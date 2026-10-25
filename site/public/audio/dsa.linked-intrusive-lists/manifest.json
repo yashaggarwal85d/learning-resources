@@ -1,0 +1,546 @@
+{
+ "topic": "dsa.linked-intrusive-lists",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "3a04e713f2141eaf",
+   "takes": [
+    "a4bd4eb843fdfd484a65",
+    "5d49a8ab3c94dc0e09a1",
+    "4bcdfd5521f57c8d069b"
+   ],
+   "duration": 29.172,
+   "lines": [
+    {
+     "text": "A dynamic array wins by being contiguous. One allocation, and a single fetch from memory can serve several elements at once.",
+     "start": 0.15,
+     "end": 9.582
+    },
+    {
+     "text": "A linked structure gives that up on purpose. Every element gets its own little allocation, scattered wherever the allocator happens to put it.",
+     "start": 10.002,
+     "end": 19.72
+    },
+    {
+     "text": "So what does giving that up actually buy back? That's today's question, and the answer has three real parts.",
+     "start": 20.54,
+     "end": 28.822
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "bf722119b798e868",
+   "takes": [
+    "7485e249202c83742337",
+    "ff34d86751162d022891"
+   ],
+   "duration": 12.488,
+   "lines": [
+    {
+     "text": "Here's a list with only a head pointer, one pointer per node, pointing forward. Nothing points at the tail.",
+     "start": 0.15,
+     "end": 7.429
+    },
+    {
+     "text": "Append one more record at the very end. What does that cost?",
+     "start": 7.849,
+     "end": 12.138
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "56e030f32f0a574a",
+   "takes": [
+    "8383559232640532bc3c",
+    "33f7aa5b681dc0950cb6"
+   ],
+   "duration": 19.011,
+   "lines": [
+    {
+     "text": "You have to walk every node, starting from the head, just to find the last one, before you can even attach the new one. That's linear time, not constant.",
+     "start": 0.15,
+     "end": 11.635
+    },
+    {
+     "text": "The singly linked list is fast exactly where you already hold a pointer. Everywhere else, you're walking.",
+     "start": 12.055,
+     "end": 18.661
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "1d1e1145838221bf",
+   "takes": [
+    "67afa2e68948473c2b68",
+    "1e0ef744b538082c253b",
+    "28eb8a15928a28a09c80"
+   ],
+   "duration": 25.354,
+   "lines": [
+    {
+     "text": "Add a second pointer to every node, pointing backward as well as forward, and something changes.",
+     "start": 0.15,
+     "end": 7.247
+    },
+    {
+     "text": "Removing a node you're already holding a pointer to costs nothing but re-pointing its two neighbours at each other. No walk at all.",
+     "start": 7.667,
+     "end": 15.308
+    },
+    {
+     "text": "Notice the condition, though. This doesn't make finding the node any faster. It only makes removing one you've already found faster.",
+     "start": 16.128,
+     "end": 25.004
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Removing a node you're already holding a pointer to costs nothing but re-pointing its two neighbours at each other. No walk at all.",
+     "said": "re pointing",
+     "heard": "repointing"
+    },
+    {
+     "line": "Removing a node you're already holding a pointer to costs nothing but re-pointing its two neighbours at each other. No walk at all.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "04": {
+   "hash": "dc663b91f7fe142c",
+   "takes": [
+    "def43cb2d3ca004feda5",
+    "2a140503cf1638e181ce",
+    "e917bdea4917b5ec338f"
+   ],
+   "duration": 29.567,
+   "lines": [
+    {
+     "text": "Close the chain into a ring, with one node standing in as a sentinel instead of a true beginning and end.",
+     "start": 0.15,
+     "end": 7.872
+    },
+    {
+     "text": "Now no pointer anywhere in the structure is ever empty. Inserting or removing at what used to be the edge uses exactly the same code as the middle.",
+     "start": 8.292,
+     "end": 18.774
+    },
+    {
+     "text": "This is the shape the Linux kernel's own list actually uses, and now you can see why: one fewer special case, everywhere.",
+     "start": 19.194,
+     "end": 29.217
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "ae3f7af6bf6ced64",
+   "takes": [
+    "0791aec4c2d1aa8c467d",
+    "1e16aa74f41a5fbd92e2"
+   ],
+   "duration": 18.162,
+   "lines": [
+    {
+     "text": "Here are the same six records, laid out two ways. On top, in the order you'd walk them. Below, scattered so that order is broken.",
+     "start": 0.15,
+     "end": 9.816
+    },
+    {
+     "text": "The list itself doesn't choose this. The allocator does, long before the list ever sees these nodes.",
+     "start": 10.236,
+     "end": 17.812
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "87967ee792ad897d",
+   "takes": [
+    "b9184922b71b46605a4f"
+   ],
+   "duration": 8.887,
+   "lines": [
+    {
+     "text": "So: walking a list by following pointers, instead of jumping by index into an array. Is that always slower?",
+     "start": 0.15,
+     "end": 8.537
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.6,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "188fb666e2a3b434",
+   "takes": [
+    "37067ecd6d5c0f51104f",
+    "3db4dd1d79d4cc55c43b"
+   ],
+   "duration": 21.363,
+   "lines": [
+    {
+     "text": "No. It's slower exactly when the order you're walking in disagrees with the order the nodes actually sit in memory.",
+     "start": 0.15,
+     "end": 7.738
+    },
+    {
+     "text": "When they agree, the hardware can see what's coming and fetch it ahead of time, almost as cheaply as it does for an array. When they don't agree, every single step is a guess the hardware can't make.",
+     "start": 8.158,
+     "end": 21.013
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "316a3cb4aca9bbbb",
+   "takes": [
+    "f44746c4cc3c46d4f668",
+    "e02d7aa3575a570ab65e",
+    "fdda5af18e50fa96a11c",
+    "e45801ccdc7fc0eb2f25"
+   ],
+   "duration": 31.9,
+   "lines": [
+    {
+     "text": "Here's what that gap actually costs, from one real measurement.",
+     "start": 0.15,
+     "end": 4.17
+    },
+    {
+     "text": "Walked in memory order, a list costs about nine cycles per element, once it's too big for the fast caches.",
+     "start": 4.59,
+     "end": 12.287
+    },
+    {
+     "text": "Walked out of order, the same list costs about four hundred fifty cycles per element, and it keeps climbing as the list grows.",
+     "start": 12.707,
+     "end": 21.674
+    },
+    {
+     "text": "Roughly fifty times worse. And the only thing that changed between the two is which order the allocator happened to put the nodes in.",
+     "start": 22.394,
+     "end": 31.55
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "63de7bff9ddb0536",
+   "takes": [
+    "4388b45a6bf273c6fc31",
+    "f7cb90d2b40bce0af910",
+    "8dca9a282f1536aedaa5"
+   ],
+   "duration": 28.316,
+   "lines": [
+    {
+     "text": "Now take a whole run of nodes out of the middle of one list and splice it into another.",
+     "start": 0.15,
+     "end": 6.19
+    },
+    {
+     "text": "Four pointers change. The two ends of the gap you're leaving, and the two ends of the gap you're filling. That's it, no matter how long the run is.",
+     "start": 6.61,
+     "end": 16.358
+    },
+    {
+     "text": "Try the same move on an array and every single element between the cut and the end has to physically shift. The list simply never pays that price.",
+     "start": 17.078,
+     "end": 27.966
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "e59b81193fc996f3",
+   "takes": [
+    "71c24df213f73bb0b023",
+    "e3976a1dddd7f64b0aaa",
+    "85435dd1c4ec48fefd69"
+   ],
+   "duration": 24.813,
+   "lines": [
+    {
+     "text": "Take a pointer into one of these nodes and hold onto it. Other nodes get inserted and removed elsewhere in the list.",
+     "start": 0.15,
+     "end": 7.898
+    },
+    {
+     "text": "That pointer is still good. A list node's address doesn't move for as long as the node is alive.",
+     "start": 8.318,
+     "end": 14.69
+    },
+    {
+     "text": "Compare that to last time's vector, where the exact same kind of pointer died the instant a single append triggered a reallocation.",
+     "start": 15.51,
+     "end": 24.463
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Take a pointer into one of these nodes and hold onto it. Other nodes get inserted and removed elsewhere in the list.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "10": {
+   "hash": "5b9aa65bee20440a",
+   "takes": [
+    "b708a85d894aca32c667",
+    "2013ea5a7e5f3a8ffcb6",
+    "7098e45a048da4f0d50f"
+   ],
+   "duration": 30.93,
+   "lines": [
+    {
+     "text": "Here's the Linux kernel's own list head. Just two pointers. No payload field at all.",
+     "start": 0.15,
+     "end": 6.047
+    },
+    {
+     "text": "Instead of allocating a separate node that points at your data, you embed this two-pointer struct directly inside your own struct.",
+     "start": 6.467,
+     "end": 14.736
+    },
+    {
+     "text": "One allocation instead of two. And because the link itself carries no data, the very same struct can embed a second one of these and belong to a second, completely independent list at the same time.",
+     "start": 15.456,
+     "end": 30.58
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "2d969bf8eb738fab",
+   "takes": [
+    "23fcc8631606dace8c8c",
+    "50031ad4e1e4156e2a64",
+    "902069f2f1749e37b89a"
+   ],
+   "duration": 25.427,
+   "lines": [
+    {
+     "text": "Given a pointer to that embedded link field, how do you get back to the struct that contains it?",
+     "start": 0.15,
+     "end": 6.156
+    },
+    {
+     "text": "You subtract the link field's offset inside the struct, a number fixed the moment the struct's layout was decided, at compile time.",
+     "start": 6.706,
+     "end": 15.437
+    },
+    {
+     "text": "That's the whole trick behind a macro called container of, and the kernel builds its own list entry lookups directly on top of it.",
+     "start": 16.257,
+     "end": 25.077
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "981292f5e9d9ab88",
+   "takes": [
+    "b56b965be7be458ae2e2"
+   ],
+   "duration": 8.5,
+   "lines": [
+    {
+     "text": "Suppose you call that macro and accidentally name the wrong struct type for the member you're recovering. Does anything catch that mistake?",
+     "start": 0.15,
+     "end": 8.15
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.8,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "d6cbd5d56df25b81",
+   "takes": [
+    "d5e691c0cff10cf1628e",
+    "1862d289ec545379aab7"
+   ],
+   "duration": 29.061,
+   "lines": [
+    {
+     "text": "Yes, in the version shipping today. The macro checks, at compile time, that the pointer you passed actually matches the named member's type, and turns a mismatch into a build error instead of a silent, dangerous cast.",
+     "start": 0.15,
+     "end": 15.818
+    },
+    {
+     "text": "That's worth knowing specifically because older code built the same idea without that check at all. Reading the current source, not an old memory of it, is what catches the difference.",
+     "start": 16.238,
+     "end": 28.711
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "ab2d515b3db6d52d",
+   "takes": [
+    "7398411a2b741c19e980",
+    "fe95c4fbbb0b8c5570a3"
+   ],
+   "duration": 35.388,
+   "lines": [
+    {
+     "text": "So: three things a linked list buys back for giving up contiguity. Splicing any length of run for a fixed, small cost. Addresses that never move while a node lives. And a design \u2014 linking the structure right inside your own data \u2014 an array simply can't express.",
+     "start": 0.15,
+     "end": 22.47
+    },
+    {
+     "text": "Against one real, measured cost: roughly fifty times worse, when the order you walk in disagrees with the order memory actually put things in.",
+     "start": 22.89,
+     "end": 35.038
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "8ccdde5080758a43",
+   "takes": [
+    "222d5bbd368d087778c0",
+    "95a6e9e45a14f1d3415b",
+    "eba1bb2c67c345d9105a"
+   ],
+   "duration": 25.219,
+   "lines": [
+    {
+     "text": "Here's the splice claim, run for real. Cut a run out of a ten thousand node list and splice it elsewhere.",
+     "start": 0.15,
+     "end": 7.255
+    },
+    {
+     "text": "Four pointer rewrites. Try it with a run of one node, thirty seven nodes, five thousand nodes \u2014 still four.",
+     "start": 7.675,
+     "end": 16.009
+    },
+    {
+     "text": "The array equivalent moves thousands of elements every single time. The list's cost never changes at all.",
+     "start": 16.729,
+     "end": 24.869
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "b0091b7d379b0e46",
+   "takes": [
+    "3ef3acbacc40831726de",
+    "c5e42bf7fc4098c94b94",
+    "b6672984b35ba8278d1a"
+   ],
+   "duration": 26.952,
+   "lines": [
+    {
+     "text": "And here's container of, not just described but actually built. A real structure, a real embedded link field, a real byte offset the compiler computed.",
+     "start": 0.15,
+     "end": 13.43
+    },
+    {
+     "text": "Subtract that offset from the link field's own address, and you land exactly back on the structure's address. Every time.",
+     "start": 13.85,
+     "end": 22.034
+    },
+    {
+     "text": "That's the whole mechanism, working, not just claimed.",
+     "start": 22.754,
+     "end": 26.602
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

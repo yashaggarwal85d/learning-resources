@@ -16,13 +16,13 @@
       ],
       "answer": [
         "You have to walk every node, starting from the head, just to find the last one, before you can even attach the new one. That's linear time, not constant.",
-        "A singly linked list is fast exactly at the one place you kept a pointer to. Everywhere else, you're walking."
+        "The singly linked list is fast exactly where you already hold a pointer. Everywhere else, you're walking."
       ]
     },
     {
       "lines": [
         "Add a second pointer to every node, pointing backward as well as forward, and something changes.",
-        "Removing a node you already have a pointer to costs nothing but re-pointing its two neighbours at each other. No walk at all.",
+        "Removing a node you're already holding a pointer to costs nothing but re-pointing its two neighbours at each other. No walk at all.",
         { "beat": 0.4 },
         "Notice the condition, though. This doesn't make finding the node any faster. It only makes removing one you've already found faster."
       ]
