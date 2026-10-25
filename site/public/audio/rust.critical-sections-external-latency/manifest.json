@@ -1,0 +1,336 @@
+{
+ "topic": "rust.critical-sections-external-latency",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "83e155e1863ddf64",
+   "takes": [
+    "70e4d9e79cf8eba75e10",
+    "8115a0d40ee8ea2f9a52"
+   ],
+   "duration": 16.59,
+   "lines": [
+    {
+     "text": "A critical section has exactly one job: guarding a handful of memory operations while one thread touches them.",
+     "start": 0.15,
+     "end": 8.631
+    },
+    {
+     "text": "That's the entire contract. Nothing in that contract says anything about what else might end up standing inside it.",
+     "start": 9.051,
+     "end": 16.24
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "815b208378a29bd9",
+   "takes": [
+    "515b2c73edc8bb0d450b",
+    "9b8d3f9217aabf10ab93"
+   ],
+   "duration": 12.251,
+   "lines": [
+    {
+     "text": "Send four threads at one lock, and give each of them its own simulated network call to make while it's still holding that lock.",
+     "start": 0.15,
+     "end": 7.901
+    },
+    {
+     "text": "Roughly how long should the whole thing take to finish?",
+     "start": 8.621,
+     "end": 11.901
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 167,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "4ce8861d89e2548f",
+   "takes": [
+    "65e7a8f105e3beeaa86f",
+    "d957f909aa8b1bae9540"
+   ],
+   "duration": 25.554,
+   "lines": [
+    {
+     "text": "Close to four times one call's length, not one call's length. The lock has no idea what it's guarding \u2014 it serializes the entire critical section, call included.",
+     "start": 0.15,
+     "end": 12.071
+    },
+    {
+     "text": "Only one thread is ever allowed inside at once, and that rule doesn't care whether the thing inside is a memory write or a wait for the outside world.",
+     "start": 12.491,
+     "end": 25.204
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 131,
+   "wer": 0.06896551724137931,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Only one thread is ever allowed inside at once, and that rule doesn't care whether the thing inside is a memory write or a wait for the outside world.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Only one thread is ever allowed inside at once, and that rule doesn't care whether the thing inside is a memory write or a wait for the outside world.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "03": {
+   "hash": "c7834ab502852512",
+   "takes": [
+    "c736dafced2b8dd8f86e",
+    "da448a6fddc62096979d"
+   ],
+   "duration": 20.2,
+   "lines": [
+    {
+     "text": "Here is the real number, measured, not guessed: roughly a hundred and sixty milliseconds for four calls that individually take forty.",
+     "start": 0.15,
+     "end": 10.705
+    },
+    {
+     "text": "That's the lock paying for every single one of those calls in sequence, because none of them could start until the one before it let go.",
+     "start": 11.125,
+     "end": 19.85
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "cd50c6005f7f7aaa",
+   "takes": [
+    "cb73536e92b750f4f2cf",
+    "2fa12c3ae1afcde73373"
+   ],
+   "duration": 21.919,
+   "lines": [
+    {
+     "text": "Move the exact same call to before the lock is ever taken, and leave the lock holding only the one memory write it was always meant to guard.",
+     "start": 0.15,
+     "end": 9.866
+    },
+    {
+     "text": "Now all four calls happen at once, and the whole thing finishes in about the length of a single call \u2014 the lock was never the bottleneck; what was inside it was.",
+     "start": 10.286,
+     "end": 21.569
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.03571428571428571,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Move the exact same call to before the lock is ever taken, and leave the lock holding only the one memory write it was always meant to guard.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "05": {
+   "hash": "673237be1760d03c",
+   "takes": [
+    "5a8de5d8c60bed9e87da",
+    "cfddb6a4832c7bf87b12"
+   ],
+   "duration": 15.121,
+   "lines": [
+    {
+     "text": "Now take two separate locks and two threads. One of them reaches for the first lock, then the second. The other reaches for them in the opposite order.",
+     "start": 0.15,
+     "end": 11.428
+    },
+    {
+     "text": "Does a program built that way ever finish?",
+     "start": 12.148,
+     "end": 14.771
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -2.5,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "cfa848508e592cec",
+   "takes": [
+    "fb632157ad4290be3deb",
+    "e9c4bafaed62343e699f"
+   ],
+   "duration": 16.277,
+   "lines": [
+    {
+     "text": "No, it hangs forever. Each thread ends up holding exactly the one thing the other thread is still waiting for.",
+     "start": 0.15,
+     "end": 7.63
+    },
+    {
+     "text": "Neither thread did anything wrong on its own \u2014 the trouble only exists in how the two of them were ordered against each other.",
+     "start": 8.05,
+     "end": 15.927
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "090d996379e3805b",
+   "takes": [
+    "53d0fb0cbac18fe5e19b",
+    "408f2ced6236e52df6ea"
+   ],
+   "duration": 17.604,
+   "lines": [
+    {
+     "text": "Run that exact program under a short timeout, and the timeout is the one that gives up \u2014 the program itself never does.",
+     "start": 0.15,
+     "end": 8.738
+    },
+    {
+     "text": "That's a deadlock proven directly, not described: the process is still sitting there, waiting on a lock that will never come free.",
+     "start": 9.158,
+     "end": 17.254
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "512d16a305afa7ce",
+   "takes": [
+    "e160c4360bcdaaba17a2",
+    "591a90978f29fa69f28e"
+   ],
+   "duration": 18.547,
+   "lines": [
+    {
+     "text": "Make one small change: have both threads reach for the first lock before ever touching the second, every single time.",
+     "start": 0.15,
+     "end": 9.064
+    },
+    {
+     "text": "The circle that made the deadlock possible simply can't form anymore, and the identical program now finishes cleanly, every time it runs.",
+     "start": 9.484,
+     "end": 18.197
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "267e87013256985c",
+   "takes": [
+    "94cbbf9ebbd58336ebcb",
+    "faef5ddc513e1617e273"
+   ],
+   "duration": 21.355,
+   "lines": [
+    {
+     "text": "A lock convoy looks similar from a distance, but it isn't a deadlock at all: it's a pile of equal-priority threads bouncing off the same lock, over and over.",
+     "start": 0.15,
+     "end": 12.538
+    },
+    {
+     "text": "Every one of them is still making progress \u2014 the cost here is wasted turns at the front of the line, not a permanent stop.",
+     "start": 12.958,
+     "end": 21.005
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "683ec684f1cc3203",
+   "takes": [
+    "d65b20e95359e14e0c89",
+    "31e9359adbcc94b3cc4d"
+   ],
+   "duration": 27.557,
+   "lines": [
+    {
+     "text": "Priority inversion is the opposite shape of problem: a thread the scheduler barely cares about ends up holding the one lock a much more urgent thread is stuck waiting on.",
+     "start": 0.15,
+     "end": 11.793
+    },
+    {
+     "text": "The kernel's own fix borrows the urgent thread's priority and lends it to the holder, just long enough to get the lock back \u2014 and none of this, start to finish, is something the compiler was ever watching for.",
+     "start": 12.213,
+     "end": 27.207
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "05ed7f222502e953",
+   "takes": [
+    "3280005d05da5c044211",
+    "9dd7b71a61b47f893673"
+   ],
+   "duration": 25.833,
+   "lines": [
+    {
+     "text": "Keep the outside world out of a critical section, order every lock the same way everywhere, and remember that a convoy still crawls forward while a deadlock never moves again.",
+     "start": 0.15,
+     "end": 14.965
+    },
+    {
+     "text": "Every one of those is a property of how the program behaves at runtime \u2014 the type system already did its part, and its part was never this.",
+     "start": 15.385,
+     "end": 25.483
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
