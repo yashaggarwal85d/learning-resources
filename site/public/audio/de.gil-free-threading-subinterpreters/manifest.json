@@ -1,0 +1,414 @@
+{
+ "topic": "de.gil-free-threading-subinterpreters",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8203999814dc2293",
+   "takes": [
+    "be17332a1730bb85bc87",
+    "c6b9ba088e84fb90d474"
+   ],
+   "duration": 18.665,
+   "lines": [
+    {
+     "text": "Start four real threads in most languages, and four cores actually light up doing real work.",
+     "start": 0.15,
+     "end": 6.573
+    },
+    {
+     "text": "Do the exact same thing in plain Python, and watch the activity monitor. Usually only one core moves at all. Something in the runtime itself is choosing not to use the others.",
+     "start": 6.993,
+     "end": 18.315
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "abeb0e86f81773be",
+   "takes": [
+    "b20a03068131946c5d6e",
+    "287275c952e94a88f35f"
+   ],
+   "duration": 21.079,
+   "lines": [
+    {
+     "text": "Here's that something, stated in the language's own glossary.",
+     "start": 0.15,
+     "end": 3.91
+    },
+    {
+     "text": "Only one thread gets to execute Python bytecode at any given moment \u2014 not a bug, not a missing optimization, but a deliberate design choice that keeps the object model safe without the programmer doing any locking themselves.",
+     "start": 4.33,
+     "end": 20.729
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "bed932c9dbfe0f36",
+   "takes": [
+    "236588815224dd9f2389",
+    "f718f5f488db53e10e9c"
+   ],
+   "duration": 18.674,
+   "lines": [
+    {
+     "text": "Here's a question worth guessing before the reveal.",
+     "start": 0.15,
+     "end": 3.192
+    },
+    {
+     "text": "A thread calls into a hash function written in C instead of running ordinary Python bytecode. Does that lock still apply the exact same way it applies to a Python loop, or does calling into C change anything?",
+     "start": 3.612,
+     "end": 18.323
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.2,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "9b10e3777934f31e",
+   "takes": [
+    "35794bc23229c9ef0622",
+    "847bbf7da50b5128677e"
+   ],
+   "duration": 19.135,
+   "lines": [
+    {
+     "text": "No \u2014 native code is allowed to let go of that lock for its own computation.",
+     "start": 0.15,
+     "end": 6.146
+    },
+    {
+     "text": "The lock specifically guards bytecode execution. Code written in C can explicitly release it while it works, and other Python threads genuinely get to run during that window.",
+     "start": 6.566,
+     "end": 18.785
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "No \u2014 native code is allowed to let go of that lock for its own computation.",
+     "said": "no",
+     "heard": "now"
+    }
+   ]
+  },
+  "04": {
+   "hash": "98c0a1d78c5f11f2",
+   "takes": [
+    "f429093891c28a3ac39e",
+    "b1ff0d0c85f0f8fed7f4"
+   ],
+   "duration": 22.416,
+   "lines": [
+    {
+     "text": "Here's that release, made real rather than just asserted.",
+     "start": 0.15,
+     "end": 3.867
+    },
+    {
+     "text": "The identical total amount of hashing work, spread across threads: the C function genuinely speeds up close to four times over. The same total work as a plain Python loop speeds up barely at all \u2014 the lock never lets go for it.",
+     "start": 4.287,
+     "end": 22.066
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "1d2d040123238961",
+   "takes": [
+    "6d8a10dd6a03200e6648",
+    "5d959086fa8d50fe8ec3"
+   ],
+   "duration": 21.962,
+   "lines": [
+    {
+     "text": "A second way around that same lock entirely: separate processes instead of threads.",
+     "start": 0.15,
+     "end": 6.232
+    },
+    {
+     "text": "One process starts by copying the parent wholesale, so it already has everything the parent had. The other starts from nothing and has to be handed whatever it needs \u2014 and starting from nothing measurably takes longer.",
+     "start": 6.652,
+     "end": 21.612
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "3215b55b653c91c1",
+   "takes": [
+    "92cc684fb72661657d42",
+    "f603dd79df599bba45cb"
+   ],
+   "duration": 23.437,
+   "lines": [
+    {
+     "text": "That handing-over isn't free either, and this is exactly how much it costs.",
+     "start": 0.15,
+     "end": 6.943
+    },
+    {
+     "text": "A fresh process can't just see memory it didn't inherit \u2014 anything crossing that boundary gets serialized first, byte by byte, and deserialized again on the other side. Both directions take real, measured time.",
+     "start": 7.363,
+     "end": 23.087
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.06060606060606061,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A fresh process can't just see memory it didn't inherit \u2014 anything crossing that boundary gets serialized first, byte by byte, and deserialized again on the other side. Both directions take real, measured time.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "A fresh process can't just see memory it didn't inherit \u2014 anything crossing that boundary gets serialized first, byte by byte, and deserialized again on the other side. Both directions take real, measured time.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "07": {
+   "hash": "d1b2a17163b7f0eb",
+   "takes": [
+    "b35ac74597268917a73c",
+    "51d48d56324e82a6651e"
+   ],
+   "duration": 19.377,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question worth sitting with.",
+     "start": 0.15,
+     "end": 3.219
+    },
+    {
+     "text": "Suppose the lock were removed from the language entirely. Would one single thread, running completely alone, run exactly as fast as it always did \u2014 with real parallelism simply bolted on top for free?",
+     "start": 3.639,
+     "end": 19.027
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.7,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "c8046dd4cbe28ad1",
+   "takes": [
+    "f1ec0cda0e885451742b",
+    "ef7abe84116fc1099393"
+   ],
+   "duration": 20.718,
+   "lines": [
+    {
+     "text": "No \u2014 a single thread actually gets measurably slower too.",
+     "start": 0.15,
+     "end": 4.676
+    },
+    {
+     "text": "Whatever that lock used to guard for free now needs its own finer-grained protection scattered through the interpreter instead, and paying for that protection costs something even when nothing else is running at the same time.",
+     "start": 5.096,
+     "end": 20.368
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "0d531cb45d496687",
+   "takes": [
+    "d141c023dfd27daeff11",
+    "fa3edbe5fcb9c3dfaef0"
+   ],
+   "duration": 22.182,
+   "lines": [
+    {
+     "text": "Here's that cost, in the exact words of the body deciding whether this feature becomes the default.",
+     "start": 0.15,
+     "end": 6.71
+    },
+    {
+     "text": "A real slowdown on ordinary single-threaded code. Real extra memory use on top of that. And a second cost named just as plainly: existing C extensions need their own separate build before they'll even load.",
+     "start": 7.13,
+     "end": 21.832
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "2d9506f37e5923b7",
+   "takes": [
+    "c0a3d3280845d766f8d6",
+    "23d2791a9a8fb390ee56"
+   ],
+   "duration": 22.588,
+   "lines": [
+    {
+     "text": "A third way around the lock, verified by actually running it, not by reading about it.",
+     "start": 0.15,
+     "end": 6.552
+    },
+    {
+     "text": "Instead of removing the lock, give every interpreter its own. Four separate interpreters, each with its own lock, each running real Python work on its own core at the same time \u2014 measured directly, right here.",
+     "start": 6.972,
+     "end": 22.238
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "f5ed9ff6b54b6d8d",
+   "takes": [
+    "789ba08d12d86e62b20c",
+    "add8726d50bae6613574"
+   ],
+   "duration": 21.373,
+   "lines": [
+    {
+     "text": "Here's what that separateness actually costs, in the documentation's own terms.",
+     "start": 0.15,
+     "end": 5.323
+    },
+    {
+     "text": "Nothing is shared automatically between one interpreter and the next, and no thread starts on its own just because an interpreter exists. Whatever sharing or concurrency you want has to be built deliberately, on purpose, every time.",
+     "start": 5.743,
+     "end": 21.023
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "043632d63c746466",
+   "takes": [
+    "26d80219b352c210fe5a",
+    "2ba04ed20f7ddd33ea46"
+   ],
+   "duration": 30.457,
+   "lines": [
+    {
+     "text": "Four separate tools for the exact same underlying problem, each with its own trade clearly named.",
+     "start": 0.15,
+     "end": 7.745
+    },
+    {
+     "text": "One lock serializes ordinary bytecode but lets native code step around it. Separate processes dodge the lock by not sharing memory at all. Removing the lock costs speed and memory. Separate interpreters trade automatic sharing for genuinely separate cores.",
+     "start": 8.165,
+     "end": 30.107
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 108,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "70ee42c0aa6fdabc",
+   "takes": [
+    "dbfc081d867526623d16",
+    "17eaeab92bf74554bcb9"
+   ],
+   "duration": 25.059,
+   "lines": [
+    {
+     "text": "One closing scenario worth actually testing rather than assuming.",
+     "start": 0.15,
+     "end": 4.947
+    },
+    {
+     "text": "Four independent chunks of work need to run in parallel right now, on an ordinary Python build with the lock still fully in place. Does simply creating four separate interpreters, with no threads involved at all, already make that happen on its own?",
+     "start": 5.367,
+     "end": 24.709
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "ba5bde1c169cfcbe",
+   "takes": [
+    "97a4f5fd6aabf8e4557e",
+    "ae1b678e7da1ef125fd5"
+   ],
+   "duration": 18.659,
+   "lines": [
+    {
+     "text": "No \u2014 creating the interpreters alone delivers nothing; something still has to run each one.",
+     "start": 0.15,
+     "end": 6.314
+    },
+    {
+     "text": "Isolation isn't concurrency. Each interpreter sits there doing nothing until a thread of its own actually drives it, and only then does the real parallel work begin.",
+     "start": 6.734,
+     "end": 18.309
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
