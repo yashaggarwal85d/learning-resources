@@ -1,0 +1,265 @@
+{
+ "topic": "rust.reference-cycles-weak",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6e05bd9a62d3b6ba",
+   "takes": [
+    "4f96f86c0ede28c0dce8",
+    "e4ac5eb34965fc38db36"
+   ],
+   "duration": 18.63,
+   "lines": [
+    {
+     "text": "Let one shared owner hold a strong claim on a second, and let that second one hold a strong claim right back on the first.",
+     "start": 0.15,
+     "end": 8.388
+    },
+    {
+     "text": "Once both of those claims go out of scope, neither one's count ever actually reaches nothing, because each is still being kept alive by the other.",
+     "start": 8.808,
+     "end": 18.28
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0a0b08594f5f78dd",
+   "takes": [
+    "51790e45fe628b49db0e",
+    "d2b735d6e2cedf2d3bfd"
+   ],
+   "duration": 17.669,
+   "lines": [
+    {
+     "text": "Nothing about building that loop breaks any rule the compiler actually checks: not the borrowing rules, not the type rules, nothing about which crate a type or a trait came from.",
+     "start": 0.15,
+     "end": 13.03
+    },
+    {
+     "text": "So does a program built this way compile at all?",
+     "start": 13.75,
+     "end": 17.319
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "70a3c59775783fb7",
+   "takes": [
+    "66604a985b3f06920b95",
+    "0b4cf4e3fab11d16c161"
+   ],
+   "duration": 24.666,
+   "lines": [
+    {
+     "text": "Yes, completely cleanly, with no complaint whatsoever. And once it runs, it holds onto that memory forever.",
+     "start": 0.15,
+     "end": 9.263
+    },
+    {
+     "text": "Counting every single allocation and every single release directly shows real memory that is requested once and never, ever given back. That's not a guess, and it isn't simulated.",
+     "start": 9.683,
+     "end": 24.316
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 112,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Yes, completely cleanly, with no complaint whatsoever. And once it runs, it holds onto that memory forever.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "03": {
+   "hash": "7aed725934f065ec",
+   "takes": [
+    "df1f0e349247cd1e8f3c",
+    "14a1e81a7af1da07af05"
+   ],
+   "duration": 20.368,
+   "lines": [
+    {
+     "text": "Give a value a second kind of pointer to the exact same thing an owning claim already points to, one that carries no ownership over it at all.",
+     "start": 0.15,
+     "end": 10.684
+    },
+    {
+     "text": "Its own count never being above nothing is never, by itself, a reason the thing it points to has to stay around a moment longer.",
+     "start": 11.104,
+     "end": 20.018
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "986ea3cfdb5dda99",
+   "takes": [
+    "d9cee77b455ea52924ce",
+    "e0aaae08a926b345292e"
+   ],
+   "duration": 27.933,
+   "lines": [
+    {
+     "text": "Build that identical closed loop one more time, but this time, have the second claim point back at the first with that non-owning kind of pointer instead of a second owning one.",
+     "start": 0.15,
+     "end": 12.743
+    },
+    {
+     "text": "Count every allocation and every release the exact same way as before. This time, once both go out of scope, everything that was asked for has also been fully given back.",
+     "start": 13.163,
+     "end": 27.583
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "35ac022783cd8a02",
+   "takes": [
+    "5d2ec674aa20bf950df0",
+    "21522992b4a4a5d69899"
+   ],
+   "duration": 19.496,
+   "lines": [
+    {
+     "text": "Take that same non-owning pointer, and have whatever it was pointing to lose its very last owning claim entirely, so nothing owns it anymore at all.",
+     "start": 0.15,
+     "end": 10.201
+    },
+    {
+     "text": "Ask that non-owning pointer to hand back a real, owning claim on the thing it points to. What comes back?",
+     "start": 10.921,
+     "end": 19.146
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.6,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "bb0a7566868b02d5",
+   "takes": [
+    "78ef8aff4bb8d38cc18e",
+    "2b0b6fe4c07ad5c78432"
+   ],
+   "duration": 22.316,
+   "lines": [
+    {
+     "text": "Nothing. It comes back empty, because the thing it used to point to is already gone.",
+     "start": 0.15,
+     "end": 5.736
+    },
+    {
+     "text": "A non-owning pointer like this one never once stopped that value from being let go. All it ever protects is the small bit of bookkeeping behind it, enough to let it answer that question safely instead of reading memory that's no longer there.",
+     "start": 6.156,
+     "end": 21.966
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "432973a2c24633fc",
+   "takes": [
+    "e7812bfc826c666398ec",
+    "e26a2d0c5ab6eb0a742f"
+   ],
+   "duration": 24.144,
+   "lines": [
+    {
+     "text": "Build a value that needs to hold a non-owning pointer back to itself, from the very moment it comes into existence, before it's even finished being built.",
+     "start": 0.15,
+     "end": 9.501
+    },
+    {
+     "text": "One particular way of building it hands the very closure doing the building a non-owning pointer to that not-yet-finished value, specifically so it can be tucked away inside the value while it's still being put together.",
+     "start": 9.921,
+     "end": 23.794
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.6,
+   "wpm": 167,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3c76b579c5ed427d",
+   "takes": [
+    "cfcda72f8847ffa87d01",
+    "055a6bd99076ec993989",
+    "1f6859cd3fe7e1aa09c1",
+    "04a8965ea77f1f50e0a5",
+    "4f04d3c86d52689efd28"
+   ],
+   "duration": 66.288,
+   "lines": [
+    {
+     "text": "So: two owning claims pointing back at each other in a closed loop never let each other go, and that memory is never given back for as long as the program keeps running.",
+     "start": 0.15,
+     "end": 12.337
+    },
+    {
+     "text": "A non-owning pointer to the same thing never keeps it alive on its own, which is exactly what lets a loop built with one break cleanly instead.",
+     "start": 12.757,
+     "end": 22.545
+    },
+    {
+     "text": "Asking a non-owning pointer for a real claim back gives nothing at all, the moment whatever it pointed to has already lost its last real owner.",
+     "start": 22.965,
+     "end": 33.117
+    },
+    {
+     "text": "And a value that needs to point back at itself from the moment it's built can be handed a non-owning pointer to itself while it's still being put together, before it's even finished.",
+     "start": 33.537,
+     "end": 46.733
+    },
+    {
+     "text": "Next time: every one of these shared values, so far, has only ever been touched by one thread's worth of logic at a time. What happens once more than one thread actually reaches for the very same, shared, changeable state, all at once?",
+     "start": 47.453,
+     "end": 65.938
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
