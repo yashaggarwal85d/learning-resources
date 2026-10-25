@@ -1,0 +1,370 @@
+{
+ "topic": "dsa.simd-group-probing-tables",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7f33454af82b6ec9",
+   "takes": [
+    "8d1e03048447cd1fe0d8",
+    "e8c02bc2127d92dd759d",
+    "7d3ae047efe7449762fe"
+   ],
+   "duration": 25.359,
+   "lines": [
+    {
+     "text": "Last topic's mechanism was correct. Open addressing really does keep every entry in the array itself.",
+     "start": 0.15,
+     "end": 6.786
+    },
+    {
+     "text": "But it still hops, one slot at a time, through its own probe sequence. This topic does the same kind of work in far fewer instructions.",
+     "start": 7.206,
+     "end": 16.326
+    },
+    {
+     "text": "Watch what happens when you stop asking 'is this one slot the right one' and start asking the same question of sixteen at once.",
+     "start": 16.746,
+     "end": 25.009
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "26c2a504008ace3b",
+   "takes": [
+    "83b6d4ed864136f326c9",
+    "6d388692b848725c2eb9",
+    "976d19a5aa926003e0f5"
+   ],
+   "duration": 27.548,
+   "lines": [
+    {
+     "text": "Two real costs, and Swiss Tables exist to avoid both of them.",
+     "start": 0.15,
+     "end": 5.188
+    },
+    {
+     "text": "A chained table pays a pointer and an allocation for every single entry. An open-addressed table avoids that, but its probe walk misses the cache on almost every step.",
+     "start": 5.608,
+     "end": 20.387
+    },
+    {
+     "text": "Keep both of those costs in mind. The next idea is built to dodge them at the same time.",
+     "start": 20.807,
+     "end": 27.198
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.03333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A chained table pays a pointer and an allocation for every single entry. An open-addressed table avoids that, but its probe walk misses the cache on almost every step.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "03": {
+   "hash": "8b3a21f7941d645b",
+   "takes": [
+    "8ddf312f9dfe98a4e11f",
+    "acc80bc331a34786a241"
+   ],
+   "duration": 16.676,
+   "lines": [
+    {
+     "text": "Here's the setup. One group, sixteen slots, one control byte per slot.",
+     "start": 0.15,
+     "end": 6.506
+    },
+    {
+     "text": "Before I show you the real number, predict it yourself: how many of those sixteen does a single SIMD compare instruction actually test?",
+     "start": 6.926,
+     "end": 16.326
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.1,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "5a7a2af2e30b3d0b",
+   "takes": [
+    "83c1151a1b7ae1d7b6d7",
+    "11e1088dcfc20f8cec74"
+   ],
+   "duration": 21.804,
+   "lines": [
+    {
+     "text": "All sixteen, in one instruction \u2014 Abseil's own design notes put it as 'winnowing sixteen candidates down... in only a few instructions.'",
+     "start": 0.15,
+     "end": 10.94
+    },
+    {
+     "text": "And it tests every one of them, occupied or not. The control byte is what decides afterward which lanes were even worth looking at.",
+     "start": 11.36,
+     "end": 21.454
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "853af22e533ed5e7",
+   "takes": [
+    "67c27da2f9ee1b6b7036",
+    "cc490839eb4e515da427",
+    "14965ad4614755dbe692"
+   ],
+   "duration": 23.228,
+   "lines": [
+    {
+     "text": "One hash value, doing two different jobs at once.",
+     "start": 0.15,
+     "end": 4.178
+    },
+    {
+     "text": "The larger share, H one, does what a hash always did: it picks which group to probe.",
+     "start": 4.598,
+     "end": 10.216
+    },
+    {
+     "text": "The smaller share, H two, gets a new job. It becomes that slot's own one byte fingerprint, stored separately from the key, right there in the control array.",
+     "start": 10.636,
+     "end": 22.878
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a7bfef39a23fc829",
+   "takes": [
+    "0ba75b155cefd88ed68c",
+    "817d39419aeac4023e04",
+    "408e88cc03655bf93034"
+   ],
+   "duration": 26.762,
+   "lines": [
+    {
+     "text": "Now sweep that fingerprint across the whole group's control bytes, all at once.",
+     "start": 0.15,
+     "end": 5.691
+    },
+    {
+     "text": "Almost every lane fades immediately \u2014 wrong fingerprint, ruled out with no key ever touched.",
+     "start": 6.111,
+     "end": 13.467
+    },
+    {
+     "text": "The one, maybe two, that match are the only candidates that earn a real comparison. That's the entire trick: reject almost everyone with one byte, before paying for the expensive check.",
+     "start": 13.887,
+     "end": 26.412
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The one, maybe two, that match are the only candidates that earn a real comparison. That's the entire trick: reject almost everyone with one byte, before paying for the expensive check.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "06": {
+   "hash": "ad7b074c881b2b62",
+   "takes": [
+    "59abaacb378b6828b319",
+    "b48516f3298f693e87c6"
+   ],
+   "duration": 13.283,
+   "lines": [
+    {
+     "text": "A seven-bit fingerprint has exactly a hundred and twenty-eight possible values.",
+     "start": 0.15,
+     "end": 6.061
+    },
+    {
+     "text": "Predict it: what are the odds a wrong candidate's fingerprint matches the query's by pure coincidence?",
+     "start": 6.481,
+     "end": 12.933
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Predict it: what are the odds a wrong candidate's fingerprint matches the query's by pure coincidence?",
+     "said": "querys",
+     "heard": "queries"
+    }
+   ]
+  },
+  "06a": {
+   "hash": "bd250fbca2d6db89",
+   "takes": [
+    "40b47dceefe46fe40204",
+    "6f137661824555361fd1"
+   ],
+   "duration": 19.575,
+   "lines": [
+    {
+     "text": "About one in a hundred and twenty-eight \u2014 not nothing, which is exactly why a real key comparison still has to run whenever that one byte says 'maybe.'",
+     "start": 0.15,
+     "end": 11.427
+    },
+    {
+     "text": "The fingerprint isn't a replacement for the real check. It's just a filter good enough that you almost never pay for one.",
+     "start": 11.847,
+     "end": 19.225
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.037037037037037035,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "About one in a hundred and twenty-eight \u2014 not nothing, which is exactly why a real key comparison still has to run whenever that one byte says 'maybe.'",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "07": {
+   "hash": "a4d95a758915b2d6",
+   "takes": [
+    "7b49fda115e89181bfc5",
+    "f570e329975e170a2473",
+    "bb818e41f1ea5380fba2"
+   ],
+   "duration": 27.098,
+   "lines": [
+    {
+     "text": "I didn't just take that one-in-a-hundred-twenty-eight number on faith \u2014 I measured it, directly, in this topic's own code.",
+     "start": 0.15,
+     "end": 7.7
+    },
+    {
+     "text": "Twenty thousand lookups for keys that were never inserted, and the rate the false matches actually land at tracks the theoretical odds closely.",
+     "start": 8.12,
+     "end": 17.942
+    },
+    {
+     "text": "That's the whole design in one sentence: the fingerprint doesn't replace the real comparison, it just makes paying for one incredibly rare.",
+     "start": 18.362,
+     "end": 26.748
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "b4662c1855109c86",
+   "takes": [
+    "9d3a1a058d764ec5eb35",
+    "502efed08a7cd27dec03",
+    "a5c0936a343a3cfedf41"
+   ],
+   "duration": 32.783,
+   "lines": [
+    {
+     "text": "Three real languages and runtimes, and I went and checked each one myself, not from memory.",
+     "start": 0.15,
+     "end": 6.913
+    },
+    {
+     "text": "Abseil's own C++ design, from twenty seventeen, open-sourced the following year. Rust's standard library HashMap, through the hashbrown crate, since a version released years back.",
+     "start": 7.333,
+     "end": 21.694
+    },
+    {
+     "text": "And Go's built-in map, adopted this very year \u2014 a current blog post is what I actually fetched for that one, not an older version I remembered.",
+     "start": 22.114,
+     "end": 32.433
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 126,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Abseil's own C++ design, from twenty seventeen, open-sourced the following year. Rust's standard library HashMap, through the hashbrown crate, since a version released years back.",
+     "said": "hashmap",
+     "heard": "hashmat"
+    },
+    {
+     "line": "And Go's built-in map, adopted this very year \u2014 a current blog post is what I actually fetched for that one, not an older version I remembered.",
+     "said": "gos",
+     "heard": "gohs"
+    }
+   ]
+  },
+  "09": {
+   "hash": "d805184eee3f2139",
+   "takes": [
+    "315cb94967d5879f2994",
+    "03e8d1443e997a662422",
+    "7c96d44bc7e2c23f3b50"
+   ],
+   "duration": 26.969,
+   "lines": [
+    {
+     "text": "One mechanism, three independent adopters, each one verified at research time.",
+     "start": 0.15,
+     "end": 6.108
+    },
+    {
+     "text": "And the asymmetry that makes it all worth it, measured, not asserted: on a packed group, the vectorized compare still costs one instruction. A naive, byte-by-byte scan of that same group costs sixteen.",
+     "start": 6.528,
+     "end": 21.725
+    },
+    {
+     "text": "Same correctness. Sixteen times fewer instructions to get there.",
+     "start": 22.145,
+     "end": 26.619
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
