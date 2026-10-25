@@ -1,0 +1,479 @@
+{
+ "topic": "de.dbt-models-tests-lineage",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "9bd93bc8517130cf",
+   "takes": [
+    "0631eaa9c582a26539cc",
+    "4d4a76f594c664df4f87"
+   ],
+   "duration": 20.145,
+   "lines": [
+    {
+     "text": "Open up a dbt model file and here's all you'll actually find inside it.",
+     "start": 0.15,
+     "end": 5.792
+    },
+    {
+     "text": "One select statement. No create-table command, no target schema name, no database connection string written anywhere in that file. So where does an actual, queryable table come from?",
+     "start": 6.212,
+     "end": 19.795
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "6a15c82ffc23a578",
+   "takes": [
+    "07fac7abe39b8047f87e",
+    "0437c03a7cbbe447e6c7"
+   ],
+   "duration": 19.145,
+   "lines": [
+    {
+     "text": "Here's the tool's own answer to that, stated directly.",
+     "start": 0.15,
+     "end": 3.702
+    },
+    {
+     "text": "A model really is just a select statement. The tool itself takes care of wrapping that statement in whatever create-or-replace logic a given warehouse happens to need \u2014 that wrapping is never the model author's own job.",
+     "start": 4.122,
+     "end": 18.795
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "3fdd16c7d7c20f40",
+   "takes": [
+    "e5b35fb1c3e0840e571d",
+    "f76ecabfdf8ca1e6c9aa"
+   ],
+   "duration": 18.563,
+   "lines": [
+    {
+     "text": "Here's a question worth sitting with before the next reveal.",
+     "start": 0.15,
+     "end": 3.584
+    },
+    {
+     "text": "One model selects from another by writing out that other model's table name directly, the plain way SQL has always allowed. Does writing it that way also tell the tool which model has to build first?",
+     "start": 4.005,
+     "end": 18.213
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "984b6341e57cf4bb",
+   "takes": [
+    "935d1305fb71df2f0458",
+    "9f6650a4ffde4c4c0cda"
+   ],
+   "duration": 20.551,
+   "lines": [
+    {
+     "text": "It doesn't \u2014 a plain table name is invisible to that dependency graph entirely.",
+     "start": 0.15,
+     "end": 5.941
+    },
+    {
+     "text": "Only one specific function registers a dependency at all. Writing a table name directly, however correct the SQL looks, tells the build system nothing whatsoever about build order.",
+     "start": 6.361,
+     "end": 20.201
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c60963f322c88080",
+   "takes": [
+    "22d8d3a135dadace782f",
+    "78fd8723f5486794ddd0"
+   ],
+   "duration": 18.538,
+   "lines": [
+    {
+     "text": "Here's that one function, made completely real in this lab.",
+     "start": 0.15,
+     "end": 4.655
+    },
+    {
+     "text": "The lab's own fact model joins three separate staging models \u2014 and every single one of those three joins goes through that one function, never once by writing out a literal table name.",
+     "start": 5.075,
+     "end": 18.188
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "8cca391d6db1b246",
+   "takes": [
+    "f26af2840e159f4c43c8",
+    "80ae200a36002bf63ee5",
+    "59b35aae1d6c6224a8ea"
+   ],
+   "duration": 37.901,
+   "lines": [
+    {
+     "text": "And here's exactly what that buys, read straight from a real build's own output.",
+     "start": 0.15,
+     "end": 6.382
+    },
+    {
+     "text": "After running this lab's build for real, the tool's own internal manifest lists, model by model, precisely which one depends on which \u2014 pulled directly from that file, never sketched out by hand.",
+     "start": 6.802,
+     "end": 22.585
+    },
+    {
+     "text": "That dependency function is the only thing the build order and the dependency graph can actually see; a plain table name stays invisible to both, however correct it looks sitting right there in the SQL.",
+     "start": 23.005,
+     "end": 37.55
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.0,
+   "wpm": 128,
+   "wer": 0.02857142857142857,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That dependency function is the only thing the build order and the dependency graph can actually see; a plain table name stays invisible to both, however correct it looks sitting right there in the SQL.",
+     "said": "sql",
+     "heard": "sequel"
+    }
+   ]
+  },
+  "06": {
+   "hash": "1af7c1bdaa8a1818",
+   "takes": [
+    "a5bc7d30b162d5ddb7dd",
+    "338f2b9eab36a7303d8a"
+   ],
+   "duration": 23.4,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question worth guessing at first.",
+     "start": 0.15,
+     "end": 3.613
+    },
+    {
+     "text": "A reusable snippet of templating logic converts a raw stored value into a cleaner display value, called from inside exactly one model's own SQL. Does changing that snippet's own logic later mean going back and editing every model that happens to call it?",
+     "start": 4.033,
+     "end": 23.05
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "3cacd69e7d51b863",
+   "takes": [
+    "0cc33fa4ea95c49f099d",
+    "468451b9b8f973385b95"
+   ],
+   "duration": 18.661,
+   "lines": [
+    {
+     "text": "Not at all \u2014 every caller inherits a changed definition automatically, with nothing left to go back and re-edit.",
+     "start": 0.15,
+     "end": 8.88
+    },
+    {
+     "text": "That snippet exists in exactly one place. Every model calling it simply compiles against whatever that one place currently says.",
+     "start": 9.3,
+     "end": 18.311
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f4554368c77107bf",
+   "takes": [
+    "1bbd04f3c8e26bf203fe",
+    "e8ef70f65ac3e14a6440"
+   ],
+   "duration": 27.091,
+   "lines": [
+    {
+     "text": "Here's that reusable snippet named directly, in the tool's own words.",
+     "start": 0.15,
+     "end": 5.341
+    },
+    {
+     "text": "Pieces of templating code that can be reused repeatedly, described as extremely useful for exactly the kind of logic that would otherwise end up duplicated across many separate models \u2014 which is precisely what this lab's own cents-to-dollars conversion was built to demonstrate.",
+     "start": 5.761,
+     "end": 26.741
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "1053c70a72c94f35",
+   "takes": [
+    "51c1901bf3e1af879641",
+    "85513eb24e091d2408d2"
+   ],
+   "duration": 23.03,
+   "lines": [
+    {
+     "text": "Here's a harder question about what happens when a check on the data actually fails.",
+     "start": 0.15,
+     "end": 4.992
+    },
+    {
+     "text": "One check on one early model fails outright \u2014 a row pointing at a customer who, it turns out, doesn't actually exist anywhere in the data. Does the build still go right ahead and build everything sitting downstream of that one failed check?",
+     "start": 5.412,
+     "end": 22.68
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "a2516e27c005a654",
+   "takes": [
+    "8024c964ef4e313293e6",
+    "9d39477b9475526f0008"
+   ],
+   "duration": 16.473,
+   "lines": [
+    {
+     "text": "No \u2014 every single thing depending on that failed check gets skipped outright, not built at all.",
+     "start": 0.15,
+     "end": 8.47
+    },
+    {
+     "text": "Nothing downstream of a known failure gets built on top of it, not even partially, not even with a warning attached.",
+     "start": 8.89,
+     "end": 16.123
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "58dc1aff42c34e85",
+   "takes": [
+    "a47c7c643828dc37a2a4",
+    "58db21ed76e2e048660e"
+   ],
+   "duration": 26.435,
+   "lines": [
+    {
+     "text": "Here's that exact failure, made completely real and then walked back.",
+     "start": 0.15,
+     "end": 4.922
+    },
+    {
+     "text": "A row pointing at a nonexistent customer was deliberately inserted into this lab's own seed data. A built-in relationship check caught it immediately, and every model, plus the one declared downstream consumer, were skipped entirely \u2014 not one of them was even attempted.",
+     "start": 5.342,
+     "end": 26.085
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.046511627906976744,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A row pointing at a nonexistent customer was deliberately inserted into this lab's own seed data. A built-in relationship check caught it immediately, and every model, plus the one declared downstream consumer, were skipped entirely \u2014 not one of them was even attempted.",
+     "said": "nonexistent",
+     "heard": "non existent"
+    }
+   ]
+  },
+  "10": {
+   "hash": "0a0df6f0328b2c0a",
+   "takes": [
+    "a1de6b7d42a5f4bcf435",
+    "5a3cce771e277be8a855"
+   ],
+   "duration": 26.386,
+   "lines": [
+    {
+     "text": "Here's a different kind of check entirely, run in complete isolation.",
+     "start": 0.15,
+     "end": 5.188
+    },
+    {
+     "text": "Checking modeling logic against a small set of fixed, deliberately fabricated rows, before ever materializing a full model against real production data \u2014 this lab's own version of that check runs against fabricated rows alone, with the real seeded data never touched at all.",
+     "start": 5.608,
+     "end": 26.036
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "b06297c081ec94bf",
+   "takes": [
+    "f655cb1410eb09b9b4c3",
+    "31849adec63c0d1741b1",
+    "e00c7af8f53eea043d88"
+   ],
+   "duration": 37.487,
+   "lines": [
+    {
+     "text": "Here's where the generated documentation, and a bigger multi-project picture, both come in.",
+     "start": 0.15,
+     "end": 7.299
+    },
+    {
+     "text": "The documentation this tool generates includes a project's own model code, its dependency graph, and every column's own attached checks \u2014 the identical graph already proven real a moment ago, now simply made browsable.",
+     "start": 7.719,
+     "end": 22.97
+    },
+    {
+     "text": "Across multiple separate projects at once, a distinct multi-project feature adds contracts, versions, and access levels, named here directly rather than built by hand.",
+     "start": 23.39,
+     "end": 37.137
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "087e268af2b5c50a",
+   "takes": [
+    "f1111f2ed24bcd631b8b",
+    "1ede7ba1e6328b9af829"
+   ],
+   "duration": 26.175,
+   "lines": [
+    {
+     "text": "Let's put the whole picture back together.",
+     "start": 0.15,
+     "end": 2.37
+    },
+    {
+     "text": "One function is the only dependency the build system can actually see. One reusable snippet, defined once, changes everywhere it's called. One failed check on the data is a hard stop for everything built on top of it. Generated documentation is that exact same proven graph, simply made browsable.",
+     "start": 2.79,
+     "end": 25.825
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "2553e97c6cfb53ab",
+   "takes": [
+    "e51dd5075d42bae9f239",
+    "db358fdbd9a00d6dec81"
+   ],
+   "duration": 23.847,
+   "lines": [
+    {
+     "text": "One closing scenario worth genuinely working through.",
+     "start": 0.15,
+     "end": 3.252
+    },
+    {
+     "text": "A brand-new model joins two existing models together, but writes out both of their table names directly instead of using that one dependency function on either. Built with several separate build threads running at once, what actually happens, and at what point does it happen?",
+     "start": 3.672,
+     "end": 23.497
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "f0e3c0e9451a6e0d",
+   "takes": [
+    "300a2ee9dc110aaca2c9",
+    "355d98796ce1812bf7e0",
+    "acafd3cd71eb6c2d4983"
+   ],
+   "duration": 30.867,
+   "lines": [
+    {
+     "text": "It can genuinely fail outright, racing directly against the very models it never declared any dependency on.",
+     "start": 0.15,
+     "end": 7.451
+    },
+    {
+     "text": "With no dependency function called anywhere, the build system has no edge at all to schedule it safely after its real dependencies \u2014 so it can run at the exact same time as them and lose that race.",
+     "start": 7.871,
+     "end": 20.822
+    },
+    {
+     "text": "It fails with a missing-table error, even though the identical query, written the other way, builds cleanly every single time.",
+     "start": 21.242,
+     "end": 30.517
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
