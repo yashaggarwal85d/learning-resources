@@ -1,0 +1,325 @@
+{
+ "topic": "dsa.order-statistic-trees",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "2db925ab61bb75d6",
+   "takes": [
+    "b363041db6206cd71725",
+    "0cba3da393717f97ab10"
+   ],
+   "duration": 16.579,
+   "lines": [
+    {
+     "text": "Every structure so far answered one question: is this key actually here.",
+     "start": 0.15,
+     "end": 6.189
+    },
+    {
+     "text": "This one answers a completely different question. Where does it rank, among everything else that's here too \u2014 for almost nothing extra.",
+     "start": 6.609,
+     "end": 16.229
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "9977d94bf6edff5e",
+   "takes": [
+    "54c9a5239810849313fa",
+    "edf5c980028f427a7374"
+   ],
+   "duration": 15.188,
+   "lines": [
+    {
+     "text": "Here's the one new thing: a count, kept at every node, of how big its own slice of the tree actually is.",
+     "start": 0.15,
+     "end": 7.55
+    },
+    {
+     "text": "Nothing about the keys changed. Every node just started keeping track of how much sits underneath it.",
+     "start": 7.97,
+     "end": 14.838
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8e2c9427dc0beb1e",
+   "takes": [
+    "e66295211aeca6c50b22",
+    "213517aabdaa4976c793"
+   ],
+   "duration": 14.001,
+   "lines": [
+    {
+     "text": "An insert just landed somewhere in this tree.",
+     "start": 0.15,
+     "end": 4.117
+    },
+    {
+     "text": "Think about it before the reveal: that one new key can't be free. Something has to pay for it in bookkeeping, and not everywhere.",
+     "start": 4.537,
+     "end": 13.651
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "caf68e3cacb5bf56",
+   "takes": [
+    "f8f01d06084248a3bd8d",
+    "bcd2506185de8e8cd145"
+   ],
+   "duration": 14.514,
+   "lines": [
+    {
+     "text": "Every node the insert actually walked past on its way down \u2014 nothing else.",
+     "start": 0.15,
+     "end": 5.369
+    },
+    {
+     "text": "Each one of those nodes just gained exactly one new thing underneath it. Nothing off that path gained anything at all.",
+     "start": 5.789,
+     "end": 14.164
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "0729eb7b33ab6caa",
+   "takes": [
+    "b19451875750e8a3f14e",
+    "0dbc1d8eacc9415a6ce3"
+   ],
+   "duration": 18.777,
+   "lines": [
+    {
+     "text": "That walk down wasn't extra work. It's the same walk the insert needed anyway, just to find where the key belonged.",
+     "start": 0.15,
+     "end": 7.785
+    },
+    {
+     "text": "So the counting hitches a ride on something the tree was already doing. Nothing underneath gets re-scanned, and nothing outside that one path even notices.",
+     "start": 8.205,
+     "end": 18.427
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a6f6553f36260dcc",
+   "takes": [
+    "3acb2f30b56e4844bd17",
+    "c9071a535c05ab8cd75f"
+   ],
+   "duration": 17.335,
+   "lines": [
+    {
+     "text": "Here's the payoff. Want the middle key, or the tenth-smallest, or whichever rank you like?",
+     "start": 0.15,
+     "end": 5.922
+    },
+    {
+     "text": "Compare it against the left side's count. Too big, subtract that count and go right. Too small, go left. Land exactly on it, and you're done.",
+     "start": 6.472,
+     "end": 16.985
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ad71038ff2cc2972",
+   "takes": [
+    "69497e352011daf4efc5",
+    "7c13917d64d9a9f3a2ff"
+   ],
+   "duration": 12.916,
+   "lines": [
+    {
+     "text": "Now the harder question. A rotation just relinked two nodes.",
+     "start": 0.15,
+     "end": 4.926
+    },
+    {
+     "text": "Guess at the damage before you see it: does fixing the bookkeeping here spread far, or stay small?",
+     "start": 5.346,
+     "end": 12.566
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "6199c85c931391f3",
+   "takes": [
+    "617dd9e5c2838c51ddcc",
+    "9dc3b9e02ecf82186a75"
+   ],
+   "duration": 15.274,
+   "lines": [
+    {
+     "text": "Exactly two \u2014 the two nodes that just changed which one is whose parent.",
+     "start": 0.15,
+     "end": 5.35
+    },
+    {
+     "text": "Every other node in this tree still has precisely the same set of things underneath it that it had a moment ago. Nothing else moved.",
+     "start": 5.77,
+     "end": 14.924
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "680bff7eb1fd9467",
+   "takes": [
+    "1cf1a0bbfff55b2a5ae9",
+    "72efb6ffcb0e25184b54"
+   ],
+   "duration": 14.466,
+   "lines": [
+    {
+     "text": "Watch it happen: two parents swap places, and exactly two counts get recomputed.",
+     "start": 0.15,
+     "end": 5.906
+    },
+    {
+     "text": "This looked like it should disturb a lot of bookkeeping. It disturbs exactly two numbers, every single time.",
+     "start": 6.326,
+     "end": 14.116
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8b452f94e2d389cd",
+   "takes": [
+    "685b0263bb311b97ba80",
+    "96354d161f1edfbb18ec"
+   ],
+   "duration": 20.527,
+   "lines": [
+    {
+     "text": "Here's why that's not a coincidence about this one count in particular.",
+     "start": 0.15,
+     "end": 5.05
+    },
+    {
+     "text": "This count survives a rotation cheaply because it's built from nothing but a node and its own two children. Any count built that same way survives a rotation the same way, at the same tiny cost.",
+     "start": 5.47,
+     "end": 20.177
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "00e4e38806edb9f8",
+   "takes": [
+    "e68a4f287a8c84df1331",
+    "92176faa98ee4c701c1a"
+   ],
+   "duration": 17.961,
+   "lines": [
+    {
+     "text": "Rank runs the opposite direction: start at a key, and climb.",
+     "start": 0.15,
+     "end": 4.787
+    },
+    {
+     "text": "Every time that climb comes up from a right-side child, add the whole left side's count to your running total. By the time you reach the top, that total is the key's own rank.",
+     "start": 5.207,
+     "end": 17.611
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "5cd1aadafdfa7faf",
+   "takes": [
+    "f6f579b1ace6052115aa",
+    "4e8646e9e0867c0009da",
+    "5337f183297f5623114e"
+   ],
+   "duration": 18.097,
+   "lines": [
+    {
+     "text": "Everything in this topic gets checked right here, not just drawn.",
+     "start": 0.15,
+     "end": 4.35
+    },
+    {
+     "text": "A query asking for a specific rank never needs more comparisons than the tree is tall.",
+     "start": 4.77,
+     "end": 10.491
+    },
+    {
+     "text": "And one real rotation, measured directly: exactly two of these counts actually change.",
+     "start": 10.911,
+     "end": 17.747
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
