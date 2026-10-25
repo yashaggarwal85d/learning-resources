@@ -14,7 +14,7 @@
         "Here is a function that borrows a string and hands back part of it, and the person who wrote it never named a single relationship between the two.",
         "The compiler isn't guessing. It follows one of three fixed rules, and the simplest says: when there is only one borrowed input anywhere in the signature, the thing handed back shares that one borrow's relationship.",
         { "beat": 0.3 },
-        "Given that rule, what does the returned slice end up tied to here?"
+        "Given that rule, what does the slice it returns end up tied to here?"
       ],
       "answer": [
         "It ties to the one borrowed parameter that exists, because that is the only candidate the rule has to offer.",
