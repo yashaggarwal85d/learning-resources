@@ -1,0 +1,4 @@
+- **WAL and durable-before-flush**: topic 3's own content. *Where you meet it:* both physical and logical replication ship the same write-ahead log this topic's own experiment measures — physical ships its bytes directly, logical decodes it first.
+- **Synchronous, asynchronous and semi-synchronous acknowledgement**: topic 17's own content. *Where you meet it:* background only — this topic is about what gets shipped, not when the primary is told it arrived.
+- **A real replication slot's own retained WAL**: this topic's own new content, built from nothing prior. *Where you meet it:* measured directly in "Reveal: a stalled slot, measured" and "Reveal: the outage, and the fix, measured."
+- **Change-data-capture (CDC)**: named informally in earlier chapters' own data-pipeline material. *Where you meet it:* logical replication's own decoded row changes, named here as the mechanism CDC tooling is actually built on.

@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: replication acknowledgement and the WAL
+
+<ul class="resources">
+  <Resource kind="reel" title="Synchronous, asynchronous and semi-synchronous replication" domain="data-engineering" host="de.synchronous-asynchronous-semi-synchronous" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.write-ahead-logging-fsync" by="the WAL this topic ships, physically or decoded" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Chapter 29. Logical Replication" href="https://www.postgresql.org/docs/current/logical-replication.html" by="PostgreSQL documentation">Logical replication named directly in contrast to physical replication's own exact-byte mechanism.</Resource>
+  <Resource kind="reading" title="26.2.6. Replication Slots" href="https://www.postgresql.org/docs/current/warm-standby.html#STREAMING-REPLICATION-SLOTS" by="PostgreSQL documentation">The real retention mechanism this topic measures directly, and its own WAL-fill warning.</Resource>
+  <Resource kind="reading" title="PostgreSQL 17.0 Release Notes" href="https://www.postgresql.org/docs/release/17.0/" by="PostgreSQL documentation">Failover-safe logical slots, named from the release that introduced them.</Resource>
+  <Resource kind="reading" title="Binary Log Formats" href="https://mariadb.com/kb/en/binary-log-formats/" by="MariaDB documentation">Row-based binary logging, the same idea named in a different engine.</Resource>
+</ul>
+
+</section>

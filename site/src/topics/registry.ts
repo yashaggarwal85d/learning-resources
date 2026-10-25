@@ -4508,4 +4508,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "This refresher treated replication as one undifferentiated thing. The next topic is the two genuinely different mechanisms hiding behind that word: shipping WAL bytes versus shipping decoded row changes.",
   },
+  {
+    id: 'de.physical-vs-logical-replication',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/physical-vs-logical-replication',
+    title: 'Physical vs logical replication',
+    syllabusTitle: 'Physical vs logical replication',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['physical-vs-logical-replication'],
+    uses: ['replication-ack-modes', 'wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "This section's refresher treated replication as one undifferentiated thing. This topic is the two genuinely different mechanisms hiding behind that word: physical WAL-byte shipping, and logical, decoded row changes — reproduced directly, including the real WAL-retention outage a stalled logical slot causes.",
+    handoff:
+      "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
+  },
 ];
