@@ -1,0 +1,335 @@
+{
+ "topic": "dsa.linear-probing-open-addressing",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b33ebb5566ec4602",
+   "takes": [
+    "8947404acf8744e2fcc8",
+    "57e5bcead0889635e2b2",
+    "d12d7a313c44d15fe655"
+   ],
+   "duration": 29.7,
+   "lines": [
+    {
+     "text": "Watch those pointers fade out, one by one. That's the entire cost topic seventeen named, and this topic exists just to get rid of it.",
+     "start": 0.15,
+     "end": 10.118
+    },
+    {
+     "text": "Every entry is about to move directly into the table itself. No node, no next pointer, nothing extra to allocate.",
+     "start": 10.538,
+     "end": 21.255
+    },
+    {
+     "text": "The price for that is hiding in plain sight, and you're about to find it the moment two keys want the same slot.",
+     "start": 21.675,
+     "end": 29.35
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "312c086e8519baa1",
+   "takes": [
+    "d74c0754a47a022474c2",
+    "7d003b0daa6665c8fc46",
+    "10b65e1793911b92b28d"
+   ],
+   "duration": 22.908,
+   "lines": [
+    {
+     "text": "Here's the whole rule, and it's almost embarrassingly simple: if a slot is full, try the next one.",
+     "start": 0.15,
+     "end": 7.38
+    },
+    {
+     "text": "That's linear probing. One hash function, one fixed step, repeat until you hit something empty.",
+     "start": 7.8,
+     "end": 14.618
+    },
+    {
+     "text": "Simple to compute is not the same thing as fast to run. Keep that tension in mind going into the next two steps.",
+     "start": 15.038,
+     "end": 22.558
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "26162a65e811642a",
+   "takes": [
+    "49f929f1d4e10192b05c",
+    "3f11770987028e759e25"
+   ],
+   "duration": 15.774,
+   "lines": [
+    {
+     "text": "Two short runs of occupied slots are already sitting there. A new key is about to collide with one of them.",
+     "start": 0.15,
+     "end": 7.624
+    },
+    {
+     "text": "Before I show you what actually happens, predict it yourself. Where does that key probably end up?",
+     "start": 8.044,
+     "end": 15.424
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "6ab85543f0d72917",
+   "takes": [
+    "7677755d1c40725d8a81",
+    "8f957e8cafc979ec212b"
+   ],
+   "duration": 15.947,
+   "lines": [
+    {
+     "text": "Very likely right at the end of one of those runs \u2014 making it one slot longer.",
+     "start": 0.15,
+     "end": 5.239
+    },
+    {
+     "text": "Any key whose probe sequence walks into a run has to cross the whole thing before it finds empty space. That's not bad luck, that's the mechanism.",
+     "start": 5.659,
+     "end": 15.597
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "25e04d730b377602",
+   "takes": [
+    "587e689d1aa9c5642c8d",
+    "d22c28675781696f9b90",
+    "fcbb2727b207e12365bd"
+   ],
+   "duration": 33.283,
+   "lines": [
+    {
+     "text": "This is primary clustering, and I want you to hear it in the original words: long runs of occupied slots build up, and the long runs tend to get longer.",
+     "start": 0.15,
+     "end": 11.88
+    },
+    {
+     "text": "Notice what's doing the damage here. It isn't a weak hash function, and it isn't bad luck \u2014 it's the probing rule itself, the same rule that made linear probing so simple to compute in the first place.",
+     "start": 12.3,
+     "end": 25.857
+    },
+    {
+     "text": "The exact thing that made this mechanism easy to build is the exact thing that makes it slow to run.",
+     "start": 26.277,
+     "end": 32.933
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "b4f3ac9795c93f2c",
+   "takes": [
+    "b83080f5c4ea160b162e",
+    "400beeeb88441d4c9ec2",
+    "f1db7f37e0b109a26780"
+   ],
+   "duration": 25.428,
+   "lines": [
+    {
+     "text": "Two real answers to that problem, and they work completely differently.",
+     "start": 0.15,
+     "end": 5.028
+    },
+    {
+     "text": "Quadratic probing steps by one, then four, then nine \u2014 it jumps away from the run instead of extending it.",
+     "start": 5.448,
+     "end": 14.052
+    },
+    {
+     "text": "Double hashing goes further still. The step itself depends on the key, so two keys that collide at the start don't even follow the same path after that.",
+     "start": 14.472,
+     "end": 25.078
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "84b64ad084332638",
+   "takes": [
+    "e8f14c2861b3c50181be",
+    "27a18239644406127fc2",
+    "7ba19c2730ff10e15a2d"
+   ],
+   "duration": 28.146,
+   "lines": [
+    {
+     "text": "Quadratic probing's guarantee comes with real fine print, and I'm not going to let that slide.",
+     "start": 0.15,
+     "end": 8.091
+    },
+    {
+     "text": "It only guarantees you'll find an empty slot within half the table \u2014 and only if the table size is prime.",
+     "start": 8.511,
+     "end": 15.31
+    },
+    {
+     "text": "And even with all of that holding, two keys that start at the same slot still follow the exact same sequence after that. That has its own name: secondary clustering.",
+     "start": 15.73,
+     "end": 27.796
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "ebf2ff1bc31cb1ba",
+   "takes": [
+    "d6099c7c119148ffdbf0",
+    "e255619be15764232952"
+   ],
+   "duration": 15.902,
+   "lines": [
+    {
+     "text": "Here's a correctness trap that catches people who've never hit it before.",
+     "start": 0.15,
+     "end": 4.205
+    },
+    {
+     "text": "You've just deleted the middle entry of this run. Before I show you what real systems do, predict it: can you just empty that slot and move on?",
+     "start": 4.625,
+     "end": 15.552
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "cc9b3f4e4fc938f5",
+   "takes": [
+    "30f26508bb30d8e9f210",
+    "7f120a323e1738098852"
+   ],
+   "duration": 20.009,
+   "lines": [
+    {
+     "text": "No \u2014 a later search walking through that slot would stop the moment it sees empty, and miss every entry sitting just beyond it.",
+     "start": 0.15,
+     "end": 9.355
+    },
+    {
+     "text": "Emptying the slot doesn't just lose the deleted key. It silently breaks every search that used to pass through it on the way to something else.",
+     "start": 9.775,
+     "end": 19.659
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8c1c983fdd6e7698",
+   "takes": [
+    "21d4edcd90839da52ae8",
+    "761c8d6363135ab610ae",
+    "27b372347049688a2e41"
+   ],
+   "duration": 30.761,
+   "lines": [
+    {
+     "text": "Two real answers, and they pay completely different costs.",
+     "start": 0.15,
+     "end": 4.183
+    },
+    {
+     "text": "One is a tombstone: a marker that says, out loud, 'nothing here, but keep going.' It keeps that slot occupied forever, until a rehash reclaims it.",
+     "start": 4.603,
+     "end": 15.83
+    },
+    {
+     "text": "The other, the one a real production library actually ships, rehashes every later entry in that same run, immediately, the moment you delete \u2014 more work right now, but nothing left behind.",
+     "start": 16.25,
+     "end": 30.411
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "73677943526b63dc",
+   "takes": [
+    "0ce231b0ecab58e2a4e4",
+    "46396500e4c6cf154adb",
+    "7306d375e6862191b6d4"
+   ],
+   "duration": 23.445,
+   "lines": [
+    {
+     "text": "Three load factors, two real strategies, one real measurement each time \u2014 nothing here is simulated.",
+     "start": 0.15,
+     "end": 6.375
+    },
+    {
+     "text": "Watch linear probing's average climb fastest as the table fills, while double hashing stays much closer to flat.",
+     "start": 6.795,
+     "end": 14.395
+    },
+    {
+     "text": "That widening gap, right there, is primary clustering actually happening, measured, not just described.",
+     "start": 14.815,
+     "end": 23.095
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.0,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
