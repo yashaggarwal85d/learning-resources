@@ -1,0 +1,403 @@
+{
+ "topic": "de.cpython-object-model-memory",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "dcc1faaa4e85348a",
+   "takes": [
+    "0d43a3283b0dded0c205",
+    "db8312fb92a7f844881d"
+   ],
+   "duration": 14.989,
+   "lines": [
+    {
+     "text": "Put the exact same arithmetic through two different paths and one of them finishes dramatically sooner.",
+     "start": 0.15,
+     "end": 6.245
+    },
+    {
+     "text": "Nothing about the math changed. What changed is what each individual number was carrying along with it the whole way through.",
+     "start": 6.665,
+     "end": 14.639
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "08117b348560fd75",
+   "takes": [
+    "07fac7abe39b8047f87e",
+    "e724e13ebe9a991f2d3f"
+   ],
+   "duration": 15.505,
+   "lines": [
+    {
+     "text": "Here's the tool's own answer to that, stated directly.",
+     "start": 0.15,
+     "end": 3.702
+    },
+    {
+     "text": "A reference count, and a pointer to the value's own type. Every object pays for both of those before a single byte of its actual value even exists.",
+     "start": 4.122,
+     "end": 15.155
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "5878593a1c93d01c",
+   "takes": [
+    "6cdd14fb3ae5f1305064",
+    "cec071e7b74b978f20e1"
+   ],
+   "duration": 19.654,
+   "lines": [
+    {
+     "text": "Here's a question worth guessing at before the reveal.",
+     "start": 0.15,
+     "end": 2.971
+    },
+    {
+     "text": "A million plain integers, sitting in a list, compared against those exact same values packed into a plain buffer with none of that per-object bookkeeping. Roughly the same footprint, or something much bigger?",
+     "start": 3.391,
+     "end": 19.304
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "d9cba6b48834cea6",
+   "takes": [
+    "35b8f3aa92e5584b18ef",
+    "e029fb11ff91f59614f4"
+   ],
+   "duration": 19.89,
+   "lines": [
+    {
+     "text": "Much bigger \u2014 every one of those integers is still paying for its own header and reference count.",
+     "start": 0.15,
+     "end": 7.019
+    },
+    {
+     "text": "The list itself only holds pointers. Each integer behind those pointers is a full, separate object, and none of that overhead exists in the packed version at all.",
+     "start": 7.439,
+     "end": 19.54
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "520955ed593e2307",
+   "takes": [
+    "9f5ba7b6c4d91bfb2244",
+    "931c0693197a8a44b63d"
+   ],
+   "duration": 18.1,
+   "lines": [
+    {
+     "text": "Here's that exact comparison, counted byte by byte on this machine's own interpreter.",
+     "start": 0.15,
+     "end": 6.106
+    },
+    {
+     "text": "Not estimated, not quoted from somewhere else \u2014 counted directly, deduplicating the handful of small integers this interpreter already keeps cached so they don't get counted twice.",
+     "start": 6.526,
+     "end": 17.75
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5fef085c1ecfd04f",
+   "takes": [
+    "7460ed769ce78060df68",
+    "108dbbb1d07179187e6b"
+   ],
+   "duration": 22.472,
+   "lines": [
+    {
+     "text": "Here's the same idea, but for a whole object instead of one number.",
+     "start": 0.15,
+     "end": 4.822
+    },
+    {
+     "text": "An ordinary object quietly carries its own private dictionary for its attributes. Declare it with a fixed set of named slots instead, and that dictionary doesn't shrink \u2014 it disappears outright, confirmed directly rather than assumed.",
+     "start": 5.242,
+     "end": 22.122
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ac02690326f62306",
+   "takes": [
+    "2a1c383c3571514b5a0a",
+    "71a43e572a17aa1e26b1"
+   ],
+   "duration": 21.016,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question about how the interpreter itself behaves.",
+     "start": 0.15,
+     "end": 5.359
+    },
+    {
+     "text": "Python stays dynamically typed the whole time it runs. Does that mean the exact same instruction executes every single time a given line runs, no matter what type shows up \u2014 or does the interpreter actually rewrite itself?",
+     "start": 5.779,
+     "end": 20.666
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "9826dfd988388a98",
+   "takes": [
+    "6bd37c41d045c04a7a3a",
+    "627fe7aa1dc5e2e2f46f"
+   ],
+   "duration": 21.071,
+   "lines": [
+    {
+     "text": "It rewrites itself. The instruction adapts to whatever type it actually keeps seeing.",
+     "start": 0.15,
+     "end": 7.11
+    },
+    {
+     "text": "Run the same tiny function cold and its instruction is generic. Call it over and over with one consistent type, and that instruction quietly becomes specific to exactly that type.",
+     "start": 7.53,
+     "end": 20.721
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "9bb2efa5e8eeffec",
+   "takes": [
+    "8d5daa2be92d6e3ce68a",
+    "39b8e7c648a02b041909"
+   ],
+   "duration": 24.753,
+   "lines": [
+    {
+     "text": "Here's that rewriting, made completely real by disassembling the same function twice.",
+     "start": 0.15,
+     "end": 6.613
+    },
+    {
+     "text": "Before a single call, a generic instruction. After enough calls with one consistent type, an instruction specific to that exact type \u2014 and a second copy of the same function, warmed up with a different type, specializes to that one instead.",
+     "start": 7.033,
+     "end": 24.403
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "a7cc87710b324bc4",
+   "takes": [
+    "dac0aa145acf738e28ed",
+    "b3cb1524fdd84155793b"
+   ],
+   "duration": 19.45,
+   "lines": [
+    {
+     "text": "Here's why the interpreter is built this way, in its own words.",
+     "start": 0.15,
+     "end": 4.044
+    },
+    {
+     "text": "It guesses ahead of time which type a piece of code is about to see, and quietly changes that guess again the moment the pattern actually shifts \u2014 keeping the cost of a wrong guess as small as it can.",
+     "start": 4.464,
+     "end": 19.1
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "05a867b1b4f1be97",
+   "takes": [
+    "2411df7fb6aef892819d",
+    "3335b5b36c6eaed189e2"
+   ],
+   "duration": 27.838,
+   "lines": [
+    {
+     "text": "Here's a compiler that goes even further than rewriting instructions \u2014 and a direct check for whether this machine actually has it.",
+     "start": 0.15,
+     "end": 9.028
+    },
+    {
+     "text": "Past a certain point, genuinely hot code can be turned into real machine code rather than just a faster instruction. That only happens in a build specifically configured for it, and this machine's own interpreter was checked directly and isn't one.",
+     "start": 9.448,
+     "end": 27.488
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "9eb4cdf69cac9bd0",
+   "takes": [
+    "7e3e575000d9fd36637d",
+    "1b4dbf992bcd656c8b1a"
+   ],
+   "duration": 24.752,
+   "lines": [
+    {
+     "text": "Here's where all of that still falls short of the vectorized path from the very first comparison.",
+     "start": 0.15,
+     "end": 6.63
+    },
+    {
+     "text": "Every trick in this topic so far makes the interpreter's own loop faster. None of it removes the per-object overhead measured earlier \u2014 and that overhead is most of why the vectorized call is still measured well ahead of all of it.",
+     "start": 7.05,
+     "end": 24.402
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "dd4922b85a8f3132",
+   "takes": [
+    "f1111f2ed24bcd631b8b",
+    "15e4e8b8209f45975c73",
+    "090c2f355c29f1f4942e"
+   ],
+   "duration": 23.601,
+   "lines": [
+    {
+     "text": "Let's put the whole picture back together.",
+     "start": 0.15,
+     "end": 2.37
+    },
+    {
+     "text": "Every plain value pays for its own header, whether it needs one or not. The interpreter adapts to whatever types it actually sees, and that adapting itself costs something real.",
+     "start": 2.79,
+     "end": 16.615
+    },
+    {
+     "text": "Neither of those tricks removes the one cost a vectorized call was built to skip from the very start.",
+     "start": 17.035,
+     "end": 23.251
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.6,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "6e880d4311f163ce",
+   "takes": [
+    "5bad3db5dd38cac6fe48",
+    "4fc1b7eba07d5da55d7d"
+   ],
+   "duration": 22.15,
+   "lines": [
+    {
+     "text": "One closing scenario worth actually measuring rather than guessing at.",
+     "start": 0.15,
+     "end": 4.393
+    },
+    {
+     "text": "The same function, called millions of times, but fed a genuine mix of two different types instead of one consistent type throughout. Does the earlier specialization still help here, or does mixing the types undo it?",
+     "start": 4.813,
+     "end": 21.8
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "c72f556803353b9f",
+   "takes": [
+    "ed62bdd3750eb3b67b2d",
+    "f60a05c856ace3c97920"
+   ],
+   "duration": 19.443,
+   "lines": [
+    {
+     "text": "It still helps \u2014 just measurably less than it did with one consistent type.",
+     "start": 0.15,
+     "end": 5.841
+    },
+    {
+     "text": "The interpreter keeps switching its guess back and forth as the type keeps changing, and that repeated switching is exactly the extra cost its own adaptive design was built to keep small \u2014 small, never nothing.",
+     "start": 6.261,
+     "end": 19.093
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
