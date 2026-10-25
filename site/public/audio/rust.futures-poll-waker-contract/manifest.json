@@ -1,0 +1,325 @@
+{
+ "topic": "rust.futures-poll-waker-contract",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "72293453124b876c",
+   "takes": [
+    "14731b44a806fd929c64",
+    "f62711cf514b6eeb03f3"
+   ],
+   "duration": 20.829,
+   "lines": [
+    {
+     "text": "A thread, once started, is simply running. It executes, or it waits for something, but either way, it's doing something, right now.",
+     "start": 0.15,
+     "end": 10.896
+    },
+    {
+     "text": "What's about to be built here does something stranger: a value that represents work, where nothing at all happens just because that value exists.",
+     "start": 11.316,
+     "end": 20.479
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ff16168bf8f89e11",
+   "takes": [
+    "b296487303034fa62869",
+    "60bac7aa8213f03ea3f5"
+   ],
+   "duration": 17.145,
+   "lines": [
+    {
+     "text": "Write that value out by hand, with no shortcuts from the language's own sugar for this \u2014 just a plain structure, holding whatever state it needs.",
+     "start": 0.15,
+     "end": 9.092
+    },
+    {
+     "text": "The moment it's constructed, before anything else touches it, has any of its actual work already started?",
+     "start": 9.812,
+     "end": 16.795
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "9b720d9e7324c880",
+   "takes": [
+    "58ba958ef3e660c7f757",
+    "67ba860e1493f8172329"
+   ],
+   "duration": 15.347,
+   "lines": [
+    {
+     "text": "No, nothing has started at all.",
+     "start": 0.15,
+     "end": 2.528
+    },
+    {
+     "text": "This is a value, not an action in progress \u2014 building it is no different from building any other piece of data, until something asks it, directly, to move forward.",
+     "start": 2.948,
+     "end": 14.997
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "07b0acd44eea9b48",
+   "takes": [
+    "f594e3ccb74bc8fbb0a0",
+    "6bee99d4870e9d79a80c"
+   ],
+   "duration": 19.756,
+   "lines": [
+    {
+     "text": "There's exactly one thing defined on this value that's capable of making anything happen, and nothing else gets to touch it.",
+     "start": 0.15,
+     "end": 9.393
+    },
+    {
+     "text": "Every bit of progress this computation will ever make happens only in the moment that single thing is called, and never otherwise.",
+     "start": 9.813,
+     "end": 19.406
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "7af8f17c154bf15f",
+   "takes": [
+    "6faff48a34fab1406ede",
+    "48039780c22bdc5fab57"
+   ],
+   "duration": 24.284,
+   "lines": [
+    {
+     "text": "Because nothing costs anything until that one call actually happens, a system can build and hold far more of these values than it could ever possibly run all at once.",
+     "start": 0.15,
+     "end": 13.339
+    },
+    {
+     "text": "None of them are consuming a thread, or memory beyond their own small size, or anything else, while they're just sitting there waiting to be asked.",
+     "start": 13.759,
+     "end": 23.934
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "027e23bfc17b766f",
+   "takes": [
+    "9862d6a610f8b494484d",
+    "a308bfcc844c8be04233"
+   ],
+   "duration": 16.864,
+   "lines": [
+    {
+     "text": "Suppose this value is asked whether it's done, says no, not yet, and then does absolutely nothing else \u2014 makes no arrangement at all for anyone to come back and ask again.",
+     "start": 0.15,
+     "end": 13.407
+    },
+    {
+     "text": "What happens to it after that?",
+     "start": 14.127,
+     "end": 16.515
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "6600820fbdb41486",
+   "takes": [
+    "5eed77c4c9091764a5d1",
+    "f2b30cc987f1ed187469"
+   ],
+   "duration": 15.293,
+   "lines": [
+    {
+     "text": "It may genuinely never be asked again, ever.",
+     "start": 0.15,
+     "end": 3.03
+    },
+    {
+     "text": "The entire system depends on the thing saying 'not yet' to also be the thing responsible for arranging its own follow-up \u2014 nothing else in the picture is watching for it.",
+     "start": 3.45,
+     "end": 14.943
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "db68e877db429e8e",
+   "takes": [
+    "f4b148e5da209a3cb365",
+    "1f286e9d8c4d565b050d"
+   ],
+   "duration": 21.224,
+   "lines": [
+    {
+     "text": "Run exactly that broken version through a real driver built to run it, and give it a very generous amount of time to finish.",
+     "start": 0.15,
+     "end": 8.147
+    },
+    {
+     "text": "It simply never comes back \u2014 not eventually, not with an error, not ever, and that's demonstrated directly, on purpose, by waiting it out and watching it fail to return.",
+     "start": 8.567,
+     "end": 20.874
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "267ed58b1ba826a5",
+   "takes": [
+    "ae1d0256ea98e3826d26",
+    "bae47888cf5416c16613"
+   ],
+   "duration": 24.83,
+   "lines": [
+    {
+     "text": "Here's the actual fix, and it's smaller than it sounds: when this value says not yet, it also keeps hold of a handle it was handed for exactly this purpose.",
+     "start": 0.15,
+     "end": 12.026
+    },
+    {
+     "text": "Somewhere else entirely \u2014 a separate thread doing the real waiting \u2014 finishes its work, and the very last thing it does is reach for that same handle and use it.",
+     "start": 12.446,
+     "end": 24.48
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "2329cd9a630f4010",
+   "takes": [
+    "37dbb4d3316c40033856",
+    "19b24163b6c866b3950e"
+   ],
+   "duration": 25.586,
+   "lines": [
+    {
+     "text": "That handle isn't exotic at all: wrap whatever a driver needs to remember about one unit of work in a single shared reference, teach it one small thing about how to respond when asked, and the standard library turns it into the real thing.",
+     "start": 0.15,
+     "end": 17.376
+    },
+    {
+     "text": "Waking, underneath all of it, just means putting that unit of work back where it can be looked at again.",
+     "start": 17.796,
+     "end": 25.236
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "999f28d48e97b0b9",
+   "takes": [
+    "36680b74b28fa4713b5a",
+    "4f113630e8cb392341cf"
+   ],
+   "duration": 21.968,
+   "lines": [
+    {
+     "text": "Put every piece from this lesson together \u2014 the value, the handle, the thing that runs it, the one method that moves it forward \u2014 and run the whole thing start to finish.",
+     "start": 0.15,
+     "end": 10.862
+    },
+    {
+     "text": "The result shows up exactly once, correctly, and at no point does anything other than that one driver ever call the one method that does the work.",
+     "start": 11.282,
+     "end": 21.618
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d2fd1486e8032a1b",
+   "takes": [
+    "e330ef30f9442402a30a",
+    "39e595115e4dd8d4321b"
+   ],
+   "duration": 30.837,
+   "lines": [
+    {
+     "text": "Doing nothing until asked turned out to be the entire backpressure story, not a limitation to work around. Saying 'not yet' turned out to be a real promise, broken here on purpose just to prove what breaking it actually costs.",
+     "start": 0.15,
+     "end": 18.383
+    },
+    {
+     "text": "That whole loop, proven piece by piece, is exactly what gets built automatically next \u2014 by a compiler, out of code that never once mentions any of this by name.",
+     "start": 18.803,
+     "end": 30.487
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 134,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Doing nothing until asked turned out to be the entire backpressure story, not a limitation to work around. Saying 'not yet' turned out to be a real promise, broken here on purpose just to prove what breaking it actually costs.",
+     "said": "backpressure",
+     "heard": "back pressure"
+    }
+   ]
+  }
+ }
+}
