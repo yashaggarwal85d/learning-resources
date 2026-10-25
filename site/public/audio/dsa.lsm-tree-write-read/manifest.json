@@ -1,0 +1,383 @@
+{
+ "topic": "dsa.lsm-tree-write-read",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0e28faa5108c6fbd",
+   "takes": [
+    "0fa68c57e5db80bdc490",
+    "3bc70bb29a82841a020a"
+   ],
+   "duration": 16.75,
+   "lines": [
+    {
+     "text": "The last two topics spent their whole runtime making an in-place page's bytes count for more.",
+     "start": 0.15,
+     "end": 6.21
+    },
+    {
+     "text": "This structure doesn't bother optimizing that problem. It just refuses to have it, by never touching a page in place at all.",
+     "start": 6.63,
+     "end": 16.4
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "59c0e2bd4dc59ae2",
+   "takes": [
+    "9e9677aa716c354194cc",
+    "eb9de23db4fd21474073"
+   ],
+   "duration": 18.066,
+   "lines": [
+    {
+     "text": "Before a write touches anything else, it gets appended to a log, in order, on disk.",
+     "start": 0.15,
+     "end": 6.162
+    },
+    {
+     "text": "That log exists for exactly one scenario: the machine loses power or crashes in the gap between a write landing in memory and reaching anywhere durable.",
+     "start": 6.582,
+     "end": 17.716
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That log exists for exactly one scenario: the machine loses power or crashes in the gap between a write landing in memory and reaching anywhere durable.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "41e2cff45a4b795b",
+   "takes": [
+    "a49c3fda6fc12829dfb8",
+    "e62107aef96c07fef430"
+   ],
+   "duration": 15.763,
+   "lines": [
+    {
+     "text": "The same write also lands in a sorted structure kept entirely in memory.",
+     "start": 0.15,
+     "end": 5.397
+    },
+    {
+     "text": "A read has to check that structure first, every time, or it would hand back an answer that's already out of date the moment something newer was written.",
+     "start": 5.817,
+     "end": 15.413
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 156,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The same write also lands in a sorted structure kept entirely in memory.",
+     "said": "write",
+     "heard": "rite"
+    },
+    {
+     "line": "The same write also lands in a sorted structure kept entirely in memory.",
+     "said": "sorted",
+     "heard": "sordid"
+    },
+    {
+     "line": "A read has to check that structure first, every time, or it would hand back an answer that's already out of date the moment something newer was written.",
+     "said": "read",
+     "heard": "reed"
+    }
+   ]
+  },
+  "04": {
+   "hash": "2e975bbe40006d9d",
+   "takes": [
+    "2b1c13f926dc01ac9b5a",
+    "0996c39c68ecae427220"
+   ],
+   "duration": 12.665,
+   "lines": [
+    {
+     "text": "This in-memory structure just hit its size limit.",
+     "start": 0.15,
+     "end": 3.35
+    },
+    {
+     "text": "Before the reveal, think about what a structure with no disk presence yet is actually able to do once it runs out of room.",
+     "start": 3.77,
+     "end": 12.315
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 156,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Before the reveal, think about what a structure with no disk presence yet is actually able to do once it runs out of room.",
+     "said": "disk",
+     "heard": "disc"
+    }
+   ]
+  },
+  "04a": {
+   "hash": "f1efdd34e760ff97",
+   "takes": [
+    "bfd66052169601fc3021",
+    "847f1bfefa152bd656cd"
+   ],
+   "duration": 16.624,
+   "lines": [
+    {
+     "text": "The whole thing gets written out as one new file on disk, and it will never be edited again.",
+     "start": 0.15,
+     "end": 6.87
+    },
+    {
+     "text": "Merging it into something that already exists isn't an option yet \u2014 nothing on disk even exists for it to merge into at this point.",
+     "start": 7.29,
+     "end": 16.274
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c2393c62264243c0",
+   "takes": [
+    "78163941f12ce01a2b8c",
+    "2d42ff1013f740f5f9bb",
+    "4a9609f82a3cbb98a3cd"
+   ],
+   "duration": 28.08,
+   "lines": [
+    {
+     "text": "So the full structure gets flushed out whole, becoming one run that never changes again from this point forward.",
+     "start": 0.15,
+     "end": 6.847
+    },
+    {
+     "text": "A brand-new, empty version takes over immediately, and the log behind the one that just got flushed can be thrown away, since everything in it now lives safely on disk.",
+     "start": 7.267,
+     "end": 19.008
+    },
+    {
+     "text": "From here on, reading that run or folding it into a later cleanup pass are the only two things that can ever happen to it.",
+     "start": 19.428,
+     "end": 27.73
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A brand-new, empty version takes over immediately, and the log behind the one that just got flushed can be thrown away, since everything in it now lives safely on disk.",
+     "said": "log",
+     "heard": "lock"
+    }
+   ]
+  },
+  "06": {
+   "hash": "71bcf4a540f85381",
+   "takes": [
+    "55c38cbb7f29ee469c40",
+    "8d66c3464b9ec279b751"
+   ],
+   "duration": 18.28,
+   "lines": [
+    {
+     "text": "Picture the identical key sitting in three different places at once: the in-memory structure, and two separate runs already on disk.",
+     "start": 0.15,
+     "end": 8.281
+    },
+    {
+     "text": "Before the reveal, think about what actually distinguishes those three copies from each other, and whether speed has anything to do with it.",
+     "start": 8.701,
+     "end": 17.93
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "9460253aff5163fc",
+   "takes": [
+    "18452da0835bd2bc5da9",
+    "93defbba82765bc150b8"
+   ],
+   "duration": 21.332,
+   "lines": [
+    {
+     "text": "Whichever one was written most recently is the one that counts, full stop.",
+     "start": 0.15,
+     "end": 5.264
+    },
+    {
+     "text": "A later write or a later delete always shadows whatever came before it for that same key. That's the entire rule, and it has nothing to do with which copy happens to be closest or quickest to reach.",
+     "start": 5.684,
+     "end": 20.982
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "4587b9011dd0470f",
+   "takes": [
+    "459666d270a9ab4da3e8",
+    "3499005af724339973e2"
+   ],
+   "duration": 20.666,
+   "lines": [
+    {
+     "text": "So a lookup checks the newest structure first, then walks the on-disk runs from newest to oldest, and stops the instant it finds a match.",
+     "start": 0.15,
+     "end": 9.498
+    },
+    {
+     "text": "That ordering isn't there for speed. It's the only mechanism this structure has for knowing which of several surviving copies is actually the current one.",
+     "start": 9.918,
+     "end": 20.316
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So a lookup checks the newest structure first, then walks the on-disk runs from newest to oldest, and stops the instant it finds a match.",
+     "said": "disk",
+     "heard": "disc"
+    }
+   ]
+  },
+  "08": {
+   "hash": "7724af8ec2ce01b2",
+   "takes": [
+    "9ab897c1a465a525a55f",
+    "5348f91de9129bca201a",
+    "826e47a177a4daff63c0"
+   ],
+   "duration": 29.315,
+   "lines": [
+    {
+     "text": "Checking every single run for every single lookup falls apart fast once there are more than a handful of them.",
+     "start": 0.15,
+     "end": 7.238
+    },
+    {
+     "text": "One trick answers a much cheaper question from memory alone: could this run possibly hold the key at all, or is a disk read definitely a waste of time here.",
+     "start": 7.658,
+     "end": 18.84
+    },
+    {
+     "text": "A second trick, once a run can't be ruled out that way, narrows the search down to one small range inside it instead of scanning the whole thing.",
+     "start": 19.26,
+     "end": 28.965
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One trick answers a much cheaper question from memory alone: could this run possibly hold the key at all, or is a disk read definitely a waste of time here.",
+     "said": "disk read",
+     "heard": "discreed"
+    }
+   ]
+  },
+  "09": {
+   "hash": "41c216b6dc11595d",
+   "takes": [
+    "a32628ce6a3b22ce5b0d",
+    "c085f6c475ddb9070523"
+   ],
+   "duration": 24.886,
+   "lines": [
+    {
+     "text": "Deleting a key can't mean editing the run that holds its old value, because that run doesn't get edited, ever, by anything.",
+     "start": 0.15,
+     "end": 8.303
+    },
+    {
+     "text": "Instead the delete becomes its own entry in the newest structure, one that has to out-rank and hide the older value on every single lookup until some later cleanup pass physically removes them both together.",
+     "start": 8.723,
+     "end": 24.536
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Instead the delete becomes its own entry in the newest structure, one that has to out-rank and hide the older value on every single lookup until some later cleanup pass physically removes them both together.",
+     "said": "out rank",
+     "heard": "outrank"
+    }
+   ]
+  },
+  "10": {
+   "hash": "64f7c19bce96ad5d",
+   "takes": [
+    "4c44bea62c8509067830",
+    "c4f9209738b262412d05"
+   ],
+   "duration": 23.969,
+   "lines": [
+    {
+     "text": "Here's what actually got measured, not assumed: how closely a real filter's wrong-guess rate tracked its own published setting.",
+     "start": 0.15,
+     "end": 9.124
+    },
+    {
+     "text": "Also measured: how many runs a lookup had to actually open with that filter and a range check in place, against opening every run blind, and a deleted key coming back as truly gone with no cleanup pass run at all.",
+     "start": 9.544,
+     "end": 23.619
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
