@@ -1,0 +1,270 @@
+{
+ "topic": "dsa.bst-operations-rotations",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "79f2899e757ba4ac",
+   "takes": [
+    "43bfaeb9232f48bf4109",
+    "66eebf4155e4301faa78"
+   ],
+   "duration": 19.959,
+   "lines": [
+    {
+     "text": "Last chapter turned every key into a number and threw its order away on purpose.",
+     "start": 0.15,
+     "end": 6.389
+    },
+    {
+     "text": "This chapter keeps the order instead. Every node sits between its left subtree's keys and its right subtree's keys, and that one rule is going to carry a cost.",
+     "start": 6.809,
+     "end": 19.609
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "eca0a2fa8e85292f",
+   "takes": [
+    "1a8650b97787dff656e6",
+    "b9ffa82fd11eff0e3459"
+   ],
+   "duration": 20.012,
+   "lines": [
+    {
+     "text": "Watch what search and insert actually share.",
+     "start": 0.15,
+     "end": 2.766
+    },
+    {
+     "text": "Searching for a key and finding where a new one belongs are the exact same walk: smaller, go left, bigger, go right. Insert just keeps walking past the point where search would have given up, until it hits empty space.",
+     "start": 3.186,
+     "end": 19.662
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d92e042a618623d8",
+   "takes": [
+    "1df520ceee792d7ed635",
+    "97d20bb96e0d1227e7b4"
+   ],
+   "duration": 13.226,
+   "lines": [
+    {
+     "text": "Here's a set of timestamps, already in sorted order, about to go into an empty tree one at a time.",
+     "start": 0.15,
+     "end": 8.054
+    },
+    {
+     "text": "Predict it before I show you: what shape does this tree end up taking?",
+     "start": 8.474,
+     "end": 12.876
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 154,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's a set of timestamps, already in sorted order, about to go into an empty tree one at a time.",
+     "said": "timestamps",
+     "heard": "time stamps"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "9c33b77374dbe3b1",
+   "takes": [
+    "b19c926a4f07210d20f3",
+    "dcaab7414d9124de707b"
+   ],
+   "duration": 19.204,
+   "lines": [
+    {
+     "text": "One long chain, every node with only a right child, height equal to the number of keys.",
+     "start": 0.15,
+     "end": 6.497
+    },
+    {
+     "text": "Each new timestamp is bigger than every key already inside, so it always lands as the current rightmost node's right child. Nothing else is possible once the order is fixed ahead of time.",
+     "start": 6.917,
+     "end": 18.854
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "3f5e0ae71142f1b7",
+   "takes": [
+    "75285ae39d36aa03b70b",
+    "1fba9935b7b6c3087097"
+   ],
+   "duration": 14.848,
+   "lines": [
+    {
+     "text": "Nothing broke on the way there. The same property held after every single insert.",
+     "start": 0.15,
+     "end": 6.024
+    },
+    {
+     "text": "The shape just quietly became the worst one a tree can take, and the property itself never once warned you it was happening.",
+     "start": 6.444,
+     "end": 14.498
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "9cc811eb10a0bf79",
+   "takes": [
+    "65549b7efc13f6f009b9",
+    "da71ff9b25b38a825792"
+   ],
+   "duration": 18.317,
+   "lines": [
+    {
+     "text": "Deleting a leaf is easy. Deleting a node with two children is the one case that actually needs thought.",
+     "start": 0.15,
+     "end": 6.942
+    },
+    {
+     "text": "Swap in the smallest key from its right subtree instead. No key anywhere sits between the deleted key and that one, so sliding it up can't put anything out of order.",
+     "start": 7.362,
+     "end": 17.968
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.1,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "29b5ba2d06172af0",
+   "takes": [
+    "46f45f08f79633961834",
+    "b7fd3f3dd2e98919b809"
+   ],
+   "duration": 12.838,
+   "lines": [
+    {
+     "text": "Walk left, visit the node, walk right, and repeat that at every level down.",
+     "start": 0.15,
+     "end": 5.879
+    },
+    {
+     "text": "Nobody sorted this output afterward. It comes out sorted because the shape of the tree already forced it to.",
+     "start": 6.299,
+     "end": 12.488
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "c37e4d4aa5c10a0c",
+   "takes": [
+    "98ecfc0e1cdb12c86948",
+    "4eafd819305c9a7079eb"
+   ],
+   "duration": 23.905,
+   "lines": [
+    {
+     "text": "One move fixes a tree's shape without touching anything else: a rotation.",
+     "start": 0.15,
+     "end": 5.702
+    },
+    {
+     "text": "Promote one node, demote its parent, relink a small, constant number of pointers. The in-order sequence underneath never moves, because the relink only swaps which subtree sits where, not what order those subtrees hold inside themselves.",
+     "start": 6.122,
+     "end": 23.555
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 123,
+   "wer": 0.02702702702702703,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Promote one node, demote its parent, relink a small, constant number of pointers. The in-order sequence underneath never moves, because the relink only swaps which subtree sits where, not what order those subtrees hold inside themselves.",
+     "said": "node",
+     "heard": "note"
+    }
+   ]
+  },
+  "08": {
+   "hash": "4419c5cf1b6ef39a",
+   "takes": [
+    "7ad704b0d17f91109b72",
+    "f76311109d5dba62ebfc",
+    "47a8933bb4cf86aad0f3"
+   ],
+   "duration": 22.26,
+   "lines": [
+    {
+     "text": "Everything in this topic gets checked right here, not assumed.",
+     "start": 0.15,
+     "end": 4.124
+    },
+    {
+     "text": "Same keys, same property, wildly different height depending only on the order they arrived in.",
+     "start": 4.544,
+     "end": 10.992
+    },
+    {
+     "text": "And a rotation, run on a real tree: the shape changes, and the in-order sequence coming back out is identical, byte for byte, before and after.",
+     "start": 11.412,
+     "end": 21.91
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 140,
+   "wer": 0.07407407407407407,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "And a rotation, run on a real tree: the shape changes, and the in-order sequence coming back out is identical, byte for byte, before and after.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "And a rotation, run on a real tree: the shape changes, and the in-order sequence coming back out is identical, byte for byte, before and after.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  }
+ }
+}
