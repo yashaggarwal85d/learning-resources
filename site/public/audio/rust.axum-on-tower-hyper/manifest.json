@@ -1,0 +1,400 @@
+{
+ "topic": "rust.axum-on-tower-hyper",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0ed9b6d7e8860130",
+   "takes": [
+    "a059e10224bb751ee1ab",
+    "e8353b9fddd31d07497d"
+   ],
+   "duration": 21.983,
+   "lines": [
+    {
+     "text": "The last topic showed that the two-step readiness contract, and the wrappers composed around it, are the whole backpressure abstraction.",
+     "start": 0.15,
+     "end": 8.773
+    },
+    {
+     "text": "The framework most of this ecosystem actually ships with is built on top of that. Does it build its own separate middleware system, or does it just reuse that same abstraction directly?",
+     "start": 9.493,
+     "end": 21.634
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "761e22c048e831c7",
+   "takes": [
+    "fed222247a43fa0205e4",
+    "fb384546ad2be42cf657"
+   ],
+   "duration": 8.161,
+   "lines": [
+    {
+     "text": "It reuses it directly.",
+     "start": 0.15,
+     "end": 1.812
+    },
+    {
+     "text": "No separate system of its own; that same abstraction, all the way down.",
+     "start": 2.232,
+     "end": 7.811
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.2,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a905df04804d26a8",
+   "takes": [
+    "54204ee32fb562d4f76d",
+    "3aaea66991a4dafc0d8d"
+   ],
+   "duration": 17.107,
+   "lines": [
+    {
+     "text": "The framework's own documentation says so plainly: it has no middleware system of its own.",
+     "start": 0.15,
+     "end": 6.709
+    },
+    {
+     "text": "It reuses that one abstraction directly, and that's what gets it timeouts, tracing, compression, and authorization for free.",
+     "start": 7.129,
+     "end": 16.757
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.5,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "794d15d0783cd6fb",
+   "takes": [
+    "c94f4e3ff2c4fe2af532",
+    "475fd00f36243018abaf"
+   ],
+   "duration": 16.141,
+   "lines": [
+    {
+     "text": "Stand up a real, running server with a route written in the newer path-parameter style.",
+     "start": 0.15,
+     "end": 6.377
+    },
+    {
+     "text": "Send a real request for a specific name through it. Does the handler actually receive that name, or does it have to parse the raw path itself?",
+     "start": 7.096,
+     "end": 15.791
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.8,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "79881191c823f934",
+   "takes": [
+    "de0abfa8a03a796bcfe5",
+    "fd46ac8b92984f941056"
+   ],
+   "duration": 6.666,
+   "lines": [
+    {
+     "text": "It receives it directly.",
+     "start": 0.15,
+     "end": 1.841
+    },
+    {
+     "text": "Already pulled out of the request, before the handler ever runs.",
+     "start": 2.261,
+     "end": 6.316
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "2fe3f7f06cd8be01",
+   "takes": [
+    "aea45900fbc5670b2c81",
+    "d2a558366f416a050926"
+   ],
+   "duration": 13.091,
+   "lines": [
+    {
+     "text": "Run it for real: a real request to a path with a name in it came back with that exact name,",
+     "start": 0.15,
+     "end": 7.024
+    },
+    {
+     "text": "pulled out automatically \u2014 the handler itself never touched the raw path at all.",
+     "start": 7.444,
+     "end": 12.741
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "bf4e7f256e678c20",
+   "takes": [
+    "923904ab692579599074",
+    "a8776d8319f3ecfa5fb4"
+   ],
+   "duration": 16.733,
+   "lines": [
+    {
+     "text": "Give that same server a piece of state, shared across every request, and send three real requests to a handler that reads and updates it.",
+     "start": 0.15,
+     "end": 9.992
+    },
+    {
+     "text": "Does each request see a fresh copy, or does that value actually build up over time?",
+     "start": 10.713,
+     "end": 16.383
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "8db505b57e9ecb11",
+   "takes": [
+    "72d09f856015e1f34d4e",
+    "4156bbff7b9595b3860e"
+   ],
+   "duration": 7.952,
+   "lines": [
+    {
+     "text": "It actually builds up.",
+     "start": 0.15,
+     "end": 1.584
+    },
+    {
+     "text": "Genuinely shared, across every one of those three separate, real requests.",
+     "start": 2.004,
+     "end": 7.602
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "8b456197fa78d524",
+   "takes": [
+    "3391d8b7feccb8014b40",
+    "6297a1c336182a81f3c1"
+   ],
+   "duration": 13.933,
+   "lines": [
+    {
+     "text": "Run it for real: three separate real requests came back with increasing values, in order \u2014",
+     "start": 0.15,
+     "end": 6.708
+    },
+    {
+     "text": "a real, shared value actually building up, not three fresh copies handed out one at a time.",
+     "start": 7.128,
+     "end": 13.583
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "0c2d7812317a5949",
+   "takes": [
+    "db66503254d2068f38c7",
+    "fa0ba82e12af97845959"
+   ],
+   "duration": 17.794,
+   "lines": [
+    {
+     "text": "Wrap that server in one layer that touches every response on its way out, and separately, in another that cuts a handler off if it runs too long.",
+     "start": 0.15,
+     "end": 9.7
+    },
+    {
+     "text": "Do both of those actually run against real requests, the same way any other wrapper composes?",
+     "start": 10.42,
+     "end": 17.444
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Do both of those actually run against real requests, the same way any other wrapper composes?",
+     "said": "wrapper",
+     "heard": "rapper"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "93d620419d71911f",
+   "takes": [
+    "3d8b3df31cb339393497",
+    "138437750a9e0c3aa58d"
+   ],
+   "duration": 6.03,
+   "lines": [
+    {
+     "text": "Both genuinely run.",
+     "start": 0.15,
+     "end": 1.684
+    },
+    {
+     "text": "Neither one is special-cased by the framework underneath.",
+     "start": 2.104,
+     "end": 5.68
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "29e501ed907916c4",
+   "takes": [
+    "1568d9bb41779a30a36c",
+    "79b5d26994e3f4533ad1"
+   ],
+   "duration": 13.928,
+   "lines": [
+    {
+     "text": "Run it for real: one layer genuinely changed a real response on its way out,",
+     "start": 0.15,
+     "end": 5.081
+    },
+    {
+     "text": "and the other genuinely cut off a handler that would have taken far longer \u2014 both against real requests.",
+     "start": 5.501,
+     "end": 13.578
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.1,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "57e2ace262cfd79b",
+   "takes": [
+    "13ef6f4089079435ece2",
+    "4c02da4847dcd769d806"
+   ],
+   "duration": 17.596,
+   "lines": [
+    {
+     "text": "None of this needed a separate thing to learn: the piece that pulls itself out of a request, the shared value, both wrappers,",
+     "start": 0.15,
+     "end": 9.029
+    },
+    {
+     "text": "all of it is the same two-step contract and composition from the topic before this one, just running inside a real server.",
+     "start": 9.449,
+     "end": 17.247
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "54c3134291775c7c",
+   "takes": [
+    "2da4386df33f7687c65f",
+    "17c10b1e72730a438773",
+    "5d5659521dfc9615210f",
+    "ca8c639d9355301e67a9"
+   ],
+   "duration": 37.428,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a real path-parameter route genuinely hands a handler its own value, already pulled out.",
+     "start": 0.15,
+     "end": 10.083
+    },
+    {
+     "text": "Real shared state genuinely builds up across real requests, rather than resetting.",
+     "start": 10.503,
+     "end": 17.734
+    },
+    {
+     "text": "One layer that touches every response, and one that cuts off a handler that runs too long, both genuinely ran against real requests, composed the same way any wrapper composes.",
+     "start": 18.154,
+     "end": 30.157
+    },
+    {
+     "text": "None of it needed a system of its own, exactly as the framework's own documentation says.",
+     "start": 30.577,
+     "end": 37.078
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One layer that touches every response, and one that cuts off a handler that runs too long, both genuinely ran against real requests, composed the same way any wrapper composes.",
+     "said": "composed",
+     "heard": "compose"
+    },
+    {
+     "line": "One layer that touches every response, and one that cuts off a handler that runs too long, both genuinely ran against real requests, composed the same way any wrapper composes.",
+     "said": "wrapper",
+     "heard": "rapper"
+    }
+   ]
+  }
+ }
+}
