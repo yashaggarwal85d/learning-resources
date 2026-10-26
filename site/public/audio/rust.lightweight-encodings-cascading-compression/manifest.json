@@ -1,0 +1,359 @@
+{
+ "topic": "rust.lightweight-encodings-cascading-compression",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "2d2a8c928757e3cb",
+   "takes": [
+    "deea673c1c403379ab90",
+    "0c46a033e57a7db5dcf6"
+   ],
+   "duration": 16.701,
+   "lines": [
+    {
+     "text": "Run-length encode a skewed, repetitive column: long stretches of the identical value, the way a real status column often looks.",
+     "start": 0.15,
+     "end": 8.806
+    },
+    {
+     "text": "Does the encoding genuinely win big, by compression ratio, on data shaped like that?",
+     "start": 9.526,
+     "end": 16.351
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "120f88acf4550ca6",
+   "takes": [
+    "dc6d561e18b74ec42695",
+    "8690e83907781863834b"
+   ],
+   "duration": 5.163,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.959
+    },
+    {
+     "text": "By a huge compression ratio.",
+     "start": 2.379,
+     "end": 4.813
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.8,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "8c0d1be20d975cde",
+   "takes": [
+    "77ee1a3f708bf2f52ec3",
+    "dcc33312d864ed068ffb"
+   ],
+   "duration": 17.557,
+   "lines": [
+    {
+     "text": "Run it for real: a huge real compression ratio showed up on the skewed, repetitive column.",
+     "start": 0.15,
+     "end": 7.0
+    },
+    {
+     "text": "Long runs of the identical value collapse down to one header each, so the real win scales directly with how repetitive the data actually is.",
+     "start": 7.42,
+     "end": 17.207
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.8,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "929b9689f6079ceb",
+   "takes": [
+    "f110ed46cf7d035e54b8",
+    "c65918b7f7fcad5627d3"
+   ],
+   "duration": 12.077,
+   "lines": [
+    {
+     "text": "Run the identical encoding on a uniformly random column of the identical length instead.",
+     "start": 0.15,
+     "end": 5.819
+    },
+    {
+     "text": "Does it still win there, or does it genuinely lose instead?",
+     "start": 6.539,
+     "end": 11.727
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "174fa5c3cd1544f9",
+   "takes": [
+    "dcadd1e6704f7e218ad1",
+    "325633a09f2874c2f1e1"
+   ],
+   "duration": 5.841,
+   "lines": [
+    {
+     "text": "It genuinely loses.",
+     "start": 0.15,
+     "end": 1.64
+    },
+    {
+     "text": "Taking up more space than the raw column did.",
+     "start": 2.06,
+     "end": 5.491
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -4.0,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "8234a9353777445d",
+   "takes": [
+    "1be94fcf39dcb886cfd3"
+   ],
+   "duration": 9.213,
+   "lines": [
+    {
+     "text": "Run it for real: the identical encoding genuinely lost, taking more space than the raw column, on the uniformly random data.",
+     "start": 0.15,
+     "end": 8.863
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "df50cae25a50b7d1",
+   "takes": [
+    "778337b2d31e9deafba4",
+    "551eb187bf867952f2a8"
+   ],
+   "duration": 14.651,
+   "lines": [
+    {
+     "text": "Now measure decode work itself: how many run-headers does decoding actually have to process, for every value it produces, on each column?",
+     "start": 0.15,
+     "end": 9.787
+    },
+    {
+     "text": "Does that real cost depend on the data's own shape too?",
+     "start": 10.637,
+     "end": 14.301
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "03d4524c36c0df09",
+   "takes": [
+    "9995c204b819e717847b",
+    "f25d4f619bf855b6b389"
+   ],
+   "duration": 5.78,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Far fewer headers per value, on the skewed column.",
+     "start": 1.84,
+     "end": 5.43
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.7,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "6139447c9696180a",
+   "takes": [
+    "2d9aa0f4bb3c5de552bd"
+   ],
+   "duration": 14.215,
+   "lines": [
+    {
+     "text": "Run it for real: decoding the skewed column processed far fewer run-headers for every value than decoding the random column did, and both decoded back to their exact original values.",
+     "start": 0.15,
+     "end": 13.865
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "405a244d41a4533e",
+   "takes": [
+    "93082f77abde0032fe8b",
+    "36dea418b8aa50cdb1d1"
+   ],
+   "duration": 16.197,
+   "lines": [
+    {
+     "text": "One real production format's own documentation states the processing-cost side of this trade-off directly.",
+     "start": 0.15,
+     "end": 7.261
+    },
+    {
+     "text": "Does it name several real compression methods as covering different points on a ratio-versus-processing-cost spectrum?",
+     "start": 7.981,
+     "end": 15.847
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "e2e493c2a7b2750d",
+   "takes": [
+    "dc6d561e18b74ec42695",
+    "b7c87a5a34d7c74fa018"
+   ],
+   "duration": 5.63,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.959
+    },
+    {
+     "text": "A real spectrum, named directly in it.",
+     "start": 2.379,
+     "end": 5.28
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.8,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "03600f80d041e791",
+   "takes": [
+    "0ac05bf6d99f1b9c6509"
+   ],
+   "duration": 12.359,
+   "lines": [
+    {
+     "text": "That format's own documentation states it in exactly those words: several compression methods, covering different areas in the compression ratio and processing cost spectrum.",
+     "start": 0.15,
+     "end": 12.009
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "1b99085356eb2333",
+   "takes": [
+    "acf5cc0230ef311ec075",
+    "7d6c434eba9bed62263a"
+   ],
+   "duration": 14.536,
+   "lines": [
+    {
+     "text": "That same format's own documentation also names exactly what run-length encoding itself is doing underneath.",
+     "start": 0.15,
+     "end": 7.546
+    },
+    {
+     "text": "It combines bit-packing together with run-length encoding, to store those repeated values far more efficiently.",
+     "start": 7.966,
+     "end": 14.186
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.7,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "069d4b9ca6f2451c",
+   "takes": [
+    "48880f8af2037d8c38c7",
+    "2de02fdc62ad13c7768b",
+    "58381872a400502d9408"
+   ],
+   "duration": 39.202,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a lightweight encoding like run-length can win hugely, by real compression ratio, on data that's genuinely repetitive.",
+     "start": 0.15,
+     "end": 11.552
+    },
+    {
+     "text": "That identical encoding genuinely loses outright on uniformly random data instead, in both its compression ratio and its own decode work, since there are simply no real runs there to collapse down.",
+     "start": 11.972,
+     "end": 26.4
+    },
+    {
+     "text": "The real choice of which encoding to use has to follow the real shape of the actual data in front of it; it can never be applied by default, regardless of what that data actually looks like.",
+     "start": 26.82,
+     "end": 38.852
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
