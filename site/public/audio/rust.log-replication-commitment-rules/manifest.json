@@ -1,0 +1,327 @@
+{
+ "topic": "rust.log-replication-commitment-rules",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "2e2d0e77435ea697",
+   "takes": [
+    "6abc39b6b42558607abd",
+    "86136abccba63ad1cd14"
+   ],
+   "duration": 17.885,
+   "lines": [
+    {
+     "text": "A follower's own log genuinely diverges from the leader's, at one point.",
+     "start": 0.15,
+     "end": 5.426
+    },
+    {
+     "text": "The leader retries, backing up one entry at a time. Does it genuinely find the real common prefix, and overwrite only the divergent suffix?",
+     "start": 6.146,
+     "end": 17.535
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "5bf369c347f61ab2",
+   "takes": [
+    "9995c204b819e717847b",
+    "913cc3dde1a08ab3830e"
+   ],
+   "duration": 4.459,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "It finds the real common prefix.",
+     "start": 1.84,
+     "end": 4.109
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -4.9,
+   "wpm": 108,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "2884b668b03d1c53",
+   "takes": [
+    "6f0888e63847f7099ef4"
+   ],
+   "duration": 10.157,
+   "lines": [
+    {
+     "text": "Run it for real: the repair genuinely finds the common prefix, and overwrites the follower's divergent suffix exactly.",
+     "start": 0.15,
+     "end": 9.807
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 106,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "48ad5f8872f214a8",
+   "takes": [
+    "ae2a5739b6401fff275f",
+    "be57e2ace59ade9b5e63"
+   ],
+   "duration": 13.035,
+   "lines": [
+    {
+     "text": "Now a single entry from a previous term already sits on a real majority of the cluster.",
+     "start": 0.15,
+     "end": 6.546
+    },
+    {
+     "text": "Does the leader genuinely count it as committed, just from that real majority alone?",
+     "start": 7.266,
+     "end": 12.685
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "984837336818a5e4",
+   "takes": [
+    "12f9269709fe56730f79",
+    "e6dc1ffaea075ced0235"
+   ],
+   "duration": 4.507,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "A real majority alone was genuinely not enough.",
+     "start": 1.044,
+     "end": 4.157
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -4.3,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "aa10d00a399d0f71",
+   "takes": [
+    "42154b76252ee4526a51"
+   ],
+   "duration": 8.969,
+   "lines": [
+    {
+     "text": "Run it for real: genuinely not committed. A previous term's own real majority alone is genuinely not enough.",
+     "start": 0.15,
+     "end": 8.619
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "50af3404aba438fb",
+   "takes": [
+    "76b97bda49b0f565fd7a",
+    "0f64a0cbd1c0157228fa"
+   ],
+   "duration": 15.575,
+   "lines": [
+    {
+     "text": "Now the leader also replicates one real entry from its own current term, to the identical majority.",
+     "start": 0.15,
+     "end": 6.832
+    },
+    {
+     "text": "Does that entry genuinely commit, and does the earlier entry genuinely commit along with it?",
+     "start": 7.552,
+     "end": 15.225
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "a4a0ba1a4dda8a06",
+   "takes": [
+    "df64a1d2578e646326e7",
+    "74d654d5dce0f02856f6"
+   ],
+   "duration": 4.736,
+   "lines": [
+    {
+     "text": "Both, genuinely.",
+     "start": 0.15,
+     "end": 1.576
+    },
+    {
+     "text": "One real commitment reaches backward too.",
+     "start": 1.996,
+     "end": 4.386
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 101,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "769446c87ca2e4d4",
+   "takes": [
+    "45e19efe36a293ad29d9"
+   ],
+   "duration": 8.779,
+   "lines": [
+    {
+     "text": "Run it for real: the current-term entry genuinely commits, and the earlier entry genuinely commits right along with it.",
+     "start": 0.15,
+     "end": 8.429
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "81d362f99101f1fb",
+   "takes": [
+    "1303d8e128ddaebe8469",
+    "04182fb68e787e6768eb"
+   ],
+   "duration": 13.693,
+   "lines": [
+    {
+     "text": "One real, foundational paper on this exact subject states this rule directly, in its own words.",
+     "start": 0.15,
+     "end": 7.452
+    },
+    {
+     "text": "Only entries from the leader's own current term are ever committed by counting replicas.",
+     "start": 7.872,
+     "end": 13.343
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "d6112723a358ca8d",
+   "takes": [
+    "8a3dd3515983a00ab97a",
+    "bf5e1a7c9e49262e18c8"
+   ],
+   "duration": 15.817,
+   "lines": [
+    {
+     "text": "A real, widely used consensus implementation in Rust keeps its own log genuinely separate from the application's own state machine.",
+     "start": 0.15,
+     "end": 8.683
+    },
+    {
+     "text": "That separation is exactly what lets consensus itself be tested against a trivial state machine first.",
+     "start": 9.103,
+     "end": 15.467
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.0,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "8b5addb5c4226f80",
+   "takes": [
+    "0718ed5c2a8bd9de9a80"
+   ],
+   "duration": 12.897,
+   "lines": [
+    {
+     "text": "Run it for real, all together: the repair, the previous-term refusal, and the current-term commitment, measured on one real log and one real follower.",
+     "start": 0.15,
+     "end": 12.547
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "52302e8333aa0bd3",
+   "takes": [
+    "56e8f4d3f9f639273d90",
+    "7ace8e0f95e343eb19e2",
+    "2156634297bbaa31153f"
+   ],
+   "duration": 35.849,
+   "lines": [
+    {
+     "text": "So here's the real shape of this whole topic: committing is never about a count alone, and repairing is never about guessing where two logs went wrong.",
+     "start": 0.15,
+     "end": 10.125
+    },
+    {
+     "text": "A log entry only counts once a real majority holds it under the exact term the leader is currently running, which is why an old, already-widespread entry still has to wait.",
+     "start": 10.545,
+     "end": 22.698
+    },
+    {
+     "text": "And fixing a broken follower never means special-casing anything; the leader just keeps stepping backward until the numbers finally agree, then lets ordinary replication take it from there.",
+     "start": 23.118,
+     "end": 35.499
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
