@@ -1,0 +1,365 @@
+{
+ "topic": "rust.columnar-layout-arrow-format",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "561908bd63377c75",
+   "takes": [
+    "c3a4b49fbf60d29bdeda",
+    "6da928b3be0a055e6ba9"
+   ],
+   "duration": 18.959,
+   "lines": [
+    {
+     "text": "Build the identical rows two ways: once as a row-major table, and once as a column-major table split into one separate buffer per column.",
+     "start": 0.15,
+     "end": 10.387
+    },
+    {
+     "text": "Scanning just one of those columns, does the column-major table genuinely touch fewer bytes than the row-major one does?",
+     "start": 11.107,
+     "end": 18.609
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "3d1330016d7c26e1",
+   "takes": [
+    "9995c204b819e717847b",
+    "b8af4f3a801726de4582"
+   ],
+   "duration": 5.289,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Far fewer bytes, in the column-major table.",
+     "start": 1.84,
+     "end": 4.939
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "1a5f2321568287b1",
+   "takes": [
+    "7fe4985b5aca7164ef84",
+    "c5f98aa76e1ae1c855b1"
+   ],
+   "duration": 18.159,
+   "lines": [
+    {
+     "text": "Run it for real: the column-major table touched far fewer bytes scanning that one column than the row-major table did.",
+     "start": 0.15,
+     "end": 8.136
+    },
+    {
+     "text": "A row-major layout's other columns ride along for free during a narrow scan, so every row's full set of fields gets touched regardless.",
+     "start": 8.556,
+     "end": 17.809
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "9fab3a550aef44e7",
+   "takes": [
+    "9d00e1bc2498572f0e7f",
+    "5351db62302ccc65c9db"
+   ],
+   "duration": 14.988,
+   "lines": [
+    {
+     "text": "Now update every field of one single logical row instead, in each of the two layouts.",
+     "start": 0.15,
+     "end": 6.252
+    },
+    {
+     "text": "Does the column-major table touch more separate, non-adjacent regions doing that than the row-major table does?",
+     "start": 6.972,
+     "end": 14.638
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.7,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a814a602c38adda8",
+   "takes": [
+    "9995c204b819e717847b",
+    "9306bbbec410d0a0f7a5"
+   ],
+   "duration": 5.403,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Several separate regions, in the column-major table.",
+     "start": 1.84,
+     "end": 5.053
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "1a5bed6b3d5a4899",
+   "takes": [
+    "6f0511c557253845f80e"
+   ],
+   "duration": 10.98,
+   "lines": [
+    {
+     "text": "Run it for real: the column-major table touched four separate regions updating that one row, while the row-major table touched exactly one.",
+     "start": 0.15,
+     "end": 10.63
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "0b91a982127a923c",
+   "takes": [
+    "0768e055d8f3456e4663",
+    "8c51a78138f27bb5532d"
+   ],
+   "duration": 16.971,
+   "lines": [
+    {
+     "text": "Mark every seventh row's own value absent, using a packed bitmap, a single bit per row, the way a real columnar format does it.",
+     "start": 0.15,
+     "end": 9.777
+    },
+    {
+     "text": "Does a scan over that column correctly skip exactly the rows that bitmap marks absent?",
+     "start": 10.497,
+     "end": 16.621
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "58dd5da0eff9303d",
+   "takes": [
+    "d4c7de8866c0673ae23b",
+    "8e8c5aa82353568be8d3"
+   ],
+   "duration": 4.193,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.299
+    },
+    {
+     "text": "Exactly those rows get skipped.",
+     "start": 1.719,
+     "end": 3.843
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -4.3,
+   "wpm": 100,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "452fa23de65fcfe7",
+   "takes": [
+    "ba8b03c5a28e7975caee"
+   ],
+   "duration": 11.056,
+   "lines": [
+    {
+     "text": "Run it for real: the scan correctly skipped exactly the rows the bitmap marked absent, using a single bit, not a whole byte, for each one.",
+     "start": 0.15,
+     "end": 10.706
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "54ed84fbdfcd4735",
+   "takes": [
+    "f34b995c709044132fe5",
+    "00ae2d6b952b50d79696"
+   ],
+   "duration": 15.957,
+   "lines": [
+    {
+     "text": "A real production columnar format's own documentation states this exact trade-off directly.",
+     "start": 0.15,
+     "end": 6.707
+    },
+    {
+     "text": "Does it name comparatively more expensive mutation as the real cost of its own locality and performance guarantees?",
+     "start": 7.427,
+     "end": 15.607
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "6ac2615ade5f2d5c",
+   "takes": [
+    "9995c204b819e717847b",
+    "3ba626028a8c7ea40032"
+   ],
+   "duration": 5.464,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "It names the more expensive mutation cost directly.",
+     "start": 1.84,
+     "end": 5.114
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.3,
+   "wpm": 110,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It names the more expensive mutation cost directly.",
+     "said": "cost",
+     "heard": "costs"
+    }
+   ]
+  },
+  "08": {
+   "hash": "7c9928d0f4f82e75",
+   "takes": [
+    "ee9f8e396c067bf63d1e"
+   ],
+   "duration": 15.384,
+   "lines": [
+    {
+     "text": "That format's own documentation states it in exactly those words: real analytical performance and real data locality guarantees, in exchange for comparatively more expensive mutation operations.",
+     "start": 0.15,
+     "end": 15.034
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 101,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "469ada2dafcbc3ed",
+   "takes": [
+    "667d371ddeb265bf9787",
+    "7d4c0f4b43bf02256476"
+   ],
+   "duration": 20.673,
+   "lines": [
+    {
+     "text": "That same format's own Rust implementation names the identical trade-off from the other side, the implementation side.",
+     "start": 0.15,
+     "end": 8.956
+    },
+    {
+     "text": "Handling the validity bitmap on its own, separately from each value, is named directly as a real, measured performance improvement over folding it in.",
+     "start": 9.376,
+     "end": 20.323
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "dbb3f5415398590e",
+   "takes": [
+    "49e70f64c1ee91dc16b2",
+    "cf91be79f130d16ce548",
+    "fd14b5717922913b9f17"
+   ],
+   "duration": 46.127,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a column-major layout genuinely touches far fewer bytes scanning a single column, and its packed bitmap genuinely skips exactly the rows it marks absent, at a small fraction of a byte-per-row's own cost.",
+     "start": 0.15,
+     "end": 17.783
+    },
+    {
+     "text": "What it pays for that is real: updating every field of one single logical row now means touching several separate, non-adjacent buffers instead of one contiguous region, the way a row-major layout would.",
+     "start": 18.203,
+     "end": 34.182
+    },
+    {
+     "text": "That's the real trade a columnar format makes on purpose, stated directly in its own documentation: cheap scanning, bought with expensive mutation.",
+     "start": 34.602,
+     "end": 45.777
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.6,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
