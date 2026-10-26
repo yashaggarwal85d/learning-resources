@@ -1,0 +1,407 @@
+{
+ "topic": "rust.group-commit-commit-latency",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "eb1b48a58063ead2",
+   "takes": [
+    "ec2dec0b9485d420db0e",
+    "c9af7825a91db7ce98ce",
+    "7441c6c8c9c90246eeee"
+   ],
+   "duration": 12.117,
+   "lines": [
+    {
+     "text": "Five transactions all become ready to commit within a short window.",
+     "start": 0.15,
+     "end": 4.229
+    },
+    {
+     "text": "Commit each one separately, with no grouping at all.",
+     "start": 4.649,
+     "end": 8.612
+    },
+    {
+     "text": "How many WAL flushes does that cost?",
+     "start": 9.332,
+     "end": 11.767
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -4.4,
+   "wpm": 134,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "How many WAL flushes does that cost?",
+     "said": "wal",
+     "heard": "wall"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "daaf05e926e28cfa",
+   "takes": [
+    "2c1678d14354bec185b7",
+    "2d395768ed39931ea349"
+   ],
+   "duration": 6.527,
+   "lines": [
+    {
+     "text": "Five, genuinely.",
+     "start": 0.15,
+     "end": 2.389
+    },
+    {
+     "text": "No grouping means no sharing of the flush at all.",
+     "start": 2.809,
+     "end": 6.177
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.7,
+   "wpm": 110,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "No grouping means no sharing of the flush at all.",
+     "said": "flush",
+     "heard": "flesh"
+    }
+   ]
+  },
+  "02": {
+   "hash": "f871663e2b9aa720",
+   "takes": [
+    "2596911b0c7955d3db09"
+   ],
+   "duration": 13.536,
+   "lines": [
+    {
+     "text": "Run it for real: committing without any grouping genuinely cost one flush per transaction, five separate flushes for five transactions ready within the same short window.",
+     "start": 0.15,
+     "end": 13.186
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "1cb47993b538df0f",
+   "takes": [
+    "89c704706b65355b8f7b",
+    "caeea6ef8e245c6cb306",
+    "27e6194c07f18c31dbc7"
+   ],
+   "duration": 14.779,
+   "lines": [
+    {
+     "text": "Now let the same five transactions commit as one group instead.",
+     "start": 0.15,
+     "end": 4.581
+    },
+    {
+     "text": "The earliest-ready one becomes the leader, waits briefly, and a single flush covers everyone ready by then.",
+     "start": 5.001,
+     "end": 11.797
+    },
+    {
+     "text": "How many flushes does that cost?",
+     "start": 12.517,
+     "end": 14.429
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "How many flushes does that cost?",
+     "said": "flushes",
+     "heard": "fleshes"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "aa5952d7772ea240",
+   "takes": [
+    "8175f349b6202dd62154",
+    "8dd21b77d8ea567b2e27"
+   ],
+   "duration": 5.134,
+   "lines": [
+    {
+     "text": "Exactly one.",
+     "start": 0.15,
+     "end": 1.411
+    },
+    {
+     "text": "The whole batch shares that single flush.",
+     "start": 1.831,
+     "end": 4.784
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.6,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "0dab5160a72f03c2",
+   "takes": [
+    "803c7c72726df5a2bbea"
+   ],
+   "duration": 6.567,
+   "lines": [
+    {
+     "text": "Run it for real: group commit genuinely used exactly one flush for the whole batch of five.",
+     "start": 0.15,
+     "end": 6.217
+    }
+   ],
+   "lufs": -15.2,
+   "true_peak": -2.1,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "432f911488c8177f",
+   "takes": [
+    "b08c330a29b83d28c41e",
+    "4ca80a9b3302b634c3e1"
+   ],
+   "duration": 14.133,
+   "lines": [
+    {
+     "text": "Every transaction in that batch did identical, instant work.",
+     "start": 0.15,
+     "end": 4.937
+    },
+    {
+     "text": "Does each one's own commit latency, the time from ready to acknowledged, end up identical too, or does it differ?",
+     "start": 5.657,
+     "end": 13.783
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does each one's own commit latency, the time from ready to acknowledged, end up identical too, or does it differ?",
+     "said": "too",
+     "heard": "to"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "2348ab3651355ba8",
+   "takes": [
+    "cd7af95574e35e32d524",
+    "233e13c0757ed8459db4"
+   ],
+   "duration": 7.24,
+   "lines": [
+    {
+     "text": "It genuinely differs.",
+     "start": 0.15,
+     "end": 1.976
+    },
+    {
+     "text": "The earliest-ready one waits the longest for the shared flush.",
+     "start": 2.396,
+     "end": 6.89
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.0,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a7e623b4dceda496",
+   "takes": [
+    "a45332353fbd93390541",
+    "58478ef6103201ac599e"
+   ],
+   "duration": 13.624,
+   "lines": [
+    {
+     "text": "Run it for real: commit latency genuinely varied across the batch, even though every transaction's own execution time was identical.",
+     "start": 0.15,
+     "end": 9.853
+    },
+    {
+     "text": "The earliest-ready one waited the longest of all.",
+     "start": 10.273,
+     "end": 13.274
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "6799f67e55f04a7c",
+   "takes": [
+    "c0943c812db4e0cc9aa8",
+    "3c31c0ab3676f45f8958"
+   ],
+   "duration": 15.012,
+   "lines": [
+    {
+     "text": "One transaction commits asynchronously: it's told it's done the instant it's ready, before its own flush even happens.",
+     "start": 0.15,
+     "end": 8.054
+    },
+    {
+     "text": "Crash in the gap between that acknowledgment and the real flush. Does its update survive?",
+     "start": 8.774,
+     "end": 14.662
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Crash in the gap between that acknowledgment and the real flush. Does its update survive?",
+     "said": "acknowledgment",
+     "heard": "acknowledgement"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "31b2da7d860084d2",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "8213e8024d92e2e2af4b"
+   ],
+   "duration": 5.731,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "The client was told something that wasn't true yet.",
+     "start": 2.386,
+     "end": 5.381
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "4bea2d25f73d823d",
+   "takes": [
+    "f5dc272287efaf2e9284",
+    "a67acc015ade69f6972d"
+   ],
+   "duration": 11.734,
+   "lines": [
+    {
+     "text": "Run it for real: the crash inside that gap genuinely revealed a false promise for the asynchronous commit.",
+     "start": 0.15,
+     "end": 6.909
+    },
+    {
+     "text": "The identical crash against a synchronous commit never did.",
+     "start": 7.329,
+     "end": 11.384
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.5,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "81eb7c6c4ef5cd8a",
+   "takes": [
+    "a2c7f86ed5a8e05194e7",
+    "ad7acd667e523a6bb6dc"
+   ],
+   "duration": 23.688,
+   "lines": [
+    {
+     "text": "One real system's own documentation names exactly this trade-off directly: that faster, asynchronous mode risks losing the most recent transactions, but it never risks corruption.",
+     "start": 0.15,
+     "end": 15.301
+    },
+    {
+     "text": "Everything recovered is still self-consistent, just possibly missing whatever hadn't reached disk yet.",
+     "start": 15.721,
+     "end": 23.338
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 101,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "279e883d28f9b6a5",
+   "takes": [
+    "a640d9f3bb14c1b1a3e1",
+    "7aae37549b80d22ac082",
+    "4d12a72b71a034a52ea4"
+   ],
+   "duration": 39.298,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a flush is the expensive part, and sharing one flush across a whole batch is cheaper than paying for it separately, every single time.",
+     "start": 0.15,
+     "end": 12.203
+    },
+    {
+     "text": "Inside that shared batch, how long any one caller waits has nothing to do with its own work; it's set entirely by whoever filled the batch last.",
+     "start": 12.623,
+     "end": 23.992
+    },
+    {
+     "text": "And telling a caller it's done before that shared work actually finishes isn't free: it's a real promise, made early, that a crash in just the wrong moment can expose as not yet true.",
+     "start": 24.412,
+     "end": 38.948
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
