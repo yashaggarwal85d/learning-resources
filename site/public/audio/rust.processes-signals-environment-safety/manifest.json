@@ -1,0 +1,389 @@
+{
+ "topic": "rust.processes-signals-environment-safety",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "ef1fe536edf4030f",
+   "takes": [
+    "a380e01a82716ee85a09",
+    "28a82e0e7d133f865b2f"
+   ],
+   "duration": 11.631,
+   "lines": [
+    {
+     "text": "Spawn a real child process with a real process builder.",
+     "start": 0.15,
+     "end": 3.693
+    },
+    {
+     "text": "Does it get its own, separate process identifier, or does it somehow share the parent's?",
+     "start": 4.413,
+     "end": 11.281
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.1,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "7b5eb8ffdbcfde9a",
+   "takes": [
+    "021e59103357384e83d9",
+    "ca320195c1604e55072e"
+   ],
+   "duration": 11.748,
+   "lines": [
+    {
+     "text": "It gets its own, completely separate identifier.",
+     "start": 0.15,
+     "end": 3.539
+    },
+    {
+     "text": "Spawning genuinely forks and execs a distinct process \u2014 not merely a distinct name for the same one.",
+     "start": 3.959,
+     "end": 11.398
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "8dc65723281f064d",
+   "takes": [
+    "38591d3293dc311c4a07",
+    "7c3efd9ff0e980267b25"
+   ],
+   "duration": 16.67,
+   "lines": [
+    {
+     "text": "Run it for real: the spawned child had its own, genuinely different process identifier.",
+     "start": 0.15,
+     "end": 8.059
+    },
+    {
+     "text": "And its real exit code was observed exactly, round-tripped straight back through a completely separate process.",
+     "start": 8.479,
+     "end": 16.32
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "ea3843cfe29581ca",
+   "takes": [
+    "2699e92508188ed00b66",
+    "21dcc9b5f78d38e981e3"
+   ],
+   "duration": 8.575,
+   "lines": [
+    {
+     "text": "A process already running several real threads calls a real fork.",
+     "start": 0.15,
+     "end": 3.938
+    },
+    {
+     "text": "How many threads does the resulting child actually have?",
+     "start": 4.658,
+     "end": 8.225
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.2,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "4c9d1051716e5d8a",
+   "takes": [
+    "cec275ad974bb7fee48c",
+    "624e51d041f4000dbc70"
+   ],
+   "duration": 11.243,
+   "lines": [
+    {
+     "text": "Exactly one \u2014 the single thread that called fork.",
+     "start": 0.15,
+     "end": 4.138
+    },
+    {
+     "text": "The entire address space gets copied, every byte of it, but only one thread is there to run it afterward.",
+     "start": 4.558,
+     "end": 10.893
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -4.4,
+   "wpm": 149,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The entire address space gets copied, every byte of it, but only one thread is there to run it afterward.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "04": {
+   "hash": "ac52f2a5e7ae6df1",
+   "takes": [
+    "7f6810a639b90a0391e6",
+    "12d2378291f1cce723ee"
+   ],
+   "duration": 17.414,
+   "lines": [
+    {
+     "text": "Run it for real: the parent genuinely had several real threads running, and the forked child had exactly one.",
+     "start": 0.15,
+     "end": 8.247
+    },
+    {
+     "text": "Which is exactly why only a narrow, carefully safe set of operations are allowed there before that child execs.",
+     "start": 8.667,
+     "end": 17.064
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5e238cf71b356589",
+   "takes": [
+    "a8a332bbd81c36f8a035",
+    "25018a949fc4653901c5"
+   ],
+   "duration": 16.07,
+   "lines": [
+    {
+     "text": "Send a signal through a stable process handle, to a process that has already exited and been properly reaped.",
+     "start": 0.15,
+     "end": 7.625
+    },
+    {
+     "text": "Does it silently succeed, silently fail, or fail with a specific, clear error?",
+     "start": 8.345,
+     "end": 15.72
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "75807f4ddba28894",
+   "takes": [
+    "fa222ffe7a48d6ad1bb3",
+    "cae7ee5db40a7bc27da6"
+   ],
+   "duration": 11.712,
+   "lines": [
+    {
+     "text": "It fails with a clear, specific error.",
+     "start": 0.15,
+     "end": 2.865
+    },
+    {
+     "text": "That handle never confuses a process that's genuinely gone with some other one that happens to share an old number.",
+     "start": 3.285,
+     "end": 11.362
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5c855a77c1ff7edc",
+   "takes": [
+    "312905d94270a9996f73",
+    "76fe5a16f75e08c9a6df"
+   ],
+   "duration": 17.357,
+   "lines": [
+    {
+     "text": "Run it for real: sending through that handle succeeded while the real process was still alive.",
+     "start": 0.15,
+     "end": 6.176
+    },
+    {
+     "text": "And it failed outright, with that exact clear error, the instant the process was genuinely gone \u2014 never silently reaching anything else.",
+     "start": 6.596,
+     "end": 17.007
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "68c22b108c2afefd",
+   "takes": [
+    "9571ad6e4e22d51fa265",
+    "d8e3eb6c02e3e519f382"
+   ],
+   "duration": 10.593,
+   "lines": [
+    {
+     "text": "Why did setting an environment variable become unsafe to call directly, when it was perfectly fine to call for years before?",
+     "start": 0.15,
+     "end": 7.974
+    },
+    {
+     "text": "What actually changed?",
+     "start": 8.824,
+     "end": 10.243
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.4,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "f5880e0673613b6f",
+   "takes": [
+    "b2a405e21bc7ca4e7cbc",
+    "c53233d1601869726318"
+   ],
+   "duration": 12.565,
+   "lines": [
+    {
+     "text": "Because it genuinely races with a C function that reads the environment.",
+     "start": 0.15,
+     "end": 4.249
+    },
+    {
+     "text": "And no library anywhere can be relied on to never call that function internally, without ever telling anyone.",
+     "start": 4.669,
+     "end": 12.215
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "32c139800e96d3b1",
+   "takes": [
+    "7f0b0616f54a44f1f8df",
+    "0feef50bc3b2dccbdf18"
+   ],
+   "duration": 19.796,
+   "lines": [
+    {
+     "text": "That function's own safety section says it plainly: sound alone on a single thread, or on one particular operating system.",
+     "start": 0.15,
+     "end": 10.469
+    },
+    {
+     "text": "Everywhere else, in a multithreaded program, the only genuinely sound choice is simply never to call it at all.",
+     "start": 10.889,
+     "end": 19.446
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 118,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Everywhere else, in a multithreaded program, the only genuinely sound choice is simply never to call it at all.",
+     "said": "multithreaded",
+     "heard": "multi threaded"
+    }
+   ]
+  },
+  "09": {
+   "hash": "96f63037b7404ac6",
+   "takes": [
+    "ab9171401691d991141e",
+    "46efad639d78f7bbfece"
+   ],
+   "duration": 19.074,
+   "lines": [
+    {
+     "text": "So, pulling this together: every one of these rules is really the same rule, said three separate ways.",
+     "start": 0.15,
+     "end": 7.535
+    },
+    {
+     "text": "A forked child, a stable process handle, and a shared global variable are each state that something else might be touching at that exact same moment.",
+     "start": 7.955,
+     "end": 18.724
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "2896c9d53f57aff9",
+   "takes": [
+    "c652ac46d02ff0c0a006",
+    "13ed76842642f48ac80e",
+    "249888c324e54fc7550e"
+   ],
+   "duration": 27.411,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: spawning a child genuinely gives it its own, separate identity, never the parent's.",
+     "start": 0.15,
+     "end": 10.365
+    },
+    {
+     "text": "A forked child genuinely runs with only one thread, the very one that called fork, and nothing else survives there.",
+     "start": 10.785,
+     "end": 19.177
+    },
+    {
+     "text": "And a stable handle to a process never, ever gets confused with some unrelated process that happens to share an old number.",
+     "start": 19.597,
+     "end": 27.061
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
