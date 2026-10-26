@@ -3955,7 +3955,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'GIL, free-threading and subinterpreters',
     syllabusTitle: 'GIL, free-threading and subinterpreters',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Foundations' },
     chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.1' },
     minutes: 15,
