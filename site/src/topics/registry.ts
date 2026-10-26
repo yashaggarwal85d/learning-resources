@@ -2332,7 +2332,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Practical hash functions and HashDoS',
     syllabusTitle: 'Practical hash functions and HashDoS',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 3, title: 'Hashing', section: '3.1' },
     minutes: 12,
