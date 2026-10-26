@@ -1,0 +1,350 @@
+{
+ "topic": "rust.partitioned-logs-per-key",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7ac60125489c8104",
+   "takes": [
+    "b165578cae73f2a09bf3",
+    "2ad9e45aaffd7579f3a1"
+   ],
+   "duration": 13.025,
+   "lines": [
+    {
+     "text": "A topic's writes, for many different keys, all go through one real partitioning function.",
+     "start": 0.15,
+     "end": 6.869
+    },
+    {
+     "text": "Does every write to the same key genuinely always land in the same partition?",
+     "start": 7.589,
+     "end": 12.675
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.1,
+   "wpm": 129,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A topic's writes, for many different keys, all go through one real partitioning function.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "Does every write to the same key genuinely always land in the same partition?",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "b3e51540610ea44c",
+   "takes": [
+    "9995c204b819e717847b",
+    "5ba9ff90615a18e9a8ef"
+   ],
+   "duration": 5.13,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "As long as the partition count stays fixed.",
+     "start": 1.84,
+     "end": 4.78
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "9608bef277a13e42",
+   "takes": [
+    "4c84def89450f2176018"
+   ],
+   "duration": 10.173,
+   "lines": [
+    {
+     "text": "Run it for real: many writes to the same key genuinely all landed in the identical partition, in the identical order they were written.",
+     "start": 0.15,
+     "end": 9.823
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: many writes to the same key genuinely all landed in the identical partition, in the identical order they were written.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "03": {
+   "hash": "a363b8314b07c78a",
+   "takes": [
+    "1b00b36974c2834c419c",
+    "8bacbb9276c8abc5146b"
+   ],
+   "duration": 8.142,
+   "lines": [
+    {
+     "text": "Now the operator grows the topic's own partition count.",
+     "start": 0.15,
+     "end": 3.266
+    },
+    {
+     "text": "Does every existing key's own routing genuinely stay put?",
+     "start": 3.986,
+     "end": 7.792
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "f6e814e9dfb83442",
+   "takes": [
+    "12f9269709fe56730f79",
+    "6ff71de70b83bb3f08e7"
+   ],
+   "duration": 4.773,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "At least one existing key genuinely reroutes.",
+     "start": 1.044,
+     "end": 4.423
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 101,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "70135299143ca45d",
+   "takes": [
+    "4258bacf06ed56360b09"
+   ],
+   "duration": 8.387,
+   "lines": [
+    {
+     "text": "Run it for real: growing the partition count genuinely rerouted at least one existing key to a different partition.",
+     "start": 0.15,
+     "end": 8.037
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.7,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "b718f218d1dcb325",
+   "takes": [
+    "2cead58dea75eb60a36e",
+    "7f696ea721a264006e73"
+   ],
+   "duration": 11.073,
+   "lines": [
+    {
+     "text": "That rerouted key keeps writing after the resize.",
+     "start": 0.15,
+     "end": 3.867
+    },
+    {
+     "text": "Does its own history now genuinely live in one partition, or does it genuinely split?",
+     "start": 4.587,
+     "end": 10.723
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "7e73ffbda4b88e88",
+   "takes": [
+    "1debb000fff4cb7a1347",
+    "ecda960ef92997a2aa64"
+   ],
+   "duration": 3.996,
+   "lines": [
+    {
+     "text": "It genuinely splits.",
+     "start": 0.15,
+     "end": 1.581
+    },
+    {
+     "text": "And it stays split.",
+     "start": 2.001,
+     "end": 3.646
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "c558d29507a8f450",
+   "takes": [
+    "a07af3c5b37756a17b8a"
+   ],
+   "duration": 10.98,
+   "lines": [
+    {
+     "text": "Run it for real: the rerouted key's own history genuinely split across the old partition and the new one, and the order guarantee it had is genuinely gone.",
+     "start": 0.15,
+     "end": 10.63
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.0,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "fc0156a2b3953faf",
+   "takes": [
+    "943d70ef6de8697abec2",
+    "e7f5b8fba39fda97eb48"
+   ],
+   "duration": 18.311,
+   "lines": [
+    {
+     "text": "One real, widely used streaming platform's own documentation states this mechanism directly, in its own words.",
+     "start": 0.15,
+     "end": 8.307
+    },
+    {
+     "text": "Events sharing a key are written to the same partition, and a consumer of that partition reads them in exactly the order they were written.",
+     "start": 8.727,
+     "end": 17.961
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "9c2584fb4721bc01",
+   "takes": [
+    "b89090db186df5078f04",
+    "1a8f29ca37a3ac9420d4"
+   ],
+   "duration": 19.745,
+   "lines": [
+    {
+     "text": "That same platform's own design document describes its message log as nothing more than a real directory of files on disk, recopied in whole segments whenever it is compacted.",
+     "start": 0.15,
+     "end": 11.593
+    },
+    {
+     "text": "This topic's own partition-per-vector model mirrors that identical, real, append-only shape.",
+     "start": 12.013,
+     "end": 19.395
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "f6f128b67135295c",
+   "takes": [
+    "80c3a0d133e28c04fd07"
+   ],
+   "duration": 11.938,
+   "lines": [
+    {
+     "text": "Run it for real, all together: fixed-count order, count-change rerouting, and the resulting split history, all measured from one real routing function.",
+     "start": 0.15,
+     "end": 11.588
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "dd77e37a2471f7b2",
+   "takes": [
+    "a0d464d31c64db172912",
+    "ba59e53c5a9f7b7b0cfe",
+    "8de4d43ea50320c35c28"
+   ],
+   "duration": 47.326,
+   "lines": [
+    {
+     "text": "So here's the real trade this whole topic turns on: spreading a topic's load across many machines and keeping one key's own writes strictly in order are not the same promise, and the second one only survives as long as the first one's own shape never moves.",
+     "start": 0.15,
+     "end": 18.79
+    },
+    {
+     "text": "A hash function doesn't know or care about history; it just answers the identical question the identical way every time it's asked, which is exactly why that answer changing at all is what breaks things.",
+     "start": 19.21,
+     "end": 33.44
+    },
+    {
+     "text": "Nothing here is approximate or probabilistic: a key's own order either lives entirely inside one partition, or it doesn't live anywhere at all once that partition assignment moves.",
+     "start": 33.86,
+     "end": 46.976
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 139,
+   "wer": 0.02127659574468085,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So here's the real trade this whole topic turns on: spreading a topic's load across many machines and keeping one key's own writes strictly in order are not the same promise, and the second one only survives as long as the first one's own shape never moves.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  }
+ }
+}
