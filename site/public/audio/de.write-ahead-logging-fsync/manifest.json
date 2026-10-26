@@ -1,0 +1,421 @@
+{
+ "topic": "de.write-ahead-logging-fsync",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "ed0ab3f510809237",
+   "takes": [
+    "1e2ddd9eac5e38fc7150",
+    "1de934335c4fd099d3c9",
+    "a59e12557c81d30a8af3"
+   ],
+   "duration": 21.554,
+   "lines": [
+    {
+     "text": "The last topic opened the cache that sits in front of a slow disk.",
+     "start": 0.15,
+     "end": 4.986
+    },
+    {
+     "text": "But a change that only ever lived in that cache disappears completely the instant the process stops running before it's written back.",
+     "start": 5.406,
+     "end": 14.526
+    },
+    {
+     "text": "So something has to exist that survives a crash even when the cache itself doesn't.",
+     "start": 14.946,
+     "end": 21.204
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So something has to exist that survives a crash even when the cache itself doesn't.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "02": {
+   "hash": "0aab326f71fdbff6",
+   "takes": [
+    "d75fda3203d9a36fe800",
+    "e3ce8999130c84030e41",
+    "0a897f322c3713de33ab"
+   ],
+   "duration": 21.35,
+   "lines": [
+    {
+     "text": "That something turns out to have its own position, read directly off a live cluster rather than assumed.",
+     "start": 0.15,
+     "end": 6.79
+    },
+    {
+     "text": "Checked before and after a real write, that position only ever moves forward, never back.",
+     "start": 7.21,
+     "end": 14.185
+    },
+    {
+     "text": "And the real distance between those two readings turns out to be an exact count, not a rough guess.",
+     "start": 14.605,
+     "end": 21.0
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Checked before and after a real write, that position only ever moves forward, never back.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "ad723485fee859f7",
+   "takes": [
+    "1446f63e283018097a0a",
+    "eea08a5f52c0d6352a5f",
+    "13c4d18dfe4f7744bf00"
+   ],
+   "duration": 23.891,
+   "lines": [
+    {
+     "text": "Worth checking whether every single change really pays for its own separate trip to make that log durable.",
+     "start": 0.15,
+     "end": 7.982
+    },
+    {
+     "text": "A real batch of changes happening close together in time, measured directly, shares a single one of those trips across many of them at once.",
+     "start": 8.402,
+     "end": 17.056
+    },
+    {
+     "text": "Nothing about sharing that trip lets any individual change skip waiting for it to finish first.",
+     "start": 17.476,
+     "end": 23.541
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "5cc6f8dc47ba3ee1",
+   "takes": [
+    "4d13e9b7cbbe7fc531a7",
+    "c4fc3f1564af75654ef5",
+    "1aa653a45b0e73b5db01"
+   ],
+   "duration": 20.654,
+   "lines": [
+    {
+     "text": "Worth reasoning through before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.184
+    },
+    {
+     "text": "A disk doesn't write an entire page in one physical step. It writes several smaller physical pieces, one after another.",
+     "start": 3.604,
+     "end": 12.369
+    },
+    {
+     "text": "If power fails partway through, does the result always come out as either every piece landing or none of them?",
+     "start": 12.789,
+     "end": 20.304
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "5e4adaae0de44abe",
+   "takes": [
+    "aa3af9c4c39094a13f4b",
+    "04b366a5ce0f64c08f79",
+    "f07410476d7e04b43441"
+   ],
+   "duration": 20.273,
+   "lines": [
+    {
+     "text": "It doesn't, and that gap is exactly why a separate defense has to exist at all.",
+     "start": 0.15,
+     "end": 5.825
+    },
+    {
+     "text": "Some of those smaller pieces can land on disk while others never do, leaving a result that's part old and part new.",
+     "start": 6.245,
+     "end": 14.981
+    },
+    {
+     "text": "Nothing reading that result afterward can tell which parts actually finished.",
+     "start": 15.401,
+     "end": 19.923
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "109dec9907d15ff3",
+   "takes": [
+    "8acc3d9dfe2ea2442cbc",
+    "2de7bc7a4ea750a0abff",
+    "dd902e993e3f938fea92"
+   ],
+   "duration": 27.0,
+   "lines": [
+    {
+     "text": "Here's that defense shown directly, not just argued for.",
+     "start": 0.15,
+     "end": 3.999
+    },
+    {
+     "text": "A real page, changed twice right after a real save point. Measured directly, the full defense against exactly that mixed-up result fires once, on the first change.",
+     "start": 4.419,
+     "end": 18.258
+    },
+    {
+     "text": "The second change to that same page doesn't trigger it again, because nothing about the risk changed.",
+     "start": 18.678,
+     "end": 26.65
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5834cb829e051f48",
+   "takes": [
+    "50a5f0afe82124f5109b",
+    "916a29138d25a1de47a5",
+    "33df03eb3505f6873889"
+   ],
+   "duration": 28.837,
+   "lines": [
+    {
+     "text": "A completely different piece of this same machinery is worth checking the same way.",
+     "start": 0.15,
+     "end": 4.989
+    },
+    {
+     "text": "Several genuinely different system-level ways exist to force a write all the way out to physical storage rather than leave it sitting in some cache along the way.",
+     "start": 5.409,
+     "end": 16.826
+    },
+    {
+     "text": "Read directly off this sandbox's own cluster, one specific one of those ways turns out to actually be in use, not an abstraction standing in for all of them.",
+     "start": 17.246,
+     "end": 28.487
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.034482758620689655,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Several genuinely different system-level ways exist to force a write all the way out to physical storage rather than leave it sitting in some cache along the way.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "07": {
+   "hash": "97f0209e1ad0e51f",
+   "takes": [
+    "7f30845c00b82428981c",
+    "71406993bb90c0416ade"
+   ],
+   "duration": 23.086,
+   "lines": [
+    {
+     "text": "A different engine runs into the identical mixed-up-page risk.",
+     "start": 0.15,
+     "end": 4.874
+    },
+    {
+     "text": "Named here directly from its own documentation rather than run in this sandbox, that engine reaches for a genuinely different fix: a safety copy, written somewhere else first, checked during recovery instead of trusting the original location at all.",
+     "start": 5.294,
+     "end": 22.736
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "fe34c98260828208",
+   "takes": [
+    "d57796fb01523de3946d",
+    "bd3078f549b691ae9ee8",
+    "43664c7cf58303f66747"
+   ],
+   "duration": 31.067,
+   "lines": [
+    {
+     "text": "One real, documented failure is worth naming directly rather than glossed over.",
+     "start": 0.15,
+     "end": 5.982
+    },
+    {
+     "text": "A system once discovered that a failed attempt to force data all the way out to disk could come back claiming success anyway, even though the write never actually landed.",
+     "start": 6.402,
+     "end": 17.353
+    },
+    {
+     "text": "Once that's even possible, the only response anyone can still trust is starting over completely: stop, and rebuild everything from the last point known to be good.",
+     "start": 17.773,
+     "end": 30.717
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 133,
+   "wer": 0.03333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A system once discovered that a failed attempt to force data all the way out to disk could come back claiming success anyway, even though the write never actually landed.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "09": {
+   "hash": "9e8336e12e8b41aa",
+   "takes": [
+    "1eb9fbe1f5d246d4d16f",
+    "8ede505ec3b02594aa7e",
+    "704a2665a67e50b6247e",
+    "2729a23f50adb9bf0b33"
+   ],
+   "duration": 44.578,
+   "lines": [
+    {
+     "text": "Pulling the whole topic back together.",
+     "start": 0.15,
+     "end": 2.623
+    },
+    {
+     "text": "That position in the log, moving only forward by an exact measured amount. A real batch of changes sharing far fewer separate durability trips than it has changes.",
+     "start": 3.043,
+     "end": 15.242
+    },
+    {
+     "text": "A real mixed-up-page defense that fires exactly once per save point, not on every single change. One specific, chosen way to force a write all the way out, confirmed directly.",
+     "start": 15.662,
+     "end": 31.357
+    },
+    {
+     "text": "A different engine's own different answer to the identical risk. And the hard lesson that a failed attempt to force data out can never be safely assumed to just need retrying.",
+     "start": 31.777,
+     "end": 44.228
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 131,
+   "wer": 0.03125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A real mixed-up-page defense that fires exactly once per save point, not on every single change. One specific, chosen way to force a write all the way out, confirmed directly.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "10": {
+   "hash": "ba3d81e7abd75ce3",
+   "takes": [
+    "26ccb194aa63d1f0755f",
+    "fc677a1add5e5c70ce55",
+    "481eb78588deba1d6344"
+   ],
+   "duration": 27.077,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through before the explanation lands.",
+     "start": 0.15,
+     "end": 4.964
+    },
+    {
+     "text": "A monitoring script sees one of those force-out attempts fail, just once. It writes a warning and lets everything keep running rather than stopping it, reasoning that a single failure probably doesn't matter much.",
+     "start": 5.384,
+     "end": 21.918
+    },
+    {
+     "text": "Is that response actually safe, and why or why not?",
+     "start": 22.338,
+     "end": 26.727
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "718c8e51093d44b0",
+   "takes": [
+    "a2b228d4b386ac9eb8ef",
+    "ae4d243cd1d7e8670994",
+    "81812dcccc72eb581909"
+   ],
+   "duration": 33.794,
+   "lines": [
+    {
+     "text": "It isn't safe, for exactly the reason this topic already named directly.",
+     "start": 0.15,
+     "end": 4.879
+    },
+    {
+     "text": "The whole point of that hard lesson is that once a failed force-out attempt can happen without the caller reliably finding out, nothing the caller believes about what already landed on disk can be trusted anymore.",
+     "start": 5.299,
+     "end": 19.539
+    },
+    {
+     "text": "Writing a warning and continuing keeps running on exactly that untrustworthy belief. Stopping and rebuilding from the last known-good point is the only response that doesn't.",
+     "start": 19.959,
+     "end": 33.444
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
