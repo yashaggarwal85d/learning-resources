@@ -1,0 +1,377 @@
+{
+ "topic": "rust.write-ahead-rule-lsns",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b21e7ebd1bcf5c25",
+   "takes": [
+    "bc6150eec7e201b563d2",
+    "af2b986b5a51ba61a744",
+    "ccc83da7e744f612f7ee"
+   ],
+   "duration": 23.004,
+   "lines": [
+    {
+     "text": "Build a real write-ahead log and a real page, each carrying its own LSN.",
+     "start": 0.15,
+     "end": 5.764
+    },
+    {
+     "text": "Apply the same update two different ways: log the change, then write the page, or write the page, then log the change.",
+     "start": 6.184,
+     "end": 14.904
+    },
+    {
+     "text": "Now crash at the exact same point in both: right between the two steps. Which update survives?",
+     "start": 15.624,
+     "end": 22.654
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "9f646048ffaa7b82",
+   "takes": [
+    "6b2447263980f80b13f4",
+    "71f8aac3f68efe607083"
+   ],
+   "duration": 6.664,
+   "lines": [
+    {
+     "text": "Only the logged-first one.",
+     "start": 0.15,
+     "end": 1.777
+    },
+    {
+     "text": "The other update is simply gone, with nothing left to redo it from.",
+     "start": 2.197,
+     "end": 6.314
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.3,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "e3291e42feea76e4",
+   "takes": [
+    "fe5399bcc69d9f9e89e6",
+    "ba04ba5623ecc2734d17"
+   ],
+   "duration": 14.328,
+   "lines": [
+    {
+     "text": "Run it for real: the log-first update survived the crash and recovered correctly.",
+     "start": 0.15,
+     "end": 6.654
+    },
+    {
+     "text": "The identical crash, with the page written first, genuinely and silently lost the update.",
+     "start": 7.074,
+     "end": 13.978
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "2591b7799716b3e8",
+   "takes": [
+    "576a61dd88dbec00ed48",
+    "f6370073da6b93dda76d"
+   ],
+   "duration": 10.541,
+   "lines": [
+    {
+     "text": "Now replay an already-applied log record against the page it already describes.",
+     "start": 0.15,
+     "end": 5.518
+    },
+    {
+     "text": "Does redo apply it again, or leave the page alone?",
+     "start": 6.238,
+     "end": 10.191
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "27f13463f6cc49c7",
+   "takes": [
+    "2494a165159b9afc1f63",
+    "b942c6da72e64a895dfd"
+   ],
+   "duration": 5.95,
+   "lines": [
+    {
+     "text": "It's a genuine no-op.",
+     "start": 0.15,
+     "end": 1.834
+    },
+    {
+     "text": "The page's own LSN already covers it.",
+     "start": 2.254,
+     "end": 5.6
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -4.1,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "91a9b0c7a61fdab9",
+   "takes": [
+    "de6bc3b6c4463ece5134"
+   ],
+   "duration": 11.352,
+   "lines": [
+    {
+     "text": "Run it for real: replaying an already-applied record was a genuine no-op, and running the full recovery pass a second time changed nothing either.",
+     "start": 0.15,
+     "end": 11.002
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "ba237fb6c113ef92",
+   "takes": [
+    "7627a31b3ca9e42caa10",
+    "b86518142120bdfde244"
+   ],
+   "duration": 12.01,
+   "lines": [
+    {
+     "text": "A crash mid-write can tear a page: part of its bytes land in the new state, part are still the old ones.",
+     "start": 0.15,
+     "end": 7.478
+    },
+    {
+     "text": "Does a checksum over the page's own bytes catch that?",
+     "start": 8.198,
+     "end": 11.66
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 165,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A crash mid-write can tear a page: part of its bytes land in the new state, part are still the old ones.",
+     "said": "write",
+     "heard": "ride"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "7a40303391e33909",
+   "takes": [
+    "9995c204b819e717847b",
+    "0a2def5ca3b2e8aeba44"
+   ],
+   "duration": 6.224,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "A half-written page's own checksum simply doesn't match anymore.",
+     "start": 1.84,
+     "end": 5.874
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.3,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "9e1ef25228aefc42",
+   "takes": [
+    "6b6838be584add160c6c"
+   ],
+   "duration": 11.81,
+   "lines": [
+    {
+     "text": "Run it for real: the torn page's own checksum genuinely didn't match, and restoring the log's own full-page image fixed it completely.",
+     "start": 0.15,
+     "end": 11.46
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "1b1abddb4fe05f5b",
+   "takes": [
+    "1cb7d93ad3264e69c15f",
+    "5c4c13fae628e3f9b1ca"
+   ],
+   "duration": 12.238,
+   "lines": [
+    {
+     "text": "One real system's own documentation states the write-ahead rule directly.",
+     "start": 0.15,
+     "end": 4.854
+    },
+    {
+     "text": "Why doesn't a transaction's commit need every data page it touched flushed to disk?",
+     "start": 5.574,
+     "end": 11.888
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.5,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "84cf80b7cb8ad899",
+   "takes": [
+    "fb819aa2031f46bd5bcd",
+    "d5df4f1b5e1765d78af5"
+   ],
+   "duration": 6.559,
+   "lines": [
+    {
+     "text": "Because the log reaching disk is already enough.",
+     "start": 0.15,
+     "end": 2.785
+    },
+    {
+     "text": "The data pages can be redone from it later.",
+     "start": 3.205,
+     "end": 6.209
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "949ebc5adc071bcf",
+   "takes": [
+    "c1697ec7fa760ad24c1c"
+   ],
+   "duration": 14.124,
+   "lines": [
+    {
+     "text": "In that system's own words: changes to data files must be written only after those changes have been logged, and any change not yet applied to a data page can be redone from the log.",
+     "start": 0.15,
+     "end": 13.774
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "c575d3cb1aa760d1",
+   "takes": [
+    "c5818358e1ef9d9b3e8b"
+   ],
+   "duration": 17.916,
+   "lines": [
+    {
+     "text": "That same system's own fix for a torn page is a full-page write: periodically writing a complete image of a page to the log before modifying it on disk, so a partially-written page can always be restored from that image.",
+     "start": 0.15,
+     "end": 17.566
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "1c193cf9724f94fe",
+   "takes": [
+    "214d297f812db60c9076",
+    "50d8f77453d60c531fd0",
+    "50e7fdf532672679a346",
+    "a414928997251573c398"
+   ],
+   "duration": 40.115,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: durability comes from the log reaching disk, not from the page it describes.",
+     "start": 0.15,
+     "end": 8.711
+    },
+    {
+     "text": "That ordering is why the same kind of interrupted write is recoverable one way and simply gone the other way.",
+     "start": 9.131,
+     "end": 16.772
+    },
+    {
+     "text": "A number stamped on both the record and the page is enough to tell whether a change still needs replaying, safely, as many times as recovery needs to try.",
+     "start": 17.192,
+     "end": 28.301
+    },
+    {
+     "text": "And a page half-written by a crash isn't trusted on its own word; its own checksum gives that away, and a separate, already-durable copy is what actually fixes it.",
+     "start": 28.721,
+     "end": 39.766
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That ordering is why the same kind of interrupted write is recoverable one way and simply gone the other way.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  }
+ }
+}
