@@ -2,6 +2,7 @@
   "what": "Topics queued for re-narration on the owner's PC (owner decision 2026-10-13): their narration.json was rewritten so the narrator teaches (QUALITY.md #54), and their audio, where it exists, is the old reading of the old script. A live topic listed here keeps playing its old clips until the PC generates the new ones (the player reads manifest.json, which still matches the old audio), so the site never loses a voice. npm run test:narration reports a listed topic's stale or missing audio as a warning, not a failure. /narrate (.claude/skills/narrate) generates the new audio for every listed topic, in bulk, after the voice is frozen, and removes the id once its clips match the current script. Never add a topic by hand except with the owner's decision (2026-10-13 for the first 18; 2026-10-17: topics may go live before they are narrated, so every new live topic without audio is listed here until /narrate generates it); new topics are narrated once, from their teaching script.",
   "listed": "2026-10-13: every topic in the registry on that day (18). 2026-10-17: the 27 topics imported from the fork (9 in Chapter 1 and the DSA chapter, 18 in Data Engineering Chapter 2) go live without audio by owner decision, and are listed so that missing audio is a warning, not a failure, until the owner's PC narrates them.",
   "pending": [
+    "rust.safe-byte-level-views",
     "dsa.practical-hash-functions-hashdos",
     "dsa.separate-chaining",
     "rust.acquire-release-publication-seqcst",
