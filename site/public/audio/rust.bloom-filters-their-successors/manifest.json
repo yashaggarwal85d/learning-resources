@@ -1,0 +1,365 @@
+{
+ "topic": "rust.bloom-filters-their-successors",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "5dd52a3ebf47ab4a",
+   "takes": [
+    "6e52a5407f56162fe601",
+    "c28dcefbfee38c61264a"
+   ],
+   "duration": 14.54,
+   "lines": [
+    {
+     "text": "A Bloom filter answers a single question about a key: either maybe present, or definitely absent.",
+     "start": 0.15,
+     "end": 7.438
+    },
+    {
+     "text": "For a key that was genuinely inserted earlier, could it ever come back definitely absent?",
+     "start": 8.158,
+     "end": 14.19
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.1,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "19f06aee7099b606",
+   "takes": [
+    "7a24d031ed91ca2e6295",
+    "847a1f6d8115569dfd7d"
+   ],
+   "duration": 10.052,
+   "lines": [
+    {
+     "text": "No, never, genuinely.",
+     "start": 0.15,
+     "end": 2.109
+    },
+    {
+     "text": "At any budget at all, an inserted key always comes back as at least maybe present.",
+     "start": 2.529,
+     "end": 9.701
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.2,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "c1efddcaaf544042",
+   "takes": [
+    "f9a4164d55f92a100e3c"
+   ],
+   "duration": 14.535,
+   "lines": [
+    {
+     "text": "Run it for real: at every single bits-per-key budget tried, every key that was actually inserted genuinely came back possibly present, with not one false negative anywhere.",
+     "start": 0.15,
+     "end": 14.185
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "a3b480b1f313dfb4",
+   "takes": [
+    "5548d523f47f1f3923a6",
+    "9b2d171d95c2c794b153"
+   ],
+   "duration": 11.589,
+   "lines": [
+    {
+     "text": "Build that same filter again, but with a much tighter bits-per-key budget this time.",
+     "start": 0.15,
+     "end": 5.297
+    },
+    {
+     "text": "Does a key that was never inserted at all ever come back maybe present?",
+     "start": 6.017,
+     "end": 11.239
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "f7b675769f4f02be",
+   "takes": [
+    "2dc50c9e57ec30d01ca6",
+    "6d6345c972e6a26f0d81"
+   ],
+   "duration": 8.085,
+   "lines": [
+    {
+     "text": "Yes, genuinely, sometimes.",
+     "start": 0.15,
+     "end": 3.102
+    },
+    {
+     "text": "Some keys that were never inserted do come back as maybe present.",
+     "start": 3.522,
+     "end": 7.735
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "af057a473d219165",
+   "takes": [
+    "bd5be823ef7a688588d3"
+   ],
+   "duration": 10.735,
+   "lines": [
+    {
+     "text": "Run it for real: that tight bits-per-key budget genuinely produced real false positives, against keys that had never been inserted at all.",
+     "start": 0.15,
+     "end": 10.385
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "8e0843df34d4ff2c",
+   "takes": [
+    "cc7733ad7621d823369b",
+    "bcb81c302fb20342cbec"
+   ],
+   "duration": 11.7,
+   "lines": [
+    {
+     "text": "Spend far more bits per key on that exact same filter instead.",
+     "start": 0.15,
+     "end": 5.034
+    },
+    {
+     "text": "Does that genuinely change how often a never-inserted key comes back maybe present?",
+     "start": 5.754,
+     "end": 11.35
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "2a53f1a0350cf03d",
+   "takes": [
+    "ecd45c62dfd9b3730c80",
+    "5224d83b46ced388ab68"
+   ],
+   "duration": 7.026,
+   "lines": [
+    {
+     "text": "Yes, genuinely, it drops.",
+     "start": 0.15,
+     "end": 2.458
+    },
+    {
+     "text": "Spending more bits per key lowers how often that happens.",
+     "start": 2.878,
+     "end": 6.676
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -2.8,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "dc289693caf64ad1",
+   "takes": [
+    "217c45155d32986151b2"
+   ],
+   "duration": 10.75,
+   "lines": [
+    {
+     "text": "Run it for real: spending far more bits per key genuinely lowered the measured false-positive rate on that same filter, by a wide margin.",
+     "start": 0.15,
+     "end": 10.4
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.4,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "6a2e9cccf2a1c820",
+   "takes": [
+    "18be80dead32d4a65560",
+    "a11d8d5da3572babb2ce"
+   ],
+   "duration": 15.7,
+   "lines": [
+    {
+     "text": "One real production system states an actual bits-per-key table directly, in its own documentation.",
+     "start": 0.15,
+     "end": 7.182
+    },
+    {
+     "text": "Does a small increase near the low end of that table buy as much improvement as the same size increase further up it?",
+     "start": 7.902,
+     "end": 15.351
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "cf6fb3bd0acc159e",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "5c3d74b169b2a198f8ac"
+   ],
+   "duration": 10.351,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "The low end of that table buys far more improvement for every bit spent than the same increase further up does.",
+     "start": 2.386,
+     "end": 10.001
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "5f8cfefe2e38e995",
+   "takes": [
+    "c95a003fbe07de6ed6b8"
+   ],
+   "duration": 13.392,
+   "lines": [
+    {
+     "text": "That system's own numbers state it directly: spending a small amount near the low end of the table buys far more improvement, per bit, than spending that same amount further up it.",
+     "start": 0.15,
+     "end": 13.042
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "45044db116cab1f7",
+   "takes": [
+    "4873938501a17aae954f",
+    "68b4ccba6f6c6a1c71a5"
+   ],
+   "duration": 20.328,
+   "lines": [
+    {
+     "text": "That same system's own documentation also states, directly, why any of this spending is worth doing at all.",
+     "start": 0.15,
+     "end": 8.114
+    },
+    {
+     "text": "A filter like this one can cut the number of unneeded disk reads a lookup would otherwise have to pay for, substantially, often by close to two orders of magnitude.",
+     "start": 8.534,
+     "end": 19.978
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 142,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A filter like this one can cut the number of unneeded disk reads a lookup would otherwise have to pay for, substantially, often by close to two orders of magnitude.",
+     "said": "disk reads",
+     "heard": "discreeds"
+    }
+   ]
+  },
+  "10": {
+   "hash": "b4426ce5bb352365",
+   "takes": [
+    "e6107adaefc1814a13a1",
+    "36be52cefb89fd3357b6",
+    "d58ba22db2e12e9c7ac0",
+    "874bb21467c6d421dd97"
+   ],
+   "duration": 42.098,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a filter like this one never forgets a key it was actually given, so when it says a key is absent, that's genuine proof, not a guess.",
+     "start": 0.15,
+     "end": 12.035
+    },
+    {
+     "text": "A positive answer is the opposite: it only grants permission to go check further, since it can occasionally be wrong about a key that was never there at all.",
+     "start": 12.455,
+     "end": 23.008
+    },
+    {
+     "text": "Spending more bits per key on that filter genuinely buys a lower rate of those wrong answers, though with real diminishing returns.",
+     "start": 23.428,
+     "end": 32.248
+    },
+    {
+     "text": "The entire reason any of this is worth doing is that it lets a lookup skip opening most of the files it would otherwise have had to check.",
+     "start": 32.668,
+     "end": 41.748
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
