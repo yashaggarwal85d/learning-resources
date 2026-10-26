@@ -1,0 +1,395 @@
+{
+ "topic": "rust.bounded-channels-backpressure",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "44b41f19557d1205",
+   "takes": [
+    "4936f96fc0373a4645c3",
+    "0571ae8b7e91d1e7c83d"
+   ],
+   "duration": 21.318,
+   "lines": [
+    {
+     "text": "A producer that can generate values quickly, a consumer that deliberately works through them slowly, and a channel between them with room for exactly one message at a time.",
+     "start": 0.15,
+     "end": 11.499
+    },
+    {
+     "text": "Does the producer just keep going, piling work up somewhere invisible, or does it genuinely get held back to the consumer's own pace?",
+     "start": 12.219,
+     "end": 20.968
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "95311991343a2d06",
+   "takes": [
+    "72b396d06f543197c3b1",
+    "20d09f52062a4fc6735f"
+   ],
+   "duration": 14.996,
+   "lines": [
+    {
+     "text": "It genuinely gets held back. The channel's limit becomes the producer's real speed limit.",
+     "start": 0.15,
+     "end": 6.682
+    },
+    {
+     "text": "This isn't the producer being polite. It's forced to wait, because there's nowhere else for the next message to go.",
+     "start": 7.102,
+     "end": 14.646
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ee89c939960f86d4",
+   "takes": [
+    "8cf494ea1b6eaef86495",
+    "718455ec88bfb5603fdb"
+   ],
+   "duration": 18.006,
+   "lines": [
+    {
+     "text": "Run it for real, and the producer's own total time to get through every message tracks the consumer's pace almost exactly, step for step.",
+     "start": 0.15,
+     "end": 10.297
+    },
+    {
+     "text": "That's the whole mechanism, made visible: the bound on the channel really does become the rate the whole pipeline runs at.",
+     "start": 10.717,
+     "end": 17.655
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "b550feb542b06058",
+   "takes": [
+    "cfb888ff812e53dabc1b",
+    "bc7893556dcc053f16ce"
+   ],
+   "duration": 20.209,
+   "lines": [
+    {
+     "text": "Now a different kind of channel, one meant for broadcasting the same message to many listeners, with room for only two values at a time, and a receiver that doesn't check in at all while five are sent.",
+     "start": 0.15,
+     "end": 14.518
+    },
+    {
+     "text": "What happens to the ones that receiver never got around to reading?",
+     "start": 15.239,
+     "end": 19.859
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "b2b63854b4c9bab3",
+   "takes": [
+    "27fe4254df4984b06f78",
+    "7420bd72f062d07e95dd"
+   ],
+   "duration": 16.273,
+   "lines": [
+    {
+     "text": "The oldest ones simply get overwritten to make room \u2014 but the receiver isn't left guessing. It's told exactly how many it missed.",
+     "start": 0.15,
+     "end": 8.792
+    },
+    {
+     "text": "That's a very different failure mode from silently losing data. The gap is named, not hidden.",
+     "start": 9.212,
+     "end": 15.923
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "cab55cb3a9ab9dea",
+   "takes": [
+    "62e96aebc9bcde146e25",
+    "e819458ab16668226bbd"
+   ],
+   "duration": 25.939,
+   "lines": [
+    {
+     "text": "Run it for real: the receiver's very first read comes back as an actual error naming the exact count of messages it fell behind by, and then it resumes cleanly from whatever's still there.",
+     "start": 0.15,
+     "end": 15.01
+    },
+    {
+     "text": "The error isn't a crash and it isn't the end of the receiver. It's a real, honest signal, with a real number attached.",
+     "start": 15.43,
+     "end": 25.589
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "de26ae043ffa8d28",
+   "takes": [
+    "4756b57b172231ba6d5f",
+    "23722561fe8ed9880760"
+   ],
+   "duration": 20.417,
+   "lines": [
+    {
+     "text": "A third kind of channel, built for watching a single value change over time, gets sent fifty separate updates in a row, with nobody checking in until all fifty have gone through.",
+     "start": 0.15,
+     "end": 12.446
+    },
+    {
+     "text": "When that one receiver finally does check in, how many of those fifty updates does it actually see?",
+     "start": 13.166,
+     "end": 20.067
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "543773bcefb256d3",
+   "takes": [
+    "27257443c0fd2808e9b7",
+    "62c0d24be11a93d7e247"
+   ],
+   "duration": 11.494,
+   "lines": [
+    {
+     "text": "Just the very last one. Every value in between is already gone by the time it looks.",
+     "start": 0.15,
+     "end": 5.824
+    },
+    {
+     "text": "That's not a limitation of this channel. It's the entire reason it exists.",
+     "start": 6.244,
+     "end": 11.144
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "b1a64fee55ea628c",
+   "takes": [
+    "e069d35d65d875039d21",
+    "eb8fb25be6d6641fc9fe"
+   ],
+   "duration": 23.918,
+   "lines": [
+    {
+     "text": "Run it for real: one receiver, reading exactly once after all fifty sends, sees only the final value \u2014 nothing from any of the other forty-nine.",
+     "start": 0.15,
+     "end": 12.29
+    },
+    {
+     "text": "This is the opposite design decision from the first channel in this topic. There, every message mattered. Here, only the newest one ever does.",
+     "start": 12.71,
+     "end": 23.568
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 125,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: one receiver, reading exactly once after all fifty sends, sees only the final value \u2014 nothing from any of the other forty-nine.",
+     "said": "sends",
+     "heard": "cents"
+    }
+   ]
+  },
+  "07": {
+   "hash": "70fdb145e25c1b61",
+   "takes": [
+    "b718e96e3b993a15b6e7",
+    "2c7dcea923772e56c222"
+   ],
+   "duration": 18.975,
+   "lines": [
+    {
+     "text": "Go back to that very first kind of channel, still with its one slot already taken, but this time don't use the send that waits. Use the one that asks once and returns immediately.",
+     "start": 0.15,
+     "end": 12.525
+    },
+    {
+     "text": "Does that version wait a little too, or does it refuse outright, with no delay at all?",
+     "start": 13.245,
+     "end": 18.625
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "46a09582f83a1981",
+   "takes": [
+    "f46e22319a69c1b8e039",
+    "c194244b851bd540114b"
+   ],
+   "duration": 14.119,
+   "lines": [
+    {
+     "text": "It refuses outright, immediately. No waiting, not even briefly.",
+     "start": 0.15,
+     "end": 5.629
+    },
+    {
+     "text": "This is a completely different decision from the first channel's behavior \u2014 a decision to shed the extra work, not queue it.",
+     "start": 6.049,
+     "end": 13.769
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 127,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "This is a completely different decision from the first channel's behavior \u2014 a decision to shed the extra work, not queue it.",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  },
+  "08": {
+   "hash": "cddd82715eedb244",
+   "takes": [
+    "fe51fb0dcc25dce68e83",
+    "7087a8dbf0ac18d80cfe"
+   ],
+   "duration": 25.412,
+   "lines": [
+    {
+     "text": "Timed directly, that refusal comes back in a tiny fraction of a single millisecond \u2014 close enough to instant that there's no meaningful wait to speak of.",
+     "start": 0.15,
+     "end": 12.787
+    },
+    {
+     "text": "That precision matters. A caller using this to shed load under real pressure needs that guarantee to be exact, not just fast most of the time.",
+     "start": 13.207,
+     "end": 25.062
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Timed directly, that refusal comes back in a tiny fraction of a single millisecond \u2014 close enough to instant that there's no meaningful wait to speak of.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "09": {
+   "hash": "664122af18e686f2",
+   "takes": [
+    "9f4596ea8ba644fac2b8",
+    "2c610dda403bd258b7d0"
+   ],
+   "duration": 28.562,
+   "lines": [
+    {
+     "text": "So here are four separate kinds of channel, lined up side by side, and each one keeps a genuinely different promise about a message nobody was ready for yet.",
+     "start": 0.15,
+     "end": 12.128
+    },
+    {
+     "text": "One makes the sender wait. One drops the oldest and says so. One throws almost everything away except the newest. And one is built to carry exactly a single reply, once, and nothing more.",
+     "start": 12.548,
+     "end": 28.212
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "eeca8e180ab4b190",
+   "takes": [
+    "ebc629d50b36fc5a2cb8",
+    "89725d8cf042c085667f",
+    "98517d08845b253bd516"
+   ],
+   "duration": 39.277,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a bounded channel of the first kind genuinely paces a fast producer to a slow consumer's speed.",
+     "start": 0.15,
+     "end": 10.389
+    },
+    {
+     "text": "A broadcast-style channel tells a lagging receiver exactly what it missed, instead of hiding the loss. A watch-style channel keeps only the newest value, on purpose, by design.",
+     "start": 10.809,
+     "end": 27.247
+    },
+    {
+     "text": "And asking once, instead of waiting, gets refused instantly the moment there's no room \u2014 a real, immediate decision, not a delay.",
+     "start": 27.667,
+     "end": 38.927
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
