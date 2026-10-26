@@ -82,7 +82,8 @@
       "lines": [
         "So, pulling this topic together: one real syscall, called on its own, can refill a dropped file's residency before anyone reads a byte.",
         "A second one empties those same pages back out, the instant they stop being dirty.",
-        "And a third path simply refuses to let the cache see a read go by in the first place."
+        "And a third path simply refuses.",
+        "It never lets the cache see a read go by at all."
       ]
     }
   ]

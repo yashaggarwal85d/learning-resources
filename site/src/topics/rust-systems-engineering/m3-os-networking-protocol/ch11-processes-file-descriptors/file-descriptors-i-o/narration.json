@@ -50,7 +50,7 @@
     {
       "lines": [
         "Run it for real: the descriptor that was opened normally never appeared inside the real, forked child at all.",
-        "The one with close-on-exec explicitly cleared leaked straight into it, exactly as cleared."
+        "The one with close-on-exec explicitly cleared leaked straight into the child."
       ],
       "takeaway": "A file descriptor closes on exec by default — that genuinely stops it leaking into a forked child."
     },
