@@ -1,0 +1,376 @@
+{
+ "topic": "rust.version-garbage-collection-long",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b6d0d1939e5c7fbb",
+   "takes": [
+    "d4128601ab997c79bc42",
+    "0a64b7ee1d32dfe8866d"
+   ],
+   "duration": 17.457,
+   "lines": [
+    {
+     "text": "A reader opens a snapshot, and then the same row gets updated four more times while that reader stays open.",
+     "start": 0.15,
+     "end": 7.689
+    },
+    {
+     "text": "Does any one of those four now-dead versions ever become reclaimable while the reader is still sitting there, open?",
+     "start": 8.409,
+     "end": 17.107
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "a6f9b2135caad474",
+   "takes": [
+    "65602b39fb8ed85ad517",
+    "8c3bdddb087ce882a723"
+   ],
+   "duration": 7.131,
+   "lines": [
+    {
+     "text": "No, not one of them.",
+     "start": 0.15,
+     "end": 1.744
+    },
+    {
+     "text": "For as long as that reader stays open, none of them can be reclaimed.",
+     "start": 2.164,
+     "end": 6.781
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -3.5,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "32c9d89f4bbe3d5d",
+   "takes": [
+    "34eaa96d2dbf01afd70d",
+    "fe160dfafaef771f1025"
+   ],
+   "duration": 15.35,
+   "lines": [
+    {
+     "text": "Run it for real: not one of the four dead versions came back reclaimable while the reader stayed open.",
+     "start": 0.15,
+     "end": 7.259
+    },
+    {
+     "text": "A long-lived reader blocks reclaim of everything newer than it, not only the one version it actually reads.",
+     "start": 7.679,
+     "end": 15.0
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.6,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "9b11872ddbbddafc",
+   "takes": [
+    "782c6249f8b91cf42678",
+    "036379d42dad73fef1e1"
+   ],
+   "duration": 10.0,
+   "lines": [
+    {
+     "text": "That same reader now closes instead, on the identical workload.",
+     "start": 0.15,
+     "end": 4.543
+    },
+    {
+     "text": "Do those same four now-dead versions become reclaimable once it's gone?",
+     "start": 5.263,
+     "end": 9.65
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.0,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "4c96189040216a58",
+   "takes": [
+    "775a734068f5e35e51a3",
+    "337980b160fb96b37369"
+   ],
+   "duration": 6.029,
+   "lines": [
+    {
+     "text": "Yes, genuinely, all of them.",
+     "start": 0.15,
+     "end": 2.31
+    },
+    {
+     "text": "Closing the reader frees every single one.",
+     "start": 2.73,
+     "end": 5.679
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.1,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "97f8b1d227ac1f39",
+   "takes": [
+    "624f9b852845972a125a"
+   ],
+   "duration": 7.412,
+   "lines": [
+    {
+     "text": "Run it for real: closing that reader genuinely freed every one of its previously-pinned dead versions.",
+     "start": 0.15,
+     "end": 7.062
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e1571b98265c7a69",
+   "takes": [
+    "3be9b48c4e5cb1412202",
+    "0c05ac971bf22cc93234"
+   ],
+   "duration": 14.997,
+   "lines": [
+    {
+     "text": "Run the identical workload twice: once with that reader staying open the entire time, once with it closing early instead.",
+     "start": 0.15,
+     "end": 8.827
+    },
+    {
+     "text": "Does the long-lived run genuinely retain more versions than the short-lived one?",
+     "start": 9.547,
+     "end": 14.647
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.3,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "158125d92b609cb7",
+   "takes": [
+    "9995c204b819e717847b",
+    "dd310673f014315be1bc"
+   ],
+   "duration": 4.582,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The long-lived run retains far more.",
+     "start": 1.84,
+     "end": 4.231
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -4.8,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "e534f165989547a4",
+   "takes": [
+    "f29cfc589d94d8ce02b4"
+   ],
+   "duration": 9.695,
+   "lines": [
+    {
+     "text": "Run it for real: the long-lived run genuinely retained far more versions than the short-lived run, on the identical workload.",
+     "start": 0.15,
+     "end": 9.345
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.8,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "9eb8f5c5d189cac6",
+   "takes": [
+    "149b0db46dd121ed155a",
+    "9f651e5963b7ff0f15c5"
+   ],
+   "duration": 15.977,
+   "lines": [
+    {
+     "text": "One real production system's own documentation states this exact coupling directly.",
+     "start": 0.15,
+     "end": 5.888
+    },
+    {
+     "text": "Does it name actually ending a long-running open transaction as something that frees up space its own cleanup process alone cannot?",
+     "start": 6.608,
+     "end": 15.627
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "4c0b18de81ac6a54",
+   "takes": [
+    "9995c204b819e717847b",
+    "ea99546ea7a1c864a5f3"
+   ],
+   "duration": 5.771,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "It tells administrators to end those transactions directly.",
+     "start": 1.84,
+     "end": 5.421
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 104,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "0791ed56f519bd62",
+   "takes": [
+    "bcff67f93b315aef9fdd"
+   ],
+   "duration": 14.83,
+   "lines": [
+    {
+     "text": "That system's own documentation states it in exactly those words: end long-running open transactions directly, found by checking for backends whose own transaction age has grown large.",
+     "start": 0.15,
+     "end": 14.48
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.0,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "3a5b856431f797fd",
+   "takes": [
+    "71b844dee3562937df73",
+    "33136eff68f9a2561129"
+   ],
+   "duration": 15.678,
+   "lines": [
+    {
+     "text": "That same system's own documentation also names exactly what that horizon is made of.",
+     "start": 0.15,
+     "end": 6.942
+    },
+    {
+     "text": "A backend's own value in that system's own activity view is named directly as that backend's own xmin horizon.",
+     "start": 7.362,
+     "end": 15.328
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.6,
+   "wpm": 126,
+   "wer": 0.21052631578947367,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A backend's own value in that system's own activity view is named directly as that backend's own xmin horizon.",
+     "said": "backends",
+     "heard": "back ends"
+    },
+    {
+     "line": "A backend's own value in that system's own activity view is named directly as that backend's own xmin horizon.",
+     "said": "backends",
+     "heard": "back ends"
+    }
+   ]
+  },
+  "10": {
+   "hash": "18868953ffb0c2f4",
+   "takes": [
+    "4bb8d8d6ef149f33f395",
+    "436f6e58e6e19729792d",
+    "e1a25335659df13f7edd"
+   ],
+   "duration": 42.582,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a version becomes reclaimable only once no open snapshot could possibly still need it, never any sooner.",
+     "start": 0.15,
+     "end": 11.843
+    },
+    {
+     "text": "One long-running reader genuinely blocks every single reclaim newer than it, not just the one version it directly reads, which is exactly why it turns into a real, measurable storage-growth problem on a workload that would otherwise stay small.",
+     "start": 12.263,
+     "end": 30.911
+    },
+    {
+     "text": "The actual fix for that isn't a smarter cleanup pass running more often; it's ending the long-running transaction that's pinning the horizon in the first place.",
+     "start": 31.331,
+     "end": 42.232
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 131,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So here's the shape of this whole topic: a version becomes reclaimable only once no open snapshot could possibly still need it, never any sooner.",
+     "said": "a version",
+     "heard": "aversion"
+    }
+   ]
+  }
+ }
+}
