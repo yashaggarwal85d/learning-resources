@@ -3,7 +3,7 @@
   assemble.py build <topic_dir> <jobs.json>   score every take; if some lines need more takes, write them to jobs.json and exit 3;
                                               if some lines can never pass, list every one of them and exit 1; else assemble
 Runs in the evaluation environment (see README.md). Scores are cached per take and per checker model."""
-import json, os, re, subprocess, sys
+import json, os, re, subprocess, sys, time
 import numpy as np, soundfile as sf, librosa
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import VOICE, CACHE, clips, clip_hash, take_path, take_key, spoken, voice_takes
@@ -145,12 +145,22 @@ def load_scores():
 
 
 def save_scores(cache):
-    """Merge into the file as it is now and replace it atomically, so parallel narration workers never lose or tear entries."""
+    """Merge into the file as it is now and replace it atomically, so parallel narration workers never lose or tear entries.
+    On Windows, os.replace can transiently raise PermissionError if another worker has the destination briefly open
+    (e.g. mid-read in load_scores): several narrate.sh processes hitting this at once is the designed concurrent case
+    (pc/README.md, /narrate section 2), not an error in the topic, so retry a few times before giving up."""
     merged = load_scores()
     merged.update(cache)
     tmp = f"{SCORES}.{os.getpid()}.tmp"
     json.dump(merged, open(tmp, "w"))
-    os.replace(tmp, SCORES)
+    for attempt in range(10):
+        try:
+            os.replace(tmp, SCORES)
+            return
+        except PermissionError:
+            if attempt == 9:
+                raise
+            time.sleep(0.2 * (attempt + 1))
 
 
 def build(topic_dir, jobs_path):
