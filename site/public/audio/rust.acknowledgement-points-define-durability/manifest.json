@@ -1,0 +1,410 @@
+{
+ "topic": "rust.acknowledgement-points-define-durability",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d10f278c1e0a9c78",
+   "takes": [
+    "3bbfede2569765b2ac01",
+    "9f61f3be8d92be2db937"
+   ],
+   "duration": 12.083,
+   "lines": [
+    {
+     "text": "A write is acknowledged once a subset smaller than a quorum has it: the leader, and the leader alone.",
+     "start": 0.15,
+     "end": 6.41
+    },
+    {
+     "text": "The leader is then destroyed. Does the write genuinely survive?",
+     "start": 7.13,
+     "end": 11.733
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 144,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A write is acknowledged once a subset smaller than a quorum has it: the leader, and the leader alone.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "The leader is then destroyed. Does the write genuinely survive?",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "a065a06a6c05f9b4",
+   "takes": [
+    "1025b9e01690fe63974a",
+    "e865d183fd9a1f93cd2e"
+   ],
+   "duration": 5.625,
+   "lines": [
+    {
+     "text": "No, it genuinely gets lost.",
+     "start": 0.15,
+     "end": 2.572
+    },
+    {
+     "text": "The acknowledgement promised nothing more.",
+     "start": 2.992,
+     "end": 5.275
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 107,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ddeac79bd11dfe0e",
+   "takes": [
+    "4dd89f108c2de91f1278",
+    "7cda81afd57442f9bddc"
+   ],
+   "duration": 14.14,
+   "lines": [
+    {
+     "text": "Run it for real: the write was genuinely lost, once the leader that alone held it was destroyed.",
+     "start": 0.15,
+     "end": 6.964
+    },
+    {
+     "text": "An acknowledgement smaller than a quorum promises nothing more, once the one node holding it is gone.",
+     "start": 7.384,
+     "end": 13.79
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.8,
+   "wpm": 149,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the write was genuinely lost, once the leader that alone held it was destroyed.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "a4689c2ccff14643",
+   "takes": [
+    "101135d8537fedb60485",
+    "43468f7322abef73b1c7"
+   ],
+   "duration": 15.346,
+   "lines": [
+    {
+     "text": "Now the leader durably records the write to its own disk before acknowledging, still with no replica involved.",
+     "start": 0.15,
+     "end": 7.397
+    },
+    {
+     "text": "The leader is destroyed the same way. Does durably recording it on the leader alone protect the write this time?",
+     "start": 8.117,
+     "end": 14.996
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now the leader durably records the write to its own disk before acknowledging, still with no replica involved.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "The leader is destroyed the same way. Does durably recording it on the leader alone protect the write this time?",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "b78567db770aee4c",
+   "takes": [
+    "c049388d81411cb0ce50",
+    "ffbfb3d8f93bf94111a8"
+   ],
+   "duration": 5.79,
+   "lines": [
+    {
+     "text": "No, it genuinely gets lost too.",
+     "start": 0.15,
+     "end": 2.561
+    },
+    {
+     "text": "It never left the one node destroyed.",
+     "start": 2.981,
+     "end": 5.44
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -3.6,
+   "wpm": 135,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It never left the one node destroyed.",
+     "said": "node",
+     "heard": "note"
+    }
+   ]
+  },
+  "04": {
+   "hash": "5f1c320e2f68dc5f",
+   "takes": [
+    "38f5bfbb0dd178b2d95b"
+   ],
+   "duration": 11.135,
+   "lines": [
+    {
+     "text": "Run it for real: the write was genuinely lost again, even though it was durably recorded, because it never reached any node beyond the one that was destroyed.",
+     "start": 0.15,
+     "end": 10.785
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "0e5ddeabe4d8880b",
+   "takes": [
+    "3538fc5153e2588908d5",
+    "863a277849a61b731a27"
+   ],
+   "duration": 15.187,
+   "lines": [
+    {
+     "text": "Now the write is persisted by a real quorum instead: the leader, and enough replicas that any two quorums are guaranteed to overlap.",
+     "start": 0.15,
+     "end": 9.053
+    },
+    {
+     "text": "The identical leader destruction happens. Does the write survive this time?",
+     "start": 9.773,
+     "end": 14.837
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now the write is persisted by a real quorum instead: the leader, and enough replicas that any two quorums are guaranteed to overlap.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "The identical leader destruction happens. Does the write survive this time?",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "ef8911f4e3254c02",
+   "takes": [
+    "9995c204b819e717847b",
+    "d529eaef9fabd6e813a8"
+   ],
+   "duration": 5.502,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "A real quorum already held a second copy.",
+     "start": 1.84,
+     "end": 5.152
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.0,
+   "wpm": 109,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d305eb647c5ccf68",
+   "takes": [
+    "eaadae2062f5e59ed308"
+   ],
+   "duration": 12.02,
+   "lines": [
+    {
+     "text": "Run it for real: the write genuinely survived, on the identical leader destruction, because a real quorum already held a durable copy beyond just the leader.",
+     "start": 0.15,
+     "end": 11.67
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the write genuinely survived, on the identical leader destruction, because a real quorum already held a durable copy beyond just the leader.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "07": {
+   "hash": "2f32c62eaa992c86",
+   "takes": [
+    "c206ae0cf6a379b67b77",
+    "035944a98145d2c101d5"
+   ],
+   "duration": 19.429,
+   "lines": [
+    {
+     "text": "One real production messaging system's own documentation states the weakest of these policies directly.",
+     "start": 0.15,
+     "end": 7.694
+    },
+    {
+     "text": "Does it name a leader failing right after acknowledging on its own, before any follower replicates the record, as something that genuinely loses it?",
+     "start": 8.414,
+     "end": 19.079
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "ac74e6f2f9e2de63",
+   "takes": [
+    "dc6d561e18b74ec42695",
+    "b305c5df499e82be0312"
+   ],
+   "duration": 6.382,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.959
+    },
+    {
+     "text": "That exact loss, named directly, in writing.",
+     "start": 2.379,
+     "end": 6.032
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -3.1,
+   "wpm": 103,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "a33b3e1652850424",
+   "takes": [
+    "6054b8546334a6b1e433"
+   ],
+   "duration": 14.801,
+   "lines": [
+    {
+     "text": "That system's own documentation states it in exactly those words: should the leader fail immediately after acknowledging the record but before the followers have replicated it, the record will be lost.",
+     "start": 0.15,
+     "end": 14.451
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "6d99ed6061da10e6",
+   "takes": [
+    "32f34a6c3be02b3bfcc2",
+    "db49a1618e502ced3f11"
+   ],
+   "duration": 17.557,
+   "lines": [
+    {
+     "text": "That same system's own documentation also names the real setting that turns a quorum requirement into an enforced guarantee.",
+     "start": 0.15,
+     "end": 9.245
+    },
+    {
+     "text": "It states that this setting causes the system to raise an error whenever the in-sync set falls below it.",
+     "start": 9.665,
+     "end": 17.207
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "ee9674042dbdd4c4",
+   "takes": [
+    "53fb88b9d6c0cac1e55b",
+    "fb24c2f5b3f1226391b8",
+    "43034fa62daebe22e351"
+   ],
+   "duration": 37.817,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: which single point in a replication pipeline counts as acknowledged genuinely decides whether a write survives the node that accepted it being destroyed.",
+     "start": 0.15,
+     "end": 14.583
+    },
+    {
+     "text": "A subset smaller than a quorum, even one that's durably recorded, can lose that write outright, since the data never genuinely left the one node that held it.",
+     "start": 15.003,
+     "end": 26.679
+    },
+    {
+     "text": "A real quorum cannot lose it the same way, because destroying any single node, even the leader, can never take every real copy with it.",
+     "start": 27.099,
+     "end": 37.467
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
