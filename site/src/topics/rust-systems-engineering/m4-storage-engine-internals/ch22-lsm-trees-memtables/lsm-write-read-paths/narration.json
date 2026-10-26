@@ -15,7 +15,8 @@
     },
     {
       "lines": [
-        "Run it for real: the overwrite that lands only in the fresh active memtable genuinely won over that same key's stale, already-flushed value sitting in the SSTable."
+        "Run it for real: the overwrite in the fresh active memtable genuinely won.",
+        "It beat that same key's stale, already-flushed value sitting in the SSTable."
       ],
       "takeaway": "A read checks the newest structure first, so a fresh, unflushed write always beats a stale, flushed one."
     },
