@@ -1,0 +1,394 @@
+{
+ "topic": "rust.cancellation-by-drop-cancel",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "2e77b213faa8655f",
+   "takes": [
+    "9dfdcdb4ec3716724eb6",
+    "779c7ee35c5aae40b93b"
+   ],
+   "duration": 12.642,
+   "lines": [
+    {
+     "text": "A macro that races two separate pieces of work against each other and moves on as soon as whichever one finishes first.",
+     "start": 0.15,
+     "end": 7.31
+    },
+    {
+     "text": "What actually happens to the piece of work that loses that race?",
+     "start": 8.03,
+     "end": 12.292
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "d560d14b8e00cf83",
+   "takes": [
+    "48929b52353d0e1a5f49",
+    "dabd34c485667a7cdefd"
+   ],
+   "duration": 15.271,
+   "lines": [
+    {
+     "text": "It gets dropped outright. Its whole future simply stops existing.",
+     "start": 0.15,
+     "end": 4.87
+    },
+    {
+     "text": "This isn't a pause, and it isn't something quietly finishing up in the background. It's gone, the instant the other one wins.",
+     "start": 5.29,
+     "end": 14.921
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "b1cf1edbfd2d4d75",
+   "takes": [
+    "3b69f9c98698687627b5",
+    "e856edb87e2fc7d1c91a"
+   ],
+   "duration": 14.464,
+   "lines": [
+    {
+     "text": "Run it for real, and check back well after the losing side's own full delay should have passed anyway.",
+     "start": 0.15,
+     "end": 6.419
+    },
+    {
+     "text": "Its own side effect never happened at all \u2014 not late, not eventually. Dropped really does mean dropped.",
+     "start": 6.839,
+     "end": 14.114
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8fb348e30c27d600",
+   "takes": [
+    "bcfc6021c8da3a3bc23d",
+    "62ceccb361108b3bbc7b"
+   ],
+   "duration": 16.362,
+   "lines": [
+    {
+     "text": "Now take a channel receive call, cancel it partway through waiting with that same racing macro, then actually send a message and call receive again fresh.",
+     "start": 0.15,
+     "end": 11.015
+    },
+    {
+     "text": "Could that first message ever quietly go missing because of the cancelled attempt?",
+     "start": 11.735,
+     "end": 16.012
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "ef99c259c3d65d6b",
+   "takes": [
+    "13e004d4cae557e769c1",
+    "b79f2ce0187f1881e282"
+   ],
+   "duration": 15.577,
+   "lines": [
+    {
+     "text": "No \u2014 nothing goes missing. This particular receive call is safe to cancel.",
+     "start": 0.15,
+     "end": 5.325
+    },
+    {
+     "text": "It either hasn't seen a message yet, or it's fully received one. There's no half-finished state in between for a cancellation to catch it in.",
+     "start": 5.745,
+     "end": 15.227
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.4,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "415c3800b6dd29a0",
+   "takes": [
+    "99945ba3a7cf6e328bc2",
+    "e2e5ee1bc59d6ed6a458"
+   ],
+   "duration": 20.002,
+   "lines": [
+    {
+     "text": "Run it for real: after the cancelled attempt, a fresh receive call gets exactly the one message that was sent \u2014 nothing lost, nothing duplicated.",
+     "start": 0.15,
+     "end": 10.936
+    },
+    {
+     "text": "That's what makes a receive call like this one genuinely safe to use inside a racing macro, over and over, in a loop.",
+     "start": 11.356,
+     "end": 19.652
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "f8d225f05ebff62b",
+   "takes": [
+    "a2acb49261d42c600f66",
+    "d3d6382f07902731231f"
+   ],
+   "duration": 18.448,
+   "lines": [
+    {
+     "text": "Now try the same kind of cancellation on a different operation \u2014 one that reads an exact number of bytes from a stream, cancelled midway, after it's already pulled part of that data in.",
+     "start": 0.15,
+     "end": 13.598
+    },
+    {
+     "text": "What happens to the bytes it already grabbed before it got cancelled?",
+     "start": 14.319,
+     "end": 18.098
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 146,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "What happens to the bytes it already grabbed before it got cancelled?",
+     "said": "cancelled",
+     "heard": "canceled"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "b43d4c10bd8e4c31",
+   "takes": [
+    "44d68349bdf40fc3a0d4",
+    "d14cfada17d368a1fe5a"
+   ],
+   "duration": 15.507,
+   "lines": [
+    {
+     "text": "They're simply gone. A fresh read only ever sees whatever arrives afterward.",
+     "start": 0.15,
+     "end": 5.224
+    },
+    {
+     "text": "Unlike the receive call, this operation genuinely has a half-finished state \u2014 and cancelling it catches that state and throws it away.",
+     "start": 5.644,
+     "end": 15.157
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "They're simply gone. A fresh read only ever sees whatever arrives afterward.",
+     "said": "read",
+     "heard": "reed"
+    },
+    {
+     "line": "Unlike the receive call, this operation genuinely has a half-finished state \u2014 and cancelling it catches that state and throws it away.",
+     "said": "cancelling",
+     "heard": "canceling"
+    }
+   ]
+  },
+  "06": {
+   "hash": "ec3ea2f69b4e5064",
+   "takes": [
+    "0a79607689e7026ca312",
+    "e6342a52487e4e5f7a52"
+   ],
+   "duration": 20.681,
+   "lines": [
+    {
+     "text": "Run it for real: the first half of what was sent, already pulled in by the cancelled read, never comes back. A fresh read only recovers the second half.",
+     "start": 0.15,
+     "end": 10.99
+    },
+    {
+     "text": "There's no mechanism in the language for handing that partial progress back anywhere once it's being dropped. It's simply lost, permanently.",
+     "start": 11.41,
+     "end": 20.331
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "0de8d4c4421570fd",
+   "takes": [
+    "3e9877abd5250433fdc1",
+    "4515fc69a4dfb0c134aa"
+   ],
+   "duration": 17.549,
+   "lines": [
+    {
+     "text": "Spawn a background task, get a handle back for it, and then drop that handle right away \u2014 without ever waiting on it, and without explicitly stopping the task.",
+     "start": 0.15,
+     "end": 10.647
+    },
+    {
+     "text": "Does the task actually stop running when its only handle disappears, or does it keep going?",
+     "start": 11.367,
+     "end": 17.199
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "6b2afe8a40a28eec",
+   "takes": [
+    "cfef1fe4e6805d5ad960",
+    "ad4fd110c0ff30f1019e"
+   ],
+   "duration": 15.01,
+   "lines": [
+    {
+     "text": "It keeps going completely. Dropping the handle only gives up the ability to check on it or wait for it.",
+     "start": 0.15,
+     "end": 6.651
+    },
+    {
+     "text": "That's a deliberate choice, not an oversight. A background task often needs to outlive whatever spawned it in the first place.",
+     "start": 7.071,
+     "end": 14.66
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "438dcd4f3f03511f",
+   "takes": [
+    "bb20607309df5d3e25d0",
+    "9e18503bb0bf331683ef"
+   ],
+   "duration": 17.993,
+   "lines": [
+    {
+     "text": "Run it for real: long after that handle was dropped, the task is still quietly doing its work, completely unobserved by anything.",
+     "start": 0.15,
+     "end": 9.633
+    },
+    {
+     "text": "It was never cancelled at all. It simply became impossible to check on, or to stop through that particular handle.",
+     "start": 10.053,
+     "end": 17.643
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "ba3441e6176bb93f",
+   "takes": [
+    "34124405a2e587260487",
+    "0d2ec08014874849b09b"
+   ],
+   "duration": 24.633,
+   "lines": [
+    {
+     "text": "So here's the same underlying mechanism, used three different ways, with three genuinely different outcomes.",
+     "start": 0.15,
+     "end": 7.952
+    },
+    {
+     "text": "A receive call drops cleanly and loses nothing. A partial read drops and loses exactly what it had already consumed. And a background task's handle drops while the task itself just keeps right on running.",
+     "start": 8.372,
+     "end": 24.283
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "798ef11dc225f11e",
+   "takes": [
+    "75a443f828ab6ad5edb3",
+    "ed4b0fa35c324057ca65",
+    "9987514ef8e972f1b5b8"
+   ],
+   "duration": 30.795,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: that racing macro genuinely drops whichever side loses, not merely delays it.",
+     "start": 0.15,
+     "end": 9.11
+    },
+    {
+     "text": "A channel receive call survives being cancelled with nothing lost. A partial stream read does not, and loses exactly the part it already consumed.",
+     "start": 9.53,
+     "end": 20.732
+    },
+    {
+     "text": "And dropping a task's only handle detaches that task instead of stopping it \u2014 it just keeps running, completely on its own.",
+     "start": 21.152,
+     "end": 30.445
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
