@@ -1,0 +1,365 @@
+{
+ "topic": "rust.simd-rust",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "5c68155d9ca7eeda",
+   "takes": [
+    "b16584ddea98acb7c439",
+    "ab02d9184cffe673046d",
+    "12cc3995ad0e2191301c"
+   ],
+   "duration": 17.36,
+   "lines": [
+    {
+     "text": "Build an explicit SIMD kernel, summing several values at once instead of one at a time.",
+     "start": 0.15,
+     "end": 6.373
+    },
+    {
+     "text": "Before ever calling it, check the real processor's own feature support at runtime.",
+     "start": 7.093,
+     "end": 12.599
+    },
+    {
+     "text": "Does the real processor here genuinely support that feature?",
+     "start": 13.019,
+     "end": 17.01
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "f53726bd3a0e69b3",
+   "takes": [
+    "9995c204b819e717847b",
+    "d809bd3d9b799edbb814"
+   ],
+   "duration": 4.154,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The real processor supports it.",
+     "start": 1.84,
+     "end": 3.804
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 101,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "8c9a60ffffe87da5",
+   "takes": [
+    "6ac06818fc2ef06f8ce8",
+    "2bc0695daa8161d20015"
+   ],
+   "duration": 18.025,
+   "lines": [
+    {
+     "text": "Run it for real: the real processor here genuinely supports that feature, detected at runtime, so the explicit kernel actually ran.",
+     "start": 0.15,
+     "end": 10.383
+    },
+    {
+     "text": "The kernel only ever gets called once the real processor's own support is actually checked, never simply assumed.",
+     "start": 10.803,
+     "end": 17.675
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "a6babd111e83400b",
+   "takes": [
+    "7cd934a02da22f4c5f87",
+    "8e0eae14e3e546e8e5a6"
+   ],
+   "duration": 11.048,
+   "lines": [
+    {
+     "text": "Run the explicit SIMD kernel and the plain scalar loop on the identical column.",
+     "start": 0.15,
+     "end": 5.343
+    },
+    {
+     "text": "Does the kernel produce the exact identical sum as the scalar loop?",
+     "start": 6.063,
+     "end": 10.698
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.7,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "ff2bde71a19d78bb",
+   "takes": [
+    "d4c7de8866c0673ae23b",
+    "929c484784a6027a4fef"
+   ],
+   "duration": 3.597,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.299
+    },
+    {
+     "text": "The exact identical sum.",
+     "start": 1.719,
+     "end": 3.247
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.9,
+   "wpm": 100,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "24c5f8fd9cede7f0",
+   "takes": [
+    "1f37e7e05e264904e248"
+   ],
+   "duration": 10.02,
+   "lines": [
+    {
+     "text": "Run it for real: the exact identical sum came back, from both the explicit SIMD kernel and the plain scalar loop.",
+     "start": 0.15,
+     "end": 9.67
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "f59765b761beb03e",
+   "takes": [
+    "ec333b165e6a7d81f82c",
+    "7ecb32c4f222b7dc8b88"
+   ],
+   "duration": 13.035,
+   "lines": [
+    {
+     "text": "Now measure vector operations themselves: does the SIMD kernel genuinely process far fewer of them than the scalar loop processes scalar operations?",
+     "start": 0.15,
+     "end": 10.378
+    },
+    {
+     "text": "On the identical column?",
+     "start": 11.228,
+     "end": 12.685
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "664a91c6e34ca8a0",
+   "takes": [
+    "9995c204b819e717847b",
+    "ba5b3ccf50473c6a7210"
+   ],
+   "duration": 4.534,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Far fewer, in the SIMD kernel.",
+     "start": 1.84,
+     "end": 4.184
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -2.4,
+   "wpm": 106,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "4ea17f3801963ce5",
+   "takes": [
+    "276e7522e728384f80f2"
+   ],
+   "duration": 8.626,
+   "lines": [
+    {
+     "text": "Run it for real: far fewer vector operations showed up in the SIMD kernel, matching the real lane width exactly.",
+     "start": 0.15,
+     "end": 8.276
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.5,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "9cc9a435e64a3fbe",
+   "takes": [
+    "202fe09c522b70b6f551",
+    "4f26a6603b3718e5dc13"
+   ],
+   "duration": 15.878,
+   "lines": [
+    {
+     "text": "The Rust standard library's own documentation states why that runtime check genuinely has to come first.",
+     "start": 0.15,
+     "end": 7.948
+    },
+    {
+     "text": "Does it name calling that kind of function on a processor that genuinely lacks the feature as unsafe?",
+     "start": 8.668,
+     "end": 15.528
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "64a3b437ad58870b",
+   "takes": [
+    "dc6d561e18b74ec42695",
+    "69354db3116455bcdbf6"
+   ],
+   "duration": 5.548,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.959
+    },
+    {
+     "text": "It's named directly as unsafe, in writing.",
+     "start": 2.379,
+     "end": 5.198
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -4.8,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "51b384d937190b0b",
+   "takes": [
+    "40afbc67ffb1724bcec3"
+   ],
+   "duration": 12.089,
+   "lines": [
+    {
+     "text": "That standard library states it in exactly those words: it is unsafe to call a function built on that feature on a processor that doesn't actually support it.",
+     "start": 0.15,
+     "end": 11.739
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "8bb5a368c7b9ecf1",
+   "takes": [
+    "3f9c84b04bb122fc3b78",
+    "169c1a0792ab3e38b48b"
+   ],
+   "duration": 14.48,
+   "lines": [
+    {
+     "text": "That same standard library's own documentation also names exactly what that runtime check itself relies on.",
+     "start": 0.15,
+     "end": 7.065
+    },
+    {
+     "text": "It states that runtime detection currently relies mostly on one particular processor instruction.",
+     "start": 7.485,
+     "end": 14.13
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "9fda97d47532695f",
+   "takes": [
+    "20d56736947fe3a732a3",
+    "edee71cf52bd3ac3213e",
+    "7a99009279b65a79cd11"
+   ],
+   "duration": 39.612,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: an explicit SIMD kernel, called only once the real processor's own support is genuinely checked at runtime, computes the exact identical answer as its scalar equivalent.",
+     "start": 0.15,
+     "end": 15.149
+    },
+    {
+     "text": "It does that while processing far fewer real operations, by exactly the real lane width a single instruction actually holds, never by a rough estimate.",
+     "start": 15.569,
+     "end": 29.056
+    },
+    {
+     "text": "That runtime check isn't an optional nicety either; it's the genuine safety contract making any of this sound to call at all.",
+     "start": 29.476,
+     "end": 39.262
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
