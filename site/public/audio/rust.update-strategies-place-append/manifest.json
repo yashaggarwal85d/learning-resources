@@ -1,0 +1,365 @@
+{
+ "topic": "rust.update-strategies-place-append",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "15beb75acdf3535a",
+   "takes": [
+    "e3dde9223a1bd34f5f94",
+    "b30423eace9525c22608"
+   ],
+   "duration": 28.346,
+   "lines": [
+    {
+     "text": "Take the exact same sequence of updates to one logical record, and apply it three genuinely different real ways: overwrite it where it sits, append each new version to a growing log, or copy the whole page it lives on and swap in the new one.",
+     "start": 0.15,
+     "end": 19.226
+    },
+    {
+     "text": "Start with the first way. Does overwriting a record in place ever leave anything behind to clean up later?",
+     "start": 19.946,
+     "end": 27.995
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "0a96dfd3d32f309d",
+   "takes": [
+    "af2afa48c73b65433afd",
+    "96cdf6358b3a8598841e"
+   ],
+   "duration": 6.467,
+   "lines": [
+    {
+     "text": "No, nothing at all.",
+     "start": 0.15,
+     "end": 1.868
+    },
+    {
+     "text": "The old bytes are simply gone the moment the new ones land.",
+     "start": 2.288,
+     "end": 6.117
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "3d96c8809dd7d3c3",
+   "takes": [
+    "bf9017bf9cae2c542fe2",
+    "017fad805e6ee3306a3d"
+   ],
+   "duration": 15.692,
+   "lines": [
+    {
+     "text": "Run it for real: overwrite the same record five separate times, in place.",
+     "start": 0.15,
+     "end": 5.576
+    },
+    {
+     "text": "Its own footprint, before and after all five updates, is exactly the same, with nothing extra accumulating anywhere.",
+     "start": 5.996,
+     "end": 15.342
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.4,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d3085ff4486025ff",
+   "takes": [
+    "baff648eef2036baba22",
+    "bdab7ee09fd2fa632146"
+   ],
+   "duration": 14.942,
+   "lines": [
+    {
+     "text": "Now take those same five updates and apply them a different way: append each new version to a growing log instead, and never touch the old one.",
+     "start": 0.15,
+     "end": 9.99
+    },
+    {
+     "text": "Does the log's own footprint actually grow with every single update?",
+     "start": 10.71,
+     "end": 14.592
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "aedf28514372a63b",
+   "takes": [
+    "76a9ac559c9857eccda4",
+    "17e0de43c1a1ba9c6a6c"
+   ],
+   "duration": 8.556,
+   "lines": [
+    {
+     "text": "Yes, it does.",
+     "start": 0.15,
+     "end": 1.661
+    },
+    {
+     "text": "Nothing old gets thrown away on its own; something else has to come along and do that later.",
+     "start": 2.081,
+     "end": 8.206
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "97e93e50d47ddbf1",
+   "takes": [
+    "fa5e6e9d4a00f222528e",
+    "c81840213ff53e267ea7"
+   ],
+   "duration": 15.502,
+   "lines": [
+    {
+     "text": "Run it for real: the log's own footprint genuinely grew with every one of the five updates.",
+     "start": 0.15,
+     "end": 7.132
+    },
+    {
+     "text": "Compacting it afterward threw away every version except the newest, shrinking the footprint right back down.",
+     "start": 7.552,
+     "end": 15.152
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "1763944ec5a7b3d6",
+   "takes": [
+    "8e9545748c216d1226e2",
+    "3465d4c784e7087bfe6f"
+   ],
+   "duration": 17.436,
+   "lines": [
+    {
+     "text": "Apply the same five updates one more way: copy the whole page the record lives on, write the new version into that copy, and swap it in.",
+     "start": 0.15,
+     "end": 9.604
+    },
+    {
+     "text": "Does this grow the structure by only the record's own handful of bytes each time, the same way the log did?",
+     "start": 10.324,
+     "end": 17.086
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "c4fc78e884ea7f95",
+   "takes": [
+    "795528d4ce473af8ee5a",
+    "83ef3385590efdd17b7a"
+   ],
+   "duration": 8.026,
+   "lines": [
+    {
+     "text": "No, not at all.",
+     "start": 0.15,
+     "end": 1.284
+    },
+    {
+     "text": "A whole page gets copied every single time, no matter how small the update actually is.",
+     "start": 1.704,
+     "end": 7.676
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2d0b3d70ee8d041b",
+   "takes": [
+    "398fc57c532447a298aa"
+   ],
+   "duration": 11.752,
+   "lines": [
+    {
+     "text": "Run it for real: copying the whole page on every update genuinely grew the structure by one whole page each time, never just the record's own bytes.",
+     "start": 0.15,
+     "end": 11.402
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.5,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "4d3811a23d605c3a",
+   "takes": [
+    "6b413233ad9b08fff108",
+    "cec27aa2c771c8b54dc0"
+   ],
+   "duration": 13.663,
+   "lines": [
+    {
+     "text": "Compare the real amount left behind by the append-only version and the copy-on-write version, on the exact same five updates.",
+     "start": 0.15,
+     "end": 8.388
+    },
+    {
+     "text": "Which one leaves more behind for some later cleanup pass to reclaim?",
+     "start": 9.108,
+     "end": 13.313
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "2b82ea96cbdb8269",
+   "takes": [
+    "f6da058cf4e4fb8a6e5a",
+    "d5b70d39797d41559cec"
+   ],
+   "duration": 9.444,
+   "lines": [
+    {
+     "text": "Copy-on-write leaves more.",
+     "start": 0.15,
+     "end": 3.057
+    },
+    {
+     "text": "Every discarded copy there is a whole page, not just one small record.",
+     "start": 3.477,
+     "end": 9.094
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "9543567a0df7342d",
+   "takes": [
+    "6e68b4fa7ca7be491d2f"
+   ],
+   "duration": 14.923,
+   "lines": [
+    {
+     "text": "Run it for real: on the exact same five updates, the copy-on-write version's own leftover was measurably, strictly larger than the append-only version's own leftover.",
+     "start": 0.15,
+     "end": 14.573
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "8693b4070132b91e",
+   "takes": [
+    "cf3b97e967125e8a9532",
+    "cb5bb97a23e8f4b036cf"
+   ],
+   "duration": 22.822,
+   "lines": [
+    {
+     "text": "One real system built around copying pages explains why that larger cost is worth paying: because no active page is ever touched directly, a crash can never leave a page sitting half-written.",
+     "start": 0.15,
+     "end": 12.824
+    },
+    {
+     "text": "There's no special recovery step needed at all afterward, because every page on disk was always either fully old or fully new.",
+     "start": 13.244,
+     "end": 22.472
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "cde6b6728cb11cfc",
+   "takes": [
+    "94fb819df352c54a8878",
+    "14eeef17860c0e685798",
+    "0d69d460bd02606ad2bb"
+   ],
+   "duration": 25.132,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: the cheapest choice in space destroys the old version outright the moment it's overwritten.",
+     "start": 0.15,
+     "end": 9.053
+    },
+    {
+     "text": "Keeping every version around costs more, until something comes along and cleans the old ones out.",
+     "start": 9.473,
+     "end": 16.001
+    },
+    {
+     "text": "And paying the most, a whole page at a time, is exactly what buys a page that a crash can never catch half-finished.",
+     "start": 16.421,
+     "end": 24.782
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
