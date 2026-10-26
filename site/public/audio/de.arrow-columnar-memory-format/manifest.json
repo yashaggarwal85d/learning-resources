@@ -1,0 +1,401 @@
+{
+ "topic": "de.arrow-columnar-memory-format",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "9ea7b03aae5741ee",
+   "takes": [
+    "75e5256a90a310ee9edc",
+    "e01507c57fef05724632"
+   ],
+   "duration": 21.548,
+   "lines": [
+    {
+     "text": "A native engine just won a measured race against a Python loop, and a direct handoff into that engine beat a trip through a file.",
+     "start": 0.15,
+     "end": 9.34
+    },
+    {
+     "text": "Neither of those measurements ever asked the question underneath both of them: how do two completely different pieces of software agree on what a pile of bytes actually means?",
+     "start": 9.76,
+     "end": 21.198
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "aae7c6159c5f3a9a",
+   "takes": [
+    "435316d2f10725945eb9",
+    "1f8a1381efce5c4c06d3"
+   ],
+   "duration": 22.866,
+   "lines": [
+    {
+     "text": "Here's the answer, stated as plainly as it gets.",
+     "start": 0.15,
+     "end": 3.721
+    },
+    {
+     "text": "An array isn't one solid chunk of memory. It's a small handful of separately addressable regions \u2014 one marking which values are missing, another holding the actual values \u2014 and that separation is what makes everything else in this topic possible.",
+     "start": 4.141,
+     "end": 22.516
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "478f15fa615f5392",
+   "takes": [
+    "6883ecddc67d2885afdd",
+    "d3aeb2be86295d1b5954"
+   ],
+   "duration": 21.949,
+   "lines": [
+    {
+     "text": "Worth guessing at before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.83
+    },
+    {
+     "text": "Picture an array built with zero missing values in it, provably, from the start. Does the system still spend memory on that missing-value marker anyway, just to stay consistent with every other array, or does it skip the cost entirely?",
+     "start": 4.25,
+     "end": 21.599
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "418958e9d0977e7b",
+   "takes": [
+    "7661795125b21bc54396",
+    "004c9dab803ded0ea5ea"
+   ],
+   "duration": 16.992,
+   "lines": [
+    {
+     "text": "It skips it entirely, at least on this build.",
+     "start": 0.15,
+     "end": 3.345
+    },
+    {
+     "text": "An array that can prove it has no missing values doesn't need a marker for them, and the real implementation checked here actually takes that shortcut rather than merely being allowed to.",
+     "start": 3.765,
+     "end": 16.642
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "8ec25ea5079a9207",
+   "takes": [
+    "df9aea01323ccc7d0d11",
+    "7b5892f627064563dd62"
+   ],
+   "duration": 21.614,
+   "lines": [
+    {
+     "text": "Now picture data arriving in pieces \u2014 one small batch, then another, then another.",
+     "start": 0.15,
+     "end": 6.773
+    },
+    {
+     "text": "Instead of copying all of them into one bigger block to call it a single column, each piece simply stays exactly where it landed, and the column keeps nothing more than a list of where those pieces already are.",
+     "start": 7.193,
+     "end": 21.264
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "b3d9e28a1591348c",
+   "takes": [
+    "f13f70061e38a023ff80",
+    "937502f90f0f9948714f"
+   ],
+   "duration": 20.617,
+   "lines": [
+    {
+     "text": "Suppose a column holds the same handful of values over and over.",
+     "start": 0.15,
+     "end": 4.991
+    },
+    {
+     "text": "Rather than storing that value in full every single time it shows up, each row gets a small number pointing into a separate list of the distinct values \u2014 the same trick a foreign key uses to avoid repeating a long value.",
+     "start": 5.411,
+     "end": 20.267
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "3a030bf09589c4e8",
+   "takes": [
+    "83d14b689503b76be6f1",
+    "c087c2da1cfc446de466"
+   ],
+   "duration": 23.89,
+   "lines": [
+    {
+     "text": "That trick from a moment ago has a blind spot worth exposing directly.",
+     "start": 0.15,
+     "end": 4.286
+    },
+    {
+     "text": "It counts repeats, but it has no idea whether those repeats sit next to each other. A value that shows up many times in a row compresses far harder under a scheme built just for runs \u2014 but a value that only alternates defeats that same scheme completely.",
+     "start": 4.706,
+     "end": 23.54
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "5d8464086b4f45e6",
+   "takes": [
+    "a8954381e6e635959216",
+    "a4ce3914fd9aab49bcf3",
+    "10c106d70caaf45697a2"
+   ],
+   "duration": 23.698,
+   "lines": [
+    {
+     "text": "Text brings its own version of the same tradeoff.",
+     "start": 0.15,
+     "end": 3.219
+    },
+    {
+     "text": "A short piece of text gets tucked directly into its own small slot, no separate storage needed at all.",
+     "start": 3.639,
+     "end": 10.98
+    },
+    {
+     "text": "A longer one keeps just its first few characters sitting right there, alongside a note of which buffer the rest lives in \u2014 enough to settle most comparisons without ever visiting that buffer.",
+     "start": 11.4,
+     "end": 23.348
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.2222222222222222,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Text brings its own version of the same tradeoff.",
+     "said": "tradeoff",
+     "heard": "trade off"
+    }
+   ]
+  },
+  "08": {
+   "hash": "164ab831db60fb57",
+   "takes": [
+    "39a32ac69d045294cd04",
+    "4c3a151d8a27146fc664"
+   ],
+   "duration": 25.135,
+   "lines": [
+    {
+     "text": "A reasonable worry at this point: does nesting one value inside another need some entirely new kind of memory layout?",
+     "start": 0.15,
+     "end": 8.376
+    },
+    {
+     "text": "It doesn't. A list of values turns out to need nothing more than the same missing-value marker from the very first reveal, a buffer of where each list starts and ends, and a plain array underneath holding whatever the list actually contains.",
+     "start": 8.926,
+     "end": 24.785
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "ec80b30f8b4e6020",
+   "takes": [
+    "edc7abbe4ee21644484b",
+    "80cdafa90784e95a2b13",
+    "c1ec3ec0b9f75ef4f821"
+   ],
+   "duration": 26.536,
+   "lines": [
+    {
+     "text": "Here's where all of this buffer talk cashes out in actual speed.",
+     "start": 0.15,
+     "end": 4.717
+    },
+    {
+     "text": "The same sum, computed one way as a single vectorized pass over these exact buffers, and another way as a loop that has to build a full Python object for every single value along the way.",
+     "start": 5.137,
+     "end": 20.728
+    },
+    {
+     "text": "The gap between those two times is the direct, measured cost of that extra step.",
+     "start": 21.148,
+     "end": 26.186
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "18fb7bfcf99ba2ca",
+   "takes": [
+    "381e220bedf5c631327b",
+    "46ce1f4b9cc418469600"
+   ],
+   "duration": 22.641,
+   "lines": [
+    {
+     "text": "And here's the demonstration this whole topic has been building toward.",
+     "start": 0.15,
+     "end": 4.243
+    },
+    {
+     "text": "Take one table sitting in memory and hand it, completely unchanged, to two genuinely different pieces of software. Neither one converts it, rewrites it, or reads it from disk again \u2014 they just read the same bytes directly, and both come back with the identical answer.",
+     "start": 4.663,
+     "end": 22.291
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.3,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "a4233164d299a2e9",
+   "takes": [
+    "9af74d45f12b26b269c2",
+    "ff770cc891f5eb47f2a9",
+    "712ddf6d906479f3ee0c"
+   ],
+   "duration": 27.365,
+   "lines": [
+    {
+     "text": "Pulling the whole picture together now.",
+     "start": 0.15,
+     "end": 2.294
+    },
+    {
+     "text": "An array is buffers, never a blob. Batches chunk together instead of being copied. Two specialists trade places depending on whether values repeat or actually run.",
+     "start": 2.714,
+     "end": 14.53
+    },
+    {
+     "text": "A string either fits inline or keeps a prefix. And underneath all of it, the exact same bytes can satisfy a fast kernel and two unrelated engines at once.",
+     "start": 14.95,
+     "end": 27.015
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 134,
+   "wer": 0.06896551724137931,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A string either fits inline or keeps a prefix. And underneath all of it, the exact same bytes can satisfy a fast kernel and two unrelated engines at once.",
+     "said": "inline",
+     "heard": "in line"
+    }
+   ]
+  },
+  "12": {
+   "hash": "f14752d932edad07",
+   "takes": [
+    "0a365692923adb3dcbb7",
+    "fe2fd87383af0d03c144"
+   ],
+   "duration": 25.98,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.929
+    },
+    {
+     "text": "Three columns: country codes that repeat constantly, timestamps sorted into long stretches of the same value, and free-text comments that barely repeat at all. Which layout from this topic actually earns its place on each one \u2014 and what does picking the wrong one cost?",
+     "start": 5.349,
+     "end": 25.63
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "08e1449ffa2ae88c",
+   "takes": [
+    "c0ff9f09414e43aad63d",
+    "0e7fb472b583d575e2b6"
+   ],
+   "duration": 21.546,
+   "lines": [
+    {
+     "text": "The repeating codes want the dictionary trick, the sorted stretches want the run-based one, and the free text wants the inline-prefix layout.",
+     "start": 0.15,
+     "end": 9.403
+    },
+    {
+     "text": "Pointing the run-based scheme at codes that repeat but don't actually run together can cost more than doing nothing at all \u2014 exactly the blind spot this topic measured directly.",
+     "start": 9.823,
+     "end": 21.196
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
