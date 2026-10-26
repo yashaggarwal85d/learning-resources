@@ -1,0 +1,389 @@
+{
+ "topic": "rust.runtime-observability-operating-rules",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "481f208e083e338d",
+   "takes": [
+    "2b6080916a1e09548a43",
+    "b4a5456e47708a5fa402"
+   ],
+   "duration": 18.541,
+   "lines": [
+    {
+     "text": "Twenty separate tasks, all trying to get at the same resource, guarded by a single counting permit-holder allowing only four permits at once.",
+     "start": 0.15,
+     "end": 11.045
+    },
+    {
+     "text": "Does the runtime actually stop at four running at the same time, or do more slip through anyway?",
+     "start": 11.765,
+     "end": 18.191
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 136,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does the runtime actually stop at four running at the same time, or do more slip through anyway?",
+     "said": "runtime",
+     "heard": "run time"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "87128bb350e1a52a",
+   "takes": [
+    "e49e549f4feccbf878f6",
+    "f98de7b12ae070ed608b"
+   ],
+   "duration": 13.356,
+   "lines": [
+    {
+     "text": "It actually stops at four. The permits genuinely run out, and it reports that directly.",
+     "start": 0.15,
+     "end": 6.765
+    },
+    {
+     "text": "This isn't a soft guideline the scheduler happens to follow. It's a hard count, enforced.",
+     "start": 7.185,
+     "end": 13.006
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "fc5eaf625dc98097",
+   "takes": [
+    "425fdf2a1e19c3113583",
+    "a56adcd4837c0e2031a4"
+   ],
+   "duration": 20.891,
+   "lines": [
+    {
+     "text": "Count it directly, while all twenty tasks are contending: exactly four are running, zero permits remain available, and the other sixteen are genuinely still waiting their turn.",
+     "start": 0.15,
+     "end": 12.459
+    },
+    {
+     "text": "That's not an assumption about how concurrency limits are supposed to behave. It's a number, read straight off the running program.",
+     "start": 12.879,
+     "end": 20.541
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "0d38c124890916eb",
+   "takes": [
+    "3c86d5e06476018119cf",
+    "6a9cd9ae379f4f6b1078"
+   ],
+   "duration": 20.629,
+   "lines": [
+    {
+     "text": "Now spawn five hundred separate tasks onto a runtime with only one real worker thread, and immediately ask the runtime's own built-in counters what's still waiting to run.",
+     "start": 0.15,
+     "end": 12.683
+    },
+    {
+     "text": "Will that counter say zero, since spawning happens instantly, or will it say something much larger?",
+     "start": 13.403,
+     "end": 20.279
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "654a6b3a4adc2090",
+   "takes": [
+    "70634edab284582d4b17",
+    "60703a9e750d1b49c34c"
+   ],
+   "duration": 12.788,
+   "lines": [
+    {
+     "text": "It says something much larger \u2014 a real backlog, not zero.",
+     "start": 0.15,
+     "end": 4.668
+    },
+    {
+     "text": "One worker thread simply cannot get through five hundred tasks between one line of code and the very next one.",
+     "start": 5.088,
+     "end": 12.438
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.0,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "34fb306b4ee3367c",
+   "takes": [
+    "1f7d97ea7b0c6a14c654",
+    "a323012cf70a44f35e33"
+   ],
+   "duration": 19.613,
+   "lines": [
+    {
+     "text": "Sample it right after the spawn loop finishes, and the runtime's own metrics report hundreds of tasks still sitting in the queue, untouched.",
+     "start": 0.15,
+     "end": 10.327
+    },
+    {
+     "text": "This number isn't estimated or averaged over time. It's the runtime's own live count of work it hasn't gotten to yet.",
+     "start": 10.747,
+     "end": 19.263
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c94c11b451b57d0c",
+   "takes": [
+    "ba3b87ee5e2ef56cb219",
+    "f3037e950b106e35680e"
+   ],
+   "duration": 16.778,
+   "lines": [
+    {
+     "text": "A message channel with room for exactly one pending message, and nothing on the other end reading it yet.",
+     "start": 0.15,
+     "end": 7.686
+    },
+    {
+     "text": "Does a second attempt to send into it wait politely for room, or does it get refused outright, right away?",
+     "start": 8.406,
+     "end": 16.428
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "baed004de5e59358",
+   "takes": [
+    "4b170db56d548bf5355d",
+    "0f3f9717dcfaf9980625"
+   ],
+   "duration": 13.374,
+   "lines": [
+    {
+     "text": "It gets refused outright, immediately \u2014 no waiting, no silent queueing.",
+     "start": 0.15,
+     "end": 6.127
+    },
+    {
+     "text": "The capacity limit is a real wall, not a polite suggestion the sender can talk its way past.",
+     "start": 6.547,
+     "end": 13.024
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 126,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It gets refused outright, immediately \u2014 no waiting, no silent queueing.",
+     "said": "queueing",
+     "heard": "queuing"
+    }
+   ]
+  },
+  "06": {
+   "hash": "2ac1ae1487823893",
+   "takes": [
+    "5c2fadb678d1d0e48b74",
+    "83293213c61a080fa5ee"
+   ],
+   "duration": 18.475,
+   "lines": [
+    {
+     "text": "Run it for real: the second send is refused the instant the channel is full, and once the one pending message is finally read out, a third send goes straight through.",
+     "start": 0.15,
+     "end": 11.089
+    },
+    {
+     "text": "Refused when full, accepted the moment it isn't \u2014 both measured directly, not assumed.",
+     "start": 11.509,
+     "end": 18.125
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "8c917bd0f74ca3ae",
+   "takes": [
+    "1e7f3863b477be2c6198",
+    "673ef550b4f0633aba26"
+   ],
+   "duration": 21.219,
+   "lines": [
+    {
+     "text": "There's a well-known diagnostic tool built specifically for watching a running asynchronous program from the outside, while it's still live.",
+     "start": 0.15,
+     "end": 8.609
+    },
+    {
+     "text": "Is that tool just a fancy log viewer, or does it actually see every kind of thing this topic just measured \u2014 tasks, resources, operations, all of it?",
+     "start": 9.329,
+     "end": 20.869
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "f6127b44abd93768",
+   "takes": [
+    "8595b5a24a06b15fd6e5",
+    "be3ffaa1790f1cac7ac0"
+   ],
+   "duration": 17.604,
+   "lines": [
+    {
+     "text": "It sees all of it \u2014 tasks, resources, and operations, live, across the whole running program.",
+     "start": 0.15,
+     "end": 7.975
+    },
+    {
+     "text": "It isn't a separate feature bolted on afterward. It's a window directly onto the same mechanisms already built here.",
+     "start": 8.395,
+     "end": 17.254
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "7a1b9103e800f6e0",
+   "takes": [
+    "89b0d158686e457ff44d",
+    "72e61265baf159202346"
+   ],
+   "duration": 20.811,
+   "lines": [
+    {
+     "text": "In the tool's own words: it collects diagnostic data on exactly the asynchronous tasks, resources, and operations inside a running application.",
+     "start": 0.15,
+     "end": 10.444
+    },
+    {
+     "text": "That's not marketing language. It's a precise description of what it actually watches, matching this topic's own three measurements.",
+     "start": 10.864,
+     "end": 20.46
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "175f15cdb222f96b",
+   "takes": [
+    "3195dbea7d1896d82d99",
+    "5f170699142ae8b7dd6f"
+   ],
+   "duration": 26.164,
+   "lines": [
+    {
+     "text": "So here's this entire chapter's short list of operating rules, one more time, each pointed back at the exact mechanism that earned it.",
+     "start": 0.15,
+     "end": 10.553
+    },
+    {
+     "text": "Keep a task small enough to yield. Bound concurrency with a counting permit-holder. Bound every channel. Define what happens on cancellation, explicitly, rather than leaving it to chance.",
+     "start": 10.973,
+     "end": 25.814
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e32d4b3aa18f9db3",
+   "takes": [
+    "de3272f3baef5da8e396",
+    "d932321d2ef04eff6c8e",
+    "4f25438149e2b2e12dc8"
+   ],
+   "duration": 33.507,
+   "lines": [
+    {
+     "text": "So, pulling this whole chapter together: a counting permit-holder's limit genuinely runs out and genuinely stops concurrency there.",
+     "start": 0.15,
+     "end": 11.737
+    },
+    {
+     "text": "A runtime's own metrics report a real backlog, not a guess. A bounded channel genuinely refuses a send once it's full.",
+     "start": 12.157,
+     "end": 21.436
+    },
+    {
+     "text": "And a dedicated diagnostic tool turns every one of those same signals into a live view, in a program that's actually running in production.",
+     "start": 21.856,
+     "end": 33.157
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
