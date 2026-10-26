@@ -1,0 +1,407 @@
+{
+ "topic": "de.resilient-clients-timeouts-retries",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "3460cfbf35c90740",
+   "takes": [
+    "d64b902725e09c54e79c",
+    "fbcb7bae531aa57d8ded"
+   ],
+   "duration": 15.974,
+   "lines": [
+    {
+     "text": "The last topic decided how many database connections a service is allowed to hold open at once.",
+     "start": 0.15,
+     "end": 6.377
+    },
+    {
+     "text": "It never said what happens the moment one of those connections' own calls actually fails. That's exactly where this one picks up.",
+     "start": 6.797,
+     "end": 15.624
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.4,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "dc1925da32eede65",
+   "takes": [
+    "b3821a37d385ab7056ba",
+    "a1457f3549926d617572",
+    "193854413b995558be0f"
+   ],
+   "duration": 24.15,
+   "lines": [
+    {
+     "text": "Here's the simplest possible failure, measured rather than assumed.",
+     "start": 0.15,
+     "end": 5.023
+    },
+    {
+     "text": "The identical client, calling two different endpoints under the same time limit: one deliberately slow, one quick to answer.",
+     "start": 5.443,
+     "end": 14.494
+    },
+    {
+     "text": "Measured directly, the slow call gives up right around that configured limit, and the quick call returns well before it.",
+     "start": 14.914,
+     "end": 23.8
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "276c5434bb736541",
+   "takes": [
+    "fc7a21cc934790fa12f3",
+    "6ed888db2bb8a80f7ece",
+    "0cbd42fb8d5548d0ea1f"
+   ],
+   "duration": 26.807,
+   "lines": [
+    {
+     "text": "A single time limit only protects one call. Here's what protects a whole chain of them.",
+     "start": 0.15,
+     "end": 6.304
+    },
+    {
+     "text": "One shared limit, handed down through three separate steps in a row. The first two steps run and spend most of that shared time.",
+     "start": 6.724,
+     "end": 15.504
+    },
+    {
+     "text": "The third step checks how much time is genuinely left before it even starts, finds none remaining, and skips its own work entirely rather than doing it for nothing.",
+     "start": 15.924,
+     "end": 26.457
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "9aa580daba65ca4b",
+   "takes": [
+    "6883ecddc67d2885afdd",
+    "79be08fb9deb06e0085e"
+   ],
+   "duration": 19.948,
+   "lines": [
+    {
+     "text": "Worth guessing at before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.83
+    },
+    {
+     "text": "A growing wait after each failed attempt already spreads retries out somewhat. Does adding genuine randomness on top of that growing wait actually help any further, or is it just noise on a problem already solved?",
+     "start": 4.25,
+     "end": 19.598
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A growing wait after each failed attempt already spreads retries out somewhat. Does adding genuine randomness on top of that growing wait actually help any further, or is it just noise on a problem already solved?",
+     "said": "wait",
+     "heard": "weight"
+    },
+    {
+     "line": "A growing wait after each failed attempt already spreads retries out somewhat. Does adding genuine randomness on top of that growing wait actually help any further, or is it just noise on a problem already solved?",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "04a": {
+   "hash": "e339cc76f763c78a",
+   "takes": [
+    "09a444ddcc421d215ab6",
+    "e7642db7e286536455a2"
+   ],
+   "duration": 18.805,
+   "lines": [
+    {
+     "text": "It genuinely does help, and here's precisely why.",
+     "start": 0.15,
+     "end": 3.747
+    },
+    {
+     "text": "A growing wait alone still slows every client down by the exact same fixed schedule, so they keep landing on the same moments as each other. Measured directly, adding real randomness is what actually breaks that pattern apart.",
+     "start": 4.167,
+     "end": 18.455
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.6,
+   "wpm": 147,
+   "wer": 0.02631578947368421,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A growing wait alone still slows every client down by the exact same fixed schedule, so they keep landing on the same moments as each other. Measured directly, adding real randomness is what actually breaks that pattern apart.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "05": {
+   "hash": "9a5222829da8458a",
+   "takes": [
+    "8a54ff97121cc81e6f22",
+    "c17dfd1948e1501b3c73",
+    "b46db96dc1acca522d17"
+   ],
+   "duration": 30.552,
+   "lines": [
+    {
+     "text": "Worth seeing both sides of that claim directly.",
+     "start": 0.15,
+     "end": 3.05
+    },
+    {
+     "text": "One real client, retrying against a server that fails a fixed number of times, waiting a randomized amount bounded by a cap. Separately, picture a hundred clients that all fail at the exact same moment.",
+     "start": 3.47,
+     "end": 18.651
+    },
+    {
+     "text": "Without randomness, every one of them retries at that same later moment too. With it, that same hundred retries spreads out measurably instead.",
+     "start": 19.071,
+     "end": 30.202
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "f93ff89c11ea2980",
+   "takes": [
+    "b77f41426339fc57f397",
+    "98fdc77836bc22058f8d",
+    "a53a56633f182db16129"
+   ],
+   "duration": 28.322,
+   "lines": [
+    {
+     "text": "Here's a second, entirely different kind of limit, aimed at the client's own behavior rather than any one call's timing.",
+     "start": 0.15,
+     "end": 8.772
+    },
+    {
+     "text": "A fixed number of retry attempts allowed in total, spent one at a time against a server that never actually recovers.",
+     "start": 9.192,
+     "end": 16.687
+    },
+    {
+     "text": "Once that allowance runs out, the client stops calling altogether and fails immediately instead, and the server's own real call count matches that allowance exactly.",
+     "start": 17.107,
+     "end": 27.972
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "b49cf931a5631df4",
+   "takes": [
+    "62e9b110c0eb5d175774",
+    "16ab35e8f6bae7bcdbde",
+    "62fc78daaea0cc2a4ffa"
+   ],
+   "duration": 30.519,
+   "lines": [
+    {
+     "text": "One more way to stop calling a struggling dependency, and it works completely differently.",
+     "start": 0.15,
+     "end": 5.708
+    },
+    {
+     "text": "The identical failing call, wrapped by the identical piece of logic, measured both before and after that logic trips.",
+     "start": 6.128,
+     "end": 14.604
+    },
+    {
+     "text": "Before tripping, every failing call still pays its full waiting period. The moment after it trips, the very next call fails in a tiny fraction of that time, because nothing was actually sent over the network at all.",
+     "start": 15.024,
+     "end": 30.169
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8ec6b9309a30aca0",
+   "takes": [
+    "ac91e44c3767f5171924",
+    "c910153354a4906a6cf6",
+    "eece12c99c49753933d6"
+   ],
+   "duration": 35.521,
+   "lines": [
+    {
+     "text": "One last mechanism, aimed at a write rather than a read.",
+     "start": 0.15,
+     "end": 3.815
+    },
+    {
+     "text": "The identical write request, sent three separate times carrying one shared, repeated key, as though a client retried after never actually seeing the first reply.",
+     "start": 4.235,
+     "end": 16.546
+    },
+    {
+     "text": "The server's own internal count of real effects, not merely the replies it sent back, shows exactly one genuine effect. A different repeated key, or no repeated key at all, produces a brand new effect every single time instead.",
+     "start": 16.966,
+     "end": 35.171
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "ed1c45d8aab623a2",
+   "takes": [
+    "cdd15270637c98775519",
+    "06815e49799927261b2f",
+    "ca507f51c4c6117e7299",
+    "676f2c0f0ffbd4d40cf1"
+   ],
+   "duration": 42.153,
+   "lines": [
+    {
+     "text": "Pulling it all back together now.",
+     "start": 0.15,
+     "end": 2.71
+    },
+    {
+     "text": "A time limit bounds how long one call can hold onto a client's resources. A shared limit lets a later step in a chain skip work nobody is still waiting on.",
+     "start": 3.13,
+     "end": 13.92
+    },
+    {
+     "text": "A growing wait alone still clusters; genuine randomness is what measurably spreads it apart. A fixed retry allowance caps one client's own total behavior, while tripped logic stops calling a struggling dependency altogether \u2014 two different fixes for two different problems.",
+     "start": 14.34,
+     "end": 33.526
+    },
+    {
+     "text": "And a repeated key turns a retried write into exactly one genuine effect, confirmed against the server's own real count.",
+     "start": 33.946,
+     "end": 41.803
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.06451612903225806,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A time limit bounds how long one call can hold onto a client's resources. A shared limit lets a later step in a chain skip work nobody is still waiting on.",
+     "said": "onto",
+     "heard": "on to"
+    },
+    {
+     "line": "A growing wait alone still clusters; genuine randomness is what measurably spreads it apart. A fixed retry allowance caps one client's own total behavior, while tripped logic stops calling a struggling dependency altogether \u2014 two different fixes for two different problems.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "10": {
+   "hash": "739c7adb677b1200",
+   "takes": [
+    "0a365692923adb3dcbb7",
+    "dd8f93aff94d20835a5f",
+    "41c845954b65304a5f5f"
+   ],
+   "duration": 37.707,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.929
+    },
+    {
+     "text": "A client retries a payment call after it never saw the first reply. It sends no repeated key on that retry, and every step along its own call chain invents its own fresh time limit instead of sharing one single limit.",
+     "start": 5.349,
+     "end": 23.017
+    },
+    {
+     "text": "The payment gets charged twice, and a slow dependency keeps consuming resources long after the original caller already gave up. What's actually wrong here, and what fixes it?",
+     "start": 23.437,
+     "end": 37.357
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "475a711c650750bc",
+   "takes": [
+    "7d6bae6fdcbdada1bae9",
+    "b726967e712f741efdcb"
+   ],
+   "duration": 26.204,
+   "lines": [
+    {
+     "text": "Two separate failures, not one, and both were measured directly earlier in this very topic.",
+     "start": 0.15,
+     "end": 7.139
+    },
+    {
+     "text": "Without a repeated key, that retried write is never recognized as a repeat, so it charges twice over. Without one shared, passed-down time limit, each step keeps working long after the original caller has already given up on the whole thing.",
+     "start": 7.559,
+     "end": 25.854
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.023809523809523808,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Without a repeated key, that retried write is never recognized as a repeat, so it charges twice over. Without one shared, passed-down time limit, each step keeps working long after the original caller has already given up on the whole thing.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  }
+ }
+}
