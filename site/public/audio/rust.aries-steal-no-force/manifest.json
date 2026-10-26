@@ -1,0 +1,394 @@
+{
+ "topic": "rust.aries-steal-no-force",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "31bee1808549be85",
+   "takes": [
+    "7d45c0f3f3a06b949302",
+    "e7d607278815f19f9286",
+    "5a33809ef313c51083b0"
+   ],
+   "duration": 17.937,
+   "lines": [
+    {
+     "text": "Build a real log with two transactions: one commits, one never does.",
+     "start": 0.15,
+     "end": 4.868
+    },
+    {
+     "text": "Run only the redo pass over it, before any undo at all.",
+     "start": 5.288,
+     "end": 10.348
+    },
+    {
+     "text": "Does redo apply the committed transaction's own updates, the uncommitted one's, or both?",
+     "start": 11.068,
+     "end": 17.587
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "fbc8e50cbd897434",
+   "takes": [
+    "21a65eaa09f562f0c3b8",
+    "ad3dded3391eec65082c"
+   ],
+   "duration": 6.448,
+   "lines": [
+    {
+     "text": "Both, genuinely.",
+     "start": 0.15,
+     "end": 1.75
+    },
+    {
+     "text": "Redo doesn't know or care about commit status at all.",
+     "start": 2.17,
+     "end": 6.098
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "6495fe877802119b",
+   "takes": [
+    "7efa3d7c0bfca5120b29",
+    "3ff02c4e601ebbef4899"
+   ],
+   "duration": 13.811,
+   "lines": [
+    {
+     "text": "Run it for real: redo genuinely reapplied the uncommitted transaction's own updates too, exactly like the committed one's.",
+     "start": 0.15,
+     "end": 10.452
+    },
+    {
+     "text": "Nothing about redo itself tells them apart.",
+     "start": 10.872,
+     "end": 13.461
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 109,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "f7544c3e93613842",
+   "takes": [
+    "1079c5cee3bd60c7dff3",
+    "da398511d0efee081071"
+   ],
+   "duration": 16.309,
+   "lines": [
+    {
+     "text": "A checkpoint recorded that one page was already safely on disk, with nothing else dirty at that moment.",
+     "start": 0.15,
+     "end": 6.492
+    },
+    {
+     "text": "Does redo, starting from that checkpoint's own bound instead of the very start of the log, still reach the correct final state?",
+     "start": 7.212,
+     "end": 15.959
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.7,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "147ecad70bc6bd3b",
+   "takes": [
+    "9995c204b819e717847b",
+    "cb6921217a62d0e0385c"
+   ],
+   "duration": 6.13,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "That bound is exactly how far back redo actually needs to look.",
+     "start": 1.84,
+     "end": 5.78
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.5,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "ad1201ebf9e9cb1c",
+   "takes": [
+    "1d0abead75afcc4bb79f"
+   ],
+   "duration": 12.688,
+   "lines": [
+    {
+     "text": "Run it for real: redo starting from the checkpoint's own bound visited genuinely fewer log records, and reached the exact same final state as a full scan from the start.",
+     "start": 0.15,
+     "end": 12.338
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "926fbf78297a5793",
+   "takes": [
+    "bef804b667bb557a28ab",
+    "9dd390e5efccfd352583",
+    "3aa7f9768ba05f002d6e"
+   ],
+   "duration": 18.394,
+   "lines": [
+    {
+     "text": "Undo the uncommitted transaction's own last update, writing a compensation log record for it.",
+     "start": 0.15,
+     "end": 6.938
+    },
+    {
+     "text": "Now crash again, right there, in the middle of undoing.",
+     "start": 7.357,
+     "end": 10.793
+    },
+    {
+     "text": "On the next recovery, does undo repeat that same step, skip it, or resume exactly where it left off?",
+     "start": 11.513,
+     "end": 18.044
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "c5d7c51d204e63a8",
+   "takes": [
+    "f2c06285df1c580c3491",
+    "1628ee4ca1c2cb619bd4"
+   ],
+   "duration": 6.346,
+   "lines": [
+    {
+     "text": "It resumes exactly there.",
+     "start": 0.15,
+     "end": 2.035
+    },
+    {
+     "text": "The compensation log record already in the log says where.",
+     "start": 2.455,
+     "end": 5.996
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a2bc3bad2d187084",
+   "takes": [
+    "d8602960c758571e902c",
+    "ee4c5b145bd9c6706548"
+   ],
+   "duration": 14.829,
+   "lines": [
+    {
+     "text": "Run it for real: the second recovery resumed undo exactly where the first one left off.",
+     "start": 0.15,
+     "end": 6.252
+    },
+    {
+     "text": "The already-undone update got exactly one compensation log record, total, across both attempts.",
+     "start": 6.672,
+     "end": 14.479
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a5c4de9d3d6f1559",
+   "takes": [
+    "3ac68328e8808c01b2fa",
+    "bc7779c5d3d76a9b3a33"
+   ],
+   "duration": 15.388,
+   "lines": [
+    {
+     "text": "The original paper behind this whole method names this kind of log record directly: a compensation log record.",
+     "start": 0.15,
+     "end": 7.881
+    },
+    {
+     "text": "Once that record undoes some earlier update, is its own effect ever itself undone later?",
+     "start": 8.601,
+     "end": 15.038
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "ce6042a4936cb282",
+   "takes": [
+    "d723ca1ed3169053c47e",
+    "1fb421698f99ceb3c337"
+   ],
+   "duration": 5.43,
+   "lines": [
+    {
+     "text": "Never.",
+     "start": 0.15,
+     "end": 0.675
+    },
+    {
+     "text": "A compensation log record is a redo-only log record.",
+     "start": 1.095,
+     "end": 5.08
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "ca6dd2da05beda39",
+   "takes": [
+    "d328105ef55894a6369d"
+   ],
+   "duration": 10.734,
+   "lines": [
+    {
+     "text": "In that paper's own words: a compensation log record's own update is never undone, and such records are viewed as redo-only log records.",
+     "start": 0.15,
+     "end": 10.384
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "66ac5f068015459d",
+   "takes": [
+    "5a16eefa39fdf82945c8",
+    "c572802c619fdca5d364"
+   ],
+   "duration": 25.402,
+   "lines": [
+    {
+     "text": "That same paper names the buffer policy this topic's own recovery assumes: letting an uncommitted page be written back early, and letting a committed one stay unwritten for a while.",
+     "start": 0.15,
+     "end": 14.164
+    },
+    {
+     "text": "Redo and undo together are exactly why that combination is safe: whatever was written back, and whenever, both passes can fix it up.",
+     "start": 14.584,
+     "end": 25.052
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "2d7ebfc8d685c8fb",
+   "takes": [
+    "12b639f305025972b66e",
+    "ff2760a50cdeadfb64a9",
+    "3b6b650185caaade2844",
+    "af2602a8eb4b99131b86"
+   ],
+   "duration": 52.741,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: one pass reconstructs the database's own state as of the crash, without asking yet who gets to keep their changes.",
+     "start": 0.15,
+     "end": 12.55
+    },
+    {
+     "text": "A separate bookkeeping record lets that pass start its work partway through the log instead of at the very beginning, with nothing lost by doing so.",
+     "start": 12.97,
+     "end": 22.232
+    },
+    {
+     "text": "Rolling back whoever didn't finish uses its own kind of record precisely so that trying again, after yet another failure, picks up exactly where it stopped rather than starting over.",
+     "start": 22.652,
+     "end": 37.258
+    },
+    {
+     "text": "And because both directions can always correct a page no matter when it reached disk, a system is free to write one back early or hold another back late, whichever happens to be faster.",
+     "start": 37.678,
+     "end": 52.391
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So, pulling this topic together: one pass reconstructs the database's own state as of the crash, without asking yet who gets to keep their changes.",
+     "said": "one pass",
+     "heard": "onepass"
+    },
+    {
+     "line": "A separate bookkeeping record lets that pass start its work partway through the log instead of at the very beginning, with nothing lost by doing so.",
+     "said": "pass",
+     "heard": "past"
+    }
+   ]
+  }
+ }
+}
