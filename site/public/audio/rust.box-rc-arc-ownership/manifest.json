@@ -1,0 +1,277 @@
+{
+ "topic": "rust.box-rc-arc-ownership",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "660c8cfb97c124e1",
+   "takes": [
+    "c7da5c1f5e3058e34fc7",
+    "c833ac2570667fa92f4f"
+   ],
+   "duration": 21.294,
+   "lines": [
+    {
+     "text": "Move a value onto the heap through a box, and exactly one place in the program owns it, the entire time, no matter how it travels.",
+     "start": 0.15,
+     "end": 9.586
+    },
+    {
+     "text": "Let more than one place share that same owner instead, and the shape of the problem changes completely, whether that sharing stays on one thread or has to cross between several.",
+     "start": 10.306,
+     "end": 20.944
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "f687b32368501d6c",
+   "takes": [
+    "cd1a3a7f0df65d4e4b8e",
+    "6b473572d233da9ec88a"
+   ],
+   "duration": 8.5,
+   "lines": [
+    {
+     "text": "Take a shared owner built for a single thread, and move it straight into a brand new thread anyway.",
+     "start": 0.15,
+     "end": 6.266
+    },
+    {
+     "text": "Does that compile?",
+     "start": 6.986,
+     "end": 8.15
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "804c97b7d640b1fb",
+   "takes": [
+    "98942e35b29f1e9cf39e",
+    "b5f0329fa1500a23c8d2"
+   ],
+   "duration": 22.448,
+   "lines": [
+    {
+     "text": "No, and it's rejected the moment it's attempted, naming the exact reason: that shared count simply is not safe to touch from more than one thread at once.",
+     "start": 0.15,
+     "end": 11.323
+    },
+    {
+     "text": "This is caught before the program ever runs at all. The compiler refuses it outright, rather than leaving it to a crash much later, on some unlucky run.",
+     "start": 11.743,
+     "end": 22.098
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.03571428571428571,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "No, and it's rejected the moment it's attempted, naming the exact reason: that shared count simply is not safe to touch from more than one thread at once.",
+     "said": "no",
+     "heard": "know"
+    }
+   ]
+  },
+  "03": {
+   "hash": "3fffcbbb7131a131",
+   "takes": [
+    "f87c45e57deb4729b03f",
+    "80dabf208f2025bfb7ce"
+   ],
+   "duration": 23.868,
+   "lines": [
+    {
+     "text": "Sharing that owner on a single thread costs almost nothing: cloning it never copies the underlying value at all, it only bumps a plain running count, and dropping a clone brings that same count back down.",
+     "start": 0.15,
+     "end": 15.432
+    },
+    {
+     "text": "Because that count only ever gets touched by one thread at a time, it doesn't need any special protection to stay correct.",
+     "start": 15.852,
+     "end": 23.518
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.0,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "2528585586dbf89a",
+   "takes": [
+    "46b190037486f4e74e0d",
+    "d17044d4df1a1a627c9e"
+   ],
+   "duration": 21.899,
+   "lines": [
+    {
+     "text": "Build the identical shared owner again, but this time make its running count safe to touch from several threads at once, and hand a clone of it to each of several real threads.",
+     "start": 0.15,
+     "end": 11.693
+    },
+    {
+     "text": "Every one of those threads can clone it, read through it, and let its own clone go, all at the same time, without ever corrupting that shared count.",
+     "start": 12.113,
+     "end": 21.549
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 167,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "4a9cda1d2fedc1b6",
+   "takes": [
+    "e9ef4d5c94cbd6d2e661",
+    "8858fb94a2c88d01a528",
+    "56ba7aeb5055c8aa150b"
+   ],
+   "duration": 27.703,
+   "lines": [
+    {
+     "text": "Take the exact same total amount of cloning and dropping work on that one shared, thread-safe owner, and run it two different ways.",
+     "start": 0.15,
+     "end": 9.302
+    },
+    {
+     "text": "Once, start to finish, by a single thread working completely alone, and once split evenly across several threads, all released to start at precisely the same moment.",
+     "start": 9.722,
+     "end": 22.526
+    },
+    {
+     "text": "Does splitting that identical work across several threads finish it any sooner?",
+     "start": 23.246,
+     "end": 27.353
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "a42f7633afc00e36",
+   "takes": [
+    "f2b58eeda2da729fe5ed",
+    "142ac4617eb3333f9ccf"
+   ],
+   "duration": 31.422,
+   "lines": [
+    {
+     "text": "No. Measured for real, the several threads together took noticeably longer to finish than the one thread working completely alone did.",
+     "start": 0.15,
+     "end": 9.223
+    },
+    {
+     "text": "Every single clone and every single drop on that shared count is a real read, modify, and write back, on the exact same shared location in memory, and several threads racing to do that at once cost far more than splitting the work ever gave back.",
+     "start": 9.643,
+     "end": 31.072
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 128,
+   "wer": 0.021739130434782608,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Every single clone and every single drop on that shared count is a real read, modify, and write back, on the exact same shared location in memory, and several threads racing to do that at once cost far more than splitting the work ever gave back.",
+     "said": "racing",
+     "heard": "raising"
+    }
+   ]
+  },
+  "06": {
+   "hash": "778ff29ca05cc74f",
+   "takes": [
+    "16a569957badd2a28021",
+    "71279fc254d8cbe3291c"
+   ],
+   "duration": 17.516,
+   "lines": [
+    {
+     "text": "Look at what that same run actually measured, not what a naive guess would have predicted.",
+     "start": 0.15,
+     "end": 5.747
+    },
+    {
+     "text": "The several threads working together took meaningfully longer than even the single thread working entirely alone did, let alone finishing in some neat fraction of that time.",
+     "start": 6.167,
+     "end": 17.166
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.5,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "1f32416a1da671ac",
+   "takes": [
+    "adfd27585c797d30afe4",
+    "9d5d0091bdde0398294b",
+    "073614642eba11a0d38f",
+    "58a97730a85a68c4ba9c",
+    "78069a1328fd88bd19a0"
+   ],
+   "duration": 55.914,
+   "lines": [
+    {
+     "text": "So: moving a value onto the heap through a box still leaves exactly one owner, only its storage changes.",
+     "start": 0.15,
+     "end": 8.346
+    },
+    {
+     "text": "Sharing that owner on a single thread costs almost nothing, because its running count only ever needs to be touched by one thread at a time.",
+     "start": 8.766,
+     "end": 18.58
+    },
+    {
+     "text": "Sharing it safely across several threads instead needs that count to be protected, and protecting it costs something real, every single time it's touched.",
+     "start": 19.0,
+     "end": 30.494
+    },
+    {
+     "text": "And once several threads genuinely race to touch that same protected count at once, the cost of that protection stops being something you can safely ignore; it has to be measured, not assumed.",
+     "start": 30.914,
+     "end": 44.689
+    },
+    {
+     "text": "Next time: none of these shared owners let a program actually change the value sitting behind them, on their own. What would it even take to make that legal?",
+     "start": 45.409,
+     "end": 55.564
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
