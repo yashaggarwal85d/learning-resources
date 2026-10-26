@@ -1,0 +1,395 @@
+{
+ "topic": "rust.structured-shutdown-tokens-trackers",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "c54891bed391d5c7",
+   "takes": [
+    "990da13993e2c8070986",
+    "1a50e6115abc6b9c6a67"
+   ],
+   "duration": 9.918,
+   "lines": [
+    {
+     "text": "A worker pool signals shutdown with a token, and then one more job gets submitted, right after that signal.",
+     "start": 0.15,
+     "end": 6.935
+    },
+    {
+     "text": "Does that job still get accepted?",
+     "start": 7.655,
+     "end": 9.568
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.15789473684210525,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A worker pool signals shutdown with a token, and then one more job gets submitted, right after that signal.",
+     "said": "signals shutdown",
+     "heard": "signal shut down"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "d86767bfc2a67134",
+   "takes": [
+    "83c354dfb10aac32df9d",
+    "7c2735109b3a65fa525f"
+   ],
+   "duration": 11.19,
+   "lines": [
+    {
+     "text": "No \u2014 it's rejected outright, immediately.",
+     "start": 0.15,
+     "end": 4.228
+    },
+    {
+     "text": "A cancelled token isn't a note that gets read eventually. It's a hard stop, checked on the spot.",
+     "start": 4.648,
+     "end": 10.84
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "130069ef51bf527b",
+   "takes": [
+    "f3fe44a3d2d2f205dfdb",
+    "414c749ab02b8db06088"
+   ],
+   "duration": 19.383,
+   "lines": [
+    {
+     "text": "Run it for real: a handful of jobs land before the signal, and every single submission after it is rejected outright.",
+     "start": 0.15,
+     "end": 8.792
+    },
+    {
+     "text": "Nothing already accepted is touched. The line is drawn at the exact moment the token is cancelled, not before and not after.",
+     "start": 9.212,
+     "end": 19.033
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "233b5ae58a51dd22",
+   "takes": [
+    "6d32f6aa398188a4c4d8",
+    "b1a6a143cd631a5540f8"
+   ],
+   "duration": 13.874,
+   "lines": [
+    {
+     "text": "Now close a task tracker holding several jobs still in flight, and call wait on it right away.",
+     "start": 0.15,
+     "end": 6.536
+    },
+    {
+     "text": "Does that return as soon as the tracker is closed, or does it actually wait for the jobs themselves?",
+     "start": 7.256,
+     "end": 13.524
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "02d36cc40d299102",
+   "takes": [
+    "fd8bfcc17c8d1e7ba6b8",
+    "c7498de07bc5f342d749"
+   ],
+   "duration": 10.794,
+   "lines": [
+    {
+     "text": "It waits for every one of them.",
+     "start": 0.15,
+     "end": 2.703
+    },
+    {
+     "text": "Closing a tracker only stops new jobs from being added to it. It says nothing about the jobs already inside.",
+     "start": 3.123,
+     "end": 10.444
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "d616e190e1a46e97",
+   "takes": [
+    "ab455f812b9703953fba",
+    "813ee7136e03b49ed23c"
+   ],
+   "duration": 17.678,
+   "lines": [
+    {
+     "text": "Run it for real: wait doesn't return until every accepted job has genuinely finished running, measured directly from the close to the moment it comes back.",
+     "start": 0.15,
+     "end": 10.879
+    },
+    {
+     "text": "That's a real wait for real completion, not a signal that completion is merely expected.",
+     "start": 11.299,
+     "end": 17.328
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: wait doesn't return until every accepted job has genuinely finished running, measured directly from the close to the moment it comes back.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "05": {
+   "hash": "a1172c4ff303e5a7",
+   "takes": [
+    "94a519f9f9aadedaafad",
+    "472130d5db5a4ad69c80"
+   ],
+   "duration": 12.135,
+   "lines": [
+    {
+     "text": "Wrap that same wait in a real deadline, with one job deliberately running far longer than it.",
+     "start": 0.15,
+     "end": 6.11
+    },
+    {
+     "text": "Does the shutdown hang until that job finishes, or does it stop on time?",
+     "start": 6.83,
+     "end": 11.785
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Wrap that same wait in a real deadline, with one job deliberately running far longer than it.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "b8b17d412c73fdfa",
+   "takes": [
+    "65e75c89d5a168c44101",
+    "6d2c978917a3a580ad62"
+   ],
+   "duration": 8.9,
+   "lines": [
+    {
+     "text": "It stops on time.",
+     "start": 0.15,
+     "end": 1.311
+    },
+    {
+     "text": "A deadline that doesn't actually end the wait isn't a deadline at all \u2014 it's a suggestion.",
+     "start": 1.731,
+     "end": 8.55
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d82dde93c6e3bf29",
+   "takes": [
+    "13fa7e4ac8c822ceb19d",
+    "6ca9c536afedcd650553"
+   ],
+   "duration": 17.008,
+   "lines": [
+    {
+     "text": "Run it for real: the wait genuinely stops right at its stated deadline, while the straggler, still unfinished, is simply left behind.",
+     "start": 0.15,
+     "end": 10.638
+    },
+    {
+     "text": "Not waited for a moment longer, and not abandoned a moment early either.",
+     "start": 11.058,
+     "end": 16.658
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3e0a283906a7cf9a",
+   "takes": [
+    "4845aa2a02c702faf9b1",
+    "b3e99f0d980dbdd0a513"
+   ],
+   "duration": 13.441,
+   "lines": [
+    {
+     "text": "Step back and ask what real-world signal this entire sequence actually exists to answer, in time.",
+     "start": 0.15,
+     "end": 8.896
+    },
+    {
+     "text": "Is it an unhandled crash, or something more deliberate?",
+     "start": 9.616,
+     "end": 13.091
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "7bcefcc4bc6528f9",
+   "takes": [
+    "568ba4d1a476c5fe0c2d",
+    "5ccb96c6afe5c54ac162"
+   ],
+   "duration": 13.792,
+   "lines": [
+    {
+     "text": "A deliberate shutdown request, with a real, limited amount of time to respond.",
+     "start": 0.15,
+     "end": 5.195
+    },
+    {
+     "text": "That's exactly what a termination signal and a grace period are, on a real process, on a real clock.",
+     "start": 5.615,
+     "end": 13.442
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "219b38b14f35e202",
+   "takes": [
+    "980807092a46d60c288b",
+    "e62b8e6525827ac3581a"
+   ],
+   "duration": 19.25,
+   "lines": [
+    {
+     "text": "So here's the full sequence this chapter has now assembled: stop accepting, signal, drain or cancel, close, wait.",
+     "start": 0.15,
+     "end": 10.391
+    },
+    {
+     "text": "Five stages, each one already measured directly, now placed in the order a real shutdown actually runs them.",
+     "start": 10.811,
+     "end": 18.9
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "126328be10cc1f48",
+   "takes": [
+    "644cfef79ecd0dd84671",
+    "b0e409e334db24ff78a2"
+   ],
+   "duration": 16.214,
+   "lines": [
+    {
+     "text": "And every stage of that sequence just used a mechanism this chapter had already proven on its own.",
+     "start": 0.15,
+     "end": 6.562
+    },
+    {
+     "text": "Stop accepting is the token. Drain or cancel is cancel safety. Wait, against a deadline, is the tracker, timed.",
+     "start": 6.982,
+     "end": 15.864
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "954d85d61c043883",
+   "takes": [
+    "f1b15a1db6f1a0775312",
+    "cb9db0d6a4be5e85df55",
+    "15805bf4654e81b9381c"
+   ],
+   "duration": 22.576,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a cancelled token draws a hard line, the instant it's checked, not sometime after.",
+     "start": 0.15,
+     "end": 8.681
+    },
+    {
+     "text": "A tracker's own wait only ever reports real completion, never merely that a stop was requested.",
+     "start": 9.101,
+     "end": 15.6
+    },
+    {
+     "text": "And a stated limit holds exactly where it's set, letting go of whatever hasn't finished by then.",
+     "start": 16.02,
+     "end": 22.226
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
