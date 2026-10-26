@@ -4155,7 +4155,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Native extensions with Rust and PyO3',
     syllabusTitle: 'Native extensions with Rust and PyO3',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Foundations' },
     chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.3' },
     minutes: 15,
