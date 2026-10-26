@@ -1,0 +1,377 @@
+{
+ "topic": "rust.mmap-versus-owned-buffer",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6612bd01ff9c7f31",
+   "takes": [
+    "bb3ec91b92382248f211",
+    "489e38691444fcaa5432"
+   ],
+   "duration": 15.928,
+   "lines": [
+    {
+     "text": "Memory-map a real file, and also keep a separate, hand-built cache of those same bytes in your own code.",
+     "start": 0.15,
+     "end": 8.306
+    },
+    {
+     "text": "Does the mapped data end up resident in memory once, or does it genuinely end up resident twice?",
+     "start": 9.027,
+     "end": 15.578
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.3,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "76e438aa736a2510",
+   "takes": [
+    "6e450f565c25e1f94cd9",
+    "a0efde2f493bf637df7e"
+   ],
+   "duration": 10.963,
+   "lines": [
+    {
+     "text": "Twice \u2014 both copies are resident at the same time.",
+     "start": 0.15,
+     "end": 3.792
+    },
+    {
+     "text": "The kernel's own page cache and your application's own cache know absolutely nothing of each other.",
+     "start": 4.212,
+     "end": 10.613
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "675ff2eab3c00d53",
+   "takes": [
+    "0aa0fd81c4d73c4e9d7d",
+    "205017b40a22c0f8e6a4"
+   ],
+   "duration": 15.69,
+   "lines": [
+    {
+     "text": "Run it for real: the mapped file's own pages stayed resident in the kernel's own page cache.",
+     "start": 0.15,
+     "end": 6.133
+    },
+    {
+     "text": "And reading that exact same file again, into a separate application cache, genuinely grew memory by roughly another full copy.",
+     "start": 6.553,
+     "end": 15.34
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "5a61ccce5517b0a6",
+   "takes": [
+    "ad344e37b851a2604991",
+    "f1e58ad9bc68463a4140"
+   ],
+   "duration": 16.008,
+   "lines": [
+    {
+     "text": "Open that same file bypassing the page cache entirely, and read it into a buffer that isn't aligned to a block boundary.",
+     "start": 0.15,
+     "end": 8.228
+    },
+    {
+     "text": "Does that read quietly degrade, silently succeed, or fail outright with a specific error?",
+     "start": 8.948,
+     "end": 15.658
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "1c7716f41185db42",
+   "takes": [
+    "92c1ca5d13a269e2bc4e",
+    "51db0c1986b40c0a9c69"
+   ],
+   "duration": 9.97,
+   "lines": [
+    {
+     "text": "It fails outright, with a specific, clear error.",
+     "start": 0.15,
+     "end": 4.24
+    },
+    {
+     "text": "Bypassing the cache never silently fixes a misaligned buffer for you.",
+     "start": 4.66,
+     "end": 9.62
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b3d7e392b9334662",
+   "takes": [
+    "fe75ab1b829f410c602a",
+    "736793964dd6e833d06f"
+   ],
+   "duration": 13.937,
+   "lines": [
+    {
+     "text": "Run it for real: the misaligned read failed outright with that exact clear error.",
+     "start": 0.15,
+     "end": 6.699
+    },
+    {
+     "text": "And the very same read, with a properly aligned buffer instead, succeeded cleanly.",
+     "start": 7.119,
+     "end": 13.587
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "f5038bdd990bd17a",
+   "takes": [
+    "7ea906e05a78667f7476",
+    "ad0541ace96694729043"
+   ],
+   "duration": 11.206,
+   "lines": [
+    {
+     "text": "If a mapped page's real read genuinely fails \u2014 a bad sector, a disk gone missing entirely \u2014",
+     "start": 0.15,
+     "end": 7.023
+    },
+    {
+     "text": "does the program get back a normal, recoverable error?",
+     "start": 7.743,
+     "end": 10.856
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "c3abf44c6a4cbd42",
+   "takes": [
+    "2040d7e1e8c3e985b354",
+    "ced7b9ad45f2e0084a89"
+   ],
+   "duration": 10.061,
+   "lines": [
+    {
+     "text": "No \u2014 it can raise a process-terminating signal outright.",
+     "start": 0.15,
+     "end": 3.86
+    },
+    {
+     "text": "A page fault simply has no normal error channel to hand a result back through.",
+     "start": 4.28,
+     "end": 9.711
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2b5f2867e077b771",
+   "takes": [
+    "92dcdf7a5def7869a4ff",
+    "b208a592b125f76bd777"
+   ],
+   "duration": 21.14,
+   "lines": [
+    {
+     "text": "The paper's own argument names exactly four real costs: a dirty page written back whenever the kernel chooses, not the database.",
+     "start": 0.15,
+     "end": 10.121
+    },
+    {
+     "text": "A stall with no promised end. A crash instead of a result to handle. And every other thread paused just to unmap one region.",
+     "start": 10.541,
+     "end": 20.79
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3e9376727b80e553",
+   "takes": [
+    "3f72556824885df97288",
+    "7d1d94c9d0e7d0237c7b"
+   ],
+   "duration": 12.417,
+   "lines": [
+    {
+     "text": "Given every one of those four real costs, is there still ever a real system where mapping a file directly is the right call?",
+     "start": 0.15,
+     "end": 8.836
+    },
+    {
+     "text": "Or is it simply never worth it?",
+     "start": 9.686,
+     "end": 12.067
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "7ddd82f437385a74",
+   "takes": [
+    "7505ac5b5a24312f0e2c",
+    "4d98dc46643cda5a02ec"
+   ],
+   "duration": 11.053,
+   "lines": [
+    {
+     "text": "Yes \u2014 a read-mostly workload with no bounded-latency need at all.",
+     "start": 0.15,
+     "end": 5.469
+    },
+    {
+     "text": "That is exactly the one case a well-known embedded database is built around.",
+     "start": 5.889,
+     "end": 10.703
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "f4559fb96e502ab6",
+   "takes": [
+    "a013b0bb6a5af38db797",
+    "5e2d8ce83c81e1793721"
+   ],
+   "duration": 16.439,
+   "lines": [
+    {
+     "text": "The paper's own recommendation is exactly that narrow: mapping stays the right call when the working set fits in memory and the workload is read-only.",
+     "start": 0.15,
+     "end": 10.199
+    },
+    {
+     "text": "Which is precisely the case that well-known embedded database's own design is built around.",
+     "start": 10.619,
+     "end": 16.089
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "12dff1f9563ee5e4",
+   "takes": [
+    "b1719f6e7a591a0ce3d3",
+    "32fa40aa34454a61d909"
+   ],
+   "duration": 19.097,
+   "lines": [
+    {
+     "text": "So, pulling this together: holding bytes twice, a strict alignment cost, and four named failure classes are really the same question, asked three times.",
+     "start": 0.15,
+     "end": 12.447
+    },
+    {
+     "text": "Who decides when a page actually moves, and does the caller ever find out if that goes wrong.",
+     "start": 12.867,
+     "end": 18.747
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "b3f4fbbc87f90d09",
+   "takes": [
+    "3893c01e7cce065dc68b",
+    "6eb59fe3018588b0e04d",
+    "a64c3897b4746c98d6e1"
+   ],
+   "duration": 30.888,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a mapped file genuinely holds the same bytes twice, the moment an application keeps its own cache on top.",
+     "start": 0.15,
+     "end": 10.984
+    },
+    {
+     "text": "Direct access genuinely removes that only by making every buffer's alignment the caller's own strict job.",
+     "start": 11.404,
+     "end": 19.129
+    },
+    {
+     "text": "And the paper's own four failure classes are exactly why most databases own their buffer pool instead \u2014 except for that one narrow, read-mostly exception.",
+     "start": 19.549,
+     "end": 30.538
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
