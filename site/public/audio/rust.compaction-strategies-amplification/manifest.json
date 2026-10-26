@@ -1,0 +1,392 @@
+{
+ "topic": "rust.compaction-strategies-amplification",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6b64d99a6584268f",
+   "takes": [
+    "6cda39afe6a37c489c92",
+    "a5b7fd33a8d002c32927"
+   ],
+   "duration": 14.385,
+   "lines": [
+    {
+     "text": "Flush memtables to SSTables over and over, with absolutely no compaction at all.",
+     "start": 0.15,
+     "end": 7.124
+    },
+    {
+     "text": "As more and more of those flushes pile up, does a lookup's own cost ever stop growing?",
+     "start": 7.844,
+     "end": 14.035
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 125,
+   "wer": 0.3076923076923077,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Flush memtables to SSTables over and over, with absolutely no compaction at all.",
+     "said": "memtables",
+     "heard": "mem tables"
+    },
+    {
+     "line": "Flush memtables to SSTables over and over, with absolutely no compaction at all.",
+     "said": "sstables",
+     "heard": "ss tables"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "b01be71ae207d0b1",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "cbb16ab8b3c1fb0dda15"
+   ],
+   "duration": 7.345,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "Every single new flush is one more file a lookup might have to check.",
+     "start": 2.386,
+     "end": 6.995
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "217f17c5e56d440d",
+   "takes": [
+    "7e0c366cb01a3e85d0f8"
+   ],
+   "duration": 11.517,
+   "lines": [
+    {
+     "text": "Run it for real: the number of files genuinely kept growing, one more for every single flush, with nothing ever shrinking it back down.",
+     "start": 0.15,
+     "end": 11.167
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "bbae5c9c16e81eb3",
+   "takes": [
+    "8772c58936adb5cebff3",
+    "33452b8381eb56367767",
+    "ef6a9b956b0ed382f91d"
+   ],
+   "duration": 17.112,
+   "lines": [
+    {
+     "text": "Now run a real leveled compactor and a real tiered compactor against that exact same pile of flushes instead.",
+     "start": 0.15,
+     "end": 7.253
+    },
+    {
+     "text": "Do both of them win?",
+     "start": 7.973,
+     "end": 9.106
+    },
+    {
+     "text": "On how many files a lookup has to check, and how much stale data sits on disk?",
+     "start": 9.656,
+     "end": 16.762
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "872c65a4a1982140",
+   "takes": [
+    "610f4db95501a2dac5d1",
+    "5bd07323f9d018e03b06"
+   ],
+   "duration": 6.96,
+   "lines": [
+    {
+     "text": "Yes, genuinely, both of them.",
+     "start": 0.15,
+     "end": 2.045
+    },
+    {
+     "text": "Real compaction of either kind beats never compacting at all.",
+     "start": 2.465,
+     "end": 6.61
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "eec8a86e50dd637b",
+   "takes": [
+    "3dd71bd74f0d36f5c4a1"
+   ],
+   "duration": 12.288,
+   "lines": [
+    {
+     "text": "Run it for real: both the leveled compactor and the tiered compactor genuinely beat doing no compaction at all, on both read cost and on stale data left behind.",
+     "start": 0.15,
+     "end": 11.938
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "3802432c683633ae",
+   "takes": [
+    "6c9f27960e0de669b3c9",
+    "77250fb6ff47d37c6975"
+   ],
+   "duration": 12.216,
+   "lines": [
+    {
+     "text": "Leveled and tiered compaction get fed the exact same sequence of flushes.",
+     "start": 0.15,
+     "end": 6.024
+    },
+    {
+     "text": "Do they cost the same amount of extra, rewritten data to actually carry out?",
+     "start": 6.744,
+     "end": 11.866
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "6ecf149ba4490508",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "75494262fbf87fbeb73b"
+   ],
+   "duration": 6.728,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "The two strategies cost noticeably different amounts of rewritten data.",
+     "start": 2.386,
+     "end": 6.378
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 107,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "4021308c3d6ce7ce",
+   "takes": [
+    "e8deae226e3b87d1b6bc"
+   ],
+   "duration": 12.24,
+   "lines": [
+    {
+     "text": "Run it for real: leveled and tiered compaction genuinely cost different amounts of rewritten data on the identical workload, with the tiered strategy costing less.",
+     "start": 0.15,
+     "end": 11.89
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "461b5e9b9b0e0970",
+   "takes": [
+    "61eaeff0dccfec84d40b",
+    "a8ec14e123a1d1260eee"
+   ],
+   "duration": 12.57,
+   "lines": [
+    {
+     "text": "That same tiered compactor costs less rewritten data to run.",
+     "start": 0.15,
+     "end": 4.441
+    },
+    {
+     "text": "Does it also leave fewer files for a lookup to check, and less stale data sitting on disk, than leveled does?",
+     "start": 5.161,
+     "end": 12.22
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "e635d1b7c903acf3",
+   "takes": [
+    "7616e44cfeba77eae846",
+    "16ce9e53a302f23a757a"
+   ],
+   "duration": 7.984,
+   "lines": [
+    {
+     "text": "No, genuinely, the opposite.",
+     "start": 0.15,
+     "end": 2.853
+    },
+    {
+     "text": "It leaves more files and more stale data behind than leveled does.",
+     "start": 3.273,
+     "end": 7.634
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.1,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "4cc2f8270fb281cb",
+   "takes": [
+    "f26bbffe9ddbd474d254"
+   ],
+   "duration": 12.023,
+   "lines": [
+    {
+     "text": "Run it for real: the tiered compactor that cost less rewritten data to run genuinely left more files to check, and more stale data on disk, than the leveled compactor did.",
+     "start": 0.15,
+     "end": 11.673
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "79304e59d5f7cc16",
+   "takes": [
+    "85ea3c526a8625f5c9f8",
+    "dcc6d0bae789414d61ab"
+   ],
+   "duration": 23.956,
+   "lines": [
+    {
+     "text": "One real production system names, in its own documentation, exactly why this rewriting work can't just run as hard as it possibly can.",
+     "start": 0.15,
+     "end": 8.923
+    },
+    {
+     "text": "If writes keep arriving faster than flushing and compacting can actually keep up with them, that system deliberately slows the incoming writes down itself, rather than letting the backlog grow without limit.",
+     "start": 9.343,
+     "end": 23.606
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "If writes keep arriving faster than flushing and compacting can actually keep up with them, that system deliberately slows the incoming writes down itself, rather than letting the backlog grow without limit.",
+     "said": "writes",
+     "heard": "rites"
+    },
+    {
+     "line": "If writes keep arriving faster than flushing and compacting can actually keep up with them, that system deliberately slows the incoming writes down itself, rather than letting the backlog grow without limit.",
+     "said": "writes",
+     "heard": "rites"
+    }
+   ]
+  },
+  "10": {
+   "hash": "90d5b5f4619d00b8",
+   "takes": [
+    "6f0c8f3eae5f3a1f0ef0",
+    "a864d68350c389ff3b71",
+    "95559bd4232f9b5f42b8"
+   ],
+   "duration": 51.244,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: with no compaction at all, every single flush becomes one more file a lookup might have to check, forever, and real compaction of either kind genuinely beats that.",
+     "start": 0.15,
+     "end": 14.137
+    },
+    {
+     "text": "But the two real strategies don't buy the same thing: a tiered strategy that merges whole batches together less often ends up doing less total rewriting, while a leveled strategy that merges more often, in smaller steps, ends up leaving fewer files and less stale data behind.",
+     "start": 14.557,
+     "end": 35.078
+    },
+    {
+     "text": "And because that rewriting work competes directly with the writes it exists to serve, a real system can't let it run unchecked either; it has to slow incoming writes down on purpose whenever that background work starts falling behind.",
+     "start": 35.498,
+     "end": 50.894
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 143,
+   "wer": 0.05128205128205128,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "And because that rewriting work competes directly with the writes it exists to serve, a real system can't let it run unchecked either; it has to slow incoming writes down on purpose whenever that background work starts falling behind.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "And because that rewriting work competes directly with the writes it exists to serve, a real system can't let it run unchecked either; it has to slow incoming writes down on purpose whenever that background work starts falling behind.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  }
+ }
+}
