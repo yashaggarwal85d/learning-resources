@@ -1,0 +1,293 @@
+{
+ "topic": "dsa.tournament-loser-trees",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "31e1c86b8c151110",
+   "takes": [
+    "010f5a4e86efd8dc69c9",
+    "0edb454f1fbe83c8897b"
+   ],
+   "duration": 19.371,
+   "lines": [
+    {
+     "text": "Last time, the question was which value is smallest across one stream of insertions.",
+     "start": 0.15,
+     "end": 5.67
+    },
+    {
+     "text": "Here's the same question asked a different way: you've got several already-sorted streams, and you need the smallest head among them, over and over, every time one gets consumed.",
+     "start": 6.09,
+     "end": 19.021
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "dedbebf9b6c96ace",
+   "takes": [
+    "63645b0edd4867475cdc",
+    "0ba72799be23859fe0f0"
+   ],
+   "duration": 17.882,
+   "lines": [
+    {
+     "text": "Start with the approach that needs no structure at all: just look at every stream's current head and pick the smallest one.",
+     "start": 0.15,
+     "end": 8.641
+    },
+    {
+     "text": "That's completely correct, and it's also the thing worth measuring against, because it gets more expensive every time you add another stream.",
+     "start": 9.061,
+     "end": 17.532
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "81202d28781f9c3b",
+   "takes": [
+    "f76202502f2636f81950",
+    "51be9774816e45f1ab95"
+   ],
+   "duration": 16.959,
+   "lines": [
+    {
+     "text": "Before the reveal, think about what a heap actually has to do on the way down, not just how many levels it has.",
+     "start": 0.15,
+     "end": 7.659
+    },
+    {
+     "text": "Does repairing a heap after a pop only ever look at one thing per level, or does it have to look at more than that?",
+     "start": 8.079,
+     "end": 16.609
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 170,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "04eb66ac7845a7c6",
+   "takes": [
+    "37fbc836b2c0b3cc1308",
+    "451f0a334b3b5ea3b037"
+   ],
+   "duration": 20.65,
+   "lines": [
+    {
+     "text": "More than one. At every level, it first has to figure out which of the two children is smaller, and only then decide whether to swap with it.",
+     "start": 0.15,
+     "end": 9.356
+    },
+    {
+     "text": "That's two separate comparisons per level, not one \u2014 the log of the size tells you how many levels, not how many comparisons.",
+     "start": 9.776,
+     "end": 20.3
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "6b49179c751f0e87",
+   "takes": [
+    "4d83a146523e98ca93a7",
+    "fff24c6d9b7437573456"
+   ],
+   "duration": 19.458,
+   "lines": [
+    {
+     "text": "Here's the part that's easy to miss: being logarithmic doesn't automatically mean cheap, because each one of those levels isn't free.",
+     "start": 0.15,
+     "end": 9.664
+    },
+    {
+     "text": "A heap pays for finding the smaller child and then checking whether to swap, every single level it touches on the way down.",
+     "start": 10.084,
+     "end": 19.108
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "addd13c957f552e5",
+   "takes": [
+    "2def2423f37f47690d31",
+    "18faf95cec7b916bfecb"
+   ],
+   "duration": 17.965,
+   "lines": [
+    {
+     "text": "Before this reveal, picture the same streams arranged as a single-elimination bracket instead of a heap.",
+     "start": 0.15,
+     "end": 8.356
+    },
+    {
+     "text": "Can a structure built that way actually beat what a heap pays per output, or does it just move the same cost somewhere else?",
+     "start": 8.776,
+     "end": 17.615
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "a2d70632af864470",
+   "takes": [
+    "ff03c574c21c417b0bff",
+    "deedc4160c4139ee528f"
+   ],
+   "duration": 16.507,
+   "lines": [
+    {
+     "text": "It can, and the reason is specific: each round only ever plays one game, so it only ever costs one comparison, not two.",
+     "start": 0.15,
+     "end": 9.985
+    },
+    {
+     "text": "Same number of rounds as a heap has levels. Half the work at every single one of them.",
+     "start": 10.405,
+     "end": 16.157
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "4300ff3f036d00c5",
+   "takes": [
+    "52373d07a1e3f077be59",
+    "50a74183cfd0435aa355"
+   ],
+   "duration": 15.75,
+   "lines": [
+    {
+     "text": "Watch what's actually different here, not just that it's a tree too.",
+     "start": 0.15,
+     "end": 4.402
+    },
+    {
+     "text": "Every round is one game between exactly two contenders \u2014 there's no second comparison hiding anywhere in a round, the way there was in a heap's own level.",
+     "start": 4.822,
+     "end": 15.4
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a057ab6ca858da0b",
+   "takes": [
+    "a6f1d7dbd984b6d10dc4",
+    "907530131cdf2f40686b"
+   ],
+   "duration": 21.596,
+   "lines": [
+    {
+     "text": "Here's the clever part: keep only the loser of each game stored in the tree, and let the winner float all the way up past the root.",
+     "start": 0.15,
+     "end": 9.143
+    },
+    {
+     "text": "When a stream's head gets consumed and replaced, only the one path from that spot back up to the root ever needs to be replayed \u2014 nothing else in the whole bracket has to move.",
+     "start": 9.563,
+     "end": 21.246
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 169,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "5bd656de8bf5e42e",
+   "takes": [
+    "667c034becbcbdd224ae",
+    "ba0598c6cd93579aa051"
+   ],
+   "duration": 20.667,
+   "lines": [
+    {
+     "text": "This exact mechanism is already quietly running inside two systems this course has already covered.",
+     "start": 0.15,
+     "end": 6.7
+    },
+    {
+     "text": "An external sort's own merge phase works this way, and so does the compaction step from a couple of topics back \u2014 both are just this same multi-way merge, wearing a different name.",
+     "start": 7.12,
+     "end": 20.317
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "f5a36427800dc041",
+   "takes": [
+    "9d786d1914149c3a29c3",
+    "572d9d2963b4d6a6bc39"
+   ],
+   "duration": 28.27,
+   "lines": [
+    {
+     "text": "Here's what actually got measured, not assumed: real comparison counts for a plain scan, a heap-based merge, and a loser tree, on the exact same streams.",
+     "start": 0.15,
+     "end": 11.706
+    },
+    {
+     "text": "And here's the honest part \u2014 the loser tree wins every time, but the real gap over the heap turns out smaller than a rough per-level estimate would suggest, because a heap rarely sinks all the way to the bottom in practice.",
+     "start": 12.126,
+     "end": 27.92
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
