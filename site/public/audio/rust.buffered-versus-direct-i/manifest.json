@@ -1,0 +1,429 @@
+{
+ "topic": "rust.buffered-versus-direct-i",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "596661c11fee72b2",
+   "takes": [
+    "40574ec49e1c0973ed7f",
+    "0edff9a19238667b0b75"
+   ],
+   "duration": 14.236,
+   "lines": [
+    {
+     "text": "A file's pages have genuinely been dropped from the page cache entirely.",
+     "start": 0.15,
+     "end": 5.345
+    },
+    {
+     "text": "Call the real readahead syscall on it. Does that alone bring the pages back in, or does a real read still have to happen first?",
+     "start": 6.065,
+     "end": 13.886
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 156,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Call the real readahead syscall on it. Does that alone bring the pages back in, or does a real read still have to happen first?",
+     "said": "readahead syscall",
+     "heard": "readhead siskel"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "01e5ccb3af8bd517",
+   "takes": [
+    "5c2827f2ecad7b526626",
+    "e8e3260cedb149bd4723"
+   ],
+   "duration": 8.535,
+   "lines": [
+    {
+     "text": "Readahead alone genuinely brings every page back in.",
+     "start": 0.15,
+     "end": 3.723
+    },
+    {
+     "text": "No read call happens at all \u2014 the syscall itself is enough.",
+     "start": 4.143,
+     "end": 8.185
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Readahead alone genuinely brings every page back in.",
+     "said": "readahead",
+     "heard": "readhead"
+    },
+    {
+     "line": "No read call happens at all \u2014 the syscall itself is enough.",
+     "said": "syscall",
+     "heard": "siskel"
+    }
+   ]
+  },
+  "02": {
+   "hash": "11328b858dbb476a",
+   "takes": [
+    "5837e583643243b0b292",
+    "e48490c5363ecf9fcd01"
+   ],
+   "duration": 11.965,
+   "lines": [
+    {
+     "text": "Run it for real: before readahead, not one of those pages was resident.",
+     "start": 0.15,
+     "end": 5.564
+    },
+    {
+     "text": "And immediately after that one call, every single one of them genuinely was.",
+     "start": 5.984,
+     "end": 11.615
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: before readahead, not one of those pages was resident.",
+     "said": "readahead",
+     "heard": "read ahead"
+    }
+   ]
+  },
+  "03": {
+   "hash": "c2cdf0f5837b86e9",
+   "takes": [
+    "8d2ac964b68c217fdffb",
+    "2aa8a7fc39f6f15dc580"
+   ],
+   "duration": 13.51,
+   "lines": [
+    {
+     "text": "Those exact same, freshly cached pages: call a real hint to discard them.",
+     "start": 0.15,
+     "end": 6.034
+    },
+    {
+     "text": "Does that hint alone genuinely evict them, or is it merely advisory and simply ignored?",
+     "start": 6.754,
+     "end": 13.16
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.3,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "4ff7c59375c32441",
+   "takes": [
+    "5235d7b74c183557293b",
+    "f692e34b59d78d07ffd5"
+   ],
+   "duration": 11.092,
+   "lines": [
+    {
+     "text": "It genuinely evicts every single one of those pages.",
+     "start": 0.15,
+     "end": 4.293
+    },
+    {
+     "text": "A documented hint, once it's actually called, has a completely real effect.",
+     "start": 4.713,
+     "end": 10.742
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "00fd876d85f19079",
+   "takes": [
+    "cd5e19106603fe87f8f5",
+    "267c5f366d5f7467aebe"
+   ],
+   "duration": 10.795,
+   "lines": [
+    {
+     "text": "Run it for real: every one of those pages was resident right after readahead.",
+     "start": 0.15,
+     "end": 5.279
+    },
+    {
+     "text": "And not a single one of them was resident right after that real discard call.",
+     "start": 5.699,
+     "end": 10.445
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.2,
+   "wpm": 161,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: every one of those pages was resident right after readahead.",
+     "said": "readahead",
+     "heard": "read ahead"
+    }
+   ]
+  },
+  "05": {
+   "hash": "7dc5a8f95d66ac90",
+   "takes": [
+    "d8af073aac2ee01dc8f8",
+    "697cda289d843cf10d3d"
+   ],
+   "duration": 16.077,
+   "lines": [
+    {
+     "text": "Read the same amount of data two genuinely different ways: once through a normal buffered read, once bypassing the cache entirely.",
+     "start": 0.15,
+     "end": 8.93
+    },
+    {
+     "text": "Does the bypassing read end up resident in the page cache too, or does it not?",
+     "start": 9.65,
+     "end": 15.727
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "1fce2c757f787381",
+   "takes": [
+    "d471d5b00fb8a5bd0b91",
+    "6d468fa7291cdaba604f"
+   ],
+   "duration": 7.988,
+   "lines": [
+    {
+     "text": "Only the normal, buffered read ends up resident.",
+     "start": 0.15,
+     "end": 2.983
+    },
+    {
+     "text": "The bypassing read never touches that cache at all.",
+     "start": 3.403,
+     "end": 7.638
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.8,
+   "wpm": 128,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Only the normal, buffered read ends up resident.",
+     "said": "read",
+     "heard": "reed"
+    },
+    {
+     "line": "The bypassing read never touches that cache at all.",
+     "said": "read",
+     "heard": "reed"
+    }
+   ]
+  },
+  "06": {
+   "hash": "a29967ba61aa156c",
+   "takes": [
+    "f77a795bd7b76a3c8961",
+    "b6e2d3ffa0954714682c"
+   ],
+   "duration": 13.469,
+   "lines": [
+    {
+     "text": "Run it for real: the buffered read left every single page resident in the cache.",
+     "start": 0.15,
+     "end": 6.441
+    },
+    {
+     "text": "And the exact same read, bypassing the cache instead, left absolutely none resident.",
+     "start": 6.861,
+     "end": 13.119
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "84c35cce4dc1c52e",
+   "takes": [
+    "aad59b4758f3d1a9740a",
+    "186ff62d63c81103fdd8"
+   ],
+   "duration": 7.53,
+   "lines": [
+    {
+     "text": "If that discard hint can't evict a file's pages right after it's written,",
+     "start": 0.15,
+     "end": 4.784
+    },
+    {
+     "text": "what's actually stopping it?",
+     "start": 5.504,
+     "end": 7.18
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "3a7100543cb362a1",
+   "takes": [
+    "89812f0090ad2c8514d2",
+    "afe9e7cce938570b7998"
+   ],
+   "duration": 11.265,
+   "lines": [
+    {
+     "text": "Those pages are still dirty, and the hint only discards clean ones.",
+     "start": 0.15,
+     "end": 5.344
+    },
+    {
+     "text": "A page that hasn't been written back yet simply isn't eligible to be dropped.",
+     "start": 5.764,
+     "end": 10.915
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "acd7879c70e3128d",
+   "takes": [
+    "160c9be7fa616a5b118d",
+    "9d0fecec62d1b5d8017c"
+   ],
+   "duration": 14.132,
+   "lines": [
+    {
+     "text": "The documentation is explicit: an unwritten, dirty page is never freed by that hint at all.",
+     "start": 0.15,
+     "end": 7.184
+    },
+    {
+     "text": "Flushing it to disk first is the only way to give the hint something clean to actually discard.",
+     "start": 7.604,
+     "end": 13.782
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 144,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Flushing it to disk first is the only way to give the hint something clean to actually discard.",
+     "said": "disk",
+     "heard": "disc"
+    }
+   ]
+  },
+  "09": {
+   "hash": "d3f1d4cb39b0ae35",
+   "takes": [
+    "d48c754a14919ead25db",
+    "3f564cd666e35622727e"
+   ],
+   "duration": 17.855,
+   "lines": [
+    {
+     "text": "So, pulling this together: bringing pages in early, pushing them back out, and never letting them in \u2014 these are really the same cache, pulled three different directions.",
+     "start": 0.15,
+     "end": 12.618
+    },
+    {
+     "text": "Who decides whether a given page is sitting in it right now.",
+     "start": 13.038,
+     "end": 17.505
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "b2637beced3df828",
+   "takes": [
+    "e76f370f647feef3570b",
+    "b57fa178301139c1fd5e",
+    "412f20f89766e62c967c",
+    "ec3e4bda1fa25fd6018e"
+   ],
+   "duration": 22.083,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: one real syscall, called on its own, can refill a dropped file's residency before anyone reads a byte.",
+     "start": 0.15,
+     "end": 10.24
+    },
+    {
+     "text": "A second one empties those same pages back out, the instant they stop being dirty.",
+     "start": 10.66,
+     "end": 16.328
+    },
+    {
+     "text": "And a third path simply refuses.",
+     "start": 16.748,
+     "end": 19.217
+    },
+    {
+     "text": "It bypasses the cache completely.",
+     "start": 19.637,
+     "end": 21.733
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.0,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
