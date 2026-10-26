@@ -1,0 +1,370 @@
+{
+ "topic": "rust.snapshot-visibility-over-version",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "053c4a6a24c59195",
+   "takes": [
+    "7a1e6ec915fe738700f8",
+    "675b091fe09eda3cb9ba"
+   ],
+   "duration": 20.092,
+   "lines": [
+    {
+     "text": "A row's own version chain holds two things right now: an old version that already committed, and a brand-new version a transaction just wrote but hasn't committed yet.",
+     "start": 0.15,
+     "end": 11.447
+    },
+    {
+     "text": "An existing reader already took its own snapshot earlier. Which one of those two versions does that reader actually see?",
+     "start": 12.167,
+     "end": 19.742
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "6daee74d8c887009",
+   "takes": [
+    "8c635c1805ffeadbfb2b",
+    "57db7b3f5537e4922c55"
+   ],
+   "duration": 10.091,
+   "lines": [
+    {
+     "text": "The old, committed one.",
+     "start": 0.15,
+     "end": 1.66
+    },
+    {
+     "text": "Until that newer transaction actually commits, its version simply isn't visible to anyone else yet.",
+     "start": 2.08,
+     "end": 9.741
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "23bf4e9806cd4786",
+   "takes": [
+    "b5db80c176dc271377d2",
+    "920e5ac80652c79a782e"
+   ],
+   "duration": 20.795,
+   "lines": [
+    {
+     "text": "Run it for real: the reader's own snapshot genuinely returned the old value, even while the chain's own newest entry already held the new one.",
+     "start": 0.15,
+     "end": 9.936
+    },
+    {
+     "text": "So which version a reader sees depends on that version's own metadata together with the snapshot, never simply on which one happens to be newest.",
+     "start": 10.356,
+     "end": 20.445
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "42d22b52fac11669",
+   "takes": [
+    "bb8b073c2e7e0a5dad45",
+    "7ac55e48a2f9f46005e4"
+   ],
+   "duration": 13.283,
+   "lines": [
+    {
+     "text": "That same newer transaction now goes ahead and commits.",
+     "start": 0.15,
+     "end": 5.031
+    },
+    {
+     "text": "Does the original reader's own snapshot change what it reports, now that the write behind it is finally committed?",
+     "start": 5.751,
+     "end": 12.933
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a963e1cab2583e87",
+   "takes": [
+    "30599d834727d6d8d616",
+    "7abf15154b4f641eddbb"
+   ],
+   "duration": 6.155,
+   "lines": [
+    {
+     "text": "No, it doesn't change at all.",
+     "start": 0.15,
+     "end": 2.07
+    },
+    {
+     "text": "It keeps reporting exactly what it reported before.",
+     "start": 2.49,
+     "end": 5.805
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "83b9365f8ba2f7f9",
+   "takes": [
+    "1324569354ceadf3c004"
+   ],
+   "duration": 10.932,
+   "lines": [
+    {
+     "text": "Run it for real: the original reader's own snapshot kept returning exactly the same value after that commit as it did before it.",
+     "start": 0.15,
+     "end": 10.582
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5c0b7d316f1f6ad2",
+   "takes": [
+    "a76d1511fef502271caa",
+    "ff175c1e824e4ea40abc"
+   ],
+   "duration": 10.206,
+   "lines": [
+    {
+     "text": "A transaction now updates a row it's able to see.",
+     "start": 0.15,
+     "end": 3.357
+    },
+    {
+     "text": "Does that update ever rewrite the existing version's own stored fields directly, in place?",
+     "start": 4.077,
+     "end": 9.856
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "519ecfcc14449f7f",
+   "takes": [
+    "2801575f3639777bf55a",
+    "dad090bcfad40010df46"
+   ],
+   "duration": 10.049,
+   "lines": [
+    {
+     "text": "No, never.",
+     "start": 0.15,
+     "end": 0.929
+    },
+    {
+     "text": "A brand-new version gets appended instead, and only the old version's own deleting-transaction marker gets stamped.",
+     "start": 1.349,
+     "end": 9.699
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.2,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "80f016b0e9b2854d",
+   "takes": [
+    "ca6cd05881bf5ffe0fa3"
+   ],
+   "duration": 13.688,
+   "lines": [
+    {
+     "text": "Run it for real: the superseded version's own fields came back completely untouched afterward, and the chain genuinely grew by exactly one brand-new entry.",
+     "start": 0.15,
+     "end": 13.338
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 110,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a2abb24e8c7b14e8",
+   "takes": [
+    "bb43eb3a8b8025b58361",
+    "94142df61992d57930a0"
+   ],
+   "duration": 18.806,
+   "lines": [
+    {
+     "text": "One real production system states this exact guarantee directly, in its own documentation.",
+     "start": 0.15,
+     "end": 8.349
+    },
+    {
+     "text": "Does that system ever let a long write force a concurrent read to wait, or the other way around, a long read forcing a write to wait?",
+     "start": 9.069,
+     "end": 18.456
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 128,
+   "wer": 0.07407407407407407,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does that system ever let a long write force a concurrent read to wait, or the other way around, a long read forcing a write to wait?",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Does that system ever let a long write force a concurrent read to wait, or the other way around, a long read forcing a write to wait?",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "eb4cfb24e3669455",
+   "takes": [
+    "a7652f432cf3a4ac6fd0",
+    "09f8d4b7b4ef893e2135"
+   ],
+   "duration": 8.161,
+   "lines": [
+    {
+     "text": "Neither one, genuinely.",
+     "start": 0.15,
+     "end": 1.837
+    },
+    {
+     "text": "Reading never blocks writing there, and writing never blocks reading either.",
+     "start": 2.257,
+     "end": 7.811
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 103,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "054e885c87361324",
+   "takes": [
+    "4fa8d0fcc2aa2db52390"
+   ],
+   "duration": 10.909,
+   "lines": [
+    {
+     "text": "That system's own documentation states it in exactly those words: reading never blocks writing, and writing never blocks reading.",
+     "start": 0.15,
+     "end": 10.559
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "05054ee118e28906",
+   "takes": [
+    "23aa6b2d6bb67656de32",
+    "f55b120168b22fe8903e"
+   ],
+   "duration": 26.262,
+   "lines": [
+    {
+     "text": "That same system's own documentation also names exactly what this topic's own version metadata has been standing in for all along.",
+     "start": 0.15,
+     "end": 9.422
+    },
+    {
+     "text": "Its own version-identity column records the inserting transaction for a row version, and its own deletion-identity column records the deleting transaction, or stays at zero while a version is still undeleted.",
+     "start": 9.842,
+     "end": 25.912
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "08966e0841e50329",
+   "takes": [
+    "8be80c3e7bc6a8bb020b",
+    "6d2814fb9227368dfe0d",
+    "dea257b76bbdf76136d6"
+   ],
+   "duration": 43.459,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: which single version of a row a reader gets to see depends on that version's own metadata together with the reader's own fixed snapshot, never simply on which version happens to be newest.",
+     "start": 0.15,
+     "end": 16.709
+    },
+    {
+     "text": "A writer never rewrites an existing version in place; it appends a brand-new one instead, and leaves the old one's own fields exactly as they were.",
+     "start": 17.129,
+     "end": 27.876
+    },
+    {
+     "text": "That one choice is the entire reason a real production system can promise what it promises: a long write never forces a read to wait, and a long read never forces a write to wait either.",
+     "start": 28.296,
+     "end": 43.109
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
