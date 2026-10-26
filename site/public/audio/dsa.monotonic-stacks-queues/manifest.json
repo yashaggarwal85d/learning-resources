@@ -1,0 +1,391 @@
+{
+ "topic": "dsa.monotonic-stacks-queues",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "5e28aacb601b600b",
+   "takes": [
+    "38eb7480c92265906516",
+    "731f444f560600bab422",
+    "1bed97aec8ca376920c2"
+   ],
+   "duration": 30.344,
+   "lines": [
+    {
+     "text": "Here is the whole trick of this topic: you don't get a faster answer by working harder. You get it by refusing to remember things you'll never need again.",
+     "start": 0.15,
+     "end": 10.95
+    },
+    {
+     "text": "Watch the bars on screen. Each one only matters for as long as something shorter is still waiting behind it. The moment a taller bar shows up, the shorter ones are done. Forget them.",
+     "start": 11.37,
+     "end": 23.156
+    },
+    {
+     "text": "That single refusal is what turns an answer that takes a long time into one that doesn't.",
+     "start": 23.576,
+     "end": 29.994
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "559876aa3b65a5bf",
+   "takes": [
+    "968e784808db7cb90e8a",
+    "cdcec9245b08b834d717",
+    "e005e26b9032c413d2ca"
+   ],
+   "duration": 34.714,
+   "lines": [
+    {
+     "text": "Picture the obvious way to solve this: stand at bar two, and look at every bar to its right until you find one taller.",
+     "start": 0.15,
+     "end": 8.016
+    },
+    {
+     "text": "Watch what happens on a run that only gets shorter, bar after bar. You never find a taller one, so you walk all the way to the end. And you do that from every single starting bar.",
+     "start": 8.436,
+     "end": 20.351
+    },
+    {
+     "text": "That's the trap a lot of people fall into: it feels like a reasonable scan, but it repeats the same ground over and over, and the repeats pile up fast as the row gets longer.",
+     "start": 20.771,
+     "end": 34.364
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "0b1a118a4bd9f4d2",
+   "takes": [
+    "4c706aad66016acfce82",
+    "f50eca9d3da2ce16597b",
+    "cd99a4b904e6f7652ee3"
+   ],
+   "duration": 32.138,
+   "lines": [
+    {
+     "text": "So instead of scanning forward from each bar, scan once, left to right, and carry a small record of what you've seen.",
+     "start": 0.15,
+     "end": 8.883
+    },
+    {
+     "text": "The rule: keep that record strictly taller at the bottom than the top. The instant a new bar shows up that's taller than what's sitting on top, throw the top away first.",
+     "start": 9.303,
+     "end": 21.537
+    },
+    {
+     "text": "Why throw it away? Because that discarded bar just got its answer. The thing that knocked it off is the next taller bar it was waiting for.",
+     "start": 21.957,
+     "end": 31.788
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c424aaae6948879d",
+   "takes": [
+    "ac3b437eff74c3a03bda",
+    "d152257b95148be7a9a3",
+    "cff4aa17fe9ac5e88d37"
+   ],
+   "duration": 32.11,
+   "lines": [
+    {
+     "text": "Walk through it with me on five, three, four, two, six, left to right.",
+     "start": 0.15,
+     "end": 7.062
+    },
+    {
+     "text": "Five goes on. Three is shorter, so it goes on top of five. Four arrives: taller than three, so three comes off, and four learns its answer was four. Four stays, since it's shorter than five. Two goes on top of four.",
+     "start": 7.482,
+     "end": 27.562
+    },
+    {
+     "text": "Now watch closely, because six is about to arrive.",
+     "start": 27.982,
+     "end": 31.76
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "02fb8b0563c6ac1e",
+   "takes": [
+    "f44f61d29c1730111c52",
+    "0bcbc24e20b352723a65",
+    "9b5a0f132baf00b183d7"
+   ],
+   "duration": 26.896,
+   "lines": [
+    {
+     "text": "Four popped three the moment it arrived, so three already knows its answer is four.",
+     "start": 0.15,
+     "end": 5.398
+    },
+    {
+     "text": "Nothing else has popped yet, because nothing taller has shown up since. Five, four and two are still waiting, bottom to top, each one shorter than the one below it.",
+     "start": 5.818,
+     "end": 18.849
+    },
+    {
+     "text": "That's the pattern to hold onto: an element only leaves once something taller forces it out, never before.",
+     "start": 19.269,
+     "end": 26.546
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That's the pattern to hold onto: an element only leaves once something taller forces it out, never before.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "05": {
+   "hash": "40822c04a788f44a",
+   "takes": [
+    "6d5b72c721269ee5454d",
+    "623a0a4331500ec77702",
+    "ce22c7d65c5844013d1b"
+   ],
+   "duration": 34.647,
+   "lines": [
+    {
+     "text": "Here's the question this picture is really answering: how many times, in total, across the whole row, does a bar get thrown away?",
+     "start": 0.15,
+     "end": 7.773
+    },
+    {
+     "text": "Look at it this way. A bar can only be thrown away if it was placed first. So the number of throwaways can never be more than the number of placements.",
+     "start": 8.323,
+     "end": 18.865
+    },
+    {
+     "text": "Add those two counts together, placements plus throwaways, and neither one can run past the number of bars. That's the whole argument \u2014 no bar gets charged twice, no matter how the throwing-away happens to cluster.",
+     "start": 19.585,
+     "end": 34.297
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "077723bce067b3e6",
+   "takes": [
+    "21e2140a6cbafa0e2d58",
+    "cd737a88bc2863ea32ac"
+   ],
+   "duration": 31.674,
+   "lines": [
+    {
+     "text": "Now change the question. Instead of one answer per bar, imagine a window of a fixed width sliding across the row, one step at a time, and at each stop you want the tallest bar currently inside it.",
+     "start": 0.15,
+     "end": 14.53
+    },
+    {
+     "text": "The obvious move is to look at every bar in the window, every time it slides. Watch how much of that looking is wasted: most of the bars inside the new window were already inside the old one. You just looked at them a moment ago.",
+     "start": 14.95,
+     "end": 31.324
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "0fab26e6eaa7d761",
+   "takes": [
+    "228edeef746d315764cf",
+    "42264449ba2f9aef4d0a",
+    "46b33032d939f99a9d03",
+    "2a29e32025bf0dd225da"
+   ],
+   "duration": 43.541,
+   "lines": [
+    {
+     "text": "The fix reuses the exact same discipline as before, just applied at both ends of a two-sided record instead of one.",
+     "start": 0.15,
+     "end": 8.341
+    },
+    {
+     "text": "At the back: the instant a new bar arrives taller than what's waiting there, the shorter ones behind it are finished \u2014 they can never win the window's top spot while this new one is still in range.",
+     "start": 8.761,
+     "end": 22.921
+    },
+    {
+     "text": "At the front: once the oldest surviving bar's position has slid out of the window entirely, it's gone too, whether or not anything beat it.",
+     "start": 23.341,
+     "end": 33.589
+    },
+    {
+     "text": "Watch the front position specifically. Because of both rules together, it never holds anything but the current window's tallest bar.",
+     "start": 34.009,
+     "end": 43.191
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "b4f3d26f5c877ff9",
+   "takes": [
+    "bc6d12620290ca725d58",
+    "b59091e5b44242063cd0"
+   ],
+   "duration": 16.642,
+   "lines": [
+    {
+     "text": "Trace a window of width three over one, three, negative one, negative three, five, up to the moment it first lands on negative one, negative three, five.",
+     "start": 0.15,
+     "end": 13.262
+    },
+    {
+     "text": "What's sitting in the record at that instant?",
+     "start": 13.682,
+     "end": 16.292
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "e0bfa7fbe626904b",
+   "takes": [
+    "783859ea48c2038589e5",
+    "216a2199d3ad6e525e9b",
+    "942a09ff4404b978fa4c"
+   ],
+   "duration": 37.358,
+   "lines": [
+    {
+     "text": "Five just arrived, and it's taller than every bar still inside the window, so it clears all of them out in one step, back to front: three, negative one, and negative three all lose to it in turn.",
+     "start": 0.15,
+     "end": 16.032
+    },
+    {
+     "text": "What's left is just five's own position. One entry, and it's already the window's maximum, with nothing left over from the earlier bars at all.",
+     "start": 16.452,
+     "end": 26.0
+    },
+    {
+     "text": "Notice the record can shrink to a single entry even though the window holds three bars \u2014 the record only ever holds bars that could still win.",
+     "start": 26.42,
+     "end": 37.008
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "0b6e8ac9bf518045",
+   "takes": [
+    "d783f58b96bbde71fbac",
+    "7478ab82edbb10af2189",
+    "338bb79c6f2e17fe5ebe"
+   ],
+   "duration": 46.729,
+   "lines": [
+    {
+     "text": "You've now seen two different reasons a sequence of operations can come out cheap on average, and it's worth telling them apart, because they don't generalize the same way.",
+     "start": 0.15,
+     "end": 10.223
+    },
+    {
+     "text": "Earlier in this course, an array amortized its cost by committing to a schedule ahead of time: double the size, and the rare expensive resize pays for all the cheap steps since the last one. The schedule is fixed before a single element arrives.",
+     "start": 10.643,
+     "end": 29.404
+    },
+    {
+     "text": "Here, nothing is scheduled in advance. The bound falls out of a rule enforced fresh on every single step: never let the record stop being ordered. The data itself decides when something gets thrown out, not a plan written beforehand.",
+     "start": 30.124,
+     "end": 46.379
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d8e7f1a9e92a9c51",
+   "takes": [
+    "077836bde0393e5f9a5d",
+    "bafa64c82b57d8430921",
+    "2022824e6e2d18cbfc6f"
+   ],
+   "duration": 46.342,
+   "lines": [
+    {
+     "text": "So does any of this actually hold up under scrutiny, or is it just a nice argument scrawled on a board somewhere?",
+     "start": 0.15,
+     "end": 8.498
+    },
+    {
+     "text": "Run both techniques against the slow, obvious method, on the same inputs, and check every single answer. They match every time \u2014 this isn't a different algorithm with a different outcome, it's the same answer, found by throwing away less work.",
+     "start": 9.048,
+     "end": 29.808
+    },
+    {
+     "text": "And watch the count of placements plus throwaways as the row gets longer, from a hundred bars to a hundred thousand. It barely grows faster than the row itself. That's the whole promise of this topic, measured instead of just claimed.",
+     "start": 30.528,
+     "end": 45.992
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
