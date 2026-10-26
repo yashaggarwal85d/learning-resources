@@ -1,0 +1,363 @@
+{
+ "topic": "de.pandas-3-0-semantics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d0e27e426bb6a9bd",
+   "takes": [
+    "fda635fbb7762f537b4f",
+    "43138b4d5bef23cf773b"
+   ],
+   "duration": 19.743,
+   "lines": [
+    {
+     "text": "A shared memory format was just introduced, and here's the first library in this chapter actually said to be built on it.",
+     "start": 0.15,
+     "end": 9.014
+    },
+    {
+     "text": "Being built on something and being changed by it aren't automatically the same claim. Worth checking directly rather than taking the label at face value.",
+     "start": 9.434,
+     "end": 19.393
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "93d73f0c05769af6",
+   "takes": [
+    "ec18bc6712ca13852a11",
+    "835a8ab7be87a741b0d0"
+   ],
+   "duration": 21.312,
+   "lines": [
+    {
+     "text": "Here's the first real change, and it's about as basic as it gets.",
+     "start": 0.15,
+     "end": 5.107
+    },
+    {
+     "text": "A column of plain text values used to land in the exact same bucket as literally any other kind of value at all. Now text gets its own dedicated home, built straight on those buffers when they're actually available.",
+     "start": 5.527,
+     "end": 20.962
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "af3aeec550edb247",
+   "takes": [
+    "6883ecddc67d2885afdd",
+    "44b95ae562cc028a73ab"
+   ],
+   "duration": 21.564,
+   "lines": [
+    {
+     "text": "Worth guessing at before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.83
+    },
+    {
+     "text": "This new, buffer-backed home for text sits right next to this chapter's own strict, typed tools for marking a value missing. Does it actually borrow their strict marker, or does it keep the old, looser one instead?",
+     "start": 4.25,
+     "end": 21.214
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "ba4041a184b78f5c",
+   "takes": [
+    "b1daa428d88e7a6d92db",
+    "19c1beaa04ef04e004e2"
+   ],
+   "duration": 18.839,
+   "lines": [
+    {
+     "text": "It keeps the old, looser marker, on purpose.",
+     "start": 0.15,
+     "end": 3.721
+    },
+    {
+     "text": "Being built on stricter buffers underneath didn't force adopting the stricter rules on top of them \u2014 and keeping the familiar marker means code written years ago still recognizes a missing value the same way.",
+     "start": 4.141,
+     "end": 18.489
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "1463e3a107fe7dde",
+   "takes": [
+    "6e02f6c268af39db3f73",
+    "c8c50d68370e50717af7"
+   ],
+   "duration": 25.135,
+   "lines": [
+    {
+     "text": "Here's a bigger behavioral promise, and it's worth separating what's promised from what actually happens.",
+     "start": 0.15,
+     "end": 7.467
+    },
+    {
+     "text": "Pulling a piece out of a table is now guaranteed to never let that piece secretly change the table it came from. But underneath that guarantee, nothing is actually duplicated in memory until the exact moment something really gets changed.",
+     "start": 7.887,
+     "end": 24.785
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c8bfe0fc8dd3576c",
+   "takes": [
+    "c25416bab9764422d5aa",
+    "0f26586269333b3251b1"
+   ],
+   "duration": 24.286,
+   "lines": [
+    {
+     "text": "Here's a habit that used to work, sometimes, by accident.",
+     "start": 0.15,
+     "end": 4.521
+    },
+    {
+     "text": "Updating a table in two separate steps never quietly succeeds any more, confirmed directly against the real original table. And the warning built to catch exactly this kind of mistake is genuinely retired \u2014 replaced by one with a sharper, more specific name.",
+     "start": 4.941,
+     "end": 23.936
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Updating a table in two separate steps never quietly succeeds any more, confirmed directly against the real original table. And the warning built to catch exactly this kind of mistake is genuinely retired \u2014 replaced by one with a sharper, more specific name.",
+     "said": "any more",
+     "heard": "anymore"
+    }
+   ]
+  },
+  "06": {
+   "hash": "6ec107afc01b6bbe",
+   "takes": [
+    "06ac77a8cedee4bc0638",
+    "008a9554c2f2b2bc2b8c"
+   ],
+   "duration": 24.211,
+   "lines": [
+    {
+     "text": "Here's where two things that sound like the same feature turn out not to be.",
+     "start": 0.15,
+     "end": 4.987
+    },
+    {
+     "text": "The new default home for text from a few moments ago, and an older, separate option that also claims to be Arrow-backed text. Side by side, measured directly, they don't even print the same type name, and they disagree on their missing-value marker too.",
+     "start": 5.407,
+     "end": 23.861
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f1a666bce4395be7",
+   "takes": [
+    "22dede914a42b98601c5",
+    "5ef681b47fa368c4065e"
+   ],
+   "duration": 22.79,
+   "lines": [
+    {
+     "text": "And here's the case where the opposite happens entirely.",
+     "start": 0.15,
+     "end": 3.785
+    },
+    {
+     "text": "A nullable number built the older way, and that same kind of number built on the newer buffers, use the exact identical missing-value marker. What actually decides the marker isn't which buffers sit underneath \u2014 it's whether the type is strictly nullable at all.",
+     "start": 4.205,
+     "end": 22.44
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c80afbd65e8da664",
+   "takes": [
+    "8fae80b060a5e7244966",
+    "aefa6bec52e508cdd88d"
+   ],
+   "duration": 25.253,
+   "lines": [
+    {
+     "text": "Here's a quieter change, in the same spirit as something this chapter already covered once.",
+     "start": 0.15,
+     "end": 5.621
+    },
+    {
+     "text": "Turning a date written as text into an actual date value used to always assume the single finest level of detail possible, no matter how little detail the text itself actually carried. Now the level of detail used actually depends on what's really there.",
+     "start": 6.041,
+     "end": 24.903
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "622b5a930937501c",
+   "takes": [
+    "1e9fc4dc3f250acc2275",
+    "eff192a68c3d2aeb9983"
+   ],
+   "duration": 24.481,
+   "lines": [
+    {
+     "text": "One last question worth sitting with before moving on.",
+     "start": 0.15,
+     "end": 2.991
+    },
+    {
+     "text": "A change this disruptive doesn't usually arrive with zero warning. The release that shipped right before this one offered two separate switches to rehearse this exact behavior early \u2014 and measured directly, on this very release, one of them still actively speaks up, while the other has gone completely silent.",
+     "start": 3.411,
+     "end": 24.131
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "cd424a3a8f95f265",
+   "takes": [
+    "cdd15270637c98775519",
+    "ae97805bee3bbaae07d2",
+    "25c47872dc16808c18ff"
+   ],
+   "duration": 32.951,
+   "lines": [
+    {
+     "text": "Pulling it all back together now.",
+     "start": 0.15,
+     "end": 2.71
+    },
+    {
+     "text": "Text gets its own dedicated home, deliberately kept familiar on missing values. Every piece pulled from a table behaves like a copy, lazily, underneath.",
+     "start": 3.13,
+     "end": 14.748
+    },
+    {
+     "text": "The old two-step update habit is retired for good, under a sharper new name. Two text options differ in ways that matter; two number options don't differ at all. And one release back, this was already being rehearsed.",
+     "start": 15.168,
+     "end": 32.601
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "a005d0ed828c27cc",
+   "takes": [
+    "0a365692923adb3dcbb7",
+    "63fc73e16579dd5e3ab6",
+    "e4e6ac7ab2e3e793cde0"
+   ],
+   "duration": 27.627,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.929
+    },
+    {
+     "text": "A team's existing code checks a column's type against the old catch-all bucket to find its text columns, and still leans on the old two-step update habit, guarded by an extra defensive copy.",
+     "start": 5.349,
+     "end": 18.969
+    },
+    {
+     "text": "Both habits are about to quietly stop doing what the team assumes. What actually breaks, and what's the one-line fix for each?",
+     "start": 19.389,
+     "end": 27.277
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "e789ff86da162512",
+   "takes": [
+    "db5f2190d4e48209250e",
+    "a4422470fc0bebca386d"
+   ],
+   "duration": 21.075,
+   "lines": [
+    {
+     "text": "The type check stops matching entirely, since text no longer lands in that old catch-all bucket \u2014 check against the new dedicated type instead.",
+     "start": 0.15,
+     "end": 9.539
+    },
+    {
+     "text": "The two-step habit never silently worked to begin with, and that defensive copy is now pure noise \u2014 one single-step update replaces both.",
+     "start": 9.959,
+     "end": 20.725
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
