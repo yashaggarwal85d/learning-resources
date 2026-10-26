@@ -1,0 +1,379 @@
+{
+ "topic": "de.runtime-schema-validation",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "884cc980146e3caf",
+   "takes": [
+    "c43c0c947d4520f8cf40",
+    "64e6278c0f321d27f8a6"
+   ],
+   "duration": 21.627,
+   "lines": [
+    {
+     "text": "Every layer built so far has one thing in common: a human decided, ahead of time, which inputs were worth checking.",
+     "start": 0.15,
+     "end": 7.99
+    },
+    {
+     "text": "A live system doesn't get that luxury. Something has to stand at the actual edge and judge whatever shows up there, sight unseen. This is that something.",
+     "start": 8.41,
+     "end": 21.277
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "add13de38ce26110",
+   "takes": [
+    "868eaf5acc7902c04953",
+    "9229030995136038218e",
+    "0b4d5e6abcf3b72e15b3"
+   ],
+   "duration": 19.291,
+   "lines": [
+    {
+     "text": "Here's one record, checked against one declared shape.",
+     "start": 0.15,
+     "end": 3.705
+    },
+    {
+     "text": "A well-formed record gets coerced cleanly into the right types without complaint.",
+     "start": 4.125,
+     "end": 9.046
+    },
+    {
+     "text": "A record with one bad field gets rejected outright, and the error names that exact field directly, not some generic failure.",
+     "start": 9.466,
+     "end": 18.941
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "747210b9a5295ddb",
+   "takes": [
+    "3ccc61b5b8c5be65d428",
+    "eb427c63f46d18da81c4",
+    "8df84c9f1c1b48b6adb8"
+   ],
+   "duration": 20.219,
+   "lines": [
+    {
+     "text": "Worth asking whether that check stays affordable once the volume grows.",
+     "start": 0.15,
+     "end": 4.39
+    },
+    {
+     "text": "The identical record check, run first against one batch of records, then against twice as many.",
+     "start": 4.81,
+     "end": 11.41
+    },
+    {
+     "text": "The time it takes roughly doubles too. The cost tracks the record count directly, not some steeper curve hiding underneath.",
+     "start": 11.83,
+     "end": 19.869
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b71ff0d447316646",
+   "takes": [
+    "6883ecddc67d2885afdd",
+    "7f8f6c5623d8f6bf7b61"
+   ],
+   "duration": 17.48,
+   "lines": [
+    {
+     "text": "Worth guessing at before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.83
+    },
+    {
+     "text": "One set of column checks, written once, already works against one kind of table. Does checking a completely different kind of table underneath actually need its own separately written version?",
+     "start": 4.25,
+     "end": 17.13
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "52220fd84c7442d6",
+   "takes": [
+    "42486e95e0a754e5ae86",
+    "e1bf10ec3680175845f1"
+   ],
+   "duration": 15.727,
+   "lines": [
+    {
+     "text": "It doesn't, and here's precisely why.",
+     "start": 0.15,
+     "end": 2.97
+    },
+    {
+     "text": "The identical declared column checks, differing only in which underlying table type they're pointed at, genuinely validate both kinds of table without being rewritten for either.",
+     "start": 3.39,
+     "end": 15.377
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "0b954e92881b72b2",
+   "takes": [
+    "b19257a18f8c49dc43db",
+    "1dcea3391793a265b4d0",
+    "51ddc5f57dafd2c6d381"
+   ],
+   "duration": 21.635,
+   "lines": [
+    {
+     "text": "Here's that claim shown directly, not just argued for.",
+     "start": 0.15,
+     "end": 3.952
+    },
+    {
+     "text": "The same declared fields and the same range check, run first against one real table, then against a second, differently built one.",
+     "start": 4.372,
+     "end": 14.006
+    },
+    {
+     "text": "Neither needs its own version of the check. Both validate cleanly against the exact same declaration.",
+     "start": 14.426,
+     "end": 21.285
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5327c1248eacd72f",
+   "takes": [
+    "ba9a822173e2ce2de20d",
+    "6823e8da1c34b6070896",
+    "6d575c7439fb97635007"
+   ],
+   "duration": 21.941,
+   "lines": [
+    {
+     "text": "Now the same check, deliberately pointed at data that's actually wrong.",
+     "start": 0.15,
+     "end": 5.656
+    },
+    {
+     "text": "One column value pushed outside its declared range. The check doesn't quietly let it through.",
+     "start": 6.076,
+     "end": 12.707
+    },
+    {
+     "text": "It rejects that row outright and names the exact column responsible, not a vague complaint about the table as a whole.",
+     "start": 13.127,
+     "end": 21.591
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "0fff3569da129e33",
+   "takes": [
+    "26d94f29152c02707bee",
+    "b8d7811de32c4b4d09d5",
+    "c8068ea1d1fefe9c7ca6"
+   ],
+   "duration": 20.953,
+   "lines": [
+    {
+     "text": "One more cost worth measuring directly rather than assuming.",
+     "start": 0.15,
+     "end": 3.592
+    },
+    {
+     "text": "The identical range check, run two different ways: once per value inside an ordinary loop, and once as a single operation across the entire column at once.",
+     "start": 4.012,
+     "end": 14.878
+    },
+    {
+     "text": "Measured directly, the loop costs several times more than that one single pass.",
+     "start": 15.298,
+     "end": 20.603
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8b5acc3b67dd93c2",
+   "takes": [
+    "dbf46a3deb410bb43225",
+    "7240190b53bfe22d36e8",
+    "c7f11e5ea585192b3942"
+   ],
+   "duration": 30.717,
+   "lines": [
+    {
+     "text": "Here's the one layer this sandbox names honestly rather than runs.",
+     "start": 0.15,
+     "end": 4.808
+    },
+    {
+     "text": "One real, sourced framework built around declared checks and a production run step; a second real, sourced framework built around a written-out scan against a live data source.",
+     "start": 5.228,
+     "end": 18.422
+    },
+    {
+     "text": "Neither needs a full production deployment inside this sandbox to describe accurately what it checks and how \u2014 named directly here, not faked and not silently skipped.",
+     "start": 18.842,
+     "end": 30.367
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "46bf650c6917d302",
+   "takes": [
+    "cdd15270637c98775519",
+    "d846ebab444f2b529ee9",
+    "183c4822534645f00cd9",
+    "a5ec16d93a8ec0cb3233"
+   ],
+   "duration": 45.21,
+   "lines": [
+    {
+     "text": "Pulling it all back together now.",
+     "start": 0.15,
+     "end": 2.71
+    },
+    {
+     "text": "A record check coerces what it safely can and names exactly what it can't, its cost scaling with record count directly rather than some worse curve.",
+     "start": 3.13,
+     "end": 13.496
+    },
+    {
+     "text": "A whole-table check validates an entire table at once, the identical declaration genuinely working across two differently built kinds of table, and genuinely rejecting a real violation by name.",
+     "start": 13.916,
+     "end": 27.15
+    },
+    {
+     "text": "Running that check row by row costs measurably more than running it once, across the whole table. And a production-scale scan checks data that's already landed \u2014 named honestly here, not run, the same kind of disclosed gap the last topic also had.",
+     "start": 27.57,
+     "end": 44.86
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "69a1364d532a10bf",
+   "takes": [
+    "0a365692923adb3dcbb7",
+    "d5d2d6d032b03602cb98",
+    "e4027200bbfddb57028c"
+   ],
+   "duration": 26.458,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.929
+    },
+    {
+     "text": "A pipeline checks every record one at a time with a record check, inside a loop running over an entire batch, and a separate downstream tool re-checks that same batch all over again afterward.",
+     "start": 5.349,
+     "end": 20.468
+    },
+    {
+     "text": "What's actually misplaced here, and where should each of those checks really sit?",
+     "start": 20.888,
+     "end": 26.108
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.6,
+   "wpm": 132,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A pipeline checks every record one at a time with a record check, inside a loop running over an entire batch, and a separate downstream tool re-checks that same batch all over again afterward.",
+     "said": "re checks",
+     "heard": "rechecks"
+    }
+   ]
+  },
+  "10a": {
+   "hash": "9e02608b02a801ac",
+   "takes": [
+    "7412f87ef95f5d99147f",
+    "ef9e5c37db8b2b154af6"
+   ],
+   "duration": 27.146,
+   "lines": [
+    {
+     "text": "Two separate things, and both were measured directly earlier in this very topic.",
+     "start": 0.15,
+     "end": 5.823
+    },
+    {
+     "text": "The per-record loop is exactly the costlier row-by-row pattern measured earlier; a single whole-table check does the identical job for measurably less. The downstream tool belongs after that check, auditing data already proven sound, not repeating the same boundary check a moment before it.",
+     "start": 6.243,
+     "end": 26.796
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
