@@ -1,0 +1,379 @@
+{
+ "topic": "de.pages-slotted-pages-tuple",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "10edb59cf0c95a99",
+   "takes": [
+    "9da97b8b391067a7a198",
+    "d3f661c285f46dde8226"
+   ],
+   "duration": 17.461,
+   "lines": [
+    {
+     "text": "Every tool this course has reached for so far has called a real database engine without once asking what that engine actually keeps its data in.",
+     "start": 0.15,
+     "end": 9.423
+    },
+    {
+     "text": "Underneath every one of them sits the exact same physical unit. This topic is finally opening it.",
+     "start": 9.843,
+     "end": 17.111
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "735e12331bd3d4f3",
+   "takes": [
+    "dbbfd27fd4ede41652f1",
+    "2966448dbbfd406f8829",
+    "0fb44fc2fc2b3e250455"
+   ],
+   "duration": 23.707,
+   "lines": [
+    {
+     "text": "Here's one, read directly off a live table rather than drawn from memory.",
+     "start": 0.15,
+     "end": 5.56
+    },
+    {
+     "text": "A fixed header comes first, tracking where the free space in the middle begins and ends.",
+     "start": 5.98,
+     "end": 12.143
+    },
+    {
+     "text": "Two regions grow toward each other from opposite sides of that free space until they meet, and that meeting point is literally how full the page is.",
+     "start": 12.563,
+     "end": 23.357
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "5415e1e4b4f5e326",
+   "takes": [
+    "a8dac7eb99d841807220",
+    "0026765cc74fd04c45cf"
+   ],
+   "duration": 14.503,
+   "lines": [
+    {
+     "text": "One of those two growing regions is worth opening further.",
+     "start": 0.15,
+     "end": 4.066
+    },
+    {
+     "text": "Each entry in it is tiny on purpose: just a starting point and a length, nothing else, one entry per row stored on the page.",
+     "start": 4.486,
+     "end": 14.153
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "dd82237a2345a018",
+   "takes": [
+    "4d13e9b7cbbe7fc531a7",
+    "ed7748724d8be89dff33",
+    "46123b224f05cc14de00"
+   ],
+   "duration": 19.446,
+   "lines": [
+    {
+     "text": "Worth reasoning through before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.184
+    },
+    {
+     "text": "Reclaiming space left behind by a deleted row sometimes means physically sliding a surviving row to a different spot on the page.",
+     "start": 3.604,
+     "end": 13.047
+    },
+    {
+     "text": "When that happens, does the handle everything else uses to find that row change along with it?",
+     "start": 13.467,
+     "end": 19.096
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "85b9ce1c111f3ba9",
+   "takes": [
+    "09062dd672eaf70e42dc",
+    "38ca0e60384ad59a3842"
+   ],
+   "duration": 22.191,
+   "lines": [
+    {
+     "text": "It doesn't, and the reason is exactly where that handle actually points.",
+     "start": 0.15,
+     "end": 5.261
+    },
+    {
+     "text": "That handle isn't the row's address. It's a small, fixed slot number that stays put, and the slot itself simply gets told where the row moved to. Nothing holding onto that slot number ever has to notice the row moved at all.",
+     "start": 5.681,
+     "end": 21.841
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That handle isn't the row's address. It's a small, fixed slot number that stays put, and the slot itself simply gets told where the row moved to. Nothing holding onto that slot number ever has to notice the row moved at all.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "05": {
+   "hash": "5b945daec99e1d92",
+   "takes": [
+    "b19257a18f8c49dc43db",
+    "318fa585ee5966a40743",
+    "fc9acc4cf531cadc9b8b"
+   ],
+   "duration": 21.686,
+   "lines": [
+    {
+     "text": "Here's that claim shown directly, not just argued for.",
+     "start": 0.15,
+     "end": 3.952
+    },
+    {
+     "text": "A real row, its deleted neighbors reclaimed by a real cleanup pass against this sandbox's own database.",
+     "start": 4.372,
+     "end": 12.341
+    },
+    {
+     "text": "Its stored position on the page genuinely changes. The handle used to find it, checked before and after, does not.",
+     "start": 12.761,
+     "end": 21.336
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "edf757861a6b21f0",
+   "takes": [
+    "ba9de379590ea6e72b78",
+    "372df282244efe45d7e9",
+    "8b8c94a7e96bd932468b"
+   ],
+   "duration": 23.398,
+   "lines": [
+    {
+     "text": "A different piece of that same header is worth checking the same way.",
+     "start": 0.15,
+     "end": 4.696
+    },
+    {
+     "text": "One row inserted with every column filled in, and a second with one column deliberately left empty.",
+     "start": 5.116,
+     "end": 12.994
+    },
+    {
+     "text": "Only the second one carries any marker at all for which columns are empty, and read directly, that marker names the exact column that's missing.",
+     "start": 13.414,
+     "end": 23.048
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a126250982cb33dc",
+   "takes": [
+    "d5c83fce5d069fc59bf2",
+    "329ed7f3839aedd83198",
+    "01a831b58969be735fa8"
+   ],
+   "duration": 28.515,
+   "lines": [
+    {
+     "text": "Now a genuinely large value, inserted for real rather than assumed to behave a certain way.",
+     "start": 0.15,
+     "end": 6.988
+    },
+    {
+     "text": "A page can't grow to fit it, so something has to give. What's actually left sitting in the main table once that value is too big to stay put?",
+     "start": 7.408,
+     "end": 17.87
+    },
+    {
+     "text": "Measured directly, what's left behind is a tiny marker, with the real value chopped into pieces and stored somewhere else entirely.",
+     "start": 18.42,
+     "end": 28.165
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "e06a9acd79c778ef",
+   "takes": [
+    "a6d108bdf0d012827e7d",
+    "0eb14e17f488b4797664"
+   ],
+   "duration": 26.005,
+   "lines": [
+    {
+     "text": "A different engine runs into the identical problem: a fixed page, and a value too big for it.",
+     "start": 0.15,
+     "end": 6.934
+    },
+    {
+     "text": "Named here directly from its own documentation rather than run in this sandbox, that engine reaches for a genuinely different fix: space set aside elsewhere for exactly this case, attached to the same row rather than filed away in a separate table.",
+     "start": 7.354,
+     "end": 25.655
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "c9de3e21f96925e1",
+   "takes": [
+    "1eb9fbe1f5d246d4d16f",
+    "9d5126d5516852c27967",
+    "faa1798db5675b037e5b",
+    "e2badfed6eeb30405e13"
+   ],
+   "duration": 41.768,
+   "lines": [
+    {
+     "text": "Pulling the whole topic back together.",
+     "start": 0.15,
+     "end": 2.623
+    },
+    {
+     "text": "A page's own five regions, read directly rather than assumed. A tiny per-row entry that's just a position and a length.",
+     "start": 3.043,
+     "end": 12.734
+    },
+    {
+     "text": "A real cleanup pass that moves a row's stored position while the handle used to find it stays exactly the same. A real missing-column marker that only exists when a column is actually missing.",
+     "start": 13.154,
+     "end": 27.015
+    },
+    {
+     "text": "A genuinely large value chopped into real pieces elsewhere, leaving only a small marker behind. And a different engine solving the identical oversized-value problem a different way.",
+     "start": 27.435,
+     "end": 41.418
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A real cleanup pass that moves a row's stored position while the handle used to find it stays exactly the same. A real missing-column marker that only exists when a column is actually missing.",
+     "said": "cleanup",
+     "heard": "clean up"
+    }
+   ]
+  },
+  "10": {
+   "hash": "3e641323bc39c7de",
+   "takes": [
+    "26ccb194aa63d1f0755f",
+    "38b38e0a94f3a81b4d11",
+    "0c2755892f25c8ee9ae4"
+   ],
+   "duration": 25.673,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through before the explanation lands.",
+     "start": 0.15,
+     "end": 4.964
+    },
+    {
+     "text": "A maintenance script holds onto one row's handle while a batch of unrelated updates runs elsewhere in the same table, and somewhere in the middle of that batch a cleanup pass runs too.",
+     "start": 5.384,
+     "end": 18.193
+    },
+    {
+     "text": "When the batch finishes, does the script's own held handle still point at the right row, and why?",
+     "start": 18.613,
+     "end": 25.323
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "905a4478b3c188f1",
+   "takes": [
+    "6056cf1b19a937ff03a6",
+    "d032f3d3d197aeb37b22"
+   ],
+   "duration": 29.201,
+   "lines": [
+    {
+     "text": "It still points at the right row, for exactly the reason this topic already measured directly.",
+     "start": 0.15,
+     "end": 6.637
+    },
+    {
+     "text": "A cleanup pass only ever updates where a slot's own stored position points within the page. It never changes which slot a given row occupies, and the script's handle names that slot, not a position. That's the identical stability this topic's own real measurement already proved.",
+     "start": 7.057,
+     "end": 28.851
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
