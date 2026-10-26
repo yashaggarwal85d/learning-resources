@@ -1,0 +1,389 @@
+{
+ "topic": "rust.middleware-ordering-as-semantics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1f2257a95be32f78",
+   "takes": [
+    "07b014088ece994e64bd",
+    "caa718ec404e7260898b"
+   ],
+   "duration": 20.967,
+   "lines": [
+    {
+     "text": "This abstraction's own documentation gives a specific example: one wrapper first, then a cap on how many run at once, admits a lot more work at once than the reverse order.",
+     "start": 0.15,
+     "end": 12.793
+    },
+    {
+     "text": "Does real code actually behave that way, or is that just a simplification written into the documentation?",
+     "start": 13.513,
+     "end": 20.617
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "8fd876bbbeace9e1",
+   "takes": [
+    "f47fafe0bd40cef547d3",
+    "9b298e0af3856e0ee012"
+   ],
+   "duration": 7.753,
+   "lines": [
+    {
+     "text": "It matches, almost exactly.",
+     "start": 0.15,
+     "end": 3.206
+    },
+    {
+     "text": "The documentation's own numbers hold up when you actually run it.",
+     "start": 3.626,
+     "end": 7.403
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0ec921dd57fc0a19",
+   "takes": [
+    "dcc2d1f97f55e9ebefcb",
+    "198fb903dfbf37654c12"
+   ],
+   "duration": 16.17,
+   "lines": [
+    {
+     "text": "Run it for real: with the first wrapper in front, well over a hundred requests were accepted right away;",
+     "start": 0.15,
+     "end": 7.594
+    },
+    {
+     "text": "with the order reversed, only exactly ten were \u2014 matching the documentation's own claim closely.",
+     "start": 8.014,
+     "end": 15.82
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 122,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: with the first wrapper in front, well over a hundred requests were accepted right away;",
+     "said": "wrapper",
+     "heard": "rapper"
+    }
+   ]
+  },
+  "03": {
+   "hash": "8259beb2b8ab2fbd",
+   "takes": [
+    "473960621e5d84d535e4",
+    "68de61062e75932fc774"
+   ],
+   "duration": 16.598,
+   "lines": [
+    {
+     "text": "Build a real pipeline with a deliberately slow authorization step, and a real deadline wrapped around the whole thing, authorization included.",
+     "start": 0.15,
+     "end": 9.478
+    },
+    {
+     "text": "Does a slow authorization step get caught by that deadline, the same way a slow piece of work would?",
+     "start": 10.198,
+     "end": 16.248
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "c81d4a779fbefda9",
+   "takes": [
+    "76a9ac559c9857eccda4",
+    "4674026b6ecc29184e65"
+   ],
+   "duration": 6.849,
+   "lines": [
+    {
+     "text": "Yes, it does.",
+     "start": 0.15,
+     "end": 1.661
+    },
+    {
+     "text": "The deadline bounds whatever sits inside it, authorization included.",
+     "start": 2.081,
+     "end": 6.499
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "7e55d1e414b3e9ef",
+   "takes": [
+    "047d69d3d3e9b03cf67c",
+    "473a3c7dc1a093d235ea"
+   ],
+   "duration": 12.697,
+   "lines": [
+    {
+     "text": "Run it for real: the real deadline fired well before the slow authorization step would have finished on its own,",
+     "start": 0.15,
+     "end": 7.375
+    },
+    {
+     "text": "because it wrapped that step too, not only the work behind it.",
+     "start": 7.795,
+     "end": 12.347
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "34daef184c787fcc",
+   "takes": [
+    "89bc9d84bf69f09175eb",
+    "2c334a1bebd50e7937d8"
+   ],
+   "duration": 18.098,
+   "lines": [
+    {
+     "text": "Now put that same deadline only around the work behind authorization, with the slow authorization step run ahead of it, outside its reach.",
+     "start": 0.15,
+     "end": 10.137
+    },
+    {
+     "text": "Does the slow authorization step still get caught, since the deadline is still somewhere in the pipeline?",
+     "start": 10.857,
+     "end": 17.748
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "1300e75840315df3",
+   "takes": [
+    "4c88f91afa16311b0a07",
+    "51451f2719d197d65171"
+   ],
+   "duration": 9.501,
+   "lines": [
+    {
+     "text": "No, it runs unbounded.",
+     "start": 0.15,
+     "end": 2.608
+    },
+    {
+     "text": "The deadline never sees the authorization step at all; only what it actually wraps.",
+     "start": 3.028,
+     "end": 9.151
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "4616dac11cdf082f",
+   "takes": [
+    "53ac4a335ec72cacd49b",
+    "c86daa5a658d0e1d6dfa"
+   ],
+   "duration": 17.344,
+   "lines": [
+    {
+     "text": "Run it for real: with the deadline moved inside, the slow authorization step ran all the way to completion, entirely unbounded,",
+     "start": 0.15,
+     "end": 10.126
+    },
+    {
+     "text": "taking far longer than the deadline's own limit \u2014 because the deadline never saw it at all.",
+     "start": 10.546,
+     "end": 16.994
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "0b1f2fb70cc05065",
+   "takes": [
+    "257ff2bea91822a652fc",
+    "afda8650326e87047e3b",
+    "818e4fb094a3fb0a5ab3"
+   ],
+   "duration": 16.718,
+   "lines": [
+    {
+     "text": "Wrap a piece of work that isn't safe to run twice in a real retry wrapper, with nothing guarding it.",
+     "start": 0.15,
+     "end": 7.688
+    },
+    {
+     "text": "It fails twice, then succeeds on the third attempt.",
+     "start": 8.108,
+     "end": 11.808
+    },
+    {
+     "text": "How many times does its own side effect actually run?",
+     "start": 12.528,
+     "end": 16.368
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "62ce839dcd587c40",
+   "takes": [
+    "7ec1239bee0fd1ec3ac6",
+    "548e02a1fa31a4e94bb9"
+   ],
+   "duration": 7.435,
+   "lines": [
+    {
+     "text": "Every single attempt.",
+     "start": 0.15,
+     "end": 2.016
+    },
+    {
+     "text": "Nothing stopped the side effect from running again, each time it was retried.",
+     "start": 2.436,
+     "end": 7.085
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "df167f6790e6539c",
+   "takes": [
+    "2254b8c20b1a4d58367c",
+    "f94cc150852d0ad7e996"
+   ],
+   "duration": 12.3,
+   "lines": [
+    {
+     "text": "Run it for real: the work's own side effect ran three separate times, once per attempt,",
+     "start": 0.15,
+     "end": 6.318
+    },
+    {
+     "text": "including the two attempts that failed, since nothing was guarding it from running again.",
+     "start": 6.738,
+     "end": 11.95
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "218255f458cd3e0d",
+   "takes": [
+    "9fdd970641d7dd14d5f0",
+    "407629692cc1ba0f5f95"
+   ],
+   "duration": 17.295,
+   "lines": [
+    {
+     "text": "Add one real check to that same piece of work, one that remembers it already ran, with the same two failures and the same retries.",
+     "start": 0.15,
+     "end": 9.64
+    },
+    {
+     "text": "The side effect now runs exactly once. One check, and all those repeats stopped mattering.",
+     "start": 10.36,
+     "end": 16.945
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "2225ea7712387804",
+   "takes": [
+    "740e8ef52a5e567a87d6",
+    "0d112ac7947964ce3377",
+    "a8f659f4351206fb60cb"
+   ],
+   "duration": 27.739,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a real wrapper placed first admits far more work at once than the reverse order, matching the documentation's own numbers.",
+     "start": 0.15,
+     "end": 10.644
+    },
+    {
+     "text": "A deadline bounds whatever it actually wraps, and moving it changes what it protects.",
+     "start": 11.064,
+     "end": 16.839
+    },
+    {
+     "text": "And a piece of work that isn't safe to run twice reruns its own side effect on every retry, unless a real check remembers it already ran.",
+     "start": 17.259,
+     "end": 27.389
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
