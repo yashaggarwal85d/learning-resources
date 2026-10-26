@@ -1,0 +1,376 @@
+{
+ "topic": "rust.slotted-pages-record-identity",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "321baf909c17feee",
+   "takes": [
+    "b9cb6c1612a84c9f7c2e",
+    "9caedefd43c3d710f95d",
+    "b368cad7a1c44d173b55"
+   ],
+   "duration": 28.666,
+   "lines": [
+    {
+     "text": "Add one real addition to last topic's page: a slot array, where each slot holds a physical offset and a length, and a record's own identity is that slot's own index, never its offset.",
+     "start": 0.15,
+     "end": 16.196
+    },
+    {
+     "text": "Delete a record sitting in the middle of the page, and compact it, physically closing the gap that deletion left behind.",
+     "start": 16.616,
+     "end": 23.436
+    },
+    {
+     "text": "Does that record's own identity survive being physically moved?",
+     "start": 24.156,
+     "end": 28.316
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "f308970e03224046",
+   "takes": [
+    "76a9ac559c9857eccda4",
+    "149e1ea9dc6d0d8f2d71"
+   ],
+   "duration": 8.828,
+   "lines": [
+    {
+     "text": "Yes, it does.",
+     "start": 0.15,
+     "end": 1.661
+    },
+    {
+     "text": "Its slot index stays exactly the same, even though its physical offset changes underneath it.",
+     "start": 2.081,
+     "end": 8.478
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.7,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "c39da4f79a8e5aef",
+   "takes": [
+    "ed3208c1ba7ebcf7ac0a",
+    "14ce0172b4ac86782441"
+   ],
+   "duration": 17.306,
+   "lines": [
+    {
+     "text": "Run it for real: insert several records of different lengths into the page, and every one of them reads back correctly through its own slot index.",
+     "start": 0.15,
+     "end": 9.51
+    },
+    {
+     "text": "Delete the middle one and compact the page, and the surviving records' own physical offsets genuinely change.",
+     "start": 9.93,
+     "end": 16.956
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "b6d1b0f27b7c7e1a",
+   "takes": [
+    "05a844300156f738d13f",
+    "d3c1f2906f0708a6cea7"
+   ],
+   "duration": 8.237,
+   "lines": [
+    {
+     "text": "Look closely at those same two surviving records.",
+     "start": 0.15,
+     "end": 3.237
+    },
+    {
+     "text": "Did compacting the page change their own slot indices at all?",
+     "start": 3.957,
+     "end": 7.887
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "f4a2413fc9bafee8",
+   "takes": [
+    "e71ff3e0eb8fdb5b2f3d",
+    "ae2f51bb322ff58c0972"
+   ],
+   "duration": 9.107,
+   "lines": [
+    {
+     "text": "No, neither one changed.",
+     "start": 0.15,
+     "end": 2.513
+    },
+    {
+     "text": "Each record's own slot index stayed exactly what it was before the deletion.",
+     "start": 2.933,
+     "end": 8.757
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "ea96e1bb2416b369",
+   "takes": [
+    "2fbc9bcfb19557258f75"
+   ],
+   "duration": 11.261,
+   "lines": [
+    {
+     "text": "Run it for real: after compaction, the surviving records' own physical offsets had changed, but their own slot indices had not moved at all.",
+     "start": 0.15,
+     "end": 10.911
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.3,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "0dac3032b49d459a",
+   "takes": [
+    "c66f13e76afc352b2638",
+    "aac3a91391445f6d8ce0"
+   ],
+   "duration": 14.207,
+   "lines": [
+    {
+     "text": "Now read each surviving record back, by that same slot index, after the compaction that physically moved it.",
+     "start": 0.15,
+     "end": 7.683
+    },
+    {
+     "text": "Does it still return the exact same content it held before the move?",
+     "start": 8.403,
+     "end": 13.857
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "1ce7ca09ac10cf32",
+   "takes": [
+    "86c4d967cf9ace0e8005",
+    "b4105c0b123ded5d8cfb"
+   ],
+   "duration": 8.051,
+   "lines": [
+    {
+     "text": "Yes, exactly the same content.",
+     "start": 0.15,
+     "end": 2.439
+    },
+    {
+     "text": "The slot index was never tied to the old physical offset in the first place.",
+     "start": 2.859,
+     "end": 7.701
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.5,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "03f95a1721f461c1",
+   "takes": [
+    "9858ceaa1d87ee3fe7de"
+   ],
+   "duration": 11.506,
+   "lines": [
+    {
+     "text": "Run it for real: reading by slot index after compaction returned the exact same content as before, for every surviving record, byte for byte.",
+     "start": 0.15,
+     "end": 11.156
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 125,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: reading by slot index after compaction returned the exact same content as before, for every surviving record, byte for byte.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "Run it for real: reading by slot index after compaction returned the exact same content as before, for every surviving record, byte for byte.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "07": {
+   "hash": "1d60f8857c48b74b",
+   "takes": [
+    "3a14c19a69a7e85ffd74",
+    "15b9348e3b5218cd4819"
+   ],
+   "duration": 8.722,
+   "lines": [
+    {
+     "text": "Now try to insert one more record, one too large to fit in whatever free space is left on the page.",
+     "start": 0.15,
+     "end": 6.799
+    },
+    {
+     "text": "What happens?",
+     "start": 7.519,
+     "end": 8.372
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "47dec55450258cf1",
+   "takes": [
+    "713900b20afe77f1a6e7",
+    "4cc088a0c922213363e2"
+   ],
+   "duration": 7.46,
+   "lines": [
+    {
+     "text": "The insert is rejected cleanly.",
+     "start": 0.15,
+     "end": 2.209
+    },
+    {
+     "text": "Every record already on the page stays exactly as it was.",
+     "start": 2.629,
+     "end": 7.11
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c87c4840c631792e",
+   "takes": [
+    "36a43766163f9ef5229e"
+   ],
+   "duration": 12.874,
+   "lines": [
+    {
+     "text": "Run it for real: the oversized insert was rejected cleanly, and every record already on the page, read back by its own slot index, was still exactly intact.",
+     "start": 0.15,
+     "end": 12.524
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "29e7ee4232fe7867",
+   "takes": [
+    "ec1982e9e37e36ebe7a8",
+    "a0dfc1f84ec5ae101fd2"
+   ],
+   "duration": 24.634,
+   "lines": [
+    {
+     "text": "The documentation this page design is modeled on makes a stronger claim still: because a page's own size is fixed, a value too large to fit can't just spill onto the next page.",
+     "start": 0.15,
+     "end": 13.387
+    },
+    {
+     "text": "It has to be compressed, or broken up and stored somewhere else entirely. That's the real reason a whole separate storage mechanism exists for oversized values.",
+     "start": 13.807,
+     "end": 24.284
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "8e931dcc8e8c906c",
+   "takes": [
+    "c084ed1261f0fd7c2b57",
+    "4761f89397d3d7e04a03",
+    "83de93c6868add560d38"
+   ],
+   "duration": 33.626,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: giving a record a name that never changes, separate from wherever it happens to physically sit, is the entire reason this indirection exists.",
+     "start": 0.15,
+     "end": 13.772
+    },
+    {
+     "text": "Move the bytes during compaction all you like; the name never has to be told.",
+     "start": 14.192,
+     "end": 20.063
+    },
+    {
+     "text": "And when something simply can't fit, the right answer is a clean rejection, not a corrupted page, which is exactly why oversized values end up living somewhere else altogether.",
+     "start": 20.483,
+     "end": 33.276
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
