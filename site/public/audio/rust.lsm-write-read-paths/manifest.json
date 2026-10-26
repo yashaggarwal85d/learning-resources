@@ -1,0 +1,488 @@
+{
+ "topic": "rust.lsm-write-read-paths",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7076eb1e0ee26e01",
+   "takes": [
+    "2638d3ae2ac18775cbc9",
+    "4c6d3484eb6ae99a0012",
+    "a9648e3869f95fb44823"
+   ],
+   "duration": 18.493,
+   "lines": [
+    {
+     "text": "A key's value gets written, and then its memtable gets flushed to an SSTable.",
+     "start": 0.15,
+     "end": 5.224
+    },
+    {
+     "text": "That same key is then overwritten, but the new write never gets flushed anywhere.",
+     "start": 5.644,
+     "end": 10.462
+    },
+    {
+     "text": "Which value does a lookup actually return: the old, flushed one, or the new, unflushed one?",
+     "start": 11.182,
+     "end": 18.143
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.2857142857142857,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A key's value gets written, and then its memtable gets flushed to an SSTable.",
+     "said": "memtable",
+     "heard": "mem table"
+    },
+    {
+     "line": "A key's value gets written, and then its memtable gets flushed to an SSTable.",
+     "said": "sstable",
+     "heard": "ss table"
+    },
+    {
+     "line": "That same key is then overwritten, but the new write never gets flushed anywhere.",
+     "said": "write",
+     "heard": "rite"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "295ca38e09c4cf9f",
+   "takes": [
+    "c6e8ddbe1eed46e6fd18",
+    "170f404c9c8c4bf0dc7a"
+   ],
+   "duration": 7.589,
+   "lines": [
+    {
+     "text": "The new one, genuinely.",
+     "start": 0.15,
+     "end": 1.582
+    },
+    {
+     "text": "A lookup checks the newest structure first, and that structure is the active memtable.",
+     "start": 2.002,
+     "end": 7.239
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 142,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A lookup checks the newest structure first, and that structure is the active memtable.",
+     "said": "memtable",
+     "heard": "mem table"
+    }
+   ]
+  },
+  "02": {
+   "hash": "488ece7f3565b1b8",
+   "takes": [
+    "bedd33b6127f31153a53",
+    "c3370317847ffcab9b4d"
+   ],
+   "duration": 12.829,
+   "lines": [
+    {
+     "text": "Run it for real: the overwrite in the fresh active memtable genuinely won.",
+     "start": 0.15,
+     "end": 5.956
+    },
+    {
+     "text": "It beat that same key's stale, already-flushed value sitting in the SSTable.",
+     "start": 6.376,
+     "end": 12.479
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.2,
+   "wpm": 122,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the overwrite in the fresh active memtable genuinely won.",
+     "said": "memtable",
+     "heard": "mem table"
+    },
+    {
+     "line": "It beat that same key's stale, already-flushed value sitting in the SSTable.",
+     "said": "sstable",
+     "heard": "ss table"
+    }
+   ]
+  },
+  "03": {
+   "hash": "06b74cb92d7fd0ef",
+   "takes": [
+    "328a2b284c85afc46b5f",
+    "2acc7b50dcf65f31d416"
+   ],
+   "duration": 20.668,
+   "lines": [
+    {
+     "text": "Three keys end up in three different places: one in the very first SSTable ever flushed, one in a later SSTable, and one still sitting only in the active memtable.",
+     "start": 0.15,
+     "end": 14.488
+    },
+    {
+     "text": "Does looking up that oldest key cost the same as looking up the newest one?",
+     "start": 15.208,
+     "end": 20.318
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.5,
+   "wpm": 131,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Three keys end up in three different places: one in the very first SSTable ever flushed, one in a later SSTable, and one still sitting only in the active memtable.",
+     "said": "memtable",
+     "heard": "mem table"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "ee29639e5c32ad6e",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "7c49eebf45faf0e3c753"
+   ],
+   "duration": 8.122,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "The oldest key costs more, because more structures have to be checked before it's found.",
+     "start": 2.386,
+     "end": 7.772
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "1fe956735fc57e90",
+   "takes": [
+    "da8bd6a376a2435ef4fc",
+    "90c85868e8cb61b4a686"
+   ],
+   "duration": 19.248,
+   "lines": [
+    {
+     "text": "Run it for real: the oldest key genuinely took checking more than one structure, the newest key took checking only the active memtable.",
+     "start": 0.15,
+     "end": 9.9
+    },
+    {
+     "text": "And a lookup for a key that doesn't exist anywhere at all had to check every single structure that exists before it could be ruled out.",
+     "start": 10.32,
+     "end": 18.898
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 153,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the oldest key genuinely took checking more than one structure, the newest key took checking only the active memtable.",
+     "said": "memtable",
+     "heard": "mem table"
+    },
+    {
+     "line": "And a lookup for a key that doesn't exist anywhere at all had to check every single structure that exists before it could be ruled out.",
+     "said": "ruled",
+     "heard": "rolled"
+    }
+   ]
+  },
+  "05": {
+   "hash": "908f9bd7a71df917",
+   "takes": [
+    "2fadfe2385f708abbe07",
+    "76e0727c42ee80b6cb49"
+   ],
+   "duration": 16.697,
+   "lines": [
+    {
+     "text": "A memtable gets flushed to an SSTable, and that SSTable then gets read from many times, by many different lookups.",
+     "start": 0.15,
+     "end": 9.818
+    },
+    {
+     "text": "Does any single one of those reads ever change even one byte of the SSTable itself?",
+     "start": 10.538,
+     "end": 16.347
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 129,
+   "wer": 0.1875,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A memtable gets flushed to an SSTable, and that SSTable then gets read from many times, by many different lookups.",
+     "said": "memtable",
+     "heard": "mem table"
+    },
+    {
+     "line": "Does any single one of those reads ever change even one byte of the SSTable itself?",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "Does any single one of those reads ever change even one byte of the SSTable itself?",
+     "said": "sstable",
+     "heard": "ss table"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "083412197b022a2f",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "1c9dc4425b4d42fbcc67"
+   ],
+   "duration": 6.386,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "The SSTable's own bytes never change once it's been flushed.",
+     "start": 2.386,
+     "end": 6.036
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.3,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The SSTable's own bytes never change once it's been flushed.",
+     "said": "sstables",
+     "heard": "ss tables"
+    },
+    {
+     "line": "The SSTable's own bytes never change once it's been flushed.",
+     "said": "flushed",
+     "heard": "flashed"
+    }
+   ]
+  },
+  "06": {
+   "hash": "207efe1546a265b5",
+   "takes": [
+    "2328fe2739f651bc3204"
+   ],
+   "duration": 12.583,
+   "lines": [
+    {
+     "text": "Run it for real: a flushed SSTable's own bytes genuinely never changed across many later reads against it, whether those reads were hits or honest misses.",
+     "start": 0.15,
+     "end": 12.233
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.3,
+   "wpm": 124,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: a flushed SSTable's own bytes genuinely never changed across many later reads against it, whether those reads were hits or honest misses.",
+     "said": "sstables",
+     "heard": "ss tables"
+    }
+   ]
+  },
+  "07": {
+   "hash": "2693707302bab138",
+   "takes": [
+    "9a1b630eef421dad1ae9",
+    "74525b964bdbbf84c8ee"
+   ],
+   "duration": 14.7,
+   "lines": [
+    {
+     "text": "One real production system names the exact moment a memtable stops accepting writes, in its own documentation.",
+     "start": 0.15,
+     "end": 7.373
+    },
+    {
+     "text": "At that exact moment, what happens to the active memtable, and to the write-ahead log alongside it?",
+     "start": 8.093,
+     "end": 14.35
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 143,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One real production system names the exact moment a memtable stops accepting writes, in its own documentation.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "At that exact moment, what happens to the active memtable, and to the write-ahead log alongside it?",
+     "said": "memtable",
+     "heard": "mem table"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "de7df43d1ce59ff0",
+   "takes": [
+    "833c4dd5194325c904b4",
+    "c2e8a0cb539d22b0794d"
+   ],
+   "duration": 10.714,
+   "lines": [
+    {
+     "text": "It's closed on the spot, genuinely.",
+     "start": 0.15,
+     "end": 2.697
+    },
+    {
+     "text": "The active memtable turns into an immutable one, and a brand-new write-ahead log file starts at that same instant.",
+     "start": 3.117,
+     "end": 10.364
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.9,
+   "wpm": 151,
+   "wer": 0.09523809523809523,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The active memtable turns into an immutable one, and a brand-new write-ahead log file starts at that same instant.",
+     "said": "memtable",
+     "heard": "mem table"
+    }
+   ]
+  },
+  "08": {
+   "hash": "fe0e320bf6f5f2dc",
+   "takes": [
+    "e3fa59ae1f4d55f1ead7"
+   ],
+   "duration": 15.038,
+   "lines": [
+    {
+     "text": "That system's own words state it directly: the active memtable is closed and turned into an immutable memtable, and the write-ahead log switches to a new file at that exact same moment.",
+     "start": 0.15,
+     "end": 14.688
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "5c5a7fac4d8d99ff",
+   "takes": [
+    "a85b9164db62db6f75cc",
+    "a594de7f64d7f218c7a0"
+   ],
+   "duration": 18.319,
+   "lines": [
+    {
+     "text": "That same system's own documentation also names, directly, what the resulting structure actually is.",
+     "start": 0.15,
+     "end": 8.142
+    },
+    {
+     "text": "A memtable that's just been closed this way isn't gone and isn't still being written to; it's simply waiting its turn to be flushed to disk.",
+     "start": 8.562,
+     "end": 17.969
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A memtable that's just been closed this way isn't gone and isn't still being written to; it's simply waiting its turn to be flushed to disk.",
+     "said": "memtable",
+     "heard": "mem table"
+    }
+   ]
+  },
+  "10": {
+   "hash": "cf5cc46152b34a65",
+   "takes": [
+    "c2927e29a028421b1954",
+    "953b4031859274228459",
+    "efebce02046ce864f492"
+   ],
+   "duration": 48.107,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a lookup always checks the newest place a value could be first, which is exactly why a fresh, unflushed write beats an old, already-flushed one every time.",
+     "start": 0.15,
+     "end": 15.348
+    },
+    {
+     "text": "That same newest-first order means an older key costs more to find than a newer one, and a key that genuinely doesn't exist anywhere costs the most of all, because ruling it out means checking every single structure there is.",
+     "start": 15.768,
+     "end": 32.581
+    },
+    {
+     "text": "And once any one of those structures gets flushed to disk, it stops changing entirely; from that moment on, it's read from, merged with others, or eventually deleted, but never edited in place again.",
+     "start": 33.001,
+     "end": 47.757
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So here's the shape of this whole topic: a lookup always checks the newest place a value could be first, which is exactly why a fresh, unflushed write beats an old, already-flushed one every time.",
+     "said": "lookup",
+     "heard": "look up"
+    },
+    {
+     "line": "So here's the shape of this whole topic: a lookup always checks the newest place a value could be first, which is exactly why a fresh, unflushed write beats an old, already-flushed one every time.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  }
+ }
+}
