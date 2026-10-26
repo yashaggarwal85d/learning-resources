@@ -1,0 +1,373 @@
+{
+ "topic": "de.native-extensions-rust-pyo3",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d6cfff24b9d655c8",
+   "takes": [
+    "102ef1733008aeb2579d",
+    "a9d0d5054193d1eb3c3d"
+   ],
+   "duration": 19.663,
+   "lines": [
+    {
+     "text": "Every speed claim this chapter made rested on a quiet assumption: that the library doing the work was itself written in the language you called it from.",
+     "start": 0.15,
+     "end": 11.025
+    },
+    {
+     "text": "Nobody checked that assumption directly. This topic finally opens the hood on what these libraries actually run on underneath.",
+     "start": 11.445,
+     "end": 19.314
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "622db61755cec45a",
+   "takes": [
+    "326e439cfd5f1cb57ceb",
+    "f6302353310e8a030997"
+   ],
+   "duration": 24.34,
+   "lines": [
+    {
+     "text": "Start with the libraries already in hand, and read what they say about themselves.",
+     "start": 0.15,
+     "end": 5.139
+    },
+    {
+     "text": "One dataframe library states, in its own documentation, that its core is a different, compiled language with a thin layer on top for this one. A validation library makes the identical claim about its own core, and names that as the reason it's fast.",
+     "start": 5.559,
+     "end": 23.99
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.022727272727272728,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One dataframe library states, in its own documentation, that its core is a different, compiled language with a thin layer on top for this one. A validation library makes the identical claim about its own core, and names that as the reason it's fast.",
+     "said": "dataframe",
+     "heard": "datafame"
+    }
+   ]
+  },
+  "03": {
+   "hash": "2fc256060955d76c",
+   "takes": [
+    "b25f6ff143d87e4f9f47",
+    "a8101707e2022cddc0f6"
+   ],
+   "duration": 22.842,
+   "lines": [
+    {
+     "text": "If a library can be built that way, so can a function written for this topic alone.",
+     "start": 0.15,
+     "end": 6.045
+    },
+    {
+     "text": "A small routine, written in that compiled language, run through one real build step rather than assumed to work. An ordinary import pulls it in afterward, and calling it returns a correct, checkable answer, not a packaging demo.",
+     "start": 6.465,
+     "end": 22.492
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "efc22068b6b67bb7",
+   "takes": [
+    "3af9595280f1826d2fc0",
+    "19d0458dd4f4a1fedd80"
+   ],
+   "duration": 22.019,
+   "lines": [
+    {
+     "text": "Here's the harder question, worth answering before it's shown.",
+     "start": 0.15,
+     "end": 3.434
+    },
+    {
+     "text": "A compiled routine can explicitly hand back the one lock that normally keeps two pieces of interpreted code from running at once. Once that lock is handed back mid-call, does a waiting thread actually get real work done, or does it just sit there out of habit?",
+     "start": 3.854,
+     "end": 21.669
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "ac9773243e606b0a",
+   "takes": [
+    "da8c7777f967834b59c1",
+    "fd299c65d2769803517d"
+   ],
+   "duration": 20.176,
+   "lines": [
+    {
+     "text": "It genuinely gets real work done, and that's the whole point of handing the lock back.",
+     "start": 0.15,
+     "end": 6.223
+    },
+    {
+     "text": "The lock isn't cosmetic. Dropping it for the duration of one call is a real, measurable grant of running time to whatever else is waiting, not a documented gesture that changes nothing in practice.",
+     "start": 6.643,
+     "end": 19.826
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "fc952baf536e37f9",
+   "takes": [
+    "4c316a51a90fe7db44d3",
+    "b19335ad8d44a6c54327",
+    "adb4707e8b2bec61f6de"
+   ],
+   "duration": 36.862,
+   "lines": [
+    {
+     "text": "One function, three different ways of computing it, is a fair test only if all three are forced to agree first.",
+     "start": 0.15,
+     "end": 8.15
+    },
+    {
+     "text": "The identical arithmetic, run in plain interpreted code, in the compiled routine, and through the dataframe library's own expression engine. All three are checked to land on the exact same number before any clock is read.",
+     "start": 8.57,
+     "end": 25.305
+    },
+    {
+     "text": "Only once that agreement is confirmed does the timing become interesting: the compiled routine comes in well ahead of the interpreted version doing the same work.",
+     "start": 25.725,
+     "end": 36.512
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "f6dd862f2a4e8154",
+   "takes": [
+    "17f844b09d155a3e205d",
+    "f1f96bd032c1cc39460e",
+    "b35d21fc9fcf13ac7b52"
+   ],
+   "duration": 32.217,
+   "lines": [
+    {
+     "text": "Put the exact same busy work through both paths and count what a waiting thread manages to do.",
+     "start": 0.15,
+     "end": 6.952
+    },
+    {
+     "text": "Once holding that lock the whole time, the waiting thread barely advances. Once releasing it for the identical stretch, that same waiting thread racks up a count dozens of times larger in the same span.",
+     "start": 7.372,
+     "end": 23.451
+    },
+    {
+     "text": "That gap is the direct evidence. Releasing the lock isn't a courtesy \u2014 it's time genuinely handed to someone else.",
+     "start": 23.871,
+     "end": 31.867
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "232de25e127893b5",
+   "takes": [
+    "4679317cb8b91f13ad4d",
+    "8641338cff1750733fcc",
+    "28002187a3cc305a39d7"
+   ],
+   "duration": 31.468,
+   "lines": [
+    {
+     "text": "Now a packaging question that sounds cosmetic but isn't.",
+     "start": 0.15,
+     "end": 4.146
+    },
+    {
+     "text": "Build the identical routine twice from the same source, flipping one setting between the two builds. The two resulting files really are named differently, and that difference tracks a real decision: one locks itself to this one interpreter version, the other declares itself good from a stated minimum version onward.",
+     "start": 4.566,
+     "end": 25.11
+    },
+    {
+     "text": "That's not a label chosen after the fact. It's a different contract, baked in at build time.",
+     "start": 25.53,
+     "end": 31.118
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "f6a78fd775083a10",
+   "takes": [
+    "defec09ca5053e7f8942",
+    "f52cd8d786944b3f34e2",
+    "91343970eaa354559c16"
+   ],
+   "duration": 30.082,
+   "lines": [
+    {
+     "text": "One more fact worth checking directly rather than guessing from a version number alone.",
+     "start": 0.15,
+     "end": 5.305
+    },
+    {
+     "text": "A newer interpreter can optionally be built with that same lock removable entirely, as a deliberate build choice rather than something every copy of that version gets automatically.",
+     "start": 5.725,
+     "end": 16.914
+    },
+    {
+     "text": "Asked directly, this particular interpreter answers plainly: this is the ordinary kind, built with the lock present, not the optional kind that removes it.",
+     "start": 17.334,
+     "end": 29.732
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "7bed929c9edeb7e3",
+   "takes": [
+    "1eb9fbe1f5d246d4d16f",
+    "44d95d4a5648e1fef371",
+    "9c0189d498082e3a0815",
+    "e0a07e161e155e3e6ad8"
+   ],
+   "duration": 52.786,
+   "lines": [
+    {
+     "text": "Pulling the whole topic back together.",
+     "start": 0.15,
+     "end": 2.623
+    },
+    {
+     "text": "Two of this chapter's own fast libraries name a different, compiled language as their real core, not inferred from outside. A routine built that way, through a real build step, imports and runs like any other code, and measurably beats the interpreted version at the identical task.",
+     "start": 3.043,
+     "end": 25.81
+    },
+    {
+     "text": "Handing back that one shared lock during a call is real, measured time given to whatever else is waiting. One build-time setting produces a genuinely different file, aimed at a whole range of future versions instead of just this one.",
+     "start": 26.23,
+     "end": 42.467
+    },
+    {
+     "text": "And whether an interpreter can remove that lock at all turns out to be a checkable fact about how it was built, not a guess from its version number.",
+     "start": 42.887,
+     "end": 52.436
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d107778d190a5c79",
+   "takes": [
+    "26ccb194aa63d1f0755f",
+    "af7ddb994f75f1a426b4",
+    "c7d9472258e171185a7a"
+   ],
+   "duration": 38.797,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through before the explanation lands.",
+     "start": 0.15,
+     "end": 4.964
+    },
+    {
+     "text": "A team builds a routine this same way and ships exactly one file, tied tightly to the one interpreter version they deploy with today. Later, three more versions need that identical routine running, unmodified, and the team is staring down building and testing a separate file for each one.",
+     "start": 5.384,
+     "end": 28.098
+    },
+    {
+     "text": "What should that team have chosen at the very first build, and why does today's choice matter so much more once those extra versions show up?",
+     "start": 28.518,
+     "end": 38.447
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "78235cf32d65778a",
+   "takes": [
+    "f8ffddd0504c2e9a1d68",
+    "abc9662020151540b116",
+    "8474f06328e02eaec734"
+   ],
+   "duration": 34.54,
+   "lines": [
+    {
+     "text": "They should have chosen the build-time setting that targets a whole range of versions from the start, not just the one in front of them.",
+     "start": 0.15,
+     "end": 8.586
+    },
+    {
+     "text": "A file locked to one exact version multiplies every time a new version ships \u2014 that's the cost this team is paying now. The alternative setting, built from identical source, already covers every version from its declared minimum upward.",
+     "start": 9.006,
+     "end": 26.621
+    },
+    {
+     "text": "That's exactly the real, differently named file this topic built and measured directly.",
+     "start": 27.041,
+     "end": 34.19
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
