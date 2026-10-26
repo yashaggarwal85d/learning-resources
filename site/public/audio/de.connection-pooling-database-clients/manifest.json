@@ -1,0 +1,385 @@
+{
+ "topic": "de.connection-pooling-database-clients",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "de6db563988cfef9",
+   "takes": [
+    "c1b5681e355302833cf7",
+    "172acf4b23471bce935c"
+   ],
+   "duration": 24.235,
+   "lines": [
+    {
+     "text": "Everything in this chapter so far has stayed inside one process, moving data between in-memory formats.",
+     "start": 0.15,
+     "end": 7.304
+    },
+    {
+     "text": "A real database connection is the first thing that actually leaves the process and talks to another service over the network. Worth asking plainly whether opening one of those actually costs something real, or whether that's just a rumor engineers repeat.",
+     "start": 7.724,
+     "end": 23.885
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "fe1d6d84f70ea6b1",
+   "takes": [
+    "44eae4ed9aeb0216bdb9",
+    "adc636a8bfe77d7dfa81",
+    "d121ca26d80cecc3b05d"
+   ],
+   "duration": 28.785,
+   "lines": [
+    {
+     "text": "Here's the direct answer, measured rather than assumed.",
+     "start": 0.15,
+     "end": 3.856
+    },
+    {
+     "text": "The identical tiny query, run two ways against this sandbox's own database cluster: a brand new connection opened and closed each time, and one connection opened once and reused for every call.",
+     "start": 4.276,
+     "end": 20.266
+    },
+    {
+     "text": "Measured directly, the brand new connection is dramatically slower, every single time it's tried.",
+     "start": 20.686,
+     "end": 28.435
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "cdd13f487b173fc2",
+   "takes": [
+    "b55e5119fa48e432667b",
+    "f865ca9e72adacea910d",
+    "64f9bd2dcce6e2af6ff6"
+   ],
+   "duration": 25.703,
+   "lines": [
+    {
+     "text": "That gap is exactly why a connection pool exists, and its size doesn't have to be a guess.",
+     "start": 0.15,
+     "end": 6.026
+    },
+    {
+     "text": "One formula says a pool's needed size equals how many requests arrive each second, multiplied by how long one connection is held handling a request.",
+     "start": 6.446,
+     "end": 16.434
+    },
+    {
+     "text": "Feeding it a real measured hold time and a chosen target rate gives a concrete number, not a round one picked out of habit.",
+     "start": 16.854,
+     "end": 25.353
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "451532d10cba3b53",
+   "takes": [
+    "6883ecddc67d2885afdd",
+    "f8ea2b0dff740febc977",
+    "f05e80f84cb67ae94eaa"
+   ],
+   "duration": 21.427,
+   "lines": [
+    {
+     "text": "Worth guessing at before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.83
+    },
+    {
+     "text": "One client prepares a reusable query once, then later asks to run that same prepared query again. The client's own connection to the pool never visibly changes in between.",
+     "start": 4.25,
+     "end": 16.67
+    },
+    {
+     "text": "Does that prepared query actually survive into the later request?",
+     "start": 17.09,
+     "end": 21.077
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "415e61349f08ac6e",
+   "takes": [
+    "b85c5f2edcf43dfd42b6",
+    "b0a294568714c59ef08d"
+   ],
+   "duration": 23.034,
+   "lines": [
+    {
+     "text": "It doesn't always, and that's the exact trap this step sets up.",
+     "start": 0.15,
+     "end": 4.947
+    },
+    {
+     "text": "One pooling mode hands the physical database connection behind the scenes back to the shared pool the moment a request finishes. The very next request, even from that same client, isn't guaranteed to land on that same physical connection again.",
+     "start": 5.367,
+     "end": 22.684
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5718ac623a138cb0",
+   "takes": [
+    "e58ad3c17e00fbbe3a4b",
+    "ab859126155eb4e69254",
+    "33e5a3757c6ef1c1b43e"
+   ],
+   "duration": 28.732,
+   "lines": [
+    {
+     "text": "Worth seeing this failure actually happen, not just described.",
+     "start": 0.15,
+     "end": 5.745
+    },
+    {
+     "text": "One client prepares a reusable query on a shared physical connection. A second, unrelated client then reuses that very same physical connection and clears its state entirely.",
+     "start": 6.165,
+     "end": 19.595
+    },
+    {
+     "text": "A third request on that same physical connection is then denied, because the prepared query it's asking for is simply gone.",
+     "start": 20.015,
+     "end": 28.382
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "e173702c6337b2ab",
+   "takes": [
+    "fe5b4a57c27b3770171e",
+    "393911199ef479aa5360",
+    "e8c6e111e33eaf0bd201"
+   ],
+   "duration": 27.003,
+   "lines": [
+    {
+     "text": "Here's the identical test again, changing only one setting.",
+     "start": 0.15,
+     "end": 4.383
+    },
+    {
+     "text": "This time, each client keeps one dedicated physical connection for its whole session instead of sharing connections between short requests.",
+     "start": 4.803,
+     "end": 13.951
+    },
+    {
+     "text": "Run again under that setting, the exact same prepare-then-run test succeeds every single time, because nothing else ever touches that connection in between.",
+     "start": 14.371,
+     "end": 26.653
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "698f5c6e019692f9",
+   "takes": [
+    "89c8bfe754249ad72830",
+    "c118327ada01cec73e1f",
+    "75f3dce93f50fb4c5032"
+   ],
+   "duration": 24.569,
+   "lines": [
+    {
+     "text": "Here's a different kind of trade, still about what a connection holds onto.",
+     "start": 0.15,
+     "end": 5.187
+    },
+    {
+     "text": "The identical large result, pulled two ways: fetched entirely into memory in one shot, versus pulled through gradually in tuned batches instead.",
+     "start": 5.607,
+     "end": 16.236
+    },
+    {
+     "text": "Measured in an isolated process both times, the batched version peaks measurably lower on the client's own memory use.",
+     "start": 16.656,
+     "end": 24.219
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's a different kind of trade, still about what a connection holds onto.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "08": {
+   "hash": "16048ce765a149c8",
+   "takes": [
+    "c2a461ad316f6ceb4767",
+    "37482dac999c318801e0",
+    "531c17b9179503477f85"
+   ],
+   "duration": 39.193,
+   "lines": [
+    {
+     "text": "One last comparison, loading data in rather than reading it back out.",
+     "start": 0.15,
+     "end": 5.623
+    },
+    {
+     "text": "The identical rows, loaded into this sandbox's own database three separate ways: one row inserted at a time, a dedicated bulk-loading path, and a library built around a shared columnar buffer format instead.",
+     "start": 6.043,
+     "end": 23.171
+    },
+    {
+     "text": "Measured directly, row-at-a-time is by far the slowest, and the buffer-format library tracks the dedicated bulk path closely \u2014 because, by its own documentation, it runs that very same path underneath.",
+     "start": 23.591,
+     "end": 38.843
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "49a9b0349301626c",
+   "takes": [
+    "cdd15270637c98775519",
+    "3da0bf336351468ebe22",
+    "cc1d15368511cf028e64",
+    "56909f0dcc45e94a25b2"
+   ],
+   "duration": 42.529,
+   "lines": [
+    {
+     "text": "Pulling it all back together now.",
+     "start": 0.15,
+     "end": 2.71
+    },
+    {
+     "text": "A fresh connection measurably costs more than a reused one, which is the entire reason a pool exists in the first place. One formula turns a measured hold time directly into a concrete pool size.",
+     "start": 3.13,
+     "end": 16.001
+    },
+    {
+     "text": "A prepared query can vanish between requests under one pooling setting, reproduced directly, and survives under the other at the cost of a dedicated connection.",
+     "start": 16.421,
+     "end": 28.568
+    },
+    {
+     "text": "A gradual, batched fetch trades server memory for client memory on a result too big to hold at once, and a buffer-format loader runs the same fast path a dedicated bulk loader does.",
+     "start": 28.988,
+     "end": 42.179
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e900a090ef329f1e",
+   "takes": [
+    "0a365692923adb3dcbb7",
+    "e63d124f101edd5ea071",
+    "e6a171970987f12cd4db"
+   ],
+   "duration": 27.401,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.929
+    },
+    {
+     "text": "A service shares its database connections across many short requests, and quietly relies on a prepared query surviving from one request to the next for the same client. It starts failing intermittently, with no code change anywhere.",
+     "start": 5.349,
+     "end": 23.142
+    },
+    {
+     "text": "What's actually happening underneath, and what's the fix?",
+     "start": 23.562,
+     "end": 27.051
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "3586327a61e30038",
+   "takes": [
+    "e8f51c860ef892e022b1",
+    "6b28e477b21af4eee693"
+   ],
+   "duration": 22.392,
+   "lines": [
+    {
+     "text": "That prepared query was never guaranteed to survive on a shared connection under that pooling setting, so it intermittently lands on a connection that never saw it prepared in the first place.",
+     "start": 0.15,
+     "end": 11.592
+    },
+    {
+     "text": "The fix is turning on that pool's own tracking of prepared queries, or moving that one workload onto dedicated, per-client connections instead.",
+     "start": 12.012,
+     "end": 22.042
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
