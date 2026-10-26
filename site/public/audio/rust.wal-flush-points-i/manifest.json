@@ -1,0 +1,434 @@
+{
+ "topic": "rust.wal-flush-points-i",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b374911393ba202a",
+   "takes": [
+    "6f130b40b9e411813cb0",
+    "72af90d5622365cf6034"
+   ],
+   "duration": 12.379,
+   "lines": [
+    {
+     "text": "A thousand small writes to one real log file, each one followed right away by a real, full sync.",
+     "start": 0.15,
+     "end": 7.792
+    },
+    {
+     "text": "How many real sync calls does that actually end up making?",
+     "start": 8.512,
+     "end": 12.029
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "1eaaadd1f0128ac7",
+   "takes": [
+    "4c27ae73079fee8a282d",
+    "5eb5c775d93f4b4c3105"
+   ],
+   "duration": 7.731,
+   "lines": [
+    {
+     "text": "Exactly a thousand.",
+     "start": 0.15,
+     "end": 1.781
+    },
+    {
+     "text": "One real sync call for every single write, no more and no fewer.",
+     "start": 2.201,
+     "end": 7.381
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.7,
+   "wpm": 124,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One real sync call for every single write, no more and no fewer.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "02": {
+   "hash": "8bf8b27839aab808",
+   "takes": [
+    "587771b2d43398255138",
+    "640fd77cc4cea05c0b19"
+   ],
+   "duration": 13.382,
+   "lines": [
+    {
+     "text": "Run it for real, traced: a thousand writes, each one flushed on its own,",
+     "start": 0.15,
+     "end": 6.381
+    },
+    {
+     "text": "made exactly a thousand real sync calls underneath \u2014 not assumed, counted.",
+     "start": 6.801,
+     "end": 13.032
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 112,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real, traced: a thousand writes, each one flushed on its own,",
+     "said": "run",
+     "heard": "ren"
+    },
+    {
+     "line": "Run it for real, traced: a thousand writes, each one flushed on its own,",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "03": {
+   "hash": "5b250632109776e9",
+   "takes": [
+    "81c4ea3a17bf7f23a888",
+    "99fad40fb627be9ea2f1"
+   ],
+   "duration": 13.128,
+   "lines": [
+    {
+     "text": "Write those same thousand records again, but this time sync only once every fifty of them, plus one last flush at the end.",
+     "start": 0.15,
+     "end": 9.181
+    },
+    {
+     "text": "How many real sync calls does that make now?",
+     "start": 9.901,
+     "end": 12.778
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "606179ac5e513296",
+   "takes": [
+    "37e03105be8709edb437",
+    "1cac19a5fd97dded4f3d"
+   ],
+   "duration": 8.158,
+   "lines": [
+    {
+     "text": "A small, fixed number, close to one flush for each batch.",
+     "start": 0.15,
+     "end": 4.488
+    },
+    {
+     "text": "Nowhere near a thousand, and not zero either.",
+     "start": 4.908,
+     "end": 7.808
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.4,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "9c6086ca10fd7f9f",
+   "takes": [
+    "d650d84288163f6e2ba9",
+    "6f1bf697f33451decca1"
+   ],
+   "duration": 10.397,
+   "lines": [
+    {
+     "text": "Run it for real, traced: the identical thousand writes, flushed in batches this time,",
+     "start": 0.15,
+     "end": 6.221
+    },
+    {
+     "text": "made twenty-one real sync calls \u2014 not a thousand.",
+     "start": 6.641,
+     "end": 10.047
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 133,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real, traced: the identical thousand writes, flushed in batches this time,",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "05": {
+   "hash": "f872883231cea5ea",
+   "takes": [
+    "a77d059087cc44ceee52",
+    "fd911658e0c2a221c153"
+   ],
+   "duration": 11.03,
+   "lines": [
+    {
+     "text": "Same comparison again, but timed this time instead of counted.",
+     "start": 0.15,
+     "end": 4.057
+    },
+    {
+     "text": "Does cutting the call count also cut the real time spent waiting, by roughly the same large amount?",
+     "start": 4.777,
+     "end": 10.68
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "91a50dd3c3cad23c",
+   "takes": [
+    "d97ef91773e9861a508f",
+    "2be855c75d32c380000d"
+   ],
+   "duration": 8.946,
+   "lines": [
+    {
+     "text": "Yes, by roughly that same large factor.",
+     "start": 0.15,
+     "end": 4.259
+    },
+    {
+     "text": "The time drops right along with the call count.",
+     "start": 4.679,
+     "end": 8.596
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.3,
+   "wpm": 107,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "84f1688f93424b7c",
+   "takes": [
+    "e3c5b13c96acdceb4a19",
+    "42182e536e4c1b4a13c6"
+   ],
+   "duration": 13.164,
+   "lines": [
+    {
+     "text": "Timed for real: the one-sync-per-write version took far longer than the batched one,",
+     "start": 0.15,
+     "end": 7.486
+    },
+    {
+     "text": "for the exact same thousand writes, start to finish.",
+     "start": 7.906,
+     "end": 12.814
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 114,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "for the exact same thousand writes, start to finish.",
+     "said": "writes",
+     "heard": "rides"
+    }
+   ]
+  },
+  "07": {
+   "hash": "08a67118c0530364",
+   "takes": [
+    "f72013827cc91196e468",
+    "959a807355dff0cf8467"
+   ],
+   "duration": 11.836,
+   "lines": [
+    {
+     "text": "A well-known database's own documentation makes a specific claim about why keeping a write-ahead log helps at all.",
+     "start": 0.15,
+     "end": 7.579
+    },
+    {
+     "text": "What does it actually say gets to skip the flush?",
+     "start": 8.299,
+     "end": 11.486
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "e212edebdd8a0c3f",
+   "takes": [
+    "328bd114facbb33a63ac",
+    "93a79d6b0acc92e18185"
+   ],
+   "duration": 7.706,
+   "lines": [
+    {
+     "text": "Every other data file the transaction touched.",
+     "start": 0.15,
+     "end": 2.945
+    },
+    {
+     "text": "Only the log file itself needs flushing to guarantee the commit.",
+     "start": 3.365,
+     "end": 7.356
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.5,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8b7b4b926f4df240",
+   "takes": [
+    "52d12ac4038ce0a049df",
+    "2cb0e85c382618a22053"
+   ],
+   "duration": 18.429,
+   "lines": [
+    {
+     "text": "The documentation's own words: keeping a log means only that log needs flushing, not every file a transaction changed.",
+     "start": 0.15,
+     "end": 10.104
+    },
+    {
+     "text": "And under real load, one flush can cover many small transactions committing around the same moment.",
+     "start": 10.524,
+     "end": 18.079
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.2,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "9e749cc753462ada",
+   "takes": [
+    "dece00b9464946b4f982",
+    "5e31e926434fdda778b5"
+   ],
+   "duration": 11.956,
+   "lines": [
+    {
+     "text": "None of this matters if the drive itself is lying about it.",
+     "start": 0.15,
+     "end": 4.23
+    },
+    {
+     "text": "What does a drive's own volatile write cache actually do, and what forces it to tell the truth?",
+     "start": 4.95,
+     "end": 11.606
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.3,
+   "wpm": 151,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "What does a drive's own volatile write cache actually do, and what forces it to tell the truth?",
+     "said": "write cache",
+     "heard": "right cash"
+    }
+   ]
+  },
+  "10": {
+   "hash": "92616ad691f2bb44",
+   "takes": [
+    "84c48680356907ce3fd0",
+    "f037ba128b861334394f",
+    "f8115cb188af78839622",
+    "2ed257324ac1b6b9a1ef"
+   ],
+   "duration": 32.619,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: flushing after every write made a real call every single time, a thousand of them.",
+     "start": 0.15,
+     "end": 9.927
+    },
+    {
+     "text": "Batching into deliberate flush points cut that to twenty-one calls, and was dramatically faster for the identical writes.",
+     "start": 10.347,
+     "end": 17.661
+    },
+    {
+     "text": "A write-ahead log's own documentation explains why: one flush can cover many transactions at once.",
+     "start": 18.081,
+     "end": 25.238
+    },
+    {
+     "text": "And none of it is real durability until a forced flush makes a volatile write cache tell the truth.",
+     "start": 25.658,
+     "end": 32.269
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So, pulling this topic together: flushing after every write made a real call every single time, a thousand of them.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Batching into deliberate flush points cut that to twenty-one calls, and was dramatically faster for the identical writes.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "And none of it is real durability until a forced flush makes a volatile write cache tell the truth.",
+     "said": "write cache",
+     "heard": "right cash"
+    }
+   ]
+  }
+ }
+}
