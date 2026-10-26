@@ -1,0 +1,407 @@
+{
+ "topic": "rust.i-o-time-drivers",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "66ec82095d8236fb",
+   "takes": [
+    "d275c459fe78e98e3682",
+    "3fde16aa3764ce8a2455"
+   ],
+   "duration": 18.038,
+   "lines": [
+    {
+     "text": "Register a real socket's own connection attempt directly with a readiness-polling library, naming exactly which operation to watch for, then call poll and wait.",
+     "start": 0.15,
+     "end": 11.518
+    },
+    {
+     "text": "Once that connection actually completes, does a real event come back saying so?",
+     "start": 12.239,
+     "end": 17.688
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "6aaceefedb47971e",
+   "takes": [
+    "973e664fd583bacb687d",
+    "8044b9ed112499325f70"
+   ],
+   "duration": 15.72,
+   "lines": [
+    {
+     "text": "Yes \u2014 a genuine readiness event comes back, naming the exact socket that just became ready.",
+     "start": 0.15,
+     "end": 6.431
+    },
+    {
+     "text": "This isn't a guess or a timeout firing blindly. It's a real signal, tied to the specific thing that was registered.",
+     "start": 6.851,
+     "end": 15.37
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "6f85dcc8f873ed42",
+   "takes": [
+    "d67f669c26dd9ee45c22",
+    "7b52f421058a74c42411"
+   ],
+   "duration": 20.962,
+   "lines": [
+    {
+     "text": "Run it for real: register the connection, call poll, and a writable readiness event comes straight back, naming that exact registered socket.",
+     "start": 0.15,
+     "end": 10.135
+    },
+    {
+     "text": "Register interest, then wait to be tapped on the shoulder \u2014 and here, for the first time in this chapter, that tap is the literal thing being measured.",
+     "start": 10.555,
+     "end": 20.612
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "46f11b2c26b52893",
+   "takes": [
+    "0069f900f053ef2f2759",
+    "682d92ae20759371de95"
+   ],
+   "duration": 18.093,
+   "lines": [
+    {
+     "text": "Now register a different socket for exactly the same kind of readiness, except this time, nothing is ever written to it at all. Nothing will ever make it ready.",
+     "start": 0.15,
+     "end": 13.034
+    },
+    {
+     "text": "What does the call to poll actually do in that case?",
+     "start": 13.754,
+     "end": 17.743
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "What does the call to poll actually do in that case?",
+     "said": "poll",
+     "heard": "paul"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "423f3b21dcc6a354",
+   "takes": [
+    "c35ef24280e361fded52",
+    "5b03c2bfb77d589b334e"
+   ],
+   "duration": 19.577,
+   "lines": [
+    {
+     "text": "It simply waits \u2014 genuinely, for close to the entire length of time it was told to wait, and then comes back empty.",
+     "start": 0.15,
+     "end": 10.078
+    },
+    {
+     "text": "There's no event to deliver, because nothing ever happened. It doesn't guess, and it doesn't return early.",
+     "start": 10.498,
+     "end": 19.227
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "5b4bbb251fc29033",
+   "takes": [
+    "2b0c479798035e8fe420",
+    "f51da8505c32fa5e7d5f"
+   ],
+   "duration": 20.228,
+   "lines": [
+    {
+     "text": "Measure that wait directly: it comes back after almost exactly the full length of time requested, with no event in it at all.",
+     "start": 0.15,
+     "end": 10.036
+    },
+    {
+     "text": "This is the real mechanism this whole chapter has been calling 'an idle worker parking' \u2014 here, it's the literal thing, timed.",
+     "start": 10.456,
+     "end": 19.878
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Measure that wait directly: it comes back after almost exactly the full length of time requested, with no event in it at all.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "05": {
+   "hash": "141234f8c1883a97",
+   "takes": [
+    "414d42777b837189f64b",
+    "625cf56c4dca6079f56d"
+   ],
+   "duration": 21.075,
+   "lines": [
+    {
+     "text": "Take the ordinary way of waiting a fixed length of time inside one of these async units of work, and time it precisely from the moment it starts.",
+     "start": 0.15,
+     "end": 10.976
+    },
+    {
+     "text": "Does it actually wake up close to the real length of time requested, or does it just wake up eventually, whenever it happens to get around to it?",
+     "start": 11.696,
+     "end": 20.725
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "d8137ded0cb5db62",
+   "takes": [
+    "d8f439141b7277fd90d3",
+    "9b29253bb8133b6be76b"
+   ],
+   "duration": 17.067,
+   "lines": [
+    {
+     "text": "It wakes up remarkably close to the real, requested length of time \u2014 not immediately, and not noticeably late either.",
+     "start": 0.15,
+     "end": 9.177
+    },
+    {
+     "text": "Something is actually watching the clock and waking it at close to the right moment, not just leaving it to chance.",
+     "start": 9.597,
+     "end": 16.717
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "bd48c4a51f535b38",
+   "takes": [
+    "cd43dc1388ee055a6ce1",
+    "beb8ac533681bc2c9f4f"
+   ],
+   "duration": 16.126,
+   "lines": [
+    {
+     "text": "Measure it precisely: ask for two hundred milliseconds, and it wakes at two hundred and one.",
+     "start": 0.15,
+     "end": 6.557
+    },
+    {
+     "text": "This is the thing that actually calls the wake function at the right moment \u2014 the exact mechanism an earlier chapter left entirely unnamed.",
+     "start": 6.977,
+     "end": 15.776
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "da301daa63762ef3",
+   "takes": [
+    "908883d635a359e21f07",
+    "99ce3ab1005233383d79"
+   ],
+   "duration": 16.171,
+   "lines": [
+    {
+     "text": "There's a newer, much-discussed way of doing fast input and output on modern systems that some runtimes have already adopted as their default.",
+     "start": 0.15,
+     "end": 9.706
+    },
+    {
+     "text": "Is that the default way this particular runtime does its input and output now?",
+     "start": 10.426,
+     "end": 15.821
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "a4ec48c436456e00",
+   "takes": [
+    "e61f76e9d9438b87055c",
+    "3583f96734d7f343e9ea"
+   ],
+   "duration": 15.422,
+   "lines": [
+    {
+     "text": "No \u2014 not by default, and not without explicitly opting into it.",
+     "start": 0.15,
+     "end": 4.659
+    },
+    {
+     "text": "It's real, and it exists, but it's still marked unstable, requiring an explicit flag most programs never pass.",
+     "start": 5.079,
+     "end": 15.072
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "044a7dccb1c6b2f7",
+   "takes": [
+    "b9394c962d97883fd4b2",
+    "1702e90976e84e8bf81c"
+   ],
+   "duration": 21.346,
+   "lines": [
+    {
+     "text": "The crate's own words say this plainly: that feature is Linux-only, and using it at all requires passing a specific, explicit flag to the compiler, one that openly admits its own public interface might still change.",
+     "start": 0.15,
+     "end": 15.484
+    },
+    {
+     "text": "Nothing about everything measured so far in this topic depends on it at all.",
+     "start": 15.904,
+     "end": 20.996
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "de3f88c9d58587d4",
+   "takes": [
+    "b2f33d6f686f7b546637",
+    "886e011485bfc78d4e83"
+   ],
+   "duration": 36.845,
+   "lines": [
+    {
+     "text": "Put the whole cycle back together now, with every single step of it already backed by something measured directly in this very topic: register interest in something specific, wait, a real event names exactly what became ready, that wakes the right unit of work, and it runs again from there.",
+     "start": 0.15,
+     "end": 21.742
+    },
+    {
+     "text": "An earlier chapter built the waking and polling contract in the abstract, with a hand-rolled, single-threaded stand-in. This is the real thing that calls it, for real, in a real runtime.",
+     "start": 22.162,
+     "end": 36.495
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.029411764705882353,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An earlier chapter built the waking and polling contract in the abstract, with a hand-rolled, single-threaded stand-in. This is the real thing that calls it, for real, in a real runtime.",
+     "said": "polling",
+     "heard": "pulling"
+    }
+   ]
+  },
+  "10": {
+   "hash": "1a8612788793245e",
+   "takes": [
+    "84685ba54686663508de",
+    "6cc488f88e08bfff3d33",
+    "e96678ade27cc3a3c6c6",
+    "560aa48fe51c41e8131c",
+    "31e06e81166f64290ad1"
+   ],
+   "duration": 56.161,
+   "lines": [
+    {
+     "text": "Registering interest and polling delivers a real, named readiness event once something genuinely becomes ready.",
+     "start": 0.15,
+     "end": 8.143
+    },
+    {
+     "text": "With nothing ready at all, that same call genuinely parks for the full length of time requested, no shortcuts.",
+     "start": 8.563,
+     "end": 15.934
+    },
+    {
+     "text": "A timer wakes a waiting unit of work close to its real, requested deadline, measured down to the millisecond.",
+     "start": 16.355,
+     "end": 24.326
+    },
+    {
+     "text": "And a newer, faster way of doing input and output exists, named honestly as real but still unstable, not the default.",
+     "start": 24.746,
+     "end": 34.415
+    },
+    {
+     "text": "Every one of these mechanisms, across this entire chapter, is a genuine, working guarantee. And every single one of them can also be broken: a unit of work that never yields, a channel with no real limit on it, a cancellation path nobody ever actually defined.",
+     "start": 34.835,
+     "end": 55.811
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
