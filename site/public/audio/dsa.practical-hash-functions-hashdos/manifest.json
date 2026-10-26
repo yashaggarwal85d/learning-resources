@@ -1,0 +1,353 @@
+{
+ "topic": "dsa.practical-hash-functions-hashdos",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d81b25aa137a4405",
+   "takes": [
+    "890129f1f337004f5784",
+    "1cbb712b39184461e312",
+    "d75666613c46ae61c8ed",
+    "d04ec02c76a1249413f3"
+   ],
+   "duration": 26.57,
+   "lines": [
+    {
+     "text": "Watch the scan on the left lose this race.",
+     "start": 0.15,
+     "end": 2.963
+    },
+    {
+     "text": "It loses immediately, no contest.",
+     "start": 3.383,
+     "end": 6.237
+    },
+    {
+     "text": "It has to touch every record, one at a time, before it can rule any of them out \u2014 that's the whole cost, right there.",
+     "start": 6.657,
+     "end": 14.439
+    },
+    {
+     "text": "The hash function is the only genuinely new idea in this picture. Everything else is the array you already know; it just gets to skip straight to the answer.",
+     "start": 14.859,
+     "end": 26.221
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "47419508bb04630b",
+   "takes": [
+    "1f64ca60e2e2a55eac03",
+    "77250ba6febe32241f05",
+    "1551d909b39d612b69de"
+   ],
+   "duration": 25.141,
+   "lines": [
+    {
+     "text": "Notice what's missing from this list of design goals. Every one of these was built to be fast on ordinary keys.",
+     "start": 0.15,
+     "end": 8.014
+    },
+    {
+     "text": "Nobody asked what happens if the keys stop being ordinary \u2014 if something on the other end gets to choose exactly which keys you hash.",
+     "start": 8.434,
+     "end": 16.754
+    },
+    {
+     "text": "Fast usually feels like it should also mean good enough. That's the assumption the next two steps are going to take apart.",
+     "start": 17.174,
+     "end": 24.791
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "a4f7d78d5b4ae064",
+   "takes": [
+    "2d3b6809030e164722b7",
+    "431bd25809ca99c4de3d"
+   ],
+   "duration": 9.993,
+   "lines": [
+    {
+     "text": "Before you pick, think about what 'fast' actually promised you back there.",
+     "start": 0.15,
+     "end": 4.832
+    },
+    {
+     "text": "Did it promise anything at all about who gets to choose the keys?",
+     "start": 5.252,
+     "end": 9.643
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "ca12a5b5dbfd2751",
+   "takes": [
+    "65e462de2e931ed15936",
+    "a4190a5ebb92ad0b2550"
+   ],
+   "duration": 18.264,
+   "lines": [
+    {
+     "text": "A fast public hash has exactly one published formula. Anyone can run it offline, for free.",
+     "start": 0.15,
+     "end": 7.016
+    },
+    {
+     "text": "Which means an attacker can precompute thousands of keys that all land in the same slot, on purpose, before ever touching your server.",
+     "start": 7.436,
+     "end": 17.914
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 128,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Which means an attacker can precompute thousands of keys that all land in the same slot, on purpose, before ever touching your server.",
+     "said": "precompute",
+     "heard": "pre compute"
+    }
+   ]
+  },
+  "04": {
+   "hash": "c95ea7e891feb467",
+   "takes": [
+    "8ba1b077ed47aefc3318",
+    "1c5c8dfcad0d66069c2e",
+    "93428443bf8c974933dd"
+   ],
+   "duration": 41.981,
+   "lines": [
+    {
+     "text": "This isn't a hypothetical. It's been rediscovered twice, a decade apart, under two different names.",
+     "start": 0.15,
+     "end": 8.435
+    },
+    {
+     "text": "Once in nineteen ninety nine, buried in a comment in a piece of DNS software. Again in two thousand three, formalized as a real academic attack. Again in twenty eleven, taking down live web servers with half a megabyte of carefully chosen form data.",
+     "start": 8.855,
+     "end": 27.514
+    },
+    {
+     "text": "It keeps coming back because the fix people reach for first \u2014 just add some randomness \u2014 turns out not to be enough. You're about to find out why, the same way the field did.",
+     "start": 27.934,
+     "end": 41.631
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "fac7cbc8d56f486e",
+   "takes": [
+    "004df0c753f88cebb16a",
+    "f0348f57a7c5008a902e"
+   ],
+   "duration": 11.664,
+   "lines": [
+    {
+     "text": "This is the answer most teams actually shipped, back in twenty eleven. It is not a wrong instinct.",
+     "start": 0.15,
+     "end": 6.731
+    },
+    {
+     "text": "Watch closely for what's different about the one case where it still breaks.",
+     "start": 7.151,
+     "end": 11.314
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.7,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "67af0753ba085797",
+   "takes": [
+    "5909c98ea7addfc4736c",
+    "c8f180fb4487fa5376d4"
+   ],
+   "duration": 22.068,
+   "lines": [
+    {
+     "text": "A random seed really does stop an attacker who has to precompute their colliding keys offline, with zero access to your server.",
+     "start": 0.15,
+     "end": 9.49
+    },
+    {
+     "text": "It does not stop someone who can send one key at a time and quietly time how long each lookup takes \u2014 not if the formula underneath is still a simple linear one.",
+     "start": 9.91,
+     "end": 21.718
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 147,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A random seed really does stop an attacker who has to precompute their colliding keys offline, with zero access to your server.",
+     "said": "precompute",
+     "heard": "pre compute"
+    }
+   ]
+  },
+  "06": {
+   "hash": "5810ccb4c83c833a",
+   "takes": [
+    "74739f7cda79e10fafff",
+    "1e05a92ff229a5b84bc6",
+    "45865b008a67c0b612bc"
+   ],
+   "duration": 45.703,
+   "lines": [
+    {
+     "text": "The left side here is real, and it's genuinely good news \u2014 those are the same crafted keys from before, landing almost one per bucket now that the seed is unknown to whoever built them.",
+     "start": 0.15,
+     "end": 14.623
+    },
+    {
+     "text": "The right side is the part that actually surprised people in twenty twelve. Being unpredictable to a guesser is not the same thing as being unpredictable to someone who can watch you compute, one probe at a time.",
+     "start": 15.043,
+     "end": 29.139
+    },
+    {
+     "text": "Nobody built a working version of that timing attack here \u2014 it's the paper's own cited argument, not a demonstration. But notice why it works at all: a linear formula is a system of equations, and systems of equations get solved.",
+     "start": 29.559,
+     "end": 45.353
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3634dc5541f75a54",
+   "takes": [
+    "3003f3d5e5c82258d661",
+    "15b3493f2c1a63ffd225",
+    "910f48f6134add87e47d"
+   ],
+   "duration": 29.376,
+   "lines": [
+    {
+     "text": "PRF is the one genuinely new term this whole topic needed.",
+     "start": 0.15,
+     "end": 4.864
+    },
+    {
+     "text": "Everything from here on is just one question, asked over and over: is this particular hash a real pseudorandom function, and what does that cost you?",
+     "start": 5.284,
+     "end": 17.764
+    },
+    {
+     "text": "And here's the part that should feel grounding rather than abstract: you've been calling this exact algorithm every single time you've hashed a string in Python.",
+     "start": 18.314,
+     "end": 29.026
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "ce48db368f92db3c",
+   "takes": [
+    "b449f74b4150112a96b2",
+    "c1d96d0dfc783633681e",
+    "36004ad8a4a124af3c68"
+   ],
+   "duration": 28.682,
+   "lines": [
+    {
+     "text": "This isn't a hypothetical trade-off dreamed up for a slide. It's a decision two real teams made differently, for the same language, on purpose.",
+     "start": 0.15,
+     "end": 11.243
+    },
+    {
+     "text": "The standard library chose the slower, safer default because it has no idea who's going to be populating its tables.",
+     "start": 11.663,
+     "end": 19.798
+    },
+    {
+     "text": "The compiler went the other way, deliberately, because it knows exactly where its own keys come from \u2014 and they were never going to fight back.",
+     "start": 20.218,
+     "end": 28.332
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "b4ee14039bfdf2c2",
+   "takes": [
+    "b0d281558dd0f953b335",
+    "ee7221b1f24c78392a2a",
+    "d474333560132dce299f"
+   ],
+   "duration": 30.552,
+   "lines": [
+    {
+     "text": "Every number on this chart, you've already watched build, one tier at a time.",
+     "start": 0.15,
+     "end": 5.156
+    },
+    {
+     "text": "Here's what should actually surprise you: the first two bars. They land close together, almost the same height, exactly the way the paper promised they would.",
+     "start": 5.576,
+     "end": 15.978
+    },
+    {
+     "text": "The real gap, the one worth remembering, is the third bar. That's the cost of asking a hash to also be cryptographically unforgeable \u2014 and it's a cost you only pay when you actually need it.",
+     "start": 16.398,
+     "end": 30.202
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
