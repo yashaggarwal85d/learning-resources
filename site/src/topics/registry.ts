@@ -3915,7 +3915,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Incremental models and snapshots in dbt',
     syllabusTitle: 'Incremental models and snapshots in dbt',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Foundations' },
     chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.4' },
     minutes: 15,
