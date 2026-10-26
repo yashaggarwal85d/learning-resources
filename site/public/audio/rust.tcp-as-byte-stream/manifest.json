@@ -1,0 +1,412 @@
+{
+ "topic": "rust.tcp-as-byte-stream",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "c7dc1a68e830a395",
+   "takes": [
+    "440d47b0c6a5953e4c3c",
+    "058a62c3f1200bbf3ceb"
+   ],
+   "duration": 15.389,
+   "lines": [
+    {
+     "text": "Write one real payload to a real connection in a single call, several megabytes at once.",
+     "start": 0.15,
+     "end": 6.36
+    },
+    {
+     "text": "On the other end, read it back with a far smaller buffer. How many real read calls does that actually take?",
+     "start": 7.08,
+     "end": 15.039
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "25a565d415b6445d",
+   "takes": [
+    "252620223cf2acc3459e",
+    "d90e1cd393168e8a902e"
+   ],
+   "duration": 6.433,
+   "lines": [
+    {
+     "text": "Many of them.",
+     "start": 0.15,
+     "end": 0.948
+    },
+    {
+     "text": "This connection has no idea your write was ever one single unit to begin with.",
+     "start": 1.368,
+     "end": 6.083
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 168,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "This connection has no idea your write was ever one single unit to begin with.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "02": {
+   "hash": "0d65128c380acfa6",
+   "takes": [
+    "a11e2ad37845d01a78ec",
+    "b4dc5cc33773ab3e3f09"
+   ],
+   "duration": 13.026,
+   "lines": [
+    {
+     "text": "Run it for real: that one real write, received through a far smaller read buffer,",
+     "start": 0.15,
+     "end": 6.202
+    },
+    {
+     "text": "took dozens of real read calls to get back in full \u2014 confirmed directly, not assumed.",
+     "start": 6.622,
+     "end": 12.676
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 138,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: that one real write, received through a far smaller read buffer,",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "2763f9b14565ec4b",
+   "takes": [
+    "1ef24b4864d29a2cff5a",
+    "68a74a2da87c0a34d356"
+   ],
+   "duration": 15.253,
+   "lines": [
+    {
+     "text": "Write a message, then shut down just one direction of a real connection, for real.",
+     "start": 0.15,
+     "end": 6.242
+    },
+    {
+     "text": "Does the other side's own read call see an error now, or something else, and can that side still reply?",
+     "start": 6.962,
+     "end": 14.903
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "abb4a35d39421397",
+   "takes": [
+    "1b220cc976ffabd690cd",
+    "707065145da3aa0c5037"
+   ],
+   "duration": 8.195,
+   "lines": [
+    {
+     "text": "It sees a clean end of stream, and it can still reply.",
+     "start": 0.15,
+     "end": 4.145
+    },
+    {
+     "text": "Shutting down one direction never touches the other.",
+     "start": 4.565,
+     "end": 7.845
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "af9a9bfc5f7c2095",
+   "takes": [
+    "27e44e6a57cc3a792040",
+    "6a4de131a60095a3a9d9"
+   ],
+   "duration": 14.249,
+   "lines": [
+    {
+     "text": "Run it for real: the far side genuinely saw a clean end of stream once the first side shut its own sending down,",
+     "start": 0.15,
+     "end": 9.366
+    },
+    {
+     "text": "and it could still write a real reply back, which genuinely arrived.",
+     "start": 9.786,
+     "end": 13.899
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.5,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "b6990db76c4f1b3c",
+   "takes": [
+    "5fd9568901d2ead5c762",
+    "f6808e71246976c6ecd8"
+   ],
+   "duration": 8.23,
+   "lines": [
+    {
+     "text": "The real documentation describes what disabling Nagle's algorithm actually changes.",
+     "start": 0.15,
+     "end": 5.56
+    },
+    {
+     "text": "What happens to small writes?",
+     "start": 6.28,
+     "end": 7.88
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 109,
+   "wer": 0.2,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The real documentation describes what disabling Nagle's algorithm actually changes.",
+     "said": "nagles",
+     "heard": "noggles"
+    },
+    {
+     "line": "What happens to small writes?",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "c523aa4a31805929",
+   "takes": [
+    "d9d5b4cbe4d51a376421",
+    "0fc760605238326ea6be"
+   ],
+   "duration": 9.508,
+   "lines": [
+    {
+     "text": "They wait, deliberately.",
+     "start": 0.15,
+     "end": 2.058
+    },
+    {
+     "text": "Held back until there's enough to send, specifically so the network isn't flooded with tiny packets.",
+     "start": 2.478,
+     "end": 9.158
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a537d9b945e18785",
+   "takes": [
+    "59b227d5792cac9352fc",
+    "6aa4df9ad1784be74a76"
+   ],
+   "duration": 13.761,
+   "lines": [
+    {
+     "text": "The documentation's own words: left on, small writes wait until there's enough to send,",
+     "start": 0.15,
+     "end": 6.379
+    },
+    {
+     "text": "specifically to avoid flooding the network with tiny packets \u2014 and disabling it turns that waiting off.",
+     "start": 6.799,
+     "end": 13.411
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The documentation's own words: left on, small writes wait until there's enough to send,",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "07": {
+   "hash": "dd94e7618373b3ed",
+   "takes": [
+    "c7b4c7353090ee9e961a",
+    "1009c58767a3159eae76"
+   ],
+   "duration": 14.934,
+   "lines": [
+    {
+     "text": "Separate real documentation describes what a certain closing option actually changes about closing a connection.",
+     "start": 0.15,
+     "end": 7.193
+    },
+    {
+     "text": "Does turning it on make closing behave the same, just with a timer running, or something genuinely different?",
+     "start": 7.913,
+     "end": 14.584
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.4,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "5290491b37e7934f",
+   "takes": [
+    "5d43bf32d213ffe2a23a",
+    "9da3a0667d1310b3f52c"
+   ],
+   "duration": 10.531,
+   "lines": [
+    {
+     "text": "Genuinely different.",
+     "start": 0.15,
+     "end": 1.309
+    },
+    {
+     "text": "Closing itself now blocks, waiting for the queue to drain or the timer to run out \u2014 which it otherwise never does.",
+     "start": 1.729,
+     "end": 10.181
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Closing itself now blocks, waiting for the queue to drain or the timer to run out \u2014 which it otherwise never does.",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  },
+  "08": {
+   "hash": "a2b11a1b93938c38",
+   "takes": [
+    "70a36cbf6a50f2c594c9",
+    "891f9ab057f1cd84a8c5"
+   ],
+   "duration": 17.949,
+   "lines": [
+    {
+     "text": "The documentation's own words: with that option on, closing won't return until everything queued has gone out, or the timer runs out.",
+     "start": 0.15,
+     "end": 9.026
+    },
+    {
+     "text": "A separate, later wait, held by the operating system itself for an entirely different reason, is something else again.",
+     "start": 9.446,
+     "end": 17.599
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "baffc34c4aea4888",
+   "takes": [
+    "7f4f80c4e4461e99f84a",
+    "91dead852dd0ecd95a1b"
+   ],
+   "duration": 16.243,
+   "lines": [
+    {
+     "text": "Partial reads, a half-close that leaves one direction open, patient batching, and a closing call that waits:",
+     "start": 0.15,
+     "end": 8.703
+    },
+    {
+     "text": "these are all the same kind of surprise. A stream of bytes was never going to hand your own boundaries back.",
+     "start": 9.123,
+     "end": 15.893
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "79e1b2d3ba824e0d",
+   "takes": [
+    "c99692f53de2e7410cfc",
+    "c1a601f8453fd56ec7da",
+    "69e348412b44b0fa8600"
+   ],
+   "duration": 36.687,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: one real write of several megabytes took dozens of real reads to arrive, because this connection delivers an undifferentiated stream of bytes, not messages.",
+     "start": 0.15,
+     "end": 14.672
+    },
+    {
+     "text": "A real half-close genuinely leaves one direction open while ending the other.",
+     "start": 15.092,
+     "end": 21.048
+    },
+    {
+     "text": "Patient batching is what disabling it turns off, and a certain closing option changes whether closing itself waits \u2014 which is an entirely different thing from the operating system's own wait, held afterward, for its own reason.",
+     "start": 21.468,
+     "end": 36.337
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
