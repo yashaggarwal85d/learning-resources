@@ -1,0 +1,371 @@
+{
+ "topic": "rust.framing-strategies-failure-modes",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "4afb3de0f0ed54a4",
+   "takes": [
+    "c65a29eff13189a6c121",
+    "dbb7060a5c062ff1f1b9"
+   ],
+   "duration": 14.536,
+   "lines": [
+    {
+     "text": "Build a real frame decoder with an explicit cap on how large a single frame can claim to be.",
+     "start": 0.15,
+     "end": 6.587
+    },
+    {
+     "text": "Send it a frame whose own length field honestly claims something far past that cap. What happens?",
+     "start": 7.307,
+     "end": 14.186
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "57ae7b5caa741e9c",
+   "takes": [
+    "35af9a3726af121a21ad",
+    "85801e81073c8e69b860"
+   ],
+   "duration": 6.681,
+   "lines": [
+    {
+     "text": "It's rejected right away.",
+     "start": 0.15,
+     "end": 1.558
+    },
+    {
+     "text": "No buffer anywhere near that claimed size ever gets allocated to hold it.",
+     "start": 1.978,
+     "end": 6.331
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -3.6,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "1cb4492606ec96d1",
+   "takes": [
+    "3b5c14e36b129bf3b084",
+    "3e46d9be29eefddfa37d"
+   ],
+   "duration": 13.343,
+   "lines": [
+    {
+     "text": "Run it for real: a frame claiming an enormous length was rejected immediately,",
+     "start": 0.15,
+     "end": 5.623
+    },
+    {
+     "text": "and no buffer anywhere near that size was ever allocated \u2014 confirmed directly, not assumed.",
+     "start": 6.043,
+     "end": 12.993
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.0,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d7058591333060c7",
+   "takes": [
+    "8da4a7b6ebeeac28a9c3",
+    "9f66f50843edc6b7bca9"
+   ],
+   "duration": 12.414,
+   "lines": [
+    {
+     "text": "Now send a frame that's genuinely under the cap, and pull it back out of the buffer.",
+     "start": 0.15,
+     "end": 6.403
+    },
+    {
+     "text": "Does pulling it out copy those bytes into a brand new buffer, or not?",
+     "start": 7.123,
+     "end": 12.064
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "750fa485f1f69a33",
+   "takes": [
+    "26f3e7656ffb6c554698",
+    "a725dc9975d243983182"
+   ],
+   "duration": 8.8,
+   "lines": [
+    {
+     "text": "It doesn't copy anything.",
+     "start": 0.15,
+     "end": 2.175
+    },
+    {
+     "text": "The same underlying bytes, just split into two pieces in place.",
+     "start": 2.595,
+     "end": 8.45
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.3,
+   "wpm": 102,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "348ce4071f235296",
+   "takes": [
+    "602999679adc1dec1d54",
+    "55e753a660a775932c94"
+   ],
+   "duration": 17.562,
+   "lines": [
+    {
+     "text": "Run it for real: the frame that came back pointed at the exact same address the payload started at in the original buffer,",
+     "start": 0.15,
+     "end": 7.745
+    },
+    {
+     "text": "not a fresh allocation \u2014 confirmed directly, by checking the real pointer, not assumed from the documentation.",
+     "start": 8.165,
+     "end": 17.212
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c2166b2fefff201e",
+   "takes": [
+    "cb9424f0b55392027448",
+    "a2f690d1fdbf5b9763ec"
+   ],
+   "duration": 10.136,
+   "lines": [
+    {
+     "text": "The real documentation for this kind of decoder names its actual job in plain words.",
+     "start": 0.15,
+     "end": 6.46
+    },
+    {
+     "text": "What does it say that job actually is?",
+     "start": 7.18,
+     "end": 9.786
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "9b94f1c5eb6410f3",
+   "takes": [
+    "23e3f1f9e3b117fa954d",
+    "c84592bd4d2f80b4e833"
+   ],
+   "duration": 8.103,
+   "lines": [
+    {
+     "text": "Finding the boundaries.",
+     "start": 0.15,
+     "end": 1.573
+    },
+    {
+     "text": "Turning a sequence of bytes into a sequence of frames, nothing about sockets or encryption.",
+     "start": 1.993,
+     "end": 7.753
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.0,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a41d1980063a1036",
+   "takes": [
+    "813c0324f2acf921860a",
+    "8325ef3ea4545288da12"
+   ],
+   "duration": 13.253,
+   "lines": [
+    {
+     "text": "The documentation's own words: this trait's job is to say how bytes become frames,",
+     "start": 0.15,
+     "end": 6.201
+    },
+    {
+     "text": "and to decide exactly where the boundary between one frame and the next actually falls.",
+     "start": 6.621,
+     "end": 12.903
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "03c82d13802ac4b5",
+   "takes": [
+    "1c747f87b7e7bac3b58a",
+    "dafdefec1787abf80437"
+   ],
+   "duration": 10.299,
+   "lines": [
+    {
+     "text": "A length prefix needs that cap to stay safe.",
+     "start": 0.15,
+     "end": 3.223
+    },
+    {
+     "text": "What do the other two common ways of framing messages need instead, to avoid their own failure modes?",
+     "start": 3.943,
+     "end": 9.948
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "642e3abca47c8c30",
+   "takes": [
+    "204d417679647519bb9f",
+    "7dca92f431441d5e86c5"
+   ],
+   "duration": 10.686,
+   "lines": [
+    {
+     "text": "A delimiter needs its own kind of escaping, and a real scan to find it.",
+     "start": 0.15,
+     "end": 5.857
+    },
+    {
+     "text": "A fixed size wastes real bandwidth on anything smaller than it.",
+     "start": 6.277,
+     "end": 10.336
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.3,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "486b0da1df39e829",
+   "takes": [
+    "bb43f317e016c5a372bc",
+    "9f2b43e5d731079459f1"
+   ],
+   "duration": 15.583,
+   "lines": [
+    {
+     "text": "Each of these fails differently: an uncapped length claim is a real denial-of-service risk,",
+     "start": 0.15,
+     "end": 6.66
+    },
+    {
+     "text": "a delimiter needs escaping and a real scan, and a fixed size wastes real bandwidth on anything short.",
+     "start": 7.08,
+     "end": 15.233
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "4505e024fb57940a",
+   "takes": [
+    "c33937172e35da6b3a49"
+   ],
+   "duration": 10.408,
+   "lines": [
+    {
+     "text": "A capped claim, split out of the buffer without copying a single byte: that's the one shape this whole chapter's own lab is actually built around.",
+     "start": 0.15,
+     "end": 10.058
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "8f1eb13c2cf04621",
+   "takes": [
+    "37e11b3ce95983cbfce3",
+    "b222c4b944b98fdff392",
+    "be2f3a071e64a1a03a73"
+   ],
+   "duration": 30.864,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a capped frame decodes correctly, and splitting it out never copies a single byte.",
+     "start": 0.15,
+     "end": 7.613
+    },
+    {
+     "text": "A frame claiming far more than the cap is rejected before any such buffer is ever allocated, which is the real risk an uncapped claim creates.",
+     "start": 8.033,
+     "end": 17.547
+    },
+    {
+     "text": "And each of the three ways of framing a message fails in its own distinct way, so the real choice a protocol makes is which one of those costs it can actually afford.",
+     "start": 17.967,
+     "end": 30.514
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
