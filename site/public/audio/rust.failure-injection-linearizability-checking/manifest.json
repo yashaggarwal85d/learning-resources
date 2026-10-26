@@ -1,0 +1,365 @@
+{
+ "topic": "rust.failure-injection-linearizability-checking",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "9c4a082441fd4004",
+   "takes": [
+    "bbc15cfecfcd489eb3b9",
+    "b03b7df4d4b925b026d6"
+   ],
+   "duration": 21.721,
+   "lines": [
+    {
+     "text": "Two real failures are injected together into a small replicated register: a delayed acknowledgement, and a duplicated message.",
+     "start": 0.15,
+     "end": 9.582
+    },
+    {
+     "text": "A read happens after both. Does the resulting recorded history, checked mechanically, turn out consistent with any honest real-time order at all?",
+     "start": 10.302,
+     "end": 21.371
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "242ab26767f39ba9",
+   "takes": [
+    "6e6f397bea76b7bc213c",
+    "de93d2d37ad787212299"
+   ],
+   "duration": 4.91,
+   "lines": [
+    {
+     "text": "No, it genuinely is not.",
+     "start": 0.15,
+     "end": 1.923
+    },
+    {
+     "text": "The checker finds a real violation.",
+     "start": 2.343,
+     "end": 4.56
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "5e745e76323c44dc",
+   "takes": [
+    "32e46abd44940989a087",
+    "c623e380a360f38be816"
+   ],
+   "duration": 15.38,
+   "lines": [
+    {
+     "text": "Run it for real: the checker scans the real recorded history and finds it genuinely is not linearizable.",
+     "start": 0.15,
+     "end": 8.056
+    },
+    {
+     "text": "Every real total order gets checked, mechanically, by genuine enumeration rather than by assumption.",
+     "start": 8.476,
+     "end": 15.03
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "7f20dd62a92ca022",
+   "takes": [
+    "773a5c68b315068639a0",
+    "fa74dc9b482f96a82ce9"
+   ],
+   "duration": 13.979,
+   "lines": [
+    {
+     "text": "Of the two real failures injected together, only one actually shows up as a violation in the recorded history.",
+     "start": 0.15,
+     "end": 6.744
+    },
+    {
+     "text": "Does the checker name the delayed-acknowledgement read, or the duplicated-message read, as the real problem?",
+     "start": 7.464,
+     "end": 13.629
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "eab338f601b92ab4",
+   "takes": [
+    "1fcdeeadbb8084c9034e",
+    "f48eec87f0761a36ec4d"
+   ],
+   "duration": 4.75,
+   "lines": [
+    {
+     "text": "The delayed-acknowledgement read.",
+     "start": 0.15,
+     "end": 1.862
+    },
+    {
+     "text": "The duplicated message was idempotent.",
+     "start": 2.282,
+     "end": 4.4
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.0,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "0a384ce592225e76",
+   "takes": [
+    "fb5842a66983bb3f7d85"
+   ],
+   "duration": 12.414,
+   "lines": [
+    {
+     "text": "Run it for real: the checker names the delayed-acknowledgement read directly, the duplicated-message read caused no actual violation at all, because it was idempotent.",
+     "start": 0.15,
+     "end": 12.064
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c8b094883726f265",
+   "takes": [
+    "e18df914ec953b2aa503",
+    "40a32459f79d676ffea3"
+   ],
+   "duration": 10.668,
+   "lines": [
+    {
+     "text": "Now the identical two failures run again, except the lagging replica catches up before anyone reads from it.",
+     "start": 0.15,
+     "end": 6.81
+    },
+    {
+     "text": "Is the resulting history now linearizable?",
+     "start": 7.53,
+     "end": 10.318
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "181f09e8b0f1c0dd",
+   "takes": [
+    "9995c204b819e717847b",
+    "65c3a0e99c547519a44b"
+   ],
+   "duration": 4.985,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The duplicated message was never the problem.",
+     "start": 1.84,
+     "end": 4.635
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 108,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "bd7ab16d1ef6919c",
+   "takes": [
+    "8768cc652660c87767ae"
+   ],
+   "duration": 8.487,
+   "lines": [
+    {
+     "text": "Run it for real: genuinely linearizable now, even with that same duplicated-message failure still injected.",
+     "start": 0.15,
+     "end": 8.137
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -3.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "c75918dbbbef7bc9",
+   "takes": [
+    "1314122fe38dad369ad5",
+    "16def12d354f0ccfedce"
+   ],
+   "duration": 15.816,
+   "lines": [
+    {
+     "text": "Now a read genuinely overlaps a write in real time: neither one finishes before the other starts.",
+     "start": 0.15,
+     "end": 7.632
+    },
+    {
+     "text": "How many of the real total orders the checker brute force enumerates actually respect that real-time precedence?",
+     "start": 8.352,
+     "end": 15.466
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "1d5251066d403c0d",
+   "takes": [
+    "8e4fd1a813166729dcdb",
+    "040417bc3bda43ea52c9"
+   ],
+   "duration": 5.305,
+   "lines": [
+    {
+     "text": "Exactly two.",
+     "start": 0.15,
+     "end": 1.187
+    },
+    {
+     "text": "Either order genuinely respects real-time precedence.",
+     "start": 1.607,
+     "end": 4.955
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.0,
+   "wpm": 102,
+   "wer": 0.5,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Exactly two.",
+     "said": "two",
+     "heard": "too"
+    }
+   ]
+  },
+  "08": {
+   "hash": "d3ecc0c4efd4b298",
+   "takes": [
+    "09ebfbe38c5c954ebb79"
+   ],
+   "duration": 12.714,
+   "lines": [
+    {
+     "text": "Run it for real: exactly two, matching the real order structure of a single concurrent pair, found by the checker's own brute force enumeration, not assumed.",
+     "start": 0.15,
+     "end": 12.364
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "06e0f3638db40b05",
+   "takes": [
+    "bfce3b5440ce53093832",
+    "d76c556058ae48af915b"
+   ],
+   "duration": 17.76,
+   "lines": [
+    {
+     "text": "One real, widely used testing methodology states this exact structure directly, in its own words.",
+     "start": 0.15,
+     "end": 8.068
+    },
+    {
+     "text": "A generator makes operations, a history records them, a nemesis injects real faults, and a checker decides correctness.",
+     "start": 8.488,
+     "end": 17.41
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "72fbe5eb6990e2b5",
+   "takes": [
+    "0ae615f1044aef0db371",
+    "4d532644532e3f4d496f",
+    "5471ce3c1020b30eed2a"
+   ],
+   "duration": 28.624,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a recorded history gathered under several real, independent failures can be mechanically checked for linearizability.",
+     "start": 0.15,
+     "end": 10.863
+    },
+    {
+     "text": "Only the failures an actual read observes ever show up as a violation; the rest can be injected all day and leave no trace at all.",
+     "start": 11.283,
+     "end": 19.991
+    },
+    {
+     "text": "A real checker finds the answer by genuine enumeration over every candidate order, never by assumption.",
+     "start": 20.411,
+     "end": 28.274
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
