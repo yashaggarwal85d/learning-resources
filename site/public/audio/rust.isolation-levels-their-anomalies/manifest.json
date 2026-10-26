@@ -1,0 +1,393 @@
+{
+ "topic": "rust.isolation-levels-their-anomalies",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "97cc2a3d4a39fed4",
+   "takes": [
+    "dafbb7be71f3054fd3fc",
+    "d072f6b7a1543f79bec7"
+   ],
+   "duration": 18.216,
+   "lines": [
+    {
+     "text": "Two doctors are both currently on call.",
+     "start": 0.15,
+     "end": 2.729
+    },
+    {
+     "text": "Each one separately checks whether at least one other doctor is still on call, gets yes, and goes off call. Does that shared rule, at least one doctor on call, actually survive both of them leaving?",
+     "start": 3.449,
+     "end": 17.866
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "8007557660cc5e55",
+   "takes": [
+    "4cf585f1ca6f148aa5a4",
+    "c4dfc6eecf173f19df3a"
+   ],
+   "duration": 7.816,
+   "lines": [
+    {
+     "text": "No, it genuinely breaks.",
+     "start": 0.15,
+     "end": 2.46
+    },
+    {
+     "text": "Neither individual check was wrong, yet together they still violate the rule.",
+     "start": 2.88,
+     "end": 7.466
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "b8d4b4fda4d050c7",
+   "takes": [
+    "74842f9bee43488ccb8c",
+    "28586c79f5549369c21b"
+   ],
+   "duration": 18.476,
+   "lines": [
+    {
+     "text": "Run it for real: it genuinely breaks, and there isn't even a conflict between the two transactions' own writes anywhere to be found.",
+     "start": 0.15,
+     "end": 8.631
+    },
+    {
+     "text": "A snapshot-isolation database lets this through because the two writes never touch the identical row.",
+     "start": 9.051,
+     "end": 18.126
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.3,
+   "wpm": 127,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: it genuinely breaks, and there isn't even a conflict between the two transactions' own writes anywhere to be found.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "A snapshot-isolation database lets this through because the two writes never touch the identical row.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "03": {
+   "hash": "8dd37e347aacf5f9",
+   "takes": [
+    "6cf4d88ee624c50eb7ce",
+    "3ed542200e52b3d3ef5f"
+   ],
+   "duration": 9.451,
+   "lines": [
+    {
+     "text": "Both transactions wrote a different doctor's own row, never the same one.",
+     "start": 0.15,
+     "end": 4.388
+    },
+    {
+     "text": "Does a snapshot-isolation database even notice a conflict here at all?",
+     "start": 5.108,
+     "end": 9.101
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "99c73abb96f91efd",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "4e51782636ed13014499"
+   ],
+   "duration": 8.192,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "Writes to the identical row are the only conflict its own commit rule checks for.",
+     "start": 2.386,
+     "end": 7.842
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.13333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Writes to the identical row are the only conflict its own commit rule checks for.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "Writes to the identical row are the only conflict its own commit rule checks for.",
+     "said": "rule",
+     "heard": "role"
+    }
+   ]
+  },
+  "04": {
+   "hash": "a86f7a07c819af6a",
+   "takes": [
+    "fe2186b0e587a3472021"
+   ],
+   "duration": 9.646,
+   "lines": [
+    {
+     "text": "Run it for real: no conflict came back at all, because the commit rule genuinely only checks for writes landing on the identical row.",
+     "start": 0.15,
+     "end": 9.296
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.4,
+   "wpm": 149,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: no conflict came back at all, because the commit rule genuinely only checks for writes landing on the identical row.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "05": {
+   "hash": "3e8c6bc09a85a9fb",
+   "takes": [
+    "806534d62431d59ee054",
+    "4113800336f1d1294a6d"
+   ],
+   "duration": 11.991,
+   "lines": [
+    {
+     "text": "A stricter check instead builds a real dependency graph between the two transactions' own reads and writes.",
+     "start": 0.15,
+     "end": 6.933
+    },
+    {
+     "text": "Does that graph genuinely catch what the write-write check missed?",
+     "start": 7.653,
+     "end": 11.641
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does that graph genuinely catch what the write-write check missed?",
+     "said": "write write",
+     "heard": "right right"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "a85f22520c17b0f3",
+   "takes": [
+    "9995c204b819e717847b",
+    "753348e4b71fdb77dc90"
+   ],
+   "duration": 6.232,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "It finds a real, dangerous two-edge cycle running between them.",
+     "start": 1.84,
+     "end": 5.882
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "08c4e5b4175e44e6",
+   "takes": [
+    "c469ea3437e2ebde3dac"
+   ],
+   "duration": 11.172,
+   "lines": [
+    {
+     "text": "Run it for real: a genuine two-edge cycle came back. Each transaction's own read was invalidated by the other transaction's own write.",
+     "start": 0.15,
+     "end": 10.822
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "8d456751bea5431f",
+   "takes": [
+    "2b2e42b555d50ef8a668",
+    "02ff20877b1971eebffe"
+   ],
+   "duration": 14.684,
+   "lines": [
+    {
+     "text": "Run that same stricter check against two entirely unrelated transactions instead, each one touching a different doctor that nobody else ever reads from.",
+     "start": 0.15,
+     "end": 10.701
+    },
+    {
+     "text": "Does it still flag that pair the same way?",
+     "start": 11.421,
+     "end": 14.334
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "ed36aec04e0dbac0",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "364ebf9184083973c9ec"
+   ],
+   "duration": 6.043,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "It correctly finds no cycle between them at all.",
+     "start": 2.386,
+     "end": 5.693
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 109,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c4af8b76da6a1c5c",
+   "takes": [
+    "c578df15739ed1e49ac8"
+   ],
+   "duration": 9.377,
+   "lines": [
+    {
+     "text": "Run it for real: genuinely no cycle came back, for two transactions that never read anything the other one wrote.",
+     "start": 0.15,
+     "end": 9.027
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -3.0,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "39931023e6251a0c",
+   "takes": [
+    "9a1e9af8e8a9081bcdd0",
+    "ac7328aea0ed8d60d745"
+   ],
+   "duration": 20.191,
+   "lines": [
+    {
+     "text": "One real production system's own documentation states this exact anomaly directly, using two account classes instead of two doctors.",
+     "start": 0.15,
+     "end": 9.816
+    },
+    {
+     "text": "It names the result of committing a group of transactions in a way no one-at-a-time ordering could ever have produced: a serialization anomaly.",
+     "start": 10.236,
+     "end": 19.841
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "29e561c77e21f428",
+   "takes": [
+    "d4bdff3f4f878af6e91b",
+    "1eaee10610d6c9d06c86",
+    "fd045b207e623487f6a1"
+   ],
+   "duration": 47.462,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a snapshot-isolation commit rule only ever checks for two transactions writing the identical row, so it genuinely lets write skew straight through, even while each transaction individually preserves a shared rule it's supposed to protect.",
+     "start": 0.15,
+     "end": 20.282
+    },
+    {
+     "text": "A stricter, dependency-graph check catches exactly that pattern: a cycle of two opposing read-write dependencies running between the identical pair of transactions.",
+     "start": 20.702,
+     "end": 34.655
+    },
+    {
+     "text": "That same stricter check is never simply stricter about everything, though; it correctly leaves two unrelated transactions alone, with no cycle between them at all.",
+     "start": 35.075,
+     "end": 47.112
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
