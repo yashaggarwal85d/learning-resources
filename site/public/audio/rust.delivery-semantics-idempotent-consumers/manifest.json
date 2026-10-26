@@ -1,0 +1,399 @@
+{
+ "topic": "rust.delivery-semantics-idempotent-consumers",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7381235e49d51b21",
+   "takes": [
+    "e998a244d4fa67c58a9e",
+    "86ce253aa7d1d25f312d"
+   ],
+   "duration": 16.411,
+   "lines": [
+    {
+     "text": "A consumer applies a real side effect, then commits its own offset, as two separate steps.",
+     "start": 0.15,
+     "end": 7.482
+    },
+    {
+     "text": "The process genuinely crashes between them. Does the next real poll genuinely redeliver that same message?",
+     "start": 8.203,
+     "end": 16.061
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 117,
+   "wer": 0.1875,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The process genuinely crashes between them. Does the next real poll genuinely redeliver that same message?",
+     "said": "poll",
+     "heard": "pull"
+    },
+    {
+     "line": "The process genuinely crashes between them. Does the next real poll genuinely redeliver that same message?",
+     "said": "redeliver",
+     "heard": "re deliver"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "27089d75fa3da5f0",
+   "takes": [
+    "9995c204b819e717847b",
+    "857e140454232c205905"
+   ],
+   "duration": 4.108,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "From the same uncommitted offset.",
+     "start": 1.84,
+     "end": 3.758
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -3.7,
+   "wpm": 102,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "77380367f76f9ef8",
+   "takes": [
+    "ebe8014e701592ead247"
+   ],
+   "duration": 10.013,
+   "lines": [
+    {
+     "text": "Run it for real: the crash genuinely left the offset uncommitted, and the next real poll genuinely redelivered the identical message.",
+     "start": 0.15,
+     "end": 9.663
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 126,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the crash genuinely left the offset uncommitted, and the next real poll genuinely redelivered the identical message.",
+     "said": "poll",
+     "heard": "pull"
+    },
+    {
+     "line": "Run it for real: the crash genuinely left the offset uncommitted, and the next real poll genuinely redelivered the identical message.",
+     "said": "redelivered",
+     "heard": "re delivered"
+    }
+   ]
+  },
+  "03": {
+   "hash": "aad5b81d3a3995fb",
+   "takes": [
+    "cf5f39a91e1a5e5c70d1",
+    "cef91829ac5cbb029ff1"
+   ],
+   "duration": 8.779,
+   "lines": [
+    {
+     "text": "That redelivered message now hits the side effect a second time.",
+     "start": 0.15,
+     "end": 4.145
+    },
+    {
+     "text": "Does a naive consumer genuinely apply it twice?",
+     "start": 4.865,
+     "end": 8.429
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.6,
+   "wpm": 130,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That redelivered message now hits the side effect a second time.",
+     "said": "redelivered",
+     "heard": "re delivered"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "27943d6eca087cd8",
+   "takes": [
+    "9995c204b819e717847b",
+    "af735a8a5d182195fbf3"
+   ],
+   "duration": 5.498,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The side effect itself has no memory of its own.",
+     "start": 1.84,
+     "end": 5.148
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "d7747938dbaa3f36",
+   "takes": [
+    "dc786d1e0d91039d291e"
+   ],
+   "duration": 11.355,
+   "lines": [
+    {
+     "text": "Run it for real: a naive consumer genuinely applied the real side effect twice, and the real ledger balance is genuinely wrong because of it.",
+     "start": 0.15,
+     "end": 11.005
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a10e1b198422cb35",
+   "takes": [
+    "df1558d1ff8094d68e5a",
+    "f4aad006fd495862a66a"
+   ],
+   "duration": 14.85,
+   "lines": [
+    {
+     "text": "Now the consumer checks a real idempotency key, the producer's own id plus its sequence number, before applying anything.",
+     "start": 0.15,
+     "end": 9.623
+    },
+    {
+     "text": "Does that genuinely remove the duplicate effect?",
+     "start": 10.343,
+     "end": 14.5
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "4735529bde8267a5",
+   "takes": [
+    "9995c204b819e717847b",
+    "e6b32593cf23d32bf49a"
+   ],
+   "duration": 4.744,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The key is what the consumer was missing.",
+     "start": 1.84,
+     "end": 4.394
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -3.0,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a6000b24914b9320",
+   "takes": [
+    "ea2bb3e3208af8712ed7"
+   ],
+   "duration": 12.645,
+   "lines": [
+    {
+     "text": "Run it for real: the real idempotency key genuinely removed the duplicate's own visible effect, and the real ledger balance came out genuinely exact.",
+     "start": 0.15,
+     "end": 12.295
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "fd50933a2d9e2448",
+   "takes": [
+    "cae147265270adc49fde",
+    "f678e2ffee18cb578167"
+   ],
+   "duration": 11.32,
+   "lines": [
+    {
+     "text": "The redelivery itself is still genuinely happening, every time.",
+     "start": 0.15,
+     "end": 5.055
+    },
+    {
+     "text": "Does only the effect disappear, or does the redelivery disappear too?",
+     "start": 5.775,
+     "end": 10.97
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.7,
+   "wpm": 106,
+   "wer": 0.2222222222222222,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The redelivery itself is still genuinely happening, every time.",
+     "said": "redelivery",
+     "heard": "re delivery"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "929585a642dd7d86",
+   "takes": [
+    "492ca9faec74c0236bac",
+    "5823b2d3ad2b15cf1dc2"
+   ],
+   "duration": 3.975,
+   "lines": [
+    {
+     "text": "Only the effect.",
+     "start": 0.15,
+     "end": 1.076
+    },
+    {
+     "text": "The redelivery itself keeps happening.",
+     "start": 1.496,
+     "end": 3.625
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 121,
+   "wer": 0.4,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The redelivery itself keeps happening.",
+     "said": "redelivery",
+     "heard": "re delivery"
+    }
+   ]
+  },
+  "08": {
+   "hash": "c6a8b7cdf003c392",
+   "takes": [
+    "64f0a4683078f2b32dcf"
+   ],
+   "duration": 9.044,
+   "lines": [
+    {
+     "text": "Run it for real: the redelivery itself genuinely still happened, and only the duplicate's own effect was genuinely removed.",
+     "start": 0.15,
+     "end": 8.694
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.1,
+   "wpm": 126,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the redelivery itself genuinely still happened, and only the duplicate's own effect was genuinely removed.",
+     "said": "redelivery",
+     "heard": "re delivery"
+    }
+   ]
+  },
+  "09": {
+   "hash": "36f78bd56c2be57a",
+   "takes": [
+    "f2636c0a0b9669575116",
+    "98e52843cf180be559e2"
+   ],
+   "duration": 15.5,
+   "lines": [
+    {
+     "text": "Two real, independent sources on this exact mechanism agree, in their own words.",
+     "start": 0.15,
+     "end": 5.618
+    },
+    {
+     "text": "The broker assigns each producer a real id, and deduplicates by a real sequence number sent with every message.",
+     "start": 6.038,
+     "end": 15.15
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "2b9ec2544ffb2233",
+   "takes": [
+    "67de09316023e13441d6",
+    "7161c1023a7e0a1bc5d3",
+    "47de54589d50124181a4"
+   ],
+   "duration": 46.029,
+   "lines": [
+    {
+     "text": "So here's the real split this whole topic turns on: a broker's own promise about delivery and a consumer's own promise about effects are answering two completely different questions, and mixing them up is exactly where this kind of bug comes from.",
+     "start": 0.15,
+     "end": 19.263
+    },
+    {
+     "text": "A crash doesn't erase what already happened; it only erases the broker's own record of having heard about it, which is precisely why the work can come back around a second time looking brand new.",
+     "start": 19.683,
+     "end": 32.16
+    },
+    {
+     "text": "The fix was never about trying to stop that second arrival. It was about giving the consumer its own memory, so arriving twice and mattering twice stop being the same thing.",
+     "start": 32.58,
+     "end": 45.679
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
