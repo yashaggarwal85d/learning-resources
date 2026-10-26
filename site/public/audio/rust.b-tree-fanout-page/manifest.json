@@ -1,0 +1,383 @@
+{
+ "topic": "rust.b-tree-fanout-page",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "99c9e0a764d000f9",
+   "takes": [
+    "827aef6e57ea7004a4f5",
+    "fc2e9d2d8c4eb5e400d6"
+   ],
+   "duration": 10.801,
+   "lines": [
+    {
+     "text": "A leaf page can only hold a handful of entries before it fills up.",
+     "start": 0.15,
+     "end": 4.618
+    },
+    {
+     "text": "Insert one more into a page that's already full. What actually happens to it?",
+     "start": 5.338,
+     "end": 10.451
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "81ec78e3478f8b7d",
+   "takes": [
+    "6712fd64ece029610dd7",
+    "0ccb626a95c9d94f683b"
+   ],
+   "duration": 8.248,
+   "lines": [
+    {
+     "text": "It splits, genuinely.",
+     "start": 0.15,
+     "end": 1.887
+    },
+    {
+     "text": "Its entries divide into two pages, and a new key gets handed up to the parent.",
+     "start": 2.307,
+     "end": 7.898
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "08f5e5417788d097",
+   "takes": [
+    "349ce19d8f3749779388",
+    "a86c422d86df9f81dd56"
+   ],
+   "duration": 18.561,
+   "lines": [
+    {
+     "text": "Run it for real: inserting past a full page genuinely allocated a brand-new page and pushed a real separator key up into a new root.",
+     "start": 0.15,
+     "end": 10.577
+    },
+    {
+     "text": "Every one of the original keys is still found correctly, right where it should be, after the split.",
+     "start": 10.997,
+     "end": 18.211
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "c723cb5706f83854",
+   "takes": [
+    "c066ae043ef0f0b38aa0",
+    "49e8dd3726263ff3cdec"
+   ],
+   "duration": 12.227,
+   "lines": [
+    {
+     "text": "Keep inserting records, thousands more of them.",
+     "start": 0.15,
+     "end": 3.299
+    },
+    {
+     "text": "Does the structure need to grow a new level for roughly every batch of records, or does something else keep it from growing that fast?",
+     "start": 4.019,
+     "end": 11.877
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "2722717dfeadcfe2",
+   "takes": [
+    "41c4bc9d5ac27012a03e",
+    "c2fe1a57c6b03374e014"
+   ],
+   "duration": 8.317,
+   "lines": [
+    {
+     "text": "Much slower, genuinely.",
+     "start": 0.15,
+     "end": 2.267
+    },
+    {
+     "text": "A high enough fanout per page keeps the whole structure only a few levels deep.",
+     "start": 2.687,
+     "end": 7.967
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c20ea3d8fbad846c",
+   "takes": [
+    "e87805c3856e77a3af8d",
+    "ffb200603366795c2ee8"
+   ],
+   "duration": 15.877,
+   "lines": [
+    {
+     "text": "Run it for real: after thousands of inserts, the structure's own depth genuinely stayed within a handful of levels.",
+     "start": 0.15,
+     "end": 9.071
+    },
+    {
+     "text": "Every one of those thousands of records is still found correctly by walking down from the root.",
+     "start": 9.491,
+     "end": 15.527
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "d2b50692e9949e0a",
+   "takes": [
+    "f837766ea50a51f68664",
+    "80c3edf843a71271e0d9",
+    "bad66137a5d5e027dc9f"
+   ],
+   "duration": 17.787,
+   "lines": [
+    {
+     "text": "Take two trees and feed them the identical sequence of inserts.",
+     "start": 0.15,
+     "end": 3.764
+    },
+    {
+     "text": "One of them deliberately leaves each page less than completely full before its next split; the other packs pages fuller.",
+     "start": 4.184,
+     "end": 11.656
+    },
+    {
+     "text": "Which one ends up splitting more times, over that same identical sequence?",
+     "start": 12.376,
+     "end": 17.437
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "c4618b8daeec0221",
+   "takes": [
+    "3fff742cdbe881c7529e",
+    "937841a09ee901dd103b"
+   ],
+   "duration": 10.154,
+   "lines": [
+    {
+     "text": "The one packed less full, genuinely.",
+     "start": 0.15,
+     "end": 2.55
+    },
+    {
+     "text": "Each of its splits leaves less spare room, so the very next insert forces another split sooner.",
+     "start": 2.97,
+     "end": 9.804
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "440da4c94320c7e4",
+   "takes": [
+    "23fa43c8e80c6b1f8b9c",
+    "c9b4104519fcf5765c84"
+   ],
+   "duration": 15.45,
+   "lines": [
+    {
+     "text": "Run it for real: packing pages less full genuinely caused more splits over the identical insert sequence than packing them fuller did.",
+     "start": 0.15,
+     "end": 8.91
+    },
+    {
+     "text": "The same inserts, two different outcomes, purely from how much slack each split leaves behind.",
+     "start": 9.33,
+     "end": 15.1
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "921d1864a28b0e13",
+   "takes": [
+    "e448cc88e538810de816",
+    "97478037c2706eb2d1ec"
+   ],
+   "duration": 15.514,
+   "lines": [
+    {
+     "text": "A split's new separator key only has one job: tell the left side apart from the right side.",
+     "start": 0.15,
+     "end": 6.564
+    },
+    {
+     "text": "Can that separator genuinely take less storage than a full copy of the key, and still send every search to the correct side?",
+     "start": 7.284,
+     "end": 15.164
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "0e4833e625c13581",
+   "takes": [
+    "9995c204b819e717847b",
+    "12b99768ad8367707185"
+   ],
+   "duration": 8.021,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Keeping only the part where the two sides first actually differ is enough to route correctly.",
+     "start": 1.84,
+     "end": 7.671
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "13597c949470b375",
+   "takes": [
+    "142114623075296dcea4",
+    "fb8b0d16d7b83b3e6dcd"
+   ],
+   "duration": 16.038,
+   "lines": [
+    {
+     "text": "Run it for real: a separator built from only the first differing part of the key genuinely took fewer bytes than a full copy of that key.",
+     "start": 0.15,
+     "end": 10.455
+    },
+    {
+     "text": "Yet it routed every single test key exactly the way the full key would have.",
+     "start": 10.875,
+     "end": 15.688
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "9318a69e5995fd52",
+   "takes": [
+    "2a3eb30bc281e06d16bf",
+    "ed0e61fc2caa1bdf8c2b"
+   ],
+   "duration": 24.832,
+   "lines": [
+    {
+     "text": "One real production system documents exactly this technique, in its own source tree, in plain terms.",
+     "start": 0.15,
+     "end": 9.345
+    },
+    {
+     "text": "It states the entire point of throwing away those extra, unneeded key bytes directly: doing that is what lets each page hold more separators, so the whole structure branches wider and stays shallower.",
+     "start": 9.765,
+     "end": 24.482
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "42b3aa01c6a16f9b",
+   "takes": [
+    "62778caa216fbb0b413f",
+    "2e5f6ba67211df432af0",
+    "f6c35061d0f0032d50cf"
+   ],
+   "duration": 40.934,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: a page that fills up doesn't refuse a new entry, it splits, and that split is what makes room for the structure to keep growing correctly.",
+     "start": 0.15,
+     "end": 12.139
+    },
+    {
+     "text": "A high branching factor per page is exactly what keeps that growth from ever costing many levels, even once the record count reaches into the billions.",
+     "start": 12.559,
+     "end": 22.298
+    },
+    {
+     "text": "And two smaller decisions compound on top of that: leaving a little slack in each page on purpose means fewer splits later, and trimming a separator key down to only its first real difference means every one of those splits costs less to remember.",
+     "start": 22.718,
+     "end": 40.584
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
