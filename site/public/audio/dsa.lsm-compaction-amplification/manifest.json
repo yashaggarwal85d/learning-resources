@@ -1,0 +1,355 @@
+{
+ "topic": "dsa.lsm-compaction-amplification",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "21e86395044b611b",
+   "takes": [
+    "9bf94c4de9fc58081986",
+    "416236f93269bfd7f17b"
+   ],
+   "duration": 17.508,
+   "lines": [
+    {
+     "text": "The last topic solved the write problem by refusing to update anything in place. That refusal has a bill attached, and it comes due here.",
+     "start": 0.15,
+     "end": 9.786
+    },
+    {
+     "text": "Every run that structure ever wrote is still sitting there, and a read still has to go through every one of them.",
+     "start": 10.206,
+     "end": 17.158
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The last topic solved the write problem by refusing to update anything in place. That refusal has a bill attached, and it comes due here.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "02": {
+   "hash": "ef6fecada210b0f7",
+   "takes": [
+    "96f998bded58d7beac11",
+    "d2662aadfa34035be390"
+   ],
+   "duration": 17.006,
+   "lines": [
+    {
+     "text": "Before the reveal, think about this from the system's point of view: the pile of runs only grows, and every read gets a little slower for it.",
+     "start": 0.15,
+     "end": 10.687
+    },
+    {
+     "text": "What's actually worth doing about that, given that rewriting data costs real disk time too?",
+     "start": 11.107,
+     "end": 16.656
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "a4569408887d3356",
+   "takes": [
+    "db2e254386705a0b7da4",
+    "f9672a5828a175d0c935"
+   ],
+   "duration": 22.005,
+   "lines": [
+    {
+     "text": "Not nothing, and not everything at once either \u2014 some runs get merged together, on a schedule, trading some disk time now for a cheaper read later.",
+     "start": 0.15,
+     "end": 11.239
+    },
+    {
+     "text": "Merging on every single flush would mean paying that rewrite cost constantly, which defeats the entire point of writing sequentially in the first place.",
+     "start": 11.659,
+     "end": 21.655
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "bcd6535309604027",
+   "takes": [
+    "1df365f785f3d31b6ad5",
+    "2f86a12d7a3f1d25e2f6",
+    "f380ae96a7587b6403fd"
+   ],
+   "duration": 30.253,
+   "lines": [
+    {
+     "text": "One scheme keeps each level down to exactly one sorted run, with a size limit attached to it.",
+     "start": 0.15,
+     "end": 6.76
+    },
+    {
+     "text": "Once a level outgrows that limit, its run gets folded into the next level down, and that fold rewrites every key it touches, not just the new ones.",
+     "start": 7.18,
+     "end": 18.462
+    },
+    {
+     "text": "The upside is that a lookup never has more than one run per level to check \u2014 the downside is a key can get rewritten again and again as it works its way down.",
+     "start": 18.882,
+     "end": 29.903
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "fb918aa07828ae8a",
+   "takes": [
+    "6384d1c5f75170184894",
+    "026f0fc4dae10366c642",
+    "52152389d9593cf03e36"
+   ],
+   "duration": 25.26,
+   "lines": [
+    {
+     "text": "A different scheme lets several similarly sized runs just sit there, side by side, completely unmerged.",
+     "start": 0.15,
+     "end": 7.927
+    },
+    {
+     "text": "Only once enough of them have piled up does the whole batch get folded together into one wider run.",
+     "start": 8.347,
+     "end": 14.783
+    },
+    {
+     "text": "A key barely gets touched this way, which is cheap \u2014 but now a lookup has to check every one of those unmerged runs instead of just one.",
+     "start": 15.203,
+     "end": 24.91
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "246e6bac3f5c524b",
+   "takes": [
+    "c3761ee82015d9415c68",
+    "b275cb493085f9851875",
+    "b61cd6668f4f75732b35"
+   ],
+   "duration": 28.358,
+   "lines": [
+    {
+     "text": "Three separate numbers are what actually let you compare these two schemes honestly, instead of arguing from intuition.",
+     "start": 0.15,
+     "end": 7.582
+    },
+    {
+     "text": "One counts the extra bytes a disk ends up writing beyond the single logical write that caused them.",
+     "start": 8.002,
+     "end": 13.926
+    },
+    {
+     "text": "Another counts the extra runs a lookup has to open beyond the one that actually holds the answer, and the third counts the extra bytes sitting on disk beyond what the live data alone would need.",
+     "start": 14.346,
+     "end": 28.008
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "dd749faa912c3600",
+   "takes": [
+    "ccfe3ad6ef7fcb3258d3"
+   ],
+   "duration": 13.139,
+   "lines": [
+    {
+     "text": "Before the reveal, here's the real question: given that one scheme above is clearly cheaper to read from and the other is clearly cheaper to write to, can some clever design just win on every count?",
+     "start": 0.15,
+     "end": 12.789
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "d00b240850f663df",
+   "takes": [
+    "d84e2a76335564b17679",
+    "8f9bb5fdc3d3bdc11a29"
+   ],
+   "duration": 20.635,
+   "lines": [
+    {
+     "text": "No. Pinning down any two of those three numbers forces the third one upward \u2014 there's no way around it, only a choice of which one gets to be the loser.",
+     "start": 0.15,
+     "end": 10.194
+    },
+    {
+     "text": "A hybrid scheme doesn't escape that. It's still built from the same two moves, so it just inherits a share of both costs instead of neither.",
+     "start": 10.614,
+     "end": 20.285
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "31aa980aa981684a",
+   "takes": [
+    "7c4bc7e5cd8fb2a3e3b2",
+    "0e1e1a13a7cff5b7788f",
+    "bc18a3b02d6532daee07"
+   ],
+   "duration": 27.652,
+   "lines": [
+    {
+     "text": "So here's the actual shape of the trade: one scheme wins by keeping wasted disk space down, at the cost of extra reading and extra rewriting.",
+     "start": 0.15,
+     "end": 10.426
+    },
+    {
+     "text": "The other wins by keeping rewriting down, at the cost of extra reading and extra wasted space.",
+     "start": 10.846,
+     "end": 17.318
+    },
+    {
+     "text": "Splitting the difference, tiered near the top and the other scheme near the bottom, doesn't dodge this \u2014 it just picks a different spot on the exact same curve.",
+     "start": 17.738,
+     "end": 27.302
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "085de8371ed8a9cd",
+   "takes": [
+    "8bcd2bbb279697fcd0b9",
+    "97f828c3697f25732033",
+    "9170ba766271833d566d"
+   ],
+   "duration": 34.032,
+   "lines": [
+    {
+     "text": "There's a piece of this that's tunable completely separately from which merging scheme you picked at all: how much memory goes to each level's own membership filter.",
+     "start": 0.15,
+     "end": 9.081
+    },
+    {
+     "text": "Most systems just hand every level the same share, measured per key, which sounds fair but isn't actually the cheapest way to spend that memory.",
+     "start": 9.501,
+     "end": 18.88
+    },
+    {
+     "text": "A smarter split gives a small level a stingier wrong-guess rate and a huge level a more generous one, because tightening a filter on a small level buys back far more lookup cost per byte spent.",
+     "start": 19.3,
+     "end": 33.682
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "696fda65b564124a",
+   "takes": [
+    "69b7689f16a233fd314c",
+    "24223016b4814dd4e3fe",
+    "aa0293e5a35873943b96"
+   ],
+   "duration": 29.294,
+   "lines": [
+    {
+     "text": "One more idea pushes this further: treat the two merging schemes not as a binary choice but as opposite ends of one continuous line.",
+     "start": 0.15,
+     "end": 11.237
+    },
+    {
+     "text": "Then pick a point on that line based on the actual shape of a given workload, merging aggressively only where it actually pays for itself.",
+     "start": 11.657,
+     "end": 20.53
+    },
+    {
+     "text": "That doesn't make the underlying trade go away. It just means someone found a better spot on it than guessing would have.",
+     "start": 20.95,
+     "end": 28.944
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "ed1478395d5db5b7",
+   "takes": [
+    "d8309d7d1a8e1fe5ba33",
+    "04c483e369515129ea9c"
+   ],
+   "duration": 23.927,
+   "lines": [
+    {
+     "text": "Here's what actually got measured, not assumed: write, read, and wasted-space cost for both merging schemes, run on the exact same sequence of inserts and updates.",
+     "start": 0.15,
+     "end": 12.849
+    },
+    {
+     "text": "Also measured: how much a smarter, per-level split of filter memory beats an equal-everywhere split, at the identical total memory budget.",
+     "start": 13.269,
+     "end": 23.577
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
