@@ -1,0 +1,401 @@
+{
+ "topic": "rust.blocking-cpu-bound-work",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "ff38aa7a17bf8c47",
+   "takes": [
+    "8e1d9dae276c623d7e3a",
+    "9ce67fa73aafb97ca0a2"
+   ],
+   "duration": 21.64,
+   "lines": [
+    {
+     "text": "Make a real, genuine three-hundred-millisecond blocking call, directly inside one of these units of work, on a runtime with exactly one real worker thread.",
+     "start": 0.15,
+     "end": 12.794
+    },
+    {
+     "text": "Right behind it, queue up a second, trivial one that would otherwise finish instantly. Does it notice at all?",
+     "start": 13.514,
+     "end": 21.291
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Right behind it, queue up a second, trivial one that would otherwise finish instantly. Does it notice at all?",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "8ff8698b36a80822",
+   "takes": [
+    "a8a2e2bf93e50292e7e9",
+    "5acdef553f6172f1e961"
+   ],
+   "duration": 14.598,
+   "lines": [
+    {
+     "text": "Yes, completely \u2014 it waits for the entire length of that call before it ever gets a turn.",
+     "start": 0.15,
+     "end": 6.985
+    },
+    {
+     "text": "There's still only the one real worker thread in this picture, and nothing here has changed that fact.",
+     "start": 7.405,
+     "end": 14.248
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "40b33e451a4d92d2",
+   "takes": [
+    "39d6bc7c3fd36d8862bc",
+    "7d4eaf23cd6b4b123615"
+   ],
+   "duration": 19.797,
+   "lines": [
+    {
+     "text": "Measure it directly, exactly the way an earlier topic already did: the trivial one waits the full three hundred milliseconds, every time.",
+     "start": 0.15,
+     "end": 10.075
+    },
+    {
+     "text": "Same baseline, same real cause \u2014 this is the exact starting point every fix in this topic has to be measured against.",
+     "start": 10.495,
+     "end": 19.447
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "4c441358a64295b4",
+   "takes": [
+    "ee57d74c68dfa00aace3",
+    "f3a1505861176d024d75"
+   ],
+   "duration": 22.223,
+   "lines": [
+    {
+     "text": "Now take that identical blocking call and move it, unchanged, into a function built for exactly this purpose: running it on a thread dedicated to blocking operations, entirely separate from the small pool of workers.",
+     "start": 0.15,
+     "end": 17.712
+    },
+    {
+     "text": "Does that one worker still end up completely stalled?",
+     "start": 18.432,
+     "end": 21.873
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a1f0681b84a30ef2",
+   "takes": [
+    "6a9a1490840e980330fb",
+    "bda16662dd47ac3c36bc"
+   ],
+   "duration": 12.016,
+   "lines": [
+    {
+     "text": "No \u2014 not at all, this time.",
+     "start": 0.15,
+     "end": 2.663
+    },
+    {
+     "text": "That dedicated pool of threads is a genuinely separate set of real threads, so the worker never even notices the call happening.",
+     "start": 3.083,
+     "end": 11.666
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "d4a735f73c8a1a13",
+   "takes": [
+    "87aca4ac4407660a7c6b",
+    "636b71a3c380d589d485"
+   ],
+   "duration": 14.582,
+   "lines": [
+    {
+     "text": "Measure that too: the trivial sibling now runs almost the instant it's created, not after any meaningful wait at all.",
+     "start": 0.15,
+     "end": 8.62
+    },
+    {
+     "text": "The call itself didn't change in the slightest \u2014 only where it was allowed to run.",
+     "start": 9.04,
+     "end": 14.232
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Measure that too: the trivial sibling now runs almost the instant it's created, not after any meaningful wait at all.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "05": {
+   "hash": "383732498d8c4402",
+   "takes": [
+    "a3a64861b4c27640d911",
+    "afc3824116d2812abb55"
+   ],
+   "duration": 22.326,
+   "lines": [
+    {
+     "text": "Here's a second, different tool making a different kind of promise entirely: it tells the scheduler, in advance, that the unit of work calling it is about to block the thread it's currently running on.",
+     "start": 0.15,
+     "end": 15.648
+    },
+    {
+     "text": "Can an entirely separate, independent piece of work still get a turn while that happens?",
+     "start": 16.368,
+     "end": 21.977
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "df3e6c668c72f81d",
+   "takes": [
+    "b9ff96e5df8bc2b09045",
+    "398c3e710fc1ccd30082"
+   ],
+   "duration": 20.273,
+   "lines": [
+    {
+     "text": "Yes \u2014 because the scheduler, warned ahead of time, hands that independent piece of work off to a different real thread before the blocking even starts.",
+     "start": 0.15,
+     "end": 11.403
+    },
+    {
+     "text": "Nothing about where the blocking call itself runs changes here at all. Only what happens to everything else around it.",
+     "start": 11.823,
+     "end": 19.923
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "43285c001ed0b0ef",
+   "takes": [
+    "72df531300a51f36d506",
+    "7d0f89b465b9219d908a"
+   ],
+   "duration": 19.621,
+   "lines": [
+    {
+     "text": "Measure it: the independent sibling runs almost instantly, same as before \u2014 but for a completely different reason this time.",
+     "start": 0.15,
+     "end": 9.337
+    },
+    {
+     "text": "It wasn't moved anywhere at all. It was handed off to a different real thread before the blocking call ever touched the one it had been running on.",
+     "start": 9.757,
+     "end": 19.271
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "49d8594c94bb8d90",
+   "takes": [
+    "06538ad0d7ac5b871929",
+    "54ddccc8325e5dc90e6b"
+   ],
+   "duration": 16.572,
+   "lines": [
+    {
+     "text": "Now try that exact same call on a runtime built with no additional worker threads of its own at all \u2014 just the one thread driving everything, start to finish.",
+     "start": 0.15,
+     "end": 12.95
+    },
+    {
+     "text": "Does it still work the same way there?",
+     "start": 13.67,
+     "end": 16.222
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "d541a3e23aa0bf1b",
+   "takes": [
+    "16fac76394be973fab13",
+    "2f525bb76edc3f9870a9"
+   ],
+   "duration": 15.793,
+   "lines": [
+    {
+     "text": "No \u2014 it refuses outright, the moment it's called.",
+     "start": 0.15,
+     "end": 4.658
+    },
+    {
+     "text": "Its entire mechanism depends on handing something off to a different worker thread, and on a runtime with none of those, there is nowhere at all for anything to be handed off to.",
+     "start": 5.078,
+     "end": 15.443
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "b785331250f2a1c0",
+   "takes": [
+    "f92a8f799fb7805343dd",
+    "312b500074f282733303"
+   ],
+   "duration": 23.124,
+   "lines": [
+    {
+     "text": "Run it for real on exactly that kind of runtime, and watch it fail loudly and specifically, naming the real reason directly: it can only be used on a runtime that actually has more than one worker thread to hand things off to.",
+     "start": 0.15,
+     "end": 16.15
+    },
+    {
+     "text": "Not a silent no-op, not a quiet fallback \u2014 a real, immediate, named failure.",
+     "start": 16.57,
+     "end": 22.774
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "9546a3ef368f4e6d",
+   "takes": [
+    "611439091491cbcdad45",
+    "e7220f6cec5346b167c8",
+    "1abb2325bf1c321d764f"
+   ],
+   "duration": 40.313,
+   "lines": [
+    {
+     "text": "For work that's genuinely heavy on computation rather than genuinely blocked on something external, that dedicated pool of blocking threads isn't necessarily the right home either \u2014 it was never sized with saturating every processor core in mind.",
+     "start": 0.15,
+     "end": 17.43
+    },
+    {
+     "text": "A specialized library built for exactly that kind of work, or an entirely separate runtime set aside for it, is the real answer there instead.",
+     "start": 17.85,
+     "end": 27.309
+    },
+    {
+     "text": "And a design that pins one worker to one processor core, with no borrowing between them at all, is a genuinely different approach again, not a flaw in anything built so far.",
+     "start": 27.729,
+     "end": 39.963
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "f2644f0c961c1e6a",
+   "takes": [
+    "98386f5d2ea918b7a4d0",
+    "132551e1aaa237b6e995",
+    "3f0418d332abb5147fa0",
+    "fa0a04f205886c268384"
+   ],
+   "duration": 50.755,
+   "lines": [
+    {
+     "text": "A real, direct blocking call on the only worker stalls everything behind it, exactly as measured before. One fix moves the call itself onto a pool built for it, and the worker never notices.",
+     "start": 0.15,
+     "end": 14.382
+    },
+    {
+     "text": "A second, different fix moves everything else away first, and fails outright wherever that's impossible. Heavy computation, with nothing blocking about it at all, has its own separate answers again.",
+     "start": 14.802,
+     "end": 31.061
+    },
+    {
+     "text": "Every one of these units of work scheduled anywhere in this chapter so far was either already ready to run, or was told directly that it needed to step aside for a while.",
+     "start": 31.481,
+     "end": 44.232
+    },
+    {
+     "text": "None of them were ever actually waiting on something out in the world that simply hadn't happened yet.",
+     "start": 44.652,
+     "end": 50.405
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
