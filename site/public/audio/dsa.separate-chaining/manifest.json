@@ -1,0 +1,301 @@
+{
+ "topic": "dsa.separate-chaining",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6fee485696290dc2",
+   "takes": [
+    "a267e9566795c29cb40e",
+    "503bc14d0dfff732b324",
+    "661a2ed015c872c5a51c"
+   ],
+   "duration": 27.515,
+   "lines": [
+    {
+     "text": "Last time we left two keys sitting right on top of each other, in the exact same slot, with no idea what happens next.",
+     "start": 0.15,
+     "end": 11.324
+    },
+    {
+     "text": "That's not a bug in the hash function. The hash function already did its job \u2014 it just never promised this couldn't happen.",
+     "start": 11.744,
+     "end": 19.77
+    },
+    {
+     "text": "So here's the oldest answer anyone gave to that problem, and it's still the one most standard libraries start with.",
+     "start": 20.19,
+     "end": 27.165
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "68b5f15f324e563f",
+   "takes": [
+    "ca510410ad23dd015263",
+    "83ddb4effb50c1bb1346",
+    "41002b4db2f080f846dd"
+   ],
+   "duration": 25.366,
+   "lines": [
+    {
+     "text": "Here's the whole trick, and it's smaller than it looks: a bucket stops being one slot for one entry.",
+     "start": 0.15,
+     "end": 7.013
+    },
+    {
+     "text": "It becomes the head of a list. Every new key that lands there just gets linked on.",
+     "start": 7.433,
+     "end": 12.774
+    },
+    {
+     "text": "And notice what I didn't have to build to make that work \u2014 it's the exact same singly-linked list from two chapters back. Nothing new, just reused in a new place.",
+     "start": 13.194,
+     "end": 25.016
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "114576b980210a73",
+   "takes": [
+    "a3e4f586888239a7cfe5",
+    "2c3646b9d5a6da77d392",
+    "93bf38f5021f4e2a54ae"
+   ],
+   "duration": 28.939,
+   "lines": [
+    {
+     "text": "I want you to see this isn't a textbook simplification before we go any further.",
+     "start": 0.15,
+     "end": 4.97
+    },
+    {
+     "text": "This is Java's own source comment, word for word: a binned, bucketed hash table. That's chaining, shipping in one of the most used libraries on earth.",
+     "start": 5.39,
+     "end": 17.5
+    },
+    {
+     "text": "One honest footnote, though \u2014 once a bucket gets big enough, Java quietly upgrades it to a balanced tree instead of a plain list. Hold onto that; it'll matter again later.",
+     "start": 17.92,
+     "end": 28.589
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One honest footnote, though \u2014 once a bucket gets big enough, Java quietly upgrades it to a balanced tree instead of a plain list. Hold onto that; it'll matter again later.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "04": {
+   "hash": "dc9b665eb5ade35c",
+   "takes": [
+    "4f4d2942745b16607343",
+    "a48b2fc2263de0246d18"
+   ],
+   "duration": 12.777,
+   "lines": [
+    {
+     "text": "Before I show you the real measurement, make a prediction.",
+     "start": 0.15,
+     "end": 4.013
+    },
+    {
+     "text": "At a load factor around one and a half \u2014 more keys than buckets \u2014 how long is the chain a typical key probably lands in?",
+     "start": 4.433,
+     "end": 12.427
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.6,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "6f3467b588c051d7",
+   "takes": [
+    "5878ecf9c633110f6c5f",
+    "8db3bfac4ab86342ad49"
+   ],
+   "duration": 14.03,
+   "lines": [
+    {
+     "text": "It's about alpha itself \u2014 the load factor, nothing fancier.",
+     "start": 0.15,
+     "end": 4.546
+    },
+    {
+     "text": "n divided by m is exactly what alpha means, so a random key's expected chain length tracks that same ratio.",
+     "start": 4.966,
+     "end": 13.68
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "41070efb242bad26",
+   "takes": [
+    "dd0c3615c2aeebc1a813",
+    "deb17fc8ba72f8bbd7cb",
+    "29f30d82b73644c0bb92"
+   ],
+   "duration": 29.788,
+   "lines": [
+    {
+     "text": "Now push this mechanism as far as it can go, on purpose. What if every single key happened to land in the same bucket?",
+     "start": 0.15,
+     "end": 8.579
+    },
+    {
+     "text": "Watch the chain just keep growing. Access time slides toward scanning the whole thing \u2014 order n, the same cost as never hashing at all.",
+     "start": 9.129,
+     "end": 19.78
+    },
+    {
+     "text": "But notice what doesn't happen: nothing breaks. There's no fixed capacity per bucket to overflow \u2014 it just gets slow.",
+     "start": 20.2,
+     "end": 29.438
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Watch the chain just keep growing. Access time slides toward scanning the whole thing \u2014 order n, the same cost as never hashing at all.",
+     "said": "toward",
+     "heard": "towards"
+    }
+   ]
+  },
+  "06": {
+   "hash": "fa7c57ee8a8a12df",
+   "takes": [
+    "8751c10e48e28ab1281f",
+    "2444801fdda8eea2d7a2",
+    "28d4191d61a12a0d3e2f",
+    "15ce6adab145c3bfb47c"
+   ],
+   "duration": 41.474,
+   "lines": [
+    {
+     "text": "Here's the citation, straight from the lecture: expected search cost is theta of one plus alpha.",
+     "start": 0.15,
+     "end": 7.815
+    },
+    {
+     "text": "Now watch the part that should actually give you pause. The average chain length equals alpha, exactly, every single time I measure it \u2014 true no matter how bad the hash function is.",
+     "start": 8.235,
+     "end": 21.423
+    },
+    {
+     "text": "Even a hash that sends everything to one bucket gets that same average, by simple counting.",
+     "start": 21.843,
+     "end": 27.733
+    },
+    {
+     "text": "So the average alone proves nothing. What actually matters is whether the longest chain stays near that average instead of hoarding every key \u2014 and that's the one thing a well-spread hash genuinely buys you.",
+     "start": 28.153,
+     "end": 41.124
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a2c2467a18610bdf",
+   "takes": [
+    "38cbec72cdc593731b53",
+    "5bbfa0fb85aae82e906d",
+    "f9b296be33f55a1ea763"
+   ],
+   "duration": 27.209,
+   "lines": [
+    {
+     "text": "One more cost before we move on, and it's the one worth remembering.",
+     "start": 0.15,
+     "end": 4.901
+    },
+    {
+     "text": "Every node in this chain is carrying a pointer to the next one. That pointer isn't free \u2014 it's memory you're spending on bookkeeping, not on the key itself.",
+     "start": 5.321,
+     "end": 16.288
+    },
+    {
+     "text": "Next topic gives that pointer up entirely, by storing every entry directly inside the table. It pays for that a completely different way.",
+     "start": 16.708,
+     "end": 26.859
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "caccabf9c2b66d49",
+   "takes": [
+    "bfb7c367f85e6bc127a7",
+    "a8b010124e11cb95d9a9",
+    "e08e3c4c801e63763424"
+   ],
+   "duration": 25.714,
+   "lines": [
+    {
+     "text": "Three load factors, one real table, built fresh each time \u2014 nothing here is simulated.",
+     "start": 0.15,
+     "end": 6.993
+    },
+    {
+     "text": "Watch the average track alpha almost perfectly at all three, exactly as the counting argument guarantees.",
+     "start": 7.413,
+     "end": 14.729
+    },
+    {
+     "text": "And watch the longest chain stay a small fraction of the total, every time \u2014 next to the worst case on the right, where one single chain is holding everything.",
+     "start": 15.149,
+     "end": 25.364
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
