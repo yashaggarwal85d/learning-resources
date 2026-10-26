@@ -1,0 +1,276 @@
+{
+ "topic": "rust.safe-byte-level-views",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e8b0e8e0f3d17102",
+   "takes": [
+    "7638fe9ee28a27bd08d4",
+    "ed4184bc1e389058bb40"
+   ],
+   "duration": 17.022,
+   "lines": [
+    {
+     "text": "Bring back that same badly ordered struct from before, the one whose fields left real gaps between them.",
+     "start": 0.15,
+     "end": 7.496
+    },
+    {
+     "text": "Nothing in the language ever promised those gaps hold any particular value. Treating one of them as part of a real value is simply not allowed.",
+     "start": 7.916,
+     "end": 16.672
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a7ab9c246ab9707c",
+   "takes": [
+    "bcb255d6daece217823a",
+    "6fb4848c4a589f71870a"
+   ],
+   "duration": 15.969,
+   "lines": [
+    {
+     "text": "Take that exact struct, add one line asking a checked view to trust it, and ask the compiler to build it.",
+     "start": 0.15,
+     "end": 8.302
+    },
+    {
+     "text": "Does the compiler still let a checked view go along with a structure that still has those same gaps in it?",
+     "start": 9.022,
+     "end": 15.619
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "5f58bde25037c770",
+   "takes": [
+    "217b0e5cf76a58d055b0",
+    "51bef94931b405164f08"
+   ],
+   "duration": 23.46,
+   "lines": [
+    {
+     "text": "No. It refuses outright, and it refuses while building, not while running.",
+     "start": 0.15,
+     "end": 6.63
+    },
+    {
+     "text": "That's a fundamentally different kind of guarantee from a check that only fires if that exact line of code happens to execute. This one is proven about the shape of the type itself, once, before anything runs at all.",
+     "start": 7.05,
+     "end": 23.111
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "9f69bf9051300ed3",
+   "takes": [
+    "f071a5adfbfed93d3c9b",
+    "9323e6fe474396b75915"
+   ],
+   "duration": 17.655,
+   "lines": [
+    {
+     "text": "Switch to the earlier field order instead, the one with no gaps anywhere, and point a checked view straight at a raw buffer of bytes.",
+     "start": 0.15,
+     "end": 9.51
+    },
+    {
+     "text": "Every field comes back correct, and there isn't a single unsafe block written anywhere to make that happen.",
+     "start": 9.93,
+     "end": 17.305
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c244e4fa9bd14d02",
+   "takes": [
+    "dfc4efaf9764c8673876",
+    "488116c4347a9b8273af",
+    "e58f443e49d9d48f2b1b"
+   ],
+   "duration": 24.571,
+   "lines": [
+    {
+     "text": "Go back and actually try building that first, badly ordered struct with a checked view attached.",
+     "start": 0.15,
+     "end": 6.085
+    },
+    {
+     "text": "The compiler doesn't just say no. It names the exact reason: those very gaps, called out by name, as the thing that makes this unsound.",
+     "start": 6.505,
+     "end": 18.33
+    },
+    {
+     "text": "That's a world apart from a comment that merely hopes nobody ever gets this wrong.",
+     "start": 18.75,
+     "end": 24.221
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a9c496d0631fbed6",
+   "takes": [
+    "008937d3911ce3205761",
+    "f3ae5b23b673d892ac2a"
+   ],
+   "duration": 14.732,
+   "lines": [
+    {
+     "text": "Take two raw bytes that arrived from somewhere else entirely, and read them back without ever deciding which byte order they're supposed to be in.",
+     "start": 0.15,
+     "end": 10.342
+    },
+    {
+     "text": "On this particular machine, what number comes out?",
+     "start": 11.062,
+     "end": 14.382
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 134,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Take two raw bytes that arrived from somewhere else entirely, and read them back without ever deciding which byte order they're supposed to be in.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "1ef6b418c128910c",
+   "takes": [
+    "024c653ad2de723caa41",
+    "a0237fc0b356f7722f95"
+   ],
+   "duration": 20.488,
+   "lines": [
+    {
+     "text": "A different number than the one that's actually correct, because this machine quietly assumed its own, local ordering.",
+     "start": 0.15,
+     "end": 8.353
+    },
+    {
+     "text": "Nothing about those two bytes themselves says which order they're in. That decision belongs entirely to whoever sent them, never to whichever machine happens to be reading them back.",
+     "start": 8.773,
+     "end": 20.138
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "19e84ba5bcd41819",
+   "takes": [
+    "73745de7cfda455f3d21",
+    "736210a67855d558c713",
+    "72afb23d99c3e8e5ce3c"
+   ],
+   "duration": 26.668,
+   "lines": [
+    {
+     "text": "Read those same two bytes a second way, this time honoring the order the sender actually chose, and compare the two results side by side.",
+     "start": 0.15,
+     "end": 11.304
+    },
+    {
+     "text": "One reading matches what was actually sent. The other, the one that quietly trusted this machine's own habits, simply doesn't.",
+     "start": 11.724,
+     "end": 20.733
+    },
+    {
+     "text": "Nothing about the bytes changed between the two readings. Only the assumption did.",
+     "start": 21.153,
+     "end": 26.318
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "1c6b5426c617a5f2",
+   "takes": [
+    "2ddf072d26883d00cb2e",
+    "06f6ced994aa5ec00f1e",
+    "9f80f3004a1548a31b34"
+   ],
+   "duration": 29.055,
+   "lines": [
+    {
+     "text": "A struct's gaps are never a promise of anything, which is exactly why reading them blind is never allowed.",
+     "start": 0.15,
+     "end": 7.427
+    },
+    {
+     "text": "A checked view refuses the moment those gaps exist, and needs no unsafe code at all once they don't.",
+     "start": 7.847,
+     "end": 16.121
+    },
+    {
+     "text": "And whatever arrives from somewhere else still carries its own choice of byte order, a choice the reading code has to honor on purpose, never assume for free.",
+     "start": 16.541,
+     "end": 28.705
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A struct's gaps are never a promise of anything, which is exactly why reading them blind is never allowed.",
+     "said": "a structs",
+     "heard": "astructs"
+    },
+    {
+     "line": "And whatever arrives from somewhere else still carries its own choice of byte order, a choice the reading code has to honor on purpose, never assume for free.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  }
+ }
+}
