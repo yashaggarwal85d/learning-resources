@@ -3935,7 +3935,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'CPython object model and memory cost',
     syllabusTitle: 'CPython object model and memory cost',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Foundations' },
     chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.1' },
     minutes: 15,
