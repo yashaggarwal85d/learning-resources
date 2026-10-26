@@ -4035,7 +4035,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'pandas 3.0 semantics',
     syllabusTitle: 'pandas 3.0 semantics',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Foundations' },
     chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.2' },
     minutes: 15,
