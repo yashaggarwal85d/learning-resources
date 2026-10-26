@@ -1,0 +1,391 @@
+{
+ "topic": "rust.acquire-release-publication-seqcst",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "368c6fca93a815f2",
+   "takes": [
+    "8eb91b07de087d5fddb4",
+    "414a39ce6e6487829e21"
+   ],
+   "duration": 18.477,
+   "lines": [
+    {
+     "text": "Last time, a value was written and then a flag was flipped to announce it, both with the weakest ordering available \u2014 and a reader was caught seeing the flag before the value it was supposed to announce.",
+     "start": 0.15,
+     "end": 12.801
+    },
+    {
+     "text": "Two words close that gap for good, and this is where they earn their keep.",
+     "start": 13.221,
+     "end": 18.127
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 169,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "081caec7d97469ba",
+   "takes": [
+    "365e40eb9cfa0de7d358",
+    "cca4a598c85e94cff9b5"
+   ],
+   "duration": 22.447,
+   "lines": [
+    {
+     "text": "Keep the value's own write exactly as weak as before, but change only the flag: the write side now carries a stronger promise, and the matching read side asks for that same stronger promise back.",
+     "start": 0.15,
+     "end": 15.113
+    },
+    {
+     "text": "Does that one change, on just the flag, actually close the gap the earlier run exposed?",
+     "start": 15.833,
+     "end": 22.097
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Keep the value's own write exactly as weak as before, but change only the flag: the write side now carries a stronger promise, and the matching read side asks for that same stronger promise back.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Keep the value's own write exactly as weak as before, but change only the flag: the write side now carries a stronger promise, and the matching read side asks for that same stronger promise back.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "02a": {
+   "hash": "7e0f1a3b42ebe259",
+   "takes": [
+    "ba13f2c218d0a6ba9823",
+    "58e88b418e9a625558ae"
+   ],
+   "duration": 13.568,
+   "lines": [
+    {
+     "text": "Yes, and nothing else about the program had to change at all.",
+     "start": 0.15,
+     "end": 4.022
+    },
+    {
+     "text": "A matched pair like this hands off a guarantee directly from the writer to the reader, which is exactly the piece that was missing before.",
+     "start": 4.442,
+     "end": 13.218
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "74279c2221bd4c72",
+   "takes": [
+    "ee8e6072cad51d77d005",
+    "9e2d50ac3f5c373e82ad"
+   ],
+   "duration": 14.949,
+   "lines": [
+    {
+     "text": "The same exhaustive search that found the earlier violation was pointed at this fixed version, exploring every ordering the language actually allows.",
+     "start": 0.15,
+     "end": 9.433
+    },
+    {
+     "text": "Not one of them lets the reader see the flag before the value arrives.",
+     "start": 9.853,
+     "end": 14.599
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "077a97b07b6b0c89",
+   "takes": [
+    "46ffcd88afc8c91cf457",
+    "f4b1d45cef45a568134a"
+   ],
+   "duration": 26.458,
+   "lines": [
+    {
+     "text": "Here's why the pairing actually works: the stronger write carries every earlier write on that same thread along with it, handed to whichever read later asks for the matching stronger guarantee.",
+     "start": 0.15,
+     "end": 13.26
+    },
+    {
+     "text": "That read, once it receives the handoff, then carries its own promise forward \u2014 everything it does afterward is guaranteed to come after what it just received.",
+     "start": 13.68,
+     "end": 26.108
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.06451612903225806,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's why the pairing actually works: the stronger write carries every earlier write on that same thread along with it, handed to whichever read later asks for the matching stronger guarantee.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Here's why the pairing actually works: the stronger write carries every earlier write on that same thread along with it, handed to whichever read later asks for the matching stronger guarantee.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "05": {
+   "hash": "5033ea6bac6c6709",
+   "takes": [
+    "06c2924ebe6188b91eef",
+    "0738c59d9326771f9a69"
+   ],
+   "duration": 18.669,
+   "lines": [
+    {
+     "text": "Suppose only the writing side gets the stronger treatment, and the reading side is left exactly as weak as it started.",
+     "start": 0.15,
+     "end": 8.122
+    },
+    {
+     "text": "The exhaustive search finds the identical bad case all over again \u2014 seeing the flag set while the value underneath is still stale.",
+     "start": 8.542,
+     "end": 18.319
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "3997224540274286",
+   "takes": [
+    "4b4d0ffcb056006747dc",
+    "30a99e8296f89e8604ba"
+   ],
+   "duration": 21.209,
+   "lines": [
+    {
+     "text": "Now picture two threads with no single leader between them: each one writes its own flag, then checks the other thread's flag, both ends using that same matched stronger pairing from before.",
+     "start": 0.15,
+     "end": 13.825
+    },
+    {
+     "text": "Does the pairing that fixed everything so far still rule out both threads seeing the other's flag as unset?",
+     "start": 14.545,
+     "end": 20.859
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "c27bed2904c41119",
+   "takes": [
+    "29bdece24cca33868d0c",
+    "e3c39976e001eb4e7680"
+   ],
+   "duration": 17.163,
+   "lines": [
+    {
+     "text": "No \u2014 this particular shape slips right through that pairing.",
+     "start": 0.15,
+     "end": 4.447
+    },
+    {
+     "text": "The pairing only ever promised a handoff between the one writer and the one reader directly involved; it never promised a single shared order that every thread in the picture agrees on.",
+     "start": 4.867,
+     "end": 16.813
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "36dfce26ac9aa4d8",
+   "takes": [
+    "7fe138ebf840688483c2",
+    "e21cb53601015c392602"
+   ],
+   "duration": 17.742,
+   "lines": [
+    {
+     "text": "The exhaustive search was pointed at exactly that two-sided shape, every access carrying the matched stronger pairing on both ends.",
+     "start": 0.15,
+     "end": 10.101
+    },
+    {
+     "text": "It still finds a path where both threads see the other's flag as unset, at the exact same moment.",
+     "start": 10.521,
+     "end": 17.392
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The exhaustive search was pointed at exactly that two-sided shape, every access carrying the matched stronger pairing on both ends.",
+     "said": "access",
+     "heard": "axis"
+    }
+   ]
+  },
+  "08": {
+   "hash": "5e15131a6ded8fb1",
+   "takes": [
+    "1f5bc8333f0dfea84c58",
+    "17baf1fe34fd184a0606"
+   ],
+   "duration": 25.516,
+   "lines": [
+    {
+     "text": "The strongest ordering the language offers adds exactly one more thing on top of everything already covered: every thread, without exception, agrees on one single order for every operation marked this way.",
+     "start": 0.15,
+     "end": 15.573
+    },
+    {
+     "text": "That single shared order is the one thing missing from the two-sided case, and it's the only reason this strongest ordering exists at all.",
+     "start": 15.993,
+     "end": 25.166
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "fd25c6ef984cf7b6",
+   "takes": [
+    "9a1bc70443304d3f3cb5",
+    "bd105bf2d9f34ee84742",
+    "4355ad13b7532486c231"
+   ],
+   "duration": 24.684,
+   "lines": [
+    {
+     "text": "A standalone checkpoint can do the same handoff work without being tied to any one specific read or write.",
+     "start": 0.15,
+     "end": 8.117
+    },
+    {
+     "text": "A lock's own compare-and-swap loop stays as weak as possible, and a separate checkpoint right after winning the lock does the strong-read half of the handoff on its own.",
+     "start": 8.537,
+     "end": 18.911
+    },
+    {
+     "text": "The strong-write half, releasing the lock, still happens the usual way.",
+     "start": 19.331,
+     "end": 24.334
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 153,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The strong-write half, releasing the lock, still happens the usual way.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "10": {
+   "hash": "d0dfc1627703f749",
+   "takes": [
+    "102ca38686e033161024",
+    "f2f9b5ada974ed11d06e"
+   ],
+   "duration": 25.68,
+   "lines": [
+    {
+     "text": "Not every atomic operation needs any of this at all: several independent counters, each one touched by its own set of threads, with nothing ever handed from one thread to another through them.",
+     "start": 0.15,
+     "end": 13.109
+    },
+    {
+     "text": "The weakest ordering was never a shortcut here \u2014 it was always the entire, correct story, because there's nothing being published for a stronger guarantee to protect.",
+     "start": 13.529,
+     "end": 25.33
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.5,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "00992c57308eef13",
+   "takes": [
+    "2993ed8caf527e537b90",
+    "6e5ec5d4e476e6eac792",
+    "d31090e0addac488e94a"
+   ],
+   "duration": 40.226,
+   "lines": [
+    {
+     "text": "The matched pairing, proven both ways now, closes a handoff cleanly; the strongest ordering exists for the one narrow shape where a shared, single order across every thread is the actual requirement, not a safety margin someone reached for out of caution.",
+     "start": 0.15,
+     "end": 18.52
+    },
+    {
+     "text": "Every guarantee covered across this chapter has been about memory that's already running becoming visible to another thread that's already running too.",
+     "start": 18.94,
+     "end": 27.723
+    },
+    {
+     "text": "What comes next asks something stranger: what does it mean for a piece of work to not be running yet at all, waiting for something else entirely to decide when it starts.",
+     "start": 28.143,
+     "end": 39.876
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
