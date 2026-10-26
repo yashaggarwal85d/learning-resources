@@ -1,7 +1,13 @@
 """Shared by gen_takes.py and assemble.py: the voice config, clip texts and cache keys.
 
 Script items (narration.json): "a line" (the narrator) or {"beat": s} (a deliberate pause)."""
-import contextlib, hashlib, json, os, time
+import contextlib, hashlib, json, os, sys, time
+
+# Progress prints echo narration lines verbatim (Greek letters, arrows, …); Windows' default console
+# codepage (cp1252) can't encode them and a crash mid-line would kill hours of queued generation.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICE = json.load(open(os.path.join(HERE, "voice.json"), encoding="utf-8"))
