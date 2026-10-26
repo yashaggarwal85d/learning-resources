@@ -1,0 +1,353 @@
+{
+ "topic": "rust.leader-election-terms-prevote",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "300b1a2c3860a8b3",
+   "takes": [
+    "abae62c91e8d1576db0c",
+    "772f11f123fd4aeb1204"
+   ],
+   "duration": 17.26,
+   "lines": [
+    {
+     "text": "Five identical, healthy nodes each get a real, deterministic timeout.",
+     "start": 0.15,
+     "end": 5.299
+    },
+    {
+     "text": "The one whose timeout fires first becomes a candidate and asks for votes. Does it genuinely win, and does the winner genuinely match the fastest timeout?",
+     "start": 6.019,
+     "end": 16.91
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.2,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "74ecca75ed481865",
+   "takes": [
+    "d4c7de8866c0673ae23b",
+    "a86f7bfd7ce37632519d"
+   ],
+   "duration": 4.726,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.299
+    },
+    {
+     "text": "The fastest real timeout genuinely wins.",
+     "start": 1.719,
+     "end": 4.376
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -3.1,
+   "wpm": 102,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "cb275d78b4927ee9",
+   "takes": [
+    "37053f1cc4ab3db11421"
+   ],
+   "duration": 9.499,
+   "lines": [
+    {
+     "text": "Run it for real: the election genuinely elects the node whose real timeout fired first, with a real majority of votes.",
+     "start": 0.15,
+     "end": 9.149
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "1b9666b69ad752e8",
+   "takes": [
+    "cbb519d4726f73951bc6",
+    "3f7e551bb2c89934f8e6"
+   ],
+   "duration": 13.995,
+   "lines": [
+    {
+     "text": "Now one candidate's own log is genuinely behind the rest of the cluster's.",
+     "start": 0.15,
+     "end": 5.908
+    },
+    {
+     "text": "Does its vote request still win, or does the up-to-date-log voting rule genuinely reject it?",
+     "start": 6.628,
+     "end": 13.645
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "2eed4e5ef0b95e53",
+   "takes": [
+    "a28223a9922c432cf576",
+    "b0fd758ae1b860061575"
+   ],
+   "duration": 3.921,
+   "lines": [
+    {
+     "text": "Rejected.",
+     "start": 0.15,
+     "end": 0.853
+    },
+    {
+     "text": "A fresh term alone was never enough.",
+     "start": 1.273,
+     "end": 3.571
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -4.5,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "bc264517d1627c0e",
+   "takes": [
+    "73c209c04e1576dc0382"
+   ],
+   "duration": 11.38,
+   "lines": [
+    {
+     "text": "Run it for real: the out-of-date candidate's own vote request is genuinely rejected, by the real up-to-date-log voting rule; it loses the election.",
+     "start": 0.15,
+     "end": 11.03
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "10ef678ff3babbd7",
+   "takes": [
+    "c8859fd2bd7d6af3f1a3",
+    "ead2ca86b1271d966730"
+   ],
+   "duration": 18.498,
+   "lines": [
+    {
+     "text": "A healthy cluster has a live leader. One node gets partitioned and, missing every heartbeat, keeps incrementing its own term locally.",
+     "start": 0.15,
+     "end": 10.244
+    },
+    {
+     "text": "When it rejoins and broadcasts that stale, inflated term, does the healthy leader genuinely step down?",
+     "start": 10.964,
+     "end": 18.148
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -3.2,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "bc8d5c98f80032f1",
+   "takes": [
+    "9995c204b819e717847b",
+    "3969495a0da0feb8ba18"
+   ],
+   "duration": 5.785,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Every node updates to a higher term it sees.",
+     "start": 1.84,
+     "end": 5.435
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "309ff663a02e5e77",
+   "takes": [
+    "40261ae9b622e78a7754"
+   ],
+   "duration": 12.76,
+   "lines": [
+    {
+     "text": "Run it for real: genuinely disruptive. Every node updates its own term the moment it sees a higher one, and the healthy leader genuinely steps down.",
+     "start": 0.15,
+     "end": 12.41
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "cfc4a133a99afcea",
+   "takes": [
+    "00a558fa3fc34a1ce1b9",
+    "8c18548f99ab0211abf7"
+   ],
+   "duration": 13.071,
+   "lines": [
+    {
+     "text": "Now the identical partitioned node runs a real pre-vote round first, before ever raising its own term.",
+     "start": 0.15,
+     "end": 8.033
+    },
+    {
+     "text": "Does pre-voting genuinely stop the identical disruption this time?",
+     "start": 8.753,
+     "end": 12.721
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "5220ebef251ee10a",
+   "takes": [
+    "9995c204b819e717847b",
+    "90b5dfe642c7db2ba6e6"
+   ],
+   "duration": 4.026,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Its term never even rises.",
+     "start": 1.84,
+     "end": 3.676
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -6.1,
+   "wpm": 104,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "1892bc02e3ef1a3e",
+   "takes": [
+    "cabbd5558eef9b8258c0"
+   ],
+   "duration": 16.637,
+   "lines": [
+    {
+     "text": "Run it for real: with that pre-vote round, every healthy voter already has a live leader and genuinely denies it; the partitioned node's own term never rises, and the healthy leader is never disturbed.",
+     "start": 0.15,
+     "end": 16.287
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "f182fe1854e54c52",
+   "takes": [
+    "d68b768a08e29d7518ae",
+    "e3790de55e3f13ea6bab"
+   ],
+   "duration": 15.809,
+   "lines": [
+    {
+     "text": "One real, widely used consensus implementation's own documentation states this exact purpose directly, in its own words.",
+     "start": 0.15,
+     "end": 9.558
+    },
+    {
+     "text": "It names stopping a partitioned node from disrupting the cluster on rejoin, directly.",
+     "start": 9.978,
+     "end": 15.459
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "7168bf4470f9a8bd",
+   "takes": [
+    "db4a9287b31b9915d3dd",
+    "d323a27cba1b46ce64ef",
+    "e083ddf29af8e686424b"
+   ],
+   "duration": 33.233,
+   "lines": [
+    {
+     "text": "So here's the real shape of this whole topic: timing alone picks a candidate, but two separate guardrails decide whether that pick is actually safe.",
+     "start": 0.15,
+     "end": 10.671
+    },
+    {
+     "text": "One guardrail looks backward, at whether a candidate's own history is caught up; the other looks forward, refusing to even spend a higher term until winning is already likely.",
+     "start": 11.091,
+     "end": 22.926
+    },
+    {
+     "text": "Neither guardrail needs a clock anyone trusts, or a human watching; both come straight out of comparing plain numbers a node already has on hand.",
+     "start": 23.346,
+     "end": 32.883
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
