@@ -1,0 +1,377 @@
+{
+ "topic": "rust.file-descriptors-i-o",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1307de78a5f9626f",
+   "takes": [
+    "3361b6285aad616ec9cd",
+    "c54c6bf609dacf6aa18e"
+   ],
+   "duration": 16.48,
+   "lines": [
+    {
+     "text": "Duplicate a file descriptor with a real system call, then read from the original and then from the duplicate.",
+     "start": 0.15,
+     "end": 8.693
+    },
+    {
+     "text": "Does the duplicate start reading from the beginning of the file, or from wherever the original left off?",
+     "start": 9.413,
+     "end": 16.13
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "7f3330af36c94e22",
+   "takes": [
+    "c3cb6e46f90730412d36",
+    "86e7a1fc46d30b979765"
+   ],
+   "duration": 13.261,
+   "lines": [
+    {
+     "text": "It continues from exactly where the original stopped.",
+     "start": 0.15,
+     "end": 3.144
+    },
+    {
+     "text": "Both descriptors point at the same open file description underneath, and that description is where the real offset actually lives.",
+     "start": 3.564,
+     "end": 12.911
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "bad3aace465b8cb2",
+   "takes": [
+    "d08ad428f9340ad3c897",
+    "4f856738a003fee2f3fb"
+   ],
+   "duration": 13.919,
+   "lines": [
+    {
+     "text": "Run it for real: the original descriptor reads the first half of the file, and the duplicate reads exactly the second half.",
+     "start": 0.15,
+     "end": 8.762
+    },
+    {
+     "text": "Continuing from the shared offset, never restarting from the beginning.",
+     "start": 9.182,
+     "end": 13.569
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "ef5d866fce30fc86",
+   "takes": [
+    "542cc11b386e96bf5f40",
+    "15b9348e3b5218cd4819"
+   ],
+   "duration": 9.321,
+   "lines": [
+    {
+     "text": "Drop an owned file descriptor, and a moment later try a raw system call on that exact same descriptor number.",
+     "start": 0.15,
+     "end": 7.398
+    },
+    {
+     "text": "What happens?",
+     "start": 8.118,
+     "end": 8.971
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "402c225f9b5e7859",
+   "takes": [
+    "5817fbec5a48cbec357d",
+    "6621b128b8fb8fa128a3"
+   ],
+   "duration": 12.803,
+   "lines": [
+    {
+     "text": "It fails outright. The descriptor is genuinely gone.",
+     "start": 0.15,
+     "end": 4.122
+    },
+    {
+     "text": "That's the entire point of an owned descriptor: dropping it closes the real resource underneath, not just a number.",
+     "start": 4.542,
+     "end": 12.453
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "9a4515d36a2e4555",
+   "takes": [
+    "148fcf8e4d11e048c534",
+    "3340f158eceeff4e5990"
+   ],
+   "duration": 17.77,
+   "lines": [
+    {
+     "text": "Run it for real: after the owned descriptor was dropped, a raw call on its number failed outright, exactly as it should.",
+     "start": 0.15,
+     "end": 9.208
+    },
+    {
+     "text": "And a borrowed descriptor, taken from a completely different file that was never dropped, stayed valid the entire time.",
+     "start": 9.628,
+     "end": 17.42
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "33bd380a2cea2210",
+   "takes": [
+    "f2e03f62cdb2a54165a4",
+    "5ba4ec2420841219c909"
+   ],
+   "duration": 17.027,
+   "lines": [
+    {
+     "text": "Open the same file twice \u2014 once the normal way, once with its close-on-exec flag explicitly cleared \u2014 then fork and exec a genuinely real child process.",
+     "start": 0.15,
+     "end": 12.719
+    },
+    {
+     "text": "Which file descriptor is still open inside that child?",
+     "start": 13.439,
+     "end": 16.677
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "2db1e4a14bc1b9ad",
+   "takes": [
+    "6dcb0ce3f05f01835636",
+    "82b3feed35552eb71ac7"
+   ],
+   "duration": 9.238,
+   "lines": [
+    {
+     "text": "Only the one with close-on-exec explicitly cleared.",
+     "start": 0.15,
+     "end": 3.434
+    },
+    {
+     "text": "The normally-opened one was never going to survive into the child in the first place.",
+     "start": 3.854,
+     "end": 8.888
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.6,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "9157287a6cae9be5",
+   "takes": [
+    "a4fe56da3173d4b8d862",
+    "32a0cfcbb04647476dd7"
+   ],
+   "duration": 14.578,
+   "lines": [
+    {
+     "text": "Run it for real: the descriptor that was opened normally never appeared inside the real, forked child at all.",
+     "start": 0.15,
+     "end": 8.61
+    },
+    {
+     "text": "The one with close-on-exec explicitly cleared leaked straight into the child.",
+     "start": 9.03,
+     "end": 14.228
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "398b29f0fbb2c729",
+   "takes": [
+    "c30f1dacd52d994b0682",
+    "94ed551203fac7912edc"
+   ],
+   "duration": 10.55,
+   "lines": [
+    {
+     "text": "So step back: why does any of this matter for a real, long-running service?",
+     "start": 0.15,
+     "end": 6.15
+    },
+    {
+     "text": "Can it just keep opening file descriptors, forever?",
+     "start": 7.0,
+     "end": 10.2
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.7,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "d06aeb0424bd3182",
+   "takes": [
+    "cbcf7aa5368f8e9ec3af",
+    "23f09a5927473d3bd821"
+   ],
+   "duration": 14.343,
+   "lines": [
+    {
+     "text": "No \u2014 a real kernel limit genuinely caps how many it may hold open at once.",
+     "start": 0.15,
+     "end": 5.75
+    },
+    {
+     "text": "Every descriptor counts against that same ceiling, whether it was duplicated, leaked, or opened the ordinary way.",
+     "start": 6.17,
+     "end": 13.993
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "3d02e9efb5db2a9f",
+   "takes": [
+    "24590f7ac6fb74175e97",
+    "c7dd076c987f0e7408fc"
+   ],
+   "duration": 17.296,
+   "lines": [
+    {
+     "text": "That real ceiling is defined as one more than the highest file descriptor number a process is ever allowed to have open.",
+     "start": 0.15,
+     "end": 8.523
+    },
+    {
+     "text": "Try to open past it, and the attempt fails outright \u2014 not eventually, not gracefully. Outright.",
+     "start": 8.943,
+     "end": 16.946
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.1,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "7bb98f55acbae3ef",
+   "takes": [
+    "0fef86f2d0ed31b5e3fc",
+    "8ce76adc618b6bd70f8e"
+   ],
+   "duration": 19.66,
+   "lines": [
+    {
+     "text": "So, pulling this together: every one of these behaviors exists for the same reason.",
+     "start": 0.15,
+     "end": 6.659
+    },
+    {
+     "text": "A file descriptor is a handle into a kernel resource, never the resource itself \u2014 so duplicating it, closing it, and leaking it are each their own, completely separate event.",
+     "start": 7.079,
+     "end": 19.31
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "022dcdead55cb3dd",
+   "takes": [
+    "367fc9fe45279c9201d5",
+    "2b78851c88361c090261",
+    "e79c6ec98743d018166f"
+   ],
+   "duration": 29.576,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: duplicating a descriptor never gives it its own offset \u2014 the two stay tied to one real position, together.",
+     "start": 0.15,
+     "end": 10.625
+    },
+    {
+     "text": "Dropping an owned descriptor closes the real resource underneath, something a mere borrow is never able to do.",
+     "start": 11.045,
+     "end": 19.738
+    },
+    {
+     "text": "And whether a descriptor survives into a forked child comes down to one flag, set by default for exactly this reason.",
+     "start": 20.158,
+     "end": 29.226
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
