@@ -1,0 +1,383 @@
+{
+ "topic": "rust.buffer-pool-page-eviction",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e20245e68531d376",
+   "takes": [
+    "d33de93dfd834efe536e",
+    "8ecff0f1f25711f023d1",
+    "15b9348e3b5218cd4819"
+   ],
+   "duration": 18.409,
+   "lines": [
+    {
+     "text": "Build a real buffer pool: a frame table, a pin count on each frame, and a dirty bit on each frame.",
+     "start": 0.15,
+     "end": 7.995
+    },
+    {
+     "text": "Now pin every single frame in that pool, and try to load one more page than the pool can actually hold.",
+     "start": 8.415,
+     "end": 16.486
+    },
+    {
+     "text": "What happens?",
+     "start": 17.206,
+     "end": 18.059
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "d43066798611c408",
+   "takes": [
+    "11bb0e5af70bd0b12832",
+    "508f566df96be9331f15"
+   ],
+   "duration": 8.84,
+   "lines": [
+    {
+     "text": "The pool genuinely refuses.",
+     "start": 0.15,
+     "end": 2.057
+    },
+    {
+     "text": "There is nothing left in it that can be evicted; a pinned frame is simply never a candidate.",
+     "start": 2.477,
+     "end": 8.49
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0ee7a15f7540cc49",
+   "takes": [
+    "c6a65d672fd8354ac52d",
+    "0ddf48d450abb1dbbad8"
+   ],
+   "duration": 12.141,
+   "lines": [
+    {
+     "text": "Run it for real: with every frame genuinely pinned, loading one more page than the pool can hold was rejected outright.",
+     "start": 0.15,
+     "end": 8.3
+    },
+    {
+     "text": "Nothing was evicted, because nothing could be.",
+     "start": 8.72,
+     "end": 11.791
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "12bc24764d5090cb",
+   "takes": [
+    "2cba4b43772245a87789",
+    "af4da995e832e50f0207"
+   ],
+   "duration": 16.838,
+   "lines": [
+    {
+     "text": "Now unpin those frames, and load a new page. One of them gets evicted to make room.",
+     "start": 0.15,
+     "end": 6.018
+    },
+    {
+     "text": "If the frame that gets evicted happens to be dirty, does its own data get written back first, before that frame is handed to the new page?",
+     "start": 6.738,
+     "end": 16.488
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a7a19a310ce31c1a",
+   "takes": [
+    "f7ece01fe77acf8308e2",
+    "33032d623c0b84577c6d"
+   ],
+   "duration": 6.038,
+   "lines": [
+    {
+     "text": "Yes, every time.",
+     "start": 0.15,
+     "end": 1.917
+    },
+    {
+     "text": "Nothing dirty is ever simply discarded along with the frame.",
+     "start": 2.337,
+     "end": 5.688
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "9e380b160c5736fa",
+   "takes": [
+    "959b3fcab788687a9320"
+   ],
+   "duration": 11.722,
+   "lines": [
+    {
+     "text": "Run it for real: the dirty frame's own data was genuinely written back first, and only afterward was that same frame reused for the new page.",
+     "start": 0.15,
+     "end": 11.372
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "88c19c22f8b8fe3d",
+   "takes": [
+    "132eba27de7a7cdca766",
+    "3bc7eefd1cba17ef8834",
+    "55439c15fbee1f6b535d",
+    "131da118e33aaaa6bc7f"
+   ],
+   "duration": 20.769,
+   "lines": [
+    {
+     "text": "Now give the real eviction policy, CLOCK, an actual choice.",
+     "start": 0.15,
+     "end": 4.702
+    },
+    {
+     "text": "Take two unpinned frames: touch one of them again since the last sweep, and leave the other one genuinely alone.",
+     "start": 5.122,
+     "end": 13.439
+    },
+    {
+     "text": "Load one more page.",
+     "start": 13.859,
+     "end": 14.968
+    },
+    {
+     "text": "Does CLOCK evict the one just touched again, or the one left untouched?",
+     "start": 15.688,
+     "end": 20.419
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -3.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "43aa880d04d18cba",
+   "takes": [
+    "a7ce5668989a32f5777b",
+    "a562f0f5a495ab69abc3"
+   ],
+   "duration": 5.886,
+   "lines": [
+    {
+     "text": "It evicts the untouched one.",
+     "start": 0.15,
+     "end": 1.903
+    },
+    {
+     "text": "Being touched again buys a real second chance.",
+     "start": 2.323,
+     "end": 5.536
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.4,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5b67fb391508393e",
+   "takes": [
+    "740486072184a36f213f"
+   ],
+   "duration": 10.704,
+   "lines": [
+    {
+     "text": "Run it for real: CLOCK genuinely evicted the frame left untouched since the last sweep, and spared the one that had been accessed again.",
+     "start": 0.15,
+     "end": 10.354
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.7,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "b53beba673a38af6",
+   "takes": [
+    "55c5d03642320527e351",
+    "edcd2c0ad7280a858b60"
+   ],
+   "duration": 16.28,
+   "lines": [
+    {
+     "text": "One real system names exactly these fields on its own real shared buffer: whether it's dirty, its own clock-sweep count, and how many backends are pinning it right now.",
+     "start": 0.15,
+     "end": 12.401
+    },
+    {
+     "text": "What's that pinning count actually there to protect?",
+     "start": 13.121,
+     "end": 15.93
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "1fe2213e26ba1765",
+   "takes": [
+    "3410600a3d1a5bb03122",
+    "6df5a2b8329be5c82749"
+   ],
+   "duration": 9.235,
+   "lines": [
+    {
+     "text": "Exactly the pin count this topic's own pool uses.",
+     "start": 0.15,
+     "end": 3.805
+    },
+    {
+     "text": "A frame being pinned right now is the entire reason it survives eviction.",
+     "start": 4.225,
+     "end": 8.885
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "b15b982b310de877",
+   "takes": [
+    "8016ada50863cc706f7d"
+   ],
+   "duration": 11.526,
+   "lines": [
+    {
+     "text": "In that system's own words: the pinning count is how many backends currently hold that buffer pinned, and its own eviction function only ever touches a buffer nobody is pinning.",
+     "start": 0.15,
+     "end": 11.176
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "c3d8ae141e8104b0",
+   "takes": [
+    "d98aec4833dc564e1ebb",
+    "54a29d9913a193805af6"
+   ],
+   "duration": 26.725,
+   "lines": [
+    {
+     "text": "An earlier chapter's own approach to this same problem hands the question of when a dirty page actually gets written back to the operating system entirely.",
+     "start": 0.15,
+     "end": 10.282
+    },
+    {
+     "text": "A real paper on exactly that approach names the difference directly: the operating system can flush a dirty page back to disk at any moment it chooses, whether or not the write that dirtied it has even finished.",
+     "start": 10.702,
+     "end": 26.375
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d1ab46b104e5c816",
+   "takes": [
+    "784230bf47081aac1c2d",
+    "7866f1bb608d7a53a86f",
+    "864e2d754f18d6265485"
+   ],
+   "duration": 36.237,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a pinned frame is never a candidate for eviction, a dirty frame is always written back before its own frame gets reused, and a real sweep-based policy genuinely favors whichever frame was touched more recently.",
+     "start": 0.15,
+     "end": 18.214
+    },
+    {
+     "text": "A real system names exactly these same three things on its own shared buffers.",
+     "start": 18.634,
+     "end": 24.15
+    },
+    {
+     "text": "And where one approach hands the timing of a dirty write entirely to the operating system, an explicit pool like this one decides that for itself, on its own terms.",
+     "start": 24.57,
+     "end": 35.887
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.03333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "And where one approach hands the timing of a dirty write entirely to the operating system, an explicit pool like this one decides that for itself, on its own terms.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  }
+ }
+}
