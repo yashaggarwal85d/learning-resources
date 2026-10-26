@@ -1,0 +1,383 @@
+{
+ "topic": "rust.fsync-semantics-failure-modes",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "ac1e41a49f88fa22",
+   "takes": [
+    "f592766bd9b7fe87ad8b",
+    "7699451e3977f665fb78"
+   ],
+   "duration": 12.889,
+   "lines": [
+    {
+     "text": "Call one real function to sync a file fully, and a separate one to sync just its data.",
+     "start": 0.15,
+     "end": 6.916
+    },
+    {
+     "text": "Do they genuinely make the same real system call underneath, or two different ones?",
+     "start": 7.636,
+     "end": 12.539
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "39530eee3745258f",
+   "takes": [
+    "99d7365c761856a96807",
+    "0a373230a8ce4dc7e8c5"
+   ],
+   "duration": 9.948,
+   "lines": [
+    {
+     "text": "Two genuinely different real system calls.",
+     "start": 0.15,
+     "end": 3.947
+    },
+    {
+     "text": "The data-only version genuinely isn't just the full version, renamed.",
+     "start": 4.367,
+     "end": 9.598
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 103,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "9daee41a215605a8",
+   "takes": [
+    "9cc5f4bab489349739ce",
+    "81539659c58ba84f2c46"
+   ],
+   "duration": 13.096,
+   "lines": [
+    {
+     "text": "Run it for real, traced: the full sync made one specific real system call.",
+     "start": 0.15,
+     "end": 6.385
+    },
+    {
+     "text": "And the data-only sync made a real, genuinely different one in its place.",
+     "start": 6.805,
+     "end": 12.746
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "04b297d3beaec1c7",
+   "takes": [
+    "1ada9311cf53a15c9e96",
+    "479b4a8168ff3da2a15e"
+   ],
+   "duration": 12.769,
+   "lines": [
+    {
+     "text": "Sync a file's own handle, then separately sync its parent folder's own handle.",
+     "start": 0.15,
+     "end": 5.66
+    },
+    {
+     "text": "Does the file's own sync already cover the folder, or are these genuinely separate?",
+     "start": 6.38,
+     "end": 12.419
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "f6ead32f46f60d16",
+   "takes": [
+    "0916036b8b0cc9ca5b25",
+    "4004572d36496e9175b3"
+   ],
+   "duration": 9.481,
+   "lines": [
+    {
+     "text": "They're genuinely two separate real calls, on two different handles.",
+     "start": 0.15,
+     "end": 4.727
+    },
+    {
+     "text": "The file's own sync says absolutely nothing about its folder entry.",
+     "start": 5.147,
+     "end": 9.131
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.8,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "81e1ff3a6e95561f",
+   "takes": [
+    "5e046e8d8df815f20348",
+    "68b9eddffaaac7e4dcc4"
+   ],
+   "duration": 12.88,
+   "lines": [
+    {
+     "text": "Run it for real, traced: the file's own sync was one real call.",
+     "start": 0.15,
+     "end": 6.919
+    },
+    {
+     "text": "And the folder's own sync was a second, genuinely separate real call.",
+     "start": 7.339,
+     "end": 12.53
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "97a11e3fa13cd6d6",
+   "takes": [
+    "da7ef98c58ca5d3c11a5",
+    "d79e2861498267385f06"
+   ],
+   "duration": 19.112,
+   "lines": [
+    {
+     "text": "Replace a file's content two hundred real times, the careful way: a temporary copy, synced, then renamed in.",
+     "start": 0.15,
+     "end": 9.149
+    },
+    {
+     "text": "Meanwhile a separate thread reads that same file as fast as it possibly can. Does it ever catch one half-written?",
+     "start": 9.869,
+     "end": 18.762
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "2755b6440c90aef1",
+   "takes": [
+    "f7849a3bc596d28eb1da",
+    "1c45e687888725312f02"
+   ],
+   "duration": 9.066,
+   "lines": [
+    {
+     "text": "No \u2014 it only ever sees the old content, or the new content.",
+     "start": 0.15,
+     "end": 5.044
+    },
+    {
+     "text": "Never once anything in between.",
+     "start": 5.464,
+     "end": 8.716
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "f586c975612bb090",
+   "takes": [
+    "f4ccea8180dae7c10f20",
+    "0c175442c8bc02fc84be"
+   ],
+   "duration": 15.819,
+   "lines": [
+    {
+     "text": "Run it for real: across many tens of thousands of real reads, racing two hundred real replacements,",
+     "start": 0.15,
+     "end": 8.975
+    },
+    {
+     "text": "the reader never once observed a length that wasn't the old file's, or the new file's.",
+     "start": 9.395,
+     "end": 15.469
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.6,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "2bf9e908c87b9e77",
+   "takes": [
+    "7b57c1a3b6f34842df34",
+    "a2cfe33118d7d50e93ad"
+   ],
+   "duration": 8.84,
+   "lines": [
+    {
+     "text": "A well-known database retried a failed sync, exactly as its own code had done for twenty years.",
+     "start": 0.15,
+     "end": 6.142
+    },
+    {
+     "text": "What actually went wrong?",
+     "start": 6.862,
+     "end": 8.49
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "2e800960b40bd788",
+   "takes": [
+    "43e6b449390a6fb3f7dd",
+    "0adf0f5ae15bd0697953"
+   ],
+   "duration": 9.942,
+   "lines": [
+    {
+     "text": "The retry succeeded without writing anything at all.",
+     "start": 0.15,
+     "end": 3.65
+    },
+    {
+     "text": "The page it needed to write had already been marked clean by the first failure.",
+     "start": 4.07,
+     "end": 9.592
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "01f01a62795eae89",
+   "takes": [
+    "033c447403cce22a26cc",
+    "fa5a91dc555101e8db1f"
+   ],
+   "duration": 17.121,
+   "lines": [
+    {
+     "text": "The real finding is specific: a failed sync marks the dirty page clean regardless, on every file system tested.",
+     "start": 0.15,
+     "end": 8.592
+    },
+    {
+     "text": "So the second call finds nothing left to write, succeeds immediately, and the database mistook that for a completed write.",
+     "start": 9.012,
+     "end": 16.771
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "d18bdcdfe5a950b4",
+   "takes": [
+    "63fde8df7897384e2484",
+    "0bf7e0594fd970c7552b"
+   ],
+   "duration": 20.104,
+   "lines": [
+    {
+     "text": "So, pulling this together: a full sync versus a data-only one, a file's own sync versus its folder's, and a retried sync that quietly lied, are really the same question, asked three times.",
+     "start": 0.15,
+     "end": 15.86
+    },
+    {
+     "text": "What, exactly, did that one call actually promise you.",
+     "start": 16.28,
+     "end": 19.754
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d7b210639a95244a",
+   "takes": [
+    "7007b7122152d92f9670",
+    "36468295cc3d4909dcbd",
+    "40a6be6427f1607fc708"
+   ],
+   "duration": 30.907,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a full sync and a data-only sync genuinely make two different real calls.",
+     "start": 0.15,
+     "end": 9.27
+    },
+    {
+     "text": "A file's own sync and its folder's own sync are genuinely two separate calls that a safe replace needs both of.",
+     "start": 9.69,
+     "end": 18.223
+    },
+    {
+     "text": "And a failed sync's own retry can report success while having written nothing at all \u2014 which is exactly why the real fix is to crash and recover, never to simply try again.",
+     "start": 18.643,
+     "end": 30.557
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.03125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "And a failed sync's own retry can report success while having written nothing at all \u2014 which is exactly why the real fix is to crash and recover, never to simply try again.",
+     "said": "syncs",
+     "heard": "sinks"
+    }
+   ]
+  }
+ }
+}
