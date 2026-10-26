@@ -1,0 +1,409 @@
+{
+ "topic": "de.buffer-pool-page-replacement",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "3c895fbf53991ccc",
+   "takes": [
+    "099f99dd7f0b6ed74d72",
+    "29e5d8568e6022e14155",
+    "ad35b1823791f05599d4"
+   ],
+   "duration": 20.442,
+   "lines": [
+    {
+     "text": "Knowing exactly what a page looks like only gets an engine so far.",
+     "start": 0.15,
+     "end": 5.024
+    },
+    {
+     "text": "A disk is slow enough that fetching the same page over and over would drag every query down with it.",
+     "start": 5.444,
+     "end": 11.762
+    },
+    {
+     "text": "So something has to decide, moment to moment, which pages are worth holding onto in memory and which ones can wait.",
+     "start": 12.182,
+     "end": 20.092
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d0f0f5be21cdf5da",
+   "takes": [
+    "96a36ab13e53a8a112b8",
+    "b5b58481e954a576becd",
+    "1bf35f8ec47bfc9d2652"
+   ],
+   "duration": 26.801,
+   "lines": [
+    {
+     "text": "Here's that cache's own replacement scheme, read directly off a live cluster rather than assumed.",
+     "start": 0.15,
+     "end": 6.181
+    },
+    {
+     "text": "A hand sweeps past every slot in a fixed circle, never stopping to rank anything by how recently it was touched.",
+     "start": 6.601,
+     "end": 14.838
+    },
+    {
+     "text": "Each slot carries its own small counter, raised every time that slot gets used, and the hand only takes a slot whose counter has already fallen to nothing.",
+     "start": 15.258,
+     "end": 26.451
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "22ebbca189a12f35",
+   "takes": [
+    "e9b1d867ec77faf3f2c2",
+    "0401b6faab814cacd6de",
+    "7a2b3d6611f26718c6b3"
+   ],
+   "duration": 19.446,
+   "lines": [
+    {
+     "text": "Worth checking what happens if that same small table keeps getting touched again and again.",
+     "start": 0.15,
+     "end": 6.534
+    },
+    {
+     "text": "Measured directly, the counter does keep climbing with each touch, but only up to a small ceiling.",
+     "start": 6.954,
+     "end": 13.017
+    },
+    {
+     "text": "Past that ceiling it simply stops, no matter how many more times the table gets scanned.",
+     "start": 13.437,
+     "end": 19.096
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c2864ac814a7203c",
+   "takes": [
+    "4d13e9b7cbbe7fc531a7",
+    "42651567bfe5890f8f7e",
+    "e5e0d71418a9f36a562b"
+   ],
+   "duration": 19.704,
+   "lines": [
+    {
+     "text": "Worth reasoning through before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.184
+    },
+    {
+     "text": "A scan that reads a table far bigger than the whole cache touches an enormous number of slots, but only once each.",
+     "start": 3.604,
+     "end": 11.301
+    },
+    {
+     "text": "Does sweeping past every one of those slots the ordinary way end up clearing out most of the cache to make room?",
+     "start": 11.721,
+     "end": 19.354
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.045454545454545456,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does sweeping past every one of those slots the ordinary way end up clearing out most of the cache to make room?",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "04a": {
+   "hash": "63886bb854141a68",
+   "takes": [
+    "1a74ee8ed7fa60dd856a",
+    "c652d0651dcd5d0b8cf1",
+    "9da83f432543a892b4cb"
+   ],
+   "duration": 23.317,
+   "lines": [
+    {
+     "text": "It doesn't, and the reason is a second, separate trick this scheme reaches for.",
+     "start": 0.15,
+     "end": 5.218
+    },
+    {
+     "text": "A slot that's only ever touched by a once-through scan like that is unlikely to matter again soon, so a small, separate loop of slots gets reused for the whole scan instead of sweeping through the entire cache.",
+     "start": 5.638,
+     "end": 18.898
+    },
+    {
+     "text": "Nothing outside that small loop ever gets disturbed.",
+     "start": 19.318,
+     "end": 22.967
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "9848dcccb7ad07ce",
+   "takes": [
+    "e6a0af916fb1a83f56d1",
+    "03bf1b616023d3338ab9",
+    "ded7fbb2a10f92dbd005"
+   ],
+   "duration": 21.813,
+   "lines": [
+    {
+     "text": "Here's that separate loop shown directly, not just argued for.",
+     "start": 0.15,
+     "end": 4.454
+    },
+    {
+     "text": "A table built and scanned for real, with vastly more content than the whole cache could ever hold at once.",
+     "start": 4.874,
+     "end": 11.262
+    },
+    {
+     "text": "Measured right after the scan finishes, only a small, bounded slice of it actually ended up resident. The rest of the cache was never touched.",
+     "start": 11.682,
+     "end": 21.463
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "76c29fca8207eed2",
+   "takes": [
+    "b49460b371e168e29d45",
+    "652518f6fca1e1de2a8f",
+    "720597137b6e1fd1d055"
+   ],
+   "duration": 18.479,
+   "lines": [
+    {
+     "text": "A completely different kind of bookkeeping is worth checking the same way.",
+     "start": 0.15,
+     "end": 4.061
+    },
+    {
+     "text": "A page just changed for real carries a marker, read directly, saying it still needs to be written out.",
+     "start": 4.481,
+     "end": 10.898
+    },
+    {
+     "text": "Run a real save point and check that exact same marker again: it's already flipped back to clean.",
+     "start": 11.318,
+     "end": 18.129
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "aa1403565a19268a",
+   "takes": [
+    "e3ca074973978883624e",
+    "ac3a49cae2716477a050",
+    "6524a65b3546e476d892"
+   ],
+   "duration": 26.234,
+   "lines": [
+    {
+     "text": "Worth naming one real cost of running a cache like this at all.",
+     "start": 0.15,
+     "end": 4.307
+    },
+    {
+     "text": "The operating system underneath is already caching the same bytes on its own, so an engine's own cache usually ends up holding a duplicate copy of everything.",
+     "start": 4.727,
+     "end": 16.244
+    },
+    {
+     "text": "One setting on the operating system exists specifically to skip that duplication, at the cost of the engine doing all of that caching work itself.",
+     "start": 16.664,
+     "end": 25.884
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 149,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Worth naming one real cost of running a cache like this at all.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "08": {
+   "hash": "6467d83233d3b559",
+   "takes": [
+    "f035d9a68f312eac2959",
+    "3ca23ab76acd7fe4f57e",
+    "d1d577c5050d683a4f01"
+   ],
+   "duration": 26.997,
+   "lines": [
+    {
+     "text": "There happens to be a second cluster available here too, a genuinely newer release of the same engine.",
+     "start": 0.15,
+     "end": 7.206
+    },
+    {
+     "text": "That newer release really does run a documented approach to reading many pages at once instead of one at a time.",
+     "start": 7.626,
+     "end": 14.45
+    },
+    {
+     "text": "Scanning it for real shows the counters it keeps rising under exactly that approach, which is real, counted activity, not just a claim in a document.",
+     "start": 14.87,
+     "end": 26.647
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "638bb44c316259aa",
+   "takes": [
+    "1eb9fbe1f5d246d4d16f",
+    "8808af064577a37e1bfa",
+    "8e14a60b05f44b7e0725",
+    "031f13bb32318287c7fb"
+   ],
+   "duration": 37.285,
+   "lines": [
+    {
+     "text": "Pulling the whole topic back together.",
+     "start": 0.15,
+     "end": 2.623
+    },
+    {
+     "text": "A sweeping hand and a small counter per slot, read directly rather than assumed, with a measured ceiling on how high that counter climbs.",
+     "start": 3.043,
+     "end": 12.684
+    },
+    {
+     "text": "A once-through scan that reuses a small, separate loop instead of clearing out the whole cache, measured directly after it ran.",
+     "start": 13.104,
+     "end": 21.669
+    },
+    {
+     "text": "A dirty marker that a real save point actually flips clean. Duplicate caching, and the one setting that skips it. And a second, newer cluster's own newer reading approach, measured for real.",
+     "start": 22.089,
+     "end": 36.934
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e315c092a5e19164",
+   "takes": [
+    "26ccb194aa63d1f0755f",
+    "ec8f5c346e62ccf0e211",
+    "11263a26412564ac13a9"
+   ],
+   "duration": 23.58,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through before the explanation lands.",
+     "start": 0.15,
+     "end": 4.964
+    },
+    {
+     "text": "One once-through scan over a huge table finishes right before a second, unrelated once-through scan starts over a different, equally huge table.",
+     "start": 5.384,
+     "end": 15.937
+    },
+    {
+     "text": "Does the second scan get slowed down because the first one already used up the whole cache scanning its own table?",
+     "start": 16.357,
+     "end": 23.23
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "9730515f1bfa0237",
+   "takes": [
+    "db2c2ba2dfba2c9e3f3e",
+    "5e3c7a5853818e21a909",
+    "22976579763c72ed224d"
+   ],
+   "duration": 20.257,
+   "lines": [
+    {
+     "text": "It doesn't, for exactly the reason this topic already measured directly.",
+     "start": 0.15,
+     "end": 4.654
+    },
+    {
+     "text": "Each once-through scan reuses its own small, separate loop rather than claiming space across the whole cache, so the first scan never touches the rest of the cache at all.",
+     "start": 5.074,
+     "end": 16.004
+    },
+    {
+     "text": "There's nothing there for the second scan to find missing.",
+     "start": 16.424,
+     "end": 19.907
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
