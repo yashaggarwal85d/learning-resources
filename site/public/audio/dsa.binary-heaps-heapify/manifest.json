@@ -1,0 +1,227 @@
+{
+ "topic": "dsa.binary-heaps-heapify",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "fec9e53802c87cfe",
+   "takes": [
+    "8d6941dd4c564aab9df5",
+    "fa5e609ea964ea0da509"
+   ],
+   "duration": 21.061,
+   "lines": [
+    {
+     "text": "Every earlier structure in this part of the course asked the same question: where does this piece of data physically sit.",
+     "start": 0.15,
+     "end": 9.32
+    },
+    {
+     "text": "This one drops that question completely and asks something narrower instead: of everything still waiting, which one is smallest, right now.",
+     "start": 9.74,
+     "end": 20.711
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "623e5d5f859fa3b4",
+   "takes": [
+    "f6dc6f9682606e5835fc",
+    "436d8b2e656f2ee7e033"
+   ],
+   "duration": 15.873,
+   "lines": [
+    {
+     "text": "Here's the trick worth noticing first: that tree you're picturing was never actually built anywhere.",
+     "start": 0.15,
+     "end": 7.263
+    },
+    {
+     "text": "Every parent and child position is just arithmetic on where something already sits inside one plain array.",
+     "start": 7.683,
+     "end": 15.523
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "78dbceaa046895eb",
+   "takes": [
+    "28946805e36a417f48cb",
+    "6108f7addc2781e2fca4",
+    "08c3b96798e46d859452"
+   ],
+   "duration": 17.677,
+   "lines": [
+    {
+     "text": "Before the reveal, think about what actually goes wrong the moment a value lands past the very end of the array, out of order with everything above it.",
+     "start": 0.15,
+     "end": 11.938
+    },
+    {
+     "text": "What has to happen here?",
+     "start": 12.358,
+     "end": 13.902
+    },
+    {
+     "text": "Before this is a real heap again?",
+     "start": 14.452,
+     "end": 17.327
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "cf22c0b76b9216aa",
+   "takes": [
+    "2f972c5aa9b4042281d8",
+    "0f09295b7e0b26835c4a"
+   ],
+   "duration": 19.077,
+   "lines": [
+    {
+     "text": "It walks upward, one step at a time, swapping with its own parent for as long as the two are out of order, and then it stops.",
+     "start": 0.15,
+     "end": 8.723
+    },
+    {
+     "text": "A full rebuild would touch everything that's already fine. Only the one path from that new value up to the root ever needs fixing.",
+     "start": 9.143,
+     "end": 18.727
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "50e7b8abe1c9f1f9",
+   "takes": [
+    "57292a3a08a107ded0e2",
+    "40309d0add38a122696c"
+   ],
+   "duration": 13.339,
+   "lines": [
+    {
+     "text": "Watch what doesn't move here, not just what does.",
+     "start": 0.15,
+     "end": 3.54
+    },
+    {
+     "text": "Every node off to the side of that one path stays exactly where it already was \u2014 the walk only ever touches its own root-ward line.",
+     "start": 3.96,
+     "end": 12.989
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 157,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Every node off to the side of that one path stays exactly where it already was \u2014 the walk only ever touches its own root-ward line.",
+     "said": "ward",
+     "heard": "word"
+    }
+   ]
+  },
+  "05": {
+   "hash": "081c512926abebda",
+   "takes": [
+    "c680735c60fc87310286",
+    "103f5922637ad0948442"
+   ],
+   "duration": 22.49,
+   "lines": [
+    {
+     "text": "Removing the smallest value empties out the root, so something has to fill that spot immediately.",
+     "start": 0.15,
+     "end": 6.272
+    },
+    {
+     "text": "The fix is the same idea, run in the opposite direction: pull the array's own last element into the empty root, then walk it downward, swapping with whichever child is smaller, until it stops.",
+     "start": 6.692,
+     "end": 22.14
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "1d55cc9795c4b9cd",
+   "takes": [
+    "f795cfd892488b308201",
+    "8f18d5c20bddd879e275"
+   ],
+   "duration": 33.118,
+   "lines": [
+    {
+     "text": "Here's the part that actually surprises people: build the exact same heap from the exact same elements two different ways, and the total cost changes, even though nothing about either operation changed.",
+     "start": 0.15,
+     "end": 14.846
+    },
+    {
+     "text": "Insert one at a time and you pay a walk for every single element. Sift downward from the bottom instead, and most of that walking disappears, because most nodes already sit close to the bottom, where a walk is short.",
+     "start": 15.266,
+     "end": 32.768
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "eb470af723f4bb58",
+   "takes": [
+    "13a69989d05f7739fcaf",
+    "fd770876c37d4ad87d44"
+   ],
+   "duration": 16.752,
+   "lines": [
+    {
+     "text": "This is the one place in the whole topic where a claim gets checked against a real count instead of just argued for.",
+     "start": 0.15,
+     "end": 8.244
+    },
+    {
+     "text": "Both builds end up at a fully valid heap. Only the swap counts along the way tell you which one actually paid less.",
+     "start": 8.664,
+     "end": 16.402
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
