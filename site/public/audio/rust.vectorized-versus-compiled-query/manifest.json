@@ -1,0 +1,365 @@
+{
+ "topic": "rust.vectorized-versus-compiled-query",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "63b6497f41f68c26",
+   "takes": [
+    "5b77cfa06d389d8a7332",
+    "c6c13323c4bef912f17d"
+   ],
+   "duration": 22.273,
+   "lines": [
+    {
+     "text": "Run the identical filter-then-sum operation two different ways over the identical column: once evaluating it one row at a time, once processing a whole batch at a time instead.",
+     "start": 0.15,
+     "end": 13.394
+    },
+    {
+     "text": "Does the batch-at-a-time version genuinely cut the number of dispatches the row-at-a-time version has to pay?",
+     "start": 14.114,
+     "end": 21.924
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "96df9c875013f2cd",
+   "takes": [
+    "9995c204b819e717847b",
+    "cfb8a034bac7f013810b"
+   ],
+   "duration": 5.366,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Far fewer dispatches, in the batched version.",
+     "start": 1.84,
+     "end": 5.016
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.9,
+   "wpm": 101,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ed7e930fb111424e",
+   "takes": [
+    "76d7cdbcada86b614e90",
+    "f25ccfc336c48ca5244f"
+   ],
+   "duration": 15.068,
+   "lines": [
+    {
+     "text": "Run it for real: far fewer dispatches showed up in the batch-at-a-time version, on the identical operation and data.",
+     "start": 0.15,
+     "end": 7.62
+    },
+    {
+     "text": "One dispatch per batch, instead of one dispatch per row, is exactly where that cut comes from.",
+     "start": 8.04,
+     "end": 14.718
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d1c37f10f069e3a7",
+   "takes": [
+    "739eb1dbbda292e793ab",
+    "5b105355b4f5f09d80c3"
+   ],
+   "duration": 14.182,
+   "lines": [
+    {
+     "text": "Both paths apply the identical filter and the identical sum to the identical column.",
+     "start": 0.15,
+     "end": 6.463
+    },
+    {
+     "text": "Does the batch-at-a-time version still produce the exact identical result as the row-at-a-time version?",
+     "start": 7.183,
+     "end": 13.832
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "db8edc9149b5a9e9",
+   "takes": [
+    "a550ef3f5ce454a92fbe",
+    "9b84bba412bc677f238d"
+   ],
+   "duration": 5.697,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.635
+    },
+    {
+     "text": "The exact, identical result, every time.",
+     "start": 2.055,
+     "end": 5.347
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.7,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "715947e3683a7613",
+   "takes": [
+    "833d188d661749228357"
+   ],
+   "duration": 8.966,
+   "lines": [
+    {
+     "text": "Run it for real: the exact identical result came back, from both the row-at-a-time path and the batch-at-a-time path.",
+     "start": 0.15,
+     "end": 8.616
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.4,
+   "wpm": 167,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "2b03b0bab35fe2cf",
+   "takes": [
+    "7d43d374bc1f2d2730ec",
+    "df6a372b48710e307f0d"
+   ],
+   "duration": 12.853,
+   "lines": [
+    {
+     "text": "Does the batch-at-a-time version's own real dispatch count match exactly what the batch size and the column's own length predict?",
+     "start": 0.15,
+     "end": 9.423
+    },
+    {
+     "text": "Or does it merely come out close?",
+     "start": 10.273,
+     "end": 12.503
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "b2fb83fc5e4606bd",
+   "takes": [
+    "a550ef3f5ce454a92fbe",
+    "a40b6c6905835ce0a579"
+   ],
+   "duration": 5.678,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.635
+    },
+    {
+     "text": "An exact match, every single time.",
+     "start": 2.055,
+     "end": 5.328
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 106,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "819d4733457251ba",
+   "takes": [
+    "4716ff0407b0138536b4"
+   ],
+   "duration": 9.293,
+   "lines": [
+    {
+     "text": "Run it for real: an exact match showed up, between the real, measured dispatch count and the real batch arithmetic.",
+     "start": 0.15,
+     "end": 8.943
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -2.6,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a518658d091a63d8",
+   "takes": [
+    "ec2ffbfd141f0af87a09",
+    "c05f3d9dcf45804d6c73"
+   ],
+   "duration": 15.28,
+   "lines": [
+    {
+     "text": "Real vectorized, Arrow-based query engines state this exact batch-at-a-time approach directly, in their own words.",
+     "start": 0.15,
+     "end": 7.914
+    },
+    {
+     "text": "Does one of those real engines own documentation name itself a vectorized execution engine directly?",
+     "start": 8.634,
+     "end": 14.93
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "40fe9b03c76e106e",
+   "takes": [
+    "dc6d561e18b74ec42695",
+    "1927a4ba5166f3c12967"
+   ],
+   "duration": 6.173,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.959
+    },
+    {
+     "text": "It names itself vectorized directly, in writing.",
+     "start": 2.379,
+     "end": 5.823
+    }
+   ],
+   "lufs": -15.5,
+   "true_peak": -2.7,
+   "wpm": 107,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "406d68c17184736d",
+   "takes": [
+    "595b6eb0e0d373cf8144"
+   ],
+   "duration": 12.968,
+   "lines": [
+    {
+     "text": "That real engine's own documentation states it, word for word, in exactly those terms: a blazingly fast, vectorized, multithreaded, streaming execution engine.",
+     "start": 0.15,
+     "end": 12.618
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 102,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That real engine's own documentation states it, word for word, in exactly those terms: a blazingly fast, vectorized, multithreaded, streaming execution engine.",
+     "said": "multithreaded",
+     "heard": "multi threaded"
+    }
+   ]
+  },
+  "09": {
+   "hash": "2063a90d33a45314",
+   "takes": [
+    "db3589f0e7d6ceacf8e7",
+    "fdec2b865c920b5474fd"
+   ],
+   "duration": 16.013,
+   "lines": [
+    {
+     "text": "A second, different real query engine's own documentation names the identical batch-at-a-time idea in its own words.",
+     "start": 0.15,
+     "end": 8.643
+    },
+    {
+     "text": "It states directly that it can execute a query in real batches, instead of processing all of the data at once.",
+     "start": 9.063,
+     "end": 15.663
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "9bc56270e241e74b",
+   "takes": [
+    "8030b270e2b541e8b18a",
+    "532a761892aab2bade0c",
+    "6d007141fce3848d0170"
+   ],
+   "duration": 36.738,
+   "lines": [
+    {
+     "text": "So here's the shape of this whole topic: processing a batch at a time instead of one row at a time genuinely cuts the real per-row dispatch overhead by exactly the batch size chosen, not by a rough estimate.",
+     "start": 0.15,
+     "end": 13.727
+    },
+    {
+     "text": "That cut changes nothing at all about the real answer a query produces, only how expensively the engine actually gets there.",
+     "start": 14.147,
+     "end": 23.098
+    },
+    {
+     "text": "Two real, independent vectorized query engines both state this identical batch-at-a-time approach directly, in their own words, as central to their own real speed.",
+     "start": 23.518,
+     "end": 36.388
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
