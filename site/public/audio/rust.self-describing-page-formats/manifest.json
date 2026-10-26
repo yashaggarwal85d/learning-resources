@@ -1,0 +1,383 @@
+{
+ "topic": "rust.self-describing-page-formats",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "58d774d47397b8f1",
+   "takes": [
+    "657017c78cf28df4f590",
+    "8446ff9341c243946c72"
+   ],
+   "duration": 24.308,
+   "lines": [
+    {
+     "text": "Build a real, fixed-size page as its own byte buffer, with its own header baked right into those bytes: a magic number, a version, a checksum, a log position.",
+     "start": 0.15,
+     "end": 12.689
+    },
+    {
+     "text": "Now flip one byte somewhere in that page's body, on purpose. Does the page notice, or does it just hand back the wrong data without complaint?",
+     "start": 13.409,
+     "end": 23.958
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "1884c82a25ffa359",
+   "takes": [
+    "f99d32cca35845d46a0d",
+    "f489c959d57f592c7b55"
+   ],
+   "duration": 7.073,
+   "lines": [
+    {
+     "text": "It notices.",
+     "start": 0.15,
+     "end": 1.123
+    },
+    {
+     "text": "The page's own checksum catches it, wherever that flipped byte happens to land.",
+     "start": 1.543,
+     "end": 6.723
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.7,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "fe1331e052d339fc",
+   "takes": [
+    "a2a9530b1e92815e4d55",
+    "e21edb67f33c867943dd"
+   ],
+   "duration": 16.177,
+   "lines": [
+    {
+     "text": "Run it for real: an untouched page's checksum validates cleanly on its own.",
+     "start": 0.15,
+     "end": 5.531
+    },
+    {
+     "text": "Flip a single byte anywhere in that same page, and the checksum genuinely stops validating, with nothing outside the page telling it where to look.",
+     "start": 5.951,
+     "end": 15.827
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "faa8c9fa90e6c487",
+   "takes": [
+    "de8e7d84536de4c085d0",
+    "d29cb8b08b4fe7d13db0"
+   ],
+   "duration": 22.251,
+   "lines": [
+    {
+     "text": "Instead of corrupting a byte, change the page's own magic number to something else entirely, then recompute the checksum over those new bytes, honestly, the same way the page always does.",
+     "start": 0.15,
+     "end": 15.305
+    },
+    {
+     "text": "Does the checksum alone catch that the format itself has quietly changed underneath it?",
+     "start": 16.025,
+     "end": 21.901
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "acef8d64b0153a9a",
+   "takes": [
+    "fe93107065f7251ba9e1",
+    "f00feb1f4732e215bbc6"
+   ],
+   "duration": 11.616,
+   "lines": [
+    {
+     "text": "No, it doesn't.",
+     "start": 0.15,
+     "end": 1.077
+    },
+    {
+     "text": "A checksum recomputed over consistent new bytes still validates; it was never built to notice a deliberate, consistent change.",
+     "start": 1.497,
+     "end": 11.266
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "551ff315e1ecdf76",
+   "takes": [
+    "bafff4681c832339dfda",
+    "4d24202ddb3fb41b5624"
+   ],
+   "duration": 15.622,
+   "lines": [
+    {
+     "text": "Run it for real: with the magic number changed and the checksum honestly recomputed over the new bytes, that checksum still validates cleanly.",
+     "start": 0.15,
+     "end": 10.216
+    },
+    {
+     "text": "Only checking the magic number itself caught that the format had actually changed.",
+     "start": 10.636,
+     "end": 15.272
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "92ea6b2e85fe8eef",
+   "takes": [
+    "0e50329b81e1afee466d",
+    "c770cf55aa5a49582b5a",
+    "aa0d688c65c169cd04a3"
+   ],
+   "duration": 20.986,
+   "lines": [
+    {
+     "text": "The page's own multi-byte fields, like its log position, are written out in a specific byte order, chosen on purpose and never left to chance.",
+     "start": 0.15,
+     "end": 10.059
+    },
+    {
+     "text": "Take those exact same raw bytes and read them back in the opposite order instead.",
+     "start": 10.479,
+     "end": 15.522
+    },
+    {
+     "text": "Does that choice actually matter, or is one byte order as good as another?",
+     "start": 16.242,
+     "end": 20.636
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 157,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does that choice actually matter, or is one byte order as good as another?",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "55043fea1e572645",
+   "takes": [
+    "7dd57698d931386de508",
+    "6127748bede8055d1b8c"
+   ],
+   "duration": 8.052,
+   "lines": [
+    {
+     "text": "It matters completely.",
+     "start": 0.15,
+     "end": 1.47
+    },
+    {
+     "text": "The same bytes, read the wrong way, hand back a genuinely different value.",
+     "start": 1.89,
+     "end": 7.702
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.5,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "fc557856bf163cf8",
+   "takes": [
+    "72714d441cd654ff6773",
+    "5a4718f6537fd341918d"
+   ],
+   "duration": 15.469,
+   "lines": [
+    {
+     "text": "Run it for real: those raw bytes, read back in the chosen order, give the exact original value.",
+     "start": 0.15,
+     "end": 7.826
+    },
+    {
+     "text": "Read in the opposite order, the very same bytes give back a different value entirely.",
+     "start": 8.246,
+     "end": 15.119
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "64c12e613acad397",
+   "takes": [
+    "150795625e85b19c3d17",
+    "f65e7d6b182d9819a4e5"
+   ],
+   "duration": 14.977,
+   "lines": [
+    {
+     "text": "Now turn to the documentation this whole page design is modeled on. It describes exactly what the very first field of its own page header is there to track.",
+     "start": 0.15,
+     "end": 10.888
+    },
+    {
+     "text": "What does it say that first field actually tracks?",
+     "start": 11.608,
+     "end": 14.627
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "b44d439ce7bc0584",
+   "takes": [
+    "8dfb4e68446eede254db",
+    "73f3f5187ff3a619ff4f"
+   ],
+   "duration": 8.224,
+   "lines": [
+    {
+     "text": "The most recent log entry touching that page.",
+     "start": 0.15,
+     "end": 2.92
+    },
+    {
+     "text": "The header ties every page straight back to the log that describes it.",
+     "start": 3.34,
+     "end": 7.874
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "9a32250351e862de",
+   "takes": [
+    "21857c73e0cb1fa3788b"
+   ],
+   "duration": 12.402,
+   "lines": [
+    {
+     "text": "In the documentation's own words: that first field tracks the most recent log entry related to the page, and right beside it sits the page's own checksum, whenever checksums are turned on.",
+     "start": 0.15,
+     "end": 12.052
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "917a8b671df0f81e",
+   "takes": [
+    "405dc91a5bbd817d9299",
+    "3f3235593efbd3bb123d"
+   ],
+   "duration": 20.279,
+   "lines": [
+    {
+     "text": "That same documentation says something stronger still, about the little index that points at an item inside a page.",
+     "start": 0.15,
+     "end": 8.29
+    },
+    {
+     "text": "That index is never moved until the item it points to is freed, so it keeps working as a long-term reference, even while the item itself gets shuffled around to make room.",
+     "start": 8.71,
+     "end": 19.929
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "657f4f072a0465f9",
+   "takes": [
+    "af78efc3bcc3bb0fbb8b",
+    "062284b7e3a3cf2ca6e7",
+    "cb3ddfcc1b32238985c0"
+   ],
+   "duration": 37.802,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a page's own checksum genuinely catches a corrupted byte anywhere in its body, but that checksum alone can't catch a deliberate, consistent change to the format; only checking the magic number does.",
+     "start": 0.15,
+     "end": 16.175
+    },
+    {
+     "text": "A page's own byte order has to be explicit and enforced, never assumed.",
+     "start": 16.595,
+     "end": 22.966
+    },
+    {
+     "text": "And the documentation this design is modeled on describes exactly that: a header that tracks its own log position, and an index that lets an item's identity outlive the item being moved.",
+     "start": 23.386,
+     "end": 37.452
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
