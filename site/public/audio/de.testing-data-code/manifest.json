@@ -1,0 +1,385 @@
+{
+ "topic": "de.testing-data-code",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "fb9ca8fccc662a80",
+   "takes": [
+    "053f35e8b670c9641850",
+    "ff654ac5f974629294f0"
+   ],
+   "duration": 18.942,
+   "lines": [
+    {
+     "text": "The last topic built a client that handles failure well: a time limit, a shared deadline, a growing wait with randomness, a retry allowance, tripped logic, a repeated key.",
+     "start": 0.15,
+     "end": 13.96
+    },
+    {
+     "text": "None of that actually proves the client is correct. So what does?",
+     "start": 14.38,
+     "end": 18.592
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 130,
+   "wer": 0.034482758620689655,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The last topic built a client that handles failure well: a time limit, a shared deadline, a growing wait with randomness, a retry allowance, tripped logic, a repeated key.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "02": {
+   "hash": "6eeafee8a3cba686",
+   "takes": [
+    "4018bff12132a3235a91",
+    "9ef16b24eb22cd4a8c63",
+    "c60bb1fcb415ff75bc9d"
+   ],
+   "duration": 23.292,
+   "lines": [
+    {
+     "text": "Here's the smallest test that still earns its keep.",
+     "start": 0.15,
+     "end": 3.425
+    },
+    {
+     "text": "One minimal input, the smallest shape that still exercises the function being checked, not a full dataset of real records.",
+     "start": 3.845,
+     "end": 12.085
+    },
+    {
+     "text": "One call, one check on the shape it hands back. That's the whole test, and it's already enough to catch the one thing it claims to verify.",
+     "start": 12.505,
+     "end": 22.942
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One minimal input, the smallest shape that still exercises the function being checked, not a full dataset of real records.",
+     "said": "dataset",
+     "heard": "data set"
+    }
+   ]
+  },
+  "03": {
+   "hash": "85c0a57b83b83778",
+   "takes": [
+    "289e6c80495de54b6c8f",
+    "8b7e1d4a21c7da48470d",
+    "461ef808d5fcc3f49aa7"
+   ],
+   "duration": 30.058,
+   "lines": [
+    {
+     "text": "Here's a very different kind of test, built to generate its own inputs rather than take one you hand it.",
+     "start": 0.15,
+     "end": 7.409
+    },
+    {
+     "text": "The same repeated-key rule from the last topic, checked not once but across a hundred separately generated sequences of write attempts, each one varying in length and in which keys repeat.",
+     "start": 7.829,
+     "end": 19.357
+    },
+    {
+     "text": "Every single one of those hundred holds: the number of real effects recorded always equals the number of distinct keys actually used.",
+     "start": 19.777,
+     "end": 29.708
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "9d12b090342f3e00",
+   "takes": [
+    "6883ecddc67d2885afdd",
+    "c0035532509b92f97eaa"
+   ],
+   "duration": 21.873,
+   "lines": [
+    {
+     "text": "Worth guessing at before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.83
+    },
+    {
+     "text": "A handwritten test already sends the same repeated key three separate times and checks that repeating it doesn't double the effect. Does generating a hundred more sequences on top of that actually find anything that handwritten test misses?",
+     "start": 4.25,
+     "end": 21.523
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "e34cfc9d5a0c9aa8",
+   "takes": [
+    "28220e8392e96b3c0cb1",
+    "2cb9bc73fe714545db7c"
+   ],
+   "duration": 20.0,
+   "lines": [
+    {
+     "text": "It does, and here's precisely why.",
+     "start": 0.15,
+     "end": 2.867
+    },
+    {
+     "text": "A handwritten test only ever exercises the one exact sequence someone sat down and typed. A generated test searches a much larger space of that same rule, including key-reuse patterns nobody thought to write by hand.",
+     "start": 3.287,
+     "end": 19.65
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "14aaff0c3b344dc4",
+   "takes": [
+    "fb294e47159e498852f6",
+    "5d211782d992d5a4591c",
+    "f3f981d4142b2934386a"
+   ],
+   "duration": 35.194,
+   "lines": [
+    {
+     "text": "Here's a test aimed at an agreement between two separate pieces of code, rather than at one function alone.",
+     "start": 0.15,
+     "end": 7.502
+    },
+    {
+     "text": "The expected request and its minimal expected reply are described once, as a single interaction. From that one description, a real local server is built automatically.",
+     "start": 7.922,
+     "end": 23.26
+    },
+    {
+     "text": "The calling code, with no special awareness that it's being tested, makes a genuine call against that server and gets back exactly the reply the interaction described.",
+     "start": 23.68,
+     "end": 34.844
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "daf1862f82ba29d1",
+   "takes": [
+    "cd6eeef54ef12454badb",
+    "14890852eef789d9d5d9",
+    "f12de684c74e78035f4f"
+   ],
+   "duration": 39.445,
+   "lines": [
+    {
+     "text": "Here's the one layer this sandbox genuinely couldn't run exactly as described, said plainly rather than faked.",
+     "start": 0.15,
+     "end": 8.543
+    },
+    {
+     "text": "The same insert, then read, run directly against this sandbox's own real, already-running database, not an in-memory stand-in that can only ever agree with itself.",
+     "start": 8.963,
+     "end": 22.817
+    },
+    {
+     "text": "The tool built to spin up a disposable copy of that database for every single test needs a container system this sandbox doesn't have. The real database underneath it is still right here, and the test runs against it for real.",
+     "start": 23.237,
+     "end": 39.095
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d64b606c231d59a4",
+   "takes": [
+    "c0dc506426fea36ab339",
+    "d9165ffb4910586c289e",
+    "822945592110c047bead"
+   ],
+   "duration": 28.116,
+   "lines": [
+    {
+     "text": "One last layer, and it works by comparison rather than by any fresh check.",
+     "start": 0.15,
+     "end": 5.678
+    },
+    {
+     "text": "A fully deterministic report, built from a fixed random starting point, gets written to a file the very first time it runs.",
+     "start": 6.098,
+     "end": 14.163
+    },
+    {
+     "text": "Run it again in the same sitting: nothing new gets worked out, only a comparison against the file already sitting on disk, and that comparison comes back with no difference at all.",
+     "start": 14.583,
+     "end": 27.766
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "eea6ee6fdd6c53fb",
+   "takes": [
+    "3cc565f7c95a919c148c",
+    "7fb89b41da5ccf89ee9b",
+    "abece5a7da5e2fc1d25b"
+   ],
+   "duration": 25.606,
+   "lines": [
+    {
+     "text": "Now all five, run together against the exact same client the last topic built.",
+     "start": 0.15,
+     "end": 5.741
+    },
+    {
+     "text": "The minimal-input test, the hundred generated sequences, the agreement check, the real-database check, and the recorded comparison each pass in turn.",
+     "start": 6.161,
+     "end": 17.547
+    },
+    {
+     "text": "Each one was checking a genuinely different claim. None of the other four would have caught what that one specifically catches.",
+     "start": 17.967,
+     "end": 25.256
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "ee507da9d7adb276",
+   "takes": [
+    "cdd15270637c98775519",
+    "0e4655b518a73052e4f3",
+    "9d3e85c6435b5f58db1d",
+    "020a0aecc6f11640d691"
+   ],
+   "duration": 45.769,
+   "lines": [
+    {
+     "text": "Pulling it all back together now.",
+     "start": 0.15,
+     "end": 2.71
+    },
+    {
+     "text": "A minimal-input test earns its keep on the smallest fixture that still exercises the function. A generated test checks the same rule across a hundred inputs, catching what one handwritten example can't.",
+     "start": 3.13,
+     "end": 18.406
+    },
+    {
+     "text": "An agreement check runs the calling code's real behavior against a server built from a shared description. A real-database check's whole point is a dependency that can genuinely disagree with you \u2014 this sandbox ran that part for real, saying plainly that only the disposable-copy tool was unavailable.",
+     "start": 18.826,
+     "end": 39.813
+    },
+    {
+     "text": "And a recorded comparison writes the answer once and checks against it from then on.",
+     "start": 40.233,
+     "end": 45.419
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d53e297133ac9d71",
+   "takes": [
+    "0a365692923adb3dcbb7",
+    "392f7eded45f7f794dcd",
+    "1732ef1beab8ab63a2f5"
+   ],
+   "duration": 32.209,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.929
+    },
+    {
+     "text": "A team ships a retry client backed only by handwritten minimal-input tests, every one of them passing. Once live, a single repeated key ends up with two real effects recorded against it instead of one \u2014 a flaw a hundred generated sequences would have caught on the very first run.",
+     "start": 5.349,
+     "end": 25.069
+    },
+    {
+     "text": "What's actually missing here, and why does an all-green suite of handwritten tests not catch it?",
+     "start": 25.489,
+     "end": 31.859
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "3b7e690dd16a203f",
+   "takes": [
+    "2c780c6046276d5965c5",
+    "6c384f33b43f9a9eedcc"
+   ],
+   "duration": 23.242,
+   "lines": [
+    {
+     "text": "A generated test was missing, and that's the whole answer.",
+     "start": 0.15,
+     "end": 3.887
+    },
+    {
+     "text": "A handwritten minimal-input test only proves the function behaves on the one input it was actually given. It can never prove a rule holds for inputs nobody sat down and wrote \u2014 closing exactly that gap is the entire point of a test that generates its own.",
+     "start": 4.307,
+     "end": 22.892
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
