@@ -3995,7 +3995,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Profiling CPU, memory and allocations',
     syllabusTitle: 'Profiling CPU, memory and allocations',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Foundations' },
     chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.1' },
     minutes: 15,
