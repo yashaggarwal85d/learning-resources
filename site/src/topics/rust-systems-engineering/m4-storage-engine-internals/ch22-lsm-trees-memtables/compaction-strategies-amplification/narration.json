@@ -22,7 +22,8 @@
       "lines": [
         "Now run a real leveled compactor and a real tiered compactor against that exact same pile of flushes instead.",
         { "beat": 0.3 },
-        "Do both of them at least beat doing no compaction at all, on how many files a lookup has to check and how much stale data sits on disk?"
+        "Do both of them at least beat doing no compaction at all?",
+        "On how many files a lookup has to check, and how much stale data sits on disk?"
       ],
       "answer": [
         "Yes, genuinely, both of them.",
@@ -65,7 +66,7 @@
     },
     {
       "lines": [
-        "Run it for real: the tiered compactor that cost less rewritten data to run genuinely left more files to check, and more stale data on disk, than leveled did."
+        "Run it for real: the tiered compactor that cost less rewritten data to run genuinely left more files to check, and more stale data on disk, than the leveled compactor did."
       ],
       "takeaway": "Costing less to run and costing less to read aren't the same thing; a strategy trades one against the other."
     },
