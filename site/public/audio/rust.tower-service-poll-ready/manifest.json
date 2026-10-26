@@ -1,0 +1,406 @@
+{
+ "topic": "rust.tower-service-poll-ready",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d1b350d602c809db",
+   "takes": [
+    "0d171bcb051a05aef726",
+    "afcc7e39be6b31581a84"
+   ],
+   "duration": 16.676,
+   "lines": [
+    {
+     "text": "A real piece of work can report that it isn't ready yet, several times in a row, before it finally says yes.",
+     "start": 0.15,
+     "end": 8.173
+    },
+    {
+     "text": "If a caller goes ahead and does the work anyway, while it's still saying not ready, what's actually allowed to happen?",
+     "start": 8.893,
+     "end": 16.326
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "46110657d77b92af",
+   "takes": [
+    "b0d20c58befa21e6fe40",
+    "8053f90887b21fe52cf0"
+   ],
+   "duration": 10.106,
+   "lines": [
+    {
+     "text": "It's allowed to break, outright.",
+     "start": 0.15,
+     "end": 2.456
+    },
+    {
+     "text": "Doing the work before a genuine yes is not a minor shortcut; it breaks the whole agreement.",
+     "start": 2.876,
+     "end": 9.756
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "1d4c22fcc4e2cd33",
+   "takes": [
+    "01ca2cfa626aa45d4b5e",
+    "9332695329c0233c4974"
+   ],
+   "duration": 13.365,
+   "lines": [
+    {
+     "text": "Run it for real: the piece of work said not ready several times in a row,",
+     "start": 0.15,
+     "end": 5.857
+    },
+    {
+     "text": "and only once it had genuinely become ready did a caller actually go ahead and do the work.",
+     "start": 6.277,
+     "end": 13.015
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "edfca1e22170941c",
+   "takes": [
+    "b49a2e68c27088994b1a",
+    "f5dd7b1bb61aece3c6e1"
+   ],
+   "duration": 26.744,
+   "lines": [
+    {
+     "text": "Wrap that same kind of work in four different wrappers at once: one that caps how many run together, one that turns work away immediately, one that spaces work out over time, and one that gives up past a deadline.",
+     "start": 0.15,
+     "end": 15.404
+    },
+    {
+     "text": "Send a whole batch of work through all four together. How many of those four actually change what happens to that batch, rather than just watching it pass by?",
+     "start": 16.124,
+     "end": 26.394
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "d4fa54379b29e590",
+   "takes": [
+    "c84bb516fb65e065aa5f",
+    "3d39d3455f8b44cefc78"
+   ],
+   "duration": 5.737,
+   "lines": [
+    {
+     "text": "All four.",
+     "start": 0.15,
+     "end": 0.924
+    },
+    {
+     "text": "Each one bounds a genuinely different thing about that batch.",
+     "start": 1.344,
+     "end": 5.387
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "6f2dbd987fc98e3d",
+   "takes": [
+    "ff122ab829aeada8a98b",
+    "cdb9f6a58d9efa4ebba3"
+   ],
+   "duration": 20.011,
+   "lines": [
+    {
+     "text": "Run it for real: the cap genuinely limited how many ran at once, the turn-away wrapper genuinely rejected one immediately instead of waiting,",
+     "start": 0.15,
+     "end": 9.596
+    },
+    {
+     "text": "the spacing wrapper genuinely stretched the work out over real time, and the deadline wrapper genuinely gave up on work that ran too long.",
+     "start": 10.016,
+     "end": 19.661
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 144,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the cap genuinely limited how many ran at once, the turn-away wrapper genuinely rejected one immediately instead of waiting,",
+     "said": "wrapper",
+     "heard": "rapper"
+    }
+   ]
+  },
+  "05": {
+   "hash": "ec54d1857dd13c0f",
+   "takes": [
+    "bf6a9b2a3422e72f4483",
+    "8f801f3ad24673e534fb"
+   ],
+   "duration": 16.172,
+   "lines": [
+    {
+     "text": "Put a queue in front of a piece of work whose own concurrency is capped at just one, then send several requests in all at once.",
+     "start": 0.15,
+     "end": 9.664
+    },
+    {
+     "text": "Does that queue turn away the extra requests, the same way the turn-away wrapper did?",
+     "start": 10.384,
+     "end": 15.822
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.1875,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does that queue turn away the extra requests, the same way the turn-away wrapper did?",
+     "said": "queue",
+     "heard": "cue"
+    },
+    {
+     "line": "Does that queue turn away the extra requests, the same way the turn-away wrapper did?",
+     "said": "turn away",
+     "heard": "turnaway"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "58d9880eeee693eb",
+   "takes": [
+    "fe93107065f7251ba9e1",
+    "a9dcc720db656e2d2f59"
+   ],
+   "duration": 9.621,
+   "lines": [
+    {
+     "text": "No, it doesn't.",
+     "start": 0.15,
+     "end": 1.077
+    },
+    {
+     "text": "It accepts every one of them up front into its own queue, no matter what the work underneath can actually get through.",
+     "start": 1.497,
+     "end": 9.271
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "52f6a2ce44d3639a",
+   "takes": [
+    "72d632d902660aa92d68",
+    "b497c67f79797464eb81"
+   ],
+   "duration": 14.817,
+   "lines": [
+    {
+     "text": "Run it for real: the queue accepted every request immediately,",
+     "start": 0.15,
+     "end": 4.935
+    },
+    {
+     "text": "while the work hiding behind it still only ran one at a time underneath \u2014 a real, hidden backlog, not a rejection.",
+     "start": 5.355,
+     "end": 14.467
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e88ed1db0a036cbb",
+   "takes": [
+    "cbac77573df03fb35643",
+    "06e5b68d742dadc0112d"
+   ],
+   "duration": 14.021,
+   "lines": [
+    {
+     "text": "Go back to the very first question: a caller goes ahead and does the work without ever checking whether it's ready first.",
+     "start": 0.15,
+     "end": 7.826
+    },
+    {
+     "text": "What does the documentation for this agreement actually say is allowed to happen?",
+     "start": 8.546,
+     "end": 13.671
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "24616cad759d6af9",
+   "takes": [
+    "b0d20c58befa21e6fe40",
+    "8d51c6bcc0b8921f478f"
+   ],
+   "duration": 9.386,
+   "lines": [
+    {
+     "text": "It's allowed to break, outright.",
+     "start": 0.15,
+     "end": 2.456
+    },
+    {
+     "text": "That's not a side effect; it's exactly what the documentation itself permits.",
+     "start": 2.876,
+     "end": 9.036
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 109,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "96f71a3a7e6a4d29",
+   "takes": [
+    "aea1c032e89ab6f77da1",
+    "0dc085084fca92efeb15"
+   ],
+   "duration": 11.545,
+   "lines": [
+    {
+     "text": "The documentation's own words settle it directly: an implementation is allowed to break outright,",
+     "start": 0.15,
+     "end": 6.561
+    },
+    {
+     "text": "if work arrives before it has genuinely reported that it's ready.",
+     "start": 6.981,
+     "end": 11.195
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "34905de84a2b585d",
+   "takes": [
+    "0354f1f0605fa9ec0a9e",
+    "197c4b07d88f4a900345"
+   ],
+   "duration": 18.5,
+   "lines": [
+    {
+     "text": "Asking if something is ready, and asking it to actually do the work, are two separate steps on purpose.",
+     "start": 0.15,
+     "end": 6.911
+    },
+    {
+     "text": "That split is the whole agreement about overload, and every wrapper placed around a piece of work composes around that exact same agreement.",
+     "start": 7.331,
+     "end": 18.15
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "1e3d45754be8a102",
+   "takes": [
+    "f749f95f3bae8f8efa89",
+    "0dd0148f5d4978e9d3c2",
+    "570f3418bd831e8d7b1b",
+    "4d2d74562e50f08b7bec"
+   ],
+   "duration": 33.335,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: a real piece of work that says not ready, and a caller that genuinely waits for a real yes before doing the work.",
+     "start": 0.15,
+     "end": 10.692
+    },
+    {
+     "text": "Four separate wrappers, each one bounding a different real thing about a batch of work.",
+     "start": 11.112,
+     "end": 16.779
+    },
+    {
+     "text": "A queue that can accept work the thing underneath it cannot yet get through, a real hidden backlog unless it's sized on purpose.",
+     "start": 17.199,
+     "end": 26.365
+    },
+    {
+     "text": "And the documentation's own permission to break outright, if that agreement is ever broken first.",
+     "start": 26.785,
+     "end": 32.985
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 146,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A queue that can accept work the thing underneath it cannot yet get through, a real hidden backlog unless it's sized on purpose.",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  }
+ }
+}
