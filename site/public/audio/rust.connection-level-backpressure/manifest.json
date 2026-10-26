@@ -1,0 +1,413 @@
+{
+ "topic": "rust.connection-level-backpressure",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "555f4ca16484dcff",
+   "takes": [
+    "775814af0f478916e8f7",
+    "3b4723058e4f5832a633"
+   ],
+   "duration": 12.904,
+   "lines": [
+    {
+     "text": "A real server accepts a connection, then deliberately never reads from it again.",
+     "start": 0.15,
+     "end": 4.881
+    },
+    {
+     "text": "Keep writing from the other side. Does the writer eventually notice, or does it just keep succeeding forever?",
+     "start": 5.601,
+     "end": 12.554
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.4,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "aa9ea269d75bd766",
+   "takes": [
+    "8c62aa207381ee9e01f9",
+    "66e782c70169bda7e1ff"
+   ],
+   "duration": 7.707,
+   "lines": [
+    {
+     "text": "It eventually notices.",
+     "start": 0.15,
+     "end": 1.67
+    },
+    {
+     "text": "Once the kernel's own receive window closes, a real write genuinely blocks.",
+     "start": 2.09,
+     "end": 7.357
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 117,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Once the kernel's own receive window closes, a real write genuinely blocks.",
+     "said": "own",
+     "heard": "on"
+    }
+   ]
+  },
+  "02": {
+   "hash": "5fc7d3c1b2e6afd8",
+   "takes": [
+    "252ea94273dbfc7fe864",
+    "9c9d720b25290749b50f"
+   ],
+   "duration": 12.305,
+   "lines": [
+    {
+     "text": "Run it for real: the writer sent several megabytes successfully,",
+     "start": 0.15,
+     "end": 4.872
+    },
+    {
+     "text": "and then one real write call genuinely blocked, once that window had filled and closed.",
+     "start": 5.292,
+     "end": 11.955
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -3.3,
+   "wpm": 122,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "and then one real write call genuinely blocked, once that window had filled and closed.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "94b1cf23f7865eb7",
+   "takes": [
+    "a327ed7380cc323e635b",
+    "bbe140658af7fb403cce"
+   ],
+   "duration": 15.554,
+   "lines": [
+    {
+     "text": "Build a real, bounded queue for one connection's own outgoing messages, with a real cap on how many it holds.",
+     "start": 0.15,
+     "end": 7.901
+    },
+    {
+     "text": "Fill it to exactly that cap, then push one more. What happens to that extra message?",
+     "start": 8.621,
+     "end": 15.204
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "18a7e039f1f7fcae",
+   "takes": [
+    "226be9893bfa1b7bfb62",
+    "4da624c6d428aea981f5"
+   ],
+   "duration": 6.195,
+   "lines": [
+    {
+     "text": "It's turned away outright.",
+     "start": 0.15,
+     "end": 1.592
+    },
+    {
+     "text": "The queue's own length never grows past the cap it was given.",
+     "start": 2.012,
+     "end": 5.845
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.3,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "47142d79132467d9",
+   "takes": [
+    "95a4d881ec3dfa0c0f53",
+    "d9274e917076fe4a04f4"
+   ],
+   "duration": 13.826,
+   "lines": [
+    {
+     "text": "Run it for real: the queue filled to exactly its own cap, and the very next push past it",
+     "start": 0.15,
+     "end": 7.103
+    },
+    {
+     "text": "was genuinely rejected \u2014 its length never grew by one more, confirmed directly.",
+     "start": 7.523,
+     "end": 13.476
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.4,
+   "wpm": 135,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the queue filled to exactly its own cap, and the very next push past it",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  },
+  "05": {
+   "hash": "2740ab25757887c8",
+   "takes": [
+    "1afbeae56bcf6a836334",
+    "8b71c4bba94d952a7733"
+   ],
+   "duration": 16.442,
+   "lines": [
+    {
+     "text": "A real peer connects, then deliberately sends nothing at all, the way a slow, stalling attacker would.",
+     "start": 0.15,
+     "end": 6.985
+    },
+    {
+     "text": "The other side sets a real deadline on how long it will wait. Does it wait forever anyway, or does that deadline actually fire?",
+     "start": 7.705,
+     "end": 16.093
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "9db9b482218c44e1",
+   "takes": [
+    "b8c74e6787cf64b04ac2",
+    "d655db6084a117951fed"
+   ],
+   "duration": 8.355,
+   "lines": [
+    {
+     "text": "It actually fires.",
+     "start": 0.15,
+     "end": 1.645
+    },
+    {
+     "text": "Right on schedule, closing the connection to a peer that never sent a single byte.",
+     "start": 2.065,
+     "end": 8.005
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -2.4,
+   "wpm": 129,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Right on schedule, closing the connection to a peer that never sent a single byte.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "06": {
+   "hash": "742dfd3020a16f01",
+   "takes": [
+    "6db4f94c48dbc9fb3d5c",
+    "95bfaa89e505b8af5634"
+   ],
+   "duration": 13.303,
+   "lines": [
+    {
+     "text": "Run it for real: the real deadline fired right on schedule,",
+     "start": 0.15,
+     "end": 4.704
+    },
+    {
+     "text": "closing a connection whose peer had sent nothing at all \u2014 confirmed directly, by measuring the real elapsed time.",
+     "start": 5.124,
+     "end": 12.953
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "ab74c3dd2f466029",
+   "takes": [
+    "4586fb2383338d2d42ac",
+    "1b97dd234f4123bb8398"
+   ],
+   "duration": 10.385,
+   "lines": [
+    {
+     "text": "This protocol's own standard makes a specific claim about how long one side may leave its own receiving window shut.",
+     "start": 0.15,
+     "end": 8.031
+    },
+    {
+     "text": "What does it actually say?",
+     "start": 8.751,
+     "end": 10.035
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "98f7b5f3ba66a782",
+   "takes": [
+    "fa9da55e2f553b873f65",
+    "c4399f48ea0f229cf57e"
+   ],
+   "duration": 8.298,
+   "lines": [
+    {
+     "text": "Indefinitely.",
+     "start": 0.15,
+     "end": 1.06
+    },
+    {
+     "text": "As long as it keeps answering the other side's own probes, the standard itself allows the wait.",
+     "start": 1.48,
+     "end": 7.948
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "5877a5e04a98b531",
+   "takes": [
+    "4d5100964c07cb4395d1",
+    "d62bc632e90ff0f08fc2"
+   ],
+   "duration": 14.783,
+   "lines": [
+    {
+     "text": "The standard's own words: one side may leave its receiving window closed indefinitely,",
+     "start": 0.15,
+     "end": 5.825
+    },
+    {
+     "text": "as long as it keeps answering the sender's own probes \u2014 not reading is a real, sanctioned way to say not yet.",
+     "start": 6.245,
+     "end": 14.433
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "2881cd2bd5c2d11f",
+   "takes": [
+    "bc222ac9121e077ef991",
+    "0b7e244cc438fd326a67"
+   ],
+   "duration": 16.911,
+   "lines": [
+    {
+     "text": "Stop reading to say not yet, cap a queue to say no more than this, set a real deadline to say not forever:",
+     "start": 0.15,
+     "end": 8.306
+    },
+    {
+     "text": "that's overload handled as an explicit, deliberate choice, never something that simply happens on its own.",
+     "start": 8.726,
+     "end": 16.561
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Stop reading to say not yet, cap a queue to say no more than this, set a real deadline to say not forever:",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  },
+  "10": {
+   "hash": "eaa6fcced723b94d",
+   "takes": [
+    "027f0859f45d06cb31c2",
+    "0ae81a7e4ed5118dec6a",
+    "8c42025b2e3ab1fd6e12"
+   ],
+   "duration": 30.841,
+   "lines": [
+    {
+     "text": "So, pulling this topic together: not reading a real connection genuinely closes its own window and blocks the other side, exactly as the standard itself says is allowed, indefinitely.",
+     "start": 0.15,
+     "end": 14.378
+    },
+    {
+     "text": "A real bounded queue enforces its own cap by genuinely turning away the next push once it's full.",
+     "start": 14.798,
+     "end": 21.278
+    },
+    {
+     "text": "And a real deadline genuinely fires against a peer that may never send anything at all, closing the connection rather than waiting on it forever.",
+     "start": 21.698,
+     "end": 30.491
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A real bounded queue enforces its own cap by genuinely turning away the next push once it's full.",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  }
+ }
+}
