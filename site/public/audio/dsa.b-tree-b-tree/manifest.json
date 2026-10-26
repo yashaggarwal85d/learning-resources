@@ -1,0 +1,331 @@
+{
+ "topic": "dsa.b-tree-b-tree",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1e8ef052c080669a",
+   "takes": [
+    "ef2346aa135311ec3f1d",
+    "559971f3e63df5595726"
+   ],
+   "duration": 19.729,
+   "lines": [
+    {
+     "text": "Last chapter's tree was already optimal, by its own measure. Every search cost the smallest number of comparisons a tree possibly could.",
+     "start": 0.15,
+     "end": 9.771
+    },
+    {
+     "text": "But a comparison and a trip to disk stopped being the same thing a long time ago. This chapter is about what you pay for the second one.",
+     "start": 10.191,
+     "end": 19.379
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d360654b2f3e337d",
+   "takes": [
+    "a72cb073c17d271166d0",
+    "aa656e75ce6505547c5d"
+   ],
+   "duration": 17.452,
+   "lines": [
+    {
+     "text": "Here's the one new constraint: every leaf sits at the exact same depth, and nothing short of the root is ever less than half full.",
+     "start": 0.15,
+     "end": 9.035
+    },
+    {
+     "text": "That second rule is doing more work than it looks like. It's the whole reason this tree's height stays predictable at all.",
+     "start": 9.455,
+     "end": 17.102
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "e165d8fc6f888e95",
+   "takes": [
+    "e1dcbb71b5531a5df752",
+    "d6e600e2f72db1b1387a"
+   ],
+   "duration": 11.629,
+   "lines": [
+    {
+     "text": "This leaf just took in one key too many.",
+     "start": 0.15,
+     "end": 3.422
+    },
+    {
+     "text": "Before the reveal, think about what a structure with a hard capacity limit is actually forced to do once that limit is crossed.",
+     "start": 3.842,
+     "end": 11.279
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a34dc4c14bb661ca",
+   "takes": [
+    "a90b099801a653785e0d",
+    "a2afa34e430618b0e1b9"
+   ],
+   "duration": 14.413,
+   "lines": [
+    {
+     "text": "It splits into two leaves, and one key moves up to the parent to keep routing correct.",
+     "start": 0.15,
+     "end": 5.915
+    },
+    {
+     "text": "Nothing about the keys already in that leaf changes. The split only decides which half each one now belongs to.",
+     "start": 6.335,
+     "end": 14.063
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "7daa095f8f4f6b05",
+   "takes": [
+    "51e67707cb1e6ea272c6",
+    "46ead820d0250df8e1fb",
+    "1f71a83f248e814c9c5c"
+   ],
+   "duration": 32.004,
+   "lines": [
+    {
+     "text": "Watch what each half gets handed. The leaf copies its middle key upward, because that key still has to live somewhere a search can find it.",
+     "start": 0.15,
+     "end": 10.88
+    },
+    {
+     "text": "An inner node does the opposite: it pushes that key up and keeps no copy at all, because an inner node was never storing anything but a route.",
+     "start": 11.3,
+     "end": 22.124
+    },
+    {
+     "text": "If the split climbs all the way to the root, the tree gains a brand new top level. That's the only way this structure ever grows taller.",
+     "start": 22.544,
+     "end": 31.654
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "bb4433a812fac0aa",
+   "takes": [
+    "1275193e9845822eadab",
+    "3439361fc2d4a34bfe42"
+   ],
+   "duration": 15.6,
+   "lines": [
+    {
+     "text": "Now the opposite failure: a delete just left a leaf under its floor.",
+     "start": 0.15,
+     "end": 5.988
+    },
+    {
+     "text": "Guess at the fix before it's shown. A structure with a floor, not just a ceiling, has exactly two honest ways to recover from going under it.",
+     "start": 6.408,
+     "end": 15.25
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "9d51f27ba906eacc",
+   "takes": [
+    "2bfd765be69cb3675a5d",
+    "7ee944ce7f3b9aff6f9d"
+   ],
+   "duration": 16.413,
+   "lines": [
+    {
+     "text": "Take one key from a sibling that can spare it, or, if none can, combine with one entirely.",
+     "start": 0.15,
+     "end": 6.582
+    },
+    {
+     "text": "Borrowing changes two neighbors' key counts and nothing else. A combine is the heavier move, and it's the last resort, not the first.",
+     "start": 7.002,
+     "end": 16.063
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "1d621a7484cace1d",
+   "takes": [
+    "6f5f02c436e95ee7068b",
+    "4d08024760c75e2f1a87"
+   ],
+   "duration": 18.268,
+   "lines": [
+    {
+     "text": "A borrow is cheap on purpose: one key slides across a boundary, and the tree's shape never moves.",
+     "start": 0.15,
+     "end": 6.912
+    },
+    {
+     "text": "Merging is the expensive branch, chosen only when borrowing has nowhere to come from, and it's the single operation in this whole topic that can make the tree shorter.",
+     "start": 7.332,
+     "end": 17.918
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "2f414dcae2df6c95",
+   "takes": [
+    "7d2183fdba88cf195e4a",
+    "d5ed5dd793730956f7e8"
+   ],
+   "duration": 18.071,
+   "lines": [
+    {
+     "text": "A range query doesn't want one key. It wants everything between two of them, in order.",
+     "start": 0.15,
+     "end": 6.912
+    },
+    {
+     "text": "Once the first matching leaf is found, every leaf after it is reached by a direct link to its neighbor, not by climbing back up and coming down again.",
+     "start": 7.332,
+     "end": 17.721
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "fefeabf1c351b589",
+   "takes": [
+    "deb718a4328148b40b5f",
+    "16d233a98aac5e61c240"
+   ],
+   "duration": 19.925,
+   "lines": [
+    {
+     "text": "Fanout is just arithmetic: however many keys and pointers physically fit in one page, that's how many children a node can route to.",
+     "start": 0.15,
+     "end": 9.584
+    },
+    {
+     "text": "Height falls out of that arithmetic too. Grow the fanout, and the same number of keys needs dramatically fewer levels to reach.",
+     "start": 10.004,
+     "end": 19.575
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 136,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Height falls out of that arithmetic too. Grow the fanout, and the same number of keys needs dramatically fewer levels to reach.",
+     "said": "fanout",
+     "heard": "fan out"
+    }
+   ]
+  },
+  "09": {
+   "hash": "be275623fab3f34e",
+   "takes": [
+    "fa14c716dcff016ead2c",
+    "415eb9be57e59e77e5e0"
+   ],
+   "duration": 16.935,
+   "lines": [
+    {
+     "text": "Put the identical set of keys through both trees and the gap isn't subtle.",
+     "start": 0.15,
+     "end": 5.062
+    },
+    {
+     "text": "One pays for a trip to disk at every single comparison. The other reads an entire page's worth of comparisons in one trip, and a realistic page shrinks that gap even further.",
+     "start": 5.482,
+     "end": 16.585
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "afb25fc32ad63c68",
+   "takes": [
+    "087c04c6b7b228821157",
+    "df53c53c2f7f757ab8e5"
+   ],
+   "duration": 20.267,
+   "lines": [
+    {
+     "text": "Nothing in this topic was taken on faith, so here's what actually got measured.",
+     "start": 0.15,
+     "end": 5.676
+    },
+    {
+     "text": "Splitting and modifying a real tree, scanning across its linked leaves instead of climbing back to the top for every match, and the fanout-and-height formula checked directly against a billion keys.",
+     "start": 6.096,
+     "end": 19.918
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
