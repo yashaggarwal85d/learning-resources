@@ -1,0 +1,293 @@
+{
+ "topic": "rust.release-profiles-build-speed",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "127a44111cf6dca9",
+   "takes": [
+    "011c4bdebd43e4f79fbb",
+    "23fb2595c060a53e059d"
+   ],
+   "duration": 19.213,
+   "lines": [
+    {
+     "text": "One real, small program gets built once, the ordinary way.",
+     "start": 0.15,
+     "end": 5.343
+    },
+    {
+     "text": "Then it gets built again, with one extra setting telling the compiler to optimize across the whole program at once. Does that second real build genuinely take longer?",
+     "start": 6.063,
+     "end": 18.863
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "3549d6d28272a67b",
+   "takes": [
+    "9995c204b819e717847b",
+    "2dc9e648b1263e6ecd8c"
+   ],
+   "duration": 6.499,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Optimizing across the whole program costs real linking time.",
+     "start": 1.84,
+     "end": 6.149
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.7,
+   "wpm": 102,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "74a989d29c6160f0",
+   "takes": [
+    "2f3af088eb581334c238"
+   ],
+   "duration": 12.9,
+   "lines": [
+    {
+     "text": "Run it for real: the ordinary build and the whole-program build are both timed directly, and the whole-program one genuinely takes longer, every single time.",
+     "start": 0.15,
+     "end": 12.55
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d873f03f86cca236",
+   "takes": [
+    "13f00cf4f68671c3b7be",
+    "0da9985f518a1f993041"
+   ],
+   "duration": 16.405,
+   "lines": [
+    {
+     "text": "The identical program, built once the ordinary way, and once more with one setting telling the compiler to strip extra information out of the finished file.",
+     "start": 0.15,
+     "end": 11.982
+    },
+    {
+     "text": "Does the real file on disk actually get smaller?",
+     "start": 12.702,
+     "end": 16.055
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "d5517d7b71f3bf17",
+   "takes": [
+    "9995c204b819e717847b",
+    "0cbfddf240345988d3c4"
+   ],
+   "duration": 5.185,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The real file on disk gets smaller.",
+     "start": 1.84,
+     "end": 4.835
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.5,
+   "wpm": 104,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "0a4ec2d466258f8c",
+   "takes": [
+    "c3183d0e01d154e70cbc"
+   ],
+   "duration": 14.149,
+   "lines": [
+    {
+     "text": "Run it for real: the ordinary file and the stripped file are both measured directly, and the stripped one is genuinely smaller every time, with the program's own behavior never touched at all.",
+     "start": 0.15,
+     "end": 13.8
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "ff364c35f29c29ca",
+   "takes": [
+    "b6e19d066e5d271d20b7",
+    "44013bc4b699b8385661"
+   ],
+   "duration": 14.347,
+   "lines": [
+    {
+     "text": "Same program again, but this time the setting being changed is what happens when it panics: whether it unwinds the stack, or simply stops.",
+     "start": 0.15,
+     "end": 10.112
+    },
+    {
+     "text": "Does the real file on disk shrink this time too?",
+     "start": 10.832,
+     "end": 13.997
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.4,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "f822f94aa5a1599d",
+   "takes": [
+    "9995c204b819e717847b",
+    "540f1caadd9a5150abeb"
+   ],
+   "duration": 7.584,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The machinery for unwinding costs real space, even when nothing ever panics.",
+     "start": 1.84,
+     "end": 7.234
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.1,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "02848f3a60318954",
+   "takes": [
+    "6eab3c68549355359371"
+   ],
+   "duration": 16.328,
+   "lines": [
+    {
+     "text": "Run it for real: the unwinding version and the stop-immediately version are both measured directly, and the one that simply stops is genuinely smaller every time, because it never had to carry that machinery at all.",
+     "start": 0.15,
+     "end": 15.978
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d7bbba40cb317251",
+   "takes": [
+    "ac82bbea2e78a528b5ae",
+    "ebff148cc5057d148e11"
+   ],
+   "duration": 22.918,
+   "lines": [
+    {
+     "text": "One real, independent page names both of these exact ideas directly, in its own words.",
+     "start": 0.15,
+     "end": 8.038
+    },
+    {
+     "text": "It says whole-program optimization costs real linking time in exchange for better code, and that splitting a build into more parallel pieces can cost real speed in exchange for finishing faster.",
+     "start": 8.458,
+     "end": 22.568
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "feb5e4f131a1dc52",
+   "takes": [
+    "693824bcb74c5cd65cb4",
+    "5db5e31966880900980a",
+    "938c72a8b6caba11737e",
+    "7f55ec0903d995f87523",
+    "dabbc37bb245a27e77b4"
+   ],
+   "duration": 40.91,
+   "lines": [
+    {
+     "text": "So here's what this topic's own three real settings are really standing in for: there is no single switch anywhere in here that just makes a program faster for free.",
+     "start": 0.15,
+     "end": 10.103
+    },
+    {
+     "text": "Optimizing across the whole program trades real time spent building for real speed once it runs.",
+     "start": 10.523,
+     "end": 17.151
+    },
+    {
+     "text": "Stripping extra information trades the ability to debug it easily for a smaller file that actually ships.",
+     "start": 17.571,
+     "end": 24.606
+    },
+    {
+     "text": "And changing how it panics trades away a real safety net for a little less space.",
+     "start": 25.026,
+     "end": 30.124
+    },
+    {
+     "text": "Every single one of them is a real decision someone has to make on purpose, not a box anyone should just tick without knowing what it costs.",
+     "start": 30.544,
+     "end": 40.56
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
