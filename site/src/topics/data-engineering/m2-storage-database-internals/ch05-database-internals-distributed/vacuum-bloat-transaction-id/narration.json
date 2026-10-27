@@ -17,7 +17,7 @@
     },
     {
       "lines": [
-        "Here's the part that actually surprised me running this.",
+        "Here's what actually surprised me.",
         "I updated three hundred rows one way, and the table's own index never grew by a single byte. Updated the same rows a different way, and it doubled.",
         "Same table, same row count, same number of updates. The only difference was which column I touched."
       ]
@@ -26,7 +26,7 @@
       "lines": [
         "Picture a table that keeps getting bigger, and nobody can point to a slow query or a bad plan.",
         "Autovacuum's logs show it running right on schedule. So what's actually stopping it from doing its job?",
-        "Sit with that for a second before I tell you."
+        "Just sit with that."
       ],
       "answer": [
         "It's not falling behind. That's the instinct, because load is usually the answer to why something's slow.",
