@@ -1,0 +1,423 @@
+{
+ "topic": "de.locking-deadlocks-lock-escalation",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b36977e13d273bf6",
+   "takes": [
+    "e00bef3eefb978b8ec22",
+    "d417de2be8462295ee08",
+    "90e6c016474e7cc10d05"
+   ],
+   "duration": 16.261,
+   "lines": [
+    {
+     "text": "Two sessions, two different tables, each one already holding a lock on its own.",
+     "start": 0.15,
+     "end": 6.521
+    },
+    {
+     "text": "Now each of them wants exactly what the other one is holding.",
+     "start": 6.941,
+     "end": 10.692
+    },
+    {
+     "text": "Neither can move forward, and so far, neither one has thrown an error.",
+     "start": 11.112,
+     "end": 15.911
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "6ee749d4839b8cc2",
+   "takes": [
+    "91a84a41538ec25d946e",
+    "b303a54555310516fb2c",
+    "e6ba2e42fd7407dbe19e"
+   ],
+   "duration": 21.364,
+   "lines": [
+    {
+     "text": "A real engine doesn't offer just one kind of lock. It offers a whole range.",
+     "start": 0.15,
+     "end": 6.172
+    },
+    {
+     "text": "At the light end, a lock that only blocks someone else trying to write the same thing.",
+     "start": 6.592,
+     "end": 12.118
+    },
+    {
+     "text": "At the far end, one mode that blocks everything else entirely, even a plain read that isn't changing a single byte.",
+     "start": 12.538,
+     "end": 21.014
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.3,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d831a3d7b6d6dce0",
+   "takes": [
+    "fe74e83967952d53a41b",
+    "925189b7c142b2b1f1cf",
+    "a4644e4315de0cffe132"
+   ],
+   "duration": 24.507,
+   "lines": [
+    {
+     "text": "Here's a question most people never think to ask. How does the engine even know a table-level lock is safe to hand out?",
+     "start": 0.15,
+     "end": 7.794
+    },
+    {
+     "text": "It doesn't scan every single row lock already held underneath. That would be far too slow.",
+     "start": 8.344,
+     "end": 14.578
+    },
+    {
+     "text": "Instead, before locking one row, it marks its own intent at the table level first, so a competing request only has to check one flag.",
+     "start": 14.998,
+     "end": 24.157
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "10f7f302df85759d",
+   "takes": [
+    "f390239b6de7bce4e948",
+    "230b89a6239d12197096",
+    "3c8ec07201e5285d836c"
+   ],
+   "duration": 18.217,
+   "lines": [
+    {
+     "text": "Here's where I want you to actually commit to an answer.",
+     "start": 0.15,
+     "end": 3.842
+    },
+    {
+     "text": "Row-level locks protect the smallest amount of data at once, and let the most transactions run side by side.",
+     "start": 4.262,
+     "end": 11.24
+    },
+    {
+     "text": "Given that, is locking at the finest possible level always the right call to make?",
+     "start": 11.66,
+     "end": 17.867
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.4,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "00d35f2dc56141d3",
+   "takes": [
+    "1283e9c8ff2c62912d5b",
+    "4b86409bbcca87efb00f",
+    "39d5b8a23e2e2adea92e"
+   ],
+   "duration": 27.815,
+   "lines": [
+    {
+     "text": "It's tempting to think so, since finer locks really do block fewer other transactions.",
+     "start": 0.15,
+     "end": 6.334
+    },
+    {
+     "text": "But every one of those tiny locks has to live somewhere, tracked, and a transaction piling up thousands of them is exactly what forces a real engine's hand.",
+     "start": 6.754,
+     "end": 18.667
+    },
+    {
+     "text": "No. That pile of tiny locks is precisely what pushes a real database to trade them all in for one big one instead.",
+     "start": 19.087,
+     "end": 27.465
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "0d9ae7d079f6cdf8",
+   "takes": [
+    "c6a6081e91c61c5798c8",
+    "0c4dee4fca2d080c335b",
+    "96494e09f9d608b7bfdc"
+   ],
+   "duration": 23.837,
+   "lines": [
+    {
+     "text": "Watch the hook's own two sessions play out for real, against an actual table.",
+     "start": 0.15,
+     "end": 5.984
+    },
+    {
+     "text": "Each one holds what the other wants, and each one is now waiting on the other, forever, unless something steps in.",
+     "start": 6.404,
+     "end": 14.562
+    },
+    {
+     "text": "The engine's own deadlock monitor catches the cycle and hands one session a real error, so the other one can finally proceed.",
+     "start": 14.982,
+     "end": 23.487
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "762888b67cb39f74",
+   "takes": [
+    "0c4dc116e617d5b9329e",
+    "f47759c590ed546a6c3f",
+    "570a5aea37d76665ec2f"
+   ],
+   "duration": 22.975,
+   "lines": [
+    {
+     "text": "There are two completely different philosophies for catching that exact situation.",
+     "start": 0.15,
+     "end": 4.757
+    },
+    {
+     "text": "One of them lets both sessions wait, and only pays the cost of checking for a cycle after some time has passed.",
+     "start": 5.177,
+     "end": 12.185
+    },
+    {
+     "text": "The other decides immediately, purely from which transaction has higher priority, and aborts the loser before a cycle ever has the chance to form.",
+     "start": 12.605,
+     "end": 22.625
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "b6fcb6005db4d862",
+   "takes": [
+    "90c36e9f921e46f88075",
+    "00ec981092afb00dd508",
+    "ee361508bc38e8351e24"
+   ],
+   "duration": 19.971,
+   "lines": [
+    {
+     "text": "Now here's the exact same two sessions, with exactly one thing changed.",
+     "start": 0.15,
+     "end": 6.441
+    },
+    {
+     "text": "Both of them ask for their locks in the same order this time, instead of opposite orders.",
+     "start": 6.861,
+     "end": 12.348
+    },
+    {
+     "text": "I ran that, for real, over and over. Zero deadlocks, every single time.",
+     "start": 12.768,
+     "end": 19.621
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "f77ffd702b8fb777",
+   "takes": [
+    "7f171bbb1ad27ae48132",
+    "952d399cd522f7ea76b8",
+    "8c4f10633ee8e4ee06e5"
+   ],
+   "duration": 21.189,
+   "lines": [
+    {
+     "text": "So what happens once a transaction really does pile up too many of those fine-grained locks?",
+     "start": 0.15,
+     "end": 6.272
+    },
+    {
+     "text": "Two real engines both have a real, documented threshold for exactly this.",
+     "start": 6.822,
+     "end": 12.198
+    },
+    {
+     "text": "Cross it, and thousands of small locks on one table get traded in for a single coarse one covering the whole thing.",
+     "start": 12.618,
+     "end": 20.839
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "dc7b7a7a2020a8f0",
+   "takes": [
+    "abff4e9616df29e2d0de",
+    "43d22ff3cfd0da9b73d9",
+    "db6db2cdbf4d929156fb"
+   ],
+   "duration": 20.996,
+   "lines": [
+    {
+     "text": "Now the part that actually matters when you're the one running the migration.",
+     "start": 0.15,
+     "end": 4.287
+    },
+    {
+     "text": "The exact lock level most schema changes acquire gets held only briefly, a fraction of a second.",
+     "start": 4.707,
+     "end": 11.976
+    },
+    {
+     "text": "I measured a plain read against that same table during that window, and it blocked for that entire stretch, every time.",
+     "start": 12.396,
+     "end": 20.646
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "dbcd64392d7ebcaf",
+   "takes": [
+    "aea4d97afdf47645e6a5",
+    "b9b8d758db94b3dee364",
+    "803cf95dc463dd4feecf"
+   ],
+   "duration": 22.433,
+   "lines": [
+    {
+     "text": "Pull it together. Real lock modes, from barely blocking anything to blocking everything.",
+     "start": 0.15,
+     "end": 6.824
+    },
+    {
+     "text": "A real deadlock, caught by one philosophy, and the exact same contention avoided entirely by the other.",
+     "start": 7.244,
+     "end": 14.755
+    },
+    {
+     "text": "And one specific lock level that can stall an entire table's own reads, however briefly it's actually held.",
+     "start": 15.175,
+     "end": 22.083
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "6a322ddbc1f86e58",
+   "takes": [
+    "cf886d25bdd8cdc68f88",
+    "e91f2694aa6bb2bb9056",
+    "e1bdf7483cfdfe12d672"
+   ],
+   "duration": 20.958,
+   "lines": [
+    {
+     "text": "Last one. A migration adds a column to a busy production table, and that column needs an expensive default computed for every existing row.",
+     "start": 0.15,
+     "end": 9.728
+    },
+    {
+     "text": "Given everything you just watched about what that kind of statement actually locks.",
+     "start": 10.148,
+     "end": 16.543
+    },
+    {
+     "text": "What's genuinely at risk here, and for how long?",
+     "start": 16.963,
+     "end": 20.608
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "628a15db05edd3b9",
+   "takes": [
+    "bc89d2820cb3f534ad58",
+    "826ecbed6a00cefdc70e",
+    "14bcd05452afabc1ef96"
+   ],
+   "duration": 23.269,
+   "lines": [
+    {
+     "text": "It's tempting to assume the reads are fine, since they're not changing anything.",
+     "start": 0.15,
+     "end": 4.54
+    },
+    {
+     "text": "But the lock level this statement needs doesn't care who's reading or writing. It blocks both, for the entire statement.",
+     "start": 4.96,
+     "end": 13.36
+    },
+    {
+     "text": "So every read and every write on that table is blocked, for as long as computing that default actually takes, slow part included.",
+     "start": 13.78,
+     "end": 22.919
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
