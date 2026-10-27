@@ -2656,7 +2656,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Segment trees and lazy propagation',
     syllabusTitle: 'Segment trees and lazy propagation',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 8, title: 'Range-Query Structures', section: '8.1' },
     minutes: 14,
