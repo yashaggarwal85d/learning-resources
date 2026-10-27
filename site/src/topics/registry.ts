@@ -4515,7 +4515,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Physical vs logical replication',
     syllabusTitle: 'Physical vs logical replication',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
     minutes: 15,
