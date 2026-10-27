@@ -2584,7 +2584,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Binary heaps and heapify',
     syllabusTitle: 'Binary heaps and heapify',
     kind: 'refresher',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 6, title: 'Heaps and Priority Queues', section: '6.1' },
     minutes: 7,
