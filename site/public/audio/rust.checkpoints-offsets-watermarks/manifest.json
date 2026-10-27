@@ -1,0 +1,287 @@
+{
+ "topic": "rust.checkpoints-offsets-watermarks",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "df19e023ca96eda7",
+   "takes": [
+    "eaa6611d3266ab21bd2d",
+    "54e98bf2d615e81da857"
+   ],
+   "duration": 25.958,
+   "lines": [
+    {
+     "text": "Here's a real pipeline that only ever writes down how far it's gotten once a batch is genuinely, durably finished, never a moment before that.",
+     "start": 0.15,
+     "end": 9.276
+    },
+    {
+     "text": "Now make it crash, right in the middle of a stream, exactly as its next batch starts going out the door. Does picking back up afterward redo anything it already finished, or lose anything it hadn't?",
+     "start": 9.996,
+     "end": 25.608
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "00234d98e1ea419b",
+   "takes": [
+    "cdcd21bd14f5671fe94d",
+    "408553893c6b85df8efa"
+   ],
+   "duration": 7.203,
+   "lines": [
+    {
+     "text": "Neither.",
+     "start": 0.15,
+     "end": 0.761
+    },
+    {
+     "text": "It picks back up exactly where it genuinely left off, nothing redone, nothing missing.",
+     "start": 1.181,
+     "end": 6.853
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d52eb066fe409505",
+   "takes": [
+    "ed8f2025962e1984d480"
+   ],
+   "duration": 12.644,
+   "lines": [
+    {
+     "text": "Run it for real: the record this pipeline wrote down lines up exactly with the last batch it genuinely finished. Picking back up afterward redoes nothing and loses nothing.",
+     "start": 0.15,
+     "end": 12.294
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "26792bf966e4ea89",
+   "takes": [
+    "7b6dc3d986acd94d351a",
+    "2074d2f89c52da12ecf2"
+   ],
+   "duration": 22.541,
+   "lines": [
+    {
+     "text": "Now take the identical real crash, at the identical real moment, against a second pipeline that writes down how far it's gotten the instant a batch is handed off, before it's actually finished at all.",
+     "start": 0.15,
+     "end": 14.871
+    },
+    {
+     "text": "Does that second pipeline's own record still line up with what genuinely happened, or does it get ahead of itself?",
+     "start": 15.591,
+     "end": 22.191
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8f6fe5ad5131365e",
+   "takes": [
+    "6d11eb54203ad03177aa",
+    "b7fb536508c281835dbd"
+   ],
+   "duration": 8.861,
+   "lines": [
+    {
+     "text": "It gets ahead of itself.",
+     "start": 0.15,
+     "end": 1.783
+    },
+    {
+     "text": "It writes down a batch as done one whole step before that batch was ever actually finished.",
+     "start": 2.203,
+     "end": 8.511
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c1ca6d464da7d2ef",
+   "takes": [
+    "0722ddb35bf928af9c1e"
+   ],
+   "duration": 13.069,
+   "lines": [
+    {
+     "text": "Run it for real: that second pipeline's own record claims one more batch finished than genuinely was, because the crash landed exactly while that one was still going out the door.",
+     "start": 0.15,
+     "end": 12.719
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e9534fb1cc9060e9",
+   "takes": [
+    "d3dd3b1d8e12c806441b",
+    "83f7a92d02fda161d761"
+   ],
+   "duration": 17.827,
+   "lines": [
+    {
+     "text": "When that second pipeline picks back up, it starts right after whatever it wrote down, skipping straight past the one batch that record claims is already handled.",
+     "start": 0.15,
+     "end": 11.488
+    },
+    {
+     "text": "Does that skipped batch's own real data come back later, or is it simply gone?",
+     "start": 12.208,
+     "end": 17.477
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.7,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "7d91de2d3b614f80",
+   "takes": [
+    "82f2db0e44438ff47155",
+    "015f9f3ace5fa7ed8647"
+   ],
+   "duration": 7.231,
+   "lines": [
+    {
+     "text": "Simply gone.",
+     "start": 0.15,
+     "end": 1.007
+    },
+    {
+     "text": "Picking back up never looks at that batch again, so whatever it held is gone for good.",
+     "start": 1.427,
+     "end": 6.881
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "6ffb13ff269c7f1a",
+   "takes": [
+    "d9f9f6fc3c4bea3d7691"
+   ],
+   "duration": 11.395,
+   "lines": [
+    {
+     "text": "Run it for real: a whole real batch's worth of records, genuinely never finished, vanishes the moment picking back up resumes, because the record said it was already handled.",
+     "start": 0.15,
+     "end": 11.045
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d06f1471b3864fb0",
+   "takes": [
+    "925ed67537e9e1449926",
+    "35976cdef2b646c62fa9"
+   ],
+   "duration": 22.951,
+   "lines": [
+    {
+     "text": "One real, well-known piece of documentation, about making sure a write genuinely reaches disk, describes exactly this distinction in its own words.",
+     "start": 0.15,
+     "end": 10.492
+    },
+    {
+     "text": "A write only counts as genuinely finished once it has actually reached where it's going. Writing something down before that moment is writing down a finish that hasn't happened yet.",
+     "start": 10.912,
+     "end": 22.601
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 139,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One real, well-known piece of documentation, about making sure a write genuinely reaches disk, describes exactly this distinction in its own words.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "08": {
+   "hash": "5f81db4e513ad6e4",
+   "takes": [
+    "4f960c5776f1b5372b9b",
+    "eabf20642e1403b28f3e",
+    "1eaf710b72b4251296ce"
+   ],
+   "duration": 43.638,
+   "lines": [
+    {
+     "text": "So here's what both of these real runs were really showing: writing something down only once it's genuinely finished lets picking back up continue exactly where things actually stood, nothing redone, nothing missing.",
+     "start": 0.15,
+     "end": 16.522
+    },
+    {
+     "text": "Writing it down a moment too early can look completely identical, right up until something crashes in exactly the wrong place, at which point it quietly erases whatever never actually finished.",
+     "start": 16.942,
+     "end": 30.969
+    },
+    {
+     "text": "Either way, it's the identical real lesson: a record is only ever as true as the real work standing behind it, never the work it merely expects is coming.",
+     "start": 31.389,
+     "end": 43.288
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
