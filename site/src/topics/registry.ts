@@ -2674,7 +2674,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Space-filling curves and cell indexes',
     syllabusTitle: 'Space-filling curves and cell indexes',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 9, title: 'Spatial and High-Dimensional Indexes', section: '9.1' },
     minutes: 13,
