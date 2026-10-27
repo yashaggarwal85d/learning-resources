@@ -4275,7 +4275,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'MVCC: append versions vs undo logs',
     syllabusTitle: 'MVCC: append versions vs undo logs',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
     minutes: 15,
