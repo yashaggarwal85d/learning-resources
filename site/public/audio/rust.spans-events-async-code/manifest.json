@@ -1,0 +1,281 @@
+{
+ "topic": "rust.spans-events-async-code",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "35c46762fc970d26",
+   "takes": [
+    "91e8295f56989353f795",
+    "54a22bb8bf60962778a4"
+   ],
+   "duration": 19.922,
+   "lines": [
+    {
+     "text": "One task here holds something open, on purpose, right across a point where it has to pause and let another task run.",
+     "start": 0.15,
+     "end": 7.719
+    },
+    {
+     "text": "While it's paused, that other task records a real event of its own. Does that event end up looking like it happened inside the first task's own open period?",
+     "start": 8.439,
+     "end": 19.572
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "3611f80c245b1f8c",
+   "takes": [
+    "9995c204b819e717847b",
+    "f8fa20cc6a4ed222b9bb"
+   ],
+   "duration": 7.968,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "That open period never actually closed, so it just keeps covering whatever runs next.",
+     "start": 1.84,
+     "end": 7.618
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0e0f95f3742faa20",
+   "takes": [
+    "923ac2f7487078f07586"
+   ],
+   "duration": 11.06,
+   "lines": [
+    {
+     "text": "Run it for real: the second task's own event comes back tagged as happening inside the first task's own period, even though the first task never touched it at all.",
+     "start": 0.15,
+     "end": 10.71
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8201c0f51f6ec4e5",
+   "takes": [
+    "c638444f9e2c76fdfbad",
+    "3dcc3b9cac389fd96097"
+   ],
+   "duration": 13.721,
+   "lines": [
+    {
+     "text": "Same two tasks, but now the first one wraps its own paused work differently, instead of holding anything open by hand.",
+     "start": 0.15,
+     "end": 9.176
+    },
+    {
+     "text": "Does the second task's event still get mistagged this way?",
+     "start": 9.896,
+     "end": 13.371
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "258f1d6a14b9d342",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "a1cc1c5f1fab6c38e088"
+   ],
+   "duration": 8.649,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "This time it closes itself the instant it pauses, and reopens once it resumes.",
+     "start": 2.386,
+     "end": 8.299
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "e00f596b2a03e13c",
+   "takes": [
+    "1b888ec321dbe7b7e155"
+   ],
+   "duration": 13.638,
+   "lines": [
+    {
+     "text": "Run it for real: the second task's own event now comes back correctly untagged, because the first one genuinely closed its own period before ever letting another task run.",
+     "start": 0.15,
+     "end": 13.288
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "f2a3a79027b7ddd2",
+   "takes": [
+    "9a20f44da64f71ee9290",
+    "31d3336049b69ed7ed55"
+   ],
+   "duration": 13.459,
+   "lines": [
+    {
+     "text": "One more version of the same first task, written as a plain function with one short label added to it instead.",
+     "start": 0.15,
+     "end": 8.251
+    },
+    {
+     "text": "Does it behave the same correct way the wrapped version just did?",
+     "start": 8.971,
+     "end": 13.109
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "d7aa433e943454c8",
+   "takes": [
+    "9995c204b819e717847b",
+    "e7614902d4d1394de203"
+   ],
+   "duration": 7.063,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "That short label quietly builds the identical, correct wrapping underneath.",
+     "start": 1.84,
+     "end": 6.713
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 102,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "90b0beed3cf0af84",
+   "takes": [
+    "2ed0c4e8d80248bb1b2e"
+   ],
+   "duration": 13.236,
+   "lines": [
+    {
+     "text": "Run it for real: the second task's own event comes back untagged again, exactly matching the wrapped version's own real result, because underneath, it really is the same thing.",
+     "start": 0.15,
+     "end": 12.886
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "415b1316317ad797",
+   "takes": [
+    "ac82bbea2e78a528b5ae",
+    "c0d47b042cce066cdd10"
+   ],
+   "duration": 28.14,
+   "lines": [
+    {
+     "text": "One real, independent page names both of these exact ideas directly, in its own words.",
+     "start": 0.15,
+     "end": 8.038
+    },
+    {
+     "text": "It says holding something open by hand across a pause produces a wrong result, because another task starts running while still covered by it. And it says the fix is tied to the task itself resuming, not to anyone remembering to close it.",
+     "start": 8.458,
+     "end": 27.79
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "2504541d03addf41",
+   "takes": [
+    "44f9f3f97b1aa3af8a29",
+    "a68d9175e6dbf8e890bc",
+    "e5e1a0e849a4d91d5692"
+   ],
+   "duration": 46.655,
+   "lines": [
+    {
+     "text": "So here's what this topic's own three real runs are really standing in for: the moment anything pauses and hands control to something else, holding a period open by hand across that pause is exactly how it ends up covering work that was never really inside it.",
+     "start": 0.15,
+     "end": 20.127
+    },
+    {
+     "text": "Wrapping the paused work instead, or labeling it with one short attribute, both fix that the identical way, by genuinely closing it the instant it pauses and only reopening it once it resumes.",
+     "start": 20.547,
+     "end": 35.585
+    },
+    {
+     "text": "Neither one is a trick. They're both just the correct way to tie something like this to the real shape of a task that keeps getting paused and resumed.",
+     "start": 36.005,
+     "end": 46.305
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
