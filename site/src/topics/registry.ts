@@ -2530,7 +2530,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'B-tree node engineering',
     syllabusTitle: 'B-tree node engineering',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 5, title: 'B-Trees and Write-Optimized Trees', section: '5.1' },
     minutes: 12,
