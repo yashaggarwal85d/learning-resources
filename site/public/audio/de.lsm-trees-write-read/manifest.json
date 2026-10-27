@@ -1,0 +1,431 @@
+{
+ "topic": "de.lsm-trees-write-read",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "88f702e83c563a70",
+   "takes": [
+    "99b49d6034801dd0d8ec",
+    "94de6032baa2df6d96b0",
+    "dcbe787b6ed030239ab0"
+   ],
+   "duration": 21.761,
+   "lines": [
+    {
+     "text": "The last topic left every update paying a cleanup bill later, because nothing ever changes in place.",
+     "start": 0.15,
+     "end": 7.128
+    },
+    {
+     "text": "Now ask the opposite question. What if a storage engine was built around that rule on purpose, from day one?",
+     "start": 7.548,
+     "end": 15.195
+    },
+    {
+     "text": "That's the log structured merge tree, and we're going to trace a real write through a real one.",
+     "start": 15.745,
+     "end": 21.411
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "35544601d5ad9697",
+   "takes": [
+    "a333a8dad851867fb824",
+    "ae395d06b3163e8a84d4",
+    "eded926962086ac454a2"
+   ],
+   "duration": 22.759,
+   "lines": [
+    {
+     "text": "I opened a real RocksDB instance and watched where one write actually goes.",
+     "start": 0.15,
+     "end": 5.488
+    },
+    {
+     "text": "First it's appended to a write ahead log for safety, then it lands in memory, in a sorted structure called the memtable.",
+     "start": 5.908,
+     "end": 13.116
+    },
+    {
+     "text": "The moment I flushed that memtable, exactly one brand new file appeared on disk. Nothing before it ever gets touched again.",
+     "start": 13.536,
+     "end": 22.409
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.13636363636363635,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "I opened a real RocksDB instance and watched where one write actually goes.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "First it's appended to a write ahead log for safety, then it lands in memory, in a sorted structure called the memtable.",
+     "said": "sorted",
+     "heard": "sordid"
+    },
+    {
+     "line": "First it's appended to a write ahead log for safety, then it lands in memory, in a sorted structure called the memtable.",
+     "said": "memtable",
+     "heard": "mem table"
+    }
+   ]
+  },
+  "03": {
+   "hash": "8e7f0ecd2534d786",
+   "takes": [
+    "302de461d0ea58798393",
+    "cffa242c797e6dbb5a94",
+    "ba3440a27d1de854a313"
+   ],
+   "duration": 17.674,
+   "lines": [
+    {
+     "text": "Here's the question.",
+     "start": 0.15,
+     "end": 1.1
+    },
+    {
+     "text": "I flush a key to disk, then write a newer value for that same key, but I don't flush again yet.",
+     "start": 1.52,
+     "end": 9.389
+    },
+    {
+     "text": "When a read for that key comes in, does it have any reason to go open that file on disk at all?",
+     "start": 9.809,
+     "end": 17.324
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "d87bb34899224e40",
+   "takes": [
+    "0da15f6d9838fa6ec1f4",
+    "f58cbe2dad8970f30484",
+    "348b69236de1cb774fd6"
+   ],
+   "duration": 20.326,
+   "lines": [
+    {
+     "text": "Checking both and picking the newer one sounds like the careful answer. It's actually the wrong one here.",
+     "start": 0.15,
+     "end": 6.697
+    },
+    {
+     "text": "A point read stops the instant it finds the key, and the newest copy is always checked first.",
+     "start": 7.117,
+     "end": 14.017
+    },
+    {
+     "text": "So no, the file on disk never gets touched. The memtable already has the answer.",
+     "start": 14.437,
+     "end": 19.976
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "717fba551a6ef261",
+   "takes": [
+    "8ba83178da42e0fc9a08",
+    "d4b855c8fd4f9baf51f5",
+    "8c3a73aacabc7134d2c1"
+   ],
+   "duration": 16.712,
+   "lines": [
+    {
+     "text": "I didn't just argue that. I measured it.",
+     "start": 0.15,
+     "end": 2.971
+    },
+    {
+     "text": "RocksDB keeps its own internal counters, and after that read, the memtable counter went up by one.",
+     "start": 3.391,
+     "end": 11.226
+    },
+    {
+     "text": "The counter for the file on disk stayed at zero. It was never even opened.",
+     "start": 11.646,
+     "end": 16.362
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "8cfc88064613538b",
+   "takes": [
+    "29f1bd4e91e46e2ced7a",
+    "cbcd5a3e9b429d2d4914",
+    "efa8b00cb1d8417b2f21"
+   ],
+   "duration": 29.478,
+   "lines": [
+    {
+     "text": "Now flip the question. What if I don't want one key, I want a whole range of them?",
+     "start": 0.15,
+     "end": 5.86
+    },
+    {
+     "text": "There's no single newest place to stop at anymore, because different keys in that range live in different structures.",
+     "start": 6.41,
+     "end": 14.876
+    },
+    {
+     "text": "So the engine has to walk the file's own sorted list and the memtable's sorted list together, merging as it goes, and whenever both have the same key, the memtable's copy wins.",
+     "start": 15.296,
+     "end": 29.128
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "66e89831ebe21103",
+   "takes": [
+    "cb02cd22f672fc48cee4",
+    "dab9db21d117e7df58dd",
+    "5fb86dc71824a960429f"
+   ],
+   "duration": 32.277,
+   "lines": [
+    {
+     "text": "Deletes aside for a second, here's a cost most people never think about. Checking whether a key exists at all.",
+     "start": 0.15,
+     "end": 7.968
+    },
+    {
+     "text": "I asked for five hundred keys that flatly don't exist in a file, and watched that file's own bloom filter handle every single one.",
+     "start": 8.388,
+     "end": 18.066
+    },
+    {
+     "text": "The large majority got rejected in one cheap check, no disk read at all. A handful slipped through to an actual, wasted read, but not one of them turned out to be a real match.",
+     "start": 18.486,
+     "end": 31.927
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The large majority got rejected in one cheap check, no disk read at all. A handful slipped through to an actual, wasted read, but not one of them turned out to be a real match.",
+     "said": "disk read",
+     "heard": "discreed"
+    }
+   ]
+  },
+  "07": {
+   "hash": "0bbab0f96bd80bf0",
+   "takes": [
+    "4421b39455eedc235c58",
+    "780a08d9b834d510966c",
+    "78077e014987e8548e09"
+   ],
+   "duration": 23.141,
+   "lines": [
+    {
+     "text": "So what happens on that small handful that slip past the filter?",
+     "start": 0.15,
+     "end": 3.982
+    },
+    {
+     "text": "Every file keeps its own index too, built once when the file was written, and it works like a binary search.",
+     "start": 4.532,
+     "end": 12.735
+    },
+    {
+     "text": "It can't say the key is definitely absent the way the filter can, but it can say exactly which one block to load, instead of the whole file.",
+     "start": 13.155,
+     "end": 22.791
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c5a05bb1c8a773d3",
+   "takes": [
+    "ffaedc913d0934f5e665",
+    "34c8b141b3788f2541e6",
+    "98425aa5718df0ec3ee8"
+   ],
+   "duration": 20.859,
+   "lines": [
+    {
+     "text": "Now the part that genuinely surprised me the first time I measured it.",
+     "start": 0.15,
+     "end": 4.854
+    },
+    {
+     "text": "I deleted a batch of keys and flushed again, expecting the file to shrink. Instead, a second file appeared.",
+     "start": 5.274,
+     "end": 12.844
+    },
+    {
+     "text": "That new file was made almost entirely of what are called tombstones, and the storage footprint actually climbed.",
+     "start": 13.264,
+     "end": 20.509
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "0e8047b3ec418e63",
+   "takes": [
+    "f1b5589960ae8fe3588e",
+    "c7f2c36d94b4cbca992d",
+    "6bddfe37c60ff33c7e3f"
+   ],
+   "duration": 25.33,
+   "lines": [
+    {
+     "text": "Let's pull that whole chain together.",
+     "start": 0.15,
+     "end": 2.327
+    },
+    {
+     "text": "A write goes into the memtable, then becomes its own immutable file. A point read checks newest first and stops early. A range read can't stop early, so it merges instead.",
+     "start": 2.747,
+     "end": 15.218
+    },
+    {
+     "text": "And a delete never erases anything by itself. It just writes one more record and waits for something else to clean up.",
+     "start": 15.638,
+     "end": 24.98
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.06451612903225806,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A write goes into the memtable, then becomes its own immutable file. A point read checks newest first and stops early. A range read can't stop early, so it merges instead.",
+     "said": "memtable",
+     "heard": "mem table"
+    }
+   ]
+  },
+  "10": {
+   "hash": "6bc5288e256f434d",
+   "takes": [
+    "43fcfffbd34f19f46921",
+    "dd92b06ee6c0791de0ec",
+    "3cd7c8615e281e6e2865"
+   ],
+   "duration": 25.033,
+   "lines": [
+    {
+     "text": "Last one. A single key has three shadowed copies sitting around: a tombstone, and two older stale values behind it in two different files.",
+     "start": 0.15,
+     "end": 11.19
+    },
+    {
+     "text": "The instinctive answer is that deleting it should have already thrown those other copies away. That instinct is wrong here.",
+     "start": 11.61,
+     "end": 20.165
+    },
+    {
+     "text": "Why does the disk not shrink down to just that tombstone right now?",
+     "start": 20.585,
+     "end": 24.683
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 137,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Why does the disk not shrink down to just that tombstone right now?",
+     "said": "disk",
+     "heard": "disc"
+    }
+   ]
+  },
+  "10a": {
+   "hash": "390dcf6fe40d75aa",
+   "takes": [
+    "e12f8bf02adc7f188e24",
+    "3dcc073daedd5927d294",
+    "d7cd651006f5188434cc"
+   ],
+   "duration": 20.434,
+   "lines": [
+    {
+     "text": "Nothing has merged those files yet, and until something does, all three copies just sit there.",
+     "start": 0.15,
+     "end": 6.5
+    },
+    {
+     "text": "A flush doesn't touch them. A read just knows to ignore the shadowed ones and keep the newest.",
+     "start": 6.92,
+     "end": 12.873
+    },
+    {
+     "text": "Only a later merge of those files actually throws the superseded copies and the tombstone away together.",
+     "start": 13.293,
+     "end": 20.084
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A flush doesn't touch them. A read just knows to ignore the shadowed ones and keep the newest.",
+     "said": "read",
+     "heard": "reed"
+    }
+   ]
+  }
+ }
+}
