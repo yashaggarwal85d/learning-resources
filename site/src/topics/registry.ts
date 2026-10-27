@@ -4315,7 +4315,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'LSM trees: write and read paths',
     syllabusTitle: 'LSM trees: write and read paths',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
     minutes: 15,
