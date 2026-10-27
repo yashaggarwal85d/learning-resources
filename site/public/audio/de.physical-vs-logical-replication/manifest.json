@@ -1,0 +1,440 @@
+{
+ "topic": "de.physical-vs-logical-replication",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6fd59b23fdfa8959",
+   "takes": [
+    "dc31666a8b27fea112e5",
+    "7194feb5459df806273e",
+    "155fca58fd86da6b0c17"
+   ],
+   "duration": 19.914,
+   "lines": [
+    {
+     "text": "A replica is supposed to end up with everything its primary has.",
+     "start": 0.15,
+     "end": 4.432
+    },
+    {
+     "text": "That word, everything, is doing a lot of work. It can mean two genuinely different things to actually send across the wire.",
+     "start": 4.852,
+     "end": 14.208
+    },
+    {
+     "text": "Both of them get called replication. Only one of them is replicating the same bytes.",
+     "start": 14.628,
+     "end": 19.564
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d54c844b939db835",
+   "takes": [
+    "bc419a06b94a8ee3db57",
+    "496fb555876f9b14321f",
+    "dd638f12ada5ad7da2ac"
+   ],
+   "duration": 24.508,
+   "lines": [
+    {
+     "text": "The first answer is the exact one. Send the actual blocks, byte for byte, address for address.",
+     "start": 0.15,
+     "end": 7.125
+    },
+    {
+     "text": "It's fast and cheap to apply, because the replica never has to figure anything out. It just writes the same bytes in the same place.",
+     "start": 7.545,
+     "end": 15.985
+    },
+    {
+     "text": "The cost of that simplicity is strictness. Both sides have to be running the identical version of the database engine.",
+     "start": 16.405,
+     "end": 24.158
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "86d22b74b47eda55",
+   "takes": [
+    "aa4d4869e5f7f344651b",
+    "c98b41f866b85bdd9e77",
+    "7b6c66decb78313368cc"
+   ],
+   "duration": 23.2,
+   "lines": [
+    {
+     "text": "The second answer throws away the bytes entirely and sends something higher level instead.",
+     "start": 0.15,
+     "end": 5.953
+    },
+    {
+     "text": "Decode the write-ahead log back into the actual row that changed, and send that instead of raw storage.",
+     "start": 6.373,
+     "end": 13.338
+    },
+    {
+     "text": "Now the two sides don't have to match at all. Different versions, even different operating systems, can read the same decoded change.",
+     "start": 13.758,
+     "end": 22.85
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "f8a2b27ee2c3fa96",
+   "takes": [
+    "f390239b6de7bce4e948",
+    "f2569e93bc04ea8d30be"
+   ],
+   "duration": 15.455,
+   "lines": [
+    {
+     "text": "Here's where I want you to actually commit to an answer.",
+     "start": 0.15,
+     "end": 3.842
+    },
+    {
+     "text": "Picture a consumer on the other end of one of these streams that simply stops reading. What happens to all the data it hasn't picked up yet?",
+     "start": 4.262,
+     "end": 15.105
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.2,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "dd6243c5401fb94b",
+   "takes": [
+    "7b933018cd3a304eece7",
+    "2ce63bdc7b8407945ca7",
+    "72fdedb2aea5e7be5fdb"
+   ],
+   "duration": 21.931,
+   "lines": [
+    {
+     "text": "It's tempting to assume the primary eventually just cleans up and moves on.",
+     "start": 0.15,
+     "end": 5.02
+    },
+    {
+     "text": "But the primary has no way to know whether that consumer is gone for good or just slow. Guessing wrong either way is dangerous.",
+     "start": 5.44,
+     "end": 13.566
+    },
+    {
+     "text": "So it doesn't guess. It keeps every bit the consumer hasn't confirmed, for however long that takes.",
+     "start": 13.986,
+     "end": 21.581
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "eb8ada6d664a8645",
+   "takes": [
+    "e02e69ac98609fb79f07",
+    "efad86cdab0e3e657042",
+    "4eedfdbf0d7761a7cace"
+   ],
+   "duration": 21.781,
+   "lines": [
+    {
+     "text": "That keeping is a real, named mechanism, not an accident.",
+     "start": 0.15,
+     "end": 5.089
+    },
+    {
+     "text": "A replication slot is the primary's own promise to a specific consumer. Don't you dare remove anything I might still need.",
+     "start": 5.509,
+     "end": 14.303
+    },
+    {
+     "text": "The primary holds up its end of that promise completely, with no built in sense of how long is too long.",
+     "start": 14.723,
+     "end": 21.431
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "aba674dd76ebc097",
+   "takes": [
+    "db082a2b769b48404434",
+    "cd6b847766bfbce7282a",
+    "80f62dcfa6dfd035c5d1"
+   ],
+   "duration": 23.147,
+   "lines": [
+    {
+     "text": "Here's that exact promise, held for real, against this sandbox's own database.",
+     "start": 0.15,
+     "end": 6.828
+    },
+    {
+     "text": "A real slot gets created, and then real writes just keep landing, with absolutely nothing on the other end ever reading them.",
+     "start": 7.248,
+     "end": 15.742
+    },
+    {
+     "text": "Watch what the primary ends up holding onto on that one consumer's behalf. It just keeps growing.",
+     "start": 16.162,
+     "end": 22.797
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A real slot gets created, and then real writes just keep landing, with absolutely nothing on the other end ever reading them.",
+     "said": "slot",
+     "heard": "sloth"
+    },
+    {
+     "line": "A real slot gets created, and then real writes just keep landing, with absolutely nothing on the other end ever reading them.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "07": {
+   "hash": "5af7fc1d63d8fe67",
+   "takes": [
+    "49f546754343c4991643",
+    "c3c238397673d47f97b6",
+    "93c7410f204b64f8220a"
+   ],
+   "duration": 29.024,
+   "lines": [
+    {
+     "text": "Left alone long enough, that growth becomes a real outage. The documentation itself is blunt about this. It can fill the space set aside for the log entirely.",
+     "start": 0.15,
+     "end": 12.135
+    },
+    {
+     "text": "Now watch the other half of the same measurement.",
+     "start": 12.555,
+     "end": 15.496
+    },
+    {
+     "text": "The identical slot, except this time a real consumer actually shows up and catches all the way up. What was being held just drops straight back down to nothing.",
+     "start": 15.916,
+     "end": 28.674
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "dc4fb6a90f0154c7",
+   "takes": [
+    "b132ab88106a1d9ee581",
+    "631892f60ab460492e2b",
+    "c776c43d98a7554dbabb"
+   ],
+   "duration": 23.681,
+   "lines": [
+    {
+     "text": "One newer wrinkle on this whole mechanism.",
+     "start": 0.15,
+     "end": 2.869
+    },
+    {
+     "text": "A more recent version of this database engine lets one of these decoded slots survive its own primary failing over to a replacement, something earlier versions simply couldn't do.",
+     "start": 3.289,
+     "end": 15.157
+    },
+    {
+     "text": "This particular sandbox is running an older version, so you're hearing this one described rather than watching it happen.",
+     "start": 15.577,
+     "end": 23.331
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "eed4ff8ebd9dcf4b",
+   "takes": [
+    "946f5ba4e95bd084abe7",
+    "94e02da9e103edae66e2",
+    "68bce15ed6064b3747f1"
+   ],
+   "duration": 24.033,
+   "lines": [
+    {
+     "text": "This same basic idea isn't unique to one database engine either.",
+     "start": 0.15,
+     "end": 5.382
+    },
+    {
+     "text": "A different, very widely used database can log its binary changes row by row instead of logging the statement that produced them.",
+     "start": 5.802,
+     "end": 15.074
+    },
+    {
+     "text": "Same underlying bet as the decoded approach you just watched. Describe what actually changed, not the command that caused it.",
+     "start": 15.494,
+     "end": 23.683
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "18f06f25416f582c",
+   "takes": [
+    "caa5137aa8c55c8dee42",
+    "b75fb32d948d912fe8ac",
+    "43c51da2927aea414b28"
+   ],
+   "duration": 20.406,
+   "lines": [
+    {
+     "text": "Pull the whole topic together.",
+     "start": 0.15,
+     "end": 1.489
+    },
+    {
+     "text": "Shipping bytes is fast and exact, but locks both sides to the same version. Shipping decoded changes is flexible, but someone has to do the decoding.",
+     "start": 1.909,
+     "end": 13.312
+    },
+    {
+     "text": "Either way, a slot's own promise has a real cost the moment nothing is there to collect on it.",
+     "start": 13.732,
+     "end": 20.056
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "678855de9ce45702",
+   "takes": [
+    "7efc39b5d310afa577c9",
+    "8db162a289ad94dc357f",
+    "f9c92089ff0cf9ebdf77"
+   ],
+   "duration": 25.479,
+   "lines": [
+    {
+     "text": "One last one. A consumer reading one of these decoded slots crashes, and stays down for six hours.",
+     "start": 0.15,
+     "end": 7.605
+    },
+    {
+     "text": "During those six hours, a sale happens to double the normal rate of writes.",
+     "start": 8.025,
+     "end": 13.193
+    },
+    {
+     "text": "Given everything you just watched measured here. What is this doing to the primary's own disk that whole time, and does simply restarting the consumer undo it by itself?",
+     "start": 13.613,
+     "end": 25.129
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 144,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "During those six hours, a sale happens to double the normal rate of writes.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "11a": {
+   "hash": "02d51588960d0bb9",
+   "takes": [
+    "e55fe091e228f6451bd0",
+    "2527952659936066565f",
+    "c08df0392dfee2a287e8"
+   ],
+   "duration": 26.099,
+   "lines": [
+    {
+     "text": "It's tempting to assume fixing the consumer fixes everything retroactively.",
+     "start": 0.15,
+     "end": 5.666
+    },
+    {
+     "text": "But for those six hours, at double the usual load, the primary kept every single byte it thought that consumer might still need.",
+     "start": 6.086,
+     "end": 14.242
+    },
+    {
+     "text": "So no, restarting it alone only stops things from getting worse. Everything already piled up still has to actually be read through before it's released.",
+     "start": 14.662,
+     "end": 25.749
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "But for those six hours, at double the usual load, the primary kept every single byte it thought that consumer might still need.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  }
+ }
+}
