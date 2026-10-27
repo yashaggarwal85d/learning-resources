@@ -1,0 +1,304 @@
+{
+ "topic": "rust.cpu-memory-profiling",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "f0f71da899efb747",
+   "takes": [
+    "34b21bf8a68b40c021d5",
+    "6329cd7c6ab77d73881b"
+   ],
+   "duration": 14.301,
+   "lines": [
+    {
+     "text": "A flamegraph's own width shows how often a function was on the real call stack.",
+     "start": 0.15,
+     "end": 5.208
+    },
+    {
+     "text": "Does that real cost spread evenly across every function a program calls, or does it pile up in one place?",
+     "start": 5.928,
+     "end": 13.951
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 147,
+   "wer": 0.13333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A flamegraph's own width shows how often a function was on the real call stack.",
+     "said": "flamegraphs",
+     "heard": "flame graphs"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "44010aedcafd0ce7",
+   "takes": [
+    "d3a54d7c2cf79e3b4304",
+    "b1e7f01c3ec8c46c41d9"
+   ],
+   "duration": 4.984,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.181
+    },
+    {
+     "text": "It piles up in one specific function.",
+     "start": 1.601,
+     "end": 4.634
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 108,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d2bcfe3d81199119",
+   "takes": [
+    "d02da1a3fef93000fa09"
+   ],
+   "duration": 13.174,
+   "lines": [
+    {
+     "text": "Run it for real: one specific function genuinely holds the real majority of the whole tree's total cost, far more than an even share across every function.",
+     "start": 0.15,
+     "end": 12.824
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.2,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "87e45469d28f3067",
+   "takes": [
+    "3e20632e50cbd4c96d83",
+    "b8ca34a6830aa9240574"
+   ],
+   "duration": 11.911,
+   "lines": [
+    {
+     "text": "That one real hot function sits several calls deep in the tree, under two real ancestors.",
+     "start": 0.15,
+     "end": 7.081
+    },
+    {
+     "text": "Does checking just the top of the real call stack find it?",
+     "start": 7.801,
+     "end": 11.561
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "93315e28818da2cd",
+   "takes": [
+    "d3a54d7c2cf79e3b4304",
+    "baea95019e2de893e370"
+   ],
+   "duration": 3.942,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.181
+    },
+    {
+     "text": "The whole tree gets walked.",
+     "start": 1.601,
+     "end": 3.592
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 107,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "910b1700d820829e",
+   "takes": [
+    "2e2ecbde7137ebe47b17"
+   ],
+   "duration": 14.416,
+   "lines": [
+    {
+     "text": "Run it for real: the real hot function is genuinely not a top-level function, so attributing its real cost correctly means walking down through its real ancestors, not just reading the top frame.",
+     "start": 0.15,
+     "end": 14.066
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c18b72884d58c87d",
+   "takes": [
+    "ae6992bd163d4f454031",
+    "47d2be8bd18f85bc7415"
+   ],
+   "duration": 14.017,
+   "lines": [
+    {
+     "text": "A specialized allocator claims a real, measured speedup over a generic one, at the identical allocation count.",
+     "start": 0.15,
+     "end": 7.592
+    },
+    {
+     "text": "Is that real difference big enough to matter, or too small to bother measuring?",
+     "start": 8.312,
+     "end": 13.667
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.8,
+   "wpm": 133,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A specialized allocator claims a real, measured speedup over a generic one, at the identical allocation count.",
+     "said": "speedup",
+     "heard": "speed up"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "3cffaf31af7fe6a0",
+   "takes": [
+    "2a791d39649925df2a57",
+    "ddc54f02045370afbef0"
+   ],
+   "duration": 7.284,
+   "lines": [
+    {
+     "text": "It's genuinely big enough.",
+     "start": 0.15,
+     "end": 1.805
+    },
+    {
+     "text": "A real, measurable, majority-level cut in total cost.",
+     "start": 2.225,
+     "end": 6.934
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.1,
+   "wpm": 107,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "355f0d6ef8e179f3",
+   "takes": [
+    "04a7535e043cd5d384ae"
+   ],
+   "duration": 10.558,
+   "lines": [
+    {
+     "text": "Run it for real: the specialized allocator genuinely cut total allocation cost by more than half, at the identical allocation count.",
+     "start": 0.15,
+     "end": 10.208
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -4.7,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f6140ac8d5d4b14e",
+   "takes": [
+    "f7c4dfcf114f093369bf",
+    "6601d91c0bff42c7b967"
+   ],
+   "duration": 19.336,
+   "lines": [
+    {
+     "text": "Two real, independent sources on this exact discipline agree, in their own words.",
+     "start": 0.15,
+     "end": 6.422
+    },
+    {
+     "text": "A frame's own width is how often it sat on the real stack; an allocator's own overhead is a real, measured, sometimes decisive share of the real cost.",
+     "start": 6.842,
+     "end": 18.986
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "37e7667f26989b97",
+   "takes": [
+    "cc3d692497b11fa4a5a9",
+    "d0ba248a9bc87bfdcab7",
+    "c669a5a6c0a3dbb159af"
+   ],
+   "duration": 51.538,
+   "lines": [
+    {
+     "text": "So here's why a flamegraph earns its own shape: a call tree can be several real functions deep, and the one actually spending the real time is rarely sitting at the top where a casual glance would land.",
+     "start": 0.15,
+     "end": 12.424
+    },
+    {
+     "text": "That's also why profiling and benchmarking answer two genuinely different questions: a benchmark from the last chapter told you whether a change helped or hurt overall, while a profiler tells you exactly where, inside the real code, that cost is actually coming from.",
+     "start": 12.844,
+     "end": 32.058
+    },
+    {
+     "text": "And the allocator result matters for the identical reason the tail mattered last chapter: a cost that looks too small to bother with on average can still be the real, decisive share once you actually go measure it rather than assume it away.",
+     "start": 32.478,
+     "end": 51.189
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So here's why a flamegraph earns its own shape: a call tree can be several real functions deep, and the one actually spending the real time is rarely sitting at the top where a casual glance would land.",
+     "said": "flamegraph",
+     "heard": "flame graph"
+    },
+    {
+     "line": "And the allocator result matters for the identical reason the tail mattered last chapter: a cost that looks too small to bother with on average can still be the real, decisive share once you actually go measure it rather than assume it away.",
+     "said": "tail",
+     "heard": "tale"
+    }
+   ]
+  }
+ }
+}
