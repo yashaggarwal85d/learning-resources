@@ -1,0 +1,5 @@
+- **Vertex**: one of a graph's own points, connected to others by edges. *Where you meet it:* every one of today's three representations stores the identical set of vertices, just laid out differently.
+- **Edge**: a connection between two vertices; directed if it has a specific tail (source) and head (destination). *Where you meet it:* what the list, matrix and edge list each store differently.
+- **Degree**: how many edges touch a vertex; a directed graph's own **out-degree** counts only edges leaving it. *Where you meet it:* the adjacency list's own neighbour-listing cost is stated directly in terms of it.
+- **Ordered pair**: two vertices with a direction attached — (u, v) is not the same as (v, u). *Where you meet it:* a directed edge is exactly an ordered pair, plus a weight.
+- **Big-O notation**: declared again here (Chapter 1, Asymptotic notation and case analysis); not re-taught. Every cost on this topic's own table is stated in this notation.

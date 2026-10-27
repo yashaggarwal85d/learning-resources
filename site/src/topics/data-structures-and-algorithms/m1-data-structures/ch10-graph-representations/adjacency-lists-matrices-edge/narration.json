@@ -1,0 +1,58 @@
+{
+  "topic": "dsa.adjacency-lists-matrices-edge",
+  "steps": [
+    {
+      "lines": [
+        "Here's the same question, asked three different ways: does an edge exist, from one vertex to another?",
+        "Every one of today's three structures answers it. They just don't all charge the same price."
+      ]
+    },
+    {
+      "lines": [
+        "Give every vertex its own short chain of neighbors, and asking who it points to becomes reading that chain straight through.",
+        "Ask about one specific pair instead, and you're walking the chain looking for it. There's no shortcut to the middle."
+      ]
+    },
+    {
+      "lines": [
+        "Switch to a grid instead: one cell for every ordered pair of vertices.",
+        { "beat": 0.3 },
+        "This graph has two separate edges sitting on the identical pair. A cell can only hold one thing. What actually happens to the second edge?"
+      ],
+      "answer": [
+        "A count survives that cell just fine.",
+        "Two separate weights do not. Only one of them is still sitting there afterward."
+      ]
+    },
+    {
+      "lines": [
+        "Watch which weight actually stays in that cell. It's whichever edge got written there last, not the first one, and not some blend of the two.",
+        "Everywhere else in this grid, one lookup answers the exact question the chain just had to search for."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing here belongs to any one vertex. Just one row per edge, and nothing else at all.",
+        "That's exactly why this is what you start from. A vertex with no edges costs this structure nothing, where the other two still have to make room for it."
+      ]
+    },
+    {
+      "lines": [
+        "Slide every vertex of this exact graph into one line, so every arrow points the same direction along it.",
+        "That only works because there's no cycle fighting it. A graph accepts that single ordering exactly when it has no directed cycle at all."
+      ]
+    },
+    {
+      "lines": [
+        "None of today's three structures is simply the best one. Each is cheap at exactly one job.",
+        "Walk from neighbor to neighbor, and the chain wins. Keep asking about one specific pair, over and over, and the grid wins instead. Need something to build the next structure from? That's the row of edges, not either of the other two."
+      ]
+    },
+    {
+      "lines": [
+        "Every number here came from actually building these three structures over this graph, then doing it again at a thousand vertices.",
+        "Watch the grid's own bar. At a thousand vertices, it's two hundred fifty times the size of the chain-based structure, for the identical graph."
+      ]
+    }
+  ]
+}
