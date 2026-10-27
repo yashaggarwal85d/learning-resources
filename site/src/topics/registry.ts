@@ -2566,7 +2566,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'LSM compaction and amplification',
     syllabusTitle: 'LSM compaction and amplification',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 5, title: 'B-Trees and Write-Optimized Trees', section: '5.2' },
     minutes: 14,
