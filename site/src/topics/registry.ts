@@ -4495,7 +4495,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Synchronous, asynchronous and semi-synchronous replication',
     syllabusTitle: 'Synchronous, asynchronous and semi-synchronous replication',
     kind: 'refresher',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
     minutes: 5,
