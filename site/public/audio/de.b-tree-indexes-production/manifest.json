@@ -1,0 +1,441 @@
+{
+ "topic": "de.b-tree-indexes-production",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "90cab45a4faba8b4",
+   "takes": [
+    "4a78c278ec3e8dad4ca1",
+    "4bacc8dd76a96e6eda5e",
+    "06225af1dbc1cfd33566"
+   ],
+   "duration": 23.58,
+   "lines": [
+    {
+     "text": "Every topic in this chapter so far has quietly assumed something: that you already know which page holds the row you want.",
+     "start": 0.15,
+     "end": 8.467
+    },
+    {
+     "text": "Real tables hold far more rows than fit comfortably in memory, spread across many, many pages.",
+     "start": 8.887,
+     "end": 15.643
+    },
+    {
+     "text": "Checking every one of them in order would work, eventually. What's the structure that makes it unnecessary?",
+     "start": 16.063,
+     "end": 23.23
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "426ad0c1a67b0d9d",
+   "takes": [
+    "2e52cea43d071eb645da",
+    "c4d10ccfde7e93f44654",
+    "687dfebec6c7ae32e333"
+   ],
+   "duration": 27.462,
+   "lines": [
+    {
+     "text": "I built a real index on a real, sizeable table and asked Postgres's own page-inspection tools how deep the tree actually is.",
+     "start": 0.15,
+     "end": 9.709
+    },
+    {
+     "text": "Just two levels. Not a comparison for every single row \u2014 two.",
+     "start": 10.129,
+     "end": 15.177
+    },
+    {
+     "text": "That's fanout: each page near the top points to many children below it, so the tree's own height grows far slower than the row count does.",
+     "start": 15.597,
+     "end": 27.112
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.13043478260869565,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "I built a real index on a real, sizeable table and asked Postgres's own page-inspection tools how deep the tree actually is.",
+     "said": "sizeable",
+     "heard": "sizable"
+    },
+    {
+     "line": "I built a real index on a real, sizeable table and asked Postgres's own page-inspection tools how deep the tree actually is.",
+     "said": "postgress",
+     "heard": "post gress"
+    },
+    {
+     "line": "Just two levels. Not a comparison for every single row \u2014 two.",
+     "said": "two",
+     "heard": "too"
+    },
+    {
+     "line": "That's fanout: each page near the top points to many children below it, so the tree's own height grows far slower than the row count does.",
+     "said": "fanout",
+     "heard": "fan out"
+    }
+   ]
+  },
+  "03": {
+   "hash": "5475ad72bf9e47ba",
+   "takes": [
+    "7359379a277e00964d47",
+    "0135153d61ff70c2bcb4",
+    "d1e526bdcc6aef926fe8"
+   ],
+   "duration": 31.444,
+   "lines": [
+    {
+     "text": "When a leaf page can't fit a new entry, Postgres splits it: moves part of its contents to a brand new page, and inserts a pointer to that new page in the parent.",
+     "start": 0.15,
+     "end": 11.598
+    },
+    {
+     "text": "If the parent itself is now full, it splits too \u2014 the split cascades upward.",
+     "start": 12.018,
+     "end": 18.531
+    },
+    {
+     "text": "Only when even the very top page can't fit a new pointer does the whole tree grow by one more level. That's the one moment fanout actually changes.",
+     "start": 18.951,
+     "end": 31.094
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Only when even the very top page can't fit a new pointer does the whole tree grow by one more level. That's the one moment fanout actually changes.",
+     "said": "fanout",
+     "heard": "fan out"
+    }
+   ]
+  },
+  "04": {
+   "hash": "1a9921088dec0a29",
+   "takes": [
+    "e671bab0ef4721f56d78",
+    "6fcf0391499ab009ff14"
+   ],
+   "duration": 14.805,
+   "lines": [
+    {
+     "text": "Worth reasoning through before the measurement settles it.",
+     "start": 0.15,
+     "end": 2.88
+    },
+    {
+     "text": "About to insert a large batch of rows into a brand-new index \u2014 should it pack every page as full as it'll go, or leave real room on each page on purpose?",
+     "start": 3.3,
+     "end": 14.455
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "de768b1eef2dd1ff",
+   "takes": [
+    "4b9484e8a9378c71d88f",
+    "4cfe2824823ed4b10634",
+    "67c7ec6b77e6d7055265"
+   ],
+   "duration": 23.105,
+   "lines": [
+    {
+     "text": "It's not about saving space at any cost \u2014 that's the trap.",
+     "start": 0.15,
+     "end": 4.33
+    },
+    {
+     "text": "Packing every page to its limit leaves nothing for a future insert that lands inside an existing page's own range, which forces an immediate split on the very next one.",
+     "start": 4.75,
+     "end": 15.84
+    },
+    {
+     "text": "Leaving real room trades some space up front for genuine room to absorb future writes without splitting.",
+     "start": 16.26,
+     "end": 22.755
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Leaving real room trades some space up front for genuine room to absorb future writes without splitting.",
+     "said": "trades",
+     "heard": "trade"
+    },
+    {
+     "line": "Leaving real room trades some space up front for genuine room to absorb future writes without splitting.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "05": {
+   "hash": "578b33098e669b5a",
+   "takes": [
+    "4c4284c99a53d2416463",
+    "619ed752149845b31079",
+    "753fce1c47e18fa650ff"
+   ],
+   "duration": 28.499,
+   "lines": [
+    {
+     "text": "Here's that trade-off shown directly, not just argued for.",
+     "start": 0.15,
+     "end": 4.338
+    },
+    {
+     "text": "The identical batch of inserts, landing inside the existing key range rather than at the end, run against two otherwise identical indexes \u2014 one packed tight, one left loose.",
+     "start": 4.758,
+     "end": 17.44
+    },
+    {
+     "text": "Measured directly, the tight index grows by real pages. The loose one, on the exact same data, doesn't grow by a single page.",
+     "start": 17.86,
+     "end": 28.149
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "b1d1cf5c17d1f455",
+   "takes": [
+    "05c25b24e189004604e5",
+    "504733dfdf2c02b44628",
+    "f0bc2ae795f8f14001b3"
+   ],
+   "duration": 26.358,
+   "lines": [
+    {
+     "text": "Duplicates in an indexed column are common \u2014 a status flag, a category, a yes-or-no flag.",
+     "start": 0.15,
+     "end": 7.605
+    },
+    {
+     "text": "I built the identical index twice on a column with only a handful of distinct values across many rows: once with a space-saving duplicate representation turned on, once off.",
+     "start": 8.025,
+     "end": 19.327
+    },
+    {
+     "text": "Measured directly, the space-saving version comes out to roughly a third the size of the other.",
+     "start": 19.747,
+     "end": 26.008
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "2342a038a53c8110",
+   "takes": [
+    "7617a5a2bf0d0527dbc4",
+    "b98af0968289bb2846b7",
+    "b348da3cfc6031855b99"
+   ],
+   "duration": 36.357,
+   "lines": [
+    {
+     "text": "Here's the part that makes a real index usable under genuinely concurrent writes.",
+     "start": 0.15,
+     "end": 6.08
+    },
+    {
+     "text": "A nineteen-eighty-one algorithm adds just one pointer to every page \u2014 to its right-hand sibling \u2014 and one more value, an upper bound on what belongs on that page.",
+     "start": 6.5,
+     "end": 17.508
+    },
+    {
+     "text": "If a search's target is bigger than that upper bound, the page must have just split underneath it. The fix isn't a lock on the whole tree \u2014 just follow that one pointer to the new page. Postgres's own source implements exactly this.",
+     "start": 17.928,
+     "end": 36.007
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's the part that makes a real index usable under genuinely concurrent writes.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "08": {
+   "hash": "2b9c51bf69d057a3",
+   "takes": [
+    "120d25f326ae2b2ef398",
+    "bda7a737e36ec96585d3",
+    "7a4bd16b110fcdf52cef"
+   ],
+   "duration": 34.814,
+   "lines": [
+    {
+     "text": "Two more things worth naming precisely, even without a live measurement here.",
+     "start": 0.15,
+     "end": 4.843
+    },
+    {
+     "text": "A newer Postgres release lets a multicolumn index still be used even when a query's own condition skips the very first column, something earlier versions couldn't do.",
+     "start": 5.263,
+     "end": 16.611
+    },
+    {
+     "text": "And a genuinely different design choice in a different engine: clustering a table's actual row data under its primary key means a secondary lookup there costs an extra full tree traversal that a table storing rows separately from its indexes doesn't pay.",
+     "start": 17.032,
+     "end": 34.464
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 141,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A newer Postgres release lets a multicolumn index still be used even when a query's own condition skips the very first column, something earlier versions couldn't do.",
+     "said": "multicolumn",
+     "heard": "multi column"
+    }
+   ]
+  },
+  "09": {
+   "hash": "b59664f1acce55f5",
+   "takes": [
+    "1eb9fbe1f5d246d4d16f",
+    "0174d13acd175f3422d3",
+    "416ca4d6810c82ace03a"
+   ],
+   "duration": 30.027,
+   "lines": [
+    {
+     "text": "Pulling the whole topic back together.",
+     "start": 0.15,
+     "end": 2.623
+    },
+    {
+     "text": "Fanout keeps a real index's own depth small no matter how many rows get added, measured directly.",
+     "start": 3.043,
+     "end": 9.431
+    },
+    {
+     "text": "Packing pages tight or loose is a real, measured trade-off, not a guess. A space-saving duplicate representation shrinks a duplicate-heavy index to a fraction its size. And none of it needs to lock the whole tree to stay safe while writes are happening concurrently.",
+     "start": 9.851,
+     "end": 29.677
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.8,
+   "wpm": 140,
+   "wer": 0.02127659574468085,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Packing pages tight or loose is a real, measured trade-off, not a guess. A space-saving duplicate representation shrinks a duplicate-heavy index to a fraction its size. And none of it needs to lock the whole tree to stay safe while writes are happening concurrently.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "10": {
+   "hash": "9274845dc1faa1af",
+   "takes": [
+    "26ccb194aa63d1f0755f",
+    "0990d3c4effa94c2ee04",
+    "11ed0101c9930d2c62e2"
+   ],
+   "duration": 26.704,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through before the explanation lands.",
+     "start": 0.15,
+     "end": 4.964
+    },
+    {
+     "text": "A team sees this topic's own measurement \u2014 a space-saving duplicate representation shrank a duplicate-heavy index dramatically \u2014 and then redesigns their schema so that same column's values become almost entirely unique.",
+     "start": 5.384,
+     "end": 20.962
+    },
+    {
+     "text": "What happens to that space-saving benefit on the exact same index now?",
+     "start": 21.382,
+     "end": 26.354
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "fab504af2cc08e8b",
+   "takes": [
+    "37abc1c250aa0286084d",
+    "12251b8541b06d75ed9b",
+    "673005077e9736a3f558"
+   ],
+   "duration": 25.349,
+   "lines": [
+    {
+     "text": "It shrinks or disappears entirely, and the reason is the same mechanism in reverse.",
+     "start": 0.15,
+     "end": 6.994
+    },
+    {
+     "text": "The entire benefit came from packing tuples that shared identical values into one compact representation.",
+     "start": 7.414,
+     "end": 14.727
+    },
+    {
+     "text": "Once those values stop being duplicates, there's nothing left to pack together \u2014 the feature quietly becomes a no-op rather than a space saver.",
+     "start": 15.147,
+     "end": 24.999
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
