@@ -2548,7 +2548,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'LSM-tree write and read paths',
     syllabusTitle: 'LSM-tree write and read paths',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 5, title: 'B-Trees and Write-Optimized Trees', section: '5.2' },
     minutes: 13,
