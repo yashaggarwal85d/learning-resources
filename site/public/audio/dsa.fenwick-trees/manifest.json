@@ -1,0 +1,363 @@
+{
+ "topic": "dsa.fenwick-trees",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "c1a2d454f6e8f1b8",
+   "takes": [
+    "c0e9e91be0c83db95175",
+    "6eb50318696796cfc53a",
+    "6794a38bf48f5e6e7c29"
+   ],
+   "duration": 30.574,
+   "lines": [
+    {
+     "text": "Every structure from here back answered one question: is this key here, and where. This chapter asks something different about an array that keeps changing.",
+     "start": 0.15,
+     "end": 10.829
+    },
+    {
+     "text": "What's true about a stretch of positions, right now, while individual positions keep getting updated underneath you.",
+     "start": 11.249,
+     "end": 19.058
+    },
+    {
+     "text": "Scan the stretch for an answer and the cost grows with how many positions there are. Cache a running total instead, and an update just moves that same cost somewhere else.",
+     "start": 19.478,
+     "end": 30.224
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Scan the stretch for an answer and the cost grows with how many positions there are. Cache a running total instead, and an update just moves that same cost somewhere else.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "02": {
+   "hash": "77e8034658ed5652",
+   "takes": [
+    "c96a70628eef68ad8e97",
+    "e3ac93d4c34414a75c08",
+    "0df5eb6e24af069eef86"
+   ],
+   "duration": 25.912,
+   "lines": [
+    {
+     "text": "Here's the one piece of arithmetic the whole chapter runs on.",
+     "start": 0.15,
+     "end": 3.937
+    },
+    {
+     "text": "Every index owns a range of the array, and that range is set entirely by the index's own lowest set bit, the rightmost one bit in its binary form.",
+     "start": 4.357,
+     "end": 15.792
+    },
+    {
+     "text": "An index ending in a single one bit owns a short range of its own. An index that is a clean power of two owns almost everything beneath it.",
+     "start": 16.212,
+     "end": 25.562
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "ae5a2f5653193d24",
+   "takes": [
+    "745643b3772f260de75e",
+    "3b5d79c2ac84844bfea2"
+   ],
+   "duration": 17.448,
+   "lines": [
+    {
+     "text": "Before the reveal, a natural first guess is that fixing one position after a change means touching everything downstream of it.",
+     "start": 0.15,
+     "end": 9.844
+    },
+    {
+     "text": "Ask instead how far an update actually has to walk, if it only ever jumps by its own lowest set bit.",
+     "start": 10.264,
+     "end": 17.098
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "87dd69053483d1ea",
+   "takes": [
+    "6dc5555f6baca4e415ce",
+    "fe54c323ada0a77e9c2c"
+   ],
+   "duration": 14.864,
+   "lines": [
+    {
+     "text": "Each jump adds the current index's own lowest set bit, and the walk runs past the end of the array after only a few jumps.",
+     "start": 0.15,
+     "end": 8.225
+    },
+    {
+     "text": "Doubling the array's size would only add one more jump, not many more positions touched.",
+     "start": 8.645,
+     "end": 14.514
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "6fd6dfade30f7cb6",
+   "takes": [
+    "016acbfe61ef6d356354",
+    "65001b868f4ff0fe0e38"
+   ],
+   "duration": 16.771,
+   "lines": [
+    {
+     "text": "Watch the jumps land: a direct arithmetic walk, not a tree being climbed one node at a time.",
+     "start": 0.15,
+     "end": 7.348
+    },
+    {
+     "text": "A short handful of positions touched, forward, each one found by adding the previous index's own lowest set bit.",
+     "start": 7.768,
+     "end": 16.421
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c86abc5ceb0e0462",
+   "takes": [
+    "2ab7469e9ca07cc8b1a7",
+    "c40f22d09238871082e9"
+   ],
+   "duration": 18.169,
+   "lines": [
+    {
+     "text": "Before this reveal, notice the query runs the identical arithmetic in reverse, subtracting a lowest set bit instead of adding one.",
+     "start": 0.15,
+     "end": 9.88
+    },
+    {
+     "text": "Does that reverse walk take the same number of jumps the update did, or a different number entirely?",
+     "start": 10.3,
+     "end": 17.819
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "ee3ab74d0bc44d9e",
+   "takes": [
+    "f64e6c9d85fd9d0e58c4",
+    "bd764cbb81428efce947"
+   ],
+   "duration": 15.428,
+   "lines": [
+    {
+     "text": "The same count turns up here, but that's a property of these two particular positions, not a rule that an update and a query always match.",
+     "start": 0.15,
+     "end": 10.055
+    },
+    {
+     "text": "Pick a different starting position and the two counts can easily come apart.",
+     "start": 10.475,
+     "end": 15.078
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.4,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "25a60e5f5665ec70",
+   "takes": [
+    "c1f8f1cee331c5412cd0",
+    "9a68f3f9b7bb78c52a73"
+   ],
+   "duration": 17.486,
+   "lines": [
+    {
+     "text": "Same arithmetic, opposite direction: each jump now subtracts the current index's own lowest set bit instead of adding it.",
+     "start": 0.15,
+     "end": 9.132
+    },
+    {
+     "text": "A short handful of positions visited, and their own stored partial sums add straight up to the running total.",
+     "start": 9.552,
+     "end": 17.136
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d2f1a21a4b103394",
+   "takes": [
+    "cdee624d2076d2386a45",
+    "b092cc9a7302b9d0de33"
+   ],
+   "duration": 19.603,
+   "lines": [
+    {
+     "text": "A stretch between two positions is just one running total subtracted from another, nothing new to compute, only a difference to take.",
+     "start": 0.15,
+     "end": 9.44
+    },
+    {
+     "text": "The same pairing trick, run on two separate trees instead of one, turns a single update into a correction applied across an entire stretch at once.",
+     "start": 9.86,
+     "end": 19.253
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "d02b0d6fbc1f4389",
+   "takes": [
+    "7608000f47bf46dccd3c",
+    "e7d8a178dd03f4c49125"
+   ],
+   "duration": 17.083,
+   "lines": [
+    {
+     "text": "Before this reveal, resist the pull toward assuming a grid needs something smarter than the one-dimensional trick.",
+     "start": 0.15,
+     "end": 7.631
+    },
+    {
+     "text": "Ask plainly whether running the identical jump arithmetic once along each axis actually works, or whether a second dimension breaks it.",
+     "start": 8.051,
+     "end": 16.733
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "7bceea7722a00ff7",
+   "takes": [
+    "854eac27b0b5bca408be",
+    "953949911bd443651ddf"
+   ],
+   "duration": 15.197,
+   "lines": [
+    {
+     "text": "It works, nested exactly that way: the same jump arithmetic, run once along each axis in turn.",
+     "start": 0.15,
+     "end": 8.994
+    },
+    {
+     "text": "Nothing about the underlying bit trick changes. Only how many times it gets applied.",
+     "start": 9.414,
+     "end": 14.847
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.7,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "7d65458616deefba",
+   "takes": [
+    "443413bab35bf8ee9437",
+    "922e502a884c352d13d3"
+   ],
+   "duration": 16.328,
+   "lines": [
+    {
+     "text": "Two nested walks, one per axis, and the structure composes without needing any new idea.",
+     "start": 0.15,
+     "end": 7.253
+    },
+    {
+     "text": "The measured total here was checked directly against summing every cell by hand, not assumed from the one-dimensional case.",
+     "start": 7.673,
+     "end": 15.978
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "28558e04749b736c",
+   "takes": [
+    "0ec2ec907cd327c1aea5",
+    "3d306c1586000c04ddd7"
+   ],
+   "duration": 18.051,
+   "lines": [
+    {
+     "text": "Here's where every claimed saving gets checked against a real count instead of an argument.",
+     "start": 0.15,
+     "end": 5.598
+    },
+    {
+     "text": "Across the same batch of updates and lookups on the identical array, a naive cached running total touched far more positions in total than the Fenwick tree's own jumps did.",
+     "start": 6.018,
+     "end": 17.701
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
