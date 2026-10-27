@@ -1,0 +1,287 @@
+{
+ "topic": "rust.feature-flags-their-combinatorics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "9f734aac36d6d9cd",
+   "takes": [
+    "7579e0e5716a1309baf6",
+    "ec12018f6ae2ac2f1e6e"
+   ],
+   "duration": 12.932,
+   "lines": [
+    {
+     "text": "One crate here never asks for a feature its own dependency offers.",
+     "start": 0.15,
+     "end": 4.144
+    },
+    {
+     "text": "But a sibling crate, built right alongside it, does ask for that feature. Does the first crate's own output change anyway?",
+     "start": 4.864,
+     "end": 12.582
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "fce05fc4c4f48c8d",
+   "takes": [
+    "9995c204b819e717847b",
+    "a0c6d483c39091a9d9e5"
+   ],
+   "duration": 7.376,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Cargo builds one shared copy, and a sibling's own request reaches it too.",
+     "start": 1.84,
+     "end": 7.026
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "88403d24127b772a",
+   "takes": [
+    "5c59b7351991021d141c"
+   ],
+   "duration": 12.07,
+   "lines": [
+    {
+     "text": "Run it for real: built alone, it prints one plain word. Built together with that sibling, the identical crate prints a different word instead, and its own source never moved.",
+     "start": 0.15,
+     "end": 11.72
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "322e0f074b35d4a6",
+   "takes": [
+    "34f26df797e5685bc4ae",
+    "989bc0c50dbd16008e6d"
+   ],
+   "duration": 13.575,
+   "lines": [
+    {
+     "text": "Same two crates, but now the sibling asks for a different kind of feature, one that only adds something new instead of changing what is already there.",
+     "start": 0.15,
+     "end": 9.199
+    },
+    {
+     "text": "Does the first crate's own output change this time too?",
+     "start": 9.919,
+     "end": 13.225
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "3e69927d1aa22732",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "775435cdc5f794e77a83"
+   ],
+   "duration": 6.332,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "An additive feature never touches what was already there.",
+     "start": 2.386,
+     "end": 5.982
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 104,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "8b4b70e5b8cacba2",
+   "takes": [
+    "a1bfda12aafdce6ba1b4"
+   ],
+   "duration": 8.782,
+   "lines": [
+    {
+     "text": "Run it for real: alone or built together with that sibling, the identical crate prints the identical word both times.",
+     "start": 0.15,
+     "end": 8.432
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.0,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a223e90829a9177c",
+   "takes": [
+    "de6708dc4c0d77e54a55",
+    "e1a40e410e38c280cd1e"
+   ],
+   "duration": 23.366,
+   "lines": [
+    {
+     "text": "One crate here declares the identical dependency twice: once for its real build, and once just for its own tests, with an extra feature turned on only for those tests.",
+     "start": 0.15,
+     "end": 14.116
+    },
+    {
+     "text": "Under the resolver a modern project uses by default, does that test-only feature reach the real, non-test build anyway?",
+     "start": 14.836,
+     "end": 23.016
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "4a744a90d0333756",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "ba9ea388ad9dc2249291"
+   ],
+   "duration": 6.982,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "The modern resolver keeps a test-only request out of the real build.",
+     "start": 2.386,
+     "end": 6.632
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "54278cad3f5fc17a",
+   "takes": [
+    "3375b489e3da3b226b5a"
+   ],
+   "duration": 15.376,
+   "lines": [
+    {
+     "text": "Run it for real: the identical declaration, checked under the resolver an older project would default to instead, genuinely does leak into the real build. Checked under the modern resolver, it genuinely does not.",
+     "start": 0.15,
+     "end": 15.026
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "2720235a1cd3aa11",
+   "takes": [
+    "d97b2a50cf7b96992cc1",
+    "0eb5bdf3eb7a6b6336ca"
+   ],
+   "duration": 23.108,
+   "lines": [
+    {
+     "text": "The Cargo Book names both of these exact ideas directly, in its own words.",
+     "start": 0.15,
+     "end": 5.788
+    },
+    {
+     "text": "One line says a shared dependency is built once, with every requester's own features unified together. The other line says that is exactly why a feature should only ever add, never take away or change.",
+     "start": 6.208,
+     "end": 22.758
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "32b6e23df4a8dc57",
+   "takes": [
+    "3d094316ef759c538109",
+    "688d517d26eee257c50a",
+    "62941559d545d3edfaf0",
+    "4f35838825ff2e1d64c9"
+   ],
+   "duration": 49.26,
+   "lines": [
+    {
+     "text": "So here is what this topic's own small pair of crates is really standing in for: a feature is never a private decision one crate makes alone, because the moment a sibling shares its dependency, that sibling's own request reaches you too, whether you asked for it or not.",
+     "start": 0.15,
+     "end": 19.959
+    },
+    {
+     "text": "Staying purely additive is what keeps that reach harmless instead of dangerous.",
+     "start": 20.379,
+     "end": 25.317
+    },
+    {
+     "text": "And a resolver is not just an implementation detail either, since it is the real thing deciding whether even a feature meant only for tests can quietly cross into a build nobody meant it to touch.",
+     "start": 25.737,
+     "end": 40.166
+    },
+    {
+     "text": "None of that is a matter of style. It is a matter of exactly which combinations the real build graph can actually produce.",
+     "start": 40.586,
+     "end": 48.91
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
