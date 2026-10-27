@@ -2476,7 +2476,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Red-black trees',
     syllabusTitle: 'Red-black trees',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 4, title: 'Binary Search Trees and Balancing', section: '4.1' },
     minutes: 13,
