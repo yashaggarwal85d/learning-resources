@@ -1,0 +1,359 @@
+{
+ "topic": "rust.idempotency-keys-distributed-apis",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "fb2d2de845bf0bc7",
+   "takes": [
+    "379b7b8fa6ab0f9014a4",
+    "9f5315b469b0de005c26"
+   ],
+   "duration": 11.194,
+   "lines": [
+    {
+     "text": "Two different resources each get a request carrying the identical idempotency key string.",
+     "start": 0.15,
+     "end": 6.498
+    },
+    {
+     "text": "Does a real key's own scope keep them from colliding?",
+     "start": 7.218,
+     "end": 10.844
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "36e98f363e7a0698",
+   "takes": [
+    "9995c204b819e717847b",
+    "a38df3250e1dc4ca65ae"
+   ],
+   "duration": 4.802,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Scope is genuinely part of the key.",
+     "start": 1.84,
+     "end": 4.452
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -4.1,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0784849de5277bb0",
+   "takes": [
+    "8387b42fec808278c9ed"
+   ],
+   "duration": 9.933,
+   "lines": [
+    {
+     "text": "Run it for real: both resources genuinely ran their own real side effect, and each one's own stored response is genuinely distinct.",
+     "start": 0.15,
+     "end": 9.583
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "355cfd6de5f8ec4e",
+   "takes": [
+    "6976324d28c560110436",
+    "a4befce4a1318993a905"
+   ],
+   "duration": 14.524,
+   "lines": [
+    {
+     "text": "Now a duplicate request arrives, carrying the identical key, well within its own real TTL.",
+     "start": 0.15,
+     "end": 8.199
+    },
+    {
+     "text": "Does it genuinely replay the stored response, or does it run the side effect again?",
+     "start": 8.919,
+     "end": 14.174
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "4ac1cf0ce2b5faf9",
+   "takes": [
+    "545b792a309bbdba0fa6",
+    "ee58157be9e000f3dc50"
+   ],
+   "duration": 4.468,
+   "lines": [
+    {
+     "text": "It replays.",
+     "start": 0.15,
+     "end": 1.431
+    },
+    {
+     "text": "The side effect never runs again.",
+     "start": 1.851,
+     "end": 4.118
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.8,
+   "wpm": 107,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "132aac71d3274840",
+   "takes": [
+    "0992fb739b53c7be6621"
+   ],
+   "duration": 11.204,
+   "lines": [
+    {
+     "text": "Run it for real: the duplicate genuinely replayed the exact stored response, and the real side effect genuinely never ran a second time.",
+     "start": 0.15,
+     "end": 10.854
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "6531478d358896f9",
+   "takes": [
+    "b86901c85946118ac44e",
+    "a5a17b9319dd9f6c08dd"
+   ],
+   "duration": 14.669,
+   "lines": [
+    {
+     "text": "Now a second request, carrying the identical key, arrives while the first one is still genuinely running.",
+     "start": 0.15,
+     "end": 7.292
+    },
+    {
+     "text": "Is that genuinely caught, or does it race the first one into running the side effect twice?",
+     "start": 8.012,
+     "end": 14.319
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "7a2daa2124b6171c",
+   "takes": [
+    "35658f17966bd83a9393",
+    "39bb8465c3bf0d8c76ff"
+   ],
+   "duration": 4.532,
+   "lines": [
+    {
+     "text": "It's genuinely caught.",
+     "start": 0.15,
+     "end": 1.577
+    },
+    {
+     "text": "Only one request ever wins.",
+     "start": 1.997,
+     "end": 4.182
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -4.6,
+   "wpm": 106,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "39e5ef5284c07b63",
+   "takes": [
+    "fc76365b362219428275"
+   ],
+   "duration": 9.133,
+   "lines": [
+    {
+     "text": "Run it for real: the genuine race was genuinely caught, and the real side effect ran exactly once, not twice.",
+     "start": 0.15,
+     "end": 8.783
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e3b688a4f0cddbbc",
+   "takes": [
+    "8631144bccb314b8d851",
+    "6c8895fd30cfcbff2076"
+   ],
+   "duration": 9.271,
+   "lines": [
+    {
+     "text": "Once the key's own real TTL genuinely expires,",
+     "start": 0.15,
+     "end": 4.507
+    },
+    {
+     "text": "is the identical key genuinely treated as brand new?",
+     "start": 5.227,
+     "end": 8.921
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 110,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "55495cd71708f08f",
+   "takes": [
+    "9995c204b819e717847b",
+    "60a3a708f89df365c6fa"
+   ],
+   "duration": 5.191,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "An expired key is genuinely free again.",
+     "start": 1.84,
+     "end": 4.841
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 104,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "2e1fb7c4dda6baa7",
+   "takes": [
+    "d96e9a165fc630ab5889"
+   ],
+   "duration": 9.138,
+   "lines": [
+    {
+     "text": "Run it for real: the genuinely expired key was genuinely treated as new, and the real side effect genuinely ran again.",
+     "start": 0.15,
+     "end": 8.788
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.7,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "1bab871d1df60223",
+   "takes": [
+    "f2636c0a0b9669575116",
+    "82c0d4bdbd6b36cd27dc"
+   ],
+   "duration": 13.901,
+   "lines": [
+    {
+     "text": "Two real, independent sources on this exact mechanism agree, in their own words.",
+     "start": 0.15,
+     "end": 5.618
+    },
+    {
+     "text": "A finished retry replays the saved response; a genuinely concurrent one gets a real conflict instead.",
+     "start": 6.038,
+     "end": 13.551
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "18fc7f34d558ba53",
+   "takes": [
+    "6bed35799abf46e7b0e1",
+    "7687249ee2cc62f9f3c1",
+    "171819c34465010db75d"
+   ],
+   "duration": 43.151,
+   "lines": [
+    {
+     "text": "So here's what an idempotency key is actually buying a client that has no way to know whether its own last request landed: not certainty about the past, but a guarantee about what happens next.",
+     "start": 0.15,
+     "end": 15.27
+    },
+    {
+     "text": "The server can't tell the difference between a lost response and a lost request either, which is exactly why a stored answer, not a fresh guess, is the only safe thing to hand back on a retry.",
+     "start": 15.69,
+     "end": 29.354
+    },
+    {
+     "text": "And the hardest part was never the duplicate that arrives late; it was the one that arrives while the first copy is still mid-flight, which is why catching that overlap matters as much as remembering the answer afterward.",
+     "start": 29.774,
+     "end": 42.801
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.02857142857142857,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So here's what an idempotency key is actually buying a client that has no way to know whether its own last request landed: not certainty about the past, but a guarantee about what happens next.",
+     "said": "idempotency",
+     "heard": "idemposency"
+    }
+   ]
+  }
+ }
+}
