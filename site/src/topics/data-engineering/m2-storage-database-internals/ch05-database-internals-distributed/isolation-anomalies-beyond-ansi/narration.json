@@ -4,7 +4,7 @@
     {
       "lines": [
         "Two transactions. Both commit cleanly. Neither one throws a single error.",
-        "And ten dollars is still gone, with nothing in the database's own response hinting that it happened.",
+        "And real money is still gone, with nothing in the database's own response hinting that it happened.",
         "That's not a bug in Postgres. It's a real, named anomaly, and by the end of this you'll know exactly which one."
       ]
     },
@@ -38,7 +38,9 @@
       "lines": [
         "I built this one for real, against a real Postgres table.",
         "Transaction one reads one hundred, writes and commits one hundred ten.",
-        "Transaction two reads that exact same stale one hundred, writes and commits one hundred twenty, after transaction one already committed. The final balance is one hundred twenty. Transaction one's own ten dollars just vanished."
+        "Transaction two reads that exact same stale one hundred, writes and commits one hundred twenty, after transaction one already committed.",
+    "The final balance is one hundred twenty.",
+    "Transaction one's own money just vanished."
       ]
     },
     {
@@ -57,7 +59,7 @@
     },
     {
       "lines": [
-        "One more for you to sit with before I answer it.",
+        "One more to sit with.",
         "A transaction that performs no writes of its own at all, only reads.",
         "Can it still end up seeing a state that no real order of execution could ever have actually produced?"
       ],
