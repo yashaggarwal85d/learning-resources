@@ -4455,7 +4455,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Optimistic vs pessimistic concurrency control',
     syllabusTitle: 'Optimistic vs pessimistic concurrency control',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
     minutes: 15,
