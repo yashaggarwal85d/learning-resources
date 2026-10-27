@@ -1,0 +1,281 @@
+{
+ "topic": "rust.bounded-stages-buffer-ownership",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1000dc9799021563",
+   "takes": [
+    "ed2a16dc0e503c384049",
+    "8e063df8831e08b615d3"
+   ],
+   "duration": 22.652,
+   "lines": [
+    {
+     "text": "Here's a real pipeline whose own middle stage only ever hands a batch forward through a channel that holds a small, fixed number of them at once.",
+     "start": 0.15,
+     "end": 11.263
+    },
+    {
+     "text": "The stage at the far end is deliberately slow. Does memory keep piling up while the fast end waits on the slow one, or does something hold it back?",
+     "start": 11.983,
+     "end": 22.302
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "97225c0991636764",
+   "takes": [
+    "ed95e9998c4a1804e30a",
+    "4b4de721bd661676f636"
+   ],
+   "duration": 7.019,
+   "lines": [
+    {
+     "text": "Something holds it back.",
+     "start": 0.15,
+     "end": 1.464
+    },
+    {
+     "text": "Once that small channel fills up, the fast end simply has to wait its turn.",
+     "start": 1.884,
+     "end": 6.669
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.4,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "88c9ef81d2284108",
+   "takes": [
+    "6c204aa1ad26598bee2d"
+   ],
+   "duration": 15.253,
+   "lines": [
+    {
+     "text": "Run it for real: across an entire real run of many batches against that same slow ending, the most memory this pipeline ever holds at once stays small, just a handful of batches worth.",
+     "start": 0.15,
+     "end": 14.903
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "64238849dc6a7250",
+   "takes": [
+    "72c4f13c936b9e42d240",
+    "560159d5961bb555abf5"
+   ],
+   "duration": 21.171,
+   "lines": [
+    {
+     "text": "Now swap in a version whose channels have no real limit at all, and whose own stages each make a fresh copy of a batch before handing it onward.",
+     "start": 0.15,
+     "end": 11.079
+    },
+    {
+     "text": "Same fast beginning, same slow ending underneath it. Does its own peak memory land anywhere close to the first version?",
+     "start": 11.799,
+     "end": 20.821
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "db0a4f9fc6026785",
+   "takes": [
+    "28fe9513a744b0308178",
+    "69a277c7b2915ec9f8f9"
+   ],
+   "duration": 10.069,
+   "lines": [
+    {
+     "text": "Nowhere close.",
+     "start": 0.15,
+     "end": 1.51
+    },
+    {
+     "text": "With nothing to push back against, the fast end just keeps going, piling up copies the slow end hasn't gotten to yet.",
+     "start": 1.93,
+     "end": 9.719
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c277b991bc9adb6c",
+   "takes": [
+    "d9c7f77d979c211038e6"
+   ],
+   "duration": 12.436,
+   "lines": [
+    {
+     "text": "Run it for real: that second pipeline's own peak memory climbs to nearly the entire run's worth of bytes, because its fast end never once had a reason to pause.",
+     "start": 0.15,
+     "end": 12.086
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.5,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "b25ef3475fbfe32f",
+   "takes": [
+    "9b9770c0fdc1cd3041b8",
+    "f3610c3327a851f60dc6"
+   ],
+   "duration": 16.963,
+   "lines": [
+    {
+     "text": "Put those two real peaks side by side, from the identical workload, the identical slow ending underneath both.",
+     "start": 0.15,
+     "end": 9.102
+    },
+    {
+     "text": "Is that gap between them a small, incidental thing, or something sturdier than that?",
+     "start": 9.822,
+     "end": 16.613
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.2,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "b2dec5ff5209edb1",
+   "takes": [
+    "b1eff8dd5875af13e120",
+    "959bd82c9a06f6303141"
+   ],
+   "duration": 10.628,
+   "lines": [
+    {
+     "text": "Something sturdier.",
+     "start": 0.15,
+     "end": 1.67
+    },
+    {
+     "text": "It's a real, structural gap, many times over, that holds for as long as the fast end keeps outrunning the slow one.",
+     "start": 2.09,
+     "end": 10.278
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.3,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "0932cdd15281bffd",
+   "takes": [
+    "f22f7891bb5ed18c7f2b"
+   ],
+   "duration": 13.446,
+   "lines": [
+    {
+     "text": "Run it for real: the pipeline with no real limit peaks at several times what the bounded one ever reaches, for the identical workload and the identical slow ending.",
+     "start": 0.15,
+     "end": 13.096
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d75dbec69e3035c8",
+   "takes": [
+    "12f58a147762f4a153a1",
+    "b9f340fc7a22fda2700d"
+   ],
+   "duration": 22.457,
+   "lines": [
+    {
+     "text": "One real, well-known piece of documentation describes exactly this, in its own words.",
+     "start": 0.15,
+     "end": 7.059
+    },
+    {
+     "text": "A channel that's actually full rejects the next handoff until room opens back up. A channel with no real limit always accepts the handoff right away, with nothing behind it to ever say no.",
+     "start": 7.479,
+     "end": 22.107
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "899d3422d36afa91",
+   "takes": [
+    "c3d658ca16d8860cf863",
+    "44445fcbe1c21fa43789",
+    "ab05f559237b23b7406d"
+   ],
+   "duration": 38.683,
+   "lines": [
+    {
+     "text": "So here's what both of these real runs were really showing: moving a batch forward through a channel that can genuinely refuse it keeps a pipeline's own memory in check, no matter how far behind the slow end falls.",
+     "start": 0.15,
+     "end": 15.291
+    },
+    {
+     "text": "Copying that same batch into a channel that never refuses anything removes the only thing standing between a fast beginning and a pile of memory nobody asked for.",
+     "start": 15.711,
+     "end": 26.541
+    },
+    {
+     "text": "Either way, it's the identical real lesson: a limit that's only ever assumed isn't a limit at all, until something downstream can actually enforce it.",
+     "start": 26.961,
+     "end": 38.333
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
