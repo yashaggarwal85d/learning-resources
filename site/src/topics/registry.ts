@@ -4255,7 +4255,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'B-tree indexes in production',
     syllabusTitle: 'B-tree indexes in production',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
     minutes: 15,
