@@ -1,0 +1,393 @@
+{
+ "topic": "dsa.segment-trees-lazy-propagation",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1d60d401efaf472b",
+   "takes": [
+    "203700a7571e9fb2ac07",
+    "f492574bfd48c5e401e3",
+    "95717c5c9aa3d8705ef1"
+   ],
+   "duration": 31.355,
+   "lines": [
+    {
+     "text": "The last structure answered one specific question well: a running sum, one operator, nothing but one array and a little bit arithmetic.",
+     "start": 0.15,
+     "end": 11.504
+    },
+    {
+     "text": "But it has real limits. It can't tell you the smallest value in a stretch, and it can't apply one correction across an entire stretch at once.",
+     "start": 11.924,
+     "end": 21.67
+    },
+    {
+     "text": "This topic builds the structure that closes both gaps, for any operator that makes sense to combine, not just a sum.",
+     "start": 22.09,
+     "end": 31.005
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0e96b50da2c850c0",
+   "takes": [
+    "2f20dc2714a223cce897",
+    "dda6f89fa659da3bebe1",
+    "079a2f006d7b6abdad7b"
+   ],
+   "duration": 24.261,
+   "lines": [
+    {
+     "text": "Here's the one new picture this topic needs: a small binary tree, drawn above the array itself.",
+     "start": 0.15,
+     "end": 7.18
+    },
+    {
+     "text": "Every leaf holds one slot's own value. Every node above a leaf holds whatever its two children combine to.",
+     "start": 7.6,
+     "end": 14.867
+    },
+    {
+     "text": "Built once, from the bottom up \u2014 each node combines its own two children exactly once, nothing recomputed twice.",
+     "start": 15.287,
+     "end": 23.911
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "ef97e8660dc80ea5",
+   "takes": [
+    "ffdd29fbc38122d8b93a",
+    "7a9808eec0007950a93b"
+   ],
+   "duration": 17.627,
+   "lines": [
+    {
+     "text": "Before the reveal, a natural first guess is that answering a question about a stretch of positions means visiting a node for every position in it.",
+     "start": 0.15,
+     "end": 10.668
+    },
+    {
+     "text": "Ask instead whether the tree can skip straight past any branch whose own stretch doesn't matter at all.",
+     "start": 11.088,
+     "end": 17.277
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "22692cee5634bf4f",
+   "takes": [
+    "3705572c8909fb5c714d",
+    "b4a7b6b6de4867f3f2c4"
+   ],
+   "duration": 12.765,
+   "lines": [
+    {
+     "text": "A handful of nodes, not one per position and not the whole tree.",
+     "start": 0.15,
+     "end": 5.197
+    },
+    {
+     "text": "Doubling how many positions the array holds would only add one more level to climb, not many more nodes to visit.",
+     "start": 5.617,
+     "end": 12.415
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.7,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "396bc8e4b7f94fe8",
+   "takes": [
+    "b6ec642938585e722850",
+    "f3e98cc9a44a6030d5ff",
+    "042ee2a136e994141a7c"
+   ],
+   "duration": 21.669,
+   "lines": [
+    {
+     "text": "Watch the descent: any branch whose own stretch sits entirely inside the question gets used directly, no further.",
+     "start": 0.15,
+     "end": 8.009
+    },
+    {
+     "text": "Any branch whose own stretch sits entirely outside the question gets skipped without a second look.",
+     "start": 8.429,
+     "end": 15.327
+    },
+    {
+     "text": "Only a branch straddling the edge of the question gets split open to look further.",
+     "start": 15.747,
+     "end": 21.319
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c0e28f80444872a7",
+   "takes": [
+    "0d77714d49ca71c3a170",
+    "f08160a55160f92d66af"
+   ],
+   "duration": 19.154,
+   "lines": [
+    {
+     "text": "Here's the generalization the whole topic is built around: swap out the one operator plugged into every node's combine step, and the identical tree answers a different question.",
+     "start": 0.15,
+     "end": 12.839
+    },
+    {
+     "text": "Nothing about where the nodes sit, or how the descent skips branches, changes at all.",
+     "start": 13.259,
+     "end": 18.804
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "6961a1376e281cc5",
+   "takes": [
+    "97f413548ac1088837a2",
+    "005e0fa8b6b3849919bc",
+    "ff51940cd6f1faa0ede4"
+   ],
+   "duration": 29.345,
+   "lines": [
+    {
+     "text": "The identical structure, stored a second way: one flat list, no pointers, no recursion, each position's own neighbor fixed in advance by simple arithmetic.",
+     "start": 0.15,
+     "end": 11.713
+    },
+    {
+     "text": "A single position's own update climbs straight from its own leaf to the root, combining with its sibling at every step on the way up.",
+     "start": 12.133,
+     "end": 21.29
+    },
+    {
+     "text": "Same answers, every time, on every question \u2014 only how the structure is kept in memory changed.",
+     "start": 21.71,
+     "end": 28.995
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "989775edae987dcc",
+   "takes": [
+    "ed4de678acf031d19eb4",
+    "cb2a66620cebdd23e2e9"
+   ],
+   "duration": 24.095,
+   "lines": [
+    {
+     "text": "Before this reveal, notice the instinct: correcting an entire stretch at once sounds like it should cost one touch per position in that stretch.",
+     "start": 0.15,
+     "end": 10.779
+    },
+    {
+     "text": "Ask instead whether a single tag, sitting at one node whose own stretch already matches the correction, could stand in for touching every position underneath it.",
+     "start": 11.199,
+     "end": 23.745
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "540f55764a719de4",
+   "takes": [
+    "b1a57e6bfb1140fc3eea",
+    "d4f01f34a68a8acc80a7"
+   ],
+   "duration": 12.81,
+   "lines": [
+    {
+     "text": "It can, and it does: one tag, at one node, costing what a single-position update costs.",
+     "start": 0.15,
+     "end": 7.947
+    },
+    {
+     "text": "Nothing underneath that node gets touched at all, not yet.",
+     "start": 8.367,
+     "end": 12.46
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "1be2ff95d221cae2",
+   "takes": [
+    "c82bfdd3a89333d92e00",
+    "46fbbb31a09ed0fc5b85",
+    "e280bafb11347590ed09"
+   ],
+   "duration": 24.337,
+   "lines": [
+    {
+     "text": "A tag sits at a node on purpose, marking its entire stretch as corrected without visiting one position beneath it.",
+     "start": 0.15,
+     "end": 8.999
+    },
+    {
+     "text": "It stays there until some later question actually needs to see past that node and down into its own children.",
+     "start": 9.419,
+     "end": 16.531
+    },
+    {
+     "text": "Only then does the tag move down one level, handed off to both children before the question continues.",
+     "start": 16.951,
+     "end": 23.987
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Only then does the tag move down one level, handed off to both children before the question continues.",
+     "said": "handed",
+     "heard": "hand it"
+    }
+   ]
+  },
+  "09": {
+   "hash": "76801f13e55df0f7",
+   "takes": [
+    "be584ec44ca615f1c635",
+    "b89599a2937abafc3b3d",
+    "baa227ac4063c4ceab26"
+   ],
+   "duration": 32.526,
+   "lines": [
+    {
+     "text": "Here's the one place getting this wrong would actually break something real.",
+     "start": 0.15,
+     "end": 4.667
+    },
+    {
+     "text": "A node already carries one kind of pending correction. A second, different kind of correction arrives for the identical node before either one has moved down. Which one survives?",
+     "start": 5.087,
+     "end": 17.897
+    },
+    {
+     "text": "If the new correction simply overwrites the old base value outright, ask whether an earlier, still-pending adjustment to that value should still apply afterward, or whether it's simply gone.",
+     "start": 18.447,
+     "end": 32.176
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "c3c4aab122b2093d",
+   "takes": [
+    "a5db66855ed35629a2bf",
+    "9450903cacaada0e0fde"
+   ],
+   "duration": 26.058,
+   "lines": [
+    {
+     "text": "An overwrite discards whatever adjustment was pending before it \u2014 the old base value is gone, so an adjustment to it no longer means anything.",
+     "start": 0.15,
+     "end": 10.139
+    },
+    {
+     "text": "The reverse direction behaves differently: a later adjustment, arriving after an overwrite is already pending, folds straight into that overwrite's own value instead of sitting beside it as a second, separate correction.",
+     "start": 10.559,
+     "end": 25.708
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e8aeffa5a7331269",
+   "takes": [
+    "4de980cb6bba8d5c55c3",
+    "2b91d94c0884b687c6ef",
+    "ee728b480d614f498684"
+   ],
+   "duration": 31.1,
+   "lines": [
+    {
+     "text": "Here's where the real cost gets checked against a count, not an argument.",
+     "start": 0.15,
+     "end": 4.705
+    },
+    {
+     "text": "Across the same batch of stretch-wide corrections on the identical array, a version with no deferred tags touched every single position in every stretch, every time.",
+     "start": 5.125,
+     "end": 19.135
+    },
+    {
+     "text": "The version with deferred tags touched only a small, bounded handful of nodes per correction \u2014 the saving this whole mechanism exists to deliver, measured directly.",
+     "start": 19.555,
+     "end": 30.75
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
