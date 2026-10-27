@@ -1,0 +1,305 @@
+{
+ "topic": "rust.cache-lines-false-sharing",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "756246072800b03f",
+   "takes": [
+    "a4d39a73974896186727",
+    "bf6b7d2831805d80a202"
+   ],
+   "duration": 11.428,
+   "lines": [
+    {
+     "text": "Two unrelated counters, one touched by each of two cores, happen to share one real cache line.",
+     "start": 0.15,
+     "end": 7.061
+    },
+    {
+     "text": "Does writing one counter ever cost the other core anything?",
+     "start": 7.781,
+     "end": 11.078
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Two unrelated counters, one touched by each of two cores, happen to share one real cache line.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "998204c31193f041",
+   "takes": [
+    "9995c204b819e717847b",
+    "e93a8d16f4a99d7ea497"
+   ],
+   "duration": 5.947,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Every write can invalidate the other core's own cached copy.",
+     "start": 1.84,
+     "end": 5.597
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.6,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "f29ace6131e70dc8",
+   "takes": [
+    "7595a15583129b2d33ab"
+   ],
+   "duration": 12.635,
+   "lines": [
+    {
+     "text": "Run it for real: the shared layout genuinely pays a real invalidation cost on every single alternating write between the two cores, even though the two counters are otherwise unrelated.",
+     "start": 0.15,
+     "end": 12.285
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.03333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the shared layout genuinely pays a real invalidation cost on every single alternating write between the two cores, even though the two counters are otherwise unrelated.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "d305d98dda5c8dda",
+   "takes": [
+    "ee50d664903629d6087f",
+    "7a04167e8439f4b49c62"
+   ],
+   "duration": 10.172,
+   "lines": [
+    {
+     "text": "Now pad each counter onto its own real cache line instead.",
+     "start": 0.15,
+     "end": 4.353
+    },
+    {
+     "text": "Does that genuinely remove the cost, or only reduce it?",
+     "start": 5.073,
+     "end": 9.822
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now pad each counter onto its own real cache line instead.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "552ac8eded3eb9f4",
+   "takes": [
+    "169ad7cfb96eddc9bdff",
+    "6894847e17b25ba7771e"
+   ],
+   "duration": 4.407,
+   "lines": [
+    {
+     "text": "It genuinely removes it.",
+     "start": 0.15,
+     "end": 1.863
+    },
+    {
+     "text": "Entirely, down to zero.",
+     "start": 2.283,
+     "end": 4.057
+    }
+   ],
+   "lufs": -15.5,
+   "true_peak": -2.5,
+   "wpm": 109,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "657a4f7b5e87fd33",
+   "takes": [
+    "a434d24e8e32548e52b3"
+   ],
+   "duration": 11.9,
+   "lines": [
+    {
+     "text": "Run it for real: the padded layout genuinely avoids every real cross-core invalidation, at the identical sequence of writes the shared layout paid for.",
+     "start": 0.15,
+     "end": 11.55
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.6,
+   "wpm": 126,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the padded layout genuinely avoids every real cross-core invalidation, at the identical sequence of writes the shared layout paid for.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "05": {
+   "hash": "1d75b4df0b4339ec",
+   "takes": [
+    "b0923a13867ce33d1b65",
+    "a2c28e259fb8e247ee5a"
+   ],
+   "duration": 12.775,
+   "lines": [
+    {
+     "text": "Run both layouts again, but with far more operations this time.",
+     "start": 0.15,
+     "end": 4.533
+    },
+    {
+     "text": "Does the shared layout's own real cost grow, or does it stay the same no matter how much work runs?",
+     "start": 5.253,
+     "end": 12.425
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "6b87c6dc8eb9935c",
+   "takes": [
+    "8fc180e68e81c5c30c47",
+    "855f598f1de2be5e239c"
+   ],
+   "duration": 4.723,
+   "lines": [
+    {
+     "text": "Yes, it genuinely grows.",
+     "start": 0.15,
+     "end": 1.661
+    },
+    {
+     "text": "With every single additional operation.",
+     "start": 2.081,
+     "end": 4.373
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -5.0,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "e31755b93b0c7fcd",
+   "takes": [
+    "a06afe336dedf6f5b61e"
+   ],
+   "duration": 14.004,
+   "lines": [
+    {
+     "text": "Run it for real: the shared layout's own real cost genuinely grows with more operations, while the padded layout's own real cost stays genuinely at zero no matter how many run.",
+     "start": 0.15,
+     "end": 13.654
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.0,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "4a903ff60ffcd517",
+   "takes": [
+    "f2636c0a0b9669575116",
+    "c389c1ede881d7c4e737"
+   ],
+   "duration": 14.28,
+   "lines": [
+    {
+     "text": "Two real, independent sources on this exact mechanism agree, in their own words.",
+     "start": 0.15,
+     "end": 5.618
+    },
+    {
+     "text": "Updating one piece of data invalidates the whole real cache line it belongs to, and padding is the real, standard fix.",
+     "start": 6.038,
+     "end": 13.931
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.3,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "f071c229c430468e",
+   "takes": [
+    "63b606e94575b9b7a085",
+    "3a4017dc1c4df9cf366e",
+    "c6cbb0470ef78b79294b"
+   ],
+   "duration": 56.016,
+   "lines": [
+    {
+     "text": "So here's the real reason this cost is so easy to miss: nothing about these two counters looks wrong in the source code, since neither thread ever touches the other's variable, and that is exactly what makes the bug invisible to a correctness reviewer.",
+     "start": 0.15,
+     "end": 17.427
+    },
+    {
+     "text": "The hardware, not the program, is the one deciding the real unit of sharing, and it moves data in whole cache lines, so two values a programmer considers completely separate can still be glued together the moment the allocator happens to place them close enough.",
+     "start": 17.847,
+     "end": 35.492
+    },
+    {
+     "text": "That also closes this whole chapter's own real argument: a program's own cost can hide in a statistic nobody looked at, in a function nobody suspected, or simply in where two unrelated bytes happened to land, and all three need the identical discipline of measuring instead of assuming.",
+     "start": 35.912,
+     "end": 55.666
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
