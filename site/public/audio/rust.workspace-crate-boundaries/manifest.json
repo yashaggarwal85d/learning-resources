@@ -1,0 +1,287 @@
+{
+ "topic": "rust.workspace-crate-boundaries",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e336f17d395d0fd7",
+   "takes": [
+    "ee37708eb7c756ab0ef5",
+    "785ca34808070c59de4b"
+   ],
+   "duration": 13.29,
+   "lines": [
+    {
+     "text": "A real workspace, two real crates, one depending on the other, gets built once.",
+     "start": 0.15,
+     "end": 6.644
+    },
+    {
+     "text": "Now only the dependent crate's own source changes. Does the one it depends on rebuild too?",
+     "start": 7.364,
+     "end": 12.94
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "43dd78a4ff89ee51",
+   "takes": [
+    "d3a54d7c2cf79e3b4304",
+    "e45da26120df47e25c10"
+   ],
+   "duration": 4.867,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.181
+    },
+    {
+     "text": "Only the crate that actually changed rebuilds.",
+     "start": 1.601,
+     "end": 4.517
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "9dd5f237d75957d3",
+   "takes": [
+    "60d72a35e746f350edf8"
+   ],
+   "duration": 11.302,
+   "lines": [
+    {
+     "text": "Run it for real: the crate being depended on keeps the identical real build artifact it already had; only the one that actually changed gets a new one.",
+     "start": 0.15,
+     "end": 10.952
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "9f7275207e048831",
+   "takes": [
+    "38130a68cb860fceb257",
+    "ad15a168e211c744c2f0"
+   ],
+   "duration": 14.72,
+   "lines": [
+    {
+     "text": "The identical workspace, but now it's the other crate's own source that changes, the one everything else depends on.",
+     "start": 0.15,
+     "end": 8.343
+    },
+    {
+     "text": "Does the dependent crate have to rebuild too, even though its own source never moved?",
+     "start": 9.063,
+     "end": 14.37
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -2.8,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "1bfdce7a7f417046",
+   "takes": [
+    "9995c204b819e717847b",
+    "15e8de839c4f48f8a9e3"
+   ],
+   "duration": 6.29,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "It depends on the one that changed, so it has to rebuild.",
+     "start": 1.84,
+     "end": 5.94
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -3.8,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "d2d96c6711c80d6c",
+   "takes": [
+    "0d3a8c6eb12d118223ff"
+   ],
+   "duration": 10.504,
+   "lines": [
+    {
+     "text": "Run it for real: both crates now carry a genuinely newer build than before, because the dependency itself is what actually changed.",
+     "start": 0.15,
+     "end": 10.154
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "73b0a088e0246582",
+   "takes": [
+    "b820c1f5d3e475a6b0e0",
+    "95cfc084930d054028f5"
+   ],
+   "duration": 14.73,
+   "lines": [
+    {
+     "text": "This workspace has one rule written down exactly once: no crate in it is allowed to contain unsafe code.",
+     "start": 0.15,
+     "end": 7.033
+    },
+    {
+     "text": "A real unsafe block gets added to one member crate anyway. Does that one rule genuinely catch it?",
+     "start": 7.753,
+     "end": 14.38
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "fa9275d63210b3f1",
+   "takes": [
+    "9995c204b819e717847b",
+    "1628d56253440b2659cd"
+   ],
+   "duration": 4.865,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The real build itself refuses to finish.",
+     "start": 1.84,
+     "end": 4.515
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d3ee2c157cccc990",
+   "takes": [
+    "14c8c02b1662cfb425e8"
+   ],
+   "duration": 15.936,
+   "lines": [
+    {
+     "text": "Run it for real: the build genuinely fails the moment that real violation exists, and genuinely succeeds again the moment it's removed, with the shared rule itself never touched at all.",
+     "start": 0.15,
+     "end": 15.586
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "db67e844ff976067",
+   "takes": [
+    "34cc44e1fecccaff0cf4",
+    "4f2640a0f74135becf72"
+   ],
+   "duration": 20.299,
+   "lines": [
+    {
+     "text": "Two real, independent sources name both of these exact ideas directly, in their own words.",
+     "start": 0.15,
+     "end": 6.809
+    },
+    {
+     "text": "One names what a crate actually is as a unit of building and linking; the other names exactly where a shared dependency or a shared rule gets written down once for an entire workspace.",
+     "start": 7.229,
+     "end": 19.949
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "9260b3cfa4f421a5",
+   "takes": [
+    "8c7a15fa7cbf03d557d9",
+    "4b0ca32c71c566bd523f",
+    "8cf373b8198731ac3486",
+    "f9bb58365bc27e62ace3"
+   ],
+   "duration": 60.835,
+   "lines": [
+    {
+     "text": "So here's what this topic's own small workspace is really standing in for: splitting a project along the wrong line doesn't just look messy, it has a real, measurable cost every single time anyone builds it.",
+     "start": 0.15,
+     "end": 17.348
+    },
+    {
+     "text": "The crate is the thing that actually gets rebuilt, the dependency between two crates is the thing that actually decides how far a change spreads, and a rule written down once at the top is the thing that actually gets enforced the same way for everyone underneath it.",
+     "start": 17.768,
+     "end": 40.98
+    },
+    {
+     "text": "None of that comes from habit or convention; it comes from exactly where the real lines were drawn.",
+     "start": 41.4,
+     "end": 48.735
+    },
+    {
+     "text": "And that's the real question the rest of this chapter keeps asking in different shapes: once more than one crate exists, what exactly is shared, and what exactly is each one's own?",
+     "start": 49.155,
+     "end": 60.485
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
