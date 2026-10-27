@@ -2602,7 +2602,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Tournament and loser trees',
     syllabusTitle: 'Tournament and loser trees',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 6, title: 'Heaps and Priority Queues', section: '6.2' },
     minutes: 13,
