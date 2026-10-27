@@ -1,0 +1,448 @@
+{
+ "topic": "de.vacuum-bloat-transaction-id",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "05b22243c15b55c3",
+   "takes": [
+    "2a6f5b938386bf24e9f7",
+    "a1ea1af7e8245c02b5cb",
+    "52eb34383494a9d03e10"
+   ],
+   "duration": 18.915,
+   "lines": [
+    {
+     "text": "The last topic left you with one uncomfortable fact.",
+     "start": 0.15,
+     "end": 3.585
+    },
+    {
+     "text": "Postgres never changes a row where it sits. An update just writes a new copy and walks away from the old one.",
+     "start": 4.005,
+     "end": 12.477
+    },
+    {
+     "text": "Do that forever, and nothing cleans itself up on its own. Something else has to.",
+     "start": 12.897,
+     "end": 18.565
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0bb2d3c64232e12c",
+   "takes": [
+    "7b896e790893d83869bf",
+    "120032985f12dda685d0",
+    "227eb46e54527984fc67"
+   ],
+   "duration": 25.95,
+   "lines": [
+    {
+     "text": "I deleted half the rows in a real table on this sandbox's own cluster, then asked Postgres how many of them it still considers dead weight.",
+     "start": 0.15,
+     "end": 10.364
+    },
+    {
+     "text": "The answer came back exactly that many, straight from the engine's own bookkeeping, not a guess.",
+     "start": 10.784,
+     "end": 18.086
+    },
+    {
+     "text": "Only once I ran the cleanup command did that number drop. Deleting a row and reclaiming its space are two separate events.",
+     "start": 18.506,
+     "end": 25.6
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "550d5883220b3005",
+   "takes": [
+    "6baf3684dae5e0e9e4c1",
+    "cb1d5a2036e5c076bcb2",
+    "33c1703f0da8b2a14ba7"
+   ],
+   "duration": 20.7,
+   "lines": [
+    {
+     "text": "Here's what actually surprised me.",
+     "start": 0.15,
+     "end": 1.814
+    },
+    {
+     "text": "I updated three hundred rows one way, and the table's own index never grew by a single byte. Updated the same rows a different way, and it doubled.",
+     "start": 2.234,
+     "end": 12.847
+    },
+    {
+     "text": "Same table, same row count, same number of updates. The only difference was which column I touched.",
+     "start": 13.267,
+     "end": 20.35
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "5c33d2661e1e1ff7",
+   "takes": [
+    "3c1a95c101c529b195eb",
+    "4ecb91e72b3e1cfd8c21",
+    "358b9b1823a58ed34a28"
+   ],
+   "duration": 16.155,
+   "lines": [
+    {
+     "text": "Picture a table that keeps getting bigger, and nobody can point to a slow query or a bad plan.",
+     "start": 0.15,
+     "end": 6.858
+    },
+    {
+     "text": "Autovacuum's logs show it running right on schedule. So what's actually stopping it from doing its job?",
+     "start": 7.278,
+     "end": 13.696
+    },
+    {
+     "text": "Just sit with that.",
+     "start": 14.246,
+     "end": 15.805
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "844ce38727db30bb",
+   "takes": [
+    "2b345773a1628dcf31af",
+    "9c85c2ab7534a7dac8f8",
+    "cb84eb88b4a7b7aca01d"
+   ],
+   "duration": 20.842,
+   "lines": [
+    {
+     "text": "It's not falling behind. That's the instinct, because load is usually the answer to why something's slow.",
+     "start": 0.15,
+     "end": 6.544
+    },
+    {
+     "text": "But a vacuum that runs and reclaims nothing isn't broken. It's being careful.",
+     "start": 6.964,
+     "end": 12.002
+    },
+    {
+     "text": "Something, somewhere, is still holding onto a view of the table old enough that today's cleanup isn't safe yet.",
+     "start": 12.422,
+     "end": 20.492
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Something, somewhere, is still holding onto a view of the table old enough that today's cleanup isn't safe yet.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "05": {
+   "hash": "72e42b9390d3ccd4",
+   "takes": [
+    "784efd316da6308b0513",
+    "9196bbe69160b3072b13",
+    "1ef3cec2f9089a53dece"
+   ],
+   "duration": 26.842,
+   "lines": [
+    {
+     "text": "So what actually holds that view open? Postgres's own documentation names exactly three things.",
+     "start": 0.15,
+     "end": 7.262
+    },
+    {
+     "text": "A transaction somebody forgot to close. A two phase commit left half finished. A replica's slot nobody dropped after that replica was decommissioned.",
+     "start": 7.682,
+     "end": 19.091
+    },
+    {
+     "text": "Three completely different situations, and from the cleanup job's point of view, they look identical.",
+     "start": 19.511,
+     "end": 26.492
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 116,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So what actually holds that view open? Postgres's own documentation names exactly three things.",
+     "said": "postgress",
+     "heard": "post gress"
+    },
+    {
+     "line": "A transaction somebody forgot to close. A two phase commit left half finished. A replica's slot nobody dropped after that replica was decommissioned.",
+     "said": "replicas",
+     "heard": "replica"
+    }
+   ]
+  },
+  "06": {
+   "hash": "35c0ff9b4a959d14",
+   "takes": [
+    "8ea4cd27c80bed48ac76",
+    "e9ed2e555dd2fc3d8fea",
+    "9f0ed8c78ff18b7ae8b9"
+   ],
+   "duration": 25.746,
+   "lines": [
+    {
+     "text": "I made that invisible thing visible by holding one transaction open on purpose.",
+     "start": 0.15,
+     "end": 6.24
+    },
+    {
+     "text": "Six hundred updates landed on the same table while it sat there. I ran the cleanup command anyway, mid experiment, just to see.",
+     "start": 6.66,
+     "end": 15.354
+    },
+    {
+     "text": "It ran. It finished without error. It reclaimed not one of those six hundred dead rows, until I let that transaction go.",
+     "start": 15.774,
+     "end": 25.396
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3161b03693e7992e",
+   "takes": [
+    "8ec9e1e251a04e896970",
+    "c0c911c5660b2b61912c",
+    "a5b16b361807dcfb8a7f"
+   ],
+   "duration": 25.994,
+   "lines": [
+    {
+     "text": "So how does autovacuum actually decide when to show up, if not on a timer?",
+     "start": 0.15,
+     "end": 5.264
+    },
+    {
+     "text": "It watches one number per table: how many rows changed since the last pass, measured against a threshold built from that table's own size.",
+     "start": 5.814,
+     "end": 15.595
+    },
+    {
+     "text": "Cross it, and a worker starts. There's no clock involved at all, which is exactly why 'it just ran an hour ago' tells you nothing.",
+     "start": 16.015,
+     "end": 25.644
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "fa4c33e3f06a2982",
+   "takes": [
+    "7399300ca4142d268522",
+    "65cad93e68d6823f9a20",
+    "af5498843e1540985427",
+    "aea8439324701d738bfd"
+   ],
+   "duration": 39.915,
+   "lines": [
+    {
+     "text": "Here's the part that makes all of this matter beyond disk space.",
+     "start": 0.15,
+     "end": 4.449
+    },
+    {
+     "text": "Postgres identifies every transaction with a number that eventually runs out and wraps back around to the start, like a clock face.",
+     "start": 4.869,
+     "end": 13.82
+    },
+    {
+     "text": "Freezing a row is what makes that safe \u2014 it tells Postgres, permanently, that this row is always in the past, no matter where the clock hand is.",
+     "start": 14.24,
+     "end": 24.289
+    },
+    {
+     "text": "Skip that for long enough, and Postgres doesn't corrupt your data. It simply refuses to take another write. Sentry's own production database did exactly that, for most of a working day, back in twenty fifteen.",
+     "start": 24.709,
+     "end": 39.565
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.027777777777777776,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Skip that for long enough, and Postgres doesn't corrupt your data. It simply refuses to take another write. Sentry's own production database did exactly that, for most of a working day, back in twenty fifteen.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "09": {
+   "hash": "37c6c808ba48d02f",
+   "takes": [
+    "5414b797b1bb40612dca",
+    "cdabcf452e0ffc3ff2e1",
+    "d037d5c0596fa1c67a68"
+   ],
+   "duration": 22.762,
+   "lines": [
+    {
+     "text": "So pull all of that together.",
+     "start": 0.15,
+     "end": 2.054
+    },
+    {
+     "text": "A dead row nobody reclaimed. A table that keeps growing for no visible reason. A whole cluster that one day just stops accepting writes.",
+     "start": 2.474,
+     "end": 14.353
+    },
+    {
+     "text": "Different scales, same root cause every time: something nobody's watching is holding a horizon open.",
+     "start": 14.773,
+     "end": 22.412
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A dead row nobody reclaimed. A table that keeps growing for no visible reason. A whole cluster that one day just stops accepting writes.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "10": {
+   "hash": "c847ccb882efec38",
+   "takes": [
+    "9dc5605df78aec638a80",
+    "6552937d1a71e5a287ed",
+    "a2781fb6b5914f482b6c"
+   ],
+   "duration": 20.674,
+   "lines": [
+    {
+     "text": "Last one. Sentry's database just hit that wall and stopped taking writes.",
+     "start": 0.15,
+     "end": 5.989
+    },
+    {
+     "text": "Somebody on the team suggests the obvious fix: turn autovacuum off so it quits interfering with recovery.",
+     "start": 6.409,
+     "end": 13.966
+    },
+    {
+     "text": "Before I tell you what they actually did, ask yourself whether that suggestion even makes sense.",
+     "start": 14.386,
+     "end": 20.324
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Last one. Sentry's database just hit that wall and stopped taking writes.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "Somebody on the team suggests the obvious fix: turn autovacuum off so it quits interfering with recovery.",
+     "said": "autovacuum",
+     "heard": "auto vacuum"
+    }
+   ]
+  },
+  "10a": {
+   "hash": "38326f7faa2f5ee8",
+   "takes": [
+    "b9d0a8a01786eb8acd99",
+    "8b66b1159661aab41959",
+    "1bc2f163e12153e8936b"
+   ],
+   "duration": 28.067,
+   "lines": [
+    {
+     "text": "Sentry's own writeup calls that exact suggestion out by name, because it's what everybody reaches for first.",
+     "start": 0.15,
+     "end": 6.815
+    },
+    {
+     "text": "It's backwards. Autovacuum isn't the thing fighting you during a wraparound crisis \u2014 it's the only thing capable of digging you out of one.",
+     "start": 7.235,
+     "end": 15.977
+    },
+    {
+     "text": "What actually worked was finding what was pinning the cleanup, giving the vacuum already running room to finish, and only then fixing the settings that let it get this bad.",
+     "start": 16.397,
+     "end": 27.717
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Sentry's own writeup calls that exact suggestion out by name, because it's what everybody reaches for first.",
+     "said": "writeup",
+     "heard": "write up"
+    },
+    {
+     "line": "It's backwards. Autovacuum isn't the thing fighting you during a wraparound crisis \u2014 it's the only thing capable of digging you out of one.",
+     "said": "autovacuum",
+     "heard": "auto vacuum"
+    }
+   ]
+  }
+ }
+}
