@@ -1,0 +1,281 @@
+{
+ "topic": "rust.parsers-as-security-boundaries",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0c616c8ba094e576",
+   "takes": [
+    "262b81072f3d35933a5c",
+    "21b302a55ddc2b1a4c05"
+   ],
+   "duration": 21.399,
+   "lines": [
+    {
+     "text": "Here's a parser that trusts a number someone else sent it. It reads that number, and uses it right away to cut a piece out of a real buffer, with no second look at how much is actually in there.",
+     "start": 0.15,
+     "end": 14.061
+    },
+    {
+     "text": "Hand it a real message that claims there's far more left than there genuinely is. What happens?",
+     "start": 14.781,
+     "end": 21.049
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "87b093ff4ad8de57",
+   "takes": [
+    "1afe07aafa18a18aa749",
+    "03829a1d54089dd2ad8c"
+   ],
+   "duration": 8.737,
+   "lines": [
+    {
+     "text": "It breaks, genuinely.",
+     "start": 0.15,
+     "end": 2.221
+    },
+    {
+     "text": "Cutting past the real end of something that isn't there long enough doesn't just fail quietly.",
+     "start": 2.641,
+     "end": 8.387
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "55715e99cfb4ed74",
+   "takes": [
+    "d78cd64e0db44a88f7b5"
+   ],
+   "duration": 16.327,
+   "lines": [
+    {
+     "text": "Run it for real: the parser that never checks genuinely crashes the moment it tries to cut past the real end. A second parser, built to check that number first, turns the identical message away cleanly, nothing crashes at all.",
+     "start": 0.15,
+     "end": 15.977
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "5f79744bbcba3381",
+   "takes": [
+    "77d11c171aa47aa97775",
+    "97a65e09562d92069e61"
+   ],
+   "duration": 19.978,
+   "lines": [
+    {
+     "text": "Now try a number that's actually honest about the real buffer, genuinely small enough to fit inside it.",
+     "start": 0.15,
+     "end": 6.797
+    },
+    {
+     "text": "But this format has its own separate real rule: nothing this big is ever allowed through, no matter how honest the number is. Does checking the buffer alone catch that too?",
+     "start": 7.517,
+     "end": 19.628
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "458582d6133d33aa",
+   "takes": [
+    "fe93107065f7251ba9e1",
+    "f5a746adacaf56824578"
+   ],
+   "duration": 9.34,
+   "lines": [
+    {
+     "text": "No, it doesn't.",
+     "start": 0.15,
+     "end": 1.077
+    },
+    {
+     "text": "Fitting inside what's actually there and obeying a separate, real limit are two different questions entirely.",
+     "start": 1.497,
+     "end": 8.99
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.2,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "30645e00a7311ee9",
+   "takes": [
+    "95b2a13408094fd6578e"
+   ],
+   "duration": 15.003,
+   "lines": [
+    {
+     "text": "Run it for real: the parser that only checks the buffer lets the oversized one straight through, since nothing in it ever asks the second question. The one built to check the real limit, separately, turns it away.",
+     "start": 0.15,
+     "end": 14.653
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "778d88659e4b0419",
+   "takes": [
+    "de813b3d3a340e986bb0",
+    "2e2595c8555bcc4365ca"
+   ],
+   "duration": 20.875,
+   "lines": [
+    {
+     "text": "Take two real numbers, each one large enough on its own, and just add them together, the plain way, in exactly the kind of build that actually ships.",
+     "start": 0.15,
+     "end": 10.432
+    },
+    {
+     "text": "When that real sum genuinely runs past what a number that size can hold, does it come back looking obviously, enormously wrong?",
+     "start": 11.152,
+     "end": 20.525
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "d6e2ed6765028998",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "713285e7b8603e092286"
+   ],
+   "duration": 8.563,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "It quietly wraps back around to something small, which looks like nothing went wrong at all.",
+     "start": 2.386,
+     "end": 8.213
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "c305874e784b2422",
+   "takes": [
+    "6c19504e60a6d941627b"
+   ],
+   "duration": 16.163,
+   "lines": [
+    {
+     "text": "Run it for real: the plain addition of two numbers that genuinely run past their own limit comes back small and ordinary-looking. The version that actually checks for that limit reports, correctly, that something real went wrong.",
+     "start": 0.15,
+     "end": 15.813
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d56028f86bc10c41",
+   "takes": [
+    "7e868ebb0f1d0ddf5129",
+    "82e93591b98c3c56583c"
+   ],
+   "duration": 22.802,
+   "lines": [
+    {
+     "text": "One real page describes exactly what that checking version of addition promises: it reports that nothing fits, instead of quietly handing back a number that's wrong.",
+     "start": 0.15,
+     "end": 11.302
+    },
+    {
+     "text": "A second real page says plainly that the kind of build meant for actually shipping leaves that checking turned off, by default, unless someone turns it back on.",
+     "start": 11.722,
+     "end": 22.453
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "02a43d10bf47a286",
+   "takes": [
+    "c5fe9ab8cfad59fd2f50",
+    "f16b1fa18810414b79d3",
+    "cf4805f41b0ad1561d40"
+   ],
+   "duration": 48.215,
+   "lines": [
+    {
+     "text": "So here's what this topic's own two real comparisons were really standing in for: a number that genuinely fits what's there can still break a separate, real rule about how big anything's ever allowed to be.",
+     "start": 0.15,
+     "end": 17.078
+    },
+    {
+     "text": "And a sum that genuinely runs past its own limit doesn't announce itself. It comes back small, ordinary, and perfectly convincing, right up until something downstream trusts it.",
+     "start": 17.498,
+     "end": 31.928
+    },
+    {
+     "text": "Checking both, on purpose, every time, is the whole real difference between a boundary that exists because someone decided it should, and one that only exists by accident, the moment it finally gets tested.",
+     "start": 32.348,
+     "end": 47.865
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
