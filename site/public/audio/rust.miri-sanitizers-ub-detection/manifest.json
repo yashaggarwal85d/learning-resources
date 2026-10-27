@@ -1,0 +1,311 @@
+{
+ "topic": "rust.miri-sanitizers-ub-detection",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "be4cb86c9564604c",
+   "takes": [
+    "4f473b826438717943db",
+    "0c7f5aa36ad21e5959e1"
+   ],
+   "duration": 16.526,
+   "lines": [
+    {
+     "text": "A real interpreter runs one program with a real branch, and this run takes the branch whose every operation stays inside one fixed buffer.",
+     "start": 0.15,
+     "end": 9.296
+    },
+    {
+     "text": "Does the real checker, run only on this branch's own operations, find a violation?",
+     "start": 10.016,
+     "end": 16.176
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "d3b81d91fcf2be9f",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "731c24f756b54e3bb702"
+   ],
+   "duration": 6.054,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "Every operation on this branch stays inside the buffer.",
+     "start": 2.386,
+     "end": 5.704
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 109,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "5a47c4760c88e427",
+   "takes": [
+    "9b388c12654a82097fae"
+   ],
+   "duration": 9.84,
+   "lines": [
+    {
+     "text": "Run it for real: the real checker, run over every operation this branch actually takes, finds no violation at all.",
+     "start": 0.15,
+     "end": 9.49
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -3.0,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "40915d28ad282369",
+   "takes": [
+    "6979826abd8f9d99bb4d",
+    "f9ea9c6866b361a4f420"
+   ],
+   "duration": 12.845,
+   "lines": [
+    {
+     "text": "The identical interpreter now runs the branch its first run never took, which holds a real, genuinely out of bounds operation.",
+     "start": 0.15,
+     "end": 9.299
+    },
+    {
+     "text": "Does the checker catch it this time?",
+     "start": 10.019,
+     "end": 12.495
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "905ac34b30017526",
+   "takes": [
+    "9995c204b819e717847b",
+    "0f31970febce956cba4f"
+   ],
+   "duration": 7.188,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Caught, the moment a run actually takes the branch that holds it.",
+     "start": 1.84,
+     "end": 6.838
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "f73dbd513708a187",
+   "takes": [
+    "18ea54c5feeefc55475a"
+   ],
+   "duration": 11.377,
+   "lines": [
+    {
+     "text": "Run it for real: the real checker, run over this branch's own operations, genuinely catches the violation the instant this run actually reaches it.",
+     "start": 0.15,
+     "end": 11.027
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "00da704b6129ec2f",
+   "takes": [
+    "01ec219be301ad20cbba",
+    "3f72ea32f3550bbbed85"
+   ],
+   "duration": 10.9,
+   "lines": [
+    {
+     "text": "The safe branch's own run never took the other branch at all.",
+     "start": 0.15,
+     "end": 4.268
+    },
+    {
+     "text": "How many of the other branch's own operations did that first run's checker actually examine?",
+     "start": 4.988,
+     "end": 10.55
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.9,
+   "wpm": 149,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "How many of the other branch's own operations did that first run's checker actually examine?",
+     "said": "branchs",
+     "heard": "branches"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "0b5ffa6f2a6375f9",
+   "takes": [
+    "c53d3cda06d8993c84b5",
+    "3c5c53b08dfe76a16b8e"
+   ],
+   "duration": 5.768,
+   "lines": [
+    {
+     "text": "None, genuinely.",
+     "start": 0.15,
+     "end": 1.83
+    },
+    {
+     "text": "That branch was never taken, so it was never checked.",
+     "start": 2.25,
+     "end": 5.418
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "6084f2f16e19f1d9",
+   "takes": [
+    "426f77df7e5ce994b11a"
+   ],
+   "duration": 17.932,
+   "lines": [
+    {
+     "text": "Run it for real: the safe branch run genuinely examined exactly its own operations and none of the other branch's; the violation sat there, real and uninspected, the whole time.",
+     "start": 0.15,
+     "end": 17.582
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 100,
+   "wer": 0.03333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: the safe branch run genuinely examined exactly its own operations and none of the other branch's; the violation sat there, real and uninspected, the whole time.",
+     "said": "branchs",
+     "heard": "branches"
+    }
+   ]
+  },
+  "07": {
+   "hash": "df8cbfd2d4465d39",
+   "takes": [
+    "a59f32255d3fc3295f1c",
+    "700c4a52d61d0eea368a"
+   ],
+   "duration": 20.243,
+   "lines": [
+    {
+     "text": "Two real, independent sources on the identical limitation agree, in their own words.",
+     "start": 0.15,
+     "end": 7.26
+    },
+    {
+     "text": "A checker can tell you whether one particular way of running your code causes undefined behavior in one particular execution, never every execution a program could ever take.",
+     "start": 7.68,
+     "end": 19.893
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "4d63acb7f8eb39c8",
+   "takes": [
+    "265162d86865f8c457fe",
+    "59e9af696e0966e2b314",
+    "ee209dba3cc2dee4d28f",
+    "a89e6ee41087924b6acf",
+    "de902e95eb5f258b12de"
+   ],
+   "duration": 67.281,
+   "lines": [
+    {
+     "text": "So here's what this topic's own tiny interpreter is really standing in for: a real detection tool doesn't read your code and reason about every path it could ever take, it watches one actual execution and reports exactly what that one execution did.",
+     "start": 0.15,
+     "end": 18.3
+    },
+    {
+     "text": "That's a genuinely useful thing to watch, and it's also a genuinely narrower thing than people sometimes assume a clean run means: a clean run says this path was fine, it never says every path would have been.",
+     "start": 18.72,
+     "end": 34.788
+    },
+    {
+     "text": "And that closes out what this whole chapter has been building toward: a documented contract decided what a caller was even allowed to reach, a validity rule decided what counted as a legal value once they reached it.",
+     "start": 35.208,
+     "end": 49.955
+    },
+    {
+     "text": "And now a checker decides, one actual execution at a time, whether either rule was ever actually broken.",
+     "start": 50.375,
+     "end": 58.687
+    },
+    {
+     "text": "None of the three can do the other one's job, and together they're still only as good as the paths somebody actually bothered to run.",
+     "start": 59.107,
+     "end": 66.931
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "None of the three can do the other one's job, and together they're still only as good as the paths somebody actually bothered to run.",
+     "said": "paths",
+     "heard": "path"
+    }
+   ]
+  }
+ }
+}
