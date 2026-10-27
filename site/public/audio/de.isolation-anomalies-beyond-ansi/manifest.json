@@ -1,0 +1,550 @@
+{
+ "topic": "de.isolation-anomalies-beyond-ansi",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "f0d6a7a181c1af4c",
+   "takes": [
+    "af9b8aa7eeb75a9fd4f5",
+    "2f5c7a9482ba33820201",
+    "2b8ac368c91f9a41f26d"
+   ],
+   "duration": 20.629,
+   "lines": [
+    {
+     "text": "Two transactions. Both commit cleanly. Neither one throws a single error.",
+     "start": 0.15,
+     "end": 6.229
+    },
+    {
+     "text": "And real money is still gone, with nothing in the database's own response hinting that it happened.",
+     "start": 6.649,
+     "end": 12.133
+    },
+    {
+     "text": "That's not a bug in Postgres. It's a real, named anomaly, and by the end of this you'll know exactly which one.",
+     "start": 12.553,
+     "end": 20.279
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "71c9e90319a518cd",
+   "takes": [
+    "99bb79035c149cf5d1c1",
+    "3ce3e1841af0e7e92938",
+    "8faae054a69c33168232"
+   ],
+   "duration": 21.14,
+   "lines": [
+    {
+     "text": "Start with the vocabulary the SQL standard itself actually gives you.",
+     "start": 0.15,
+     "end": 4.833
+    },
+    {
+     "text": "ANSI SQL ninety two names four phenomena precisely: a dirty write, a dirty read, a non repeatable read, a phantom.",
+     "start": 5.253,
+     "end": 14.728
+    },
+    {
+     "text": "Four different, specific ways for concurrent transactions to step on each other.",
+     "start": 15.148,
+     "end": 20.79
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 122,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "ANSI SQL ninety two names four phenomena precisely: a dirty write, a dirty read, a non repeatable read, a phantom.",
+     "said": "ansi sql",
+     "heard": "anzis sequel"
+    }
+   ]
+  },
+  "03": {
+   "hash": "46a3aa95ead368ac",
+   "takes": [
+    "f390239b6de7bce4e948",
+    "64752a7f454b508fe2d3",
+    "e2501121faa4af872e1d"
+   ],
+   "duration": 18.369,
+   "lines": [
+    {
+     "text": "Here's where I want you to actually commit to an answer.",
+     "start": 0.15,
+     "end": 3.842
+    },
+    {
+     "text": "Take the standard's own written definition of a dirty read, hand it to two separate engineers, and let each one build the check from scratch.",
+     "start": 4.262,
+     "end": 12.972
+    },
+    {
+     "text": "What are the odds their two implementations actually agree on everything?",
+     "start": 13.392,
+     "end": 18.019
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "e496f4e2273b0032",
+   "takes": [
+    "fd90a0a342810f4e00ed",
+    "23990937d4831d075ecd",
+    "84655e2c1df3256d92bb"
+   ],
+   "duration": 19.946,
+   "lines": [
+    {
+     "text": "It reads like one precise rule, which is exactly why this result is uncomfortable.",
+     "start": 0.15,
+     "end": 5.848
+    },
+    {
+     "text": "The same sentence genuinely supports a narrow reading and a broader one, and they don't agree on what to block.",
+     "start": 6.268,
+     "end": 13.182
+    },
+    {
+     "text": "So no, they don't end up with the same rule. The English itself is the problem.",
+     "start": 13.602,
+     "end": 19.596
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "e997622229e54bc0",
+   "takes": [
+    "812cb9e2c61520446013",
+    "bfd8508b6c49691281b1",
+    "ab0d611aa15316ca9c7b"
+   ],
+   "duration": 19.703,
+   "lines": [
+    {
+     "text": "I'm not just telling you that, the paper actually shows it.",
+     "start": 0.15,
+     "end": 3.809
+    },
+    {
+     "text": "The narrow reading only blocks a read of a write that later gets rolled back.",
+     "start": 4.229,
+     "end": 9.456
+    },
+    {
+     "text": "The broad reading blocks any read at all before the writer has even decided to commit or abort. Same sentence, two different rules.",
+     "start": 9.876,
+     "end": 19.353
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "2dfb6f091cad3f82",
+   "takes": [
+    "2f5018546a9f57fe7f9e",
+    "882fdd5a632f7da61def",
+    "6fcd95d17a1cce0418e2",
+    "a5a6290c13da7a3a348e",
+    "908288a4212ad50d0cea"
+   ],
+   "duration": 27.032,
+   "lines": [
+    {
+     "text": "I built this one for real, against a real Postgres table.",
+     "start": 0.15,
+     "end": 4.849
+    },
+    {
+     "text": "Transaction one reads one hundred, writes and commits one hundred ten.",
+     "start": 5.269,
+     "end": 10.989
+    },
+    {
+     "text": "Transaction two reads that exact same stale one hundred, writes and commits one hundred twenty, after transaction one already committed.",
+     "start": 11.409,
+     "end": 19.916
+    },
+    {
+     "text": "The final balance is one hundred twenty.",
+     "start": 20.336,
+     "end": 23.232
+    },
+    {
+     "text": "Transaction one's own money just vanished.",
+     "start": 23.652,
+     "end": 26.682
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "81b0bfa5ccd23578",
+   "takes": [
+    "536788cc0f9beeb19982",
+    "99f190e98cba5ff32567",
+    "c285c54362750fc5f918"
+   ],
+   "duration": 28.101,
+   "lines": [
+    {
+     "text": "Same database, a different shape of the same problem.",
+     "start": 0.15,
+     "end": 3.43
+    },
+    {
+     "text": "Transaction one reads x, then transaction two updates both x and y together and commits, then transaction one rereads y.",
+     "start": 3.85,
+     "end": 14.711
+    },
+    {
+     "text": "One transaction, two reads, and an inconsistent pair of values it never should have been able to see. Write skew is the two writer version of this exact same gap.",
+     "start": 15.131,
+     "end": 27.751
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Transaction one reads x, then transaction two updates both x and y together and commits, then transaction one rereads y.",
+     "said": "rereads",
+     "heard": "re reads"
+    },
+    {
+     "line": "One transaction, two reads, and an inconsistent pair of values it never should have been able to see. Write skew is the two writer version of this exact same gap.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "One transaction, two reads, and an inconsistent pair of values it never should have been able to see. Write skew is the two writer version of this exact same gap.",
+     "said": "writer",
+     "heard": "rider"
+    }
+   ]
+  },
+  "07": {
+   "hash": "09dff00ddcd72682",
+   "takes": [
+    "11a1f6026f3e6f085c01",
+    "3b9215f3424f812003fd",
+    "b95ff5fbca6a9d7d3eaf"
+   ],
+   "duration": 20.98,
+   "lines": [
+    {
+     "text": "Now here's a case where the real engine is actually stricter than the standard requires.",
+     "start": 0.15,
+     "end": 5.423
+    },
+    {
+     "text": "ANSI only forces a dirty write to be blocked at its own strictest level.",
+     "start": 5.843,
+     "end": 10.4
+    },
+    {
+     "text": "I measured a second writer hitting the same row, and it genuinely blocks, for roughly as long as the first transaction holds that row, before it's ever allowed to apply.",
+     "start": 10.82,
+     "end": 20.63
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 169,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "ANSI only forces a dirty write to be blocked at its own strictest level.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "08": {
+   "hash": "d36849eeee2fb2d2",
+   "takes": [
+    "6285ebeca5311f815a3e",
+    "cd64dfc3ceb005a45fd5",
+    "b866393a69873af0190b"
+   ],
+   "duration": 14.096,
+   "lines": [
+    {
+     "text": "One more to sit with.",
+     "start": 0.15,
+     "end": 1.301
+    },
+    {
+     "text": "A transaction that performs no writes of its own at all, only reads.",
+     "start": 1.721,
+     "end": 6.856
+    },
+    {
+     "text": "Can it still end up seeing a state that no real order of execution could ever have actually produced?",
+     "start": 7.276,
+     "end": 13.746
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 157,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A transaction that performs no writes of its own at all, only reads.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "08a": {
+   "hash": "9509bfa0647c15c5",
+   "takes": [
+    "60042db7c279c6cceb31",
+    "a7aa78da47a283d2fdb1",
+    "25f8baef1e78fad6dbff"
+   ],
+   "duration": 17.001,
+   "lines": [
+    {
+     "text": "\"It only reads, so it can't be the one with the problem\" is the intuitive answer.",
+     "start": 0.15,
+     "end": 5.377
+    },
+    {
+     "text": "It's wrong. The reader itself did nothing wrong, but what it got handed can still be an impossible state.",
+     "start": 5.797,
+     "end": 13.308
+    },
+    {
+     "text": "Yes, it can happen, and it has a name.",
+     "start": 13.728,
+     "end": 16.651
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "57b4c3a729730652",
+   "takes": [
+    "b49ff157313c55a3d0b4",
+    "3afbc8ed924d442ea97e",
+    "9496a054c92d4a5fb925"
+   ],
+   "duration": 29.209,
+   "lines": [
+    {
+     "text": "It's called the read only transaction anomaly, and it's one of the stranger ones in this whole list.",
+     "start": 0.15,
+     "end": 7.257
+    },
+    {
+     "text": "Line up every possible order those other transactions could have run in, one at a time, and check which final database states are actually reachable.",
+     "start": 7.677,
+     "end": 18.309
+    },
+    {
+     "text": "The reader's own answer isn't on that list. No ordering of anyone else's work ever produces what it saw, and it never touched the data itself.",
+     "start": 18.729,
+     "end": 28.859
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "6c4f4c4f0f262fa8",
+   "takes": [
+    "e2d7b6bbb89d7311b3fb",
+    "1c0e3a108a24f86c3db0",
+    "778fe0de0f24ae0769bf"
+   ],
+   "duration": 22.864,
+   "lines": [
+    {
+     "text": "So how do you actually pin any of this down, instead of arguing about English sentences?",
+     "start": 0.15,
+     "end": 6.807
+    },
+    {
+     "text": "Adya's own answer: build a real graph of dependencies between transactions, instead of a paragraph of prose.",
+     "start": 7.357,
+     "end": 15.296
+    },
+    {
+     "text": "An anomaly becomes a cycle in that graph. You can check for a cycle. You can't check for a vibe.",
+     "start": 15.716,
+     "end": 22.514
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 139,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Adya's own answer: build a real graph of dependencies between transactions, instead of a paragraph of prose.",
+     "said": "adyas",
+     "heard": "adias"
+    }
+   ]
+  },
+  "11": {
+   "hash": "d3e17ef03e952037",
+   "takes": [
+    "cb32ded3eadcc766eb7c",
+    "cb375e5b3d893aa68426",
+    "08a6abbe8c6886f93f18"
+   ],
+   "duration": 18.333,
+   "lines": [
+    {
+     "text": "Pull it together. Eight anomalies, named precisely, not vaguely.",
+     "start": 0.15,
+     "end": 5.085
+    },
+    {
+     "text": "One real reason the standard's own definitions kept slipping past careful engineers: the English itself was ambiguous.",
+     "start": 5.505,
+     "end": 13.813
+    },
+    {
+     "text": "And one formal graph that finally closed that gap for good.",
+     "start": 14.233,
+     "end": 17.983
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "aa534fedd99d5842",
+   "takes": [
+    "4e63e9c7cfa89af55904",
+    "f6d9d65dd151f6a8eb05",
+    "5668ffe1fc79848c0686"
+   ],
+   "duration": 21.977,
+   "lines": [
+    {
+     "text": "Last one. Two doctors are on call. Transaction one reads that count: two. Transaction two reads the same count: two.",
+     "start": 0.15,
+     "end": 9.735
+    },
+    {
+     "text": "Both doctors then take themselves off call, independently, and both transactions commit successfully.",
+     "start": 10.155,
+     "end": 17.687
+    },
+    {
+     "text": "Zero doctors on call. Which anomaly is this?",
+     "start": 18.107,
+     "end": 21.627
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "b06f5eb4bdd29816",
+   "takes": [
+    "a116d148367922c580de",
+    "b5d68846836b9fc76c2e",
+    "b79fbd53e3044bd06b83"
+   ],
+   "duration": 27.169,
+   "lines": [
+    {
+     "text": "If you're thinking lost update, look again: nobody's write got overwritten. Both doctors successfully came off call.",
+     "start": 0.15,
+     "end": 9.031
+    },
+    {
+     "text": "Two transactions reading one shared constraint, then each independently writing a different piece of it, breaking the constraint only together.",
+     "start": 9.451,
+     "end": 19.404
+    },
+    {
+     "text": "That's write skew, and the next topic is where you'll watch it actually survive snapshot isolation.",
+     "start": 19.824,
+     "end": 26.819
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 117,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "If you're thinking lost update, look again: nobody's write got overwritten. Both doctors successfully came off call.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "That's write skew, and the next topic is where you'll watch it actually survive snapshot isolation.",
+     "said": "write skew",
+     "heard": "right sku"
+    }
+   ]
+  }
+ }
+}
