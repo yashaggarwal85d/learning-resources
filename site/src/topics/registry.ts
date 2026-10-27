@@ -2422,7 +2422,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Consistent hashing rings',
     syllabusTitle: 'Consistent hashing rings',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 3, title: 'Hashing', section: '3.3' },
     minutes: 13,
