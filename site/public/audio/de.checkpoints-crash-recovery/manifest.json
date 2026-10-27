@@ -1,0 +1,397 @@
+{
+ "topic": "de.checkpoints-crash-recovery",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "eb93d0d6b0ae23bd",
+   "takes": [
+    "e160d9fe57f62fc65564",
+    "8318e431564d797ffe46",
+    "4c15dc5497b54ba11a03"
+   ],
+   "duration": 20.34,
+   "lines": [
+    {
+     "text": "The last topic established that a committed change is durable in the log before the page itself is.",
+     "start": 0.15,
+     "end": 6.801
+    },
+    {
+     "text": "But a log nobody ever trims would mean a crash has to replay the engine's entire history, from the very beginning.",
+     "start": 7.221,
+     "end": 14.891
+    },
+    {
+     "text": "Something marks a far more recent, trustworthy point to start from instead.",
+     "start": 15.311,
+     "end": 19.99
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "f53d8c4c45476525",
+   "takes": [
+    "ea3659d26ff4202a88b8",
+    "5fba1d456ba5758c244d",
+    "a6d9e4bb16f1020062d8"
+   ],
+   "duration": 23.462,
+   "lines": [
+    {
+     "text": "That something is a checkpoint's own redo record, read directly off a live cluster rather than assumed.",
+     "start": 0.15,
+     "end": 7.955
+    },
+    {
+     "text": "It names the exact position recovery would resume from if a crash happened this very instant.",
+     "start": 8.375,
+     "end": 14.718
+    },
+    {
+     "text": "And the live distance behind that position is exactly how much work a crash right now would force.",
+     "start": 15.138,
+     "end": 23.112
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "37e14428b731571c",
+   "takes": [
+    "310b2159ec24d003c93d",
+    "cb79db5e9784374b14e2",
+    "2192170b86671e2e3cc9"
+   ],
+   "duration": 20.428,
+   "lines": [
+    {
+     "text": "Checkpoint more often, and there's genuinely less work to redo after a crash \u2014 that part is the clear win.",
+     "start": 0.15,
+     "end": 7.217
+    },
+    {
+     "text": "But the same documentation names a real cost sitting right next to it.",
+     "start": 7.637,
+     "end": 12.464
+    },
+    {
+     "text": "With the page-tear defense turned on, checkpointing more often also means logging a full page copy more often.",
+     "start": 12.884,
+     "end": 20.078
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "With the page-tear defense turned on, checkpointing more often also means logging a full page copy more often.",
+     "said": "tear",
+     "heard": "tier"
+    }
+   ]
+  },
+  "04": {
+   "hash": "363e33aa7cc63f0c",
+   "takes": [
+    "4d13e9b7cbbe7fc531a7",
+    "853030edf6f86e1f7f16",
+    "a74f2b59b075596c67fe"
+   ],
+   "duration": 20.116,
+   "lines": [
+    {
+     "text": "Worth reasoning through before the reveal settles it.",
+     "start": 0.15,
+     "end": 3.184
+    },
+    {
+     "text": "A disk doesn't write an entire page in one physical step \u2014 it lands in several smaller physical pieces, one after another.",
+     "start": 3.604,
+     "end": 12.224
+    },
+    {
+     "text": "If a crash happens partway through, why would the whole page need logging, rather than just the change being made?",
+     "start": 12.644,
+     "end": 19.766
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "b673d2aa0cad42db",
+   "takes": [
+    "fb966563e8d06a2782ed",
+    "c66b6886e8def5937f2f",
+    "6e4b76a30bb0a3f7f9a3"
+   ],
+   "duration": 30.378,
+   "lines": [
+    {
+     "text": "It's not a format limitation, and it's not about saving space either \u2014 it's a physical problem.",
+     "start": 0.15,
+     "end": 7.409
+    },
+    {
+     "text": "Some of those smaller physical pieces can land while others never do, leaving a page that's part old and part new.",
+     "start": 7.829,
+     "end": 16.728
+    },
+    {
+     "text": "Applying an ordinary change on top of that mixed-up state could still produce something wrong, so only a full, known-good copy of the page can safely repair whatever a crash left behind.",
+     "start": 17.148,
+     "end": 30.028
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "801e81caa39d0931",
+   "takes": [
+    "4c4284c99a53d2416463",
+    "5ce76d06e5e177cfb8f6",
+    "354bd2266aa8dbccd218"
+   ],
+   "duration": 21.149,
+   "lines": [
+    {
+     "text": "Here's that trade-off shown directly, not just argued for.",
+     "start": 0.15,
+     "end": 4.338
+    },
+    {
+     "text": "Checkpointing after every single one of ten identical rounds of change, measured directly against a real cluster: a very large number of full-page copies logged.",
+     "start": 4.758,
+     "end": 15.389
+    },
+    {
+     "text": "And the live distance a crash would need to replay, kept down to something small.",
+     "start": 15.809,
+     "end": 20.799
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2130a8017bbd5234",
+   "takes": [
+    "acefaaf68fd0e9010628",
+    "4f8f6948756b46203820",
+    "8116bbc6cc5a6f6ccbe9"
+   ],
+   "duration": 23.822,
+   "lines": [
+    {
+     "text": "The identical rounds of change, measured again, but checkpointed only once at the very start instead.",
+     "start": 0.15,
+     "end": 6.786
+    },
+    {
+     "text": "Far fewer full-page copies logged this time \u2014 a small fraction of the earlier count.",
+     "start": 7.206,
+     "end": 13.385
+    },
+    {
+     "text": "But the live distance a crash would need to replay has grown far larger instead, the trade-off flipped in the opposite direction.",
+     "start": 13.805,
+     "end": 23.472
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3c7029cd9bb9c3fd",
+   "takes": [
+    "4a2dbf2a96ef573b6bbf",
+    "9090563414ba08ec4fef",
+    "d3e6ef754747995de2e0"
+   ],
+   "duration": 32.273,
+   "lines": [
+    {
+     "text": "A completely different piece of this same topic is worth naming directly.",
+     "start": 0.15,
+     "end": 4.277
+    },
+    {
+     "text": "A well-known recovery method, named from its own original paper, describes three separate passes: figuring out what was happening, redoing everything, and then undoing the transactions that never finished.",
+     "start": 4.697,
+     "end": 18.568
+    },
+    {
+     "text": "This sandbox's own engine describes only one of those passes \u2014 redo \u2014 because a change's own transaction status decides what's visible, with nothing left to physically undo.",
+     "start": 18.988,
+     "end": 31.923
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "dd4c30e568e886a9",
+   "takes": [
+    "b9c6b7b2fdd77db410af",
+    "81f75344549e92557b56",
+    "a02ab36cce8466d6035a"
+   ],
+   "duration": 32.317,
+   "lines": [
+    {
+     "text": "The exact same log this whole topic measures turns out to get reused for three more jobs entirely.",
+     "start": 0.15,
+     "end": 7.408
+    },
+    {
+     "text": "Stop replaying it early instead of running it to the end, and that's a point-in-time recovery.",
+     "start": 7.828,
+     "end": 14.359
+    },
+    {
+     "text": "Ship the identical bytes to another machine that keeps applying them continuously, and that's physical replication. Decode those same bytes into row-level changes instead, and that's the basis of logical decoding.",
+     "start": 14.779,
+     "end": 31.967
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "73ab372dc2155284",
+   "takes": [
+    "1eb9fbe1f5d246d4d16f",
+    "c026afedd71c65495e4a",
+    "386721ff34cc11a3d740"
+   ],
+   "duration": 32.349,
+   "lines": [
+    {
+     "text": "Pulling the whole topic back together.",
+     "start": 0.15,
+     "end": 2.623
+    },
+    {
+     "text": "A checkpoint's own redo record, naming the real starting point for recovery.",
+     "start": 3.043,
+     "end": 8.232
+    },
+    {
+     "text": "A real, measured trade-off, pulling two real costs in opposite directions by a huge margin each. One engine that redoes only, deciding visibility by a change's own status rather than physically undoing anything. And the identical log, reused for three more jobs entirely.",
+     "start": 8.652,
+     "end": 31.999
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "932b2c876ad70d11",
+   "takes": [
+    "26ccb194aa63d1f0755f",
+    "021d570fa9d5f9fa1159",
+    "de04b94073fc15e9b618"
+   ],
+   "duration": 20.353,
+   "lines": [
+    {
+     "text": "One closing scenario, worth reasoning through before the explanation lands.",
+     "start": 0.15,
+     "end": 4.964
+    },
+    {
+     "text": "A system claims instant crash recovery no matter how long it's been running, without ever mentioning anything like a checkpoint.",
+     "start": 5.384,
+     "end": 14.305
+    },
+    {
+     "text": "Before believing that claim, what would actually have to be true underneath it?",
+     "start": 14.725,
+     "end": 20.003
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "84b7ba4d29d21acd",
+   "takes": [
+    "9c6df1f16490395ba254",
+    "9d2aba636ef588809319",
+    "a720374976e1542a2422"
+   ],
+   "duration": 32.968,
+   "lines": [
+    {
+     "text": "It can't really be true as stated, and the giveaway isn't about redo versus undo at all \u2014 that's a separate question this topic already settled.",
+     "start": 0.15,
+     "end": 9.873
+    },
+    {
+     "text": "Any crash-recovery claim that doesn't grow with how long a system has been running has to be capping how far back it looks somehow, and that capping is exactly the job this topic's own checkpoint does.",
+     "start": 10.293,
+     "end": 22.763
+    },
+    {
+     "text": "A claim of instant recovery with no stated bound at all is either marketing, or it's quietly hiding a checkpoint-equivalent under a different name.",
+     "start": 23.183,
+     "end": 32.618
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
