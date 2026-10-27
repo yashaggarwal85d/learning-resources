@@ -4295,7 +4295,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Vacuum, bloat and transaction-ID wraparound',
     syllabusTitle: 'Vacuum, bloat and transaction-ID wraparound',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
     minutes: 15,
