@@ -35,6 +35,10 @@ def norm(s, lang="en", years=False):
     """Lowercase words, numbers spelled out, aliases applied: what was said, independent of how it was written.
     years=True reads a four digit number from 1100 to 2099 the way a year is said ("nineteen eighty eight")."""
     s = s.lower().replace("%", " percent")
+    # "C++" is said "C plus plus"; the checker hears it back as the symbol too (Whisper writes the name it
+    # recognizes), and without this the generic punctuation strip below would throw both "+"s away and leave
+    # just "c" against the written "c plus plus" — a permanent word-count mismatch no take could ever pass.
+    s = s.replace("++", " plus plus")
     # A hyphen right after a letter and before a digit is a transcribed "minus" ("n-1", "3n-2"): say so before the
     # generic hyphen strip below throws it away, or an algebraic line never matches ("n minus one" vs "n 1").
     s = re.sub(r"([a-z])-(\d)", r"\1 minus \2", s)
