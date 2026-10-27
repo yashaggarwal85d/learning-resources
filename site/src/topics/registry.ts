@@ -4395,7 +4395,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Snapshot isolation and write skew',
     syllabusTitle: 'Snapshot isolation and write skew',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
     minutes: 15,
