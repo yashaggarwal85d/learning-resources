@@ -2638,7 +2638,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Fenwick trees',
     syllabusTitle: 'Fenwick trees',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 8, title: 'Range-Query Structures', section: '8.1' },
     minutes: 13,
