@@ -29,7 +29,7 @@
 5. **EdgeListReveal.** *Title:* "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." *Body:* "The one representation with no per-vertex structure — which is exactly why it is the natural starting format, not the natural structure to query." *Visual:* the identical graph's edges laid out as a flat row of (u, v, weight) triples, the multi-edge shown as two ordinary, unremarkable rows.
    *Takeaway (step 5):* "An edge list costs space proportional to the edges alone, with nothing paid for a vertex that has none."
 
-6. **DAGReveal.** *Title:* "A directed graph with no directed cycle is a DAG — and a directed graph is a DAG exactly when its vertices admit a single consistent ordering that every edge agrees with." *Body:* "Any of the three representations above can hold a DAG; being a DAG is a property of the edges, not a fourth way to store them." *Visual:* the identical graph (or a trimmed, cycle-free view of it) with its vertices slid into one consistent left-to-right ordering, every edge arrow pointing the same direction along it.
+6. **DAGReveal.** *Title:* "A directed graph with no directed cycle is a DAG — and a directed graph is a DAG exactly when its vertices admit a single consistent ordering that every edge agrees with." *Body:* "Any of the three representations above can hold a DAG; being a DAG is a property of the edges, not a fourth way to store them." *Visual:* the identical graph (built acyclic from the start, fact-check confirmed its multi-edge doesn't change that) with its vertices slid into one consistent left-to-right ordering, every edge arrow pointing the same direction along it.
 
 7. **WhichRepReveal.** *Title:* "Breadth-first and depth-first search want a vertex's own neighbours, cheaply and repeatedly — the adjacency list's own strength. An algorithm that keeps asking whether one specific pair is connected wants the matrix's O(1) lookup instead. The edge list is what you start with, before any of the other two exists." *Body:* "Three different costs, three different jobs — no single representation is simply 'the right one.'" *Visual:* the three representations shown side by side one final time, each one's own cheap operation underlined in caramel.
    *Takeaway (step 7):* "No representation is free: pick the one whose cheap operation is the operation the algorithm actually repeats."
@@ -62,7 +62,7 @@
 3. Assert the adjacency matrix's own multi-edge cell holds a count (2), and that attempting to store two distinct weights in one cell loses one of them (demonstrated directly, not merely asserted).
 4. Time (or count operations for) a neighbour-iteration and an edge-existence check against each representation, confirming the stated relative costs on this graph.
 5. Scale the identical construction up to a larger synthetic vertex count and report the real V + E, V² and E counts side by side, to produce the "surprising number" the reel's own final step shows.
-6. Verify the graph (or the cycle-free view used for step 6) is correctly classified as acyclic and admits at least one valid topological ordering, by trying to produce one.
+6. Verify the chapter's own graph is correctly classified as acyclic and admits at least one valid topological ordering, by trying to produce one.
 
 ## Bridge (topic 35's own handoff, quoted word for word)
 
