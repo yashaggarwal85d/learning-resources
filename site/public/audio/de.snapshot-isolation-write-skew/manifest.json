@@ -1,0 +1,502 @@
+{
+ "topic": "de.snapshot-isolation-write-skew",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e271c7516fc4483d",
+   "takes": [
+    "4fca0cb9397cc4ba0ca4",
+    "4db4e745fdcbf7ffb151",
+    "42384dc822ce74530653"
+   ],
+   "duration": 22.968,
+   "lines": [
+    {
+     "text": "Two doctors are on call tonight. The hospital's own rule says at least one of them has to stay.",
+     "start": 0.15,
+     "end": 6.359
+    },
+    {
+     "text": "Each one checks the schedule, decides it's fine to leave, and commits. Neither commit throws an error.",
+     "start": 6.779,
+     "end": 13.649
+    },
+    {
+     "text": "Zero doctors on call, and the database never objected once. By the end of this you'll see exactly why.",
+     "start": 14.069,
+     "end": 22.618
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a82ce1ff8284175e",
+   "takes": [
+    "424a1f64f2125e810c93",
+    "eef726cc157aef7a7796",
+    "92de4e4b674028d4e030"
+   ],
+   "duration": 25.954,
+   "lines": [
+    {
+     "text": "Start with the mechanism underneath all of this.",
+     "start": 0.15,
+     "end": 3.227
+    },
+    {
+     "text": "A transaction running under snapshot isolation takes one fixed picture of the database, right when it starts, and reads from that picture the whole way through.",
+     "start": 3.647,
+     "end": 13.769
+    },
+    {
+     "text": "When it finally tries to commit, there's one check: has anything it wrote been changed by someone else since that picture was taken. If so, it loses.",
+     "start": 14.189,
+     "end": 25.604
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "38ebf81a2d87a6b6",
+   "takes": [
+    "48e6fd3d7ace70c45634",
+    "fbe8cd6bf4d32316175d",
+    "0d35304c3cf2067dfecd"
+   ],
+   "duration": 19.338,
+   "lines": [
+    {
+     "text": "Here's the question I want you to actually answer before I show you.",
+     "start": 0.15,
+     "end": 5.049
+    },
+    {
+     "text": "That commit check already catches two writers racing to update the exact same row.",
+     "start": 5.469,
+     "end": 11.414
+    },
+    {
+     "text": "Does it also catch two doctors, each updating a completely different row, off the same shared rule?",
+     "start": 11.834,
+     "end": 18.988
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That commit check already catches two writers racing to update the exact same row.",
+     "said": "writers",
+     "heard": "riders"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "676aea62f3edfae9",
+   "takes": [
+    "16dc4f63f30b67251a33",
+    "de74d8a49f5461a9e323",
+    "b3c7f57e5b98e2bc9d8a"
+   ],
+   "duration": 18.816,
+   "lines": [
+    {
+     "text": "It feels like it should count, since they're both reading the same shared rule.",
+     "start": 0.15,
+     "end": 4.832
+    },
+    {
+     "text": "But the check only ever compares one written row against its own snapshot. It never looks at two rows together.",
+     "start": 5.252,
+     "end": 12.128
+    },
+    {
+     "text": "So no. Two different rows never collide here, no matter how related they are in meaning.",
+     "start": 12.548,
+     "end": 18.466
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "ba3dff09ab3993ab",
+   "takes": [
+    "0884edee76637adad1ea",
+    "6767f5857c87bedd2f7a",
+    "d2b413c2059bd36b855e"
+   ],
+   "duration": 27.037,
+   "lines": [
+    {
+     "text": "Let's see what this mechanism actually buys you, for real.",
+     "start": 0.15,
+     "end": 4.463
+    },
+    {
+     "text": "I took the exact read skew setup from last topic and reran it, this time under a real snapshot instead of read committed.",
+     "start": 4.883,
+     "end": 12.547
+    },
+    {
+     "text": "Transaction one's first read and its second read now land on the exact same picture of the data. Fifty, then fifty again. Last topic's broken pair just can't happen here.",
+     "start": 12.967,
+     "end": 26.687
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 140,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "I took the exact read skew setup from last topic and reran it, this time under a real snapshot instead of read committed.",
+     "said": "reran",
+     "heard": "re ran"
+    },
+    {
+     "line": "Transaction one's first read and its second read now land on the exact same picture of the data. Fifty, then fifty again. Last topic's broken pair just can't happen here.",
+     "said": "ones",
+     "heard": "one s"
+    }
+   ]
+  },
+  "05": {
+   "hash": "7366e29ab28523d9",
+   "takes": [
+    "b7171e2c1b7fff9cb99f",
+    "85eca980a7a2ff3711de",
+    "c88be2b1c15b915ddb5b"
+   ],
+   "duration": 25.699,
+   "lines": [
+    {
+     "text": "And here's the case the mechanism is actually built for.",
+     "start": 0.15,
+     "end": 3.341
+    },
+    {
+     "text": "Two transactions both try to update the same row, off the same starting snapshot. One of them commits balance one hundred ten.",
+     "start": 3.761,
+     "end": 13.278
+    },
+    {
+     "text": "The other one's write hits a row that's already changed underneath it, and Postgres hands back a real serialization failure. Not a guess. An actual error, measured.",
+     "start": 13.698,
+     "end": 25.349
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 140,
+   "wer": 0.03571428571428571,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The other one's write hits a row that's already changed underneath it, and Postgres hands back a real serialization failure. Not a guess. An actual error, measured.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "06": {
+   "hash": "fe63f43351598280",
+   "takes": [
+    "174bbc58ae9514f4d45a",
+    "eac4513a6954f23fd68e",
+    "6b5ffd50175cf7c20470"
+   ],
+   "duration": 28.455,
+   "lines": [
+    {
+     "text": "Now the doctors, for real, against a real Postgres table.",
+     "start": 0.15,
+     "end": 4.431
+    },
+    {
+     "text": "Watch what the database actually checks when each transaction commits: only whether its own written row moved out from under it. Nothing more.",
+     "start": 4.851,
+     "end": 15.046
+    },
+    {
+     "text": "Since each doctor's update lands on a different row, that check has nothing to object to. It passes twice, and the rule the hospital actually cared about is still gone.",
+     "start": 15.466,
+     "end": 28.105
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "80d888e7a90ad81e",
+   "takes": [
+    "bb22570d9289cfc34889",
+    "f51de3e943dee88f9493",
+    "b6ecede4bfe1846b65a6"
+   ],
+   "duration": 28.003,
+   "lines": [
+    {
+     "text": "That same gap shows up as something worse than a technicality: three real vendors calling it three different things.",
+     "start": 0.15,
+     "end": 8.689
+    },
+    {
+     "text": "Postgres's own documentation says plainly that what it calls repeatable read is implemented as snapshot isolation.",
+     "start": 9.109,
+     "end": 17.716
+    },
+    {
+     "text": "Oracle's own serializable level is snapshot isolation too, and Oracle itself sometimes just calls it serializable anyway.",
+     "start": 18.136,
+     "end": 27.653
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "7743951d0d993ddb",
+   "takes": [
+    "6285ebeca5311f815a3e",
+    "08fb0948a03ae147176e",
+    "ae9f9ed4a68abf15510e"
+   ],
+   "duration": 15.016,
+   "lines": [
+    {
+     "text": "One more to sit with.",
+     "start": 0.15,
+     "end": 1.301
+    },
+    {
+     "text": "Without touching the isolation level at all, not raising it, not changing anything about the database setup.",
+     "start": 1.721,
+     "end": 10.008
+    },
+    {
+     "text": "Is there any way at all to make this exact doctors scenario safe?",
+     "start": 10.428,
+     "end": 14.666
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "bbfd73b82875be45",
+   "takes": [
+    "de8f28ab752208345401",
+    "cf139251f0d17e1aee30",
+    "ebb7a657d48dcf70f23c"
+   ],
+   "duration": 23.515,
+   "lines": [
+    {
+     "text": "Raising the level is one route, but it's not the only one.",
+     "start": 0.15,
+     "end": 3.981
+    },
+    {
+     "text": "Give both transactions a real row to collide on. Lock a shared row, or touch it, and that same first committer wins rule you already saw now has something to actually catch.",
+     "start": 4.401,
+     "end": 16.858
+    },
+    {
+     "text": "Yes, there's a fix, and it doesn't need a stronger isolation level.",
+     "start": 17.279,
+     "end": 23.165
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Raising the level is one route, but it's not the only one.",
+     "said": "route",
+     "heard": "root"
+    }
+   ]
+  },
+  "09": {
+   "hash": "f420d05205eb0db1",
+   "takes": [
+    "c9e9c9bac85b33021ec8",
+    "0c55f0e3b965643dee6d",
+    "73b647bfd21e3d9da2e8"
+   ],
+   "duration": 22.951,
+   "lines": [
+    {
+     "text": "Here's exactly how far that fix actually reaches, and no further.",
+     "start": 0.15,
+     "end": 4.573
+    },
+    {
+     "text": "Lock a shared row, and this specific scenario is closed. Measured, caught, done.",
+     "start": 4.993,
+     "end": 11.787
+    },
+    {
+     "text": "But it's a patch written for this one query pattern. A different question against the exact same underlying rule can walk right back through the gap.",
+     "start": 12.207,
+     "end": 22.601
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "3be93b6e4198d0b6",
+   "takes": [
+    "25e679ba06176e4eabb5",
+    "d0aad4821d9ae3c1d52f",
+    "62d60ad9a85f860968c5"
+   ],
+   "duration": 23.672,
+   "lines": [
+    {
+     "text": "Pull it together. One mechanism: a snapshot, and whoever commits first wins.",
+     "start": 0.15,
+     "end": 6.239
+    },
+    {
+     "text": "Two anomalies it actually prevents, read skew and lost update, both measured directly.",
+     "start": 6.659,
+     "end": 13.458
+    },
+    {
+     "text": "One anomaly it never catches, write skew, and three real vendors who each call this same mechanism by a different name.",
+     "start": 13.878,
+     "end": 23.322
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.8,
+   "wpm": 117,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One anomaly it never catches, write skew, and three real vendors who each call this same mechanism by a different name.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "11": {
+   "hash": "3c4a573608727392",
+   "takes": [
+    "d7aaab7d506581db3d76",
+    "e597a440bac2d254c89f",
+    "15fcca28cc4902c50964"
+   ],
+   "duration": 18.461,
+   "lines": [
+    {
+     "text": "Last one. Two transactions each read the exact same shared total.",
+     "start": 0.15,
+     "end": 4.962
+    },
+    {
+     "text": "Each one then updates only its own separate row, and both commits go through without a single error from either one.",
+     "start": 5.382,
+     "end": 13.343
+    },
+    {
+     "text": "Is that a safe outcome, a caught conflict, or write skew?",
+     "start": 13.763,
+     "end": 18.111
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Is that a safe outcome, a caught conflict, or write skew?",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "11a": {
+   "hash": "7d93c1c8c503c0d7",
+   "takes": [
+    "066caac25d131a4feb7c",
+    "e1a555be402b217e1e4b",
+    "7bbcfd772c65b5fc70be"
+   ],
+   "duration": 24.378,
+   "lines": [
+    {
+     "text": "No row ever got written twice, so there was never anything for the commit check to catch.",
+     "start": 0.15,
+     "end": 5.516
+    },
+    {
+     "text": "Two transactions reading one shared total, then each independently writing a different row that total depends on, is exactly the shape you've been watching this whole topic.",
+     "start": 5.936,
+     "end": 16.413
+    },
+    {
+     "text": "That's write skew, and next topic is where you'll watch the two real ways to finally close this gap for good.",
+     "start": 16.833,
+     "end": 24.028
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That's write skew, and next topic is where you'll watch the two real ways to finally close this gap for good.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  }
+ }
+}
