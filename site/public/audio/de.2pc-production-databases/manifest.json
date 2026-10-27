@@ -1,0 +1,423 @@
+{
+ "topic": "de.2pc-production-databases",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "88b0582d914149d4",
+   "takes": [
+    "a47bd484f2fdf2e8634d",
+    "7a7bccbae833c6c76fc3",
+    "7fd57f2e5b0fc6295a86"
+   ],
+   "duration": 19.945,
+   "lines": [
+    {
+     "text": "One order, two separate databases. One holds inventory, the other holds the payment.",
+     "start": 0.15,
+     "end": 6.368
+    },
+    {
+     "text": "Both of them have to agree to commit, or neither one should.",
+     "start": 6.788,
+     "end": 10.628
+    },
+    {
+     "text": "Shaking hands on that, across a network, between two machines that don't trust each other blindly, is not the simple part it sounds like.",
+     "start": 11.048,
+     "end": 19.595
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.3,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "5593497d29cd02d9",
+   "takes": [
+    "a772ec7f695c04e5aba3",
+    "41fe6ad8e08607f9325c",
+    "5820d704b3321efa1c4b"
+   ],
+   "duration": 20.193,
+   "lines": [
+    {
+     "text": "The first step is a question, not an order.",
+     "start": 0.15,
+     "end": 3.115
+    },
+    {
+     "text": "A coordinator asks every participant one thing. Could you guarantee committing this, if I asked you to right now?",
+     "start": 3.535,
+     "end": 11.502
+    },
+    {
+     "text": "Each one answers only after it's already written down, durably, exactly what it would need to follow through on that guarantee.",
+     "start": 12.052,
+     "end": 19.843
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "3094f0e9c127efd0",
+   "takes": [
+    "3cff4a8d5e81ac443f53",
+    "845ac3d530abd11c6b6d",
+    "0ccfa5c56ef7b7474505"
+   ],
+   "duration": 19.09,
+   "lines": [
+    {
+     "text": "Only once every participant has answered yes does the coordinator do something irreversible of its own.",
+     "start": 0.15,
+     "end": 7.249
+    },
+    {
+     "text": "It writes its own decision down, durably, before a single commit message ever goes out.",
+     "start": 7.669,
+     "end": 13.601
+    },
+    {
+     "text": "Only after that does it actually tell everyone involved to commit for real.",
+     "start": 14.021,
+     "end": 18.74
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b67562ccd7ed2295",
+   "takes": [
+    "f390239b6de7bce4e948",
+    "d88447e6bc76bcbf9c4c"
+   ],
+   "duration": 14.525,
+   "lines": [
+    {
+     "text": "Here's where I want you to actually commit to an answer.",
+     "start": 0.15,
+     "end": 3.842
+    },
+    {
+     "text": "The coordinator has been giving every order so far. What happens to the participants if the coordinator itself goes silent, right between those two phases?",
+     "start": 4.262,
+     "end": 14.175
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "4a0e6ae1ad8f168e",
+   "takes": [
+    "1340620984c1cb418e38",
+    "6312d188051ee102676e",
+    "1e7550fd35b7032250aa"
+   ],
+   "duration": 22.794,
+   "lines": [
+    {
+     "text": "You might expect each participant to just give up and decide on its own after a while.",
+     "start": 0.15,
+     "end": 6.283
+    },
+    {
+     "text": "But a participant that already promised it could commit can't safely guess which way to go. Guessing wrong either way could break the whole transaction.",
+     "start": 6.703,
+     "end": 15.357
+    },
+    {
+     "text": "So no. It just sits there, prepared, still holding what it holds, waiting to be told.",
+     "start": 15.777,
+     "end": 22.444
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "9006e0eb7a6e7609",
+   "takes": [
+    "0bedf055cdeea2fdaf1f",
+    "3dbabe20fa4ea82b67b6",
+    "e08b5cc22af0c2040475"
+   ],
+   "duration": 21.877,
+   "lines": [
+    {
+     "text": "Here's that exact prepared state, done for real, against this sandbox's own database.",
+     "start": 0.15,
+     "end": 6.349
+    },
+    {
+     "text": "One session prepares a change and disconnects. A second session looks, and sees nothing has changed yet.",
+     "start": 6.769,
+     "end": 14.742
+    },
+    {
+     "text": "Only a third session, one that never touched this transaction before, is the one that actually commits it.",
+     "start": 15.162,
+     "end": 21.527
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "26dce6d1fabc9176",
+   "takes": [
+    "7a0eb232b83d4af3799c",
+    "253e05e3aa1c9d907d0c",
+    "914d0095e77d62a102d4"
+   ],
+   "duration": 23.573,
+   "lines": [
+    {
+     "text": "Now watch what that same prepared transaction is still doing underneath, while it waits.",
+     "start": 0.15,
+     "end": 6.918
+    },
+    {
+     "text": "It's still holding the row it touched. A second, completely separate writer that wants that same row has to wait.",
+     "start": 7.338,
+     "end": 14.69
+    },
+    {
+     "text": "That wait is measured here, for real, and it lasts for exactly as long as that prepared transaction stays unresolved.",
+     "start": 15.11,
+     "end": 23.223
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It's still holding the row it touched. A second, completely separate writer that wants that same row has to wait.",
+     "said": "writer",
+     "heard": "rider"
+    }
+   ]
+  },
+  "07": {
+   "hash": "4ff3993b9bc3ba9c",
+   "takes": [
+    "55621cd12801e83f1fc7",
+    "1d533812bab245b09abb",
+    "4c781b33ac8f52821c1b"
+   ],
+   "duration": 21.422,
+   "lines": [
+    {
+     "text": "This is exactly what a real coordinator failure leaves behind.",
+     "start": 0.15,
+     "end": 4.61
+    },
+    {
+     "text": "Locks held. Nothing resolved. For as long as nobody with the authority to decide steps back in.",
+     "start": 5.03,
+     "end": 12.292
+    },
+    {
+     "text": "The database's own documentation is blunt about this. Leave it too long, and it can force a shutdown just to protect itself.",
+     "start": 12.712,
+     "end": 21.072
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "1123e434ea246576",
+   "takes": [
+    "0215cdaf3b9c6afc66ac",
+    "ea74a85739efe2a05590",
+    "96da7ec31d1701037f84"
+   ],
+   "duration": 30.794,
+   "lines": [
+    {
+     "text": "Every production database that does this is really implementing one vendor-neutral standard underneath.",
+     "start": 0.15,
+     "end": 6.318
+    },
+    {
+     "text": "That standard's rule is simple and strict. One single no, from any one participant, vetoes the entire transaction for everyone.",
+     "start": 6.738,
+     "end": 17.293
+    },
+    {
+     "text": "And a yes is never just an optimistic guess. It's a guarantee that committing or rolling back will still work later, even if that participant itself fails in between.",
+     "start": 17.713,
+     "end": 30.444
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "a087951026e95db2",
+   "takes": [
+    "b62ad934736e7a73efea",
+    "37becc5bdaecb61cb67f",
+    "043d2ed0d15848a941a1"
+   ],
+   "duration": 27.77,
+   "lines": [
+    {
+     "text": "A real distributed database doesn't get to skip this problem. It hides it behind something sturdier instead.",
+     "start": 0.15,
+     "end": 7.369
+    },
+    {
+     "text": "One whole group of machines elects a leader to act as the coordinator. Another whole group elects a leader to act as a participant.",
+     "start": 7.789,
+     "end": 15.768
+    },
+    {
+     "text": "Each one of those leaders is itself backed by its own group reaching agreement, so the fragile single coordinator you just watched become durable, not assumed away.",
+     "start": 16.188,
+     "end": 27.42
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "b378a637742af977",
+   "takes": [
+    "caa5137aa8c55c8dee42",
+    "e5a8f447cde90cba0ce0",
+    "e7d72da37fcf3fa4642a"
+   ],
+   "duration": 19.136,
+   "lines": [
+    {
+     "text": "Pull the whole topic together.",
+     "start": 0.15,
+     "end": 1.489
+    },
+    {
+     "text": "Asking for a guarantee is one phase. Spending that guarantee is the next one.",
+     "start": 1.909,
+     "end": 6.83
+    },
+    {
+     "text": "The gap in between those two phases is real, it's measurable, and shrinking it is most of what a production two-phase-commit implementation actually exists to do.",
+     "start": 7.25,
+     "end": 18.786
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "5b517486cf2eb9e6",
+   "takes": [
+    "4cb644b08fca22b68dee",
+    "a0746441baa76ad29325",
+    "39fc8a640e258cb1cc04"
+   ],
+   "duration": 27.022,
+   "lines": [
+    {
+     "text": "One last one. A payment and an inventory decrement have to commit together, across two separate databases.",
+     "start": 0.15,
+     "end": 8.197
+    },
+    {
+     "text": "The coordinator process crashes one second after telling both of them to prepare, before either one is ever told to commit.",
+     "start": 8.617,
+     "end": 17.062
+    },
+    {
+     "text": "Given everything you just watched happen in this sandbox. What state are both of those databases actually in right now?",
+     "start": 17.482,
+     "end": 26.672
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "5ededef533521e3e",
+   "takes": [
+    "6e62ffcb73e5cef377d6",
+    "a6d2468457241199abf4",
+    "667e93fb83ae922d3a04"
+   ],
+   "duration": 27.654,
+   "lines": [
+    {
+     "text": "It's tempting to assume a missing commit order just means everything quietly rolls back on its own.",
+     "start": 0.15,
+     "end": 6.658
+    },
+    {
+     "text": "But neither database can safely decide that by itself. Each one already guaranteed it could commit if asked.",
+     "start": 7.078,
+     "end": 14.602
+    },
+    {
+     "text": "So both of them stay exactly where this topic's own measurements left one: prepared, holding their locks, waiting for some session to finally resolve them.",
+     "start": 15.022,
+     "end": 27.304
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
