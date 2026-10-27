@@ -2440,7 +2440,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Merkle trees',
     syllabusTitle: 'Merkle trees',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 3, title: 'Hashing', section: '3.3' },
     minutes: 12,
