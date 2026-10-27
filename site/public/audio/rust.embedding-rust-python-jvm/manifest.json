@@ -1,0 +1,298 @@
+{
+ "topic": "rust.embedding-rust-python-jvm",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "90400822ce8bec6f",
+   "takes": [
+    "bfa0305cdc92e2968a5b",
+    "d85d070cf6cfdf10611b"
+   ],
+   "duration": 16.555,
+   "lines": [
+    {
+     "text": "A real Python buffer is handed to a real Rust function, which reads its own real memory address directly.",
+     "start": 0.15,
+     "end": 7.725
+    },
+    {
+     "text": "Does the address Rust sees genuinely match the address Python itself reports for that identical buffer?",
+     "start": 8.445,
+     "end": 16.205
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "09f3ae4ee8d29dce",
+   "takes": [
+    "9995c204b819e717847b",
+    "f849ae4008fc991944d0"
+   ],
+   "duration": 4.745,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The same real address, on both sides.",
+     "start": 1.84,
+     "end": 4.395
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -3.7,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "6b2122822036d4d3",
+   "takes": [
+    "69b0ebd3f2651403fec4"
+   ],
+   "duration": 13.21,
+   "lines": [
+    {
+     "text": "Run it for real: the real address Rust reads straight off that buffer is genuinely identical to the one Python already had for it, no copy ever made along the way.",
+     "start": 0.15,
+     "end": 12.86
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d6bcac9bcfe38309",
+   "takes": [
+    "f361587f3846dce73987",
+    "7b08a9c6f6fb7ee6424c"
+   ],
+   "duration": 15.608,
+   "lines": [
+    {
+     "text": "A real Rust function now holds onto the interpreter's own lock for its entire run, while it does real, honest work.",
+     "start": 0.15,
+     "end": 9.243
+    },
+    {
+     "text": "While it's running, how much progress does a separate, real Python thread actually make?",
+     "start": 9.963,
+     "end": 15.258
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.0,
+   "wpm": 135,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A real Rust function now holds onto the interpreter's own lock for its entire run, while it does real, honest work.",
+     "said": "rust",
+     "heard": "rest"
+    },
+    {
+     "line": "A real Rust function now holds onto the interpreter's own lock for its entire run, while it does real, honest work.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "460ac64d36079b05",
+   "takes": [
+    "52cdaefd1deae841bf98",
+    "d3f6a5288e60cfbfbaa3"
+   ],
+   "duration": 7.412,
+   "lines": [
+    {
+     "text": "Genuinely very little.",
+     "start": 0.15,
+     "end": 1.507
+    },
+    {
+     "text": "That lock is never given up, so there's almost no room for anything else.",
+     "start": 1.927,
+     "end": 7.062
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -3.7,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "a5274141158c4342",
+   "takes": [
+    "5c07681282f7617498fe"
+   ],
+   "duration": 8.991,
+   "lines": [
+    {
+     "text": "Run it for real: while that call holds on, a separate thread's own counter barely moves at all; there was nowhere for it to go.",
+     "start": 0.15,
+     "end": 8.641
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.6,
+   "wpm": 167,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "13c8c9eb3fe2e0f8",
+   "takes": [
+    "5f5619d7fc6cf363ef4d",
+    "f668aa6857e789219044"
+   ],
+   "duration": 13.723,
+   "lines": [
+    {
+     "text": "The identical real work now runs with that lock explicitly let go, just for the length of this one call.",
+     "start": 0.15,
+     "end": 7.645
+    },
+    {
+     "text": "Does the other thread now get dramatically more done in the same stretch of time?",
+     "start": 8.365,
+     "end": 13.373
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "7b9882c241cf567d",
+   "takes": [
+    "2be4854748fc71106f4a",
+    "c8d4a173dfef104b0eda"
+   ],
+   "duration": 8.961,
+   "lines": [
+    {
+     "text": "Yes, genuinely; dramatically more.",
+     "start": 0.15,
+     "end": 3.463
+    },
+    {
+     "text": "Letting go of it is the one real thing that actually opens the door.",
+     "start": 3.883,
+     "end": 8.611
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "eef55c1e9f0b0d33",
+   "takes": [
+    "cab11534f3dcb6e8b53c"
+   ],
+   "duration": 11.073,
+   "lines": [
+    {
+     "text": "Run it for real: the identical counter, given that identical stretch of time, now climbs many times higher, because something else finally got to run.",
+     "start": 0.15,
+     "end": 10.723
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "8fa66e8fbadea73f",
+   "takes": [
+    "0adcad34c5be28217935",
+    "7f8c312d777cf209cbb0"
+   ],
+   "duration": 22.422,
+   "lines": [
+    {
+     "text": "Two real, independent sources name both of these exact rules directly, in their own words.",
+     "start": 0.15,
+     "end": 8.031
+    },
+    {
+     "text": "One names the explicit release that lets other work run while real work continues; the other names reading a buffer's own real bytes directly, with nothing copied in along the way.",
+     "start": 8.451,
+     "end": 22.072
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "341dd6121f7eb9f6",
+   "takes": [
+    "914daa7bd179e62d0369",
+    "d17fec5fea2d03a8615c",
+    "4a81e755ce93e06a7acb",
+    "b66237ed9ff6b1d3b15e"
+   ],
+   "duration": 46.546,
+   "lines": [
+    {
+     "text": "So here's what this topic's own two small boundaries are really standing in for: a real extension built this way isn't limited to handing Python back a brand new answer every time.",
+     "start": 0.15,
+     "end": 13.016
+    },
+    {
+     "text": "It can hand Python the exact same memory it was already holding, and it can step out of the interpreter's own way entirely while it does the real work underneath.",
+     "start": 13.436,
+     "end": 23.97
+    },
+    {
+     "text": "Neither one happens automatically; both are a real, explicit choice the code has to make, the same way the handle, the status code, and the unwind boundary were.",
+     "start": 24.39,
+     "end": 36.225
+    },
+    {
+     "text": "And that's the real thread running through this entire chapter: crossing out of Rust was never going to be automatic, not once, not anywhere along the way.",
+     "start": 36.645,
+     "end": 46.196
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
