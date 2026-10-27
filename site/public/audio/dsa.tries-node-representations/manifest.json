@@ -1,0 +1,357 @@
+{
+ "topic": "dsa.tries-node-representations",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7ff391aa3cda6cb2",
+   "takes": [
+    "63b94f68d7a923db8d96",
+    "f72117cb0da19e580578"
+   ],
+   "duration": 20.7,
+   "lines": [
+    {
+     "text": "Every structure this course has built so far answers the same kind of question by comparing whole keys, or whole values, against each other.",
+     "start": 0.15,
+     "end": 10.414
+    },
+    {
+     "text": "Here's a different question entirely: given a string, where does it live, found out one character at a time instead of comparing it whole against anything else?",
+     "start": 10.834,
+     "end": 20.35
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "2b23b1b285b842da",
+   "takes": [
+    "45ba2ff0db358632ac36",
+    "18b6b1aa81b726c75243"
+   ],
+   "duration": 22.731,
+   "lines": [
+    {
+     "text": "A trie stores the characters themselves in its nodes, not the keys \u2014 each node has one child for every possible next character.",
+     "start": 0.15,
+     "end": 9.372
+    },
+    {
+     "text": "Walking from the root one character at a time either lands on the string or proves it was never there, and two words that start the same way walk through the exact same shared node.",
+     "start": 9.792,
+     "end": 22.381
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A trie stores the characters themselves in its nodes, not the keys \u2014 each node has one child for every possible next character.",
+     "said": "a trie",
+     "heard": "atria"
+    }
+   ]
+  },
+  "03": {
+   "hash": "600cb9009dca9713",
+   "takes": [
+    "f792e07feb5b7c4282c9",
+    "23f895f6a882de531cdf"
+   ],
+   "duration": 13.968,
+   "lines": [
+    {
+     "text": "Before the reveal, think about what actually changes if this dictionary gets much bigger.",
+     "start": 0.15,
+     "end": 6.876
+    },
+    {
+     "text": "Does a lookup that walks one character at a time even notice how many other keys are stored alongside it?",
+     "start": 7.296,
+     "end": 13.618
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "768965c78e738000",
+   "takes": [
+    "b1244846f42d1707762a",
+    "2a76c564587cb21333dc"
+   ],
+   "duration": 18.844,
+   "lines": [
+    {
+     "text": "No. Each step only ever consumes one character and moves to exactly one child \u2014 that cost never once references how many other keys share the trie.",
+     "start": 0.15,
+     "end": 11.682
+    },
+    {
+     "text": "Add far more words to the same dictionary and this exact lookup costs exactly the same.",
+     "start": 12.102,
+     "end": 18.494
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 134,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "No. Each step only ever consumes one character and moves to exactly one child \u2014 that cost never once references how many other keys share the trie.",
+     "said": "trie",
+     "heard": "tri"
+    }
+   ]
+  },
+  "04": {
+   "hash": "d61475bed999329e",
+   "takes": [
+    "75b8b06555951c581bba",
+    "de003f206f34d83dc2dc"
+   ],
+   "duration": 15.848,
+   "lines": [
+    {
+     "text": "Here's the part worth sitting with: every earlier chapter's own cost grew with how many keys were stored.",
+     "start": 0.15,
+     "end": 7.462
+    },
+    {
+     "text": "This is the first structure in the whole course where that stops being true \u2014 the cost depends only on the key's own length.",
+     "start": 7.882,
+     "end": 15.498
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "1605c0bbad914c2f",
+   "takes": [
+    "c542bfa5f8a70da175f2",
+    "f72084eec5ebc5b6092f"
+   ],
+   "duration": 13.988,
+   "lines": [
+    {
+     "text": "Before this reveal, picture one single node's own array of possible next characters, sized for the whole alphabet.",
+     "start": 0.15,
+     "end": 8.498
+    },
+    {
+     "text": "On a sparse dictionary, how many of those slots do you think actually get used?",
+     "start": 8.918,
+     "end": 13.638
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "e2234bd92bc67034",
+   "takes": [
+    "121a18beaab4e94d3cda",
+    "4eca866370ca84e694fc"
+   ],
+   "duration": 16.796,
+   "lines": [
+    {
+     "text": "Almost none of them. One node rarely has anywhere near enough distinct children to fill every slot the alphabet allows.",
+     "start": 0.15,
+     "end": 8.274
+    },
+    {
+     "text": "That's the trade an array makes: every slot gets allocated up front, whether or not anything ever lands in it.",
+     "start": 8.694,
+     "end": 16.446
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d15e32db1ef68336",
+   "takes": [
+    "4fe607e45d012f392d9a",
+    "2fa3a996904b4893b85c"
+   ],
+   "duration": 14.543,
+   "lines": [
+    {
+     "text": "An array child slot costs nothing to search \u2014 one direct step, no comparison at all.",
+     "start": 0.15,
+     "end": 6.61
+    },
+    {
+     "text": "And on the exact dictionary measured here, the overwhelming majority of those slots sit completely empty.",
+     "start": 7.03,
+     "end": 14.193
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -3.1,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e762c60273c378d3",
+   "takes": [
+    "57868d3f98798ce79c7b",
+    "44111b80446f9f907474"
+   ],
+   "duration": 23.839,
+   "lines": [
+    {
+     "text": "Same shared tree underneath, every time \u2014 only the way a single node stores its own children changes.",
+     "start": 0.15,
+     "end": 6.967
+    },
+    {
+     "text": "A hash table keyed by character, a sorted list searched by comparison, or a tiny three-child structure built around one character at a time \u2014 three more ways to hold exactly the same information.",
+     "start": 7.387,
+     "end": 23.489
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "86febacdd0b54ab7",
+   "takes": [
+    "07e22af914d732890a0a",
+    "6c43f892049a956cccbc"
+   ],
+   "duration": 17.451,
+   "lines": [
+    {
+     "text": "Before this reveal: the array's whole advantage was one direct step, no comparison needed.",
+     "start": 0.15,
+     "end": 6.7
+    },
+    {
+     "text": "Can something that compares against just one stored character still keep that same one-step-per-character discipline, while using far less memory?",
+     "start": 7.12,
+     "end": 17.101
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "007c61e5337d1ada",
+   "takes": [
+    "0be463a80fe9f33a6273",
+    "04326e1572da13b01cc5"
+   ],
+   "duration": 18.573,
+   "lines": [
+    {
+     "text": "Yes. Comparing against a single stored character, instead of indexing into a slot for every letter in the alphabet, needs far less memory per node.",
+     "start": 0.15,
+     "end": 10.128
+    },
+    {
+     "text": "It still consumes exactly one character per step forward \u2014 it just gets there by comparison instead of a direct index.",
+     "start": 10.548,
+     "end": 18.223
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "775bd54912685e08",
+   "takes": [
+    "cd514344f3bdd22c81d8",
+    "1cb39327a460fbe0746c"
+   ],
+   "duration": 23.713,
+   "lines": [
+    {
+     "text": "This structure's own node holds exactly one character, one value, and three children: two of them compare against that same character, and the third moves forward to the next one.",
+     "start": 0.15,
+     "end": 14.336
+    },
+    {
+     "text": "Measured on the exact same dictionary as every other representation here, this one used less memory than all three of the others.",
+     "start": 14.756,
+     "end": 23.363
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "397559c632fdf1c4",
+   "takes": [
+    "57c1a8be385d78a5de72",
+    "c37158cd6e59f20b9503"
+   ],
+   "duration": 24.747,
+   "lines": [
+    {
+     "text": "Here's what actually got measured, not assumed: real memory, in bytes, for every representation, on the exact same small dictionary.",
+     "start": 0.15,
+     "end": 9.773
+    },
+    {
+     "text": "The array representation came out the most expensive by a wide margin \u2014 and that wasted memory is the exact problem every later design this syllabus names, and skips, exists to solve.",
+     "start": 10.193,
+     "end": 24.397
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
