@@ -1,0 +1,298 @@
+{
+ "topic": "rust.choosing-abstraction-level",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e432e343e8da2b3d",
+   "takes": [
+    "a07bf0c3e17c6d77a3e0",
+    "7d19f0aff41c67caf457"
+   ],
+   "duration": 22.435,
+   "lines": [
+    {
+     "text": "Before touching a single line of code, here's a guess, written down on purpose: waiting for a storage write to actually finish before replying to a client will make that reply measurably slower, by roughly however long that write itself takes.",
+     "start": 0.15,
+     "end": 17.582
+    },
+    {
+     "text": "Is a guess like that actually specific enough to be wrong?",
+     "start": 18.302,
+     "end": 22.085
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "da0703a77fa78a55",
+   "takes": [
+    "9995c204b819e717847b",
+    "48263c489f2042736b86"
+   ],
+   "duration": 8.659,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "It names a real number and a real direction, so a real measurement can actually agree or disagree with it.",
+     "start": 1.84,
+     "end": 8.309
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "17ac89ba854bb9be",
+   "takes": [
+    "bbec3307b32a0c62abee"
+   ],
+   "duration": 14.252,
+   "lines": [
+    {
+     "text": "Run it for real, first, without the change: a handful of requests, each one replied to the moment it's handed off, long before any of the real work behind it is even close to done.",
+     "start": 0.15,
+     "end": 13.902
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "859689f3eacb2620",
+   "takes": [
+    "4ed4039a35a49409c0a0",
+    "b13f25407616752791a9"
+   ],
+   "duration": 16.149,
+   "lines": [
+    {
+     "text": "Now make the one real change the guess was actually about: hold the reply back until that specific request's own work has genuinely finished.",
+     "start": 0.15,
+     "end": 10.519
+    },
+    {
+     "text": "Does the client actually feel that difference, the way the guess said it would?",
+     "start": 11.239,
+     "end": 15.799
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does the client actually feel that difference, the way the guess said it would?",
+     "said": "guess",
+     "heard": "guest"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "56b81aa0c2117ad3",
+   "takes": [
+    "08698133f32b46673e8e",
+    "98ddfa8ccf3baa415069"
+   ],
+   "duration": 10.682,
+   "lines": [
+    {
+     "text": "It does, genuinely.",
+     "start": 0.15,
+     "end": 1.998
+    },
+    {
+     "text": "Waiting for real work to finish costs real time, and now that cost shows up exactly where it was expected to.",
+     "start": 2.418,
+     "end": 10.332
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "05abe2725f35082d",
+   "takes": [
+    "f1268a1733f3dbbb2e85"
+   ],
+   "duration": 12.104,
+   "lines": [
+    {
+     "text": "Run it for real: what used to be a reply so fast it barely registered now takes roughly as long as the real work itself takes, every single time.",
+     "start": 0.15,
+     "end": 11.754
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.2,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "567294a0982bbcfe",
+   "takes": [
+    "3ac79edf9f0b5587f461",
+    "77e797c9b3780493fb09"
+   ],
+   "duration": 15.614,
+   "lines": [
+    {
+     "text": "Put the two real numbers side by side: what was guessed beforehand, and what actually got measured afterward.",
+     "start": 0.15,
+     "end": 7.22
+    },
+    {
+     "text": "Did the guess just happen to land close, or is that match the real point of writing it down in the first place?",
+     "start": 7.94,
+     "end": 15.264
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Did the guess just happen to land close, or is that match the real point of writing it down in the first place?",
+     "said": "guess",
+     "heard": "guest"
+    },
+    {
+     "line": "Did the guess just happen to land close, or is that match the real point of writing it down in the first place?",
+     "said": "writing",
+     "heard": "riding"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "2c8837eeb64622c5",
+   "takes": [
+    "cc545cd1a0a7e4415519",
+    "62e7f2a193a8ad0e5987"
+   ],
+   "duration": 9.565,
+   "lines": [
+    {
+     "text": "That's the real point, genuinely.",
+     "start": 0.15,
+     "end": 2.495
+    },
+    {
+     "text": "A guess that happens to be right only means something once there's a written record to check it against.",
+     "start": 2.915,
+     "end": 9.215
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.3,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "682d35285168c26c",
+   "takes": [
+    "1bc48b3b83aa4ebeb7e7"
+   ],
+   "duration": 11.592,
+   "lines": [
+    {
+     "text": "Run it for real: the slowdown that actually showed up lines up with what was guessed beforehand, closely enough that there's no real question left about whether the two are actually connected.",
+     "start": 0.15,
+     "end": 11.242
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "55f2bc426eb0f6f5",
+   "takes": [
+    "2edc88b8370a17c11017",
+    "192f07efa252933fc9eb"
+   ],
+   "duration": 23.378,
+   "lines": [
+    {
+     "text": "One real, well-known field guide to exactly this kind of problem says it plainly, in its own words.",
+     "start": 0.15,
+     "end": 7.245
+    },
+    {
+     "text": "First, come up with a real, specific guess about what's actually going on. Then, measure the real system and see whether what you find actually backs that guess up, or knocks it down.",
+     "start": 7.665,
+     "end": 23.028
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "684bb6d610f7ce25",
+   "takes": [
+    "f11c073391fc7800116a",
+    "7ec91739684513bb184a",
+    "aaf795e61fa28a3a50d2"
+   ],
+   "duration": 39.539,
+   "lines": [
+    {
+     "text": "So here's what this topic's own two real runs were really standing in for: a real guess, written down before anything changes, a real change made on purpose, and a real result measured the exact same way both times.",
+     "start": 0.15,
+     "end": 16.165
+    },
+    {
+     "text": "Without that written guess, the exact same slower number would just be a number, with nothing to say whether it was actually expected or not.",
+     "start": 16.585,
+     "end": 28.284
+    },
+    {
+     "text": "With it, that same number either backs up what was predicted, or it doesn't, and either way, that's a real answer instead of a feeling.",
+     "start": 28.704,
+     "end": 39.189
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
