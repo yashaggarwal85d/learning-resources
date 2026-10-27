@@ -1,0 +1,408 @@
+{
+ "topic": "de.mvcc-append-versions-vs",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "30497d8d896e4404",
+   "takes": [
+    "3c4cbfa805d3ba0b480d",
+    "3c6bcf93d93b7f022bdc",
+    "968f382e52c995b9b668"
+   ],
+   "duration": 22.155,
+   "lines": [
+    {
+     "text": "Every earlier topic in this chapter answered one question: given a row, how do you find it fast.",
+     "start": 0.15,
+     "end": 7.888
+    },
+    {
+     "text": "Here's a different question. Two transactions reach for that exact same row at the exact same moment.",
+     "start": 8.308,
+     "end": 16.414
+    },
+    {
+     "text": "What does a third transaction, just trying to read, see while that's happening?",
+     "start": 16.834,
+     "end": 21.805
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "3cfa06a6e52c80ad",
+   "takes": [
+    "6c439b59e350785d3a8b",
+    "8e0424a9b5baca322f23",
+    "7f17598e2ccadda15ce4"
+   ],
+   "duration": 25.704,
+   "lines": [
+    {
+     "text": "I updated one row on a real cluster, then asked Postgres directly what's sitting on that page right now.",
+     "start": 0.15,
+     "end": 7.638
+    },
+    {
+     "text": "Not one tuple. Two \u2014 the one from before the update, and the one from after, both still physically there.",
+     "start": 8.058,
+     "end": 15.967
+    },
+    {
+     "text": "Watch the transaction number. It closes the old tuple and opens the new one \u2014 the same number, in two different fields.",
+     "start": 16.387,
+     "end": 25.354
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "134f977b56ac3b9c",
+   "takes": [
+    "2b3a33e688bd22c9bf17",
+    "ae9ac9cc075d6679b39f",
+    "4dcff9e0385c30a4548d"
+   ],
+   "duration": 22.426,
+   "lines": [
+    {
+     "text": "That header alone can't tell a reader whether a tuple counts.",
+     "start": 0.15,
+     "end": 4.062
+    },
+    {
+     "text": "A reader also carries its own snapshot \u2014 a record of which transactions were still running when it started \u2014 and for anything outside that list, there's one more question: did it actually commit.",
+     "start": 4.482,
+     "end": 17.294
+    },
+    {
+     "text": "Two checks, not one, before a version is considered visible at all.",
+     "start": 17.714,
+     "end": 22.076
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "cf77870969fbf150",
+   "takes": [
+    "c95b202d451aec391b4c",
+    "e1382ef3d127b013cbe8",
+    "0872b78f1ce58514c76f"
+   ],
+   "duration": 20.792,
+   "lines": [
+    {
+     "text": "InnoDB and Oracle don't keep two tuples around like that.",
+     "start": 0.15,
+     "end": 4.836
+    },
+    {
+     "text": "Each row has exactly one physical copy on disk, and a plain update changes it right where it sits.",
+     "start": 5.256,
+     "end": 12.765
+    },
+    {
+     "text": "So a reader who needs the value from a moment ago \u2014 where does that come from, if there's only one copy left?",
+     "start": 13.185,
+     "end": 20.442
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "a0347f4e0c17c8d1",
+   "takes": [
+    "5de6507e78f050fdb2cd",
+    "6f8c24564824700671ab",
+    "bcd634e8a591f46ee20e"
+   ],
+   "duration": 21.964,
+   "lines": [
+    {
+     "text": "Not by waiting. That's the assumption locking-era databases made, and it isn't what either system does here.",
+     "start": 0.15,
+     "end": 7.999
+    },
+    {
+     "text": "Both keep a separate log of exactly what got overwritten.",
+     "start": 8.419,
+     "end": 11.844
+    },
+    {
+     "text": "A reader who needs the old value doesn't get a second tuple handed to it \u2014 it gets that log, rebuilt into a readable version.",
+     "start": 12.264,
+     "end": 21.614
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "2fec30c6a98fce22",
+   "takes": [
+    "e3646086fe7122a36cc8",
+    "df2243bb81f9cc3549dc",
+    "02677c7491311f5e46f5"
+   ],
+   "duration": 22.602,
+   "lines": [
+    {
+     "text": "Same update, this time under that other model, straight from each engine's own documentation.",
+     "start": 0.15,
+     "end": 7.949
+    },
+    {
+     "text": "The row itself: one copy, changed in place. Nothing duplicated there.",
+     "start": 8.369,
+     "end": 13.666
+    },
+    {
+     "text": "Off to the side, a record of exactly what it used to say \u2014 structurally nothing like what you just watched Postgres do.",
+     "start": 14.086,
+     "end": 22.253
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "9eb6946cde56158f",
+   "takes": [
+    "1730829ee2fe66e2e2f3",
+    "9bdac76750f1c7dc3dc1",
+    "8db93aaccde3cc80061f"
+   ],
+   "duration": 23.608,
+   "lines": [
+    {
+     "text": "An append-only design has to pay for itself somewhere. Here's where.",
+     "start": 0.15,
+     "end": 4.491
+    },
+    {
+     "text": "I updated the same row, over and over, on a column that's indexed, with nothing running to clean up behind it.",
+     "start": 4.911,
+     "end": 11.985
+    },
+    {
+     "text": "The table grew. The index grew. Every one of those old tuples is still sitting there, because nothing has told Postgres it's safe to reuse that space yet.",
+     "start": 12.405,
+     "end": 23.258
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "706286c9972a14a8",
+   "takes": [
+    "adc7b3d72358766bf8bd",
+    "700578f18a2ee9d86d32",
+    "d4288ae07a07a755b9eb"
+   ],
+   "duration": 26.105,
+   "lines": [
+    {
+     "text": "This is the payoff for all of that.",
+     "start": 0.15,
+     "end": 2.848
+    },
+    {
+     "text": "One connection opens a transaction and reads a value. A second, completely separate connection updates and commits that same row while the first is still open.",
+     "start": 3.268,
+     "end": 14.408
+    },
+    {
+     "text": "The first connection reads again. Same answer. Not delayed, not blocked \u2014 its own snapshot from a few steps back is exactly what makes that possible.",
+     "start": 14.828,
+     "end": 25.755
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "6e7639f7de4ca3a1",
+   "takes": [
+    "e99203fc41d8b3100814",
+    "6505104492fe7e15bf00",
+    "15838942dc4022016387"
+   ],
+   "duration": 27.352,
+   "lines": [
+    {
+     "text": "That bounded log from a few steps back has a sharp edge.",
+     "start": 0.15,
+     "end": 5.014
+    },
+    {
+     "text": "It's reused in a circle \u2014 new undo eventually overwrites old undo, because the space isn't infinite.",
+     "start": 5.434,
+     "end": 13.622
+    },
+    {
+     "text": "A reader that's still running when its own undo gets overwritten doesn't get a stale answer. It gets no answer at all \u2014 that's what snapshot too old actually means.",
+     "start": 14.042,
+     "end": 27.002
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "2029970bba02ff6b",
+   "takes": [
+    "c09fdb7b23fa61291a8a",
+    "c023aef7acc1a15199c9",
+    "fb05f3d1b705cc5396b3"
+   ],
+   "duration": 24.862,
+   "lines": [
+    {
+     "text": "Step back and look at what you've actually seen.",
+     "start": 0.15,
+     "end": 3.103
+    },
+    {
+     "text": "Postgres pays as it goes \u2014 every write leaves something behind, and the next topic is exactly what deals with that.",
+     "start": 3.523,
+     "end": 12.218
+    },
+    {
+     "text": "The other family pays differently \u2014 cheap writes in place, reconstruction work on long reads, and one hard limit that Postgres, structurally, doesn't share.",
+     "start": 12.638,
+     "end": 24.512
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Postgres pays as it goes \u2014 every write leaves something behind, and the next topic is exactly what deals with that.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "The other family pays differently \u2014 cheap writes in place, reconstruction work on long reads, and one hard limit that Postgres, structurally, doesn't share.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "10": {
+   "hash": "a1bd5b9cb7609d47",
+   "takes": [
+    "152fe6af71adf4d4181a",
+    "bf52b8380ca795976b54",
+    "7b074d3cbd16ff61e3ef"
+   ],
+   "duration": 20.244,
+   "lines": [
+    {
+     "text": "One more scenario, worth working through before the answer lands.",
+     "start": 0.15,
+     "end": 4.365
+    },
+    {
+     "text": "A team keeps hitting that failure on a nightly report and turns one dial to make it stop: more retention.",
+     "start": 4.785,
+     "end": 13.187
+    },
+    {
+     "text": "Does that actually fix what's wrong, or does it just buy some time?",
+     "start": 13.607,
+     "end": 19.894
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "543e7d5b625b0a97",
+   "takes": [
+    "93f138e715b230e43306",
+    "232f6b9ec6f4e7dee8c2",
+    "09be5bc5fae103764ef3"
+   ],
+   "duration": 22.381,
+   "lines": [
+    {
+     "text": "It buys time. The underlying shape of the problem hasn't moved.",
+     "start": 0.15,
+     "end": 4.561
+    },
+    {
+     "text": "Retention, by Oracle's own description, is a target the database tries for \u2014 not a promise.",
+     "start": 4.981,
+     "end": 11.817
+    },
+    {
+     "text": "Give it more room and the report runs longer before failing again. Grow the writes instead, and the exact same failure comes back.",
+     "start": 12.237,
+     "end": 22.031
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Give it more room and the report runs longer before failing again. Grow the writes instead, and the exact same failure comes back.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  }
+ }
+}
