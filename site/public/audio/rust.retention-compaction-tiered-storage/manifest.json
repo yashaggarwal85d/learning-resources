@@ -1,0 +1,343 @@
+{
+ "topic": "rust.retention-compaction-tiered-storage",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b353466d21b36afe",
+   "takes": [
+    "32cebbdcde761c0c09e1",
+    "06968a64bd3e48fb1652"
+   ],
+   "duration": 16.191,
+   "lines": [
+    {
+     "text": "One key's own only entry is already old; another key has several recent updates.",
+     "start": 0.15,
+     "end": 7.02
+    },
+    {
+     "text": "Time-based retention runs over the whole log. Does it genuinely delete the old entry, even though it is that key's own latest?",
+     "start": 7.74,
+     "end": 15.841
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.8,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "f2a1d67499f3c554",
+   "takes": [
+    "9995c204b819e717847b",
+    "aa0316b42719ebe6b112"
+   ],
+   "duration": 5.312,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Retention never looks at a key at all.",
+     "start": 1.84,
+     "end": 4.962
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -2.0,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "1e0eff6f59946705",
+   "takes": [
+    "713a68a9d27aa91ba25e"
+   ],
+   "duration": 9.452,
+   "lines": [
+    {
+     "text": "Run it for real: retention genuinely deleted the old entry, even though it was that key's own only, latest value.",
+     "start": 0.15,
+     "end": 9.102
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.6,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "85dc91289968598b",
+   "takes": [
+    "ccc9aee06816419d5bfb",
+    "d5550e537098ac8b0671"
+   ],
+   "duration": 11.097,
+   "lines": [
+    {
+     "text": "Now run compaction over the identical log instead.",
+     "start": 0.15,
+     "end": 3.097
+    },
+    {
+     "text": "Does the old entry survive this time, just because it is still that key's own latest value?",
+     "start": 3.817,
+     "end": 10.747
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "f451688f426df573",
+   "takes": [
+    "9995c204b819e717847b",
+    "23810329ebcbf62ab9e4"
+   ],
+   "duration": 4.291,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Compaction never checks age at all.",
+     "start": 1.84,
+     "end": 3.941
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -5.6,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "6086f03587853ef7",
+   "takes": [
+    "1fb3415f2eac0b02fb9c"
+   ],
+   "duration": 9.037,
+   "lines": [
+    {
+     "text": "Run it for real: compaction genuinely kept the old entry, because it is still that key's own latest value, with no age check at all.",
+     "start": 0.15,
+     "end": 8.687
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "1f52057c039d17f4",
+   "takes": [
+    "3386e66b37c50b452352",
+    "8bb4cb7ee45ffd5f4a55"
+   ],
+   "duration": 13.46,
+   "lines": [
+    {
+     "text": "A real tombstone, a message with the same key and no value, is appended after all the others.",
+     "start": 0.15,
+     "end": 7.048
+    },
+    {
+     "text": "Once compaction runs past it, does the key genuinely disappear entirely?",
+     "start": 7.768,
+     "end": 13.11
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "c0c9cab598834f84",
+   "takes": [
+    "9995c204b819e717847b",
+    "86b9f04ae53946509817"
+   ],
+   "duration": 4.509,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The tombstone removes the key itself.",
+     "start": 1.84,
+     "end": 4.159
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -3.5,
+   "wpm": 106,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "aad07b1c14f4f817",
+   "takes": [
+    "43e8ace0dbc7e4c6390d"
+   ],
+   "duration": 11.948,
+   "lines": [
+    {
+     "text": "Run it for real: the tombstone genuinely removed the key entirely, once compaction ran past it, with every other key genuinely untouched.",
+     "start": 0.15,
+     "end": 11.598
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 110,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "01ee2f27485c8f95",
+   "takes": [
+    "f2636c0a0b9669575116",
+    "a54745b768d48e47b444"
+   ],
+   "duration": 14.701,
+   "lines": [
+    {
+     "text": "Two real, independent sources on this exact mechanism agree, in their own words.",
+     "start": 0.15,
+     "end": 5.618
+    },
+    {
+     "text": "Compaction keeps at least the last state for each key, and a null-payload message is treated as a real delete.",
+     "start": 6.038,
+     "end": 14.351
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.1,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "e36c90fa9574fce4",
+   "takes": [
+    "9a8f687e904014524117"
+   ],
+   "duration": 11.041,
+   "lines": [
+    {
+     "text": "Run it for real, all together: time-based retention, keep-the-latest compaction, and the tombstone's own removal, all measured from the identical log.",
+     "start": 0.15,
+     "end": 10.691
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "983e145e7de3e303",
+   "takes": [
+    "d9fa5560b54c76c67808",
+    "07b1d91193c73d22e50b"
+   ],
+   "duration": 22.026,
+   "lines": [
+    {
+     "text": "This whole chapter has been building toward one closed loop: how a log orders writes, how a consumer survives redelivery, and now, how long any of that even sticks around to be read.",
+     "start": 0.15,
+     "end": 14.364
+    },
+    {
+     "text": "A real tombstone's own removal is the last piece of that loop, closing the question this chapter opened.",
+     "start": 14.784,
+     "end": 21.676
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "This whole chapter has been building toward one closed loop: how a log orders writes, how a consumer survives redelivery, and now, how long any of that even sticks around to be read.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "This whole chapter has been building toward one closed loop: how a log orders writes, how a consumer survives redelivery, and now, how long any of that even sticks around to be read.",
+     "said": "redelivery",
+     "heard": "re delivery"
+    },
+    {
+     "line": "A real tombstone's own removal is the last piece of that loop, closing the question this chapter opened.",
+     "said": "tombstones own",
+     "heard": "tombstone zone"
+    }
+   ]
+  },
+  "10": {
+   "hash": "13c1f350d672ba84",
+   "takes": [
+    "955cde97f584a02cbe8c",
+    "a71f118221ef883bec7c",
+    "a773a9b65d646242be07"
+   ],
+   "duration": 39.978,
+   "lines": [
+    {
+     "text": "So here's the real question underneath both of these mechanisms: how long should any one piece of data actually matter, and who gets to decide that, the clock or the key?",
+     "start": 0.15,
+     "end": 12.469
+    },
+    {
+     "text": "Retention never even looks at a key; it just watches a clock, which is exactly why it can erase something that still mattered, simply because enough time went by.",
+     "start": 13.019,
+     "end": 22.687
+    },
+    {
+     "text": "Compaction flips that completely: it watches keys, not clocks, so a value sticks around for as long as nothing newer has replaced it, and a tombstone is just the producer's own way of saying that this key's story is finally over.",
+     "start": 23.107,
+     "end": 39.628
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
