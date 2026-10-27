@@ -1,0 +1,293 @@
+{
+ "topic": "rust.unsafe-contracts-safety-comments",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8b872893b310d9c6",
+   "takes": [
+    "8bfce2ac90601479eb26",
+    "c346905eb13924919eec"
+   ],
+   "duration": 12.134,
+   "lines": [
+    {
+     "text": "A function is marked unsafe and ships with a documented contract.",
+     "start": 0.15,
+     "end": 4.609
+    },
+    {
+     "text": "Does calling it from behind a real safe guard that checks the contract first ever reach undefined behavior?",
+     "start": 5.329,
+     "end": 11.784
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 143,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does calling it from behind a real safe guard that checks the contract first ever reach undefined behavior?",
+     "said": "safe guard",
+     "heard": "safeguard"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "5e05961114e2da45",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "7e2e1fcf7f598a3a07ec"
+   ],
+   "duration": 5.293,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "A real, enforcing guard keeps it sound.",
+     "start": 2.386,
+     "end": 4.943
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 102,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "41403f5dea63d8b6",
+   "takes": [
+    "46948e8fa0de30656ae9"
+   ],
+   "duration": 11.693,
+   "lines": [
+    {
+     "text": "Run it for real: every real call that genuinely satisfies the documented contract returns the genuinely correct value, every single time.",
+     "start": 0.15,
+     "end": 11.343
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -3.1,
+   "wpm": 108,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "5a963eaa8da9fb48",
+   "takes": [
+    "60e03c6441d866f98d18",
+    "37890c8eeb9354b1ffa3"
+   ],
+   "duration": 10.483,
+   "lines": [
+    {
+     "text": "Now send the guard three requests outside the real contract.",
+     "start": 0.15,
+     "end": 5.253
+    },
+    {
+     "text": "Does it still let any of them reach the unsafe code underneath it?",
+     "start": 5.973,
+     "end": 10.133
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "ce496721c86677c3",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "69550fa95b5d44202241"
+   ],
+   "duration": 7.021,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "Every one is rejected before the unsafe code ever runs.",
+     "start": 2.386,
+     "end": 6.671
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 103,
+   "wer": 0.2,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Every one is rejected before the unsafe code ever runs.",
+     "said": "every one",
+     "heard": "everyone"
+    }
+   ]
+  },
+  "04": {
+   "hash": "c1ff1238336dd097",
+   "takes": [
+    "d4a059dccb43d3b683ea"
+   ],
+   "duration": 11.376,
+   "lines": [
+    {
+     "text": "Run it for real: the real guard genuinely rejected every one of the three out-of-contract requests, and the unsafe function's own real call counter never moved for them.",
+     "start": 0.15,
+     "end": 11.026
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.4,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "4f41e19fcd9a39d4",
+   "takes": [
+    "6d5c9bf9ebf96608f947",
+    "5d7e7a9b8ef5b9b7c337"
+   ],
+   "duration": 12.176,
+   "lines": [
+    {
+     "text": "Suppose a different caller skipped the guard and called the unsafe function directly, with the identical invalid inputs.",
+     "start": 0.15,
+     "end": 7.844
+    },
+    {
+     "text": "Would that genuinely violate the documented contract?",
+     "start": 8.564,
+     "end": 11.826
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "7d2a671832574816",
+   "takes": [
+    "fb26b36c4a4a799f1ca5",
+    "7a6c4601c9f8dfb2ea1a"
+   ],
+   "duration": 5.267,
+   "lines": [
+    {
+     "text": "Yes, it genuinely would.",
+     "start": 0.15,
+     "end": 1.714
+    },
+    {
+     "text": "That's exactly outside the documented bound.",
+     "start": 2.134,
+     "end": 4.917
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.9,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ce008771eafeb776",
+   "takes": [
+    "950cab046092350a8de0"
+   ],
+   "duration": 13.661,
+   "lines": [
+    {
+     "text": "Run it for real: the identical invalid inputs genuinely violate the real documented contract, the exact real bound the guard above was built to enforce.",
+     "start": 0.15,
+     "end": 13.311
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 110,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "df7c5ee9fb3e8095",
+   "takes": [
+    "5aa095f0b09cf8fb1861",
+    "e42b431374a0de9f0c23"
+   ],
+   "duration": 17.862,
+   "lines": [
+    {
+     "text": "Two real, independent sources on this exact rule agree, in their own words.",
+     "start": 0.15,
+     "end": 6.626
+    },
+    {
+     "text": "Unsafe code is sound only if no safe caller can ever trigger undefined behavior through it, and a real Safety section is how that contract gets written down.",
+     "start": 7.046,
+     "end": 17.512
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.7,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "03828861fa72f04e",
+   "takes": [
+    "3c7bf0b6d03b792b67a7",
+    "df89dc730da7c9dc884c",
+    "347d68ad6c6162bc86a2"
+   ],
+   "duration": 59.95,
+   "lines": [
+    {
+     "text": "So here's why the word unsafe is misleading if you read it as a speed setting: nothing about the keyword itself removes a single rule Rust enforces everywhere else, it only moves the job of proving those rules onto the person who wrote that one function.",
+     "start": 0.15,
+     "end": 19.252
+    },
+    {
+     "text": "That's also why a comment claiming something runs faster is never, on its own, a safety argument: faster and sound are answering two completely different questions, and this topic's own guard shows what actually answering the second one looks like in real code.",
+     "start": 19.672,
+     "end": 39.402
+    },
+    {
+     "text": "And the sharper standard underneath all of it is the one this topic measured directly: it isn't enough that today's callers happen to behave, since a function is only sound once no caller, however it is written, can ever reach the broken state through the safe surface alone.",
+     "start": 39.822,
+     "end": 59.6
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
