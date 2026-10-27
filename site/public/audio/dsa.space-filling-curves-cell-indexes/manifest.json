@@ -1,0 +1,322 @@
+{
+ "topic": "dsa.space-filling-curves-cell-indexes",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6ee50398419da6d4",
+   "takes": [
+    "a495fd15d1685dcf0f9d",
+    "233f637b566e985dcb03"
+   ],
+   "duration": 21.925,
+   "lines": [
+    {
+     "text": "Every structure so far has ordered one array, by position or by key. Here's a different kind of question: points scattered across two dimensions, not one.",
+     "start": 0.15,
+     "end": 12.823
+    },
+    {
+     "text": "Two points that are neighbours on a map \u2014 once you squeeze them into a single line, how far apart do they actually land?",
+     "start": 13.243,
+     "end": 21.575
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Two points that are neighbours on a map \u2014 once you squeeze them into a single line, how far apart do they actually land?",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "02": {
+   "hash": "7918e8391671c1d4",
+   "takes": [
+    "fb5b4716536922d30fbe",
+    "f93cc8a64926914dda24"
+   ],
+   "duration": 23.274,
+   "lines": [
+    {
+     "text": "Start with the obvious ordering: number the grid row by row, left to right, top to bottom.",
+     "start": 0.15,
+     "end": 6.653
+    },
+    {
+     "text": "It's a perfectly valid ordering \u2014 every cell gets its own distinct number \u2014 but it has no special relationship to the grid's own two dimensions. Step one row down, and you can jump a huge distance in that ordering.",
+     "start": 7.073,
+     "end": 22.924
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "eb25f5dc94196de6",
+   "takes": [
+    "99131892bbba030bbf6e",
+    "f6cbdce3b371fc093714"
+   ],
+   "duration": 16.766,
+   "lines": [
+    {
+     "text": "Before the reveal, think about what happens if, instead of numbering by rows, you weave a point's two coordinates together, bit by bit.",
+     "start": 0.15,
+     "end": 9.76
+    },
+    {
+     "text": "Does that actually fix row-major's problem everywhere, or does it just move the problem somewhere else?",
+     "start": 10.18,
+     "end": 16.416
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does that actually fix row-major's problem everywhere, or does it just move the problem somewhere else?",
+     "said": "row",
+     "heard": "roe"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "2aaa243cb0aeaa46",
+   "takes": [
+    "5cd7d9e7bc06e347632d",
+    "3a7667d86d2740cc24e2"
+   ],
+   "duration": 22.44,
+   "lines": [
+    {
+     "text": "Somewhere else, mostly. Weaving the bits together ties the ordering to both coordinates at once, and that fixes most of the problem.",
+     "start": 0.15,
+     "end": 8.972
+    },
+    {
+     "text": "But it doesn't fix all of it \u2014 there are still specific places where this new ordering breaks down, and finding exactly where is the point of what comes next.",
+     "start": 9.392,
+     "end": 22.09
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "1dfda6fcac394ad1",
+   "takes": [
+    "7015bb36c78f47ec071e",
+    "e6bced3689ff97f3468a"
+   ],
+   "duration": 19.692,
+   "lines": [
+    {
+     "text": "Here's the construction: take one bit from each coordinate in turn and interleave them into a single number.",
+     "start": 0.15,
+     "end": 7.64
+    },
+    {
+     "text": "Connect those numbers in order, and the path they trace visits every single cell on the grid exactly once \u2014 a real one-to-one ordering, not an approximation of one.",
+     "start": 8.06,
+     "end": 19.342
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "8fd2f7bdcfadf2ec",
+   "takes": [
+    "19b00f02aa3d931a5b3b",
+    "1142a5e0f008554d88f0"
+   ],
+   "duration": 22.154,
+   "lines": [
+    {
+     "text": "Here's the catch that's easy to miss: near the grid's own corner, this new ordering is already about as tight as plain row numbering.",
+     "start": 0.15,
+     "end": 9.359
+    },
+    {
+     "text": "But step across a boundary \u2014 out of one quadrant and into the next \u2014 and the ordering can jump by far more than a single step, because interleaving has nothing special to say about that crossing.",
+     "start": 9.779,
+     "end": 21.804
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d2bd1f764d32413e",
+   "takes": [
+    "c51f9918746eca7a7743",
+    "4b5d093ec90ed352581c"
+   ],
+   "duration": 14.51,
+   "lines": [
+    {
+     "text": "Before this reveal, picture a curve built by recursion instead of by simply weaving bits together.",
+     "start": 0.15,
+     "end": 7.91
+    },
+    {
+     "text": "Can a curve built that way specifically dodge the exact crossing that just broke the other one?",
+     "start": 8.33,
+     "end": 14.16
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "ff90a36f1682f8af",
+   "takes": [
+    "882fdbba8f5b46f55a2c",
+    "cc684efbbaf33e29bed2"
+   ],
+   "duration": 22.044,
+   "lines": [
+    {
+     "text": "It can, and the reason is specific: the recursive construction chooses each quadrant's own order and orientation so the path never has to leap across a boundary it's about to come straight back to.",
+     "start": 0.15,
+     "end": 14.072
+    },
+    {
+     "text": "Same two points that jumped apart a moment ago land right next to each other on this curve instead.",
+     "start": 14.492,
+     "end": 21.694
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "90a77246f11efde0",
+   "takes": [
+    "ded17900bf18ae51746c",
+    "bd9f869ae1fc277cac74"
+   ],
+   "duration": 21.888,
+   "lines": [
+    {
+     "text": "Watch what's actually different here, not just that it's built differently.",
+     "start": 0.15,
+     "end": 4.861
+    },
+    {
+     "text": "Every quadrant is visited in an order and a flip chosen specifically so the path folds back on itself at a boundary rather than leaping across it. That's more work to construct, and it's exactly what buys the tighter closeness.",
+     "start": 5.281,
+     "end": 21.538
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "51487e1c238c7381",
+   "takes": [
+    "ad41b997df71e92b06d7",
+    "79784536c6c8b9b8c305"
+   ],
+   "duration": 28.301,
+   "lines": [
+    {
+     "text": "Three real systems each pick one specific curve and one specific cell shape, on top of this exact idea.",
+     "start": 0.15,
+     "end": 8.905
+    },
+    {
+     "text": "One weaves latitude and longitude together into a short text string. One wraps a curve around six faces of a cube instead of a flat plane. One swaps squares for hexagons outright, because every neighbour of a hexagon sits the identical distance from its centre.",
+     "start": 9.325,
+     "end": 27.951
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.044444444444444446,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One weaves latitude and longitude together into a short text string. One wraps a curve around six faces of a cube instead of a flat plane. One swaps squares for hexagons outright, because every neighbour of a hexagon sits the identical distance from its centre.",
+     "said": "neighbour",
+     "heard": "neighbor"
+    },
+    {
+     "line": "One weaves latitude and longitude together into a short text string. One wraps a curve around six faces of a cube instead of a flat plane. One swaps squares for hexagons outright, because every neighbour of a hexagon sits the identical distance from its centre.",
+     "said": "centre",
+     "heard": "center"
+    }
+   ]
+  },
+  "09": {
+   "hash": "5918195240622548",
+   "takes": [
+    "2424f14be0586c0024a8",
+    "587c6fc0479c4d25e0ef"
+   ],
+   "duration": 31.385,
+   "lines": [
+    {
+     "text": "Here's what actually got measured, not assumed: three real pairs of grid neighbours, their real distance apart in three different orderings.",
+     "start": 0.15,
+     "end": 9.89
+    },
+    {
+     "text": "And here's the honest part \u2014 the boundary-crossing pairs show a huge gap in favor of the recursive curve, but right at the grid's own corner, the simple bit-weaving ordering already matches plain row numbering, and the recursive curve isn't even the closest of the three there.",
+     "start": 10.31,
+     "end": 31.035
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's what actually got measured, not assumed: three real pairs of grid neighbours, their real distance apart in three different orderings.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  }
+ }
+}
