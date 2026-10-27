@@ -1,0 +1,425 @@
+{
+ "topic": "de.lsm-compaction-rum-trade",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "62c79a57f6537fd9",
+   "takes": [
+    "e7f134523f64e6675aed",
+    "9e9afd6b11d9c31ffbe7",
+    "da793c1c233207edbd17"
+   ],
+   "duration": 24.08,
+   "lines": [
+    {
+     "text": "Last time we traced one write all the way down to a brand new file on disk, never edited again.",
+     "start": 0.15,
+     "end": 7.139
+    },
+    {
+     "text": "Do that forever and you get a problem. Sorted runs just keep piling up, one per flush.",
+     "start": 7.559,
+     "end": 15.613
+    },
+    {
+     "text": "Something has to merge them back down, and that something is compaction. What does it actually cost?",
+     "start": 16.033,
+     "end": 23.73
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "eddeb9d3259fd4e0",
+   "takes": [
+    "e321b98a685bdff12d96",
+    "b691ffb427b2c0bad8ae",
+    "80bd219b4e11a1ecded9"
+   ],
+   "duration": 31.285,
+   "lines": [
+    {
+     "text": "I ran the exact same shuffled write pattern through two of RocksDB's own real compaction styles, measuring the result directly.",
+     "start": 0.15,
+     "end": 9.462
+    },
+    {
+     "text": "Leveled compaction keeps one sorted run per level and merges aggressively. On this workload, it settled down to just three files.",
+     "start": 9.882,
+     "end": 18.922
+    },
+    {
+     "text": "Tiered, which RocksDB itself calls universal compaction, lets more runs coexist before merging. The same writes settled to four files instead.",
+     "start": 19.342,
+     "end": 30.935
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "I ran the exact same shuffled write pattern through two of RocksDB's own real compaction styles, measuring the result directly.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "I ran the exact same shuffled write pattern through two of RocksDB's own real compaction styles, measuring the result directly.",
+     "said": "rocksdbs",
+     "heard": "roxdbs"
+    }
+   ]
+  },
+  "03": {
+   "hash": "cb2fdab56fde82b6",
+   "takes": [
+    "5ff318e66ea83250fec1",
+    "c54478285f74e8c663cf",
+    "5656bccb7cbef4c48383"
+   ],
+   "duration": 19.411,
+   "lines": [
+    {
+     "text": "There's a third style that doesn't merge at all.",
+     "start": 0.15,
+     "end": 3.496
+    },
+    {
+     "text": "I wrote well past a configured hundred kilobyte cap on a real FIFO-style store.",
+     "start": 3.916,
+     "end": 10.011
+    },
+    {
+     "text": "The oldest round's own key was simply gone, dropped outright. The newest round's own key was still right there.",
+     "start": 10.431,
+     "end": 19.061
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "6cabb50516db8216",
+   "takes": [
+    "b73478a0e63387a66ec7",
+    "4d7bced2ef1c36b967e1"
+   ],
+   "duration": 17.907,
+   "lines": [
+    {
+     "text": "So here's the real question these three styles are all dancing around.",
+     "start": 0.15,
+     "end": 3.943
+    },
+    {
+     "text": "Leveled pays more to write. Tiered pays more to read later, because more runs pile up first. Is there a compaction style out there that just avoids all of these costs?",
+     "start": 4.363,
+     "end": 17.557
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "5f1964a21f01c5b7",
+   "takes": [
+    "efac376fbb31636d0bd4",
+    "6e47deab3feee0160a15",
+    "1c88f412fc3498b006ac"
+   ],
+   "duration": 19.587,
+   "lines": [
+    {
+     "text": "\"Somebody just hasn't invented it yet\" is a tempting answer. It's also wrong.",
+     "start": 0.15,
+     "end": 5.742
+    },
+    {
+     "text": "This isn't an engineering gap waiting to be closed. It has a name, and a proof sketch behind it.",
+     "start": 6.162,
+     "end": 12.396
+    },
+    {
+     "text": "No compaction style escapes this trade-off, and the next thing I'm going to show you is exactly why.",
+     "start": 12.816,
+     "end": 19.237
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "6508bf9a7d962d1e",
+   "takes": [
+    "2bffe6995712c11dd10d",
+    "9b135b6d2fd62ec936c7",
+    "4e2faf4a86c3f03e38af"
+   ],
+   "duration": 32.649,
+   "lines": [
+    {
+     "text": "It's called the RUM conjecture, and it gives each of those costs a precise name.",
+     "start": 0.15,
+     "end": 6.138
+    },
+    {
+     "text": "Read overhead is read amplification. Update overhead is write amplification. Memory overhead is space amplification. Each one is a real ratio, with a theoretical floor of exactly one.",
+     "start": 6.558,
+     "end": 21.834
+    },
+    {
+     "text": "And the conjecture itself says: optimize any two of those three, and the one you didn't touch gets worse. Not usually. Provably.",
+     "start": 22.254,
+     "end": 32.299
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "f57b6a6463b078c7",
+   "takes": [
+    "1ad7c335bf8a07168c6d",
+    "bd2d92b452f881429ed6",
+    "81ca4a1d044f39338d26"
+   ],
+   "duration": 29.804,
+   "lines": [
+    {
+     "text": "That trade-off isn't just theory. RocksDB has a real, measured trigger built around it.",
+     "start": 0.15,
+     "end": 7.017
+    },
+    {
+     "text": "I configured the trigger on the newest level, L zero, to two files, then ran a real write pattern and read RocksDB's own internal file count directly.",
+     "start": 7.437,
+     "end": 18.133
+    },
+    {
+     "text": "It came back at six, well past that trigger. At that point RocksDB doesn't crash or block. It deliberately slows writes down, on purpose.",
+     "start": 18.553,
+     "end": 29.454
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 133,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It came back at six, well past that trigger. At that point RocksDB doesn't crash or block. It deliberately slows writes down, on purpose.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "07": {
+   "hash": "6fd9d07c580418fd",
+   "takes": [
+    "8551f479f6b5da51fa78",
+    "8707868dcf703c170e0b",
+    "76c95983127c7d2cae9c"
+   ],
+   "duration": 20.967,
+   "lines": [
+    {
+     "text": "Here's the connection.",
+     "start": 0.15,
+     "end": 1.237
+    },
+    {
+     "text": "Last topic, a tombstone was uncollected merge work on a single key, sitting there until some later compaction finally cleaned it up.",
+     "start": 1.657,
+     "end": 10.585
+    },
+    {
+     "text": "A write stall is the exact same debt, just at the scale of the whole system instead of one key, finally forcing a slowdown.",
+     "start": 11.005,
+     "end": 20.617
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A write stall is the exact same debt, just at the scale of the whole system instead of one key, finally forcing a slowdown.",
+     "said": "write stall",
+     "heard": "reitstall"
+    }
+   ]
+  },
+  "08": {
+   "hash": "537646f985098ee5",
+   "takes": [
+    "63d96d9140130abcc840",
+    "7562e8484fb31815c0eb",
+    "748a7aef7d49b5d5ab9c"
+   ],
+   "duration": 44.362,
+   "lines": [
+    {
+     "text": "This chapter's own lab puts a number on all of this. I ran the identical insert-then-update workload against a real Postgres cluster and a real RocksDB instance, side by side.",
+     "start": 0.15,
+     "end": 13.098
+    },
+    {
+     "text": "Postgres paid roughly two point six one times write amplification and one point eight nine times space amplification. RocksDB paid less on both: about one point eight five and one point one one.",
+     "start": 13.518,
+     "end": 28.551
+    },
+    {
+     "text": "RocksDB's own read came back faster every single run too, but I want to be honest about that one. That's an in-process read against Postgres's own network round trip, not a clean amplification comparison.",
+     "start": 28.971,
+     "end": 44.012
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 138,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Postgres paid roughly two point six one times write amplification and one point eight nine times space amplification. RocksDB paid less on both: about one point eight five and one point one one.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Postgres paid roughly two point six one times write amplification and one point eight nine times space amplification. RocksDB paid less on both: about one point eight five and one point one one.",
+     "said": "rocksdb",
+     "heard": "roxdb"
+    }
+   ]
+  },
+  "09": {
+   "hash": "23b3883f0fdd5c5b",
+   "takes": [
+    "9ff743c96e10e833cd95",
+    "35171a3b8d506346a55b",
+    "9f229cda2de2f075ba96"
+   ],
+   "duration": 27.218,
+   "lines": [
+    {
+     "text": "Pull it together, because none of this was three separate design choices.",
+     "start": 0.15,
+     "end": 4.829
+    },
+    {
+     "text": "Every compaction style you just saw is picking a spot on the exact same read, write and space trade-off, and the conjecture is why none of them can pick a better spot than the others.",
+     "start": 5.249,
+     "end": 17.249
+    },
+    {
+     "text": "The lab didn't just illustrate that idea. It put a real number on what two production engines actually chose to pay for their own spot on it.",
+     "start": 17.669,
+     "end": 26.868
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d1b35ed74c56d25c",
+   "takes": [
+    "a5f430ecef06c39421d9",
+    "f17096b2315d989a7ccf",
+    "5e2450bae645a31516c5"
+   ],
+   "duration": 25.236,
+   "lines": [
+    {
+     "text": "One more for you. Picture a workload that's almost all writes, barely ever reads anything back, and disk space costs nothing to it.",
+     "start": 0.15,
+     "end": 10.026
+    },
+    {
+     "text": "The instinct is to reach for the mature, general-purpose default. Is that actually the right call here?",
+     "start": 10.446,
+     "end": 17.873
+    },
+    {
+     "text": "Which engine from this lab genuinely fits that workload: the B-tree, or the LSM tree?",
+     "start": 18.423,
+     "end": 24.886
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One more for you. Picture a workload that's almost all writes, barely ever reads anything back, and disk space costs nothing to it.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "10a": {
+   "hash": "420ca49e66d2297b",
+   "takes": [
+    "0609622229e9659f1bfc",
+    "26179e4200a6b27cf5da",
+    "7c7a0fa025a9e98d7f17"
+   ],
+   "duration": 25.026,
+   "lines": [
+    {
+     "text": "\"The mature default\" is usually a safe bet. Here, it's the wrong one.",
+     "start": 0.15,
+     "end": 5.227
+    },
+    {
+     "text": "This workload cares about exactly one thing: writing cheaply. This chapter's own lab just measured the LSM tree paying less for precisely that.",
+     "start": 5.647,
+     "end": 17.61
+    },
+    {
+     "text": "So it's the LSM tree, not because it's newer, but because the numbers we just measured say so.",
+     "start": 18.03,
+     "end": 24.677
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
