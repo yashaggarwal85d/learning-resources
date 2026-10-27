@@ -4,7 +4,7 @@
     {
       "clause": "space and query costs",
       "at": [
-        { "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." },
+        { "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its out-degree — but checking one specific edge means searching that chain." },
         { "step": "A cell holds one value. Two parallel edges can share that one cell as a count — but not as two different weights; one of them is always overwritten." },
         { "step": "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." },
         { "deep": "Into the internals" }
@@ -41,8 +41,8 @@
     {
       "source": "\"Adjacency list\" (Wikipedia)",
       "items": [
-        { "item": "An adjacency list is one unordered list per vertex, holding that vertex's own neighbours", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." }] },
-        { "item": "Neighbour-listing costs time proportional to the vertex's own degree; edge-existence testing costs time proportional to the minimum of the two vertices' own degrees", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." }] },
+        { "item": "An adjacency list is one unordered list per vertex, holding that vertex's own neighbours", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its out-degree — but checking one specific edge means searching that chain." }] },
+        { "item": "Neighbour-listing costs time proportional to the vertex's own degree; edge-existence testing costs time proportional to the minimum of the two vertices' own degrees", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its out-degree — but checking one specific edge means searching that chain." }] },
         { "item": "An adjacency list's own space (V + E) against a plain adjacency matrix's own space (V²)", "at": [{ "deep": "Into the internals" }] }
       ]
     },
@@ -91,7 +91,7 @@
       { "item": "'Which representation each later algorithm assumes' is a real trade-off against this topic's own stated costs, not folklore ('BFS uses adjacency lists, full stop'): an algorithm that repeatedly tests specific-pair membership genuinely wants the matrix instead.", "at": [{ "step": "Breadth-first and depth-first search want a vertex's own neighbours, cheaply and repeatedly — the adjacency list's own strength. An algorithm that keeps asking whether one specific pair is connected wants the matrix's O(1) lookup instead. The edge list is what you start with, before any of the other two exists." }] },
       { "item": "A loop (a self-edge) is a case the sources treat specially (forbidden in a simple graph; the matrix's diagonal convention differs by directed/undirected once loops are allowed) — this topic's own graph is loop-free, and that choice is stated rather than silently assumed.", "at": [{ "deep": "Into the internals" }] },
       { "item": "An edge list's space is exactly Θ(E), with no O(V) term at all — strictly smaller than the adjacency list's own V + E once a graph has isolated (zero-degree) vertices, which the adjacency list still pays a per-vertex cost for even though they contribute no edges.", "at": [{ "step": "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." }] },
-      { "item": "The adjacency list's own edge-existence cost is O(min(deg(u), deg(v))), proportional to the smaller of the two vertices' own degrees, not loosely 'O(degree)' without naming which vertex's degree is searched.", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." }] },
+      { "item": "The adjacency list's own edge-existence cost is O(min(deg(u), deg(v))), proportional to the smaller of the two vertices' own degrees, not loosely 'O(degree)' without naming which vertex's degree is searched.", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its out-degree — but checking one specific edge means searching that chain." }] },
       { "item": "This topic's own handoff does not claim the adjacency list is simply bad at scale; a graph whose edges mutate (insertions, deletions) still wants a list (or a hash-set-backed variant), since compressed sparse row's own two-pass construction assumes a largely static edge set — the trade is scale-and-staticity, not a strict improvement.", "at": [{ "deep": "Where this goes next" }] }
     ]
   },

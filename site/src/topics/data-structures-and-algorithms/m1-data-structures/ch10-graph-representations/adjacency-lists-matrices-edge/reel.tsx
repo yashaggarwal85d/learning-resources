@@ -15,7 +15,7 @@ const reel: Reel = {
       Visual: S.Opening,
     },
     {
-      title: "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain.",
+      title: "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its out-degree — but checking one specific edge means searching that chain.",
       body: <>Space proportional to V + E. Cheap to list a vertex's own neighbours; not free to test one specific pair.</>,
       duration: 4,
       fig: 'ListReveal',
