@@ -2620,7 +2620,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Tries and node representations',
     syllabusTitle: 'Tries and node representations',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 7, title: 'Tries and Ordered String Dictionaries', section: '7.1' },
     minutes: 13,
