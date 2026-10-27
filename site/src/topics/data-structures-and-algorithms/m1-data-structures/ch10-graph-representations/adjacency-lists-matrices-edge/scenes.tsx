@@ -107,12 +107,11 @@ export function ListReveal({ t }: StepCtx) {
               />
             ))
           )}
-          {v === 'A' &&
-            chainItems.map((item, j) => (
-              <T key={j} x={115 + j * 70} y={44} s={12} f={C.caramel} a="middle" o={chain}>
-                {item}
-              </T>
-            ))}
+          {chainItems.map((item, j) => (
+            <T key={j} x={115 + j * 70} y={40 + i * 40} s={12} f={v === 'A' ? C.caramel : C.quiet} a="middle" o={v === 'A' ? chain : a}>
+              {item}
+            </T>
+          ))}
         </g>
       ))}
       <T x={30} y={278} s={13} f={C.latte}>A's own chain: 3 entries.</T>
@@ -197,8 +196,8 @@ export function MatrixReveal({ t }: StepCtx) {
         </g>
       ))}
       <T x={60 + cell + (cell - 3) / 2} y={60} s={16} f={C.caramel} a="middle">7</T>
-      <T x={60 + 5 * cell + (cell - 3) / 2} y={260} s={13} f={C.quiet} a="middle">A &rarr; F</T>
       <T x={60 + 5 * cell + (cell - 3) / 2} y={60} s={14} f={C.latte} a="middle">&empty;</T>
+      <T x={60 + 6 * cell + 16} y={64} s={12} f={C.quiet}>A &rarr; F: no edge</T>
       <T x={30} y={278} s={13} f={C.latte}>One lookup, every time.</T>
       <T x={30} y={304} s={13} f={C.latte}>The list searched 3 entries for this.</T>
     </Svg>
@@ -286,7 +285,7 @@ export function ProveIt({ t }: StepCtx) {
     { name: 'Matrix', v: 1_000_000, c: C.caramel },
     { name: 'Edges', v: 3000, c: C.caramel },
   ];
-  const scale = (n: number, max: number) => (n / max) * 140;
+  const scale = (n: number, max: number) => (n / max) * 115;
   return (
     <Svg label="Real counted cells/entries for the small graph, and a much taller matrix bar once scaled to a thousand vertices" h={300}>
       <T x={30} y={30} s={13} f={C.quiet}>this graph (6 vertices)</T>
