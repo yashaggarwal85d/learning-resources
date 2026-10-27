@@ -2404,7 +2404,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Resizing and incremental rehashing',
     syllabusTitle: 'Resizing and incremental rehashing',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 3, title: 'Hashing', section: '3.2' },
     minutes: 12,
