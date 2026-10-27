@@ -1,0 +1,333 @@
+{
+ "topic": "rust.undefined-behavior-validity-provenance",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0dc1cc0186386b0b",
+   "takes": [
+    "5f9b272946e5c4326545",
+    "bb640111bdf614e26c2b"
+   ],
+   "duration": 10.981,
+   "lines": [
+    {
+     "text": "A bool's own one byte could hold any of two hundred fifty six possible patterns.",
+     "start": 0.15,
+     "end": 6.249
+    },
+    {
+     "text": "How many of those genuinely count as a valid bool?",
+     "start": 6.969,
+     "end": 10.631
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.8,
+   "wpm": 137,
+   "wer": 0.2,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A bool's own one byte could hold any of two hundred fifty six possible patterns.",
+     "said": "a bools",
+     "heard": "abuls"
+    },
+    {
+     "line": "A bool's own one byte could hold any of two hundred fifty six possible patterns.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "How many of those genuinely count as a valid bool?",
+     "said": "bool",
+     "heard": "bull"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "68baf1f0f5dd92ed",
+   "takes": [
+    "51ca07c43cfe4ed88eec",
+    "454a5f1c05937cc13e66"
+   ],
+   "duration": 5.181,
+   "lines": [
+    {
+     "text": "Only two, genuinely.",
+     "start": 0.15,
+     "end": 1.894
+    },
+    {
+     "text": "Every other byte value is invalid.",
+     "start": 2.314,
+     "end": 4.831
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.1,
+   "wpm": 104,
+   "wer": 0.3333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Only two, genuinely.",
+     "said": "two",
+     "heard": "to"
+    }
+   ]
+  },
+  "02": {
+   "hash": "c08acc166b780b1e",
+   "takes": [
+    "08bcd1c466109fa12ce6"
+   ],
+   "duration": 14.861,
+   "lines": [
+    {
+     "text": "Run it for real: a real validity check, applied to every single one of those byte values in turn, finds exactly two that genuinely pass, the byte for false and the byte for true.",
+     "start": 0.15,
+     "end": 14.511
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "4af1ed0423bcd9aa",
+   "takes": [
+    "7724c6283b31b1cc9c3e",
+    "3d773c24590f7441d24f"
+   ],
+   "duration": 14.279,
+   "lines": [
+    {
+     "text": "A pointer's address is read out, shifted to point at a different element of the identical allocation, then rebuilt into a new pointer.",
+     "start": 0.15,
+     "end": 8.624
+    },
+    {
+     "text": "Does the rebuilt pointer still carry the real right to read that allocation?",
+     "start": 9.344,
+     "end": 13.929
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "97281f9f97d8b615",
+   "takes": [
+    "9995c204b819e717847b",
+    "74e5a3a88fc5561484a2"
+   ],
+   "duration": 7.191,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Rebuilding the address copies the original pointer's own provenance along with it.",
+     "start": 1.84,
+     "end": 6.841
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.8,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "557551c86ea4692e",
+   "takes": [
+    "b05a0b99dc4c68b16c6f"
+   ],
+   "duration": 14.494,
+   "lines": [
+    {
+     "text": "Run it for real: reading an array's own base address out, shifting it over by a few elements, then rebuilding a pointer from the shifted address genuinely recovers the exact correct element.",
+     "start": 0.15,
+     "end": 14.144
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "ca1909379d653a53",
+   "takes": [
+    "7519f6e85c358ad6c129",
+    "1e1cd98421230a3e8165"
+   ],
+   "duration": 16.273,
+   "lines": [
+    {
+     "text": "A reference to an aligned type must genuinely be both non null and a multiple of its own alignment.",
+     "start": 0.15,
+     "end": 7.829
+    },
+    {
+     "text": "Of a handful of candidate addresses, how many genuinely pass both checks, without ever building a reference from them?",
+     "start": 8.549,
+     "end": 15.923
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "6c30ce54cbc8caae",
+   "takes": [
+    "9fc2be48bd94c9ce6c99",
+    "b082feaf2cec78c5881c"
+   ],
+   "duration": 6.057,
+   "lines": [
+    {
+     "text": "Only about half, genuinely.",
+     "start": 0.15,
+     "end": 2.434
+    },
+    {
+     "text": "The rest fail one check or the other.",
+     "start": 2.854,
+     "end": 5.707
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -3.3,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "1ec8fc8c61a94b66",
+   "takes": [
+    "be77d4aa6751a4ff6152"
+   ],
+   "duration": 12.032,
+   "lines": [
+    {
+     "text": "Run it for real: the identical non null and alignment check, run directly on each candidate address, finds that only about half genuinely pass both.",
+     "start": 0.15,
+     "end": 11.682
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.1,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "387f19109ecfea28",
+   "takes": [
+    "b5396547dac48924f6e2",
+    "6eaca461aa0850488de0"
+   ],
+   "duration": 17.427,
+   "lines": [
+    {
+     "text": "Three real, independent sources on the identical rule agree, in their own words.",
+     "start": 0.15,
+     "end": 5.664
+    },
+    {
+     "text": "A value is valid for its type or producing it is immediate undefined behavior, and provenance is the real right that makes a dereference sound.",
+     "start": 6.084,
+     "end": 17.077
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.5,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "50fce5363d10a888",
+   "takes": [
+    "72ba7cf2fb5fbb377c56",
+    "6e079c958165e32de202",
+    "bad9eb214874a6376f75",
+    "3cdaf09afd64c6da1015",
+    "c1d4b4b7b623f773b588",
+    "8988a0c8eaa9253564b8",
+    "a1196b1c59888a5da7fe"
+   ],
+   "duration": 63.336,
+   "lines": [
+    {
+     "text": "So here's the thing a validity rule and a provenance rule have in common that a lot of unsafe code quietly ignores: neither one is a property of the bits sitting in memory right now.",
+     "start": 0.15,
+     "end": 12.274
+    },
+    {
+     "text": "It's a property of what those bits are allowed to mean, and the compiler is entitled to assume that meaning holds everywhere, every time, without checking.",
+     "start": 12.694,
+     "end": 22.559
+    },
+    {
+     "text": "That's why this topic never once constructs the invalid case it's describing.",
+     "start": 22.979,
+     "end": 27.639
+    },
+    {
+     "text": "Doing that would be the exact undefined behavior under discussion.",
+     "start": 28.059,
+     "end": 32.292
+    },
+    {
+     "text": "So every claim here runs a real check over every possible value, or over a fixed real address, instead of ever crossing the line it's measuring.",
+     "start": 32.712,
+     "end": 43.178
+    },
+    {
+     "text": "And that's the sharper version of what the last topic started: a safe guard decides whether a caller can reach the unsafe code at all.",
+     "start": 43.598,
+     "end": 52.009
+    },
+    {
+     "text": "But validity and provenance are the actual rules that guard has to be checking, the ones that decide whether a value or a pointer was ever sound to begin with.",
+     "start": 52.429,
+     "end": 62.986
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "And that's the sharper version of what the last topic started: a safe guard decides whether a caller can reach the unsafe code at all.",
+     "said": "safe guard",
+     "heard": "safeguard"
+    }
+   ]
+  }
+ }
+}
