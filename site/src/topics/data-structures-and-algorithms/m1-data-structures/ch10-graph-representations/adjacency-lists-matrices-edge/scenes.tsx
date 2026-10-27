@@ -84,7 +84,7 @@ export function ListReveal({ t }: StepCtx) {
   const chain = easeOut(seg(t, 0.8, 1.8));
   const rows = VERTICES.map((v) => [v, EDGES.filter(([u]) => u === v).map(([, w, wt]) => `${w}(${wt})`)] as const);
   return (
-    <Svg label="One short chain of neighbours per vertex, A's own chain of two destinations highlighted" h={300}>
+    <Svg label="One short chain of neighbours per vertex, A's own chain of two destinations highlighted" h={330}>
       {rows.map(([v, chainItems], i) => (
         <g key={v} opacity={a}>
           <T x={30} y={40 + i * 40} s={14} f={v === 'A' ? C.caramel : C.crema}>{v}</T>
@@ -115,7 +115,8 @@ export function ListReveal({ t }: StepCtx) {
             ))}
         </g>
       ))}
-      <T x={30} y={270} s={13} f={C.latte}>A's own chain: 3 entries — reading it costs exactly that: 3 steps.</T>
+      <T x={30} y={278} s={13} f={C.latte}>A's own chain: 3 entries.</T>
+      <T x={30} y={304} s={13} f={C.latte}>Reading it costs exactly 3 steps.</T>
     </Svg>
   );
 }
@@ -157,7 +158,7 @@ export function MatrixPredictViz({ t, answer }: StepCtx) {
       {answered && (
         <>
           <T x={60 + cell + (cell - 3) / 2} y={60} s={16} f={C.cherryText} a="middle">7</T>
-          <T x={60 + cell + (cell - 3) / 2} y={74} s={10} f={C.cherryText} a="middle" italic>(4 lost)</T>
+          <T x={60 + cell + (cell - 3) / 2} y={78} s={13} f={C.cherryText} a="middle" italic>(4 lost)</T>
         </>
       )}
       <T x={300} y={300} s={13} f={C.latte} a="middle">two edges, A &rarr; B — one cell</T>
@@ -198,7 +199,8 @@ export function MatrixReveal({ t }: StepCtx) {
       <T x={60 + cell + (cell - 3) / 2} y={60} s={16} f={C.caramel} a="middle">7</T>
       <T x={60 + 5 * cell + (cell - 3) / 2} y={260} s={13} f={C.quiet} a="middle">A &rarr; F</T>
       <T x={60 + 5 * cell + (cell - 3) / 2} y={60} s={14} f={C.latte} a="middle">&empty;</T>
-      <T x={30} y={290} s={13} f={C.latte}>one lookup, every time — list had to search a 3-entry chain for the same answer</T>
+      <T x={30} y={278} s={13} f={C.latte}>One lookup, every time.</T>
+      <T x={30} y={304} s={13} f={C.latte}>The list searched 3 entries for this.</T>
     </Svg>
   );
 }
@@ -301,7 +303,8 @@ export function ProveIt({ t }: StepCtx) {
       {big.map((s, i) => (
         <T key={s.name} x={355 + i * 70} y={176} s={11} f={C.quiet} a="middle">{s.name}</T>
       ))}
-      <T x={30} y={220} s={13} f={C.latte}>at a thousand vertices, the matrix is 250&times; the list's own space</T>
+      <T x={30} y={210} s={13} f={C.latte}>At a thousand vertices,</T>
+      <T x={30} y={236} s={13} f={C.latte}>the matrix is 250&times; the list's own space.</T>
     </Svg>
   );
 }

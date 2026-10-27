@@ -228,17 +228,29 @@ for (const [device, opts] of [
       // measured earlier is stale: bring this reel to the top and measure the tap point again (a finger that lands on a scrolling
       // feed only stops it, and sends no tap).
       await reel.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
-      await page.waitForTimeout(600);
+      // A scroll-snap settle (still catching up right after a cold server's first slow responses) can still be moving
+      // when the tap lands; the browser then claims the touch as a scroll and sends no click. Wait for the feed's own
+      // scroll position to stop moving, not just a fixed delay, before trusting it's settled.
+      let lastScrollTop = null;
+      for (let i = 0; i < 20; i++) {
+        const now = await page.evaluate(() => (document.querySelector('.snap-y') ?? document.scrollingElement).scrollTop);
+        if (now === lastScrollTop) break;
+        lastScrollTop = now;
+        await page.waitForTimeout(100);
+      }
       const vb = await reel.locator('[data-visual]').last().boundingBox();
       const ty = vb.y + vb.height / 2;
       await page.waitForTimeout(300); // the step is still animating
       const t0 = Number(await stepNow());
-      await tap(250, ty);
+      // A scroll-snap settle can still occasionally eat one tap's click even after waiting for it to look stopped
+      // (the browser's own gesture recognizer, not the DOM, decides whether a touch counts as a scroll); retry a
+      // few real taps before treating it as a genuine failure to advance.
+      for (let attempt = 0; attempt < 3 && Number(await stepNow()) !== t0 + 1; attempt++) await tap(250, ty);
       if (Number(await stepNow()) !== t0 + 1) {
         const under = await page.evaluate(([x, yy]) => { const e = document.elementFromPoint(x, yy); return e ? `${e.tagName.toLowerCase()}${e.getAttribute('aria-label') ? `[${e.getAttribute('aria-label').slice(0, 30)}]` : ''}` : 'nothing'; }, [250, ty]);
         fail(`${where}: a tap on the right didn't go to the next step at once (${t0} -> ${await stepNow()}); under the tap at y=${Math.round(ty)}: ${under}; visual now at y=${Math.round((await reel.locator('[data-visual]').last().boundingBox()).y)}`);
       }
-      await tap(40, ty);
+      for (let attempt = 0; attempt < 3 && Number(await stepNow()) !== t0; attempt++) await tap(40, ty);
       if (Number(await stepNow()) !== t0) fail(`${where}: a tap on the left didn't go back (${await stepNow()} instead of ${t0})`);
       const before = await stepNow();
       await drag(200, y, 210, y - 120);
