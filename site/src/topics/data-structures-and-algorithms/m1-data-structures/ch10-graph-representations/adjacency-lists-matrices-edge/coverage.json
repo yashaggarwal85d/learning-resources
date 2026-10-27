@@ -1,0 +1,99 @@
+{
+  "topic": "dsa.adjacency-lists-matrices-edge",
+  "syllabus": [
+    {
+      "clause": "space and query costs",
+      "at": [
+        { "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." },
+        { "step": "A cell holds one value. Two parallel edges can share that one cell as a count — but not as two different weights; one of them is always overwritten." },
+        { "step": "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "directed/undirected",
+      "at": [{ "deep": "Into the internals" }]
+    },
+    {
+      "clause": "weighted",
+      "at": [
+        { "step": "A cell holds one value. Two parallel edges can share that one cell as a count — but not as two different weights; one of them is always overwritten." },
+        { "step": "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." }
+      ]
+    },
+    {
+      "clause": "multigraph",
+      "at": [
+        { "step": "An adjacency matrix stores one cell per ordered pair of vertices. Does the graph's own real multi-edge survive into the matrix the same way it survived into the list?" },
+        { "step": "A cell holds one value. Two parallel edges can share that one cell as a count — but not as two different weights; one of them is always overwritten." }
+      ]
+    },
+    {
+      "clause": "and DAG terminology",
+      "at": [{ "step": "A directed graph with no directed cycle is a DAG — and a directed graph is a DAG exactly when its vertices admit a single consistent ordering that every edge agrees with." }]
+    },
+    {
+      "clause": "which representation each later algorithm assumes",
+      "at": [{ "step": "Breadth-first and depth-first search want a vertex's own neighbours, cheaply and repeatedly — the adjacency list's own strength. An algorithm that keeps asking whether one specific pair is connected wants the matrix's O(1) lookup instead. The edge list is what you start with, before any of the other two exists." }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "\"Adjacency list\" (Wikipedia)",
+      "items": [
+        { "item": "An adjacency list is one unordered list per vertex, holding that vertex's own neighbours", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." }] },
+        { "item": "Neighbour-listing costs time proportional to the vertex's own degree; edge-existence testing costs time proportional to the minimum of the two vertices' own degrees", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." }] },
+        { "item": "An adjacency list's own space (V + E) against a plain adjacency matrix's own space (V²)", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "\"Adjacency matrix\" (Wikipedia)",
+      "items": [
+        { "item": "An adjacency matrix is a square matrix, one cell per ordered vertex pair, marking whether an edge is present", "at": [{ "step": "An adjacency matrix stores one cell per ordered pair of vertices. Does the graph's own real multi-edge survive into the matrix the same way it survived into the list?" }] },
+        { "item": "The matrix extends to multigraphs by storing the number of edges between a pair in the corresponding cell", "at": [{ "step": "A cell holds one value. Two parallel edges can share that one cell as a count — but not as two different weights; one of them is always overwritten." }] }
+      ]
+    },
+    {
+      "source": "\"Edge list\" (Wikipedia)",
+      "items": [
+        { "item": "An edge list is a flat list of edges, each one its own start and end vertex (plus a weight for three numbers), with no per-vertex structure at all", "at": [{ "step": "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." }] }
+      ]
+    },
+    {
+      "source": "\"Multigraph\" (Wikipedia)",
+      "items": [
+        { "item": "A multigraph is a graph permitted to have more than one edge between the identical pair of vertices", "at": [{ "step": "An adjacency matrix stores one cell per ordered pair of vertices. Does the graph's own real multi-edge survive into the matrix the same way it survived into the list?" }] }
+      ]
+    },
+    {
+      "source": "\"Directed acyclic graph\" (Wikipedia)",
+      "items": [
+        { "item": "A DAG is a directed graph with no directed cycle, and is a DAG if and only if it can be topologically ordered", "at": [{ "step": "A directed graph with no directed cycle is a DAG — and a directed graph is a DAG exactly when its vertices admit a single consistent ordering that every edge agrees with." }] }
+      ]
+    },
+    {
+      "source": "\"Graph (abstract data type)\" (Wikipedia)",
+      "items": [
+        { "item": "A second, independent confirmation of the adjacency list's own vertex-keyed-list shape and the adjacency matrix's own row/column shape, and that only one value can be stored for one edge between a pair", "at": [{ "deep": "Into the internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-27",
+    "items": [
+      { "item": "The adjacency list's two costs are asymmetric with the matrix's two costs, not simply 'the list is cheap and the matrix is expensive': the list is cheap to enumerate (O(degree)) but slow to test one edge (O(min degree)); the matrix inverts this exactly (O(1) edge test, O(V) enumeration).", "at": [{ "step": "Breadth-first and depth-first search want a vertex's own neighbours, cheaply and repeatedly — the adjacency list's own strength. An algorithm that keeps asking whether one specific pair is connected wants the matrix's O(1) lookup instead. The edge list is what you start with, before any of the other two exists." }] },
+      { "item": "The list only wins on space when the graph is genuinely sparse; Wikipedia's own crossover analysis puts the break-even around a density of 1/64 for a naive array-based list against a bit-packed matrix, so 'the list is always smaller' is not stated as universal.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "A weighted multigraph's parallel edges cannot both keep their own distinct weight in one matrix cell at all — a stronger, more precise claim than 'the matrix can't handle multigraphs', which is false for an unweighted multigraph (a count works fine there).", "at": [{ "step": "A cell holds one value. Two parallel edges can share that one cell as a count — but not as two different weights; one of them is always overwritten." }] },
+      { "item": "An edge list is not a competing query structure in the same family as the other two; it is the natural input/transport format the next topic (compressed sparse row) is built from, which is why this topic frames it that way rather than as a fourth representation to query directly.", "at": [{ "step": "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." }] },
+      { "item": "DAG is a property of a directed graph's own edges (acyclicity), never a fourth representation; any of the three representations above can store a DAG without modification.", "at": [{ "step": "A directed graph with no directed cycle is a DAG — and a directed graph is a DAG exactly when its vertices admit a single consistent ordering that every edge agrees with." }] },
+      { "item": "The DAG/topological-order equivalence is stated in both directions (a DAG admits a topological order, and a graph that admits one has no cycle), since the later topological-sort topic in Milestone 2 relies on both directions, not just the one that is easier to picture.", "at": [{ "step": "A directed graph with no directed cycle is a DAG — and a directed graph is a DAG exactly when its vertices admit a single consistent ordering that every edge agrees with." }] },
+      { "item": "'Which representation each later algorithm assumes' is a real trade-off against this topic's own stated costs, not folklore ('BFS uses adjacency lists, full stop'): an algorithm that repeatedly tests specific-pair membership genuinely wants the matrix instead.", "at": [{ "step": "Breadth-first and depth-first search want a vertex's own neighbours, cheaply and repeatedly — the adjacency list's own strength. An algorithm that keeps asking whether one specific pair is connected wants the matrix's O(1) lookup instead. The edge list is what you start with, before any of the other two exists." }] },
+      { "item": "A loop (a self-edge) is a case the sources treat specially (forbidden in a simple graph; the matrix's diagonal convention differs by directed/undirected once loops are allowed) — this topic's own graph is loop-free, and that choice is stated rather than silently assumed.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "An edge list's space is exactly Θ(E), with no O(V) term at all — strictly smaller than the adjacency list's own V + E once a graph has isolated (zero-degree) vertices, which the adjacency list still pays a per-vertex cost for even though they contribute no edges.", "at": [{ "step": "An edge list is neither a list of neighbours nor a grid of pairs — it is simply every edge, once, as its own entry. Space proportional to E alone, with no cost at all for a vertex that has none." }] },
+      { "item": "The adjacency list's own edge-existence cost is O(min(deg(u), deg(v))), proportional to the smaller of the two vertices' own degrees, not loosely 'O(degree)' without naming which vertex's degree is searched.", "at": [{ "step": "An adjacency list stores one short chain of neighbours per vertex. Reading off a vertex's own neighbours costs time proportional to its degree — but checking one specific edge means searching that chain." }] },
+      { "item": "This topic's own handoff does not claim the adjacency list is simply bad at scale; a graph whose edges mutate (insertions, deletions) still wants a list (or a hash-set-backed variant), since compressed sparse row's own two-pass construction assumes a largely static edge set — the trade is scale-and-staticity, not a strict improvement.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-27", "by": "self-review", "open": [] }
+}
