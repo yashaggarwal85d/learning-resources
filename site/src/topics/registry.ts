@@ -4355,7 +4355,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'ACID guarantees, precisely stated',
     syllabusTitle: 'ACID guarantees, precisely stated',
     kind: 'refresher',
-    status: 'held',
+    status: 'live',
     milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
     chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
     minutes: 5,
