@@ -1,0 +1,301 @@
+{
+ "topic": "de.acid-guarantees-precisely-stated",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "67a0a8fe289d1864",
+   "takes": [
+    "dcba6b78a0e056b58f30",
+    "fa12a461d12b95f8a5e6",
+    "4afa591efecedaecb518"
+   ],
+   "duration": 19.831,
+   "lines": [
+    {
+     "text": "Picture a transfer, mid-flight, when the power dies. Ten dollars already left account A. It never reached account B.",
+     "start": 0.15,
+     "end": 9.135
+    },
+    {
+     "text": "Four letters are supposed to be the reason that can't happen to you.",
+     "start": 9.555,
+     "end": 13.862
+    },
+    {
+     "text": "So let's actually say what each one promises, instead of just reciting the acronym.",
+     "start": 14.282,
+     "end": 19.482
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "f1705c687e11693f",
+   "takes": [
+    "45835d1fe4c40e731e02",
+    "07ca036f1b22bd28785e",
+    "b63c5d2de056addbaeea"
+   ],
+   "duration": 20.079,
+   "lines": [
+    {
+     "text": "First letter. I ran a real transfer against a real table, with a rule built in: two columns always have to sum to one hundred.",
+     "start": 0.15,
+     "end": 9.29
+    },
+    {
+     "text": "I deliberately let the second half of that transfer fail.",
+     "start": 9.71,
+     "end": 13.509
+    },
+    {
+     "text": "The row came back exactly as it started. Not half changed. Nothing at all.",
+     "start": 13.929,
+     "end": 19.729
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d935cc539bac5fe8",
+   "takes": [
+    "8cf80688b91685d7e73a",
+    "e81d9b0d44907f1fa20c",
+    "dc82de439aaa41719f60"
+   ],
+   "duration": 20.38,
+   "lines": [
+    {
+     "text": "Here's where I want you to actually commit to an answer before I give you mine.",
+     "start": 0.15,
+     "end": 5.791
+    },
+    {
+     "text": "The engine clearly does check some rules, since you just watched it enforce one.",
+     "start": 6.211,
+     "end": 11.851
+    },
+    {
+     "text": "So who really owns keeping the database correct: the engine, because it's the one doing the checking, or the application?",
+     "start": 12.271,
+     "end": 20.03
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.0,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "e8198c65c0122d7e",
+   "takes": [
+    "58754357ad0c9388a83c",
+    "cd497785b7873124de21",
+    "62996fe340bae73faefb"
+   ],
+   "duration": 25.212,
+   "lines": [
+    {
+     "text": "The trap is that the engine really does check rules, so it's tempting to hand it the whole job.",
+     "start": 0.15,
+     "end": 7.597
+    },
+    {
+     "text": "But it only checks the rules you actually wrote down. Anything you never declared, it has no way to know about.",
+     "start": 8.017,
+     "end": 14.842
+    },
+    {
+     "text": "So the honest answer is both, split: the engine owns what you told it, and the application owns everything you didn't.",
+     "start": 15.262,
+     "end": 24.862
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c4ca3d7cc293dad5",
+   "takes": [
+    "d0fbb236be896b559dbc",
+    "a4702b7b76f706cc6ac4",
+    "cceb5798cc3cf6e54c20"
+   ],
+   "duration": 21.882,
+   "lines": [
+    {
+     "text": "I measured both halves of that split directly.",
+     "start": 0.15,
+     "end": 2.732
+    },
+    {
+     "text": "A rule I did declare, stock can't go negative, got blocked outright, no question.",
+     "start": 3.152,
+     "end": 9.072
+    },
+    {
+     "text": "A rule I never declared, reservations can't exceed what's on hand, slipped straight through. Fifty three reserved against ten on hand, committed without a single complaint.",
+     "start": 9.492,
+     "end": 21.532
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a5fe1bd06dc274bc",
+   "takes": [
+    "a40157d84a93643f5486",
+    "ebae2c9c7a4881ba308f",
+    "7ed52cd7a85a96a5efbb"
+   ],
+   "duration": 34.059,
+   "lines": [
+    {
+     "text": "Third letter. I ran the identical interleaving twice, once under each of two real isolation levels.",
+     "start": 0.15,
+     "end": 7.692
+    },
+    {
+     "text": "Under Read Committed, a transaction re-read the row and actually saw the other transaction's change land in the middle of its own work: one hundred, then one hundred ten.",
+     "start": 8.112,
+     "end": 20.978
+    },
+    {
+     "text": "Under Repeatable Read, the exact same interleaving, same code, and it never saw that change at all. One hundred, then one hundred, the whole way through.",
+     "start": 21.398,
+     "end": 33.709
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ab8852e6d8999bc4",
+   "takes": [
+    "955ca3a435187e22cc5f",
+    "c74ed2d4d9bfc090cce9",
+    "7c8ec8a388d9c80c2323"
+   ],
+   "duration": 20.111,
+   "lines": [
+    {
+     "text": "Fourth letter. I watched what actually happens the instant a transaction commits.",
+     "start": 0.15,
+     "end": 5.518
+    },
+    {
+     "text": "The server's own write ahead log position measurably moved forward, right then.",
+     "start": 5.938,
+     "end": 11.31
+    },
+    {
+     "text": "And a brand new connection, one that had nothing to do with writing that data, read the committed value straight back.",
+     "start": 11.73,
+     "end": 19.761
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 134,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The server's own write ahead log position measurably moved forward, right then.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "07": {
+   "hash": "4da6a3ef2c66f8f6",
+   "takes": [
+    "a544f78efcd926f33646",
+    "f56065bcc6995466787f",
+    "28267d56aea0b038f4d3"
+   ],
+   "duration": 23.276,
+   "lines": [
+    {
+     "text": "One more thing before we pull this together, and it genuinely surprised me.",
+     "start": 0.15,
+     "end": 4.338
+    },
+    {
+     "text": "IBM's own IMS system was already running transactions with all four of these guarantees back in nineteen seventy three.",
+     "start": 4.758,
+     "end": 13.535
+    },
+    {
+     "text": "The acronym that actually names them didn't get coined until nineteen eighty three. A full decade of running it before anyone needed a word for it.",
+     "start": 13.955,
+     "end": 22.926
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8c2eb52110f2a94e",
+   "takes": [
+    "f4d11eb73371d89d12d1",
+    "0aefc671acdb5f1a7294",
+    "438963f8abd349844715"
+   ],
+   "duration": 28.428,
+   "lines": [
+    {
+     "text": "So, four letters, stated precisely instead of recited.",
+     "start": 0.15,
+     "end": 3.852
+    },
+    {
+     "text": "Atomicity: all or nothing, even mid crash. Isolation: as if you were the only one running. Durability: a commit survives everything after it.",
+     "start": 4.272,
+     "end": 17.063
+    },
+    {
+     "text": "And consistency, the one that isn't owned by just one side: the engine keeps its own promises, and the application has to keep the rest.",
+     "start": 17.483,
+     "end": 28.078
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
