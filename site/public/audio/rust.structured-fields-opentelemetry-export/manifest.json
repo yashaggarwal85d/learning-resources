@@ -1,0 +1,293 @@
+{
+ "topic": "rust.structured-fields-opentelemetry-export",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7b06ca7c6f22da10",
+   "takes": [
+    "e1948f48662cac774e4e",
+    "582aadb3114f4bb27350"
+   ],
+   "duration": 20.023,
+   "lines": [
+    {
+     "text": "Three real events happen here, each one worded completely differently from the other two.",
+     "start": 0.15,
+     "end": 5.853
+    },
+    {
+     "text": "Each one also carries the same real, typed field attached to it, underneath its own wording. Summed directly, does that typed field give the real, correct total?",
+     "start": 6.573,
+     "end": 19.673
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.0,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "96e5b60282ceb08e",
+   "takes": [
+    "9995c204b819e717847b",
+    "a549ece4b1c63112b81b"
+   ],
+   "duration": 7.383,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "That field was never text to begin with, so summing it directly just works.",
+     "start": 1.84,
+     "end": 7.033
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "e373d4d5b971b298",
+   "takes": [
+    "22c2f191c6574ea9b20e",
+    "d9a53f00e8105f08d44d"
+   ],
+   "duration": 12.133,
+   "lines": [
+    {
+     "text": "Run it for real: summed directly, that typed field gives exactly the right total.",
+     "start": 0.15,
+     "end": 6.123
+    },
+    {
+     "text": "That holds no matter how different the wording is in each of the three events.",
+     "start": 6.543,
+     "end": 11.783
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "e718d591a236906d",
+   "takes": [
+    "60dde3a16586bd49b44b",
+    "311a13b8a8f8e41ca41c"
+   ],
+   "duration": 14.988,
+   "lines": [
+    {
+     "text": "Now try getting the same total a different way: by reading it back out of each event's own rendered sentence instead of the typed field underneath.",
+     "start": 0.15,
+     "end": 10.71
+    },
+    {
+     "text": "Does reading the sentences give the same correct total?",
+     "start": 11.43,
+     "end": 14.638
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "38f75456401fc2cd",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "1eb48b75cc521e0c17ab"
+   ],
+   "duration": 9.757,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "One of those three sentences spells its own number out as a word instead of writing it as a digit.",
+     "start": 2.386,
+     "end": 9.407
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "fdb8153bed0a0abb",
+   "takes": [
+    "41b61537f738538fa2e1"
+   ],
+   "duration": 11.527,
+   "lines": [
+    {
+     "text": "Run it for real: read back out of the sentences, the total comes out genuinely wrong, because one real sentence never wrote its number as a digit at all.",
+     "start": 0.15,
+     "end": 11.177
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "ce92f7b5c594fe3d",
+   "takes": [
+    "f5d98cfb240e31b80eb4",
+    "ef57add3be29e43db1f6"
+   ],
+   "duration": 25.114,
+   "lines": [
+    {
+     "text": "Separately, picture one real, specified header, built once from a real trace id, a real parent id, and a real sampled flag, then handed to a completely different parser to read back.",
+     "start": 0.15,
+     "end": 15.322
+    },
+    {
+     "text": "Does it come back exactly as built? And does a genuinely broken version of that same header get rejected, instead of being guessed at?",
+     "start": 16.042,
+     "end": 24.764
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "9086a9d32d133e28",
+   "takes": [
+    "99dd2fac67507970e328",
+    "8a1ed7943e50f502eb75"
+   ],
+   "duration": 14.108,
+   "lines": [
+    {
+     "text": "Yes to both, genuinely.",
+     "start": 0.15,
+     "end": 2.375
+    },
+    {
+     "text": "A real specification is written so a second, independent implementation can parse what the first one built, exactly, and refuse whatever it can't.",
+     "start": 2.795,
+     "end": 13.758
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "fb3647d0e77e529d",
+   "takes": [
+    "616695206d2a2838c6c8"
+   ],
+   "duration": 12.383,
+   "lines": [
+    {
+     "text": "Run it for real: handed to the parser, that header comes back out exactly as it was built, and the genuinely broken version of it is rejected outright, never guessed at.",
+     "start": 0.15,
+     "end": 12.033
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 150,
+   "wer": 0.06451612903225806,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: handed to the parser, that header comes back out exactly as it was built, and the genuinely broken version of it is rejected outright, never guessed at.",
+     "said": "handed",
+     "heard": "hand it"
+    }
+   ]
+  },
+  "07": {
+   "hash": "a5369afa92d26cef",
+   "takes": [
+    "68b54c45d738d81fe636",
+    "37f92ff62d84bd533713"
+   ],
+   "duration": 26.815,
+   "lines": [
+    {
+     "text": "One real, independent specification and one real crate's own documentation each name this exact rule in their own words.",
+     "start": 0.15,
+     "end": 9.454
+    },
+    {
+     "text": "A trace id and a parent id are real, specific values, never free text. And a field attached to a real event or span is real, typed data, never a sentence written for a person.",
+     "start": 9.874,
+     "end": 26.465
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "6b5999d57cbc5024",
+   "takes": [
+    "2c5e2c5e0d377eaef714",
+    "4b911176b5fbae197b8c",
+    "6976563a661367d34a64"
+   ],
+   "duration": 43.34,
+   "lines": [
+    {
+     "text": "So here's what this topic's own three real runs are really standing in for: a typed value attached directly to a real event survives being summed, filtered, or asked about later, exactly, no matter how its own event happens to be worded.",
+     "start": 0.15,
+     "end": 18.488
+    },
+    {
+     "text": "The same value, once it's only living inside a sentence written for a person, can quietly go missing the moment that sentence is worded any differently.",
+     "start": 18.908,
+     "end": 28.13
+    },
+    {
+     "text": "And a real, specified format carries its own values across that same gap, surviving being built by one program and read back correctly by a completely different one.",
+     "start": 28.55,
+     "end": 42.99
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
