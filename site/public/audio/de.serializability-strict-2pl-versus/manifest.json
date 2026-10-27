@@ -1,0 +1,441 @@
+{
+ "topic": "de.serializability-strict-2pl-versus",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "f69a09105f84c354",
+   "takes": [
+    "89ed277d979b2e16da08",
+    "f7d113ea9265028743c3",
+    "c30fe1cda99d919edb47"
+   ],
+   "duration": 19.905,
+   "lines": [
+    {
+     "text": "Same two doctors as last topic. Same rule. The exact same two writes that broke cleanly and committed without a single error.",
+     "start": 0.15,
+     "end": 10.132
+    },
+    {
+     "text": "I'm running it again, one isolation level stricter than before.",
+     "start": 10.552,
+     "end": 14.609
+    },
+    {
+     "text": "This time, one of those two transactions doesn't make it to commit.",
+     "start": 15.029,
+     "end": 19.555
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 133,
+   "wer": 0.045454545454545456,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Same two doctors as last topic. Same rule. The exact same two writes that broke cleanly and committed without a single error.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "02": {
+   "hash": "54b4c94be0bdbd0d",
+   "takes": [
+    "bd7770d3612e743e581b",
+    "535cc3c368dab56348d2",
+    "b36fc11cb4c8368be19e"
+   ],
+   "duration": 23.648,
+   "lines": [
+    {
+     "text": "There are really only two ways anyone has ever built full serializability. Here's the first.",
+     "start": 0.15,
+     "end": 7.582
+    },
+    {
+     "text": "Lock whatever you touch, and don't let go until you commit. Anyone who wants the same data has to wait their turn.",
+     "start": 8.002,
+     "end": 15.787
+    },
+    {
+     "text": "If two transactions end up waiting on each other, that's a deadlock, and one of them gets rolled back to break it.",
+     "start": 16.207,
+     "end": 23.298
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "5b188bb0cadc9c56",
+   "takes": [
+    "00083fbcd30f9b1ac196",
+    "b521a65481a893ec4cc1",
+    "04bfd9ded24c91a9518f"
+   ],
+   "duration": 20.565,
+   "lines": [
+    {
+     "text": "Here's the second way, and it looks nothing like the first.",
+     "start": 0.15,
+     "end": 5.078
+    },
+    {
+     "text": "Run snapshot isolation exactly the way it already runs. Nothing blocks. Nobody waits for anybody.",
+     "start": 5.498,
+     "end": 12.602
+    },
+    {
+     "text": "The only new thing is a watcher, checking the read write conflicts between transactions that are running at the same time.",
+     "start": 13.022,
+     "end": 20.215
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "470a69bac13a6f1b",
+   "takes": [
+    "84fdf3bd2907616191d3",
+    "7e1a4b7fccdd54a837ab",
+    "8f1ba97117f2d6d3574b"
+   ],
+   "duration": 19.144,
+   "lines": [
+    {
+     "text": "Both of these actually deliver the exact same guarantee, full serializability, no exceptions.",
+     "start": 0.15,
+     "end": 8.059
+    },
+    {
+     "text": "Here's my prediction.",
+     "start": 8.479,
+     "end": 9.718
+    },
+    {
+     "text": "Locking blocks you up front. Watching lets you run and sometimes throws your work away afterward. Does that cost the same either way?",
+     "start": 10.138,
+     "end": 18.794
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "997024a45d8f8b6a",
+   "takes": [
+    "53c1058f29fe60e09409",
+    "99af5ff3dd7ada27d7ab",
+    "c3a02cbbe3dc97f52f91"
+   ],
+   "duration": 19.206,
+   "lines": [
+    {
+     "text": "It really doesn't, and the measurements in this topic are going to make that concrete, not just plausible.",
+     "start": 0.15,
+     "end": 6.174
+    },
+    {
+     "text": "One route makes you wait before you've done any work. The other lets you do the work and sometimes wastes it.",
+     "start": 6.594,
+     "end": 14.533
+    },
+    {
+     "text": "Same promise. Two genuinely different bills.",
+     "start": 14.953,
+     "end": 18.856
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c4e04532b31bde3c",
+   "takes": [
+    "fefeb61addbadd842cd2",
+    "61e1c9d0af6a10b181bc",
+    "4d4f14e9f6feae8f11d1"
+   ],
+   "duration": 23.676,
+   "lines": [
+    {
+     "text": "So what exactly is that watcher looking for? One specific shape.",
+     "start": 0.15,
+     "end": 4.643
+    },
+    {
+     "text": "Two transactions, each reading data the other one is about to write, chained together through a transaction sitting in the middle.",
+     "start": 5.063,
+     "end": 12.65
+    },
+    {
+     "text": "That chain, two read write conflicts back to back, is the one pattern every single write skew anomaly turns out to have.",
+     "start": 13.07,
+     "end": 23.326
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.045454545454545456,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That chain, two read write conflicts back to back, is the one pattern every single write skew anomaly turns out to have.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "06": {
+   "hash": "3d5a1177d1f75ddb",
+   "takes": [
+    "320e91bef0d1b4da60b6",
+    "8cfa88b3f87c353c83d6",
+    "b5c2738e2647b9987dfc"
+   ],
+   "duration": 20.089,
+   "lines": [
+    {
+     "text": "Now watch it actually happen, against a real table, not a diagram.",
+     "start": 0.15,
+     "end": 4.236
+    },
+    {
+     "text": "I ran the exact same doctors scenario from last topic, with nothing changed except the isolation level.",
+     "start": 4.656,
+     "end": 11.925
+    },
+    {
+     "text": "One doctor's commit goes through clean. The other one gets handed a real serialization failure, straight from the engine.",
+     "start": 12.345,
+     "end": 19.739
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "c2a8194c7018d358",
+   "takes": [
+    "758ab82a631bab08dd3c",
+    "3fc1aa6326958fe85bee",
+    "1c7638a73934fea0b706"
+   ],
+   "duration": 23.724,
+   "lines": [
+    {
+     "text": "That failed transaction doesn't just disappear. It's supposed to try again, and I built exactly that.",
+     "start": 0.15,
+     "end": 7.539
+    },
+    {
+     "text": "The retry starts completely fresh, with a brand new snapshot of the actual current data.",
+     "start": 7.959,
+     "end": 13.362
+    },
+    {
+     "text": "This time the count it reads is the real one, the other doctor already left, and it correctly decides to stay.",
+     "start": 13.782,
+     "end": 23.374
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "b7b5c50195cff903",
+   "takes": [
+    "9e571010dce9b1529213",
+    "169871e508a02a41be6e",
+    "ec6e134f9249b955fece"
+   ],
+   "duration": 21.548,
+   "lines": [
+    {
+     "text": "So here's the actual price tag on each side, stated plainly.",
+     "start": 0.15,
+     "end": 5.511
+    },
+    {
+     "text": "Locking makes you wait, and under real contention it can tip into a deadlock that rolls someone back anyway.",
+     "start": 5.931,
+     "end": 13.304
+    },
+    {
+     "text": "Watching never makes you wait at all, but it will sometimes cancel a transaction that was never actually going to cause a problem.",
+     "start": 13.724,
+     "end": 21.198
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "b857fcb8dd19c039",
+   "takes": [
+    "f095185d3cb24da68a9f",
+    "d1a1193d70f793076834",
+    "9ceb924c18a4bbda45e9"
+   ],
+   "duration": 23.533,
+   "lines": [
+    {
+     "text": "I didn't just state that false positive cost, I measured it, at two different levels of contention.",
+     "start": 0.15,
+     "end": 6.704
+    },
+    {
+     "text": "With two transactions sharing one rule, about half of them get aborted.",
+     "start": 7.124,
+     "end": 12.077
+    },
+    {
+     "text": "Scale that up to six transactions sharing the exact same rule, and most of them get aborted. The rate climbs, for real, as the crowd grows.",
+     "start": 12.497,
+     "end": 23.183
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "bbae2ffb84623065",
+   "takes": [
+    "322ff22caec92c9876a4",
+    "68144067829364a4f020",
+    "ead6a72de864aaf30886"
+   ],
+   "duration": 18.544,
+   "lines": [
+    {
+     "text": "Put the two routes side by side.",
+     "start": 0.15,
+     "end": 2.702
+    },
+    {
+     "text": "One guarantee, full serializability, reached two completely different ways.",
+     "start": 3.122,
+     "end": 8.738
+    },
+    {
+     "text": "One of them bills you in blocking and the occasional deadlock. The other bills you in false alarms and mandatory retries.",
+     "start": 9.158,
+     "end": 18.194
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 120,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Put the two routes side by side.",
+     "said": "routes",
+     "heard": "roots"
+    }
+   ]
+  },
+  "11": {
+   "hash": "6e1118efefe4ed52",
+   "takes": [
+    "d1fc0bbe41e5352e9f14",
+    "a168749af24740eed6aa",
+    "f8bbb7b8916d8155571b"
+   ],
+   "duration": 24.401,
+   "lines": [
+    {
+     "text": "Last one. Picture a workload where most of the contention lands on just a handful of very hot rows.",
+     "start": 0.15,
+     "end": 9.1
+    },
+    {
+     "text": "Given everything you just watched, which of these two routes handles that better, locking or watching?",
+     "start": 9.52,
+     "end": 16.59
+    },
+    {
+     "text": "Think about where each one's own real cost actually gets worse as things get busier.",
+     "start": 17.14,
+     "end": 24.051
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "d406e38e8ce49edb",
+   "takes": [
+    "71831713d2a9ad0a28b7",
+    "45522f68e81e4bd96aed",
+    "b2113c6d69abab6469f3"
+   ],
+   "duration": 24.265,
+   "lines": [
+    {
+     "text": "It's tempting to reach for the one that never blocks, since that sounds strictly better on paper.",
+     "start": 0.15,
+     "end": 5.561
+    },
+    {
+     "text": "But the watcher's own false positive rate climbs fastest exactly where reads and writes overlap the most, and a few very hot rows is exactly that.",
+     "start": 5.981,
+     "end": 15.441
+    },
+    {
+     "text": "Strict locking's blocking is at least predictable there. For this specific shape of contention, that's usually the better trade.",
+     "start": 15.861,
+     "end": 23.915
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
