@@ -2494,7 +2494,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Order-statistic trees',
     syllabusTitle: 'Order-statistic trees',
     kind: 'full',
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Data Structures' },
     chapter: { number: 4, title: 'Binary Search Trees and Balancing', section: '4.2' },
     minutes: 11,
