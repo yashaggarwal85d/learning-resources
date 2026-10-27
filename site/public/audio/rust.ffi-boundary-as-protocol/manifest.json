@@ -1,0 +1,298 @@
+{
+ "topic": "rust.ffi-boundary-as-protocol",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "3707d539969b98cd",
+   "takes": [
+    "fb56f42ac1d43543a288",
+    "c192751e5ca31105ca02"
+   ],
+   "duration": 13.347,
+   "lines": [
+    {
+     "text": "A real buffer handle crosses the boundary through an allocate function and a free function.",
+     "start": 0.15,
+     "end": 5.721
+    },
+    {
+     "text": "After that handle is correctly freed once, what happens when the identical handle is freed a second time?",
+     "start": 6.441,
+     "end": 12.997
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "a2e65f78742bf06d",
+   "takes": [
+    "f11e9bd864cc63afa6b9",
+    "bff155c343e4433b13e0"
+   ],
+   "duration": 7.588,
+   "lines": [
+    {
+     "text": "The free is genuinely rejected.",
+     "start": 0.15,
+     "end": 2.408
+    },
+    {
+     "text": "The handle is no longer live, so there is nothing left to free.",
+     "start": 2.828,
+     "end": 7.238
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "53ed6501e74da9b9",
+   "takes": [
+    "c9eab3b50ebafd016701"
+   ],
+   "duration": 16.046,
+   "lines": [
+    {
+     "text": "Run it for real: every correct pair is accepted exactly once, a second free on the same handle is genuinely turned away rather than carried out, and no handle is ever left outstanding afterward.",
+     "start": 0.15,
+     "end": 15.696
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "0949d908e823a421",
+   "takes": [
+    "7dbca92538ccc3f25bce",
+    "c4150ebd14e0621a96a6"
+   ],
+   "duration": 16.006,
+   "lines": [
+    {
+     "text": "A status function writes its real result through an out pointer instead, since there is no proper result type crossing this particular boundary.",
+     "start": 0.15,
+     "end": 9.499
+    },
+    {
+     "text": "When the real call genuinely fails, what happens to that out pointer?",
+     "start": 10.219,
+     "end": 15.656
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -1.8,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "5a2e6649263d9f19",
+   "takes": [
+    "80f6df7964636577e891",
+    "73bfdd4585a4572b96bf"
+   ],
+   "duration": 7.757,
+   "lines": [
+    {
+     "text": "It is left genuinely untouched.",
+     "start": 0.15,
+     "end": 3.147
+    },
+    {
+     "text": "Only the status code itself reports that anything went wrong.",
+     "start": 3.567,
+     "end": 7.407
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "174e8096f5c2ed49",
+   "takes": [
+    "4bc7aba608aa18202f74"
+   ],
+   "duration": 14.212,
+   "lines": [
+    {
+     "text": "Run it for real: a genuine success writes the real value through the out pointer, and a genuine failure returns its own status code while leaving that out pointer genuinely untouched.",
+     "start": 0.15,
+     "end": 13.862
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 131,
+   "wer": 0.12903225806451613,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run it for real: a genuine success writes the real value through the out pointer, and a genuine failure returns its own status code while leaving that out pointer genuinely untouched.",
+     "said": "out pointer",
+     "heard": "outpointer"
+    },
+    {
+     "line": "Run it for real: a genuine success writes the real value through the out pointer, and a genuine failure returns its own status code while leaving that out pointer genuinely untouched.",
+     "said": "out pointer",
+     "heard": "outpointer"
+    }
+   ]
+  },
+  "05": {
+   "hash": "b061da46b1fd3b8a",
+   "takes": [
+    "45229885301298071a6a",
+    "06656e3ab7188b4fea77"
+   ],
+   "duration": 13.342,
+   "lines": [
+    {
+     "text": "A real function on the other side of the boundary genuinely panics when it is told to.",
+     "start": 0.15,
+     "end": 5.878
+    },
+    {
+     "text": "When a real caller catches that panic, does the caller genuinely keep running afterward?",
+     "start": 6.598,
+     "end": 12.992
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "09c916deff08572f",
+   "takes": [
+    "9995c204b819e717847b",
+    "7de5936393ec491ec3a5"
+   ],
+   "duration": 8.91,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "This exact calling convention defines what crossing with an unwind is allowed to mean.",
+     "start": 1.84,
+     "end": 8.56
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.7,
+   "wpm": 108,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "e57ecc86e8d90b9d",
+   "takes": [
+    "8965c61334ce092192bd"
+   ],
+   "duration": 12.96,
+   "lines": [
+    {
+     "text": "Run it for real: the real panic crossing that boundary is genuinely caught, and the caller genuinely keeps running right afterward, exactly as that convention defines.",
+     "start": 0.15,
+     "end": 12.61
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "469dfd2c78f32b30",
+   "takes": [
+    "2903885429255aaa231c",
+    "9cd9a4db96901c7feb9e"
+   ],
+   "duration": 23.421,
+   "lines": [
+    {
+     "text": "Two real, independent sources name this identical protocol directly, in their own words.",
+     "start": 0.15,
+     "end": 6.973
+    },
+    {
+     "text": "A foreign library handing off a resource's ownership needs a real destructor to guarantee it actually gets released, and a boundary expecting a panic to cross it has to say so explicitly in its own calling convention.",
+     "start": 7.393,
+     "end": 23.071
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "22f9170c71bf7e5b",
+   "takes": [
+    "f6eb354118b9e8d15d66",
+    "b5ebe81521d7f685fbe3",
+    "fe129b945eacac61e21b",
+    "a21355c9f820e030aef1"
+   ],
+   "duration": 55.345,
+   "lines": [
+    {
+     "text": "So here's what this topic's own three small boundaries are really standing in for: matching a foreign struct's own layout gets you through the door, but it tells you nothing about who is actually on the hook for freeing what you're handed.",
+     "start": 0.15,
+     "end": 16.132
+    },
+    {
+     "text": "It tells you nothing about where a real failure's answer actually lands, and it tells you nothing about what happens the instant something on the other side of that door genuinely goes wrong.",
+     "start": 16.552,
+     "end": 29.298
+    },
+    {
+     "text": "Those three questions are a real, unenforced agreement two sides have to keep by hand, every single time, which is exactly why this chapter calls a boundary like this a protocol rather than just a shape.",
+     "start": 29.718,
+     "end": 45.132
+    },
+    {
+     "text": "And that's the real question this whole chapter now turns to: once code stops being Rust at all, what is anyone actually promising the other side?",
+     "start": 45.552,
+     "end": 54.995
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
