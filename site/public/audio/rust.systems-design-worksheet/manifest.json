@@ -1,0 +1,293 @@
+{
+ "topic": "rust.systems-design-worksheet",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8bda6bb3d85cbd58",
+   "takes": [
+    "b1f2bc73f1344a08a06c",
+    "b1e07e2d09338ceae28c"
+   ],
+   "duration": 22.214,
+   "lines": [
+    {
+     "text": "Here's a service that made one decision on purpose before anyone wrote a line of code: exactly how much waiting work it would ever hold at once.",
+     "start": 0.15,
+     "end": 9.12
+    },
+    {
+     "text": "A burst of requests lands on it all at once, faster than it can keep up. Does that stated limit actually hold, or does the line just keep growing anyway?",
+     "start": 9.84,
+     "end": 21.864
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "7af3272a89b25a7b",
+   "takes": [
+    "f170a292ff314b0418ac",
+    "c22000e36d48011590a9"
+   ],
+   "duration": 8.125,
+   "lines": [
+    {
+     "text": "It holds, genuinely.",
+     "start": 0.15,
+     "end": 1.792
+    },
+    {
+     "text": "That's the whole point of stating it ahead of time instead of leaving it to chance.",
+     "start": 2.212,
+     "end": 7.775
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "17a0f7620a0b256e",
+   "takes": [
+    "87fb2f7f08678e5c1b62",
+    "c29308c2db0682d94b52"
+   ],
+   "duration": 10.818,
+   "lines": [
+    {
+     "text": "Run it for real: most of that burst gets turned away the moment the line is full.",
+     "start": 0.15,
+     "end": 5.764
+    },
+    {
+     "text": "The line itself never grows past the number that was chosen for it.",
+     "start": 6.184,
+     "end": 10.468
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "22ec848eb8212449",
+   "takes": [
+    "497f260e54c4e101188f",
+    "d3c248fa5f084a669b18"
+   ],
+   "duration": 17.898,
+   "lines": [
+    {
+     "text": "Now take the identical burst, and send it at a second, separate service, built the same way in every respect but one.",
+     "start": 0.15,
+     "end": 9.24
+    },
+    {
+     "text": "Nobody ever told this one how much waiting work to allow. Does skipping that question change anything real about what happens?",
+     "start": 9.96,
+     "end": 17.548
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "93a86d44bab6aac8",
+   "takes": [
+    "88035389b912ba163091",
+    "5cabcae5e6d2f383af74"
+   ],
+   "duration": 10.771,
+   "lines": [
+    {
+     "text": "It changes everything, genuinely.",
+     "start": 0.15,
+     "end": 3.151
+    },
+    {
+     "text": "Skipping the question doesn't make it go away. It just hands the answer to whatever the library does by default.",
+     "start": 3.571,
+     "end": 10.421
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "3d36281f994384fe",
+   "takes": [
+    "031493b43513cfe6e46a"
+   ],
+   "duration": 11.997,
+   "lines": [
+    {
+     "text": "Run it for real: nothing gets turned away at all this time, and the waiting line just keeps growing, request after request, with no ceiling anywhere in sight.",
+     "start": 0.15,
+     "end": 11.647
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "8bef648a021a3ab4",
+   "takes": [
+    "c1772b5feaecf24dbcc6",
+    "8165a5d96b87e15194a4"
+   ],
+   "duration": 10.847,
+   "lines": [
+    {
+     "text": "Put both of those real runs side by side, from the identical burst.",
+     "start": 0.15,
+     "end": 5.687
+    },
+    {
+     "text": "Which one actually protects the rest of the service sitting behind it?",
+     "start": 6.407,
+     "end": 10.497
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -4.0,
+   "wpm": 138,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Put both of those real runs side by side, from the identical burst.",
+     "said": "real",
+     "heard": "reel"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "6dfa7aa4e31b2e5a",
+   "takes": [
+    "f571b23ac2b75ceb2198",
+    "ba0e8671d8e4774cbc5c"
+   ],
+   "duration": 8.539,
+   "lines": [
+    {
+     "text": "The one that refused.",
+     "start": 0.15,
+     "end": 2.041
+    },
+    {
+     "text": "The other one didn't protect anything; it just postponed the real cost further down the line.",
+     "start": 2.461,
+     "end": 8.188
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.2,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "c6b843c1941d95ef",
+   "takes": [
+    "bd8cd80b978907b7eaa8"
+   ],
+   "duration": 12.761,
+   "lines": [
+    {
+     "text": "Run it for real: one line stays capped at the number someone chose. The other keeps climbing, under the exact same pressure, because nobody ever chose a number for it at all.",
+     "start": 0.15,
+     "end": 12.411
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3c36105dc2a3e095",
+   "takes": [
+    "ff4c6b8b0a46277863d1",
+    "9db16965a042efdfbc1a"
+   ],
+   "duration": 21.677,
+   "lines": [
+    {
+     "text": "One real page, the library's own reference for this exact piece, says it plainly, in two short lines about its two different modes.",
+     "start": 0.15,
+     "end": 10.13
+    },
+    {
+     "text": "One mode is described as communicating with a real limit in place. The other is described, just as plainly, as communicating with no limit in place at all.",
+     "start": 10.55,
+     "end": 21.327
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c7e4696821c5b33c",
+   "takes": [
+    "28ae104efb808532d5d1",
+    "79edb64ead1d9ffc3e9a",
+    "508e288ed46dab8bd05e"
+   ],
+   "duration": 44.309,
+   "lines": [
+    {
+     "text": "So here's what this topic's own two real services were really standing in for: a design that writes down its own limit on purpose turns away exactly the work it chose to turn away, and nothing more.",
+     "start": 0.15,
+     "end": 14.588
+    },
+    {
+     "text": "A design that never writes that limit down at all still gets an answer to the identical question. It's simply an answer nobody actually chose, discovered the hard way, under real pressure, instead of checked for ahead of time.",
+     "start": 15.008,
+     "end": 30.61
+    },
+    {
+     "text": "That's the whole reason a real worksheet gets filled in before any code gets written, not after: so every one of its questions gets a real, chosen answer, instead of whatever a default happens to supply.",
+     "start": 31.03,
+     "end": 43.959
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
