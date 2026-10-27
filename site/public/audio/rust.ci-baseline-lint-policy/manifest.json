@@ -1,0 +1,293 @@
+{
+ "topic": "rust.ci-baseline-lint-policy",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "84914d848547bf51",
+   "takes": [
+    "7ab9113fea385e0f0a85",
+    "5082a6dd98d3af514738"
+   ],
+   "duration": 13.191,
+   "lines": [
+    {
+     "text": "One real line in this project gets indented a few spaces further than it should be.",
+     "start": 0.15,
+     "end": 5.67
+    },
+    {
+     "text": "The real build still compiles it without a single complaint. Does the real format check catch it anyway?",
+     "start": 6.39,
+     "end": 12.841
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "3e63f0c66af583b5",
+   "takes": [
+    "9995c204b819e717847b",
+    "044190c06e3d6572eaa7"
+   ],
+   "duration": 7.086,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The format check cares about exactly this, even when the build does not.",
+     "start": 1.84,
+     "end": 6.736
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "1e98706a2069cdef",
+   "takes": [
+    "d590b4888d10642dbc21"
+   ],
+   "duration": 17.286,
+   "lines": [
+    {
+     "text": "Run it for real: the format check genuinely fails the moment that real indentation is wrong, and genuinely passes again the moment it is put back, while the build itself never once objects either way.",
+     "start": 0.15,
+     "end": 16.936
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "321bb6c6f20a6334",
+   "takes": [
+    "6b61d86078363107c58e",
+    "0331c4181c6cec210fe2"
+   ],
+   "duration": 17.463,
+   "lines": [
+    {
+     "text": "This workspace has one rule written down exactly once: a specific, named mistake is forbidden everywhere in it.",
+     "start": 0.15,
+     "end": 9.819
+    },
+    {
+     "text": "A real line breaking that exact rule gets added anyway. Does the rule genuinely catch it?",
+     "start": 10.539,
+     "end": 17.113
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -3.1,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "0096a3940403bc60",
+   "takes": [
+    "9995c204b819e717847b",
+    "bd5f85dcbe280408f67a"
+   ],
+   "duration": 6.62,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "The real build refuses to finish, and says exactly why.",
+     "start": 1.84,
+     "end": 6.27
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.7,
+   "wpm": 109,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "6967347cf4353831",
+   "takes": [
+    "3fe55984f12619498388"
+   ],
+   "duration": 15.893,
+   "lines": [
+    {
+     "text": "Run it for real: the build genuinely fails the moment that real violation exists, naming the exact rule it broke, and genuinely succeeds again the moment it is fixed, with the rule itself never touched at all.",
+     "start": 0.15,
+     "end": 15.543
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -4.1,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "ec5e8ed3124d1436",
+   "takes": [
+    "cbc34f8145b7508902ea",
+    "0ca15da3bc877c6269e7"
+   ],
+   "duration": 17.832,
+   "lines": [
+    {
+     "text": "Now a real function quietly starts giving the wrong answer every single time, even though its own real shape, what it takes in and what it hands back, never changes at all.",
+     "start": 0.15,
+     "end": 13.11
+    },
+    {
+     "text": "Does the build catch that. Does a real test catch it?",
+     "start": 13.83,
+     "end": 17.482
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "f4c4e36b8c834f2e",
+   "takes": [
+    "54c761f13e01cd60a5ae",
+    "6f110cc48c6496b007e8"
+   ],
+   "duration": 5.151,
+   "lines": [
+    {
+     "text": "The build stays green.",
+     "start": 0.15,
+     "end": 1.673
+    },
+    {
+     "text": "But the real test genuinely fails.",
+     "start": 2.093,
+     "end": 4.801
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "f81f64447e68bd5f",
+   "takes": [
+    "4cdfaef539ffd0f45058"
+   ],
+   "duration": 14.4,
+   "lines": [
+    {
+     "text": "Run it for real: the build keeps compiling the whole way through that real wrong answer, completely unbothered, while the test genuinely fails on it, because the test is the one thing actually checking what the code does.",
+     "start": 0.15,
+     "end": 14.05
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "b83874647eff4276",
+   "takes": [
+    "e232fbd343744067bb84",
+    "6e8297bd6d2233f6c035"
+   ],
+   "duration": 19.78,
+   "lines": [
+    {
+     "text": "Two real, independent pages name both of these exact ideas directly, in their own words.",
+     "start": 0.15,
+     "end": 7.718
+    },
+    {
+     "text": "One names the one place a rule like this gets written down for an entire project. The other names exactly what a real test is actually doing when it runs.",
+     "start": 8.138,
+     "end": 19.43
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "dde42d254b7f3e02",
+   "takes": [
+    "b82007f5616070b4b37f",
+    "8ea221927d9916092011",
+    "e3e87be8ddf4718f4ad0",
+    "c720f11350972accc660",
+    "a8c6bf4a486c8fcccf4f"
+   ],
+   "duration": 39.406,
+   "lines": [
+    {
+     "text": "So here's what this topic's own three real checks are really standing in for: none of them is a stand in for either of the other two, because each one is actually looking at something completely different.",
+     "start": 0.15,
+     "end": 13.11
+    },
+    {
+     "text": "A format check only ever looks at how the code is laid out on the page.",
+     "start": 13.53,
+     "end": 18.647
+    },
+    {
+     "text": "A rule denied once only ever looks for one specific, named mistake it already knows about.",
+     "start": 19.067,
+     "end": 25.339
+    },
+    {
+     "text": "And a real test is the only one of the three that ever actually looks at whether the code does the right thing.",
+     "start": 25.759,
+     "end": 33.516
+    },
+    {
+     "text": "Skip any one of them, and that's exactly the kind of mistake that gets through.",
+     "start": 33.936,
+     "end": 39.056
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
