@@ -1,0 +1,450 @@
+{
+ "topic": "de.optimistic-vs-pessimistic-concurrency",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "5e8305fc283790d9",
+   "takes": [
+    "6a76f92c12d4628bf381",
+    "913640ce8e95995159a5",
+    "d4c63727aaca8fa4d2f1"
+   ],
+   "duration": 20.136,
+   "lines": [
+    {
+     "text": "Picture two browser tabs, both checking out the very last unit of the same item.",
+     "start": 0.15,
+     "end": 7.605
+    },
+    {
+     "text": "Exactly one of those orders can actually succeed. That part was never in question.",
+     "start": 8.025,
+     "end": 13.224
+    },
+    {
+     "text": "What's in question is when the database finds that out, and what it spends finding out.",
+     "start": 13.644,
+     "end": 19.786
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "2fa6c8f942fd0213",
+   "takes": [
+    "9ad81d146b7600b88804",
+    "d508d8eeb20391663333",
+    "f204a16f97e34d2f0ac2"
+   ],
+   "duration": 24.181,
+   "lines": [
+    {
+     "text": "The first answer is the one you already know from last topic. Lock the row the moment you touch it.",
+     "start": 0.15,
+     "end": 7.053
+    },
+    {
+     "text": "Watch the left-hand row. The lock goes on before the database has any idea whether a second checkout is even coming.",
+     "start": 7.473,
+     "end": 14.588
+    },
+    {
+     "text": "That's the defining trait of a pessimistic strategy. It pays the cost of protection whether or not protection turns out to be needed.",
+     "start": 15.008,
+     "end": 23.831
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d5f89521f132bd5e",
+   "takes": [
+    "071fb256cf3e5a51e27c",
+    "525513cf70879b3f9703",
+    "0f228105bc3a5d29796e"
+   ],
+   "duration": 22.334,
+   "lines": [
+    {
+     "text": "The second answer flips that bet entirely.",
+     "start": 0.15,
+     "end": 3.153
+    },
+    {
+     "text": "Read the row with nothing held. No lock, nothing stopping a second reader from reading that exact same value a moment later.",
+     "start": 3.573,
+     "end": 11.791
+    },
+    {
+     "text": "The version number is the only thing protecting you. Your write only lands if that number hasn't moved since you read it. If it has, you start over.",
+     "start": 12.211,
+     "end": 21.984
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 153,
+   "wer": 0.10714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The version number is the only thing protecting you. Your write only lands if that number hasn't moved since you read it. If it has, you start over.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "The version number is the only thing protecting you. Your write only lands if that number hasn't moved since you read it. If it has, you start over.",
+     "said": "read it",
+     "heard": "raided"
+    }
+   ]
+  },
+  "04": {
+   "hash": "6c066ed2431725a7",
+   "takes": [
+    "f390239b6de7bce4e948",
+    "0dc61750da96bac594ce"
+   ],
+   "duration": 13.314,
+   "lines": [
+    {
+     "text": "Here's where I want you to actually commit to an answer.",
+     "start": 0.15,
+     "end": 3.842
+    },
+    {
+     "text": "If almost nobody collides most of the time, is paying for a lock on every single row still the safer choice?",
+     "start": 4.262,
+     "end": 12.964
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "f02950241f94c6c2",
+   "takes": [
+    "7886a6861c192f85836b",
+    "0096bc5625d43da6bde2",
+    "bb3ed5f1c5e50a9a2fc1"
+   ],
+   "duration": 22.105,
+   "lines": [
+    {
+     "text": "It's tempting to treat a lock as cheap insurance you should always carry.",
+     "start": 0.15,
+     "end": 4.473
+    },
+    {
+     "text": "But insurance has a premium, and the lock's premium gets paid on every row, collision or not.",
+     "start": 4.893,
+     "end": 10.998
+    },
+    {
+     "text": "No. On a workload this uncontended, skipping the lock and betting on the version column wins outright, on the identical workload.",
+     "start": 11.418,
+     "end": 21.755
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "6ea62c7464e53ce1",
+   "takes": [
+    "8b42155398a5e202a6c9",
+    "82e89ff6f09d89f08dfd",
+    "9f5ca61d1ab0ea483fcb"
+   ],
+   "duration": 22.231,
+   "lines": [
+    {
+     "text": "Here's that exact bet, run for real, against this sandbox's own database.",
+     "start": 0.15,
+     "end": 6.488
+    },
+    {
+     "text": "Hundreds of rows, a handful of workers, hundreds of increments apiece \u2014 the same work, once under each strategy.",
+     "start": 6.908,
+     "end": 16.13
+    },
+    {
+     "text": "Watch the bottom row win. Almost nothing collided, so almost nothing was wasted either.",
+     "start": 16.55,
+     "end": 21.881
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ad8f59c8f5ed1794",
+   "takes": [
+    "de9447f1f670ed7196a5",
+    "b4f33aed1f598735ecf7",
+    "7a8e9e5ea6c6ca3dd38e"
+   ],
+   "duration": 28.355,
+   "lines": [
+    {
+     "text": "Now shrink the target. The same workers, but only a couple of rows left to fight over.",
+     "start": 0.15,
+     "end": 6.179
+    },
+    {
+     "text": "Watch what happens to the optimistic row. It isn't just slower. It's burning through retry after retry, redoing the same work over and over.",
+     "start": 6.599,
+     "end": 17.62
+    },
+    {
+     "text": "The winner flipped completely, on the exact same two strategies. Neither mechanism changed. Only how often they collided did.",
+     "start": 18.04,
+     "end": 28.005
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f9d6bab4f16b4f52",
+   "takes": [
+    "01ec042e4e43b0ade421",
+    "dcb75b1278170d55fc15",
+    "84c9face979e9570a541"
+   ],
+   "duration": 33.24,
+   "lines": [
+    {
+     "text": "So why does how often they collide flip the winner this completely? Look at what each strategy actually wastes the moment a collision happens.",
+     "start": 0.15,
+     "end": 10.63
+    },
+    {
+     "text": "A blocked session isn't doing nothing. It's waiting its turn, and every bit of that wait still counts the moment the lock finally arrives.",
+     "start": 11.05,
+     "end": 20.275
+    },
+    {
+     "text": "A failed compare and set throws real work away. The read, the comparison, the attempted write \u2014 all of it, discarded, and started over from nothing.",
+     "start": 20.695,
+     "end": 32.89
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "23ecff478eef7dd6",
+   "takes": [
+    "309e984850fc683ab944",
+    "8439df872434c6099217",
+    "fcf2ab4177b9113b055c"
+   ],
+   "duration": 28.359,
+   "lines": [
+    {
+     "text": "There's a third version of this same bet, and you've actually already met it.",
+     "start": 0.15,
+     "end": 6.982
+    },
+    {
+     "text": "Instead of checking one row's own version number, validate everything a transaction read, all at once, right before it commits.",
+     "start": 7.402,
+     "end": 16.55
+    },
+    {
+     "text": "That's exactly what the serializable route from a couple of topics back does. Same philosophy as the version column, scaled up to a transaction's entire read set.",
+     "start": 16.971,
+     "end": 28.009
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "8ddae2a82f43d0e1",
+   "takes": [
+    "f047e1851e2d683bb577",
+    "193871a9d9d581cda4aa",
+    "7b2a6fae0ddd27df1156"
+   ],
+   "duration": 23.594,
+   "lines": [
+    {
+     "text": "This exact bet isn't unique to one database row.",
+     "start": 0.15,
+     "end": 3.546
+    },
+    {
+     "text": "A table format built on object storage commits a whole table the same way. Swap one pointer, and only if nobody else swapped it first.",
+     "start": 3.966,
+     "end": 14.231
+    },
+    {
+     "text": "A distributed database runs the identical bet across an entire cluster of machines. Different altitude, same wager.",
+     "start": 14.651,
+     "end": 23.244
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e94675c0fe2a6a30",
+   "takes": [
+    "caa5137aa8c55c8dee42",
+    "daaa88d67d5298c33a33",
+    "432f2966af9d84906888"
+   ],
+   "duration": 22.284,
+   "lines": [
+    {
+     "text": "Pull the whole topic together.",
+     "start": 0.15,
+     "end": 1.489
+    },
+    {
+     "text": "One strategy pays up front, whether or not it turns out to need protecting. The other pays only when it guesses wrong \u2014 and sometimes it guesses wrong a lot.",
+     "start": 1.909,
+     "end": 13.165
+    },
+    {
+     "text": "Which one actually wins was never something you could answer from instinct. You measure it, the way this topic just did, twice.",
+     "start": 13.585,
+     "end": 21.934
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "3aeeea884845d1c5",
+   "takes": [
+    "9ed131898ee4b9536b41",
+    "39a7cfda33d37478f769",
+    "596dcbebef602d029fea"
+   ],
+   "duration": 24.858,
+   "lines": [
+    {
+     "text": "One last one. An endpoint lets a shopper claim one seat at a show.",
+     "start": 0.15,
+     "end": 5.653
+    },
+    {
+     "text": "Most of the day, almost nobody is claiming a seat at the same moment. Then the sale opens, and for roughly a minute and a half, everyone is.",
+     "start": 6.073,
+     "end": 15.662
+    },
+    {
+     "text": "Given everything you just watched about what decides the winner here. Does one fixed strategy serve this endpoint well for the whole day?",
+     "start": 16.082,
+     "end": 24.508
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One last one. An endpoint lets a shopper claim one seat at a show.",
+     "said": "endpoint",
+     "heard": "end point"
+    }
+   ]
+  },
+  "11a": {
+   "hash": "47efdb1dbf7cf134",
+   "takes": [
+    "b5e0a4df3d6ad3cefa89",
+    "3a41d1bfd3ac748922a8",
+    "2b84c8bebf829c8098f0"
+   ],
+   "duration": 32.699,
+   "lines": [
+    {
+     "text": "It's tempting to pick one strategy for the endpoint and leave it there. It is, after all, one endpoint.",
+     "start": 0.15,
+     "end": 7.045
+    },
+    {
+     "text": "But what decides the winner was never the endpoint's own identity. It was how often requests actually collided, and that genuinely changes for those ninety seconds.",
+     "start": 7.465,
+     "end": 19.696
+    },
+    {
+     "text": "So no. The optimistic version wins for most of the day, and the pessimistic one is the better bet for that one spike \u2014 the exact reversal this topic just measured.",
+     "start": 20.116,
+     "end": 32.349
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.21052631578947367,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It's tempting to pick one strategy for the endpoint and leave it there. It is, after all, one endpoint.",
+     "said": "endpoint",
+     "heard": "end point"
+    },
+    {
+     "line": "It's tempting to pick one strategy for the endpoint and leave it there. It is, after all, one endpoint.",
+     "said": "endpoint",
+     "heard": "end point"
+    },
+    {
+     "line": "But what decides the winner was never the endpoint's own identity. It was how often requests actually collided, and that genuinely changes for those ninety seconds.",
+     "said": "endpoints",
+     "heard": "end points"
+    }
+   ]
+  }
+ }
+}
