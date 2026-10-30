@@ -1,0 +1,96 @@
+{
+  "topic": "de.slo-burn-rate-alerting",
+  "steps": [
+    {
+      "lines": [
+        "Picture a table with a freshness target of ninety-nine percent over a rolling thirty days.",
+        "Now its source goes stale for a real six hours. That's a genuine incident, not a blip."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what I actually want you to commit to before I show you the answer.",
+        "Does a reasonable-looking alert catch that six-hour stall in the first five minutes, only after the whole budget's already gone, or not at all?",
+        "And separately, does that same alert also go off at four in the morning, every single night, just because the table is waiting on its own normal run?"
+      ],
+      "answer": [
+        "A plain fixed threshold genuinely can't tell those two situations apart. Both just look like the data is old.",
+        "What actually works is two separate pieces: a multi-window rule that catches the real outage within minutes, and a schedule-aware check that stops it from paging for a gap that was expected all along."
+      ]
+    },
+    {
+      "lines": [
+        "Before any of the math, there's a principle underneath all of this, and it's worth saying plainly.",
+        "Alert on what the person reading the data actually experiences, not on every single internal thing that could have gone wrong along the way.",
+        "Because here's the real cost when you don't: every page has to earn the right to interrupt someone, or the next real one gets ignored right along with all the noise."
+      ]
+    },
+    {
+      "lines": [
+        "So, concretely, how fast is a budget actually being spent?",
+        "That's what burn rate measures, relative to the SLO itself.",
+        "A burn rate of exactly one means you're on pace to spend the whole thing right at the end of the window. Thirty days out, not a minute sooner."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch what a plain fixed threshold actually does with that number.",
+        "A complete outage and a barely-noticeable one both trigger the alert after the exact same hour. There's no sense of how bad it actually is baked in anywhere.",
+        "And once it does fire, it can keep firing for most of the rest of that long window, long after whatever actually broke is already fixed."
+      ]
+    },
+    {
+      "lines": [
+        "The fix for that second problem is almost embarrassingly simple once you see it.",
+        "Put a much shorter window right next to the long one, sized at roughly a twelfth of it.",
+        "Run that same outage through it again, and it clears in minutes this time, not most of a month."
+      ]
+    },
+    {
+      "lines": [
+        "There are even specific numbers worth memorizing here, because they're a genuinely good starting point.",
+        "Two percent of the budget in one hour, five percent in six hours, and that's worth paging someone for. Ten percent over three days is more of a ticket.",
+        "But here's the honest catch nobody tells you up front: push the target low enough, and even a complete, full outage can sit under that page threshold and simply never trigger it at all."
+      ]
+    },
+    {
+      "lines": [
+        "One more wrinkle that's specific to data, and the SRE playbook on its own doesn't cover it.",
+        "A daily table is supposed to look nearly a full day old, right before it runs. That's not broken, that's just Tuesday.",
+        "A fixed age threshold pages for that every single night. Measure the age against when the table is actually expected to run instead, and that false alarm simply stops happening."
+      ]
+    },
+    {
+      "lines": [
+        "One failure upstream can light up every single signal downstream of it at the exact same moment.",
+        "Left alone, that's not one incident, it's ten separate pages for people who all needed the same one piece of information.",
+        "Group those into a single page, and send it to whoever actually owns the thing that broke."
+      ]
+    },
+    {
+      "lines": [
+        "Before any alert ships, run it through one honest question.",
+        "Can a person actually do something about this, right now, the moment it fires?",
+        "If the answer's no, it isn't a page. It's a ticket for tomorrow, or it's nothing at all."
+      ]
+    },
+    {
+      "lines": [
+        "Put all of that together and here's what a genuinely good alert actually looks like.",
+        "It watches the symptom, not every possible cause behind it. It has a short window sitting next to a long one. It knows the schedule, not just a fixed age. One incident gets exactly one page. And nothing pages at all unless someone can actually act on it."
+      ]
+    },
+    {
+      "lines": [
+        "Last one, and it's the kind of thing that actually happens on a real team.",
+        "A nightly freshness alert does its job and correctly catches a real six-hour outage. Then the very next morning, it fires again, for the table's own completely ordinary overnight gap.",
+        "What's the one change that actually fixes that, without also making the alert slower to catch the next real outage?"
+      ],
+      "answer": [
+        "Widening the window looks tempting, but it just trades one problem for another: now the real outage takes longer to catch too.",
+        "The actual fix is making the freshness check schedule-aware, so it's comparing age against when the table is supposed to run, not one fixed number.",
+        "Do that, and it stays fast on the real outage while finally going quiet on the ordinary nights."
+      ]
+    }
+  ]
+}

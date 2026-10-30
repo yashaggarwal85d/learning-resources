@@ -4667,6 +4667,26 @@ export const TOPICS: TopicMeta[] = [
       "Now there is telemetry worth reading. A dashboard that nobody watches changes nothing; an alert that fires on every blip teaches people to ignore it. The next topic is the rule that decides when a symptom is worth waking someone: SLO burn-rate alerting.",
   },
   {
+    id: 'de.slo-burn-rate-alerting',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/slo-burn-rate-alerting',
+    title: 'SLO burn-rate alerting',
+    syllabusTitle: 'SLO burn-rate alerting',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['error-budget-burn-rate', 'multi-window-multi-burn-rate-alert', 'schedule-aware-freshness-alert', 'actionable-page-test'],
+    uses: ['pipeline-golden-signals', 'metric-types-counter-gauge-histogram'],
+    declared: ['data-slis-slos-error-budgets', 'data-incident-response-blast-radius', 'littles-law'],
+    bridge:
+      "Now there is telemetry worth reading. A dashboard that nobody watches changes nothing; an alert that fires on every blip teaches people to ignore it. This topic is the rule that decides when a symptom is worth waking someone: SLO burn-rate alerting.",
+    handoff:
+      "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. That is classification, and it is where the governance half of this chapter starts.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
@@ -4685,5 +4705,25 @@ export const TOPICS: TopicMeta[] = [
       "Chapter 8 moved data from where it is produced to where it can be read, once and in order. This chapter takes the other kind of source: not a database to be read, but a stream someone is already appending to. This topic is the thing every later topic in this chapter assumes exists: the partitioned log itself, as bytes on disk.",
     handoff:
       "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
+  },
+  {
+    id: 'de.failure-domains-regions-zones',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
+    title: 'Failure domains: regions, zones, cells',
+    syllabusTitle: 'Failure domains: regions, zones, cells',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['failure-domain-blast-radius'],
+    uses: [],
+    declared: ['cloud-basics'],
+    bridge:
+      'Milestones 1-4 built correct pipelines without asking where they run. This chapter is that question, starting with the most basic one: when a piece of the cloud disappears, how much of the system goes with it?',
+    handoff:
+      "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
   },
 ];

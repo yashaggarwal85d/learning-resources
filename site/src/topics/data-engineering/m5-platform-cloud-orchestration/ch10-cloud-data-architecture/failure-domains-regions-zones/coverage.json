@@ -1,0 +1,97 @@
+{
+  "topic": "de.failure-domains-regions-zones",
+  "syllabus": [
+    {
+      "clause": "which data services are zonal vs regional (block volumes zonal, object storage regional, managed Kafka multi-AZ)",
+      "at": [
+        { "step": "One zone goes dark" },
+        { "step": "Zonal vs regional vs multi-AZ by design, not by luck" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "what an AZ outage actually takes down",
+      "at": [
+        { "step": "One zone goes dark" },
+        { "step": "Which of these three keeps serving?" }
+      ]
+    },
+    {
+      "clause": "cross-AZ replication cost",
+      "at": [
+        { "step": "What a zone outage actually costs to insure against" }
+      ]
+    },
+    {
+      "clause": "cell-based architectures as blast-radius limits",
+      "at": [
+        { "step": "A cell is a smaller blast radius than a whole region" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS Global Infrastructure: Regions and AZs",
+      "items": [
+        { "item": "Regions: a physical location clustering a minimum of three isolated, physically separate AZs within a geographic area", "at": [{ "step": "Zonal vs regional vs multi-AZ by design, not by luck" }] },
+        { "item": "Availability Zones: one or more discrete data centers with redundant power, networking and connectivity", "at": [{ "step": "Zonal vs regional vs multi-AZ by design, not by luck" }] },
+        { "item": "AZs are physically separated by a meaningful distance, within 100 km (60 miles) of each other", "at": [{ "deep": "Internals" }] },
+        { "item": "Local Zones: an extension of a Region placing compute closer to end users for latency-sensitive workloads", "at": [{ "out": "out of scope for this refresher; Local Zones are a latency-placement feature, not a failure-domain concept this topic needs" }] }
+      ]
+    },
+    {
+      "source": "AWS EC2 On-Demand Instance Pricing (data transfer section)",
+      "items": [
+        { "item": "Cross-AZ data transfer within one Region (EC2, RDS, Redshift, DAX, ElastiCache, ENIs) is billed at $0.01/GB in each direction", "at": [{ "step": "What a zone outage actually costs to insure against" }] },
+        { "item": "100 GB of data transfer out to the internet is free each month, aggregated across services and Regions", "at": [{ "out": "general egress pricing, not a cross-AZ failure-domain concept; this chapter's own cost topic (10.1 topic 6) covers egress in full" }] }
+      ]
+    },
+    {
+      "source": "AWS Guidance for Cell-Based Architecture on AWS",
+      "items": [
+        { "item": "A fixed number of independent, fixed-size cells each hold the full application logic and storage", "at": [{ "step": "A cell is a smaller blast radius than a whole region" }] },
+        { "item": "A routing layer redirects each client to its assigned cell", "at": [{ "step": "A cell is a smaller blast radius than a whole region" }] },
+        { "item": "Fault isolation aligns with individual users/sets of users instead of the whole business system sharing one failure domain", "at": [{ "step": "A cell is a smaller blast radius than a whole region" }, { "deep": "Frontier" }] },
+        { "item": "A rebalancer can move users between cells and create new cells as needed", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Geography and regions",
+      "items": [
+        { "item": "Zonal resources operate within a single zone; a zonal outage can affect some or all resources in it", "at": [{ "step": "Zonal vs regional vs multi-AZ by design, not by luck" }] },
+        { "item": "Regional resources are redundantly deployed across multiple zones within a region, giving higher availability than zonal resources", "at": [{ "step": "Zonal vs regional vs multi-AZ by design, not by luck" }] },
+        { "item": "Multi-regional resources are deployed across multiple regions", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn: What are Azure Availability Zones?",
+      "items": [
+        { "item": "Availability zones are separated datacenter groups within a region, each with independent power, cooling and networking", "at": [{ "step": "Zonal vs regional vs multi-AZ by design, not by luck" }] },
+        { "item": "A zone-redundant resource is resilient to a single zone failure once it uses two or more zones", "at": [{ "step": "Which of these three keeps serving?" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A Region is a geographic grouping of multiple, independent data centers (AZs); an AZ outage and a Region outage are different, nested failure domains", "at": [{ "step": "One zone goes dark" }] },
+      { "item": "Zonal vs regional is a property of the specific service, not of 'the cloud' generically — an operator has to check per service, not assume", "at": [{ "step": "Zonal vs regional vs multi-AZ by design, not by luck" }] },
+      { "item": "A managed service's multi-AZ-ness is sometimes opt-in configuration (e.g. a database tier) rather than an automatic property of the service", "at": [{ "deep": "Production" }] },
+      { "item": "Object storage is the canonical regional service: a single-zone request failure doesn't take the object's other replicas with it", "at": [{ "step": "Which of these three keeps serving?" }] },
+      { "item": "Cross-AZ replication traffic is a distinct, named line item on a cloud bill, not bundled invisibly into compute or storage cost", "at": [{ "step": "What a zone outage actually costs to insure against" }] },
+      { "item": "AZs within a region are close enough (within ~100km) for synchronous replication to be practical, which is why multi-AZ designs don't pay a cross-region latency penalty", "at": [{ "deep": "Internals" }] },
+      { "item": "A cell-based design is a deliberate trade: more operational surface (duplicated stacks, a routing layer, a rebalancer) bought for a smaller blast radius than the whole region", "at": [{ "step": "A cell is a smaller blast radius than a whole region" }] },
+      { "item": "A cell boundary is meant to stop a software bug or bad deploy from reaching other cells' customers, not just a hardware/power failure", "at": [{ "step": "A cell is a smaller blast radius than a whole region" }] },
+      { "item": "The practical habit this topic exists to build: before trusting a service with availability, check its specific, documented failure-domain guarantee rather than assuming 'the cloud handles it'", "at": [{ "step": "In one breath" }] },
+      { "item": "Table formats and object-store-backed catalogs later in this course inherit their correctness from object storage's regional guarantee taught here — this topic is the floor the next one (object storage write/read semantics) stands on", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A region, zone or cell boundary is a human-drawn abstraction over physical infrastructure (data centers, power grids, network paths) — it does not stop a sufficiently large, correlated physical event (a regional power grid failure, a submarine cable cut) from crossing it", "at": [{ "out": "named as a limit in Deep dive 'Internals', not built as its own reel step in a 5-minute refresher" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}
