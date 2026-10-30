@@ -4626,4 +4626,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Now there is telemetry worth reading. A dashboard that nobody watches changes nothing; an alert that fires on every blip teaches people to ignore it. The next topic is the rule that decides when a symptom is worth waking someone: SLO burn-rate alerting.",
   },
+  {
+    id: 'de.partitioned-log-segments-indexes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
+    title: 'Partitioned log storage: segments and indexes',
+    syllabusTitle: 'Partitioned log storage: segments and indexes',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['partition-segment-index', 'zero-copy-log-read'],
+    uses: [],
+    declared: ['basic familiarity with append-only files and binary search'],
+    bridge:
+      "Chapter 8 moved data from where it is produced to where it can be read, once and in order. This chapter takes the other kind of source: not a database to be read, but a stream someone is already appending to. This topic is the thing every later topic in this chapter assumes exists: the partitioned log itself, as bytes on disk.",
+    handoff:
+      "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
+  },
 ];
