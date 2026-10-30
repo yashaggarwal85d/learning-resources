@@ -1,0 +1,9 @@
+- **Snapshot**: a version of a table, created by every write, that a time-travel query can read from. *Where you meet it:* "Reveal: a delete writes a snapshot, not an erasure."
+- **Time travel**: querying a table as it existed at an earlier snapshot. *Where you meet it:* the Hook, and the same reveal.
+- **Delete file**: a file that marks certain rows as removed from a data file without rewriting it. *Where you meet it:* "Reveal: hidden from queries before it's gone from disk."
+- **Compaction**: rewriting small or marked-up files into fewer, clean ones. *Where you meet it:* the same reveal, as what finally removes a deleted row's bytes.
+- **Merge-on-read**: an engine strategy that combines delete files with data files at query time, instead of rewriting the data file immediately. *Where you meet it:* the same reveal.
+- **Retention**: how long a system keeps something — an old snapshot, a tombstoned key — before it's eligible to be removed for good. *Where you meet it:* "Reveal: what actually frees the bytes," and again for Kafka's own tombstone retention.
+- **Tombstone**: a record that marks a key as deleted, itself cleaned up only after its own retention window. *Where you meet it:* "Reveal: three more places it survives."
+- **Backup**: a separate, stored copy of data, taken independently of the live table. *Where you meet it:* the same reveal.
+- **Crypto-shredding**: deleting an encryption key to make everything encrypted under it unreadable, in place of deleting the data itself. *Where you meet it:* "Reveal: one key, every copy at once" — topic 5's own mechanism, applied here across table, topic and backup at once.

@@ -1,0 +1,98 @@
+{
+  "topic": "de.right-erasure-immutable-lakehouses",
+  "syllabus": [
+    {
+      "clause": "deletes vs time travel (snapshots must expire)",
+      "at": [{ "step": "Reveal: a delete writes a snapshot, not an erasure" }]
+    },
+    {
+      "clause": "MOR delete files until compaction",
+      "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }]
+    },
+    {
+      "clause": "VACUUM/expire_snapshots/orphan removal",
+      "at": [{ "step": "Reveal: what actually frees the bytes" }]
+    },
+    {
+      "clause": "replicas, backups and Kafka topics (compaction tombstones, retention)",
+      "at": [{ "step": "Reveal: three more places it survives" }]
+    },
+    {
+      "clause": "per-subject key crypto-shredding and its key-management cost",
+      "at": [
+        { "step": "Reveal: one key, every copy at once" },
+        { "step": "Reveal: what that costs at scale" }
+      ]
+    },
+    {
+      "clause": "proving deletion to an auditor",
+      "at": [{ "step": "Reveal: proving it to an auditor" }]
+    },
+    {
+      "clause": "retention policies as code",
+      "at": [{ "step": "Reveal: retention, written down as code" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg — Maintenance",
+      "items": [
+        { "item": "Each write creates a new snapshot; expiring old snapshots removes them from metadata, so they're no longer available for time travel.", "at": [{ "step": "Reveal: a delete writes a snapshot, not an erasure" }] },
+        { "item": "Regularly expiring snapshots is recommended to delete data files no longer needed; task or job failures can leave orphan files not referenced by table metadata.", "at": [{ "step": "Reveal: what actually frees the bytes" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg — Table specification",
+      "items": [
+        { "item": "Equality delete files use field ids to determine row equality; position delete files identify rows by file path.", "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake — Table utility commands",
+      "items": [
+        { "item": "VACUUM removes files no longer referenced by the table and older than the retention threshold, which defaults to seven days.", "at": [{ "step": "Reveal: what actually frees the bytes" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake — What are deletion vectors?",
+      "items": [
+        { "item": "Deletion vectors mark existing rows as removed without rewriting the Parquet file; the change is applied physically only when files are later rewritten.", "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }] }
+      ]
+    },
+    {
+      "source": "Apache Kafka — Design (Log Compaction)",
+      "items": [
+        { "item": "Log compaction retains at least the last known value per key; a null-valued message is a tombstone, removed only after delete.retention.ms (24 hours by default).", "at": [{ "step": "Reveal: three more places it survives" }] }
+      ]
+    },
+    {
+      "source": "EU GDPR — Article 17",
+      "items": [
+        { "item": "The data subject has the right to obtain erasure of personal data from the controller.", "at": [{ "step": "Hook" }] }
+      ]
+    },
+    {
+      "source": "NIST SP 800-88 Revision 2",
+      "items": [
+        { "item": "Cryptographic erase sanitizes the keys used to encrypt data, or prevents access to the keys that encrypt data.", "at": [{ "step": "Reveal: one key, every copy at once" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A time-travel query and an auditor's own query are the same mechanism: both read an older snapshot, which is exactly why the subject is still visible to either one until that snapshot expires.", "at": [{ "step": "Reveal: a delete writes a snapshot, not an erasure" }] },
+      { "item": "A table can look fully erased to every normal reader (merge-on-read hides the row) long before the data is actually freed (compaction rewrites it away) — the gap between those two moments is exactly where an over-confident compliance claim goes wrong.", "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }] },
+      { "item": "Shortening a retention window trades compliance speed for reader safety: a snapshot or file removed too soon can break a query that started before the window closed but is still running when it does.", "at": [{ "step": "Reveal: what actually frees the bytes" }] },
+      { "item": "A replica, a backup and a Kafka topic are not edge cases of the table's own erasure — they are architecturally separate stores that no table-level operation was ever designed to reach, which is why each needs its own closing mechanism.", "at": [{ "step": "Reveal: three more places it survives" }] },
+      { "item": "Topic 5's crypto-shredding mechanism (introduced there only as a consequence of deleting a key) becomes this topic's main erasure tool precisely because it is indifferent to where a copy of the ciphertext physically sits — the table, the topic, and the backup are all just storage to it.", "at": [{ "topic": "Envelope encryption, KMS and key rotation", "quote": "key deletion as crypto-shredding", "domain": "data-engineering" }] },
+      { "item": "The classification step that tags a column as personal data in the first place is what makes crypto-shredding's own scope question answerable: without knowing which rows belong to a subject, there's no way to say which key should have encrypted them.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "classification schemes", "domain": "data-engineering" }] },
+      { "item": "Masking a column (topic 8) and erasing a subject's data (this topic) solve different problems: a mask hides a value from an unauthorised reader while the value still exists; erasure is removing the value, or making it permanently unreadable, for everyone.", "at": [{ "topic": "Row/column security and dynamic masking in-engine", "quote": "bypass paths (direct file reads, extracts, unprotected materialized views)", "domain": "data-engineering" }] },
+      { "item": "Writing retention and crypto-shredding decisions as code is the same policy-as-code idea topic 7 applied to who may read a row, applied here to how long a row is allowed to exist at all.", "at": [{ "topic": "Access-control models: RBAC, ABAC, policy-as-code", "quote": "policy decision vs enforcement points", "domain": "data-engineering" }] },
+      { "item": "Proof of erasure has two independent parts that must both hold: the table's own metadata (no live snapshot references the subject's files) and the key store's own record (exactly when a key was destroyed) — neither one alone is sufficient, since a table could still be vacuumed while a key survives, or vice versa.", "at": [{ "step": "Reveal: proving it to an auditor" }] },
+      { "item": "The predict question's second scenario (a key shredded with no table DELETE ever run) tests whether the reader has separated the two mechanisms entirely: crypto-shredding changes what a stored value decrypts to, never whether a row exists in the table at all.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

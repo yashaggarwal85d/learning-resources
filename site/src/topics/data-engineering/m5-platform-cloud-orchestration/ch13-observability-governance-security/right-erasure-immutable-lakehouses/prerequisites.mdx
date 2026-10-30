@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: classification, keys, masking and access
+
+<ul class="resources">
+  <Resource kind="reel" title="Data classification and sensitive-data discovery" domain="data-engineering" host="de.data-classification-sensitive-data" by="knowing which rows belong to the subject being erased" />
+  <Resource kind="reel" title="Envelope encryption, KMS and key rotation" domain="data-engineering" host="de.envelope-encryption-kms-key" by="the per-subject key this topic deletes to crypto-shred" />
+  <Resource kind="reel" title="Access-control models: RBAC, ABAC, policy-as-code" domain="data-engineering" host="de.access-control-models-rbac" by="the policy-as-code pattern this topic applies to retention" />
+  <Resource kind="reel" title="Row/column security and dynamic masking in-engine" domain="data-engineering" host="de.row-column-security-dynamic" by="masking hides a value; this topic is removing it for good" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Maintenance" href="https://iceberg.apache.org/docs/latest/maintenance/" by="Apache Iceberg documentation">Expiring snapshots, removing orphan files, and why both are needed.</Resource>
+  <Resource kind="reading" title="Table specification" href="https://iceberg.apache.org/spec/" by="Apache Iceberg documentation">Position and equality delete files.</Resource>
+  <Resource kind="reading" title="Table utility commands" href="https://docs.delta.io/latest/delta-utility.html" by="Delta Lake documentation">VACUUM and its default seven-day retention threshold.</Resource>
+  <Resource kind="reading" title="What are deletion vectors?" href="https://docs.delta.io/delta-deletion-vectors/" by="Delta Lake documentation">Merge-on-read deletes, and when they're physically applied.</Resource>
+  <Resource kind="reading" title="Design: Log Compaction" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka documentation">Tombstones and delete.retention.ms.</Resource>
+  <Resource kind="reading" title="Article 17: Right to erasure" href="https://gdpr-info.eu/art-17-gdpr/" by="EU GDPR">The data subject's right to obtain erasure.</Resource>
+  <Resource kind="reading" title="SP 800-88 Revision 2: Guidelines for Media Sanitization" href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-88r2.pdf" by="NIST">Cryptographic erase as a purge sanitization technique.</Resource>
+</ul>
+
+</section>
