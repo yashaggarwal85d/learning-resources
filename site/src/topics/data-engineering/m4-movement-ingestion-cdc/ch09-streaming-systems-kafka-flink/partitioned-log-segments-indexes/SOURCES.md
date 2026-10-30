@@ -34,6 +34,19 @@ Contents:
 - Consumer Position: offsets as a single integer per partition, held by the consumer side, not broker-tracked per-message state (used verbatim for the "offsets owned by consumers" clause).
 - Configuring The Log Cleaner: the active segment is never compacted (used to support "active segment rolling" — a segment is either active (open, appendable) or closed, and only closed segments participate in compaction/retention/tiering elsewhere in the chapter).
 
+## Apache Kafka: `TopicConfig` and `LogConfig` (segment size, roll time, index interval)
+
+URL: https://raw.githubusercontent.com/apache/kafka/trunk/clients/src/main/java/org/apache/kafka/common/config/TopicConfig.java
+Version: Apache Kafka, trunk (post-4.4).
+
+> The active segment is rolled once it reaches this size.
+
+Contents:
+- `segment.bytes` (`log.segment.bytes` at the broker level): "This configuration controls the segment file size for the log. Retention and cleaning is always done a file at a time so a larger segment size means fewer files but less granular control over retention." (read from the doc string's Java source concatenation, not quoted verbatim above because the source splits it across string-literal lines; the standalone final sentence is quoted verbatim instead). Used for the "a segment rolls at a size limit" and "retention acts on whole segments" framing.
+- `DEFAULT_SEGMENT_BYTES = 1024 * 1024 * 1024` (`storage/src/main/java/org/apache/kafka/storage/internals/log/LogConfig.java`, read not quoted as prose, since it is a numeric constant, not documentation text): the real default segment size is 1 GiB, cited in `post-notes.md` as the real-world figure the toy log's much smaller demo size stands in for.
+- `DEFAULT_SEGMENT_MS = 24 * 7 * 60 * 60 * 1000L` (same file): the real default roll time is 7 days, cited the same way.
+- `LOG_INDEX_INTERVAL_BYTES_DEFAULT = 4096` (`server-common/src/main/java/org/apache/kafka/server/config/ServerLogConfigs.java`, read not quoted): the real default sparsity of the offset index is one entry per 4096 bytes of log data appended, cited in `post-notes.md` as the concrete answer to "how sparse is sparse."
+
 ## Apache Kafka: source tree, `storage/` module (file layout reference, read not quoted)
 
 URL: https://github.com/apache/kafka/tree/trunk/storage/src/main/java/org/apache/kafka/storage/internals/log
