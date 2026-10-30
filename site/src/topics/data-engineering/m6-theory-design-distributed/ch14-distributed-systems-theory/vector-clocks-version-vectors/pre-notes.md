@@ -1,0 +1,8 @@
+- **Vector**: a list of numbers, one per process or replica, that travels alongside a piece of data. *Where you meet it:* every version of every object in this topic's examples.
+- **Element-wise maximum**: comparing two vectors position by position and keeping whichever number is larger at each position. *Where you meet it:* the vector-clock merge rule on receiving a message.
+- **Replica**: one of several copies of the same data item, kept on different machines. *Where you meet it:* a version vector's one entry per replica that has coordinated a write.
+- **Version**: one specific state of a data item, produced by one write. *Where you meet it:* the Dynamo paper's D1 through D5.
+- **Conflict**: when two versions of the same item exist and neither is clearly more current than the other. *Where you meet it:* two writes to the same cart during a partition.
+- **Merge**: combining two conflicting versions into one the application accepts as correct. *Where you meet it:* the shopping-cart reconciliation this topic's lab builds.
+- **Shopping cart**: this chapter's running example of an item an application must reconcile when a store hands back more than one version. *Where you meet it:* the hook, and Dynamo's own motivating use case.
+- **Coordinator**: the replica that handles a particular write and bumps its own entry in the vector. *Where you meet it:* every step of the Dynamo worked example.

@@ -1,0 +1,77 @@
+{
+  "topic": "de.vector-clocks-version-vectors",
+  "steps": [
+    {
+      "lines": [
+        "Pay attention to what's actually being asked for here, because it's a harder question than it looks.",
+        "Everything you had before could always produce some order between two versions, right or wrong.",
+        "What you need now is the honest ability to say there is no order at all, and still keep both."
+      ]
+    },
+    {
+      "lines": [
+        "Before you pick, think about what comparing two versions is actually checking.",
+        "It isn't checking which has the bigger total. It's checking whether one truly contains every change the other made."
+      ],
+      "answer": [
+        "Both, and here's the reasoning that makes it certain rather than a guess.",
+        "Comparing the two versions entry by entry, neither one's numbers are all at least as large as the other's.",
+        "That is exactly what concurrent means, and once that's true, there is no basis left for discarding either side."
+      ]
+    },
+    {
+      "lines": [
+        "Notice how small the actual mechanism is once you strip away the word vector.",
+        "Bump your own entry whenever you do something. When you hear from someone else, keep whichever number is bigger, position by position.",
+        "One version truly contains another exactly when every single position agrees, and at least one is strictly ahead."
+      ]
+    },
+    {
+      "lines": [
+        "Walk through this as a real trace, not a diagram, because every step is mechanical and that's the whole point.",
+        "One coordinator writes, then writes again, each time only touching its own number.",
+        "Two other coordinators each branch off that same point, neither one seeing what the other did, and a reconciling write later folds both branches back into one."
+      ]
+    },
+    {
+      "lines": [
+        "Keep the distinction here sharp, because it's easy to blur.",
+        "One version of this idea watches events happening at processes. The other watches versions of one specific item sitting at replicas.",
+        "The comparison never changes. Only what each entry is counting does."
+      ]
+    },
+    {
+      "lines": [
+        "Separate two different costs here, because people tend to treat them as the same complaint.",
+        "Keeping both versions when neither dominates is not a failure. It's the store refusing to guess.",
+        "Letting those kept versions multiply forever because nobody ever merges them back is the actual failure, and it's a client problem, not a clock problem."
+      ]
+    },
+    {
+      "lines": [
+        "Watch exactly what breaks when two different people happen to write through the same coordinator.",
+        "The coordinator bumps its own number the same way both times, so by the numbers alone, the second write looks like it simply replaced the first.",
+        "One small tag, naming the specific event that produced each write, is enough to stop that collapse from happening."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward what this mechanism actually buys you, stated plainly.",
+        "A vector tells concurrency apart from order exactly, which a single number never could.",
+        "Keeping both versions when neither wins is the honest choice, and a small tag keeps that honesty from turning into endless duplicates.",
+        "Shrinking that vector on purpose, to save space, is a real trade, and it has a real cost."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, think about what gets thrown away when old entries are dropped to save space.",
+        "Ask whether the proof that one version truly contained another could ever be sitting in exactly the entry that just got discarded."
+      ],
+      "answer": [
+        "Yes, and this is worth remembering precisely because it's easy to assume size limits are free.",
+        "If the discarded entry was the only one showing the earlier version's history was fully included in the later one, nothing is left to prove that anymore.",
+        "The pair now reads as concurrent, even though it never actually was."
+      ]
+    }
+  ]
+}

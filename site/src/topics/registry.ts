@@ -4667,6 +4667,26 @@ export const TOPICS: TopicMeta[] = [
       "An idempotent task can safely be re-run for one interval. A backfill re-runs it for every interval across years of history — the same safety property, at a scale where it also becomes a risk to whatever source or warehouse absorbs that much repeated work. The next topic is exactly that scale.",
   },
   {
+    id: 'de.data-intervals-catchup-backfills',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-intervals-catchup-backfills',
+    title: 'Data intervals, catchup and backfills',
+    syllabusTitle: 'Data intervals, catchup and backfills',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['data-interval-semantics', 'resumable-backfill-design', 'backfill-blast-radius'],
+    uses: ['de.idempotent-tasks-failure-semantics', 'ch8.database-extraction-without-hurting', 'ch9.partition-replay'],
+    declared: [],
+    bridge:
+      "An idempotent task is safe to re-run once. A backfill re-runs it across years of history, at a scale where the same safety property becomes a different kind of risk entirely: to the scheduler's own state, and to the source it reads from. This topic is both.",
+    handoff:
+      "A backfill re-runs a fixed number of tasks over a fixed range. Many pipelines need the number of tasks itself to depend on the data — one task per file, one per partition, decided at run time. That is the next mechanism.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -4745,6 +4765,26 @@ export const TOPICS: TopicMeta[] = [
       "If a timestamp cannot be trusted to order two writes, what can? Not a time at all, but who could have known what: a write that a node had seen when it made another write is ordered before it, whatever the clocks said. This topic is that relation, happens-before, and the one number that respects it: a Lamport clock.",
     handoff:
       "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. That is the vector clock.",
+  },
+  {
+    id: 'de.vector-clocks-version-vectors',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/vector-clocks-version-vectors',
+    title: 'Vector clocks and version vectors',
+    syllabusTitle: 'Vector clocks and version vectors',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['vector-clock-exact-causality', 'version-vector-vs-vector-clock', 'dotted-version-vector', 'siblings-and-metadata-growth'],
+    uses: ['happens-before-partial-order', 'lamport-scalar-clock', 'clock-condition-total-order', 'last-write-wins-clock-hazard'],
+    declared: ['session-consistency-guarantees', 'partitioning-schemes', 'cap-pacelc'],
+    bridge:
+      "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. This topic is that clock: vector clocks and the version vectors real stores use.",
+    handoff:
+      "Now there is a way to say exactly which writes were ordered and which were concurrent, without a trusted clock. The next question is the one a client asks: what may a read return? The strongest answer, the one that makes a replicated register behave like a single variable, is linearizability.",
   },
   {
     id: 'de.ingestion-modes-push-vs',
@@ -4887,6 +4927,26 @@ export const TOPICS: TopicMeta[] = [
       "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
   },
   {
+    id: 'de.producer-batching-compression-acks',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/producer-batching-compression-acks',
+    title: 'Producer batching, compression and acks',
+    syllabusTitle: 'Producer batching, compression and acks',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['producer-batching-linger', 'acks-durability-tradeoff'],
+    uses: ['partition-segment-index'],
+    declared: [],
+    bridge:
+      "A partition is a log a producer writes to. This topic is what a producer actually does before that write ever reaches the broker: batching, compressing, and deciding how much durability to wait for.",
+    handoff:
+      "acks=all means waiting for every in-sync replica, not just the leader. What makes a replica count as in-sync, and what happens when one falls behind or a leader dies, is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
@@ -4927,6 +4987,26 @@ export const TOPICS: TopicMeta[] = [
       "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
   },
   {
+    id: 'de.object-storage-semantics-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/object-storage-semantics-data',
+    title: 'Object storage semantics for data engineers',
+    syllabusTitle: 'Object storage semantics for data engineers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['object-store-consistency-guarantee', 'conditional-write-compare-swap', 'prefix-throttling-hot-key'],
+    uses: ['failure-domain-blast-radius'],
+    declared: ['basic-http', 'object-storage-vocabulary'],
+    bridge:
+      "That map called object storage 'regional,' which sounds safe, but safety here means something exact — not 'the bytes survive,' but 'what does a read see right after a write, and what can two writers actually coordinate on, using only the store itself.'",
+    handoff:
+      'A conditional write protects one key. It says nothing about how long that byte should even exist, or what it costs to keep it — which is the next question.',
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
@@ -4945,5 +5025,25 @@ export const TOPICS: TopicMeta[] = [
       "This chapter opened at the single physical page an engine reads and writes and closed at a sketch that approximates an entire distribution in a few kilobytes. The next chapter turns to the files these engines and sketches actually read and write at rest, starting with the oldest and most trap-ridden of them: plain-text interchange formats like CSV and JSON.",
     handoff:
       "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. The next question is that choice itself: row-oriented versus columnar layout.",
+  },
+  {
+    id: 'de.row-vs-columnar-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/row-vs-columnar-vs',
+    title: 'Row vs columnar vs hybrid layouts',
+    syllabusTitle: 'Row vs columnar vs hybrid layouts',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['row-vs-columnar-layout'],
+    uses: ['text-format-traps'],
+    declared: [],
+    bridge:
+      "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. This topic is that choice itself, measured directly: row-major storage, full column decomposition, and the PAX compromise in between.",
+    handoff:
+      "Every one of these layouts still has to survive a reader using a different version of the schema than the writer did. That's schema evolution.",
   },
 ];
