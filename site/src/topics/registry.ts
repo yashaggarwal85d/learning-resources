@@ -5003,6 +5003,26 @@ export const TOPICS: TopicMeta[] = [
       "Lineage tells you where data came from and went. It does not tell you whether the data at either end is any good. The next topic is how a dataset's contents are checked: data-quality frameworks, where the checks run and what they cost.",
   },
   {
+    id: 'de.data-quality-frameworks',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/data-quality-frameworks',
+    title: 'Data quality frameworks',
+    syllabusTitle: 'Data quality frameworks',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['dq-gates-vs-posthoc-scans', 'dq-check-cost-incremental-metrics-sampling', 'dq-framework-landscape'],
+    uses: ['dbt-tests-data-unit', 'dbt-models-ref-dag', 'data-contract-specification', 'open-data-contract-standard', 'data-code-testing-layers', 'runtime-schema-validation', 'openlineage-facets'],
+    declared: ['hyperloglog-distinct-counting', 'probabilistic-membership-filters', 'testing-pyramid-transformations', 'write-audit-publish-safe-deploys', 'contract-enforcement-ci'],
+    bridge:
+      "Lineage tells you where data came from and went. It does not tell you whether the data at either end is any good. This topic is how a dataset's contents are checked: data-quality frameworks, where the checks run and what they cost.",
+    handoff:
+      "Catalog, lineage and quality checks are tools. Tools do not decide who owns a table, who fixes a failing check, or which rules a domain team may change. The next topic is the operating model that puts people and policy around those tools: federated governance.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',

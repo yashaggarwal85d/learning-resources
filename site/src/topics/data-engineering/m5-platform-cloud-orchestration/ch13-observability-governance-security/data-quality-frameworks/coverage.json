@@ -1,0 +1,97 @@
+{
+  "topic": "de.data-quality-frameworks",
+  "syllabus": [
+    {
+      "clause": "where checks run (in-pipeline gates vs post-hoc scans) and what they cost at scale",
+      "at": [{ "step": "Reveal: where a check runs, and what it costs" }]
+    },
+    {
+      "clause": "dbt tests and unit tests",
+      "at": [{ "step": "Reveal: dbt's two kinds of test" }]
+    },
+    {
+      "clause": "GX Core expectation suites (open source; Fivetran announced in May 2026 that it will become steward; GX Cloud went to FICO in 2026)",
+      "at": [{ "step": "Reveal: an expectation suite" }]
+    },
+    {
+      "clause": "Soda 4 contracts-first engine",
+      "at": [{ "step": "Reveal: the rest of the landscape, named" }]
+    },
+    {
+      "clause": "Deequ/PyDeequ metric-based checks",
+      "at": [{ "step": "Reveal: the rest of the landscape, named" }]
+    },
+    {
+      "clause": "Databricks DQX",
+      "at": [{ "step": "Reveal: the rest of the landscape, named" }]
+    },
+    {
+      "clause": "incremental metrics and sampling",
+      "at": [
+        { "step": "Reveal: incremental metrics" },
+        { "step": "Reveal: sampling, and what it misses" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "dbt — Data tests",
+      "items": [
+        { "item": "A data test is a SQL select statement that returns the failing rows that disprove an assertion.", "at": [{ "step": "Reveal: dbt's two kinds of test" }] }
+      ]
+    },
+    {
+      "source": "dbt — Unit tests",
+      "items": [
+        { "item": "A unit test validates modeling logic against a small set of static, mocked inputs before the full model is built.", "at": [{ "step": "Reveal: dbt's two kinds of test" }] }
+      ]
+    },
+    {
+      "source": "Great Expectations — GX Core overview",
+      "items": [
+        { "item": "An Expectation is a verifiable assertion about data; an Expectation Suite is a collection of Expectations.", "at": [{ "step": "Reveal: an expectation suite" }] }
+      ]
+    },
+    {
+      "source": "Great Expectations — An Update for the Great Expectations Community",
+      "items": [
+        { "item": "Fivetran becomes steward of the GX Core open-source project; FICO acquires GX Cloud (6 May 2026).", "at": [{ "step": "Reveal: the rest of the landscape, named" }] }
+      ]
+    },
+    {
+      "source": "Soda — Contract Language Reference",
+      "items": [
+        { "item": "A Soda data contract is a YAML document of data quality checks, similar to unit tests for software.", "at": [{ "step": "Reveal: the rest of the landscape, named" }] }
+      ]
+    },
+    {
+      "source": "Deequ — README (awslabs/deequ)",
+      "items": [
+        { "item": "Deequ is a library on Apache Spark for \"unit tests for data,\" measuring data quality in large datasets.", "at": [{ "step": "Reveal: the rest of the landscape, named" }] }
+      ]
+    },
+    {
+      "source": "Databricks DQX — project site",
+      "items": [
+        { "item": "DQX defines and runs data-quality checks in PySpark pipelines and notebooks, for batch and streaming.", "at": [{ "step": "Reveal: the rest of the landscape, named" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Being a gate (running before publish, able to block) and being cheap are two separate properties — the Prove It scenario's full-table gate shows a gate can be exactly as expensive as a post-hoc scan if what it checks is the whole table every single run.", "at": [{ "step": "Prove it" }] },
+      { "item": "A dbt data test and a GX expectation computing the same not-null rule on the same data and reaching the same verdict is the direct, run demonstration of this chapter's own thesis for tooling: different engines, one question, same answer when the rule is the same.", "at": [{ "step": "Reveal: an expectation suite" }] },
+      { "item": "The GX suite catching a negative amount that none of dbt's four built-in generic tests (unique, not_null, accepted_values, relationships) would have caught on their own is why a real team often runs more than one framework rather than picking just one.", "at": [{ "step": "Reveal: an expectation suite" }] },
+      { "item": "A data-quality facet attaching a check's result to a dataset node is the same mechanism the lineage topic's own facet system defined generically — this topic's checks are one more kind of fact a lineage event can carry, not a separate reporting channel.", "at": [{ "topic": "OpenLineage: events, facets and lineage graphs", "quote": "facets (schema, column lineage, data quality, SQL)", "domain": "data-engineering" }] },
+      { "item": "The sampled estimate reporting zero on data that actually has a defect is a sharper failure mode than undercounting: a dashboard reading zero defects looks identical whether the data is actually clean or the sample simply never saw the one bad row.", "at": [{ "step": "Reveal: sampling, and what it misses" }] },
+      { "item": "GX's own stewardship announcement naming an exact transition date (GX Cloud unavailable after 1 June) is the same kind of dated, checkable fact this chapter has flagged before for Amundsen and for Apache Polaris — stated with its own date rather than assumed current.", "at": [{ "topic": "Metadata platforms and active catalogs", "quote": "Amundsen is now low-activity", "domain": "data-engineering" }] },
+      { "item": "Incremental metrics and sampling are the same cost lever Chapter 5's sketches apply to distinct counting and membership, generalised here to a data-quality check: compute less per run, at a stated (and in sampling's case, nonzero) risk of missing something.", "at": [{ "step": "Reveal: incremental metrics" }] },
+      { "item": "The predict question's two scenarios (gate-vs-scan placement, then a full-table gate's own growing cost) both test the same underlying claim from different angles: where a check runs and what a check costs are two separate decisions, not one.", "at": [{ "step": "Prove it" }] },
+      { "item": "Naming Deequ, Soda and DQX without running any of them, while running dbt and GX to completion, is a disclosed scope limit set directly by this environment's own missing dependencies (no Spark, no connected data platform), not an editorial choice about which tools matter more.", "at": [{ "step": "Reveal: the rest of the landscape, named" }] },
+      { "item": "A unit test passing on mocked rows while a data test fails on the real built data, in the same lab run, is the clearest possible demonstration that the two check different things: the model's own logic is correct, but the data it was actually fed that run was not.", "at": [{ "step": "Reveal: dbt's two kinds of test" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

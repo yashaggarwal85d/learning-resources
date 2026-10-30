@@ -1,0 +1,8 @@
+- **Assertion**: a statement about data that can be checked true or false. *Where you meet it:* throughout; it's the whole topic's subject.
+- **Expectation**: Great Expectations' own word for one verifiable assertion about data. *Where you meet it:* "Reveal: an expectation suite."
+- **Data test**: a dbt check that queries already-built data for rows that disprove an assertion. *Where you meet it:* "Reveal: dbt's two kinds of test."
+- **Unit test**: a check against fixed, mocked input, validating logic before anything is built. *Where you meet it:* the same reveal.
+- **Metric**: a single computed number (a count, a rate) that a check compares against a threshold. *Where you meet it:* "Reveal: incremental metrics."
+- **Partition**: one slice of a table's data, usually by date, that a pipeline run touches. *Where you meet it:* the same reveal.
+- **Sample**: a subset of rows read instead of the whole table, to estimate a metric cheaply. *Where you meet it:* "Reveal: sampling, and what it misses."
+- **Gate**: a check placed before publish that can block bad data from going further. *Where you meet it:* "Reveal: where a check runs, and what it costs."

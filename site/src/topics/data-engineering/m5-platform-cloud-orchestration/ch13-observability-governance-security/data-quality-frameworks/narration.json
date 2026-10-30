@@ -1,0 +1,80 @@
+{
+  "topic": "de.data-quality-frameworks",
+  "steps": [
+    {
+      "lines": [
+        "A team bolts twelve new quality checks onto their orders pipeline, one busy week.",
+        "Overnight, the whole thing's runtime doubles. And two weeks later, a bad partition still reaches the dashboard anyway — the one check that would've actually caught it ran only after the data was already published."
+      ]
+    },
+    {
+      "lines": [
+        "So, three checks: one for a missing value, one for freshness, one for drift.",
+        "Before the data's published, or after? And here's the real question underneath that one — which of those two choices actually doubled the cost in the first place? Think it through before I go on."
+      ],
+      "answer": [
+        "It's not running checks early that costs you. A check sitting before publish only touches data already moving through — that's genuinely cheap.",
+        "What actually doubled the cost is a full scan after the fact, reading the entire table back again from scratch, on top of everything the pipeline was already doing."
+      ]
+    },
+    {
+      "lines": [
+        "So, where should a check actually sit?",
+        "One option sits before publish and can stop bad data cold — and because it's only touching what's already passing through, it stays cheap.",
+        "The other runs after the data's already landed. It can't block anything at that point — and it costs a full read of whatever it's covering."
+      ]
+    },
+    {
+      "lines": [
+        "Now, one particular tool draws a line between two genuinely different kinds of test.",
+        "One kind queries data that's already been built, hunting for rows that break an assertion — and on an actual run just now, it caught a real missing customer id.",
+        "The other kind checks a model's own logic against fixed, made-up rows, before anything gets built at all — and that one passed clean."
+      ]
+    },
+    {
+      "lines": [
+        "A different tool groups several of these assertions together and runs them all against one batch of data at once.",
+        "On the exact same rows, it caught that same missing id all over again — and it caught one more thing entirely: a negative amount, something none of the first tool's four built-in checks had ever been watching for."
+      ]
+    },
+    {
+      "lines": [
+        "A few more tools, worth naming, even though none of them actually ran here.",
+        "One checks data against a published contract. Another's built on a distributed engine, turning checks into jobs that compute a metric first, then test the metric itself. A third is built specifically for one platform's own pipelines.",
+        "None of their machinery exists on this particular build — so they're named, sourced, and nothing more."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a cheaper way to keep a running check up to date.",
+        "Compute a metric on whatever's new, then merge it into what's already stored — instead of rescanning the entire history every single time.",
+        "Run it both ways on the same data, and they land on the exact same number. The merged version just gets there for a fraction of the work."
+      ]
+    },
+    {
+      "lines": [
+        "Cheaper still: read a slice instead of everything, and estimate from there.",
+        "On this very data, a one-in-ten slice landed on the same relative row every single time it ran — and it missed a bad row that was genuinely there, reporting back zero when the real count wasn't zero at all.",
+        "Not a smaller number than the truth. A flat miss."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this all together.",
+        "A check before publish stays cheap and can block; one after can't block, and costs a full read. One kind of test checks what got built; the other checks the logic behind it. A group of assertions runs together, against one batch.",
+        "Compute a metric incrementally, and it matches a full rescan exactly, for far less work. Sample instead, and it's cheaper again — but now it can miss something completely."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario, and it's worth sitting with.",
+        "Picture a check that sits before publish — so it is, by definition, a gate — but it scans every single row of a table that just keeps growing, on every single run, start to finish.",
+        "As that table keeps growing, does this gate's own cost per run stay flat, or does it keep climbing? And why?"
+      ],
+      "answer": [
+        "Climbing. Sitting before publish only tells you when a check runs and whether it can block — it tells you nothing at all about what that check actually costs to compute.",
+        "This particular gate rereads the whole table from scratch, every single run — so its cost tracks the table's own size, growing right alongside it, gate or no gate."
+      ]
+    }
+  ]
+}
