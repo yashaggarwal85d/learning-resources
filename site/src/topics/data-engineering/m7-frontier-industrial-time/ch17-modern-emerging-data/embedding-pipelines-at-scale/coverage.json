@@ -1,0 +1,77 @@
+{
+  "topic": "de.embedding-pipelines-at-scale",
+  "syllabus": [
+    {
+      "clause": "batch inference throughput (GPU batching, API rate limits, cost per million tokens)",
+      "at": [
+        { "step": "Reveal: throughput and cost per million tokens" },
+        { "step": "Reveal: the API-bound case" }
+      ]
+    },
+    {
+      "clause": "content hashing to re-embed only changed chunks",
+      "at": [
+        { "step": "Reveal: content hashing, the mechanism" }
+      ]
+    },
+    {
+      "clause": "deletes and tombstones propagated to the index",
+      "at": [
+        { "step": "Reveal: deletes and tombstones" }
+      ]
+    },
+    {
+      "clause": "backfills after a model change without downtime",
+      "at": [
+        { "step": "Reveal: why a model change cannot be an in-place swap" },
+        { "step": "Reveal: the dual-index backfill" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "\"The Embedder's Dilemma: LLMs Are Better, but at What Cost?\" (COLM 2026)",
+      "items": [
+        { "item": "the benchmark's own cost method: maximum-throughput token processing on an H100 80GB at sequence length 512 (largest fitting batch), cost = $2.49/hr H100 spot rate / tokens per hour", "at": [{ "step": "Reveal: throughput and cost per million tokens" }] },
+        { "item": "26 embedding models benchmarked at sequence length 512 with maximum batch size, each with its own throughput and cost per million tokens", "at": [{ "step": "Reveal: throughput and cost per million tokens" }] },
+        { "item": "measured costs range from $0.00016/MTok (mE5-small, 4.3M tok/s) to $0.047/MTok (F2LLM-v2-14B, 14.7K tok/s)", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "OpenAI API documentation — text-embedding-3-large Model",
+      "items": [
+        { "item": "a caller's usage tier determines how high the API's own rate-limit caps are set, and those caps rise automatically with usage and spend", "at": [{ "step": "Reveal: the API-bound case" }] },
+        { "item": "the text-embedding-3-large \"Build\" usage tier caps at 1,000,000 tokens per minute", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Qdrant documentation — Qdrant Fundamentals (FAQ)",
+      "items": [
+        { "item": "deletions are implemented as soft deletes using a bitmask, so the index is not rebuilt after each deletion", "at": [{ "step": "Reveal: deletes and tombstones" }] },
+        { "item": "after a delete operation, the point is immediately inaccessible via the API", "at": [{ "step": "Reveal: deletes and tombstones" }] },
+        { "item": "queries continue to be served by the old index until a rebuilt index is complete, so there is no downtime", "at": [{ "step": "Reveal: the dual-index backfill" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's nightly-full-re-embed scenario is not a toy inefficiency but the default behavior of the naive version of this pipeline: without a hashing step, re-embedding cost scales with total corpus size every single night, forever, regardless of how little actually changed.", "at": [{ "step": "Hook" }] },
+      { "item": "Reading a benchmark's own stated method (fixed sequence length, maximum batch size, a named hardware rate) before trusting its headline cost number is the general skill this topic teaches through one specific paper — the same discipline applies to any published throughput or latency claim, not only embedding benchmarks.", "at": [{ "step": "Reveal: throughput and cost per million tokens" }] },
+      { "item": "An API rate limit and a GPU's compute ceiling are structurally different kinds of constraints: a rate limit is a fixed external cap unrelated to how much spare hardware exists, while a compute ceiling is a property of the hardware actually doing the work — conflating the two leads to optimizing throughput on hardware that was never the actual bottleneck.", "at": [{ "step": "Reveal: the API-bound case" }] },
+      { "item": "Tombstone propagation and the label-leakage concern from topic 1 share the same shape even though they look unrelated: both are cases where data that should no longer be visible keeps being visible, and both are correctness failures rather than performance ones.", "at": [{ "step": "Reveal: deletes and tombstones" }] },
+      { "item": "The incomparability of two models' vectors is not a limitation to work around with a translation layer; it is the reason a backfill needs a complete second index rather than any kind of incremental or partial conversion of the old vectors.", "at": [{ "step": "Reveal: why a model change cannot be an in-place swap" }] },
+      { "item": "\"Zero downtime\" in a dual-index backfill specifically means no query is ever left with nothing to search, not that the backfill itself completes instantly — the backfill can take arbitrarily long as long as the old index keeps answering throughout it.", "at": [{ "step": "Reveal: the dual-index backfill" }] },
+      { "item": "Qdrant's own soft-delete-plus-background-optimizer pattern and this topic's own dual-index backfill both separate \"stop being visible immediately\" from \"finish the expensive physical work later\" — the same two-phase shape recurs because an index's physical structure is expensive to touch and its logical correctness is not.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's content-hash saving ratio depends entirely on how much of the corpus is actually unchanged on a given night; a corpus with a high edit rate would see a much smaller ratio, so the number this topic measures is a property of its own synthetic corpus, not a general constant.", "at": [{ "deep": "Lab" }] },
+      { "item": "The *(skipped)* embedding-model-choice topic is what would explain why two models' vectors land in different spaces in the first place; this topic deliberately states that fact and builds a procedure on top of it rather than re-deriving it, which is consistent with how CHAPTER.md scopes this topic's dependency on that skipped material.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The syllabus line's four clauses (throughput/cost, content hashing, tombstones, backfill) are four separate operational concerns that happen to all apply to the same kind of pipeline; a team could handle any one of them well while mishandling the others, so this topic teaches them as four distinct disciplines rather than one unified \"embedding maintenance\" procedure.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
