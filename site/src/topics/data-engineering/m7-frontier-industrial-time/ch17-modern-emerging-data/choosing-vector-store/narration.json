@@ -1,0 +1,83 @@
+{
+  "topic": "de.choosing-vector-store",
+  "steps": [
+    {
+      "lines": [
+        "Picture two teams, both needing to search over vectors, starting from completely different places.",
+        "One already runs a regular database and only has a modest pile of support tickets to search through.",
+        "The other has an enormous, ever-growing collection of product images, split across hundreds and hundreds of separate customers who must never see each other's data."
+      ]
+    },
+    {
+      "lines": [
+        "So, naturally, which vector database is the right one for both of these teams.",
+        "Is there a single engine out there that genuinely fits them equally well, if you just pick whichever one tops the rankings?",
+        "Or is that framing itself the actual mistake being made here."
+      ],
+      "answer": [
+        "Reaching for a single universal winner buries exactly the differences that actually decide this.",
+        "How big the collection is, how complicated the filtering gets, how fast things change, who owns which customer's data, how fast an answer has to come back, and who wants to run all of it day to day."
+      ]
+    },
+    {
+      "lines": [
+        "Here are those six things, laid out plainly, one at a time.",
+        "How large the collection is. How complicated filtering needs to get. How quickly new data shows up. Whether tenants must stay strictly separate. How fast an answer has to come back. And who actually wants to run and maintain all of it.",
+        "Think of these as six questions to walk through in order, never as six numbers you add together into one final score."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the option that adds the least.",
+        "One well-known extension bolts vector search directly onto a database a team is probably running already, meaning nothing new ever has to be deployed or maintained.",
+        "And a companion extension on top of it adds a disk-backed index, specifically for the moment a collection outgrows what fits comfortably in memory."
+      ]
+    },
+    {
+      "lines": [
+        "Now, the engines built specifically and only for this one job.",
+        "One of them is built to shard across enormous, multi-node deployments at real operational cost. Another is known for strong filtering and for being refreshingly simple to run yourself.",
+        "A third treats blending keyword search with vector search as a core, built-in feature rather than an add-on. A fourth hands the entire operational burden to someone else, in exchange for a monthly bill.",
+        "Four genuinely different bets, never four rows meant to be ranked on one single chart."
+      ]
+    },
+    {
+      "lines": [
+        "Two more options worth naming before moving on.",
+        "A search engine that already handled keyword matching can simply add vector fields alongside what it already does, which suits a team whose real need was always blending the two.",
+        "And some newer formats skip a separate database altogether, storing vectors right where the rest of the data already lives, trading away a bit of query speed for one less system to run."
+      ]
+    },
+    {
+      "lines": [
+        "Walk all six questions against that first team's actual numbers now.",
+        "Their collection is small, their customer model is simple, their speed requirement is comfortable, and they'd clearly rather keep running their own systems than hand that off.",
+        "Every one of those answers points toward the exact same extension bolted onto their existing database, and it lands there because of their numbers specifically, not because that option beat anyone in a contest."
+      ]
+    },
+    {
+      "lines": [
+        "Now run the identical six questions again, but against a wildly different, hypothetical collection instead.",
+        "Billions of items, fast-changing data, and customers who must be kept strictly, provably separate from one another.",
+        "The exact same six questions, asked in the exact same order, land somewhere completely different this time."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling all of that together now.",
+        "Walk through those six questions one at a time, never add them up into a single score. Let a team that's already running a familiar database stay right there if its own numbers support it.",
+        "Pick a dedicated engine because its specific trade-off genuinely fits, never because a chart says it won. And trust the procedure you just walked through, not whichever number shouts the loudest."
+      ]
+    },
+    {
+      "lines": [
+        "A vendor puts out their own benchmark, claiming their engine beats every single competitor, at every single scale, no exceptions.",
+        "Given everything just covered, what part of that claim should actually be trusted, and what part shouldn't be?"
+      ],
+      "answer": [
+        "The raw number itself might genuinely be real, at least for the exact setup that vendor happened to test it under.",
+        "What hasn't been shown at all is whether that same number holds up on a collection shaped differently from theirs — and that's precisely what walking the six questions on your own numbers is actually for."
+      ]
+    }
+  ]
+}

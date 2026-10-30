@@ -1,0 +1,105 @@
+{
+  "topic": "de.choosing-vector-store",
+  "syllabus": [
+    {
+      "clause": "pgvector/pgvectorscale inside Postgres",
+      "at": [
+        { "step": "Reveal: pgvector and pgvectorscale" }
+      ]
+    },
+    {
+      "clause": "dedicated engines (Milvus, Qdrant, Weaviate, Pinecone)",
+      "at": [
+        { "step": "Reveal: the dedicated engines" }
+      ]
+    },
+    {
+      "clause": "search engines vs lakehouse/object-store options",
+      "at": [
+        { "step": "Reveal: search engines and lakehouse-native options" }
+      ]
+    },
+    {
+      "clause": "decide by corpus size, filter complexity, update rate, tenancy, latency SLO and operational ownership",
+      "at": [
+        { "step": "Reveal: the six axes" },
+        { "step": "Reveal: walking the six axes on the shop's own corpus" },
+        { "step": "Reveal: the same procedure on a different corpus" }
+      ]
+    },
+    {
+      "clause": "not by benchmark marketing",
+      "at": [
+        { "step": "Reveal: the dedicated engines" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pgvector — GitHub README",
+      "items": [
+        { "item": "pgvector describes itself as open-source vector similarity search for Postgres", "at": [{ "step": "Reveal: pgvector and pgvectorscale" }] },
+        { "item": "HNSW has better query performance than IVFFlat but slower build times and uses more memory", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "pgvectorscale — GitHub README (Timescale)",
+      "items": [
+        { "item": "pgvectorscale complements pgvector and introduces StreamingDiskANN, inspired by Microsoft's DiskANN research", "at": [{ "step": "Reveal: pgvector and pgvectorscale" }] }
+      ]
+    },
+    {
+      "source": "Milvus — GitHub README",
+      "items": [
+        { "item": "Milvus is built for scale, able to handle tens of thousands of search queries on billions of vectors by scaling horizontally", "at": [{ "step": "Reveal: the dedicated engines" }] }
+      ]
+    },
+    {
+      "source": "Qdrant — GitHub README",
+      "items": [
+        { "item": "Qdrant is tailored for extended filtering support and is written in Rust", "at": [{ "step": "Reveal: the dedicated engines" }] }
+      ]
+    },
+    {
+      "source": "Weaviate documentation — Hybrid search",
+      "items": [
+        { "item": "hybrid search combines a vector search and a keyword (BM25F) search by fusing the two result sets", "at": [{ "step": "Reveal: the dedicated engines" }] }
+      ]
+    },
+    {
+      "source": "Pinecone — How Pinecone Works",
+      "items": [
+        { "item": "Pinecone's current architecture is serverless, built on object storage with decoupled storage and compute; pods are its legacy architecture", "at": [{ "step": "Reveal: the dedicated engines" }] }
+      ]
+    },
+    {
+      "source": "Encore — Best Vector Databases in 2026 (independent, dated 9 March 2026)",
+      "items": [
+        { "item": "pgvector is the default recommendation for teams already running Postgres, avoiding a second data store's operational complexity", "at": [{ "deep": "Frontier" }] },
+        { "item": "a dedicated engine becomes the better choice once a workload exceeds what a single Postgres instance handles comfortably", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's two teams are not an arbitrary pair of examples; they sit near opposite ends of nearly every one of the six axes at once (size, tenancy, operational preference), which is precisely why a single ranked list of vector databases cannot serve both without one of them silently sacrificing something.", "at": [{ "step": "Hook" }] },
+      { "item": "Framing the six axes as criteria to walk through in order, rather than scores to sum, matters because the axes are not commensurable: no numeric combination of \"corpus size\" and \"operational ownership\" produces a meaningful total, so any procedure that tries to score-and-rank them is making up precision it doesn't have.", "at": [{ "step": "Reveal: the six axes" }] },
+      { "item": "The instruction to treat every vendor-published number as \"that vendor's own benchmark\" is not vendor-hostile skepticism; it is the same discipline this course already taught for reading any benchmark's method before trusting its headline figure (topic 6), applied here to a comparison across vendors instead of within one.", "at": [{ "step": "Reveal: the dedicated engines" }] },
+      { "item": "pgvectorscale's relationship to pgvector (complement, not replacement) matters operationally: a team adopting pgvectorscale for its disk-backed index is not switching away from pgvector's own HNSW/IVFFlat indexes, which remain available on the same extension for smaller tables.", "at": [{ "deep": "Internals" }] },
+      { "item": "The lakehouse-native \"no separate database\" option is the one choice on this topic's list that is not really competing on the same axes as the rest; its selling point is organizational (no new system to operate at all) rather than a position on corpus size, filtering or tenancy, which is why CHAPTER.md names it last and separately from the four dedicated engines.", "at": [{ "step": "Reveal: search engines and lakehouse-native options" }] },
+      { "item": "Walking the six-axis procedure twice, on two different corpora, is the actual proof this topic offers that the procedure is not secretly a lookup table with \"small corpus equals pgvector\" baked in — a third corpus (mid-size, managed-preference) in this topic's own examples.py lands on neither of the first two answers, confirming the procedure is sensitive to more than size alone.", "at": [{ "deep": "Lab" }] },
+      { "item": "This topic deliberately excludes every specific latency or recall number found during research, including several that appeared in multiple blog posts and therefore looked credible by repetition alone — repetition across uncredentialed sources is not independent confirmation, and CHAPTER.md's scope line asks for exactly this restraint.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The independent comparison write-up is cited for agreeing with this topic's own, separately-derived procedure, not as the source of that procedure — if the write-up disagreed with the six-axis walkthrough's conclusion on the shop's corpus, the topic's own procedure would still stand on its own reasoning, not on the write-up's authority.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Chapter 5's storage-engine vocabulary (not yet live) is referenced only in prose here, as CHAPTER.md specifies, because pgvector's \"index built in place inside the same database\" trade-off is easiest to place against B-tree/LSM vocabulary a reader may not have encountered yet in this course's own build order.", "at": [{ "step": "Reveal: pgvector and pgvectorscale" }] },
+      { "item": "The syllabus explicitly asks this topic to decide \"not by benchmark marketing,\" which this topic satisfies two ways at once: by refusing to repeat any vendor's own comparative number, and by making the Prove It step's correct answer be about epistemic caution toward a vendor's benchmark specifically, not a factual claim about any one vendor.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
