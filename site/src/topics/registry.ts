@@ -4812,4 +4812,33 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'Every topic so far produced a piece of a design: an SLO, an estimate, a shape, a layout, an engine, a correctness plan, a failure table, a cost. The last method topic is the skill of putting them in front of someone and defending them: stating the alternatives, recording the decision, and saying what would change your mind.',
   },
+  {
+    id: 'de.trade-off-articulation-decision',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/trade-off-articulation-decision',
+    title: 'Trade-off articulation and decision records',
+    syllabusTitle: 'Trade-off articulation and decision records',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['three-alternatives-with-costs', 'adr-with-change-our-mind', 'ten-x-next-bottleneck', 'design-session-pacing'],
+    uses: [
+      'ask-to-slo-translation',
+      'capacity-estimate-chain',
+      'data-flow-shape-decision',
+      'layout-from-dominant-access-path',
+      'engine-choice-by-state-latency-skill',
+      'failure-table-blast-radius',
+      'cost-waterfall-dominant-lever',
+      'data-contract-specification',
+    ],
+    declared: [],
+    bridge:
+      'Every topic so far produced a piece of a design: an SLO, an estimate, a shape, a layout, an engine, a correctness plan, a failure table, a cost. This topic is the skill of putting them in front of someone and defending them: stating the alternatives, recording the decision, and saying what would change your mind.',
+    handoff:
+      'The method assumed the requirements were already known. They never are. They live in other people\'s heads, and the right questions decide how good the design can be. The next topic is where that starts: asking the source of the data what it really sends.',
+  },
 ];
