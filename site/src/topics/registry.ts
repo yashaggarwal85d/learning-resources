@@ -4627,6 +4627,26 @@ export const TOPICS: TopicMeta[] = [
       "Every mechanism in this section so far assumed replicas and shards stay in sync and agree on membership changes without a formal protocol for it. The next topic is that protocol: consensus.",
   },
   {
+    id: 'de.consensus-inside-data-systems',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/consensus-inside-data-systems',
+    title: 'Consensus inside data systems',
+    syllabusTitle: 'Consensus inside data systems',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['consensus-raft-paxos-in-systems'],
+    uses: ['two-phase-commit', 'cap-pacelc'],
+    declared: [],
+    bridge:
+      "Every mechanism in this section so far assumed replicas and shards stay in sync and agree on membership changes without a formal protocol for it. This topic is that protocol: where Raft and Paxos actually run inside a real data stack, what a commit costs in round trips, and what losing quorum looks like operationally.",
+    handoff:
+      "Every mechanism in this section — replication, partitioning, consensus — is a building block. The next topic closes the section by showing a real system (Spanner's pattern) built from all of them at once.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
