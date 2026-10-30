@@ -1,0 +1,66 @@
+{
+  "topic": "de.text-interchange-formats-their",
+  "steps": [
+    {
+      "lines": [
+        "Here's a value nobody thinks to worry about: somebody's own name.",
+        "A customer named Smith, comma, John lands in an export exactly where a column boundary could be, and a reader that just splits on every comma it sees counts four columns where there are really only three.",
+        "The reader isn't broken. It's doing exactly what it was told to do, split on every comma, and that instruction turns out to be the wrong one."
+      ]
+    },
+    {
+      "lines": [
+        "Quoting that field fixed the comma, so it's tempting to think quoting just solves everything that could trip up a reader.",
+        "Here's a second field, this time with a quote mark living inside it.",
+        "Does wrapping it in quotes handle that too, or does an embedded quote need some rule all its own?"
+      ],
+      "answer": [
+        "Quoting really did solve the comma, and that's exactly what makes this tempting.",
+        "But quoting only tells a reader where a field starts and ends. It says nothing about a quote mark that shows up inside the field itself.",
+        "That's a second, completely separate rule, and it's what we look at next."
+      ]
+    },
+    {
+      "lines": [
+        "If you've written code in almost any other language, your instinct here is a backslash, escape the quote the way you would in a string literal.",
+        "Try that in a plain text table and watch what a correct reader actually does with it: it reads back wrong, because a backslash means nothing special to this format at all.",
+        "The one rule this format actually has looks stranger but is far simpler: write the quote twice in a row, and that's the whole escape mechanism."
+      ]
+    },
+    {
+      "lines": [
+        "Every line based tool you've ever used treats a line break as the end of something, a text editor's own line count, a naive reader, all of them.",
+        "A properly quoted field breaks that assumption completely: a street address spanning two physical lines is still one single field, one single record.",
+        "Split on the line break instead of actually parsing the quotes, and you don't get an error. You get a silently wrong record count."
+      ]
+    },
+    {
+      "lines": [
+        "Ask yourself, for a second, whether a number with this many digits sitting plainly in a file could possibly come back wrong. It looks completely exact.",
+        "Nothing in the file changes. The bytes on disk never move. What changes is the choice a reader makes about how to hold that number in memory.",
+        "A parser that keeps every digit exact hands it back untouched. A parser that stores it the way most languages store a number by default hands you back a value one smaller, with no warning at all."
+      ]
+    },
+    {
+      "lines": [
+        "Open this file in a plain text editor and you will see nothing wrong with it at all. It looks like an ordinary, well formed object.",
+        "The problem lives in a few bytes before the text even starts, bytes your editor doesn't bother showing you, that exist purely to signal which encoding the file is in.",
+        "A reader that doesn't know to skip that signal treats it as the file's actual first character, and the very first thing it expects to see is already wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Every single trap you just watched traces back to the same missing piece: none of these formats carries a type, or a schema, anywhere in the file itself.",
+        "A reader has to guess the structure every single time it opens one, which is exactly the guessing that broke in five different ways just now.",
+        "That's the real reason none of them is where data actually lives. They're a doorway data passes through, not a place it stays."
+      ]
+    },
+    {
+      "lines": [
+        "Five readers, each one confidently doing exactly what it was told, and each one wrong in its own way: a comma, a quote, a line break, a number, an invisible signature.",
+        "Every fix was the same shape too: stop guessing the structure, and actually parse it the way the format's own rule says to.",
+        "Underneath every one of these files is still a row of values. Whether that row is stored a row at a time or a column at a time is the very next question."
+      ]
+    }
+  ]
+}

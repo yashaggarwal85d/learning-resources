@@ -1,0 +1,57 @@
+{
+  "topic": "de.lamport-clocks-happens-before",
+  "syllabus": [
+    {
+      "clause": "the happens-before partial order",
+      "at": [{ "step": "Reveal: happens-before, three conditions and nothing more" }]
+    },
+    {
+      "clause": "scalar logical clocks and the clock condition",
+      "at": [{ "step": "Reveal: a counter, incremented and advanced past every message it sees" }, { "deep": "Internals: the three conditions and the clock condition's proof sketch" }]
+    },
+    {
+      "clause": "a scalar clock yields a total order consistent with causality",
+      "at": [{ "step": "Reveal: a definite order for everyone, by breaking ties on who you are" }]
+    },
+    {
+      "clause": "but cannot tell you whether two events were concurrent",
+      "at": [{ "step": "Reveal: the one question that single line cannot answer" }, { "step": "Hook: three services, three disagreeing clocks, and one log that must get the order right" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Time, Clocks, and the Ordering of Events in a Distributed System (Lamport, CACM 1978)",
+      "items": [
+        { "item": "the happens-before definition's three conditions and concurrency as its negation both ways", "at": [{ "step": "Reveal: happens-before, three conditions and nothing more" }] },
+        { "item": "the Clock Condition and the IR1/IR2 implementation rules that guarantee it", "at": [{ "step": "Reveal: a counter, incremented and advanced past every message it sees" }] },
+        { "item": "the tie-broken total order construction using an arbitrary total order of process identifiers", "at": [{ "step": "Reveal: a definite order for everyone, by breaking ties on who you are" }] },
+        { "item": "the resource-scheduling (mutual exclusion) algorithm built on the total order", "at": [{ "out": "named in CHAPTER.md as not built; this topic teaches the total-order construction it relies on, not the scheduling algorithm itself" }] },
+        { "item": "the Strong Clock Condition and the phone-call anomalous-behavior example", "at": [{ "deep": "Internals: the three conditions and the clock condition's proof sketch" }] }
+      ]
+    },
+    {
+      "source": "Physical clocks and why they lie — internal cross-reference (topic 2)",
+      "items": [
+        { "item": "reuse of clock-drift-ntp-error and last-write-wins-clock-hazard as the hook's motivating failure mode, with no new claim from topic 2's own sources", "at": [{ "step": "Hook: three services, three disagreeing clocks, and one log that must get the order right" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Happens-before is the smallest relation satisfying program order within a process, a message send linked to its matching receipt, and transitivity; it is a strict partial order (irreflexive).", "at": [{ "step": "Reveal: happens-before, three conditions and nothing more" }] },
+      { "item": "Two events are concurrent exactly when neither happens-before the other; concurrency is a defined third relationship, not an absence of information.", "at": [{ "step": "Reveal: happens-before, three conditions and nothing more" }] },
+      { "item": "A scalar (Lamport) logical clock is a per-process counter incremented between events (IR1) and advanced past every incoming message's timestamp on receipt (IR2).", "at": [{ "step": "Reveal: a counter, incremented and advanced past every message it sees" }] },
+      { "item": "The Clock Condition (a happens-before b implies C(a) is less than C(b)) follows from IR1 and IR2 and holds regardless of real clock behavior, since scalar clocks never read a physical clock.", "at": [{ "step": "Reveal: the same guarantee, however badly a physical clock would have disagreed" }] },
+      { "item": "The converse of the Clock Condition does not hold: a smaller timestamp never implies happens-before, so two concurrent events can still receive comparable, meaningless-for-causality timestamps.", "at": [{ "step": "Reveal: the one question that single line cannot answer" }] },
+      { "item": "Breaking ties on equal scalar timestamps with any fixed total order of process identifiers extends happens-before to a genuine total order that never contradicts it.", "at": [{ "step": "Reveal: a definite order for everyone, by breaking ties on who you are" }] },
+      { "item": "The total order this construction yields is not unique; different valid clock systems satisfying the Clock Condition can yield different total orders, and only the underlying partial order is uniquely determined by the system's events.", "at": [{ "deep": "Internals: the three conditions and the clock condition's proof sketch" }] },
+      { "item": "The total order can be used to solve synchronization problems such as mutual exclusion over a shared resource, because it gives every request a definite, causality-respecting place in line.", "at": [{ "deep": "Internals: the three conditions and the clock condition's proof sketch" }] },
+      { "item": "Anomalous behavior occurs when the algorithm's total order disagrees with a precedence relation that exists outside the system's own observable events (Lamport's own phone-call example); this is fixed either by carrying the external precedence information into the system, or by using sufficiently well-synchronized physical clocks (the Strong Clock Condition).", "at": [{ "deep": "Internals: the three conditions and the clock condition's proof sketch" }] },
+      { "item": "A scalar clock cannot detect concurrency after the fact: it compresses a partial order into a total one, which is exactly the information a vector clock preserves instead.", "at": [{ "deep": "Frontier: from one number to detecting concurrency" }] },
+      { "item": "Hybrid logical clocks combine a scalar logical-clock-style counter with a physical-time component to get a monotonic, causality-respecting timestamp that also stays close to real time; this is a distinct, more recent mechanism not covered by Lamport's 1978 construction.", "at": [{ "out": "a *(skipped)* syllabus topic; named only in CHAPTER.md's framing, not taught in this topic" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

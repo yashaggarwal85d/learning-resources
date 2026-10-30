@@ -1,0 +1,9 @@
+- **Personal data**: any information relating to an identified or identifiable person (GDPR Art. 4). *Where you meet it:* the category label every tier/category pair carries.
+- **PII**: personally identifiable information — the general-purpose category for personal data. *Where you meet it:* `customers.email`, the running example throughout.
+- **PHI**: protected health information, a GDPR "special category" under stricter default rules. *Where you meet it:* named alongside PII and PCI as a category this topic's scheme distinguishes.
+- **PCI**: payment-card data — card numbers and the fields that accompany them. *Where you meet it:* the Luhn-checksummed card numbers the pattern scanner detects.
+- **Regular expression**: a pattern that matches a shape of text. *Where you meet it:* "Reveal: pattern and checksum detection," the first discovery technique.
+- **Checksum (Luhn)**: an arithmetic check that a sequence of digits is internally consistent. *Where you meet it:* the same reveal, as the second half of the structured-column scanner.
+- **Precision and recall**: precision is how many of the matches found were real; recall is how many of the real ones were found. *Where you meet it:* measured for both structured columns and free text.
+- **False negative**: a real instance of sensitive data the scanner missed entirely. *Where you meet it:* "Reveal: false negatives in free text, measured."
+- **Free text**: an unstructured text column, like a support note, as opposed to a column with a known shape. *Where you meet it:* the hook, and the topic's own worked miss-rate measurement.

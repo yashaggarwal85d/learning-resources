@@ -1,0 +1,84 @@
+{
+  "topic": "de.idempotent-tasks-failure-semantics",
+  "syllabus": [
+    {
+      "clause": "tasks run at-least-once (retries, zombie/orphaned tasks, heartbeats)",
+      "at": [
+        { "step": "Reveal: at-least-once, not exactly-once" },
+        { "step": "Reveal: zombies, by the book" }
+      ]
+    },
+    {
+      "clause": "idempotency through deterministic, interval-keyed outputs (partition overwrite, not append)",
+      "at": [
+        { "step": "Reveal: overwrite vs append, measured" }
+      ]
+    },
+    {
+      "clause": "retryable vs non-retryable errors and backoff",
+      "at": [
+        { "step": "Predict: does a timeout retry like a data error?" },
+        { "step": "Reveal: timeouts and the retry budget" }
+      ]
+    },
+    {
+      "clause": "task-level vs run-level failure",
+      "at": [
+        { "step": "Reveal: trigger rules, run for real" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "trigger rules and upstream_failed propagation",
+      "at": [
+        { "step": "Reveal: trigger rules, run for real" }
+      ]
+    },
+    {
+      "clause": "timeouts",
+      "at": [
+        { "step": "Reveal: timeouts and the retry budget" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Tasks (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "task-instance states include upstream_failed and up_for_retry as distinct terminal/transitional states", "at": [{ "step": "Reveal: trigger rules, run for real" }] },
+        { "item": "execution_timeout bounds every task's runtime, including sensors, and raises AirflowTaskTimeout", "at": [{ "step": "Reveal: timeouts and the retry budget" }] },
+        { "item": "default retry behaviour is a fixed count and delay regardless of error type; a retry policy customises per-exception behaviour", "at": [{ "step": "Predict: does a timeout retry like a data error?" }] },
+        { "item": "a zombie task is a task instance stuck running despite its worker being gone, found via a missed heartbeat", "at": [{ "step": "Reveal: zombies, by the book" }] },
+        { "item": "the documented local heartbeat-timeout reproduction recipe (three scheduler config values, a long-running task)", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Dags, Trigger Rules (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "the default trigger rule is all_success; an unoverridden downstream task becomes upstream_failed when a needed upstream task fails", "at": [{ "step": "Reveal: trigger rules, run for real" }] },
+        { "item": "one_failed runs a task specifically because an upstream task failed, without waiting for every upstream task to finish", "at": [{ "step": "Reveal: trigger rules, run for real" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "'Retried' in Airflow's own logs doesn't mean 'ran once cleanly, then ran again' — the first attempt may have already written its output before the heartbeat was lost, which is exactly why idempotency is a property of the task's write, not of the retry mechanism.", "at": [{ "step": "Reveal: at-least-once, not exactly-once" }] },
+      { "item": "upstream_failed and skipped are two genuinely distinct terminal states in Airflow's own state machine, not two names for the same thing — skipped comes from branching/LatestOnly logic, upstream_failed specifically means the trigger rule needed an upstream task that failed; this topic's own executed demo lands on upstream_failed precisely because no branching operator is involved.", "at": [{ "step": "Reveal: trigger rules, run for real" }] },
+      { "item": "This topic's own idempotency demo (overwrite stays at three rows across two runs, append doubles to six) is deliberately the simplest possible version of Chapter 8 topic 6's general exactly-once-effect recipe, applied at the orchestrator's own task-retry scale rather than at the extractor scale that chapter taught it at.", "at": [{ "step": "Reveal: overwrite vs append, measured" }] },
+      { "item": "The heartbeat-timeout ('zombie') mechanism is sourced directly from Airflow's own documentation, including its exact reproduction recipe, but was not independently reproduced live in this session — a real reproduction needs a persistent scheduler process heartbeating over real wall time, and this sandbox's airflow standalone command failed on an internal subprocess PATH issue; the fact-check and post-notes both disclose this rather than claiming a live measurement that didn't happen.", "at": [{ "step": "Reveal: zombies, by the book" }] },
+      { "item": "Retrying a non-retryable error (a malformed row, say) isn't neutral — it's actively worse than failing fast, because it spends the retry budget and delays the point at which a human finds out the real problem, which is exactly backoff's own blind spot when every error is treated the same.", "at": [{ "step": "Reveal: timeouts and the retry budget" }] },
+      { "item": "This topic's own 'Prove it' answer (check the heartbeat before assuming a long-running task is healthy) follows directly from the zombie mechanism two steps earlier: a scheduler genuinely cannot distinguish 'still working' from 'silently dead' except through the heartbeat it's designed to watch.", "at": [{ "step": "Prove it" }] },
+      { "item": "A reader who has only ever used retries as a blanket safety net may not realise Airflow's own retry policies let different exceptions get different actions (RETRY, FAIL, DEFAULT) in one declared policy — the next topic's backfill discussion assumes this per-error distinction is already available, not something to re-derive.", "at": [{ "deep": "Frontier" }] },
+      { "item": "'At-least-once' is a guarantee about the task, not about the data interval it processes — a task instance can be rerun any number of times, but the interval it owns is fixed by the DAG's schedule, which is why keying an output to the interval (not to 'this particular run') is what actually makes a retry harmless.", "at": [{ "step": "Reveal: overwrite vs append, measured" }] },
+      { "item": "execution_timeout is a per-task ceiling, not a retry mechanism in itself — a task that times out still goes through the same retries/up_for_retry logic as any other failure, so a timeout alone doesn't change how many attempts a task gets, only how long each attempt is allowed to run.", "at": [{ "step": "Reveal: timeouts and the retry budget" }] },
+      { "item": "The three real task states this topic reads back from the metadata database (failed, upstream_failed, success) are the actual terminal states Airflow persists, not a simplification for teaching purposes — the demo's assertion on those exact strings is checking the real state machine, not a stand-in for it.", "at": [{ "step": "Reveal: trigger rules, run for real" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

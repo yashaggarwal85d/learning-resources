@@ -1,0 +1,8 @@
+- **Symmetric vs asymmetric encryption**: one shared key for both directions versus a public/private key pair. *Where you meet it:* the DEK/KEK hierarchy uses symmetric keys throughout.
+- **Ciphertext**: data after encryption, unreadable without the key. *Where you meet it:* every data block in the key-ladder visual.
+- **Key wrapping**: encrypting one key with another. *Where you meet it:* "Reveal: the DEK/KEK hierarchy," the KEK wrapping the DEK.
+- **KMS**: key management service — the system that generates, stores and uses KEKs on your behalf. *Where you meet it:* throughout; it's what "never sees the data" in this topic's own thesis.
+- **HSM**: hardware security module, a tamper-resistant device a KMS often uses to hold key material. *Where you meet it:* named in the vendor sources as what actually performs a wrap/unwrap.
+- **Certificate**: a signed statement binding a public key to an identity. *Where you meet it:* "Reveal: TLS and mTLS," what each side of a connection presents.
+- **TLS**: the protocol that encrypts and authenticates a connection in transit. *Where you meet it:* "Reveal: TLS and mTLS — the wire, not the disk."
+- **Hash**: a one-way function with collision resistance (from the *Data Structures & Algorithms* track). *Where you meet it:* named only in passing, as background for how a wrapped key's integrity can be checked; not this topic's own subject.
