@@ -4787,6 +4787,26 @@ export const TOPICS: TopicMeta[] = [
       "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
   },
   {
+    id: 'de.object-storage-semantics-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/object-storage-semantics-data',
+    title: 'Object storage semantics for data engineers',
+    syllabusTitle: 'Object storage semantics for data engineers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['object-store-consistency-guarantee', 'conditional-write-compare-swap', 'prefix-throttling-hot-key'],
+    uses: ['failure-domain-blast-radius'],
+    declared: ['basic-http', 'object-storage-vocabulary'],
+    bridge:
+      "That map called object storage 'regional,' which sounds safe, but safety here means something exact — not 'the bytes survive,' but 'what does a read see right after a write, and what can two writers actually coordinate on, using only the store itself.'",
+    handoff:
+      'A conditional write protects one key. It says nothing about how long that byte should even exist, or what it costs to keep it — which is the next question.',
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',

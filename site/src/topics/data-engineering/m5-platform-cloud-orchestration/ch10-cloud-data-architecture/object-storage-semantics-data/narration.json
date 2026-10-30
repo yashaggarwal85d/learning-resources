@@ -1,0 +1,75 @@
+{
+  "topic": "de.object-storage-semantics-data",
+  "steps": [
+    {
+      "lines": [
+        "Watch two clients do the exact same cautious thing. Each one checks whether a key exists, sees nothing there, and decides it is safe to write.",
+        "Both writes go through. Neither one is refused. No exception reaches either client.",
+        { "beat": 0.3 },
+        "And yet one of those two writes is simply gone, replaced without a trace by the other. That silence is the whole problem this topic exists to fix."
+      ]
+    },
+    {
+      "lines": [
+        "Pause here and think it through before I give it away. Both of those writes succeeded a moment ago.",
+        "What single guarantee, if the store already had it, would have made one of those two writes fail instead of quietly losing data?"
+      ],
+      "answer": [
+        "A write tied to a condition on the key, not stronger consistency. Consistency only decides what a later read sees; it was never about whether a second write gets to happen at all.",
+        "A client that reads first and writes second still leaves a gap between those two steps, no matter how fresh that first read was.",
+        "The only thing that closes that gap is a check the store itself performs at the exact moment it writes, which is a different mechanism entirely from consistency."
+      ]
+    },
+    {
+      "lines": [
+        "Now place a real date on something people still half-remember as a limitation. Before the end of twenty twenty, a listing taken right after a write could still miss that write.",
+        "Since then, that gap is closed automatically, for every customer, at no extra charge.",
+        { "beat": 0.3 },
+        "Notice what did not need fixing. Reading the one key you just wrote was never the hard case here; it is listing a whole prefix right after changing it that used to need a workaround."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a distinction that trips up almost everyone the first time. Writing to one key is atomic, full stop; a second reader either sees all of the new bytes or none of them.",
+        "Renaming, though, was never one operation. It has always been a copy to the new key, followed by a separate delete of the old one, with a real window between those two calls.",
+        { "beat": 0.3 },
+        "A hierarchical namespace, the kind Azure's data lake storage offers, buys that guarantee back by updating a single directory entry instead of touching every file underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same conditional check and point it somewhere useful. Write a key only if nothing is there yet, and you have just built an append-only log with no coordinator and no shared database.",
+        "Write a key only if its current tag still matches what you last saw, and you have just built a lease that nobody can silently steal from its current holder.",
+        { "beat": 0.3 },
+        "Both of those checks run inside the store itself, the instant the write happens, which is exactly why neither client ever has to coordinate with the other directly."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a limit that catches people who assumed a bucket has one single speed limit for everything in it. The limit actually lives on the key prefix, not on the bucket as a whole.",
+        "Hammer one narrow prefix past its own baseline, and a share of those requests come back told to slow down, even while the rest of that same bucket sits almost idle.",
+        { "beat": 0.3 },
+        "Spread that exact same traffic across several prefixes instead, and the slowdown disappears completely, because each prefix is now well under its own separate limit."
+      ]
+    },
+    {
+      "lines": [
+        "Four things to carry forward. A read or a listing right after a write has been immediately accurate since the end of twenty twenty.",
+        "One key is atomic on its own; a rename across two keys never is, unless the store itself has a real directory hierarchy underneath it.",
+        "A conditional write is a genuine compare and swap, enforced by the store rather than trusted to the client.",
+        { "beat": 0.3 },
+        "And a busy prefix throttles on its own, no matter how quiet the rest of the bucket is. What comes next is everything still missing once you only have those two primitives to build with."
+      ]
+    },
+    {
+      "lines": [
+        "One more to work out yourself before we move on. A client is holding a tag it read several writes ago, and two other writers have each changed that same key since then, without that client knowing.",
+        "Now that client finally tries its own conditional write, using the old tag it has been carrying around. Accepted, rejected, or does it depend on something you have not been told yet?"
+      ],
+      "answer": [
+        "Rejected, and for a very specific reason: the store compares the condition against the key's current tag at this exact instant, never against whatever a client happened to remember from before.",
+        "Two writes have landed since that client last looked, so the tag it is holding is already stale, and the precondition simply fails."
+      ]
+    }
+  ]
+}
