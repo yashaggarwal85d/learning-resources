@@ -1,0 +1,77 @@
+{
+  "topic": "de.inference-logging-log-wait",
+  "syllabus": [
+    {
+      "clause": "logging the exact feature vector and model version at serving time",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Reveal: the logging mechanism" }
+      ]
+    },
+    {
+      "clause": "joining to delayed labels to build training sets that are skew-free by construction",
+      "at": [
+        { "step": "Reveal: log-and-wait, the join" }
+      ]
+    },
+    {
+      "clause": "shadow/canary capture",
+      "at": [
+        { "step": "Reveal: shadow vs. canary, placed" }
+      ]
+    },
+    {
+      "clause": "storage cost and PII in logged payloads",
+      "at": [
+        { "step": "Predict: storage cost" },
+        { "step": "Reveal: storage cost, measured" },
+        { "step": "Reveal: PII and retention" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Rules of Machine Learning (Google for Developers)",
+      "items": [
+        { "item": "Rule #29: save the set of features used at serving time and pipe them to a log for training", "at": [{ "step": "Reveal: the logging mechanism" }] },
+        { "item": "even a sampled fraction of logged traffic is enough to verify training/serving consistency; YouTube's home page adopted this with measured quality gains", "at": [{ "deep": "Production failures this topic warns about" }] }
+      ]
+    },
+    {
+      "source": "7. Continuous deployment (AWS Prescriptive Guidance, MLOps checklist)",
+      "items": [
+        { "item": "a continuously deployed ML system has at least one promotion strategy: canary, shadow, blue/green, or A/B", "at": [{ "deep": "Frontier" }] },
+        { "item": "a canary sends a small, growing portion of real traffic to the new model, closely monitored", "at": [{ "step": "Reveal: shadow vs. canary, placed" }] },
+        { "item": "a shadow deployment sends the new model the same real traffic, but only the existing model's output is ever served", "at": [{ "step": "Reveal: shadow vs. canary, placed" }] }
+      ]
+    },
+    {
+      "source": "Create and Manage Datasets (Tecton documentation)",
+      "items": [
+        { "item": "Feature Services can continuously log online requests and served feature vector responses into a reusable dataset", "at": [{ "deep": "Internals" }] },
+        { "item": "feature logging is enabled per Feature Service with a configurable sample rate, not an all-or-nothing default", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Logging and a feature store solve different halves of the same problem: the store guarantees one definition reaches both code paths going forward, while logging proves after the fact what a specific past request actually saw — neither one makes the other unnecessary.", "at": [{ "step": "Reveal: the logging mechanism" }] },
+      { "item": "The log point's placement is the entire mechanism: logging the raw input would reproduce topic 2's different-code-path risk at training time (whoever rebuilds the feature from the raw input might do it differently), so the log point has to sit after the transformation, capturing the value nothing downstream can recompute differently.", "at": [{ "step": "Reveal: the logging mechanism" }] },
+      { "item": "\"Skew-free by construction\" is a narrower claim than \"this training set has no problems\" — it rules out exactly one of topic 2's three causes (different code path), by removing the second code path entirely; a wrong join or a stale value could still have been logged in the first place, if the serving code itself had one of those bugs upstream of the log point.", "at": [{ "step": "Reveal: log-and-wait, the join" }] },
+      { "item": "Shadow and canary are often described as alternatives, but they answer different questions: shadow asks whether a new model's predictions look reasonable against real traffic with zero risk, while canary asks whether real users respond well to a new model's actual decisions — a team typically runs shadow first and canary second, not either instead of the other.", "at": [{ "step": "Reveal: shadow vs. canary, placed" }] },
+      { "item": "A sample rate on feature logging (Tecton's own configurable option) is itself a design choice with a trade-off this topic's storage-cost math makes visible: halving the sample rate halves the storage bill but also halves how many of a rare skew's occurrences the log will ever capture.", "at": [{ "deep": "Internals" }] },
+      { "item": "The storage-cost estimate in this topic isn't a one-time number — because it compounds with retention, the same logging setup costs roughly twice as much at a year's retention as it does at six months, which is exactly why a retention policy is a cost control, not only a privacy control.", "at": [{ "step": "Reveal: storage cost, measured" }] },
+      { "item": "Redacting a customer id assumes identity lives in one field; in practice, a handful of ordinary-looking numeric features (order counts, account age, an average order value) can jointly narrow a population down to one row, which is why this topic measures re-identification risk directly instead of trusting that removing the 'obviously' sensitive field is sufficient.", "at": [{ "step": "Reveal: PII and retention" }] },
+      { "item": "This topic's own measured re-identification rate (effectively every simulated row unique across its remaining fields) is itself evidence that a feature vector's width works against anonymity: more features mean more ways to narrow down to one person, even with the most obviously identifying field removed.", "at": [{ "deep": "Lab" }] },
+      { "item": "Logging as an asynchronous side-channel write (rather than a synchronous append) matters because it decouples the serving path's latency from the logging pipeline's own reliability — if logging had to succeed before a response could return, a logging outage would become a serving outage, which defeats the entire point of adding observability.", "at": [{ "deep": "Internals" }] },
+      { "item": "A logging pipeline's sample rate silently dropping to zero is a failure mode specific to this mechanism and easy to miss precisely because nothing about serving itself breaks — requests keep succeeding, predictions keep returning, and the only symptom is an absence (an empty or shrinking dataset) that nothing alerts on unless someone explicitly checks for it.", "at": [{ "deep": "Production failures this topic warns about" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
