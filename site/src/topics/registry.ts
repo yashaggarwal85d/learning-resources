@@ -4546,4 +4546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.failure-domains-regions-zones',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
+    title: 'Failure domains: regions, zones, cells',
+    syllabusTitle: 'Failure domains: regions, zones, cells',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['failure-domain-blast-radius'],
+    uses: [],
+    declared: ['cloud-basics'],
+    bridge:
+      'Milestones 1-4 built correct pipelines without asking where they run. This chapter is that question, starting with the most basic one: when a piece of the cloud disappears, how much of the system goes with it?',
+    handoff:
+      "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
+  },
 ];

@@ -1,0 +1,75 @@
+{
+  "topic": "de.failure-domains-regions-zones",
+  "steps": [
+    {
+      "lines": [
+        "Here is the asymmetry that matters. One zone in a cloud provider's network goes dark.",
+        "A single-zone database answers nothing for the whole length of that outage.",
+        {
+          "beat": 0.3
+        },
+        "Right beside it, an object store and a streaming cluster never even notice. Nobody touched a setting during the outage itself.",
+        "The outcome was decided weeks earlier, by how each of those three services was built and configured. That decision is this whole refresher."
+      ]
+    },
+    {
+      "lines": [
+        "Try this one before I answer it. The zone holding all three of these just failed.",
+        "A block volume, a database pinned to one zone, and a bucket in a regional object store.",
+        {
+          "beat": 0.3
+        },
+        "Which one keeps answering reads the instant after the failure?"
+      ],
+      "answer": [
+        "The object store. It is a regional service, and the provider already keeps copies of that data outside the zone that just failed.",
+        "The block volume and the single-zone database both live in exactly one zone, so they go down with it.",
+        "Notice the trap: all three were drawn next to the same failed zone. Being drawn there is not the same as being hosted there, and that confusion is the one this refresher exists to clear up."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the habit of mind that matters more than any single fact on this screen. Never ask whether the cloud, in general, protects you from a zone failure. Ask it one service at a time.",
+        "Some answers are a fact about the product, fixed from the start, and no setting changes them. Other answers are a choice somebody has to actually make, usually by ticking a box on a pricing tier, and the box is unticked by default more often than people expect.",
+        {
+          "beat": 0.3
+        },
+        "The dangerous case is not the service that is obviously fragile. It is the service that looks like it should be safe, that most people assume is safe, and that was quietly left on its cheaper, single-zone setting.",
+        "What should reassure you instead is that this is not folklore specific to one company. Open the documentation of any major cloud provider, and the same three-way split appears, independently confirmed, almost word for word."
+      ]
+    },
+    {
+      "lines": [
+        "Now put a price on that safety. Spreading a database across zones means every write gets copied to another zone, over the network, continuously.",
+        "That copying is metered. Every gigabyte that crosses a zone boundary for replication is billed, in each direction.",
+        {
+          "beat": 0.3
+        },
+        "Picture five hundred gigabytes replicated each way, every single day. At one cent per gigabyte each direction, that is ten dollars a day, on top of whatever the storage and compute already cost.",
+        "Multiply that by a month, and redundancy has quietly become its own line item, not a free upgrade."
+      ]
+    },
+    {
+      "lines": [
+        "Now shrink the blast radius even further than a zone. Cut the whole system into many small, independent cells, say twenty of them.",
+        "Each cell has its own full copy of the application and its own storage, and a routing layer sends every customer to exactly one cell.",
+        {
+          "beat": 0.3
+        },
+        "A bad software deploy inside one cell stays inside that cell. With twenty even cells, one bad cell reaches about five percent of customers, not every customer.",
+        "That is strictly smaller than losing a whole region, and it costs more to build and operate than a single shared system would."
+      ]
+    },
+    {
+      "lines": [
+        "Three things to carry forward. Zonal, regional, or spread across zones by configuration: that is a property of the specific service, and you check it, you do not assume it.",
+        "Spreading data across zones for safety shows up on the bill, every gigabyte, every direction.",
+        "And a cell bounds a failure to a slice of customers, well below the whole region.",
+        {
+          "beat": 0.3
+        },
+        "One habit to take with you: before you hand any service your availability, go find its own documented answer to exactly which failure it promises to survive. Next, we ask the harder version of that question for storage itself: what does a read actually see the instant after a write?"
+      ]
+    }
+  ]
+}
