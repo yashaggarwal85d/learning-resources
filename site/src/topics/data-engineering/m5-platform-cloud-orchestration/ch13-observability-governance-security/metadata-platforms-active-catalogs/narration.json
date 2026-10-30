@@ -1,0 +1,81 @@
+{
+  "topic": "de.metadata-platforms-active-catalogs",
+  "steps": [
+    {
+      "lines": [
+        "A shop's data catalog last scanned everything on a Sunday.",
+        "By Wednesday, one table's been dropped, a new one's shown up, and a column's been renamed somewhere else entirely. Thursday rolls around, somebody goes looking, and finds the old table — still sitting there, confidently marked as certified."
+      ]
+    },
+    {
+      "lines": [
+        "So, to actually catch that within seconds instead of days — what does it take?",
+        "Does scanning more often close that gap on its own? Does switching over to event-based updates do it? Or does it genuinely take both? Think that through before I go on."
+      ],
+      "answer": [
+        "Scanning more often only ever shrinks that gap — it never actually closes it. However often that scan runs, there's always some window afterward where a change has happened and nobody's caught it yet.",
+        "An event-based update is a different animal entirely. It fires the instant something changes, so there's no window sitting there waiting to be caught at all."
+      ]
+    },
+    {
+      "lines": [
+        "So what is a catalog actually holding onto, underneath all of this?",
+        "A table. A column. A person. A tag. Each one of those is a single point sitting in a graph. And connections between them — someone owns this, this comes from that — those are named links drawn between two of those points.",
+        "All of that, held together in one place, and searchable."
+      ]
+    },
+    {
+      "lines": [
+        "There are really only two ways any of that information actually gets in.",
+        "One: something sweeps through a source system on a fixed schedule and reports back what it found. That's stale for exactly as long as its own schedule says, every single time, no exceptions.",
+        "Two: the source system itself fires off an update the instant something actually changes. That one's never stale at all — there's no schedule for it to wait on in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Put yourself in the shoes of somebody actually using this thing day to day. What are they even coming to it for?",
+        "Finding something — search, ranked by how much it's actually getting used. Deciding whether to trust what they found — how many people query it, who owns it, how fresh it is.",
+        "And agreeing on what something even means — a shared glossary, tied directly to the columns that carry each term."
+      ]
+    },
+    {
+      "lines": [
+        "Now, who's actually building these things?",
+        "On the open-source side: one project built around events and graphs. Another built around a shared API and schema. An open edition of a commercial catalog. And a project for the catalog layer underneath the table format itself.",
+        "On the other side, sold as finished products: a handful of commercial platforms, named here only — nothing claimed about any of them beyond what each one's own page actually says."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a distinction that's easy to blur, so let's pull it apart properly.",
+        "One kind of catalog answers a narrow, technical question: where does this table's data actually live, and who's allowed to read it?",
+        "A completely different kind of catalog answers a human one: what does this column actually mean, who owns it, has anyone signed off on it being trustworthy? Same table. Two genuinely different questions."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing worth catching, and it's a small one, but it matters.",
+        "A list describing these tools still calls one particular open-source project merely 'low-activity.' Go check that project's own page, though, and it says something considerably stronger: archived, by its own maintainers, specifically for inactivity.",
+        "The page itself is right. It's the label describing it that's gone out of date."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling all of this together.",
+        "A catalog is a graph — points for things, named links between them. Scanning on a schedule always leaves some gap; an event-driven update leaves none. Finding something, trusting it, and agreeing on what it means — those are the three jobs people actually come to it for, every day.",
+        "Open-source options exist, and so do commercial ones. A technical catalog and a business catalog answer entirely different questions. And a label describing any of this can go stale faster than the thing it's describing."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario, and there's a twist buried in this one.",
+        "Say that same shop switches its tables over to event-based updates, but its dashboards are still only getting swept once a night. A dashboard changes on a Wednesday.",
+        "Is the catalog's picture of that dashboard actually current by Thursday — or is it still sitting there stale? And why would it go one way or the other?"
+      ],
+      "answer": [
+        "Still stale. Freshness isn't some single property that applies to the whole catalog all at once — it belongs to each individual feed going into it, separately.",
+        "Switching tables over to event-based updates does absolutely nothing for dashboards. Those are still sitting there, waiting on whatever their own next scheduled sweep happens to be."
+      ]
+    }
+  ]
+}

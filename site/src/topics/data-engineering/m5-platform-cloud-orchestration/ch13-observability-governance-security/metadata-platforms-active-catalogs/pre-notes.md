@@ -1,0 +1,8 @@
+- **Metadata**: data describing data — a table's schema, its owner, when it was last updated. *Where you meet it:* throughout; it's the whole topic's subject.
+- **Catalog**: the system that stores and serves a company's metadata, searchable in one place. *Where you meet it:* the Hook, and every reveal after it.
+- **Crawler**: a process that scans a source system on a schedule and reports what it finds. *Where you meet it:* "Reveal: two ways metadata gets in."
+- **Event**: a message emitted the instant something happens, rather than discovered later by a scan. *Where you meet it:* the same reveal, as push's own mechanism.
+- **Glossary**: a shared list of business terms, each one linked to the columns that carry it. *Where you meet it:* "Reveal: the three daily jobs."
+- **Ownership**: the record of who is responsible for a dataset. *Where you meet it:* the same reveal, and again in "Reveal: two different questions, two catalogs."
+- **Asset**: anything a catalog tracks — a table, a dashboard, a column, a model. *Where you meet it:* throughout.
+- **Technical vs business metadata**: where something lives and who may read it, versus what it means and who owns it. *Where you meet it:* "Reveal: two different questions, two catalogs."

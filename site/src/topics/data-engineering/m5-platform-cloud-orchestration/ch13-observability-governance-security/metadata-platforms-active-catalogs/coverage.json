@@ -1,0 +1,75 @@
+{
+  "topic": "de.metadata-platforms-active-catalogs",
+  "syllabus": [
+    {
+      "clause": "architecture of metadata graphs: pull crawlers vs push/event-based ingestion (change-log streams), search, usage statistics, glossary",
+      "at": [
+        { "step": "Reveal: what a catalog actually stores" },
+        { "step": "Reveal: two ways metadata gets in" },
+        { "step": "Reveal: the three daily jobs" }
+      ]
+    },
+    {
+      "clause": "open source (DataHub, OpenMetadata, Unity Catalog OSS, Apache Polaris — top-level ASF project since Feb 2026 — as technical catalogs) vs enterprise (Collibra, Atlan, Alation)",
+      "at": [{ "step": "Reveal: open source and enterprise, named" }]
+    },
+    {
+      "clause": "technical vs business catalog",
+      "at": [{ "step": "Reveal: two different questions, two catalogs" }]
+    },
+    {
+      "clause": "Amundsen is now low-activity",
+      "at": [{ "step": "Reveal: a name worth retiring" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "DataHub — What is DataHub? (Concepts)",
+      "items": [
+        { "item": "An entity is the primary node in the metadata graph; a relationship is a named edge between two entities.", "at": [{ "step": "Reveal: what a catalog actually stores" }] }
+      ]
+    },
+    {
+      "source": "DataHub — Metadata Ingestion",
+      "items": [
+        { "item": "Pull-based integrations crawl data systems on a schedule; push-based integrations emit metadata directly from code as it happens.", "at": [{ "step": "Reveal: two ways metadata gets in" }] }
+      ]
+    },
+    {
+      "source": "OpenMetadata — High Level Design",
+      "items": [
+        { "item": "OpenMetadata is the integration of a core API, a UI serving layer, and an ingestion framework interfacing with external sources.", "at": [{ "step": "Reveal: open source and enterprise, named" }] },
+        { "item": "Relationships are stored as graph nodes, with the edge holding the relationship's type.", "at": [{ "step": "Reveal: what a catalog actually stores" }] }
+      ]
+    },
+    {
+      "source": "Apache Polaris — Apache Polaris Graduates to Top-Level Project",
+      "items": [
+        { "item": "Apache Polaris officially graduated from the Apache Incubator to become a Top Level Project.", "at": [{ "step": "Reveal: open source and enterprise, named" }] }
+      ]
+    },
+    {
+      "source": "Databricks — Unity Catalog",
+      "items": [
+        { "item": "Unity Catalog is Databricks' unified governance solution for data, models, agents and apps, across any cloud or platform.", "at": [{ "step": "Reveal: open source and enterprise, named" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The same graph model (entities as nodes, relationships as named edges) is what makes a catalog's search, trust and glossary features possible at all — each is a different traversal or filter over the same underlying graph, not three separate systems.", "at": [{ "step": "Reveal: what a catalog actually stores" }] },
+      { "item": "A crawl's staleness window is a direct function of its schedule, never of how good the crawler is — a smarter crawler run on the same weekly schedule still leaves the same week-long gap.", "at": [{ "step": "Reveal: two ways metadata gets in" }] },
+      { "item": "Search ranked by usage statistics is precisely what lets a catalog surface a fresher, heavily-queried table ahead of an old one that still happens to carry a 'certified' tag from before it went stale.", "at": [{ "step": "Reveal: the three daily jobs" }] },
+      { "item": "Technical catalog versus business catalog is a distinction in audience and question, not in product: a single tool like Unity Catalog or DataHub typically answers both kinds of question for different users, rather than the two being separate product categories.", "at": [{ "step": "Reveal: two different questions, two catalogs" }] },
+      { "item": "Naming Apache Polaris's graduation date alongside Amundsen's archive date makes the same point from opposite directions: both are facts a syllabus froze at authoring time that a primary source can outrun within months.", "at": [{ "step": "Reveal: a name worth retiring" }] },
+      { "item": "This topic's own catalog entry is what topic 9's proof-of-erasure and topic 13's registration flow both eventually read from — knowing where a column lives, from this topic, is a precondition for either of those, not a parallel concern.", "at": [{ "topic": "Right to erasure in immutable lakehouses", "quote": "proving deletion to an auditor", "domain": "data-engineering" }] },
+      { "item": "The tags a catalog's glossary and business metadata carry on a column are the same classification output topic 4 produces — this topic is where that classification becomes something searchable and attached to an owner, not a new classification step.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "classification schemes", "domain": "data-engineering" }] },
+      { "item": "The predict question's two scenarios (crawl-faster vs push, then tables-pushed-but-dashboards-crawled) both test the same underlying claim from different angles: staleness is a property of an integration's own update mechanism, not a single dial the whole catalog shares.", "at": [{ "step": "Prove it" }] },
+      { "item": "Naming the open-source and enterprise products without a feature claim beyond what each one's own page states is a deliberate scope limit, not an oversight: a syllabus line that only names products, rather than scoping specific claims about each, earns exactly that treatment in the topic.", "at": [{ "step": "Reveal: open source and enterprise, named" }] },
+      { "item": "Apache Polaris and Unity Catalog's open edition are both named as technical catalogs specifically because they sit on top of an open table format (Chapter 6's own subject) rather than wrapping a proprietary storage layer, which is what lets either one serve as a shared catalog across engines.", "at": [{ "step": "Reveal: open source and enterprise, named" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

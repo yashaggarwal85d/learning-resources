@@ -4945,6 +4945,24 @@ export const TOPICS: TopicMeta[] = [
       "Erasure, masking and access all depended on knowing where a column lives and where it flows. That knowledge has to live somewhere other than people's heads. The next topic opens the governance tooling, starting with the place metadata is kept: the catalog.",
   },
   {
+    id: 'de.metadata-platforms-active-catalogs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/metadata-platforms-active-catalogs',
+    title: 'Metadata platforms and active catalogs',
+    syllabusTitle: 'Metadata platforms and active catalogs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['metadata-graph-entities-relationships', 'crawl-vs-push-ingestion', 'technical-vs-business-catalog'],
+    bridge:
+      "Erasure, masking and access all depended on knowing where a column lives and where it flows. That knowledge has to live somewhere other than people's heads. This topic opens the governance tooling, starting with the place metadata is kept: the catalog.",
+    handoff:
+      "A catalog can store a lineage edge, but someone has to produce it. If each tool invents its own format, every catalog needs a custom connector per tool. The next topic is the open standard jobs use to report what they read and wrote: OpenLineage.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
