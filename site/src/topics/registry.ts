@@ -4745,4 +4745,39 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'A pipeline that is correct under replay and late data can still be down. Sources go quiet, brokers fail, a bad deploy ships, a region disappears. The next topic is enumerating those failures before they happen: failure-mode analysis and recovery.',
   },
+  {
+    id: 'de.failure-mode-analysis-recovery',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/failure-mode-analysis-recovery',
+    title: 'Failure-mode analysis and recovery',
+    syllabusTitle: 'Failure-mode analysis and recovery',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['failure-table-blast-radius', 'rpo-rto-per-data-class', 'degraded-mode-design'],
+    uses: [
+      'system-of-record-vs-derived',
+      'replay-backfill-as-first-class-path',
+      'correctness-as-specification',
+      'resilient-client-patterns',
+      'replication-ack-modes',
+    ],
+    declared: [
+      'blast-radius-scoring',
+      'stale-propagation-along-lineage',
+      'actionable-page-test',
+      'cap-pacelc',
+      'two-phase-commit-blocking-in-doubt',
+      'kafka-isr-non-majority-quorum',
+      'data-incident-response-blast-radius',
+      'disaster-recovery-lakehouse-mechanics',
+    ],
+    bridge:
+      'A pipeline that is correct under replay and late data can still be down. Sources go quiet, brokers fail, a bad deploy ships, a region disappears. This topic is enumerating those failures before they happen: failure-mode analysis and recovery.',
+    handoff:
+      'A design now meets its SLOs, survives replay and has a recovery plan for every failure. It also has a price, and almost always one line of it dominates. The next topic is finding that line: the cost model, and the single lever that moves it.',
+  },
 ];
