@@ -5486,4 +5486,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Everything in this section assumed data engineering still moves the data at all. The chapter's last topic asks what happens when a vendor claims it doesn't have to: 'zero-ETL,' and what that name is actually hiding.",
   },
+  {
+    id: 'de.zero-etl-replication',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/zero-etl-replication',
+    title: 'Zero-ETL replication',
+    syllabusTitle: 'Zero-ETL replication',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.9' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['zero-etl-is-managed-log-cdc', 'managed-cdc-cadence-and-prerequisites', 'vendor-controlled-schema-filter-cost'],
+    uses: ['label-feature-timeline-join', 'feature-ttl-staleness', 'grain-and-freshness-documentation'],
+    declared: [],
+    bridge:
+      "Everything in this section assumed data engineering still moves the data at all. This topic is what happens when a vendor claims it doesn't have to: 'zero-ETL' from Aurora, DynamoDB or a managed database straight into an analytics engine. It is still log-based CDC underneath, now running on a vendor's schedule and rules instead of a team's own, and the chapter closes on exactly what that trade costs.",
+    handoff:
+      "That closes this chapter's look at where the data stack is heading. Everything in it, from a point-in-time join to a managed zero-ETL feed, is a claim someone has to be able to test, not just trust. The next chapter is the method for testing claims like that honestly: how to benchmark a system so the number you report is the number that's actually true, starting with the first way a benchmark lies — the warm-up period you forgot to discard.",
+  },
 ];

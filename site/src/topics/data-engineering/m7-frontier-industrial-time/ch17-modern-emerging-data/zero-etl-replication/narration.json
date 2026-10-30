@@ -1,0 +1,74 @@
+{
+  "topic": "de.zero-etl-replication",
+  "steps": [
+    {
+      "lines": [
+        "A vendor's own slide promises something that sounds almost too good to be true. Zero ETL.",
+        "A team with a fraud detection system that genuinely needs sub minute freshness adopts this integration, and promptly starts missing real fraud for up to half an hour at a stretch.",
+        "The slide said zero. The team got a number it never actually asked for."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real question underneath that slide.",
+        "What did zero actually mean here, and what number was always quietly going to be the real limit all along."
+      ],
+      "answer": [
+        "Nothing here was ever broken. Zero never meant zero latency.",
+        "It meant zero pipeline code, the code a team no longer has to write and operate by hand. The team's real limit was always the vendor's own documented replication window, and nobody had read that window as a freshness promise until it actually cost them something."
+      ]
+    },
+    {
+      "lines": [
+        "A whole list of operational databases now show up as named, supported sources for this pattern.",
+        "Moving straight into an analytics engine on one major cloud platform, or mirroring continuously into a lake on another.",
+        "Different vendor names, genuinely different branding, but exactly one mechanism sitting underneath every single one of them."
+      ]
+    },
+    {
+      "lines": [
+        "One of these integrations states its own cadence plainly, right in its own documentation.",
+        "The moment it's turned on, it exports the entire source table, just once, to get started.",
+        "After that, it incrementally replicates whatever changed, on a recurring window measured in minutes, and it requires a specific recovery feature to already be turned on before it'll even start."
+      ]
+    },
+    {
+      "lines": [
+        "So what is that word zero actually hiding here.",
+        "Every single one of these zero ETL integrations is log based change data capture, running quietly inside a vendor's own managed infrastructure.",
+        "Nothing about that underlying mechanism is genuinely new or different."
+      ]
+    },
+    {
+      "lines": [
+        "That exact same shape can be reproduced for real, right here, on this sandbox's own database.",
+        "First, a prerequisite gets checked. Then, a full export runs once. Then, a cursor gets drained on a fixed, repeating cycle, catching up whatever changed since the last time.",
+        "A write that lands inside that window stays genuinely invisible, right up until the next cycle runs, and that's the mechanism working exactly as designed, not a bug in it."
+      ]
+    },
+    {
+      "lines": [
+        "Giving up that pipeline's code quietly means giving up more than just the code itself.",
+        "Schema changes now happen on the vendor's own schedule, not whenever a team's migration plan says they should. Filtering is limited to whatever the integration happens to expose. And the cost shifts from a pipeline a team could tune to a single line on somebody else's bill."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling this all together now.",
+        "Zero meant zero pipeline code, never zero latency. The mechanism underneath is the exact same log based approach this course already covered, simply managed by somebody else now.",
+        "The real limit is whatever window the vendor actually documents. And what gets given up, beyond the code itself, is control over schema timing, over filtering, and over cost."
+      ]
+    },
+    {
+      "lines": [
+        "A separate team has a freshness requirement that's exact down to the minute, and they're deciding whether this documented window can actually meet it.",
+        "Can it, reliably."
+      ],
+      "answer": [
+        "Not reliably, no.",
+        "Falling inside a documented range isn't the same thing as being guaranteed by it. What has to be checked against that requirement is the window's own worst case, and that worst case alone is already enough to miss a strict requirement like this one.",
+        "Any cycle that happens to run long confirms it."
+      ]
+    }
+  ]
+}
