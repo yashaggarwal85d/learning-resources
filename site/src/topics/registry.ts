@@ -4841,4 +4841,39 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'The method assumed the requirements were already known. They never are. They live in other people\'s heads, and the right questions decide how good the design can be. The next topic is where that starts: asking the source of the data what it really sends.',
   },
+  {
+    id: 'de.source-side-interrogation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/source-side-interrogation',
+    title: 'Source-side interrogation',
+    syllabusTitle: 'Source-side interrogation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['source-interrogation-checklist', 'answers-as-measurements-not-adjectives', 'connector-growth-cost'],
+    uses: [
+      'ask-to-slo-translation',
+      'six-dimension-requirement-checklist',
+      'capacity-estimate-chain',
+      'push-pull-source-boundary',
+      'replay-backfill-as-first-class-path',
+      'data-contract-specification',
+      'open-data-contract-standard',
+      'resilient-client-patterns',
+    ],
+    declared: [
+      'sensitivity-tier-and-category',
+      'openlineage-run-job-dataset-events',
+      'ingestion-pull-connector-patterns',
+      'cdc-log-based-capture',
+      'eu-regulatory-residency-architecture',
+    ],
+    bridge:
+      'The method assumed the requirements were already known. They never are. They live in other people\'s heads, and the right questions decide how good the design can be. This topic is where that starts: asking the source of the data what it really sends.',
+    handoff:
+      'The source interview says what goes into the pipeline. The consumer interview says what has to come out, and it is the one that most changes the design: who reads it, how fresh, how often, how big a query, who may see which part. That is the destination side, next.',
+  },
 ];

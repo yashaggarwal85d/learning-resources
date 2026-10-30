@@ -1,0 +1,82 @@
+{
+  "topic": "de.source-side-interrogation",
+  "steps": [
+    {
+      "lines": [
+        "A payments partner describes its own events using exactly one phrase: they arrive in real time.",
+        "Within weeks of launch, every single retry from that partner quietly doubles the revenue recorded on this side.",
+        "Events vanish without a trace during that partner's own routine maintenance window, and the whole pipeline breaks the moment a field gets renamed with barely any warning at all."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Each of those three failures traces back to something nobody actually asked in that very first meeting with the partner.",
+        "A more detailed drawing of the partner's own system was never going to surface any of the three. So what question actually would have?"
+      ],
+      "answer": [
+        "A diagram only ever describes what somebody already built. It says nothing at all about how that system behaves under a retry, an outage, or a change.",
+        "Each of those three failures is exactly the shape of a question a diagram simply can't answer: does a retry carry a fresh identifier, what happens during their own maintenance window, and who actually warns you before a field changes."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the source sitting on one side, and a whole stack of interview questions sitting on the other, each one waiting to be asked out loud.",
+        "Every single question, once answered, flips over to reveal exactly which design decision that answer actually changes.",
+        "Ask whether this partner ever resends an event, and that answer lands squarely on the deduplication logic. Ask what happens the moment they go down, and that answer lands just as squarely on the buffer."
+      ]
+    },
+    {
+      "lines": [
+        "Real time is nothing more than an adjective. It says nothing whatsoever about how fast, measured against what, or how often that promise actually slips.",
+        "A measured delay, tracked carefully across an entire quarter, is an actual number this design can genuinely plan around."
+      ]
+    },
+    {
+      "lines": [
+        "Who genuinely owns this data, and who actually holds the right to change it going forward?",
+        "What format does it arrive in, concretely: rows out of a database, discrete events, or files dropped somewhere on a schedule?",
+        "A contract that states its own current status and its own current version turns how much warning you'll actually get into something you can check directly, rather than a promise you simply have to trust."
+      ]
+    },
+    {
+      "lines": [
+        "Late, duplicate, lost, and resent are the four plain facts any serious design has to plan for from the very start.",
+        "A resend from the source doesn't always carry a freshly minted identifier, and two genuinely distinct events can easily land sharing the exact same timestamp.",
+        "Which means the key used for deduplication has to be that identifier itself, and never, under any circumstance, the clock."
+      ]
+    },
+    {
+      "lines": [
+        "Average rate, peak rate, and precisely how fast that volume has been growing all feed directly into the estimate itself.",
+        "Protocol, authentication, and rate limit all feed just as directly into the resilient client sitting on this side of the connection.",
+        "And a quota is a hard ceiling this design genuinely has to respect from day one, not some number left to be discovered later, in production, the hard way."
+      ]
+    },
+    {
+      "lines": [
+        "Two particular cards flip over to a stark red: what's your actual daily quota, and exactly where is this data allowed to live.",
+        "The partner simply can't answer either one.",
+        "And an honestly unanswerable question is, itself, the real answer here: the design has to plan around that exact constraint, never simply assume it quietly away."
+      ]
+    },
+    {
+      "lines": [
+        "Questions about resending and about downtime feed straight into the deduplication logic and the buffer sitting behind it.",
+        "Questions about ownership and about advance notice feed straight into the contract itself.",
+        "Questions about rate and about growth feed straight into the estimate. And any quota or residency question that comes back unanswered is, on its own, a warning worth designing around."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: an entirely different partner answers the large majority of these same fifteen questions with real, concrete numbers.",
+        "A small handful of questions come back red: genuinely unanswerable.",
+        "Does this design simply skip past those few questions, or does it plan for them anyway, the same way it plans for everything the partner actually did answer?"
+      ],
+      "answer": [
+        "An unanswered question is an unknown. It is never, on its own, a guarantee that nothing troublesome happens over there.",
+        "This design has to carry both of those unknowns forward as genuine, explicit risks, in exactly the same way the first payments partner's own unasked questions eventually turned into three separate failures, only weeks after launch."
+      ]
+    }
+  ]
+}
