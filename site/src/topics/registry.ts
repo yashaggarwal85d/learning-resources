@@ -4566,4 +4566,44 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A model says processes may be slow and messages may be late, but it gives them no shared clock to measure how late. The next topic is what the clocks a machine does have actually promise, and why 'last write wins by timestamp' quietly loses writes.",
   },
+  {
+    id: 'de.ingestion-modes-push-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
+    title: 'Ingestion modes: push vs pull, batch vs streaming',
+    syllabusTitle: 'Ingestion modes: push vs pull, batch vs streaming',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['ingestion-modes-ownership'],
+    uses: ['medallion-bronze-silver-gold', 'lambda-architecture', 'kappa-architecture'],
+    declared: ['basic familiarity with ETL'],
+    bridge:
+      "Milestone 3 computed over data that was already sitting in storage. Nothing there said how it got there from the systems that make it. This chapter is that missing front door, and a refresher on its vocabulary comes first: who owns the schedule, who owns the buffer, and how often data moves.",
+    handoff:
+      "Pull is the most common mode, and the most common thing it pulls from is a production database that was built to serve customers, not analysts. The next question is how to read it without becoming the outage.",
+  },
+  {
+    id: 'de.telemetry-pipelines-logs-metrics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
+    title: 'Telemetry for pipelines: logs, metrics, traces',
+    syllabusTitle: 'Telemetry for pipelines: logs, metrics, traces',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['structured-logs-correlation-ids', 'metric-types-counter-gauge-histogram', 'pipeline-golden-signals', 'push-vs-pull-metrics'],
+    uses: ['latency-percentiles', 'cron', 'process-model', 'exit-status'],
+    declared: ['data-slis-slos-error-budgets', 'quantile-cannot-be-averaged'],
+    bridge:
+      "The platform is now delivered and kept converged. That says nothing about whether it is healthy. This topic opens exactly that question: what a pipeline must emit, in logs, metrics and traces, for an incident to be visible in minutes instead of when a stakeholder notices.",
+    handoff:
+      "Logs and metrics are written by one process and read in one place. A single order, though, crosses a Kafka topic, a Spark job and a warehouse, and no process sees the whole journey. The next topic is how a trace follows one record across those hops: OpenTelemetry.",
+  },
 ];

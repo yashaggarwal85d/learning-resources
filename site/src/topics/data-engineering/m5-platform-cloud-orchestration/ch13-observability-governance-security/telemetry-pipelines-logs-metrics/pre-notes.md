@@ -1,0 +1,7 @@
+- **Log level**: a tag (DEBUG, INFO, WARN, ERROR) a log line carries for its own severity. *Where you meet it:* background only — this topic is about the fields a record carries, not its severity level.
+- **Structured vs unstructured log**: a free-text sentence versus a set of named fields. *Where you meet it:* the hook's own contrast, built out fully in "Reveal: a log record as fields, not a sentence."
+- **Time series**: one metric's values over time, identified by its name and label set. *Where you meet it:* every metric-type reveal in this topic produces one.
+- **Label**: a key-value tag attached to a metric that splits it into separate time series. *Where you meet it:* the series-explosion extension, where one label per customer multiplies the series count directly.
+- **Scrape**: Prometheus reading a target's current metric values at one point in time. *Where you meet it:* "Reveal: push vs pull," where a job shorter than the scrape interval is never caught mid-run.
+- **Quantile / percentile**: the value below which a given fraction of observations fall (the 99th percentile is the value ninety-nine percent of observations stay under). *Where you meet it:* "Reveal: histogram," where a quantile read off bucket counts is an estimate, not an exact value.
+- **Backlog**: work queued but not yet processed. *Where you meet it:* named as one of the six pipeline golden signals, alongside freshness and consumer lag.

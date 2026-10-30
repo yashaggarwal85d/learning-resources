@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Chapter 3's medallion and Lambda/Kappa topics
+
+<ul class="resources">
+  <Resource kind="reel" title="Medallion architecture and its limits" domain="data-engineering" host="de.medallion-architecture-limits" by="Chapter 3, §3.3" />
+  <Resource kind="reel" title="Lambda vs Kappa architectures" domain="data-engineering" host="de.lambda-vs-kappa-architectures" by="Chapter 3, §3.3" />
+</ul>
+
+Chapter 7 (Apache Spark and Distributed Batch Execution), the chapter immediately before this
+one in the syllabus, was planned in parallel and had not shipped when this topic was built (the
+chapter plan's own assumption note); its reel is not linked here for that reason, not because it
+isn't a real prerequisite.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Structured Streaming Programming Guide: Getting Started" href="https://spark.apache.org/docs/latest/streaming/getting-started.html" by="Apache Spark docs">The trigger-interval model a micro-batch actually runs on.</Resource>
+  <Resource kind="reading" title="Design: Push vs. pull" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka docs">Why Kafka's own consumers pull from brokers instead of being pushed to.</Resource>
+</ul>
+
+</section>

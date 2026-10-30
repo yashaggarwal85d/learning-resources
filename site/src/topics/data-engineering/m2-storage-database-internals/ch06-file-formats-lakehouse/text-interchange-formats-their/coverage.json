@@ -1,0 +1,21 @@
+{
+  "topic": "Text interchange formats and their traps",
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "CSV has no single formal standard; RFC 4180 documents common practice retroactively, and real producers (e.g. Excel) diverge from it, especially on quoting.", "at": [] },
+      { "item": "A CSV field is quoted only when it contains a comma, a CRLF or a quote; readers must tolerate quoting applied inconsistently across producers.", "at": [] },
+      { "item": "An embedded quote inside a quoted CSV field is escaped by doubling it (\"\"), never by a backslash.", "at": [] },
+      { "item": "RFC 4180 rule 6 makes an embedded line break inside a quoted field legal, so a naive line-based CSV reader corrupts legitimate data.", "at": [] },
+      { "item": "CSV carries no type system at all: every value is text until a reader infers a type, which is the root cause of classic bugs like a leading-zero ID or postal code being read as an integer.", "at": [] },
+      { "item": "JSON's grammar has one numeric type (\"number\"), with no distinction between integer and float; a parser's own choice of representation (commonly IEEE 754 binary64) decides what round-trips exactly.", "at": [] },
+      { "item": "RFC 8259 states that an integer outside ±(2^53 − 1) is not guaranteed to survive a round trip once real binary64-based parsers are involved, even though the JSON grammar itself has no such limit.", "at": [] },
+      { "item": "JSON is specified as UTF-8 (RFC 8259 §8.1), but earlier and looser JSON implementations accept UTF-16/UTF-32, which is a real encoding-mismatch bug between an old producer and a strict modern reader.", "at": [] },
+      { "item": "A byte order mark (U+FEFF) at the start of a UTF-8 stream is purely a signature with no byte-order meaning in UTF-8 itself, and an unstripped BOM breaks any reader that expects specific bytes (CSV's header, JSON's leading `{`/`[`) at offset zero.", "at": [] },
+      { "item": "JSON itself has no per-record delimiter for streaming a sequence of values; JSON Lines (JSONL) is a separate convention — one JSON value per line, UTF-8, no BOM, `\\n` as the terminator — layered on top of JSON to make it splittable and streamable.", "at": [] },
+      { "item": "Neither CSV nor JSON/JSONL supports columnar pushdown: a reader must parse every field of every row to answer even a single-column query, in contrast to the columnar formats later in this chapter.", "at": [] },
+      { "item": "XML is named by the syllabus as a third text interchange format, more verbose than either CSV or JSON and typically paired with an external schema (XSD/DTD) enforced outside the file itself; this topic names it without building a deep example, matching the syllabus's own brief treatment.", "at": [] }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "topic": "de.ingestion-modes-push-vs",
+  "steps": [
+    {
+      "lines": [
+        "A team I know calls their dashboard real time. It's an hourly cron job.",
+        "Nobody had ever actually put a number on how long one order sits before it shows up.",
+        "So I took the exact same stream of orders and ran it through three different ingestion modes, and watched one single row's own delay in each."
+      ]
+    },
+    {
+      "lines": [
+        "Before the numbers, the vocabulary every one of these modes shares, because you'll need it for the rest of this chapter.",
+        "Every pipeline has a source, where the truth lives, a sink, where it lands, and a cursor, the record of how far it's gotten.",
+        "And a buffer, where bytes wait their turn. In a pull, the consumer decides when to ask, so the source ends up holding that buffer. Flip to a push, and the source decides when to send, so the consumer has to hold it instead."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question before I show you the measurements.",
+        "Batch moves the most rows in a single run, that's not in dispute.",
+        "So which mode actually drops the most unplanned load on whatever has to consume it: batch, because of the size of its runs, or streaming?"
+      ],
+      "answer": [
+        "The trap is that batch really does move the most rows at once, so it's tempting to call that the heaviest load.",
+        "But batch does that work on a schedule the consumer itself agreed to. It's never a surprise.",
+        "Streaming hands the consumer whatever the producer sends, whenever it sends it. No schedule, no shield. That's where an unplanned surge actually comes from."
+      ]
+    },
+    {
+      "lines": [
+        "I generated one fixed stream of three hundred simulated orders and read it three ways: once an hour, once every thirty seconds, and continuously.",
+        "The average wait for a single order dropped from thousands of seconds, down to tens of seconds, down to under one second, in that order.",
+        "And the size of each delivery dropped the same way: roughly a hundred rows handed over at once under the hourly read, down to well under one row at a time under the continuous read."
+      ]
+    },
+    {
+      "lines": [
+        "Same shrinking interval, counted a different way: how many moving parts each mode actually needs.",
+        "The hourly read needs exactly one: the scheduled job itself. Nothing watches whether it actually ran.",
+        "Add a checkpoint of your last position and you've got the thirty second read, and a new failure: lots of small, separately recorded runs piling up behind you.",
+        "Go fully continuous and you need a broker, a consumer, and that consumer's own tracked position, three parts, and the backlog failure we already named has nowhere left to hide."
+      ]
+    },
+    {
+      "lines": [
+        "So: four positions in every pipeline, and pull and push decide which side holds the buffer.",
+        "Three ways to cut the identical stream, measured, not guessed: thousands of seconds down to under one, a hundred rows at once down to well under one.",
+        "And one honest failure mode for each: a late run nobody notices, small runs piling up, or a backlog with nothing to shield it. Pick your mode by which of those three you can actually live with."
+      ]
+    }
+  ]
+}
