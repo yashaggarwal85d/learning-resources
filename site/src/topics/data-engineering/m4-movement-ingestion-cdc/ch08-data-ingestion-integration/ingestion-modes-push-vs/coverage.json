@@ -1,0 +1,104 @@
+{
+  "topic": "de.ingestion-modes-push-vs",
+  "syllabus": [
+    {
+      "clause": "who owns the schedule and the buffer",
+      "at": [
+        { "step": "Reveal: the four positions" },
+        { "step": "Predict: which mode surprises the consumer most" }
+      ]
+    },
+    {
+      "clause": "batch vs micro-batch vs streaming ingestion",
+      "at": [
+        { "step": "Reveal: the three cuts, measured" }
+      ]
+    },
+    {
+      "clause": "the latency/cost/complexity each buys",
+      "at": [
+        { "step": "Reveal: the three cuts, measured" },
+        { "step": "Reveal: moving parts, and the one failure each is prone to" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Structured Streaming Programming Guide: Getting Started (Apache Spark docs)",
+      "items": [
+        {
+          "item": "a micro-batch advances the Result Table on a trigger interval, not a categorically different engine from batch",
+          "at": [{ "step": "Reveal: the three cuts, measured" }, { "deep": "Why pull won over push, and what a micro-batch actually is" }]
+        }
+      ]
+    },
+    {
+      "source": "Design: Push vs. pull (Apache Kafka docs)",
+      "items": [
+        {
+          "item": "Kafka chose pull over push because a pull-based consumer falls behind and catches up instead of being overwhelmed",
+          "at": [{ "step": "Reveal: the four positions" }, { "deep": "Why pull won over push, and what a micro-batch actually is" }]
+        },
+        {
+          "item": "a naive pull loop busy-waits without data; the long-poll parameter fixes this",
+          "at": [{ "deep": "Why pull won over push, and what a micro-batch actually is" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      {
+        "item": "Every pipeline has four positions: a source, a buffer, a sink and a cursor; which side owns the buffer depends on whether the data is pulled or pushed.",
+        "at": [{ "step": "Reveal: the four positions" }]
+      },
+      {
+        "item": "In a pull, the consumer owns the schedule and the source holds the buffer, which costs the source retention for however long the consumer takes to ask.",
+        "at": [{ "step": "Reveal: the four positions" }]
+      },
+      {
+        "item": "In a push, the source owns the schedule and the consumer must own a buffer that absorbs bursts, or it drops data.",
+        "at": [{ "step": "Reveal: the four positions" }]
+      },
+      {
+        "item": "Batch, micro-batch and streaming are the same underlying idea (a poll) at three different interval sizes, not three unrelated mechanisms.",
+        "at": [{ "step": "Reveal: the three cuts, measured" }, { "deep": "Why pull won over push, and what a micro-batch actually is" }]
+      },
+      {
+        "item": "Shrinking the poll interval buys lower average delay and smaller burst size per delivery, measured directly: average delay and rows handled per tick both shrink together as the interval shrinks.",
+        "at": [{ "step": "Reveal: the three cuts, measured" }]
+      },
+      {
+        "item": "Batch's own largest risk is a late or silently skipped run going unnoticed, because nothing about batch itself surfaces that it didn't run.",
+        "at": [{ "step": "Reveal: moving parts, and the one failure each is prone to" }]
+      },
+      {
+        "item": "Micro-batch's own largest risk is many small, separately checkpointed runs accumulating many small outputs (files, commits) downstream.",
+        "at": [{ "step": "Reveal: moving parts, and the one failure each is prone to" }]
+      },
+      {
+        "item": "Streaming's own largest risk is an unbounded backlog, because nothing about a continuous feed shields the consumer from a producer's own surge the way a schedule does.",
+        "at": [{ "step": "Reveal: moving parts, and the one failure each is prone to" }]
+      },
+      {
+        "item": "Webhook and event ingestion is the canonical push case (the source calls the consumer the moment something happens); it is a skipped syllabus topic in this chapter, named only as a sourced pointer.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Lambda and Kappa architecture (Chapter 3) are the serving-layer version of the same batch/streaming choice this topic makes at the ingestion layer; this topic doesn't restate them, only assumes them.",
+        "at": [{ "out": "Lambda/Kappa architecture itself is Chapter 3 topic 20, used here, not re-taught" }]
+      },
+      {
+        "item": "Kafka as the actual buffer implementation behind a streaming ingestion path is not this topic's own scope; it is Chapter 9's.",
+        "at": [{ "out": "Kafka as the buffer is Chapter 9, named only as the source of this topic's push/pull design citation" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

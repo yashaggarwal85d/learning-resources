@@ -1,0 +1,161 @@
+{
+  "topic": "de.partitioned-log-segments-indexes",
+  "syllabus": [
+    {
+      "clause": "a partition as a directory of segment files with sparse offset and time indexes",
+      "at": [
+        { "step": "Setup: a partition is files on disk" },
+        { "step": "Reveal: the offset index is sparse" }
+      ]
+    },
+    {
+      "clause": "active segment rolling",
+      "at": [
+        { "step": "Predict: the open segment just filled up. What happens to the next record?" },
+        { "step": "Reveal: the active segment rolls" }
+      ]
+    },
+    {
+      "clause": "reads served from the page cache with zero-copy sendfile",
+      "at": [
+        { "step": "Reveal: reads come from the page cache, with zero copies to spare" }
+      ]
+    },
+    {
+      "clause": "offsets as positions owned by consumers, not the broker",
+      "at": [
+        { "step": "Reveal: an offset belongs to the consumer, not the broker" }
+      ]
+    },
+    {
+      "clause": "(internals built in → Rust Systems Engineering Ch.27)",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Kafka Design documentation",
+      "items": [
+        {
+          "item": "the position of a consumer in each partition is a single integer, the offset of the next message to consume, held by the consumer",
+          "at": [{ "step": "Reveal: an offset belongs to the consumer, not the broker" }]
+        },
+        {
+          "item": "a consumer can deliberately rewind to an old offset and re-consume data",
+          "at": [{ "step": "Reveal: an offset belongs to the consumer, not the broker" }]
+        },
+        {
+          "item": "Kafka favors the OS page cache over an in-process cache by design",
+          "at": [{ "step": "Reveal: reads come from the page cache, with zero copies to spare" }]
+        },
+        {
+          "item": "sendfile lets the OS send data from pagecache to the network directly, avoiding a re-copy",
+          "at": [{ "step": "Reveal: reads come from the page cache, with zero copies to spare" }]
+        },
+        {
+          "item": "the zero-copy optimization's benefit compounds across multiple consumers of the same cached data",
+          "at": [{ "deep": "Outcomes" }]
+        },
+        {
+          "item": "the active segment is never compacted, even past the minimum compaction time lag",
+          "at": [{ "step": "Reveal: the active segment rolls" }]
+        },
+        {
+          "item": "sendfile is not used once TLS/SSL is enabled, since TLS operates in user space",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka source (TopicConfig.java / LogConfig.java / ServerLogConfigs.java)",
+      "items": [
+        {
+          "item": "segment.bytes controls the segment file size; the active segment is rolled once it reaches this size",
+          "at": [{ "step": "Reveal: the active segment rolls" }]
+        },
+        {
+          "item": "the real default segment size is one gigabyte (DEFAULT_SEGMENT_BYTES)",
+          "at": [{ "deep": "Outcomes" }]
+        },
+        {
+          "item": "the real default roll time is seven days (DEFAULT_SEGMENT_MS)",
+          "at": [{ "deep": "Outcomes" }]
+        },
+        {
+          "item": "the real default offset-index sparsity is one entry per four thousand and ninety-six bytes of log data (LOG_INDEX_INTERVAL_BYTES_DEFAULT)",
+          "at": [{ "step": "Reveal: the offset index is sparse" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka source, storage/internals/log module (read, not quoted)",
+      "items": [
+        {
+          "item": "a segment is really three files: the .log data file, a sparse .index offset file, and a .timeindex timestamp file",
+          "at": [{ "step": "Setup: a partition is files on disk" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      {
+        "item": "A partition is a directory of segment files; only one segment (the active one) is open for appends at a time.",
+        "at": [{ "step": "Setup: a partition is files on disk" }]
+      },
+      {
+        "item": "Within a segment, the .log file holds the records; a parallel .index file holds a sparse offset-to-byte-position map and a .timeindex file holds a sparse timestamp-to-offset map.",
+        "at": [{ "step": "Setup: a partition is files on disk" }]
+      },
+      {
+        "item": "The index is sparse because Kafka only needs to narrow a seek down to roughly the right position, then finish with a short local scan — not locate every record by direct lookup.",
+        "at": [{ "step": "Reveal: the offset index is sparse" }]
+      },
+      {
+        "item": "A segment rolls to a new file once it crosses its configured size (or time) limit; the active segment is never eligible for compaction.",
+        "at": [{ "step": "Reveal: the active segment rolls" }]
+      },
+      {
+        "item": "Reads are served from the OS page cache, not a Kafka-managed in-process cache, by deliberate design choice.",
+        "at": [{ "step": "Reveal: reads come from the page cache, with zero copies to spare" }]
+      },
+      {
+        "item": "sendfile lets the broker hand the kernel a file descriptor so bytes move pagecache to NIC directly, skipping the extra kernel-to-user-to-kernel round trip a naive read/write loop pays.",
+        "at": [{ "step": "Reveal: reads come from the page cache, with zero copies to spare" }]
+      },
+      {
+        "item": "The zero-copy optimization compounds with multiple consumers: the same cached bytes serve every reader of that region, not a fresh copy per reader.",
+        "at": [{ "deep": "Outcomes" }]
+      },
+      {
+        "item": "Kafka deliberately does not track per-consumer, per-record consumption state on the broker; a consumer's position is a single integer it owns and checkpoints itself.",
+        "at": [{ "step": "Reveal: an offset belongs to the consumer, not the broker" }]
+      },
+      {
+        "item": "Because the broker holds no per-record consumption state, a consumer can rewind to an old offset and re-read, which plain queue semantics don't allow.",
+        "at": [{ "step": "Reveal: an offset belongs to the consumer, not the broker" }]
+      },
+      {
+        "item": "sendfile/zero-copy is not used once TLS is enabled, a real, named operational cost of turning on encryption.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Log compaction physically rewrites segments out of append order, which is why it needs its own later topic (retention and compaction) rather than being folded into this one.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "This topic is the entry point to the whole chapter; every later topic in 9.1-9.3 assumes the reader already has the partition/segment/offset vocabulary this topic introduces.",
+        "at": [{ "deep": "Where this goes next" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

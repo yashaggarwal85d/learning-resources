@@ -1,0 +1,90 @@
+{
+  "topic": "de.opentelemetry-across-batch-streaming",
+  "steps": [
+    {
+      "lines": [
+        "One order came out wrong in the warehouse, and three separate systems were involved in getting it there.",
+        "A database change, a Kafka topic, a Spark job folding things together. Every single one of them is logging perfectly, on its own terms.",
+        "That last part is exactly the trap. Three perfect logs, kept in three separate places, tell you nothing about which hop between them actually broke."
+      ]
+    },
+    {
+      "lines": [
+        "So think about how you'd actually go find that one broken hop, without grepping three separate clusters by hand for the same order id.",
+        "Is it one continuous parent-child chain stretching across all three systems? A shared id you search for in each one? Or something else entirely, called a link?"
+      ],
+      "answer": [
+        "A parent-child chain can't actually do this. A span only ever gets one parent, and a batch job folding in many Kafka records has many producers behind it, not one.",
+        "A shared id gets you partway, but it's still three separate systems to search by hand, which is exactly what you were trying to avoid.",
+        "Links are built for precisely this: the one structure that survives a single parent limit, a batch fan-in, and a step that's already nested inside some other span, all three at once."
+      ]
+    },
+    {
+      "lines": [
+        "Before any of that works, you need one thing underneath it: a single way to export every signal, so it ends up wherever it needs to go.",
+        "Traces, metrics, logs, a bit of context called baggage. All of it leaves the application the same way, and a separate component called the Collector decides where it actually lands.",
+        "That separation is what makes the rest of this topic possible at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that actually crosses the gap between systems: a short, fixed string called traceparent.",
+        "A producer writes it straight into the headers of the Kafka record it's sending, because nothing like an HTTP request exists on that hop to carry it automatically.",
+        "The consumer reads those same headers back out on the other side. Same string, same trace, unbroken."
+      ]
+    },
+    {
+      "lines": [
+        "Now try to describe a batch consumer honestly, and a parent-child chain falls apart immediately.",
+        "Force five separate producer contexts through one span's parent field, one after another, and watch what actually survives: only the last one you assigned.",
+        "Hold those same five as links instead, and every single one makes it through intact. That's the whole reason links exist."
+      ]
+    },
+    {
+      "lines": [
+        "But links aren't free, and this is where it gets interesting at real scale.",
+        "A nightly job folds in a million Kafka records in one pass. The tracing library's own default cap on links per span is one hundred twenty-eight.",
+        "Almost all of those million producer contexts get dropped from the trace, on purpose, by design, the moment that cap is hit."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece makes a trace from Kafka and a trace from a database actually comparable.",
+        "They use the exact same attribute names for things like a destination and a partition.",
+        "That shared vocabulary is what lets you query a Kafka span and a database span the same way, instead of learning two different systems' own conventions."
+      ]
+    },
+    {
+      "lines": [
+        "Now follow the record all the way through, honestly, including the one place it actually breaks.",
+        "Three of the four hops carry the trace automatically: Kafka, the Spark aggregate, the warehouse write. The fourth, the original database write itself, does not.",
+        "The tooling's own documentation says so directly. Skip passing the trace metadata into that one write, and the id is simply gone from there on, not degraded, gone."
+      ]
+    },
+    {
+      "lines": [
+        "Last piece, and it's one people genuinely mix up: this is not the same thing as lineage.",
+        "One of these tells you what happened during one execution and how long it took. The other tells you which datasets a job actually read and wrote, for one run.",
+        "They share exactly one thing, a run identifier, and nothing else about their shape."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of what a trace actually gives you across a pipeline like this.",
+        "A header that crosses a hop nothing else would carry it across. Links, exactly where a single parent genuinely can't exist. One real seam, named honestly instead of glossed over. And two separate standards, answering two separate questions."
+      ]
+    },
+    {
+      "lines": [
+        "One more to commit to, because it's the kind of thing that actually trips people up on call.",
+        "That same nightly job reads a million Kafka records and writes out a single row. Its consumer span's links are capped at one hundred twenty-eight, same as before.",
+        "When someone notices that cap later, does it mean the data for the other producers is wrong, or something else entirely?"
+      ],
+      "answer": [
+        "The link limit lives in the tracing SDK, not in the data path, so it has no say over what the job actually reads or writes.",
+        "The aggregate still folds in every one of those million records exactly as it always did.",
+        "What you lose is visibility into where most of those records came from afterward. Not the data. Only the trace's own memory of it."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "topic": "de.driver-executors-task-hierarchy",
+  "syllabus": [
+    {
+      "clause": "application → job (one per action) → stage → task (one per partition)",
+      "at": [
+        { "step": "Reveal: one action, one job" },
+        { "step": "Reveal: a new job id" },
+        { "step": "Reveal: task count tracks partitions" },
+        { "step": "Recap" }
+      ]
+    },
+    {
+      "clause": "the driver as the single planner and single point of failure",
+      "at": [
+        { "step": "Reveal: driver and executor" },
+        { "deep": "Local mode collapses the process boundary, not the mechanism" }
+      ]
+    },
+    {
+      "clause": "executors as slot pools (cores × executors)",
+      "at": [
+        { "step": "Reveal: driver and executor" },
+        { "deep": "Local mode collapses the process boundary, not the mechanism" }
+      ]
+    },
+    {
+      "clause": "cluster managers in Spark 4.x (YARN, Kubernetes, standalone; Mesos removed in 4.0)",
+      "at": [{ "deep": "Local mode collapses the process boundary, not the mechanism" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Cluster Mode Overview (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "the driver/SparkContext as the coordinating process in the main program",
+          "at": [{ "step": "Reveal: driver and executor" }]
+        },
+        {
+          "item": "the cluster manager's role: allocating resources (standalone, YARN, Kubernetes)",
+          "at": [{ "deep": "Local mode collapses the process boundary, not the mechanism" }]
+        },
+        {
+          "item": "executors as per-application processes that run tasks and hold data",
+          "at": [{ "step": "Reveal: driver and executor" }]
+        },
+        {
+          "item": "isolation between applications' executors (different JVMs; no shared data without external storage)",
+          "at": [{ "out": "a later chapter concern (application isolation at the cluster level), named only in passing here" }]
+        },
+        {
+          "item": "driver network-addressability and locality requirement",
+          "at": [{ "out": "a cluster-deployment detail this local-mode refresher doesn't measure; named as a boundary only" }]
+        },
+        {
+          "item": "glossary: Application, Driver program, Cluster manager, Deploy mode, Worker node, Executor, Task, Job, Stage",
+          "at": [
+            { "step": "Hook" },
+            { "step": "Reveal: one action, one job" },
+            { "step": "Reveal: driver and executor" },
+            { "step": "Recap" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Spark Release 4.0.0 (Apache Spark project)",
+      "items": [
+        {
+          "item": "Mesos cluster-manager support dropped (SPARK-44442)",
+          "at": [{ "deep": "Local mode collapses the process boundary, not the mechanism" }]
+        },
+        {
+          "item": "Scala 2.12 dropped, Scala 2.13 made the default (SPARK-45314)",
+          "at": [{ "out": "a chapter-wide engine-of-record detail, not specific to this topic's own scope" }]
+        },
+        {
+          "item": "SparkR's minimum Java requirement raised to 17 (SPARK-45284)",
+          "at": [{ "out": "a chapter-wide engine-of-record detail, not specific to this topic's own scope" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      {
+        "item": "A job is spawned by one action and scoped to that action, never to the DataFrame or the data: calling the same action twice on unchanged data produces two distinct job ids.",
+        "at": [{ "step": "Reveal: a new job id" }]
+      },
+      {
+        "item": "A stage's task count equals its partition count, not the row count or data size — repartitioning without changing the data changes only the task count.",
+        "at": [{ "step": "Reveal: task count tracks partitions" }]
+      },
+      {
+        "item": "The driver is the one process holding the whole job's coordinating state (the SparkContext); losing it ends the application, while losing one executor only loses that executor's tasks, which get rescheduled elsewhere.",
+        "at": [{ "step": "Reveal: driver and executor" }]
+      },
+      {
+        "item": "An executor's slot count (its real concurrency) is its core count; an application's total task parallelism across the cluster is cores per executor times the number of executors granted.",
+        "at": [{ "deep": "Local mode collapses the process boundary, not the mechanism" }]
+      },
+      {
+        "item": "Spark 4.x supports exactly three cluster managers (standalone, YARN, Kubernetes); Mesos, previously a fourth option, was removed in Spark 4.0.",
+        "at": [{ "deep": "Local mode collapses the process boundary, not the mechanism" }]
+      },
+      {
+        "item": "Local mode (`local[N]`) runs the driver and N executor-equivalent worker threads in a single JVM; it exercises the real DAGScheduler/TaskScheduler job-stage-task counting but cannot demonstrate independent-process executor failure.",
+        "at": [{ "deep": "Local mode collapses the process boundary, not the mechanism" }]
+      },
+      {
+        "item": "Spark Connect decouples where client code runs from where the driver runs (a thin client submits an unresolved plan over gRPC to a server-side driver), without changing the job/stage/task accounting this topic measures.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "A stage boundary exists specifically where a shuffle is required; this refresher names the boundary's existence and hands its precise cut rule (narrow vs. wide dependencies) to the next topic rather than re-deriving it here.",
+        "at": [{ "out": "de.dag-scheduling-stage-boundaries teaches the precise narrow-vs-wide cut rule; this refresher only establishes that stages exist" }]
+      },
+      {
+        "item": "spark.default.parallelism and spark.sql.shuffle.partitions are two distinct settings governing different operations' default partition counts, not interchangeable; this refresher's repartition(8) example sets the count explicitly rather than relying on either default.",
+        "at": [{ "out": "de.task-scheduling-locality-parallelism teaches the two settings' distinction precisely" }]
+      },
+      {
+        "item": "Dynamic allocation lets an application's executor count grow and shrink during a run rather than staying fixed at submission; this refresher's local[4] run uses a fixed executor-equivalent count throughout.",
+        "at": [{ "out": "named only as a boundary; dynamic allocation's mechanics are not this refresher's scope" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

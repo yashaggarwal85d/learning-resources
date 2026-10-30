@@ -1,0 +1,10 @@
+- **Process**: one machine or one running copy of the protocol, able to send and receive messages. *Where you meet it:* every diagram in this chapter draws one lane per process.
+- **Message**: the unit of communication between processes; this chapter treats a network as something that moves messages, nothing more. *Where you meet it:* every arrow between lanes.
+- **Timeout**: a process giving up on waiting for a reply after some amount of time. *Where you meet it:* the question of whether "no reply yet" safely means "that process crashed".
+- **Crash**: a process stopping unexpectedly, as opposed to shutting down on purpose. *Where you meet it:* the difference between a crash that never comes back and one that restarts.
+- **Restart**: a process coming back online after stopping, possibly with less state than it had before. *Where you meet it:* whether a restarted process remembers everything it did.
+- **Replica**: one of several copies of the same data, kept on different machines so losing one doesn't lose the data. *Where you meet it:* the primary and the backup both hold a copy of the same register.
+- **Quorum**: a large-enough subset of a group of replicas to make a decision binding on the whole group. *Where you meet it:* named here only as vocabulary; this chapter's quorum topics come later.
+- **Invariant**: a statement about a system that is supposed to stay true no matter what happens to it. *Where you meet it:* "an acknowledged write survives on at least one live, durable copy" is this topic's one invariant.
+- **Safety property**: a property that must never be violated, at any point, under any circumstances. *Where you meet it:* the write-survival invariant is a safety property.
+- **Liveness property**: a property that must eventually become true, given enough time and favorable conditions. *Where you meet it:* "eventually every correct process decides" is a liveness property, contrasted with safety in this topic's model discussion.
