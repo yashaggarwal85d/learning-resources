@@ -4927,6 +4927,26 @@ export const TOPICS: TopicMeta[] = [
       'A conditional write protects one key. It says nothing about how long that byte should even exist, or what it costs to keep it — which is the next question.',
   },
   {
+    id: 'de.storage-classes-lifecycle-economics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/storage-classes-lifecycle-economics',
+    title: 'Storage classes and lifecycle economics',
+    syllabusTitle: 'Storage classes and lifecycle economics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['storage-tier-lifecycle-tradeoff', 'lifecycle-snapshot-corruption'],
+    uses: ['object-store-consistency-guarantee'],
+    declared: [],
+    bridge:
+      'A conditional write protects one key at one instant. This topic is what happens to that byte over months and years: which tier it should sit in, what moving or deleting it costs, and the one rule mistake that can delete a file a live table still needs.',
+    handoff:
+      'Everything so far has been about data at rest. The next two topics are about who is allowed to touch it at all — starting with identity, because the alternative to a scoped role is a static key sitting in a notebook.',
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
