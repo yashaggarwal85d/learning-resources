@@ -137,7 +137,7 @@ const reel: Reel = {
       ),
       duration: 4.8,
       fig: 'a four second job, a fifteen second scrape. Push it, or miss it.',
-      takeaway: 'A pushed value through a gateway never expires on its own — it keeps answering long after the job that sent it is gone.',
+      takeaway: 'A pushed value never expires on its own — it keeps answering after the job is gone.',
       Visual: S.RevealPushPull,
     },
     {
