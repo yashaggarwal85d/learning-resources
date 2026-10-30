@@ -1,0 +1,80 @@
+{
+  "topic": "de.data-intervals-catchup-backfills",
+  "steps": [
+    {
+      "lines": [
+        "Someone kicks off a five year backfill on a Friday afternoon, just to be safe.",
+        "By evening, the production source that normally handles a thousand queries a minute is timing out.",
+        "Nothing changed about the query. It's running the exact same extract Monday runs. Five years of times over, all at once."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a word that quietly carries more weight than it sounds like it should: logical date.",
+        "A daily run labeled for the first of January does not mean it executes on the first of January.",
+        "It means that run owns the data up through the end of that day, and only actually runs once that day has fully closed.",
+        "This isn't a guess about how the scheduler behaves. It's read straight out of Airflow's own scheduling logic, called directly."
+      ]
+    },
+    {
+      "lines": [
+        "Now a setting that decides something much bigger than timing: whether missed history gets scheduled at all.",
+        "Turn catchup on, and the scheduler walks forward from the very first day it ever missed.",
+        "Leave it off, which is what a fresh Airflow three install does by default, and it skips straight to whatever day is most recently finished, ignoring everything before it.",
+        "Same engine, same starting point. One setting decides whether weeks of history exist to the scheduler at all."
+      ],
+      "takeaway": "Catchup decides whether history gets scheduled at all, not how fast it runs once it is."
+    },
+    {
+      "lines": [
+        "Quick question before the next reveal.",
+        "A backfill issues the exact same requests, one per partition, that an ordinary day's run makes.",
+        "Does the orchestrator give that backfill some separate, protected allowance to work with, or does every one of those requests draw from the same budget production traffic is already competing for?",
+        "Think about it before I answer."
+      ],
+      "answer": "The same budget. Airflow controls how many of its own runs execute at once, but it has no idea what the task underneath is actually asking of — in this case — a database. Every request still lands on whatever that source can sustain, backfill or not."
+    },
+    {
+      "lines": [
+        "Here's that bounded concurrency, not described, actually run.",
+        "Ten days, capped at two runs active at any moment.",
+        "Reading the real metadata database while this executes shows exactly that: two running, the rest waiting their turn, never three.",
+        "This is the mechanism Airflow three moved into the scheduler itself, with its own concurrency knob, separate from however the Dag is normally configured."
+      ]
+    },
+    {
+      "lines": [
+        "Now the part that actually matters when something goes wrong mid-backfill.",
+        "Six of those ten days have already finished successfully. The scheduler process is killed outright, mid-run.",
+        "Restart it, and watch what happens: those six stay exactly as they were. Only the four that never finished pick back up.",
+        "Their original start times, from before the kill, are still sitting right there in the database, untouched. That's the proof it wasn't restarted from the beginning. It was resumed."
+      ],
+      "takeaway": "A resumed backfill isn't a restarted one. Finished work stays finished."
+    },
+    {
+      "lines": [
+        "A different orchestrator makes this same trade differently.",
+        "Dagster's default launches one separate run for every single partition in the range you ask for.",
+        "Opt in explicitly, and an asset can instead run as one single operation covering the entire range in one pass — one query instead of years of separate ones.",
+        "Same problem, same two options Airflow's own bounded-concurrency design is wrestling with, just drawn at a different point."
+      ]
+    },
+    {
+      "lines": [
+        "So: a logical date marks where an interval starts, never when the work actually runs.",
+        "Catchup is the switch that decides whether missed history gets scheduled in the first place.",
+        "A backfill, done properly, is bounded and it survives being killed halfway through.",
+        "But none of that protects the one thing actually paying for it: the source's own request budget, spent all the same, just compressed into history instead of today."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario.",
+        "A particular day already shows success in the database. Someone re-runs a backfill over a range that happens to include it, using whatever the default setting is.",
+        "Does that already-finished day get redone?",
+        "Take a moment."
+      ],
+      "answer": "No. The default behavior is explicit about this: if a run already exists for that date, nothing new gets created, no matter whether that run succeeded or failed. Redoing it would need a different setting, chosen on purpose."
+    }
+  ]
+}

@@ -4587,6 +4587,26 @@ export const TOPICS: TopicMeta[] = [
       "An idempotent task can safely be re-run for one interval. A backfill re-runs it for every interval across years of history — the same safety property, at a scale where it also becomes a risk to whatever source or warehouse absorbs that much repeated work. The next topic is exactly that scale.",
   },
   {
+    id: 'de.data-intervals-catchup-backfills',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-intervals-catchup-backfills',
+    title: 'Data intervals, catchup and backfills',
+    syllabusTitle: 'Data intervals, catchup and backfills',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['data-interval-semantics', 'resumable-backfill-design', 'backfill-blast-radius'],
+    uses: ['de.idempotent-tasks-failure-semantics', 'ch8.database-extraction-without-hurting', 'ch9.partition-replay'],
+    declared: [],
+    bridge:
+      "An idempotent task is safe to re-run once. A backfill re-runs it across years of history, at a scale where the same safety property becomes a different kind of risk entirely: to the scheduler's own state, and to the source it reads from. This topic is both.",
+    handoff:
+      "A backfill re-runs a fixed number of tasks over a fixed range. Many pipelines need the number of tasks itself to depend on the data — one task per file, one per partition, decided at run time. That is the next mechanism.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
