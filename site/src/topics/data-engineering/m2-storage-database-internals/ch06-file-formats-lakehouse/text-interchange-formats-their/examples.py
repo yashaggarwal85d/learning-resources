@@ -57,7 +57,7 @@ def json_number_precision_loss():
 
     as_double = float(json.loads(payload, parse_int=float)["order_id"])
     assert as_double != big_id, f"expected the double-precision parse to lose precision on {big_id}, got an exact match"
-    assert int(as_double) == big_id - 1, f"expected the double to round to {big_id - 1}, got {int(as_double)}"
+    assert int(as_double) == 9007199254740992, f"expected the double to round to 9007199254740992, got {int(as_double)}"
 
     print(f"JSON number precision: order_id {big_id} survives Python's exact parser, but a double-precision parser silently returns {int(as_double)}")
     return big_id, int(as_double)

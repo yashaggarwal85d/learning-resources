@@ -4727,6 +4727,26 @@ export const TOPICS: TopicMeta[] = [
       "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. That is classification, and it is where the governance half of this chapter starts.",
   },
   {
+    id: 'de.data-classification-sensitive-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/data-classification-sensitive-data',
+    title: 'Data classification and sensitive-data discovery',
+    syllabusTitle: 'Data classification and sensitive-data discovery',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['sensitivity-tier-and-category', 'automated-sensitive-data-discovery', 'tag-propagation-lineage', 'discovery-false-negatives'],
+    uses: ['pipeline-golden-signals', 'structured-logs-correlation-ids', 'data-contract-specification', 'open-data-contract-standard'],
+    declared: ['data-eu-regulatory-architecture-ch10', 'data-cloud-discovery-products-ch10', 'personal-data-is-regulated'],
+    bridge:
+      "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. This topic is classification, and it is where the governance half of this chapter starts.",
+    handoff:
+      "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. How a key hierarchy delivers that, and what rotating or deleting a key really does to the data, is the next topic: envelope encryption.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
@@ -4785,5 +4805,25 @@ export const TOPICS: TopicMeta[] = [
       'Milestones 1-4 built correct pipelines without asking where they run. This chapter is that question, starting with the most basic one: when a piece of the cloud disappears, how much of the system goes with it?',
     handoff:
       "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
+  },
+  {
+    id: 'de.text-interchange-formats-their',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
+    title: 'Text interchange formats and their traps',
+    syllabusTitle: 'Text interchange formats and their traps',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['text-format-traps'],
+    uses: [],
+    declared: [],
+    bridge:
+      "This chapter opened at the single physical page an engine reads and writes and closed at a sketch that approximates an entire distribution in a few kilobytes. The next chapter turns to the files these engines and sketches actually read and write at rest, starting with the oldest and most trap-ridden of them: plain-text interchange formats like CSV and JSON.",
+    handoff:
+      "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. The next question is that choice itself: row-oriented versus columnar layout.",
   },
 ];
