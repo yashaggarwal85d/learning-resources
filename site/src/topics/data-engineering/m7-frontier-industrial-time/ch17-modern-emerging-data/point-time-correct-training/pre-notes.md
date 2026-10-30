@@ -1,0 +1,4 @@
+- **As-of join**: Chapter 2's own content. *Where you meet it:* this topic reapplies the identical mechanism to a label instead of a neighbouring sensor row.
+- **Temporal leakage**: Chapter 2's own content. *Where you meet it:* measured here at a whole training set's scale, not one joined row.
+- **AUC (area under the ROC curve)**: a single number summarizing how well a classifier ranks positives above negatives; 1 is perfect, 0.5 is a coin flip. *Where you meet it:* the number this topic measures to show the leakage gap.
+- **Label and feature timestamp**: a label has a timestamp (when the outcome became true); every feature has its own timestamp (when it was known). *Where you meet it:* the two clocks this topic's entire join depends on telling apart.

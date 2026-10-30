@@ -1,0 +1,88 @@
+{
+  "topic": "de.point-time-correct-training",
+  "syllabus": [
+    {
+      "clause": "label/feature timelines, as-of joins of features to label timestamps",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: naive vs. as-of join" },
+        { "step": "Reveal: the as-of join, mechanism" }
+      ]
+    },
+    {
+      "clause": "leakage from future data or post-outcome fields",
+      "at": [
+        { "step": "Reveal: temporal leakage, measured" },
+        { "step": "Reveal: post-outcome field leakage" }
+      ]
+    },
+    {
+      "clause": "feature TTLs",
+      "at": [
+        { "step": "Predict: TTL edges" },
+        { "step": "Reveal: feature TTL, measured" }
+      ]
+    },
+    {
+      "clause": "backfilling a new feature historically with the same logic used online",
+      "at": [
+        { "step": "Reveal: backfill with the same online logic" }
+      ]
+    },
+    {
+      "clause": "batch vs streaming feature computation",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Rules of Machine Learning (Google for Developers)",
+      "items": [
+        { "item": "Rule #29: save the set of features used at serving time and pipe them to a log for training", "at": [{ "deep": "Production failures this topic warns about" }] },
+        { "item": "Rule #30: importance-weight sampled data rather than dropping it", "at": [{ "out": "a sampling concern, not a leakage or join-timing concern this topic teaches" }] },
+        { "item": "Rule #31: a joined table's data may change between training and serving time; snapshotting is a partial mitigation", "at": [{ "step": "Reveal: temporal leakage, measured" }, { "deep": "Production failures this topic warns about" }] },
+        { "item": "Rule #32: reuse code between training and serving pipelines to eliminate a skew source", "at": [{ "step": "Reveal: backfill with the same online logic" }, { "deep": "Production failures this topic warns about" }] },
+        { "item": "training-serving skew's definition and its three named causes", "at": [{ "out": "this topic cites only the one clause of Rule #31 about a joined table changing between training and serving time; the full three-cause skew taxonomy is the next topic's own subject (Feature stores and online/offline consistency), not yet in the registry to cite by id" }] }
+      ]
+    },
+    {
+      "source": "Point-in-time joins (Feast documentation)",
+      "items": [
+        { "item": "a point-in-time join reproduces the state of features at a specific point in the past, not their current value", "at": [{ "step": "Reveal: the as-of join, mechanism" }] },
+        { "item": "the join scans backward from the entity dataframe's own timestamp up to a maximum of the TTL", "at": [{ "step": "Reveal: the as-of join, mechanism" }] },
+        { "item": "the TTL is relative to each entity row's own timestamp, never to the time the query runs", "at": [{ "deep": "Internals" }] },
+        { "item": "a row older than the earliest feature data, or further from a feature row than the TTL allows, joins to nothing", "at": [{ "step": "Reveal: feature TTL, measured" }] }
+      ]
+    },
+    {
+      "source": "Feature leakage in ML: Detect, Prevent, and Fix It (Hex)",
+      "items": [
+        { "item": "a post-outcome field is only knowable, or only populated, after the outcome has occurred", "at": [{ "step": "Reveal: post-outcome field leakage" }] },
+        { "item": "the causal test: would this feature's value be known at the exact moment of prediction", "at": [{ "step": "Reveal: post-outcome field leakage" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "An as-of join and a 'snapshot the table periodically' mitigation (Rule #31's own suggestion) solve the same problem to different degrees — a periodic snapshot only gets you 'reasonably close,' in the source's own words, while an as-of join keyed to the label's exact timestamp is exact by construction.", "at": [{ "step": "Reveal: the as-of join, mechanism" }] },
+      { "item": "Temporal leakage and post-outcome leakage are easy to conflate because both get called 'leakage,' but they fail differently: temporal leakage is fixed by changing *when* you look (the as-of join), while post-outcome leakage has no 'when' that works, because the field is unpopulated at every moment before the outcome.", "at": [{ "step": "Reveal: post-outcome field leakage" }] },
+      { "item": "A feature TTL and an as-of join are the same mechanism with one extra stop condition: both scan backward from the label's own timestamp, and a TTL simply refuses to accept an answer past a stated distance back, converting 'stale' from an invisible property of the data into an explicit, checkable one.", "at": [{ "step": "Reveal: feature TTL, measured" }] },
+      { "item": "The naive-join AUC isn't 'wrong data' in the way a bug usually is — every number in it is real and correctly computed from the table as it stood; the bug is purely that the live model will never have access to that same table state at serving time, which is why the gap only ever shows up after shipping, never in an offline test that doesn't also change what it's allowed to see.", "at": [{ "step": "Reveal: temporal leakage, measured" }] },
+      { "item": "Reusing the exact online transformation for a backfill (Rule #32) isn't a style preference — a warehouse-table approximation of 'the same' feature can be correlated with the true online value without ever being equal to it, which is precisely the gap that produces skew without any join-timing bug at all.", "at": [{ "step": "Reveal: backfill with the same online logic" }] },
+      { "item": "This topic's own examples.py trains the identical simple classifier on both the naive and as-of training sets specifically so the measured AUC gap reflects the join alone, not a confound from comparing two different models.", "at": [{ "deep": "Lab" }] },
+      { "item": "Choosing batch versus streaming feature computation doesn't change what the as-of join does — it changes only how fresh the feature's as-of value can be relative to when the event that produced it actually happened, which is a separate axis from correctness.", "at": [{ "deep": "Internals" }] },
+      { "item": "The two TTL edge cases (too early, too stale) both resolve to the same answer — null — for different reasons: one has no feature history yet to scan back into, the other has history that exists but sits outside the stated staleness contract; conflating them as 'missing data' in general loses the distinction between 'never known' and 'known too long ago to trust.'", "at": [{ "step": "Reveal: feature TTL, measured" }] },
+      { "item": "A naive join's inflated AUC and a post-outcome field's near-perfect correlation with the label look like the same symptom (suspiciously good offline performance) but demand different fixes: the naive join is repaired by changing the join's timing, while the post-outcome field has to be dropped outright, because no timing choice makes an unpopulated-until-after field available earlier.", "at": [{ "step": "Reveal: post-outcome field leakage" }] },
+      { "item": "This topic's own churn scenario deliberately engineers the leakage into a synthetic dataset with a stated random seed, rather than claiming a real company's numbers, so the measured AUC gap is reproducible evidence of the join's effect and not an anecdote borrowed from elsewhere.", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
