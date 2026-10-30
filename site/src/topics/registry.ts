@@ -5286,4 +5286,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every one of these layouts still has to survive a reader using a different version of the schema than the writer did. That's schema evolution.",
   },
+  {
+    id: 'de.point-time-correct-training',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/point-time-correct-training',
+    title: 'Point-in-time correct training data',
+    syllabusTitle: 'Point-in-time correct training data',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['label-feature-timeline-join', 'post-outcome-field-leakage', 'feature-ttl-staleness', 'backfill-same-online-logic'],
+    uses: ['as-of-join', 'temporal-leakage'],
+    declared: [],
+    bridge:
+      "That closes the chapter, from a plant's hierarchy through the time series its machines produce to the shell that describes them. One idea from it travels straight into the next: the as-of join that attaches the right temperature to a pressure spike is the same join that attaches the right feature to a label, and getting it wrong leaks the future into a model. The next chapter is the data layer of machine learning and of language models, and it opens there: point-in-time correct training data.",
+    handoff:
+      "Getting the join right once, in one script, proves the idea. It does not stop the next engineer on the next model from writing the same join wrong, or from computing the 'same' feature a second way for the live service. The next topic is the platform built to make that impossible: the feature store, and the online/offline consistency it exists to guarantee.",
+  },
 ];
