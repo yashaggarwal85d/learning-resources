@@ -1,0 +1,131 @@
+{
+  "topic": "de.dag-scheduling-stage-boundaries",
+  "syllabus": [
+    {
+      "clause": "narrow vs wide dependencies",
+      "at": [
+        { "step": "Reveal: a narrow chain, one stage" },
+        { "step": "Reveal: why the cut happens there" }
+      ]
+    },
+    {
+      "clause": "the DAGScheduler cuts the lineage graph at every shuffle dependency",
+      "at": [
+        { "step": "Reveal: a wide dependency, two stages" },
+        { "step": "Reveal: a second shuffle, a third stage" },
+        { "deep": "The DAGScheduler's real algorithm" }
+      ]
+    },
+    {
+      "clause": "pipelines narrow operators inside a stage",
+      "at": [{ "step": "Reveal: a narrow chain, one stage" }]
+    },
+    {
+      "clause": "orders shuffle-map stages before the result stage",
+      "at": [{ "deep": "The DAGScheduler's real algorithm" }]
+    },
+    {
+      "clause": "why a stage boundary is a materialisation point, not a lineage break",
+      "at": [
+        { "step": "Reveal: why the cut happens there" },
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Resilient Distributed Datasets (Zaharia et al., NSDI 2012)",
+      "items": [
+        {
+          "item": "narrow dependency, precise definition: each parent partition used by at most one child partition",
+          "at": [{ "step": "Reveal: a narrow chain, one stage" }]
+        },
+        {
+          "item": "wide dependency, precise definition: a child partition may depend on multiple parent partitions",
+          "at": [{ "step": "Reveal: a wide dependency, two stages" }]
+        },
+        {
+          "item": "why the distinction matters: pipelining vs. a MapReduce-like shuffle; recovery cost",
+          "at": [
+            { "step": "Reveal: why the cut happens there" },
+            { "out": "recovery-cost consequence named only in passing; task retry and fetch failure are §7.3's own later topic" }
+          ]
+        },
+        {
+          "item": "the scheduler's exact cut rule: stage boundaries at wide/shuffle dependencies, narrow transformations pipelined",
+          "at": [{ "deep": "The DAGScheduler's real algorithm" }]
+        },
+        {
+          "item": "wide-dependency (shuffle) outputs are materialized on the nodes holding the parent partitions, for fault recovery",
+          "at": [{ "out": "sort-based shuffle mechanics, the next topic's own scope" }]
+        }
+      ]
+    },
+    {
+      "source": "RDD Programming Guide — Shuffle operations (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "current Spark's own definition of a shuffle: redistributing data so it's grouped differently across partitions",
+          "at": [
+            { "step": "Reveal: a wide dependency, two stages" },
+            { "step": "Reveal: why the cut happens there" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      {
+        "item": "A stage's boundary is determined by dependency type between RDDs/DataFrames in the lineage graph, never by the number of operators chained — an arbitrarily long narrow chain still costs one stage.",
+        "at": [{ "step": "Reveal: a narrow chain, one stage" }]
+      },
+      {
+        "item": "map, filter and select are canonical narrow operations; groupBy, join (against non-co-partitioned inputs) and repartition are canonical wide operations.",
+        "at": [
+          { "step": "Reveal: a narrow chain, one stage" },
+          { "step": "Reveal: a wide dependency, two stages" }
+        ]
+      },
+      {
+        "item": "A join can actually be narrow if both sides are already partitioned identically (hash- or range-co-partitioned) — this topic names the general rule and defers the co-partitioned exception to this chapter's own bucketing topic (§7.2).",
+        "at": [{ "out": "bucketing and storage-partitioned joins, §7.2's own topic" }]
+      },
+      {
+        "item": "Each independent wide dependency in a plan cuts its own stage boundary; stage count is one plus the number of shuffles, not a fixed property of the job or capped at some maximum.",
+        "at": [{ "step": "Reveal: a second shuffle, a third stage" }]
+      },
+      {
+        "item": "count() as an action always includes its own final single-partition merge stage, even over an otherwise purely narrow chain, which is why this topic's own measurements use collect() to isolate the narrow/wide distinction cleanly.",
+        "at": [{ "out": "an examples.py methodology note, not itself a syllabus clause; disclosed in FACT-CHECK.md" }]
+      },
+      {
+        "item": "A stage boundary is a materialisation point (shuffle output written so the next stage can read it), not merely a lineage split — the DAG itself has no 'breaks', only a continuous dependency graph the scheduler cuts at specific points.",
+        "at": [{ "step": "Reveal: why the cut happens there" }]
+      },
+      {
+        "item": "The DAGScheduler walks the lineage graph backward from the final RDD to build the DAG of stages, rather than scheduling forward from the sources — a detail the original paper states explicitly.",
+        "at": [{ "deep": "The DAGScheduler's real algorithm" }]
+      },
+      {
+        "item": "Stage-map output materialisation (writing shuffle files to disk on the nodes holding the producing partitions) is what makes a wide dependency's recovery cost higher than a narrow one's: a lost node can force recomputation of an entire ancestor stage, not just the lost partitions.",
+        "at": [{ "out": "task retry, fetch failure and speculation, §7.3's own later topic" }]
+      },
+      {
+        "item": "A `union` between two RDDs is narrow (each child partition depends on exactly one parent partition from one of the two inputs), despite combining two different RDDs — narrowness is about per-partition dependency count, not about how many RDDs are involved.",
+        "at": [{ "out": "named only as a boundary case strengthening the narrow/wide definition; not separately measured in this topic's examples.py" }]
+      },
+      {
+        "item": "Catalyst's physical plan represents a wide dependency's cut point as an explicit Exchange node; this topic's own examples.py greps queryExecution().toString() for that exact string as its evidence, matching how a real engineer would confirm a shuffle from EXPLAIN output.",
+        "at": [{ "step": "Reveal: a wide dependency, two stages" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -4666,4 +4666,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
   },
+  {
+    id: 'de.dag-scheduling-stage-boundaries',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
+    title: 'DAG scheduling and stage boundaries',
+    syllabusTitle: 'DAG scheduling and stage boundaries',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['spark-narrow-wide-dependency', 'spark-stage-boundary'],
+    uses: ['spark-task-hierarchy'],
+    declared: [],
+    bridge:
+      "Topic 1 gave the hierarchy's names. This topic answers the question it left open: exactly which operators force the scheduler to cut a new stage, and why that cut is where real work — a shuffle — has to happen.",
+    handoff:
+      "A stage boundary is a promise that a shuffle happens there. The next topic opens that promise: what a shuffle actually writes to disk and sends over the network to make the next stage's input exist.",
+  },
 ];
