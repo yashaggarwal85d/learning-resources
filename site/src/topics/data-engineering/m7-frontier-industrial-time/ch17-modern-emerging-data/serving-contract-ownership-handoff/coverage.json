@@ -1,0 +1,69 @@
+{
+  "topic": "de.serving-contract-ownership-handoff",
+  "syllabus": [
+    {
+      "clause": "what data engineering hands to BI: conformed marts, the semantic/metrics layer as single metric definition (§3.4)",
+      "at": [
+        { "step": "Reveal: what gets handed off" },
+        { "topic": "Semantic and metrics layers", "quote": "metric definitions compiled to SQL", "domain": "data-engineering" }
+      ]
+    },
+    {
+      "clause": "documented grain and freshness SLAs",
+      "at": [
+        { "step": "Reveal: grain and freshness, documented" }
+      ]
+    },
+    {
+      "clause": "where ownership moves to analytics engineers and how metric definitions are negotiated so nothing is computed two ways",
+      "at": [
+        { "step": "Reveal: ownership moves to analytics engineers" },
+        { "step": "Reveal: the negotiation that keeps a metric from being computed twice" }
+      ]
+    },
+    {
+      "clause": "Airbnb Minerva case study, Milestone 5",
+      "at": [
+        { "step": "Reveal: Minerva, the production-scale example" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Vu Trinh — How did Airbnb build their semantic layer? (secondary)",
+      "items": [
+        { "item": "Minerva took fact and dimension tables as inputs, performed data denormalization, and served the aggregated data to downstream applications", "at": [{ "step": "Reveal: Minerva, the production-scale example" }] },
+        { "item": "Minerva contained more than 12,000 metrics and 4,000 dimensions, with 200+ data producers across different functions and teams", "at": [{ "deep": "Internals" }] },
+        { "item": "Minerva ran on Airflow for orchestration, Hive and Spark for compute, and Presto and Druid for serving", "at": [{ "step": "Reveal: Minerva, the production-scale example" }] }
+      ]
+    },
+    {
+      "source": "StarRocks — Airbnb Builds a New Generation of Fast Analytics Experience with StarRocks (independent secondary)",
+      "items": [
+        { "item": "Minerva was designed with the vision to let users define metrics once and use them everywhere, with over 12,000 metrics and 4,000 dimensions", "at": [{ "deep": "Internals" }] },
+        { "item": "the same Airflow/Hive/Spark/Presto/Druid stack is independently corroborated", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's two dashboards are not a contrived edge case; a conformed mart with an undocumented grain is a correctness trap precisely because every individual query against it can be syntactically and logically valid while still disagreeing with every other valid query — there is no SQL error to find, which is why documentation, not testing, is the actual fix.", "at": [{ "step": "Hook" }] },
+      { "item": "Naming the semantic layer as the thing that gets handed off (rather than the mart alone) matters because a mart without a compiled metric layer still leaves every consumer free to write their own aggregation logic, which reopens exactly the \"computed two ways\" risk this topic is organized around.", "at": [{ "step": "Reveal: what gets handed off" }] },
+      { "item": "A freshness SLA and a grain are both facts about the mart, but they fail in different ways when undocumented: an undocumented grain produces a wrong number that looks plausible, while an undocumented freshness assumption produces a correct-looking number that is simply out of date — both are silent, but neither failure mode would be caught by the same kind of check.", "at": [{ "step": "Reveal: grain and freshness, documented" }] },
+      { "item": "The division of labor this topic names (data engineers move and model data at scale; analytics engineers define metrics correctly for the business) is itself a claim about comparative advantage, not about who is more senior — a data engineer who could technically write the metric's business logic may still not be the person who should own deciding what the business logic ought to be.", "at": [{ "step": "Reveal: ownership moves to analytics engineers" }] },
+      { "item": "Calling the metric-ownership negotiation a process rather than a document is the load-bearing claim in this topic's middle section: a written policy that nobody is actually empowered to enforce when a conflict arises is functionally the same as having no policy, since the failure mode (two people computing the same metric differently) happens exactly at the moment of disagreement, not before it.", "at": [{ "step": "Reveal: the negotiation that keeps a metric from being computed twice" }] },
+      { "item": "Minerva's own reported numbers (12,000+ metrics, 4,000+ dimensions, 200+ producers) matter less as a specific fact to memorize than as evidence that the single-metric-definition idea this topic teaches survives at a scale far beyond what any one team's convention could hold together informally.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own list of what it leaves out (semantic-layer compilation mechanics, BI tool choice, the serving engine, the full negotiation process) is itself evidence of the handoff concept working as designed: each left-out piece is legitimately someone else's job, named plainly rather than vaguely gestured at.", "at": [{ "step": "Reveal: what this topic leaves out" }] },
+      { "item": "The Prove It step's bypassed-metric-layer scenario generalizes beyond SQL specifically: any consumer recomputing a shared definition independently, in any tool or language, reproduces the identical organizational failure, because the failure is about where the computation happened, not what syntax it was written in.", "at": [{ "step": "Prove it" }] },
+      { "item": "Because Airbnb's own Minerva posts could not be fetched directly in this sandbox, every specific number and architectural detail attributed to Minerva here traces to a secondary source, which this topic's own FACT-CHECK.md states plainly rather than implying firsthand verification of Airbnb's primary text.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own executable example (examples.py) deliberately keeps the fan-out small (one three-night booking among three total) so the mechanism is visible by inspection, not because real-world grain mismatches are typically this small — the lesson is the mechanism, not this example's specific ratio.", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

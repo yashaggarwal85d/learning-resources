@@ -5426,4 +5426,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "This chapter leaves the model's side of the platform here — the syllabus's own next three subsections (production RAG, reverse ETL, graph data) are not taught in this course. What does continue is the warehouse underneath all of it, and the question of who it actually serves: the analysts and dashboards this course has built toward since Chapter 3, and the contract that decides where data engineering's job ends and theirs begins.",
   },
+  {
+    id: 'de.serving-contract-ownership-handoff',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/serving-contract-ownership-handoff',
+    title: 'Serving contract and ownership handoff',
+    syllabusTitle: 'Serving contract and ownership handoff',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.7' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['de-to-bi-handoff-contract', 'grain-and-freshness-documentation', 'analytics-engineer-metric-ownership'],
+    uses: ['semantic-layer-metric-compilation', 'fact-grain', 'conformed-dimension', 'data-contract-specification'],
+    declared: [],
+    bridge:
+      "This chapter leaves the model's side of the platform here — the syllabus's own next three subsections are not taught in this course. What does continue is the warehouse underneath all of it, and the question of who it actually serves: the analysts and dashboards this course has built toward since Chapter 3, and the contract that decides where data engineering's job ends and theirs begins. This topic is that contract: what gets handed off, documented, and who owns it on the other side.",
+    handoff:
+      "A contract names what the mart promises. It says nothing about which actual tool an analyst opens to use it. The next topic, a refresher, is that tool: the BI layer itself.",
+  },
 ];
