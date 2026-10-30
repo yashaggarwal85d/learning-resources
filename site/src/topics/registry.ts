@@ -4567,6 +4567,26 @@ export const TOPICS: TopicMeta[] = [
       "Lag is what a network partition costs you in the normal case. The next topic names precisely what it costs you in the worst case: CAP and PACELC.",
   },
   {
+    id: 'de.cap-pacelc-practice',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/cap-pacelc-practice',
+    title: 'CAP and PACELC in practice',
+    syllabusTitle: 'CAP and PACELC in practice',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['cap-pacelc'],
+    uses: ['replication-ack-modes'],
+    declared: [],
+    bridge:
+      "Lag is what a network partition costs you in the normal case. This topic names precisely what it costs you in the worst case: CAP's own PA-vs-PC choice, and PACELC's addition of the normal-case trade lag already demonstrated.",
+    handoff:
+      "Every replication topic so far assumed the same data lived on every node. The next topic is the orthogonal axis: splitting the data itself across nodes, starting with the real schemes for doing it.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
