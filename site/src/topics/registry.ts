@@ -5366,4 +5366,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A versioned dataset still assumes the world it was drawn from hasn't moved since. It has. The last topic of this section is what to do about that: data drift, concept drift, and the proxy metrics you watch while the true label is still weeks away.",
   },
+  {
+    id: 'de.drift-label-delay-monitoring',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/drift-label-delay-monitoring',
+    title: 'Drift and label-delay monitoring',
+    syllabusTitle: 'Drift and label-delay monitoring',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['data-drift-vs-concept-drift', 'psi-ks-js-per-feature-tests', 'schema-and-null-rate-drift', 'proxy-metrics-during-label-delay'],
+    uses: ['dataset-snapshot-reproducibility', 'label-version-drift', 'feature-ttl-staleness', 'label-feature-timeline-join', 'log-and-wait-label-join'],
+    declared: [],
+    bridge:
+      "A versioned dataset still assumes the world it was drawn from hasn't moved since. It has. This topic is what to do about that: telling data drift apart from concept drift, three per-feature tests that disagree on purpose, the silent corruption a null-rate creep causes, and the proxy metrics you watch while the true label is still weeks away.",
+    handoff:
+      "Everything in this section assumed a feature is a number or a category. An embedding is a feature too — a few hundred numbers standing for a document — and it drifts exactly the same way, except re-embedding the whole corpus to fix it is not free. The next topic is what keeping embeddings fresh actually costs at scale.",
+  },
 ];
