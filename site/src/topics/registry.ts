@@ -5326,4 +5326,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A feature store guarantees the definition is the same. It cannot tell you, after the fact, whether the value a real request actually saw matched what training assumed — that has to be measured, not assumed, and the way to measure it is to log the exact vector the model scored.",
   },
+  {
+    id: 'de.inference-logging-log-wait',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/inference-logging-log-wait',
+    title: 'Inference logging and log-and-wait features',
+    syllabusTitle: 'Inference logging and log-and-wait features',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['served-vector-logging', 'log-and-wait-label-join', 'shadow-vs-canary-capture', 'logging-pii-and-retention'],
+    uses: ['feature-store-single-definition', 'train-serve-skew-causes', 'online-offline-materialization', 'label-feature-timeline-join'],
+    declared: [],
+    bridge:
+      "A feature store guarantees the definition is the same. It cannot tell you, after the fact, whether the value a real request actually saw matched what training assumed — that has to be measured, not assumed. This topic is the way to measure it: log the exact vector the model scored, and join it to the label once the label arrives.",
+    handoff:
+      "A logged vector proves what one request saw. It says nothing about whether this training set, built from many such logs over many weeks, can be rebuilt byte for byte six months from now when someone asks which data trained which model. That is the next topic: giving a training set a version and a lineage.",
+  },
 ];
