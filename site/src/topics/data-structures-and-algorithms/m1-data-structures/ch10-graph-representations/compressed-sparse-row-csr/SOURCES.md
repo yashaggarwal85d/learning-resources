@@ -23,6 +23,20 @@ Cites: E. Cuthill and J. McKee, "Reducing the Bandwidth of Sparse Symmetric Matr
 Contents (for coverage.json):
 - Confirms RCM operates directly on a CSR/CSC-represented graph (reordering composes with the representation this topic builds), and that it is a bandwidth-reduction/permutation technique, not a from-scratch layout.
 
+## "Locality-based Graph Reordering for Processing Speed-Ups and Impact of Diameter" (Satav, IIT Bombay thesis, arXiv:2111.12281)
+URL: https://arxiv.org/pdf/2111.12281
+Version: July 4th, 2021
+
+> Earlier research has shown that the cache miss latency is responsible for more than half of the graph processing time, with the CPU execution having the smaller share.
+
+> Graph Reordering attempts to exploit the power-law distribution of graphs- few sparsely-populated vertices in the graph have high number of connections- to keep the frequently accessed vertices together locally and hence decrease the cache misses. However, reordering the graph by keeping the hot vertices together may affect the spatial locality of the graph, and thus add to the total CPU compute time.
+
+> A simple reordering of the graph vertices on the basis of their degree would threaten to disrupt the spatial locality of neighbourhoods in the original graph structure. For graph processing algorithms that are neighbourhood-based, like BFS, decreasing the spatial locality can therefore lead to worse, if not the same, post-reordering execution time.
+
+Contents (for coverage.json):
+- The actual measured motivation for reordering at all: cache miss latency, not CPU compute, dominates graph-processing time — this is the primary-source number behind this topic's "measured, not asserted" locality claim.
+- The real tradeoff a degree-sort-only reordering has: it clusters hot (high-degree) vertices together for temporal-locality reuse, but can disrupt the spatial locality that neighbourhood-walking algorithms (BFS, this topic's own traversal) depend on — this is the primary-source backing for naming BFS/RCM and community order as real alternatives to plain degree sort, not just restating the syllabus line.
+
 Note — still needed before fact-check closes (not a source, no quotes here):
-- The original Cuthill–McKee 1969 paper, or a textbook treatment, fetched directly (currently only cited secondhand via SciPy's docs).
-- A primary source with a measured locality/cache-miss result for degree-sort or RCM reordering on a large graph, to cross-check this topic's own `examples.py` measurement against, per CHAPTER.md's "Sources to start from." Candidates to try next session: GAP Benchmark Suite paper, a graph-processing systems paper (Ligra/GraphIt/GBBS) with a reordering ablation, or Intel/academic cache-locality-of-graph-layouts papers. (One guessed VLDB PDF URL this session resolved to the journal's landing page, not the paper — discarded, not cited.)
+- The original Cuthill–McKee 1969 paper is paywalled (ACM DL, DOI 10.1145/800195.805928); no freely fetchable full text found this session. SciPy's own reference (above) is kept as the primary source for "what RCM computes and that it operates on CSR/CSC," which is the only claim this topic needs about RCM itself — the historical bandwidth-reduction framing is dropped rather than cited secondhand.
+- This topic's own `examples.py` measurement (degree-sort reordering vs. no reordering, cache misses or wall-clock, on the chapter's large synthetic graph) is the thing actually shown on screen; the arXiv source above is the cross-check that the direction and rough order of magnitude of the effect is real, not that this topic reproduces its exact numbers.

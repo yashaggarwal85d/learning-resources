@@ -1,0 +1,39 @@
+{
+  "topic": "dsa.compressed-sparse-row-csr",
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-30",
+    "items": [
+      {
+        "item": "CSR is not merely 'an adjacency list flattened into one array' \u2014 it is the row-compressed form of the same offsets+column-index layout used for sparse matrices in numerical computing (cuSPARSE's own CSR description), so the format this topic teaches is identical, not analogous, to the one used in sparse linear algebra libraries.",
+        "placement": "here \u2014 the two-flat-array construction (topic 37)",
+        "source": "cuSPARSE 13.4 docs, SOURCES.md"
+      },
+      {
+        "item": "CSC is not a separately-built structure; it has exactly the same memory layout as CSR's transpose. So building CSC for reverse-edge queries is correctly framed as 'transpose the construction', not as a second, independent representation to learn.",
+        "placement": "here \u2014 CSC named for reverse edges (topic 37)",
+        "source": "cuSPARSE 13.4 docs, SOURCES.md"
+      },
+      {
+        "item": "Reverse Cuthill-McKee is a permutation computed over a graph already in CSR/CSC form, not a separate graph structure \u2014 the function signature itself (scipy.sparse.csgraph.reverse_cuthill_mckee takes a CSR/CSC matrix and returns a permutation array) is itself evidence that reordering composes with, rather than replaces, the representation.",
+        "placement": "here \u2014 vertex reordering section (topic 37)",
+        "source": "SciPy reverse_cuthill_mckee reference, SOURCES.md"
+      },
+      {
+        "item": "The real motivation for reordering at all is a specific, measured number, not a vague 'locality is good': cache miss latency (not CPU compute) is the majority of graph-processing time in prior measurement, which is why a representation change alone (adjacency list to CSR) is not the whole story \u2014 the vertex numbering on top of it is a second, independent lever on the same bottleneck.",
+        "placement": "here \u2014 opens the reordering section (topic 37)",
+        "source": "arXiv:2111.12281 abstract, SOURCES.md"
+      },
+      {
+        "item": "A degree-sort-only reordering is not strictly dominant over no reordering: it improves temporal locality (hot, high-degree vertices stay cache-resident) but can actively hurt spatial locality for neighbourhood-walking algorithms like BFS, which is the real, sourced reason the syllabus names three different reordering strategies (degree sort, BFS/RCM, community order) instead of just 'sort by degree' \u2014 each targets a different one of these two locality types.",
+        "placement": "here \u2014 motivates naming BFS/RCM and community order as real alternatives, not just more options (topic 37)",
+        "source": "arXiv:2111.12281, SOURCES.md"
+      },
+      {
+        "item": "CSR's two-pass build from an edge list (count degrees -> prefix sum into offsets, then scatter into targets using a per-vertex write cursor) is the reason topic 36 built the edge list first: CSR's natural input is an edge list, not an adjacency list, so the dependency direction in the chapter plan (36 before 37) is structurally required, not just a pedagogical choice.",
+        "placement": "out of scope for the quote itself, but structurally required \u2014 recorded here as a planning note, source is the chapter's own CHAPTER.md + general CSR construction knowledge, to be backed by whatever primary source's own worked CSR-construction example the storyboard stage finds",
+        "source": "CHAPTER.md's own dependency note; needs a primary source with a worked two-pass construction example before FACT-CHECK.md closes"
+      }
+    ]
+  }
+}
