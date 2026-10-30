@@ -5406,4 +5406,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Fresh vectors still have to live somewhere a query can search. The last question before this chapter leaves embeddings behind is not which index algorithm to run — the syllabus does not ask for that here — but which kind of store to run it in at all, decided from the shape of your corpus and your traffic rather than a benchmark chart.",
   },
+  {
+    id: 'de.choosing-vector-store',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/choosing-vector-store',
+    title: 'Choosing a vector store',
+    syllabusTitle: 'Choosing a vector store',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.1.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['vector-store-decision-axes', 'pgvector-vs-dedicated-engine-tradeoff', 'benchmark-marketing-skepticism'],
+    uses: ['embedding-batch-throughput-cost', 'content-hash-incremental-reembed', 'vector-delete-tombstone-propagation', 'dual-index-model-backfill'],
+    declared: [],
+    bridge:
+      "Fresh vectors still have to live somewhere a query can search. This topic is not which index algorithm to run — the syllabus does not ask for that here — but which kind of store to run it in at all, decided from the shape of your corpus and your traffic rather than a benchmark chart: pgvector inside Postgres, a dedicated engine, a search engine with vectors added, or a lakehouse-native option.",
+    handoff:
+      "This chapter leaves the model's side of the platform here — the syllabus's own next three subsections (production RAG, reverse ETL, graph data) are not taught in this course. What does continue is the warehouse underneath all of it, and the question of who it actually serves: the analysts and dashboards this course has built toward since Chapter 3, and the contract that decides where data engineering's job ends and theirs begins.",
+  },
 ];
