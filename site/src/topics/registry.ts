@@ -4667,6 +4667,26 @@ export const TOPICS: TopicMeta[] = [
       "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. That is classification, and it is where the governance half of this chapter starts.",
   },
   {
+    id: 'de.data-classification-sensitive-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/data-classification-sensitive-data',
+    title: 'Data classification and sensitive-data discovery',
+    syllabusTitle: 'Data classification and sensitive-data discovery',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['sensitivity-tier-and-category', 'automated-sensitive-data-discovery', 'tag-propagation-lineage', 'discovery-false-negatives'],
+    uses: ['pipeline-golden-signals', 'structured-logs-correlation-ids', 'data-contract-specification', 'open-data-contract-standard'],
+    declared: ['data-eu-regulatory-architecture-ch10', 'data-cloud-discovery-products-ch10', 'personal-data-is-regulated'],
+    bridge:
+      "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. This topic is classification, and it is where the governance half of this chapter starts.",
+    handoff:
+      "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. How a key hierarchy delivers that, and what rotating or deleting a key really does to the data, is the next topic: envelope encryption.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
