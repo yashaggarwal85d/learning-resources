@@ -5346,4 +5346,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A logged vector proves what one request saw. It says nothing about whether this training set, built from many such logs over many weeks, can be rebuilt byte for byte six months from now when someone asks which data trained which model. That is the next topic: giving a training set a version and a lineage.",
   },
+  {
+    id: 'de.training-set-versioning-lineage',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/training-set-versioning-lineage',
+    title: 'Training-set versioning and lineage',
+    syllabusTitle: 'Training-set versioning and lineage',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['dataset-snapshot-reproducibility', 'lakefs-branch-vs-dvc-pin', 'logged-model-dataset-linkage', 'label-version-drift'],
+    uses: ['served-vector-logging', 'log-and-wait-label-join', 'feature-store-single-definition'],
+    declared: [],
+    bridge:
+      "A logged vector proves what one request saw. It says nothing about whether this training set, built from many such logs over many weeks, can be rebuilt byte for byte six months from now when someone asks which data trained which model. This topic is giving a training set a version and a lineage: a snapshot to query, a branch or a pin to point at it, and an experiment tracker that links all three to the model it produced.",
+    handoff:
+      "A versioned dataset still assumes the world it was drawn from hasn't moved since. It has. The last topic of this section is what to do about that: data drift, concept drift, and the proxy metrics you watch while the true label is still weeks away.",
+  },
 ];
