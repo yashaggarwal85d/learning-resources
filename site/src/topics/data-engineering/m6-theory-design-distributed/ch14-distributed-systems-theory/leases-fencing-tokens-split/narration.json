@@ -1,0 +1,76 @@
+{
+  "topic": "de.leases-fencing-tokens-split",
+  "steps": [
+    {
+      "lines": [
+        "Notice that the first worker did everything right, by its own lights.",
+        "It held a lock, it paused for reasons entirely outside its control, and it checked that the lock was still good before resuming.",
+        "Everything it could see told it to go ahead. What it couldn't see is the part that matters."
+      ]
+    },
+    {
+      "lines": [
+        "Before choosing, think about what actually stops an arbitrarily long pause from landing wherever it wants.",
+        "Nothing you add on the client's own side has a way to guarantee that. Whatever fixes this has to live somewhere the pause can't reach."
+      ],
+      "answer": [
+        "Only the storage layer refusing the stale write actually works.",
+        "A longer lease just buys more time before the identical failure. Another check just gives the pause one more gap to land in.",
+        "The fix has to sit at the one place the pause can't interfere with: the moment the write actually arrives."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what a lease is actually buying here, and what it's costing to buy it.",
+        "While it holds, nothing else in the system can possibly be the leader, so a local answer is as good as asking everyone.",
+        "That certainty rests entirely on clocks agreeing closely enough. Loosen that assumption and the certainty goes with it."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention to where exactly the danger lives, because it's not where it looks like it lives.",
+        "It's not in the length of the pause. It's in the fact that a pause can start at literally any instant, including the one between your check and your write.",
+        "Move the check right up against the write, and you haven't closed that gap. You've just given it a new address."
+      ]
+    },
+    {
+      "lines": [
+        "Notice who's doing the checking now, because that's the entire fix.",
+        "Not the client, checking itself. The resource, checking the number arriving with the write against the highest one it's already seen.",
+        "A pause can corrupt what a client believes. It can't touch what the resource has already recorded."
+      ]
+    },
+    {
+      "lines": [
+        "Separate what's genuinely different across these four systems from what's identical underneath.",
+        "A sequencer, an epoch, a zxid, a term. Four names, four slightly different formats.",
+        "Every one of them is a number that only grows, checked by something that refuses to let it go backward."
+      ]
+    },
+    {
+      "lines": [
+        "Think carefully about what a lock can and can't promise, separate from how carefully it's used.",
+        "It can promise to coordinate clients who check it and respect what it says. It cannot promise anything about a client who's stopped running entirely.",
+        "That's not a flaw in any particular lock. It's a limit on what a lock, by itself, is."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the whole fix, not four separate production names.",
+        "A lease buys a local answer, paid for in a clock assumption. No amount of client-side checking survives an unbounded pause. A number that only grows, checked by the thing being written to, does.",
+        "Everything else in this topic is that one idea, dressed differently."
+      ]
+    },
+    {
+      "lines": [
+        "Before answering, think about what the storage layer is actually comparing when it rejects a stale write.",
+        "It needs to look at a number and know, just from the number, whether something larger has already come through."
+      ],
+      "answer": [
+        "No, uniqueness alone isn't enough.",
+        "A random token tells the storage this write is different from the last one, but nothing about whether it's older or newer.",
+        "Without an order to compare against, the storage has no way to pick out the stale write at all."
+      ]
+    }
+  ]
+}
