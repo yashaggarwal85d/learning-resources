@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the models CAP reasons about
+
+<ul class="resources">
+  <Resource kind="reel" title="Linearizability" domain="data-engineering" host="de.linearizability" by="Chapter 14, topic 5" />
+  <Resource kind="reel" title="Sequential and causal consistency" domain="data-engineering" host="de.sequential-causal-consistency" by="Chapter 14, topic 6" />
+  <Resource kind="reel" title="Serializability vs strict serializability" domain="data-engineering" host="de.serializability-vs-strict-serializability" by="Chapter 14, topic 7" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes directly
+
+<ul class="resources">
+  <Resource kind="reading" title="Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services" href="https://www.cs.princeton.edu/courses/archive/spr22/cos418/papers/cap.pdf" by="Gilbert and Lynch, SIGACT News 2002">The original theorem and proof, and the fair-execution condition.</Resource>
+  <Resource kind="reading" title="Perspectives on the CAP Theorem" href="https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer2.pdf" by="Gilbert and Lynch, IEEE Computer 2012">The theorem restated with atomic/available defined precisely, and the proof's two-group split.</Resource>
+  <Resource kind="reading" title="CAP Twelve Years Later: How the 'Rules' Have Changed" href="https://sites.cs.ucsb.edu/~rich/class/cs293b-cloud/papers/brewer-cap.pdf" by="Eric Brewer, IEEE Computer 2012">Brewer's own admission that "pick two" oversimplified the tradeoffs.</Resource>
+  <Resource kind="reading" title="Consistency Tradeoffs in Modern Distributed Database System Design" href="https://paperswelove.org/papers/consistency-tradeoffs-in-modern-distributed-databa-4a1ea3bd/" by="Daniel Abadi, IEEE Computer 2012 (abstract)">PACELC's own abstract.</Resource>
+  <Resource kind="reading" title="Problems with CAP, and Yahoo's little known NoSQL system" href="http://dbmsmusings.blogspot.com/2010/04/problems-with-cap-and-yahoos-little.html" by="Daniel Abadi, DBMS Musings, 2010">PACELC's original definition and the three worked system classifications.</Resource>
+  <Resource kind="reading" title="Inside Cloud Spanner and the CAP Theorem" href="https://cloud.google.com/blog/products/databases/inside-cloud-spanner-and-the-cap-theorem" by="Eric Brewer, Google Cloud blog, 2017">Why Spanner is "effectively CA" but not literally.</Resource>
+</ul>
+
+</section>

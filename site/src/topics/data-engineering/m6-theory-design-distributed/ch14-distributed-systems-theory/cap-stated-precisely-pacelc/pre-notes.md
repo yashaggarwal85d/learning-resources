@@ -1,0 +1,6 @@
+- **Atomic (in CAP)**: Gilbert and Lynch's own name for what topic 5 calls linearizability — every operation appears to happen at one instant. *Where you meet it:* the "A" in CAP, carried over from topic 5, not redefined.
+- **Available (liveness property)**: every request to a non-failing node eventually gets a response. *Where you meet it:* the hook's isolated replica, still answering through the partition.
+- **Partition tolerant**: the network may lose arbitrarily many messages between two groups of nodes. *Where you meet it:* the three-replica split that drives the whole proof sketch.
+- **Fair execution**: Gilbert and Lynch's technical condition — every message sent is eventually delivered unless the run never ends, so losing finitely many messages forever is excluded. *Where you meet it:* named in the theorem's own conditions, not re-derived.
+- **PACELC**: Abadi's extension — if a Partition, choose Availability or Consistency; Else, choose Latency or Consistency. *Where you meet it:* the four-quadrant classification of Dynamo-family, ACID, and PNUTS systems.
+- **Effectively CA**: a system that is technically CP (it does sacrifice consistency during a partition) but whose partitions are rare enough that users can plan as if it were CA. *Where you meet it:* Spanner, in its own architect's words.
