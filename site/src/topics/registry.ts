@@ -5586,4 +5586,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every topic in this chapter built one piece of an honest benchmark: a warmed-up target, a load generator that doesn't lie about its own worst case, data shaped like real data, and the industry suites that apply all three at scale. None of that method decides, by itself, when a capstone is actually done, or who outside engineering has to agree the numbers mean what the team says they mean. The next chapter is that half of the job: writing the requirements and contracts that decide what 'done' even means, and communicating the trade-off this chapter's own numbers represent to someone who will never read a percentile.",
   },
+  {
+    id: 'de.negotiating-data-contracts-slos',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/negotiating-data-contracts-slos',
+    title: 'Negotiating data contracts and SLOs',
+    syllabusTitle: 'Negotiating data contracts and SLOs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['data-contract', 'slo-tiering', 'error-budget-ownership', 'producer-consumer-negotiation'],
+    uses: [],
+    declared: [],
+    bridge:
+      "Every topic in this chapter built one piece of an honest benchmark: a warmed-up target, a load generator that doesn't lie about its own worst case, data shaped like real data, and the industry suites that apply all three at scale. None of that method decides, by itself, when a capstone is actually done, or who outside engineering has to agree the numbers mean what the team says they mean. This chapter is that half of the job: writing the requirements and contracts that decide what 'done' even means, and communicating the trade-off this chapter's own numbers represent to someone who will never read a percentile.",
+    handoff:
+      "Three priced tiers on a cost curve are a negotiation finished, not a decision made — someone outside engineering still has to actually pick one, and the next topic is how that choice gets explained to them in the terms they use to decide, not the terms that built the curve.",
+  },
 ];
