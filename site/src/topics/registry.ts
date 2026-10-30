@@ -5526,4 +5526,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A warmed-up, steady-state run still has to be summarized into one number someone reads, and the easiest way to summarize it is also the most dishonest: a mean. The next topic is why that single number hides exactly the tail that matters, and what to report instead.",
   },
+  {
+    id: 'de.latency-percentiles-histogram-aggregation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch18-capstones-benchmarking/latency-percentiles-histogram-aggregation',
+    title: 'Latency percentiles and histogram aggregation',
+    syllabusTitle: 'Latency percentiles and histogram aggregation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 18, title: 'Capstones and Benchmarking', section: '18.1' },
+    minutes: 18,
+    verified: '2026-10-30',
+    introduces: ['mean-hides-tail-latency', 'percentile-ladder-p50-to-max', 'histogram-merge-vs-percentile-average', 'fanout-tail-amplification', 'closed-loop-vs-constant-rate-generator', 'coordinated-omission-effect'],
+    uses: ['steady-state-detection', 'cold-vs-hot-cache-reporting'],
+    declared: [],
+    bridge:
+      "A warmed-up, steady-state run still has to be summarized into one number someone reads, and the easiest way to summarize it is also the most dishonest: a mean. This topic is why that single number hides exactly the tail that matters, and what to report instead: the full percentile ladder, histograms merged instead of averaged, and the fan-out math that makes a tail far more common than it looks.",
+    handoff:
+      "Every number in this topic came from requests generated against the shop's real schema with a uniform customer id — data far tidier than any real traffic actually is. The next topic asks what changes once the data looks the way real data looks: a few customers dominating the traffic, not an even spread.",
+  },
 ];
