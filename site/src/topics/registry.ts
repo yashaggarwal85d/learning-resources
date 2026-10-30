@@ -4767,6 +4767,26 @@ export const TOPICS: TopicMeta[] = [
       "The map shows a ladder of models, and the strongest rungs cost the most. The next question is whether you can simply have the top rung everywhere. You cannot, and the result that says why, CAP, is usually quoted wrongly. The next topic states it precisely.",
   },
   {
+    id: 'de.cap-stated-precisely-pacelc',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/cap-stated-precisely-pacelc',
+    title: 'CAP, stated precisely, and PACELC',
+    syllabusTitle: 'CAP, stated precisely, and PACELC',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.4' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['cap-theorem-formal-statement', 'cap-misreadings-and-per-operation-choice', 'pacelc-else-branch', 'effectively-ca-meaning'],
+    uses: ['linearizability-definition', 'causal-ceiling-always-available', 'consistency-model-map'],
+    declared: ['timing-models-sync-partial-async', 'link-models-fair-loss-reliable', 'cap-pacelc', 'replication-ack-modes', 'distributed-sql-architecture', 'partitioning-schemes'],
+    bridge:
+      "The map so far places every model by how strong its promise is. CAP is the theorem that explains why no model gets to sit at the top of that map for free: once a partition happens, something has to give, and the two words usually quoted for that trade are themselves often misread. This topic is the theorem stated precisely, its common misreadings, and PACELC's extension to the normal case with no partition at all.",
+    handoff:
+      "CAP and PACELC name the choice a system makes; they say nothing about the mechanisms that make a choice survivable, a leader failing mid-write, a coordinator dying mid-transaction. The next topics build those mechanisms, starting with Raft.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
