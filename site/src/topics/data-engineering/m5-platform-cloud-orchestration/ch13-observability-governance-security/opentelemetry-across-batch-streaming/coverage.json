@@ -1,0 +1,21 @@
+{
+  "topic": "de.opentelemetry-across-batch-streaming",
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "OpenTelemetry defines traces, metrics, logs and baggage as its signals (profiles/events still proposal-stage), and the Collector is a vendor-agnostic receive/process/export pipeline so applications export once (OTLP).", "at": [{ "out": "here, referenced from a named step not a reel beat" }] },
+      { "item": "traceparent carries version-trace_id-parent_id-flags in a fixed, portable format; every compliant tool must at minimum forward it.", "at": [{ "out": "here" }] },
+      { "item": "Messaging spans use links, not parent/child, as the default correlation because a span can have only one parent, batch fan-in has many producers, and consumption can happen inside another ambient span.", "at": [{ "out": "here" }] },
+      { "item": "A span's link count is configurable with a default limit (128); a batch receive accounting for more messages than that drops links beyond the limit.", "at": [{ "out": "here" }] },
+      { "item": "Kafka-specific and shared messaging semantic-convention attributes (messaging.destination.name, messaging.destination.partition.id) make a Kafka trace and a database trace queryable the same way.", "at": [{ "out": "here" }] },
+      { "item": "Debezium supports OpenTelemetry tracing, but a CDC write is a real break point: trace metadata must be explicitly passed through it, not assumed to propagate.", "at": [{ "out": "here" }] },
+      { "item": "OpenLineage's object model (Job, Dataset, Run, RunEvent) answers a different question than OTel: what a job read/wrote per run, not what happened during one execution.", "at": [{ "out": "here, named as the complement; full model is topic 11" }] },
+      { "item": "Topic 1's correlation key (run/task/asset/partition) and golden signals are the base this topic adds a trace on top of.", "at": [{ "out": "uses, not re-taught" }] },
+      { "item": "Chapter 8's CDC architecture and Chapter 9's Kafka records/headers and Flink/Spark consumers are the concrete systems this topic's trace crosses — both chapters are unbuilt as of this topic's build, so their ids are declared, not used, per CHAPTER.md's cross-chapter-id rule.", "at": [{ "out": "declared" }] },
+      { "item": "A quantile/percentile, a Kafka record as carrier (queues-vs-logs), and logical decoding (CDC) are prior-chapter ideas this topic leans on without re-teaching.", "at": [{ "out": "uses" }] },
+      { "item": "The W3C Trace Context Recommendation is the standard OpenTelemetry's HTTP/Kafka-header propagation implements; a Kafka hop has no HTTP request, so the header map is carried in the record's own headers instead.", "at": [{ "out": "here" }] },
+      { "item": "A trace and a log can be correlated by TraceId/SpanId (topic 1's forward pointer), but a trace and a lineage event share only the idea of a run identifier, not a data model.", "at": [{ "out": "here, closing the loop topic 1 opened" }] }
+    ]
+  }
+}
