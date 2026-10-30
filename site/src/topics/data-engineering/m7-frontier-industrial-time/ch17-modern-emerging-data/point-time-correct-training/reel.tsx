@@ -48,12 +48,12 @@ const reel: Reel = {
       body: (
         <>
           Scan backward from the label's own timestamp. Stop at the first feature value at or
-          before it, never after.
+          before it, never after — this doesn't ask what the feature is now, only what it was at
+          that moment.
         </>
       ),
       duration: 4.2,
       fig: 'scan backward. Stop at the first value at or before.',
-      takeaway: "An as-of join doesn't ask what a feature is now. It asks what it was, the moment the label happened.",
       Visual: S.RevealAsOfMechanism,
     },
     {

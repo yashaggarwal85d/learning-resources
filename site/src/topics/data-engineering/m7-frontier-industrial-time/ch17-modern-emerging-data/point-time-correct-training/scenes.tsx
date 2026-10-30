@@ -96,8 +96,8 @@ export function RevealTemporalLeakageMeasured({ t }: StepCtx) {
         naive join (current value)
       </T>
       <rect x={25} y={55} width={520} height={28} rx={4} fill={C.cocoa} />
-      <rect x={25} y={55} width={520 * n} height={28} rx={4} fill={C.badText} />
-      <T x={555} y={75} s={16} f={C.badText} a="end">
+      <rect x={25} y={55} width={520 * n} height={28} rx={4} fill={C.cherry} />
+      <T x={555} y={75} s={16} f={C.cherryText} a="end">
         inflated
       </T>
       <T x={25} y={125} s={14} f={C.latte}>
@@ -123,15 +123,18 @@ export function RevealPostOutcomeField({ t }: StepCtx) {
         {cells.map((i) => {
           const filled = i % 3 === 0;
           const k = easeOut(seg(t, 0.15 + i * 0.07, 0.15 + i * 0.07 + 0.3));
-          return (
-            <g key={i} opacity={k}>
-              <rect x={30 + i * 55} y={70} width={44} height={44} rx={4} fill={filled ? C.badText : C.cocoa} />
-              <T x={30 + i * 55 + 22} y={140} s={12} f={filled ? C.badText : C.taupe} a="middle">
-                {filled ? 'churned' : 'stayed'}
-              </T>
-            </g>
-          );
+          return <rect key={i} x={30 + i * 55} y={70} width={44} height={44} rx={4} fill={filled ? C.cherry : C.cocoa} opacity={k} />;
         })}
+      </g>
+      <g opacity={easeOut(seg(t, 0.9, 1.2))}>
+        <rect x={150} y={135} width={18} height={18} rx={3} fill={C.cherry} />
+        <T x={174} y={149} s={12} f={C.cherryText}>
+          churned
+        </T>
+        <rect x={330} y={135} width={18} height={18} rx={3} fill={C.cocoa} />
+        <T x={354} y={149} s={12} f={C.taupe}>
+          stayed
+        </T>
       </g>
       <T x={300} y={190} s={13} f={C.taupe} a="middle" w={600}>
         the field exists only where the label does
@@ -208,10 +211,26 @@ export function Recap({ t }: StepCtx) {
 }
 
 export function ProveIt({ t }: StepCtx) {
+  const a = easeOut(seg(t, 0, 0.4));
+  const b = easeOut(seg(t, 0.3, 0.7));
   return (
     <Svg label="backfilled from the warehouse, not the online code. Trustworthy?" h={220}>
-      <Row y={70} label="new feature, backfilled" value="approximated from warehouse tables" o={easeOut(seg(t, 0, 0.4))} />
-      <Row y={130} label="is it the same feature" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.65))} />
+      <g opacity={a}>
+        <T x={25} y={60} s={15} f={C.latte}>
+          new feature, backfilled
+        </T>
+        <T x={25} y={85} s={17} f={C.crema}>
+          approximated from warehouse tables
+        </T>
+      </g>
+      <g opacity={b}>
+        <T x={25} y={140} s={15} f={C.latte}>
+          is it the same feature
+        </T>
+        <T x={25} y={165} s={17} f={C.focus}>
+          not yet revealed
+        </T>
+      </g>
     </Svg>
   );
 }
