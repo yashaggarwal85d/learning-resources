@@ -4567,6 +4567,26 @@ export const TOPICS: TopicMeta[] = [
       "The executor's job is to run a task and the scheduler's job is to retry it if it fails. That retry is only safe if running the task twice does no harm. The next topic is exactly that property, and the two kinds of failure that make it necessary.",
   },
   {
+    id: 'de.idempotent-tasks-failure-semantics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/idempotent-tasks-failure-semantics',
+    title: 'Idempotent tasks and failure semantics',
+    syllabusTitle: 'Idempotent tasks and failure semantics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['idempotent-tasks-failure-semantics', 'zombie-task-detection', 'trigger-rule-propagation'],
+    uses: ['de.orchestrator-architecture-scheduler', 'ch9.exactly-once-effect-recipe', 'ch9.deterministic-batch-id'],
+    declared: [],
+    bridge:
+      "The executor's job is to retry a failed task, but that retry is only safe if running the task twice does no harm. This topic is that property — at-least-once execution, the overwrite-vs-append line between a harmless retry and a doubled row count, and the trigger rules and heartbeat mechanism that decide who runs and who's declared dead, run and read back from a real metadata database.",
+    handoff:
+      "An idempotent task can safely be re-run for one interval. A backfill re-runs it for every interval across years of history — the same safety property, at a scale where it also becomes a risk to whatever source or warehouse absorbs that much repeated work. The next topic is exactly that scale.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -4625,6 +4645,26 @@ export const TOPICS: TopicMeta[] = [
       "The last topic stated the model every protocol is correct relative to, but gave processes no shared clock to measure delay by. This topic is what the clocks a real machine actually has — a drifting crystal, NTP's own correction, a wall clock and a monotonic clock — really promise, and why 'last write wins by timestamp' quietly loses writes even when every clock reports itself synchronised.",
     handoff:
       "A bounded-error clock admits when it can't order two events, but it still needs real time to reason about, and real time is exactly what's unreliable here. The next topic drops the clock entirely and asks what 'happened before' can mean using only the messages processes actually exchange.",
+  },
+  {
+    id: 'de.lamport-clocks-happens-before',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/lamport-clocks-happens-before',
+    title: 'Lamport clocks and happens-before',
+    syllabusTitle: 'Lamport clocks and happens-before',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['happens-before-partial-order', 'lamport-scalar-clock', 'clock-condition-total-order'],
+    uses: ['timing-models-sync-partial-async', 'clock-drift-ntp-error', 'last-write-wins-clock-hazard', 'dag', 'graph-traversal'],
+    declared: [],
+    bridge:
+      "If a timestamp cannot be trusted to order two writes, what can? Not a time at all, but who could have known what: a write that a node had seen when it made another write is ordered before it, whatever the clocks said. This topic is that relation, happens-before, and the one number that respects it: a Lamport clock.",
+    handoff:
+      "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. That is the vector clock.",
   },
   {
     id: 'de.ingestion-modes-push-vs',
