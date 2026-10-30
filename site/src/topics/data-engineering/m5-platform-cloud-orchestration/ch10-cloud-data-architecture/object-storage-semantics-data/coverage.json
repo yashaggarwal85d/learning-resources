@@ -1,0 +1,121 @@
+{
+  "topic": "de.object-storage-semantics-data",
+  "syllabus": [
+    {
+      "clause": "strong read-after-write and list consistency (S3 since Dec 2020)",
+      "at": [
+        { "step": "What strong consistency actually promised, and when" },
+        { "step": "Two writers, one key, no error" }
+      ]
+    },
+    {
+      "clause": "atomic single-object PUT but no atomic rename (copy+delete) unlike ADLS Gen2 hierarchical namespace",
+      "at": [
+        { "step": "One PUT is atomic; a rename never was — unless the store has a hierarchy" }
+      ]
+    },
+    {
+      "clause": "conditional writes (If-None-Match Aug 2024, If-Match Nov 2024, CopyObject Oct 2025) as compare-and-swap for catalog-free commits and leases",
+      "at": [
+        { "step": "Which guarantee closes this gap?" },
+        { "step": "Conditional writes turn one key into a lock" }
+      ]
+    },
+    {
+      "clause": "per-prefix request-rate limits and 503 SlowDown",
+      "at": [
+        { "step": "A hot key range throttles, even though the bucket has no limit" }
+      ]
+    },
+    {
+      "clause": "why table formats exist on top of these guarantees (§6.3)",
+      "at": [
+        { "step": "In one breath" },
+        { "deep": "Where this goes next" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS: strong read-after-write and list consistency (Dec 2020)",
+      "items": [
+        { "item": "Strong read-after-write consistency for any storage request, automatically, for all applications", "at": [{ "step": "What strong consistency actually promised, and when" }] },
+        { "item": "Strong consistency for list operations after a write", "at": [{ "step": "What strong consistency actually promised, and when" }] },
+        { "item": "No change to performance, availability or cost", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: Amazon S3 user guide (atomic single-key PUT)",
+      "items": [
+        { "item": "Updates to a single key are atomic: never partial or corrupt data on a concurrent read", "at": [{ "step": "One PUT is atomic; a rename never was — unless the store has a hierarchy" }] },
+        { "item": "Updates are key-based; no atomic update across keys unless the application builds it", "at": [{ "step": "One PUT is atomic; a rename never was — unless the store has a hierarchy" }] },
+        { "item": "No object locking for concurrent writers; the latest timestamp wins on a simultaneous unconditional PUT", "at": [{ "step": "Two writers, one key, no error" }] }
+      ]
+    },
+    {
+      "source": "AWS: conditional requests on S3",
+      "items": [
+        { "item": "Conditional writes supported on PutObject, CompleteMultipartUpload and CopyObject", "at": [{ "step": "Conditional writes turn one key into a lock" }] },
+        { "item": "No additional charge for conditional reads, writes or deletes, including failed requests", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: If-None-Match conditional writes (Aug 2024)",
+      "items": [
+        { "item": "If-None-Match on PutObject and CompleteMultipartUpload, launched Aug 20, 2024", "at": [{ "step": "Conditional writes turn one key into a lock" }, { "deep": "Internals" }] },
+        { "item": "Removes the need for client-side consensus mechanisms to avoid overwriting another client's object", "at": [{ "step": "Which guarantee closes this gap?" }] }
+      ]
+    },
+    {
+      "source": "AWS: If-Match conditional writes (Nov 2024)",
+      "items": [
+        { "item": "If-Match checked against an object's current ETag, launched Nov 25, 2024", "at": [{ "step": "Conditional writes turn one key into a lock" }, { "deep": "Internals" }] },
+        { "item": "Framed by AWS itself as offloading a compare-and-swap operation to S3", "at": [{ "step": "Conditional writes turn one key into a lock" }] }
+      ]
+    },
+    {
+      "source": "AWS: conditional CopyObject (Oct 2025)",
+      "items": [
+        { "item": "If-none-match/if-match extended to CopyObject, launched Oct 29, 2025", "at": [{ "deep": "Internals" }] },
+        { "item": "Matching s3:if-match / s3:if-none-match bucket-policy condition keys", "at": [{ "out": "a bucket-policy enforcement detail, not needed for this topic's own compare-and-swap demonstration; named in references.md" }] }
+      ]
+    },
+    {
+      "source": "AWS: optimizing Amazon S3 performance (per-prefix request rates)",
+      "items": [
+        { "item": "At least 3,500 PUT/COPY/POST/DELETE requests/sec per partitioned prefix, no limit on prefix count", "at": [{ "step": "A hot key range throttles, even though the bucket has no limit" }] },
+        { "item": "At least 5,500 GET/HEAD requests/sec per partitioned prefix", "at": [{ "out": "the read-rate baseline; this topic's own example and reel focus on the write-rate baseline that the conditional-write and commit-log use case actually hits" }] },
+        { "item": "503 Slow Down while S3 scales to a new, higher request rate", "at": [{ "step": "A hot key range throttles, even though the bucket has no limit" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn: ADLS Gen2 hierarchical namespace",
+      "items": [
+        { "item": "Atomic directory manipulation: one entry updated instead of processing every blob under the path", "at": [{ "step": "One PUT is atomic; a rename never was — unless the store has a hierarchy" }] },
+        { "item": "Hive/Spark write-then-rename jobs are the motivating case; rename can otherwise take longer than the analytics process itself", "at": [{ "step": "One PUT is atomic; a rename never was — unless the store has a hierarchy" }, { "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Consistency (what a read sees) and concurrency control (what a write is allowed to do) are different guarantees; strong consistency alone does not prevent a lost-write race", "at": [{ "step": "Which guarantee closes this gap?" }] },
+      { "item": "A naive check-then-write pattern against an object store is not a real check, because the check and the write are two separate, non-atomic requests", "at": [{ "step": "Two writers, one key, no error" }] },
+      { "item": "A precondition header is evaluated by the server at the moment of the write, which is the only way to close a check-then-write race without a separate coordination service", "at": [{ "step": "Which guarantee closes this gap?" }] },
+      { "item": "There is no rename call in the S3 API or in boto3; a rename is always implemented client-side as copy_object then delete_object", "at": [{ "step": "One PUT is atomic; a rename never was — unless the store has a hierarchy" }] },
+      { "item": "If-None-Match with a value of * means create-if-absent; If-Match with an ETag means update-if-unchanged — two distinct compare-and-swap primitives, not one", "at": [{ "step": "Conditional writes turn one key into a lock" }] },
+      { "item": "A catalog-free append-only commit log can be built on conditional writes alone, by writing the next sequence number's key only if it does not already exist", "at": [{ "deep": "Production" }] },
+      { "item": "A lease pattern (renew only if you still hold it) is If-Match against the lease key's own current ETag, not a separate locking service", "at": [{ "step": "Conditional writes turn one key into a lock" }] },
+      { "item": "The request-rate limit is scoped to the key prefix, not the whole bucket, so one hot key or narrow prefix can throttle while the rest of a large bucket has full headroom", "at": [{ "step": "A hot key range throttles, even though the bucket has no limit" }] },
+      { "item": "Spreading writes across more key prefixes is the documented fix for prefix throttling; it is a key-space design change, not a quota increase request", "at": [{ "step": "A hot key range throttles, even though the bucket has no limit" }] },
+      { "item": "A table format (Iceberg, Delta, Hudi) exists specifically because a conditional write only protects one key, not a consistent, atomic view across the many keys that make up one table", "at": [{ "step": "In one breath" }, { "deep": "Where this goes next" }] },
+      { "item": "The three conditional-write launches (If-None-Match, If-Match, conditional CopyObject) shipped as three separate, independently dated features over about fourteen months, not as one feature in three parts", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

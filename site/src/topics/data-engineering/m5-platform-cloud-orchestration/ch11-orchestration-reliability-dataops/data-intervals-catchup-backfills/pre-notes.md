@@ -1,0 +1,7 @@
+- **Logical date**: the start of the data interval a Dag run owns, not the time it actually executes. *Where you meet it:* the gap between "for January first" and "runs on January second."
+- **Data interval**: the time range a single Dag run is responsible for. *Where you meet it:* what a run's logical date is the start of.
+- **Catchup**: whether the scheduler creates a run for every missed interval since a Dag's start date, or only the latest one. *Where you meet it:* off by default in Airflow 3.
+- **Backfill**: creating Dag runs for past dates, through the CLI, API or UI. *Where you meet it:* the operation a five-year "just to be safe" run actually is.
+- **Reprocess behaviour**: what a backfill does when a run already exists for a logical date — leave it, redo it if failed, or redo it regardless. *Where you meet it:* the default, `none`, never touches an existing run.
+- **Per-partition backfill**: one run per partition, independently retryable. *Where you meet it:* Dagster's own default, contrasted with a single run across a whole range.
+- **Blast radius**: how much of a shared resource's own budget a long operation consumes. *Where you meet it:* a backfill spending a source's request budget on history instead of today's load.
