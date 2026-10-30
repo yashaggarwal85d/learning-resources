@@ -4546,4 +4546,32 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.requirements-into-slos',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/requirements-into-slos',
+    title: 'Requirements into SLOs',
+    syllabusTitle: 'Requirements into SLOs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['ask-to-slo-translation', 'six-dimension-requirement-checklist', 'correctness-as-specification'],
+    uses: ['latency-percentiles'],
+    declared: [
+      'error-budget-burn-rate',
+      'schedule-aware-freshness-alert',
+      'actionable-page-test',
+      'end-to-end-argument',
+      'at-least-once-plus-idempotence',
+      'cap-theorem-formal-statement',
+      'consistency-model-map',
+    ],
+    bridge:
+      'The theory is now complete enough to use: a model to reason in, an order without clocks, a ladder of consistency models, one impossibility result, and the mechanisms that buy what the result allows. This chapter does not add theory. It applies it: given a vague request for a data system, how do you turn it into measurable requirements first, so that every later choice can be defended. This first topic is that step: requirements into service-level objectives.',
+    handoff:
+      'Now there is a list of numbers the system must meet. The next question is how big the thing is: how many events a second, how many bytes a year, and what that does to storage, network and cost. That is capacity estimation, and it is the arithmetic every later choice rests on.',
+  },
 ];
