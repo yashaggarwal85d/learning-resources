@@ -1,0 +1,82 @@
+{
+  "topic": "de.orchestrator-architecture-scheduler",
+  "steps": [
+    {
+      "lines": [
+        "One team's deployment goes from a few hundred scheduled workflow files to several thousand, almost overnight.",
+        "Nobody expects the scheduler to get twice as slow. It gets a lot worse than that.",
+        "To see why, you first have to know what pieces are actually doing the work."
+      ]
+    },
+    {
+      "lines": [
+        "A working orchestrator needs four required parts, and only four.",
+        "A scheduler, which decides what should run now.",
+        "A dag processor, which parses the workflow files and is always its own separate process, so the scheduler never has to run code a workflow author wrote.",
+        "An a p i server, which fronts the user interface and the rest api.",
+        "And a metadata database, which holds the state of every run.",
+        "Here's the part people get wrong: the executor is not a fifth piece sitting next to these four. It is a setting on the scheduler itself, and it runs inside the scheduler's own process."
+      ]
+    },
+    {
+      "lines": [
+        "That one setting comes in three common shapes.",
+        "The local executor keeps the scheduler and every worker in one process, on one machine.",
+        "The celery executor adds a message broker and a pool of long running workers, so tasks run somewhere else entirely.",
+        "The kubernetes executor starts a brand new pod for every single task, and tears it down when the task finishes."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question before I tell you the answer.",
+        "Two scheduler processes point at the same metadata database at the same time.",
+        "Does any task ever get claimed, and scheduled, by both of them?",
+        "Think about it for a second before I reveal it."
+      ],
+      "answer": "No. A row lock that skips a row instead of waiting for it means a second scheduler simply moves on to the next available row, so no task is ever claimed twice."
+    },
+    {
+      "lines": [
+        "Here is that guarantee, run for real, not just described.",
+        "Two separate scheduler threads, ten real rows in one shared queue table, each thread racing the other to claim the next row.",
+        "Every single run split those ten rows cleanly between the two threads, with zero rows claimed twice.",
+        "The trick is that the lock only has to survive from the moment a row is claimed to the moment that claim is committed. It doesn't need to hold for the whole task."
+      ]
+    },
+    {
+      "lines": [
+        "Now the parsing cost itself, also measured directly, not estimated.",
+        "A real dag processor, parsing a few hundred workflow files, took well under a second.",
+        "The same processor, parsing a thousand files, took a couple of seconds.",
+        "And parsing five thousand files took around ten seconds.",
+        "Notice what stayed almost constant: the cost per file. What grew was simply the total, in direct proportion to how many files there were."
+      ]
+    },
+    {
+      "lines": [
+        "So why does that matter more than it sounds like it should?",
+        "Every single state change, for every task, is a write the metadata database has to absorb.",
+        "That database is very often the thing that actually strains first, long before the scheduler process's own processor usage looks like a problem.",
+        "A dashboard that shows a healthy, idle looking scheduler can still be sitting on top of a database that is quietly falling behind.",
+        "One more fact worth carrying forward: airflow two is on a documented path to end of life in April of twenty twenty six, well before airflow three's own current line even has an end date set."
+      ]
+    },
+    {
+      "lines": [
+        "So: four required parts, with the executor living inside the scheduler, not beside it.",
+        "Three executor shapes, trading one process for more isolation and more moving parts.",
+        "One coordination trick, a lock that skips instead of waiting, measured with zero double claims.",
+        "And one real cost curve: parsing time that grows with every file, not a fixed cost paid once."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario before we move on.",
+        "After a migration, a deployment's workflow file count jumps overnight. Not one individual workflow actually changed.",
+        "What's the first thing worth profiling?",
+        "Give it a second."
+      ],
+      "answer": "Parsing cost and metadata-database writes, not the scheduler process's own CPU — exactly what the last two measurements already showed, since both of those scale directly with file count."
+    }
+  ]
+}
