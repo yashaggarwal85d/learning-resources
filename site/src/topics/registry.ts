@@ -4647,6 +4647,26 @@ export const TOPICS: TopicMeta[] = [
       "A Job runs a fixed set of pods you wrote down. Spark does something stranger: you start one pod, the driver, and it asks the API server to create the rest. The next topic opens that design and what happens to its shuffle data when one of those pods disappears.",
   },
   {
+    id: 'de.spark-on-kubernetes-internals',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/spark-on-kubernetes-internals',
+    title: 'Spark on Kubernetes internals',
+    syllabusTitle: 'Spark on Kubernetes internals',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['spark-driver-creates-executor-pods', 'spark-dynamic-allocation-shuffle-tracking', 'spark-executor-decommissioning', 'k8s-operators-vs-managed-spark'],
+    uses: ['cgroup-memory-cpu-limits', 'oom-kill-vs-runtime-oom', 'requests-vs-limits', 'qos-classes-eviction', 'pdb-priority-preemption', 'k8s-reconciliation-loop', 'k8s-workload-objects', 'k8s-placement-and-storage', 'k8s-indexed-jobs-backoff-per-index', 'spark-task-hierarchy', 'spark-driver-executor-model'],
+    declared: [],
+    bridge:
+      "A Job runs a fixed set of pods you wrote down. Spark does something stranger: you start one pod, the driver, and it asks the API server to create the rest. This topic opens that design, and what happens to a stage's shuffle data when one of those executor pods disappears.",
+    handoff:
+      "A Spark executor is disposable: lose one and the stage is redone. Not everything on a cluster can be treated that way. A Kafka broker owns data on a disk and a Flink job owns state that took hours to build. The next topic is how Kubernetes runs processes that must keep their identity.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
