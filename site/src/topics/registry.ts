@@ -4847,6 +4847,26 @@ export const TOPICS: TopicMeta[] = [
       "Linearizability is the strongest single-object answer and, by the Attiya-Welch result, the most expensive. Most systems offer something weaker on purpose. The next topic states the two main weaker models, sequential consistency, which drops the real-time rule, and causal consistency, which drops almost everything but cause and effect.",
   },
   {
+    id: 'de.sequential-causal-consistency',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/sequential-causal-consistency',
+    title: 'Sequential and causal consistency',
+    syllabusTitle: 'Sequential and causal consistency',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['sequential-consistency-definition', 'causal-consistency-definition', 'causal-ceiling-always-available', 'session-guarantees-formal'],
+    uses: ['linearizability-definition', 'linearizable-vs-sequential-cost', 'happens-before-partial-order', 'vector-clock-exact-causality'],
+    declared: ['session-consistency-guarantees', 'cap-pacelc'],
+    bridge:
+      "Linearizability is the strongest single-object answer and, by the Attiya-Welch result, the most expensive. Most systems offer something weaker on purpose. This topic states the two main weaker models: sequential consistency, which drops the real-time rule, and causal consistency, which drops almost everything but cause and effect.",
+    handoff:
+      "Both models so far are about single objects: one register, one key. A database gives transactions that touch many objects at once, and there the same two ideas, order and real time, come in two more strengths with a famously confusing difference. That is the next topic: serializability versus strict serializability.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',

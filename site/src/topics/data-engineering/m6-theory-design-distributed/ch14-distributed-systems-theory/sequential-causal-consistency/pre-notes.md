@@ -1,0 +1,8 @@
+- **Total order**: a single sequence that every operation is placed into, with no ties. *Where you meet it:* what sequential consistency requires, and what linearizability's real-time rule adds a constraint on top of.
+- **Program order**: the order a single process issued its own operations in. *Where you meet it:* the one ordering constraint sequential consistency keeps.
+- **Causal dependency**: a link from one operation to another because the second could only have happened as a result of the first (a read that a later write depends on, or two operations on the same process). *Where you meet it:* the question-before-answer link in the chat example.
+- **Concurrent writes**: two writes with no causal link between them — neither happened as a result of the other. *Where you meet it:* Barbarella's and Cyrus's two answers, free to be seen in either order.
+- **Session**: one client's own sequence of operations against a store over time. *Where you meet it:* the unit every session guarantee is defined over.
+- **Replica**: one copy of the data, held by one node. *Where you meet it:* the thing a client's reads and writes land on, possibly a different one each time.
+- **Convergence**: the requirement that connected, correct replicas eventually agree once they've seen the same operations. *Where you meet it:* the second condition, besides availability, in the ceiling result.
+- **Always available**: a store that answers every request, even during a network partition. *Where you meet it:* the first condition in the ceiling result, and the reason sequential consistency and linearizability are both ruled out for such a store.
