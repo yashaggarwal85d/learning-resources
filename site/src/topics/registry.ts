@@ -4807,6 +4807,26 @@ export const TOPICS: TopicMeta[] = [
       "Raft guarantees there is at most one leader per term. It does not stop a leader from the previous term, paused by a garbage collection, from waking up and acting as if it still led. A consensus protocol cannot fix that alone; something outside it must refuse the old leader's writes. That is the next topic: leases, fencing tokens and split brain.",
   },
   {
+    id: 'de.leases-fencing-tokens-split',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/leases-fencing-tokens-split',
+    title: 'Leases, fencing tokens and split brain',
+    syllabusTitle: 'Leases, fencing tokens and split brain',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.6' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['leader-lease-clock-bound', 'zombie-leader-gc-pause', 'fencing-token-epoch', 'lock-without-fencing-unsafe'],
+    uses: ['bounded-error-clock-interval', 'clock-drift-ntp-error', 'wall-vs-monotonic-clock', 'stale-leader-read', 'linearizability-definition', 'raft-terms-election-voting-restriction', 'timing-models-sync-partial-async', 'process-model', 'signals'],
+    declared: ['consensus-raft-paxos-in-systems', 'queues-vs-logs'],
+    bridge:
+      "Raft guarantees there is at most one leader per term. It does not stop a leader from the previous term, paused by a garbage collection, from waking up and acting as if it still led. A consensus protocol cannot fix that alone; something outside it must refuse the old leader's writes. This topic is that: leases, fencing tokens and split brain.",
+    handoff:
+      "Fencing tokens and leader election both need a small, strongly consistent service that hands out the next number and holds the lease. Real data systems rely on a few such services, and on a replicated log that is not quite a majority quorum. The next topic places them: ZooKeeper, etcd, Kafka's KRaft and its in-sync replicas, and the table-format commit.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
