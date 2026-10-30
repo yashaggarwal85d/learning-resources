@@ -1,0 +1,71 @@
+{
+  "topic": "de.timing-failure-models",
+  "steps": [
+    {
+      "lines": [
+        "Notice what just happened. The team said their protocol was correct, and they were right, inside the model their tests actually exercised.",
+        "Production simply doesn't run inside that model. It runs inside whatever the real machines and the real network actually do.",
+        "So the question worth sitting with isn't what broke. It's which unstated assumption the test suite never challenged in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trap worth noticing before you answer. Telling a client a write is acknowledged feels like it settles the matter.",
+        "But that sentence is a promise about the future, not a fact about where any byte currently sits.",
+        "Ask yourself what actually has to be true on disk, somewhere, for that promise to still be honest a moment later."
+      ],
+      "answer": [
+        "The honest answer is yes, on its own, that single dropped message already breaks the promise.",
+        "If the only durable copy ever made was the one on the machine that just disappeared, the acknowledgement was already false the moment it was said.",
+        "Nothing else needs to go wrong. One silent message is enough."
+      ]
+    },
+    {
+      "lines": [
+        "Resist treating partial synchrony as one vague idea in the middle. The paper actually gives two sharply different shapes for it.",
+        "One hides the delay bound from the protocol entirely. The other reveals it, but only after a moment the protocol has no way to detect arriving.",
+        "Those aren't the same assumption wearing different words, and a protocol built for one can fail outright under the other."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the correction worth making early. Byzantine isn't just a worse version of a process going silent.",
+        "A silent process you can eventually work around by waiting it out or ignoring it. A lying process actively spends effort convincing the others of something false.",
+        "That's why outvoting liars costs more spare machines than simply outlasting the silent ones ever did."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the gap between these two promises, because it's smaller than it sounds and people assume it away constantly.",
+        "The weaker one only guarantees that trying forever eventually works once. It says nothing at all about any single attempt.",
+        "Everything people casually call a reliable connection is really that weaker promise, plus retrying and filtering duplicates, bolted on afterward."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what should actually surprise you. This isn't three different bugs in three different protocols.",
+        "It's the exact same handful of lines, run three separate times, failing for three unrelated reasons each time reality supplied a different missing assumption.",
+        "That's the real lesson a model buys you: it tells you in advance which of those three failures you're even protected against."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the argument, not just the vocabulary.",
+        "A model is a contract a protocol is correct relative to, so ask which contract before trusting any claim of correctness at all.",
+        "A lying witness is a different kind of problem than a silent one, never just a worse version of the same problem.",
+        "And one small, ordinary-looking protocol just failed three separate ways, each one traced back to a single missing assumption."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, think about what those two counters are actually capable of seeing.",
+        "A counter can only ever report the thing it was built to count. It cannot report on a fault nobody told it to watch for."
+      ],
+      "answer": [
+        "No, and the reason is worth remembering well past this topic.",
+        "A reordered pair of messages still counts as nothing dropped. A restart that only lost unflushed memory still counts as nothing crashed, by most definitions a dashboard uses.",
+        "A quiet counter is evidence that one particular fault didn't fire. It is never evidence that the underlying model actually held."
+      ]
+    }
+  ]
+}
