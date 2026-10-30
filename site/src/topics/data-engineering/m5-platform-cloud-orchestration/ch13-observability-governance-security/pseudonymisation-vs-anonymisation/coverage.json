@@ -1,0 +1,98 @@
+{
+  "topic": "de.pseudonymisation-vs-anonymisation",
+  "syllabus": [
+    {
+      "clause": "the legal and technical line: pseudonymised data remains personal data for whoever can re-identify",
+      "at": [{ "step": "Reveal: pseudonymised data is still personal data for the key holder" }]
+    },
+    {
+      "clause": "the CJEU's relative approach in EDPS v SRB (C‑413/23 P, Sept 2025: may be non-personal for a recipient with no means to re-identify) and the pending GDPR changes in the Digital Omnibus",
+      "at": [
+        { "step": "Reveal: the CJEU's relative approach, EDPS v SRB" },
+        { "step": "Reveal: the controller's duty is judged from the controller's own side" },
+        { "step": "Reveal: the Digital Omnibus, pending" }
+      ]
+    },
+    {
+      "clause": "keyed hashing (HMAC) vs plain hashing (dictionary attacks on emails and phone numbers), linkage attacks.",
+      "at": [
+        { "step": "Reveal: the dictionary attack on a plain hash" },
+        { "step": "Reveal: HMAC resists it" },
+        { "step": "Reveal: linkage attacks" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "GDPR, Article 4 — Definitions",
+      "items": [
+        { "item": "Pseudonymisation is processing that leaves data no longer attributable to a specific person without additional information, kept separately and protected.", "at": [{ "step": "Reveal: pseudonymised data is still personal data for the key holder" }] }
+      ]
+    },
+    {
+      "source": "GDPR, Recital 26 — Not Applicable to Anonymous Data",
+      "items": [
+        { "item": "Pseudonymised data attributable to a person by additional information is still information on an identifiable natural person.", "at": [{ "step": "Reveal: pseudonymised data is still personal data for the key holder" }] },
+        { "item": "Anonymous information, by contrast, is outside the Regulation's scope entirely.", "at": [{ "step": "Reveal: pseudonymised data is still personal data for the key holder" }] }
+      ]
+    },
+    {
+      "source": "GDPR, Article 32 — Security of Processing",
+      "items": [
+        { "item": "Pseudonymisation and encryption of personal data named as an appropriate security measure.", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Court of Justice of the European Union — Press Release No 107/25 (Case C-413/23 P, EDPS v SRB)",
+      "items": [
+        { "item": "Pseudonymised data must not be regarded as constituting, in all cases and for every person, personal data.", "at": [{ "step": "Reveal: the CJEU's relative approach, EDPS v SRB" }] },
+        { "item": "The controller's transparency duty is assessed at the time of collection and from the controller's own point of view.", "at": [{ "step": "Reveal: the controller's duty is judged from the controller's own side" }] }
+      ]
+    },
+    {
+      "source": "EDPB — Guidelines 01/2025 on Pseudonymisation (version for public consultation)",
+      "items": [
+        { "item": "A pseudonymisation secret needs sufficient entropy to resist brute-force or dictionary searching.", "at": [{ "step": "Reveal: HMAC resists it" }] },
+        { "item": "The guidelines' own dictionary-attack example: hashing every candidate name with the same unkeyed function and matching against the pseudonymised dataset.", "at": [{ "step": "Reveal: the dictionary attack on a plain hash" }] },
+        { "item": "Keyed, pre-image-resistant one-way functions (HMACs) recommended as a suitable building block.", "at": [{ "step": "Reveal: HMAC resists it" }] }
+      ]
+    },
+    {
+      "source": "Council of the European Union — Proposal for a Regulation (Digital Omnibus), COM(2025) 837 final",
+      "items": [
+        { "item": "The proposal would write the CJEU's relative approach into the GDPR's own recitals.", "at": [{ "step": "Reveal: the Digital Omnibus, pending" }] },
+        { "item": "New Article 41a would let the Commission specify by implementing act when pseudonymised data stops being personal data for certain entities.", "at": [{ "step": "Reveal: the Digital Omnibus, pending" }] }
+      ]
+    },
+    {
+      "source": "EDPB-EDPS — Joint Opinion 2/2026 on the Proposal for a Regulation (Digital Omnibus)",
+      "items": [
+        { "item": "An implementing act under Article 41a could de facto affect the material scope of EU data protection law.", "at": [{ "step": "Reveal: the Digital Omnibus, pending" }] },
+        { "item": "The EDPB and EDPS recommend deleting proposed Article 41a from the proposal.", "at": [{ "step": "Reveal: the Digital Omnibus, pending" }] }
+      ]
+    },
+    {
+      "source": "European Parliament — Legislative Train Schedule, \"The Digital Omnibus Regulation Proposal\"",
+      "items": [
+        { "item": "The personal-data definition was left to later committee negotiation; the Council's negotiating-mandate vote was cancelled.", "at": [{ "step": "Reveal: the Digital Omnibus, pending" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Determinism, not hash strength, is the dictionary attack's exploit: a cryptographically strong but unkeyed hash is just as attackable as a weak one, because the attacker computes the same function on candidates, never inverts it.", "at": [{ "step": "Reveal: the dictionary attack on a plain hash" }] },
+      { "item": "HMAC resisting the dictionary attack does not make the data anonymous; it remains pseudonymised, because the key is exactly the Article 4(5) 'additional information' and is kept, not destroyed.", "at": [{ "step": "Reveal: HMAC resists it" }] },
+      { "item": "The CJEU's relative-approach holding is conditional, not absolute: it rules out 'always personal data for everyone,' not 'never personal data for anyone' — the recipient's actual means remain a question of fact.", "at": [{ "step": "Reveal: the CJEU's relative approach, EDPS v SRB" }] },
+      { "item": "The judgment is decided under Regulation (EU) 2018/1725, not the GDPR; its press release never cites GDPR Article 4(1), so this topic treats the holding as persuasive, not controlling, for the GDPR's identical wording.", "at": [{ "step": "Reveal: the CJEU's relative approach, EDPS v SRB" }] },
+      { "item": "A linkage attack succeeds without ever touching the pseudonymisation key, which is why a perfectly keyed pseudonym is not, by itself, a complete privacy guarantee.", "at": [{ "step": "Reveal: linkage attacks" }] },
+      { "item": "Chapter 10's EU-regulatory-architecture material is cited by CHAPTER.md as a uses source but is unresolvable (Chapter 10 unbuilt beyond its own CHAPTER.md), so declared rather than used, consistent with topics 4 and 5's own finding of the same gap.", "at": [{ "out": "Chapter 10 unbuilt; declared per CHAPTER.md's cross-chapter-id rule" }] },
+      { "item": "Topic 5's DEK/KEK hierarchy and crypto-shredding both assume the data is already identified as sensitive; this topic assumes a column has already been pseudonymised and asks whether that pseudonymisation alone makes it non-personal.", "at": [{ "topic": "Envelope encryption, KMS and key rotation", "quote": "crypto-shredding", "domain": "data-engineering" }] },
+      { "item": "The k-anonymity/l-diversity/t-closeness and differential-privacy syllabus topics are skipped; this topic names the Netflix Prize de-anonymisation as the cited failure for generalisation-based privacy techniques without building either mechanism.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The predict question's two-part structure (which single change stops the attack; does the result become anonymous or only pseudonymised) tests the Article 4(5) definition applied to a concrete mechanism, not just recall of the definition's wording.", "at": [{ "step": "Prove it" }] },
+      { "item": "Article 32's naming of pseudonymisation and encryption together as security measures is why topic 5's envelope-encryption mechanism and this topic's pseudonymisation mechanism are treated as siblings in the chapter, not as a strict prerequisite chain.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

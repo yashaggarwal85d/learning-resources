@@ -1,0 +1,9 @@
+- **Personal data**: any information relating to an identified or identifiable natural person. *Where you meet it:* the legal line this whole topic is drawn around.
+- **Data subject**: the natural person the data is about. *Where you meet it:* every reveal step, as "the person" being identified or not.
+- **Controller and processor**: the controller decides why and how data is processed; a processor acts only on the controller's instructions. *Where you meet it:* "Reveal: the controller's duty is judged from the controller's own side."
+- **Pseudonym**: a stand-in value replacing an identifier, reversible with additional information. *Where you meet it:* the hashed email in the Hook, and the pseudonym column in the linkage-attack reveal.
+- **Hash**: a one-way function mapping an input to a fixed-size output, deterministic for the same input and function (from the *Data Structures & Algorithms* track). *Where you meet it:* "Reveal: the dictionary attack on a plain hash" — the determinism is the vulnerability, not a weakness in the hash itself.
+- **Salt**: random data mixed into a hash to make precomputed tables useless, but still public and reused per-record, unlike a key. *Where you meet it:* named only as the contrast to a secret key in "Reveal: HMAC resists it" — a salt alone, known to the attacker, would not have stopped the dictionary attack.
+- **Dictionary attack**: trying every value from a known candidate list rather than brute-forcing the full input space. *Where you meet it:* the Hook and "Reveal: the dictionary attack on a plain hash."
+- **Quasi-identifier**: an attribute that is not itself an identifier but, combined with others, can single someone out (postcode, birth date, product mix). *Where you meet it:* "Reveal: linkage attacks."
+- **Re-identification**: recovering the identity behind pseudonymised or anonymised data. *Where you meet it:* the rate measured in both the dictionary-attack and linkage-attack reveals.

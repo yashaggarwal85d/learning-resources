@@ -4807,6 +4807,26 @@ export const TOPICS: TopicMeta[] = [
       "Encryption makes data unreadable to a thief. It does not change what the data legally is for the people who hold the key, and it does not help once an analyst has decrypted it. The next topic is the line between data that can be tied to a person and data that cannot: pseudonymisation versus anonymisation.",
   },
   {
+    id: 'de.pseudonymisation-vs-anonymisation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/pseudonymisation-vs-anonymisation',
+    title: 'Pseudonymisation vs anonymisation',
+    syllabusTitle: 'Pseudonymisation vs anonymisation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['pseudonymised-vs-anonymised-data', 'edps-v-srb-relative-identifiability', 'keyed-vs-plain-hash-pseudonyms', 'linkage-attack'],
+    uses: ['dek-kek-envelope-hierarchy', 'crypto-shredding-key-deletion', 'sensitivity-tier-and-category', 'discovery-false-negatives'],
+    declared: ['data-eu-regulatory-architecture-ch10', 'keyed-hash', 'cryptographic-hash'],
+    bridge:
+      "Encryption makes data unreadable to a thief. It does not change what the data legally is for the people who hold the key, and it does not help once an analyst has decrypted it. This topic is the line between data that can be tied to a person and data that cannot: pseudonymisation versus anonymisation.",
+    handoff:
+      "Whether a dataset is personal data decides what you must protect. The next question is who inside your own company may read it, and how that rule is written down so a machine can apply it: access-control models.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',

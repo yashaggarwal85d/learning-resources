@@ -1,0 +1,87 @@
+{
+  "topic": "de.pseudonymisation-vs-anonymisation",
+  "steps": [
+    {
+      "lines": [
+        "Picture this request landing on your desk: take the customer emails, hash them, and call the result anonymous, job done.",
+        "Give it ten minutes with a list of emails you already know belong to real people, run the same hash over that list, and most of that table matches straight back to names."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you why that happened, think about what would have stopped it.",
+        "Is there one change that closes this off completely? And once you make that change, has the data crossed over into something the law would actually call anonymous, or is it still something else?"
+      ],
+      "answer": [
+        "Swap in a hash that only works with a secret key, and the attack you just watched stops cold — nobody without that key can reproduce the match.",
+        "But the result still isn't anonymous. That secret key is exactly the kind of extra information the law has in mind, and whoever's holding it can still tie the data back to a person."
+      ]
+    },
+    {
+      "lines": [
+        "So let's be precise about what the law is actually testing for here.",
+        "The question isn't whether a human reads the raw value and sees a name. It's whether anyone, anywhere, could still tie that value back to a person using some extra piece of information.",
+        "Hold that extra piece — a key, a lookup list, anything — and the data is still, for you, information about an identifiable person."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly how that ten-minute attack from the start actually worked.",
+        "An ordinary hash takes the same input to the same output, every single time, and that function is public. Anyone can run it.",
+        "So you don't break the hash at all. You just run it over every email address you already suspect might be in there, and see which outputs line up."
+      ]
+    },
+    {
+      "lines": [
+        "Now bring in a secret into that same function, and everything changes.",
+        "Without that secret, running the exact same guesses produces completely different output every time — none of it lines up with the real table anymore."
+      ]
+    },
+    {
+      "lines": [
+        "Now, a case that went through Europe's highest court is worth walking through carefully, because people tend to oversimplify it.",
+        "The ruling said pseudonymised data isn't automatically personal data for absolutely everyone who ever touches it. It depends on whether that particular party actually has a realistic way of tying it back to someone.",
+        "So for someone with no realistic path to re-identify it, it may not count as personal data to them at all. For someone who does have that path, it still is."
+      ]
+    },
+    {
+      "lines": [
+        "That same ruling made a second point that matters just as much, and it's about who's judging this and when.",
+        "The company doing the collecting has a duty to tell people what's happening with their data, and that duty gets judged from that company's own position, at the moment it first collected the data.",
+        "So a company can't point downstream at some other party's limited ability to re-identify and use that to excuse its own duty to inform people upfront."
+      ]
+    },
+    {
+      "lines": [
+        "Now, there's a proposal working its way through Europe's lawmaking process that would take that court ruling and try to write it straight into the law itself.",
+        "It would also hand regulators the power to decide, later, exactly where that line sits for different situations.",
+        "The regulators who'd actually be asked to use that power have pushed back on it directly, and this is still only a proposal — nothing here has become law yet."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that catches people who think a secret key alone makes them safe.",
+        "Say your pseudonym is perfectly keyed, and nobody can guess their way to it. The data sitting right next to that pseudonym — a postcode, a birth year, what somebody tends to buy — can still give them away entirely.",
+        "Join that handful of details against some outside list that happens to share the same details, and a solid majority of people come back uniquely matched. The key was never even needed for that."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this all together.",
+        "Pseudonymised data stays personal data for whoever can still tie it back to someone. The court's own ruling says that depends on the party, and on their actual ability to re-identify, judged from the collector's own side at the start.",
+        "A proposal would write that principle into law, but hasn't yet. A secret key stops a guessing attack on the pseudonym itself, but does nothing about the other details still sitting right beside it."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario, and work through it before I answer it for you.",
+        "Someone's destroyed the secret key on a pseudonymised release entirely. But the postcode, the birth year, the product mix — all of that is still sitting there, untouched.",
+        "Does an attack still work against this, and would you call this data anonymous now?"
+      ],
+      "answer": [
+        "An attack absolutely still works, just not the one you'd expect — destroying the key only closes off guessing at the pseudonym itself.",
+        "Those other details sitting beside it are a completely separate path back to a person, and we just measured how often that path actually succeeds. This isn't anonymous."
+      ]
+    }
+  ]
+}
