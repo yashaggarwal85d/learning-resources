@@ -4606,4 +4606,31 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "With the load known, the first structural choice is when work happens: continuously as data arrives, in scheduled batches, or some mix. The freshness SLO from the first topic and the volumes from this one decide it. The next topic is choosing the data-flow shape.",
   },
+  {
+    id: 'de.choosing-data-flow-shape',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/choosing-data-flow-shape',
+    title: 'Choosing the data-flow shape',
+    syllabusTitle: 'Choosing the data-flow shape',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['data-flow-shape-decision', 'freshness-slo-as-floor', 'push-pull-source-boundary'],
+    uses: ['ask-to-slo-translation', 'capacity-estimate-chain', 'lambda-architecture', 'kappa-architecture', 'medallion-bronze-silver-gold', 'latency-percentiles'],
+    declared: [
+      'at-least-once-plus-idempotence',
+      'atomic-offset-output-commit',
+      'queues-vs-logs',
+      'micro-batch-trigger-semantics',
+      'ingestion-pattern-catalog',
+      'unified-batch-stream-execution',
+    ],
+    bridge:
+      'With the load known, the first structural choice is when work happens: continuously as data arrives, in scheduled batches, or some mix. The freshness SLO from the first topic and the volumes from the second decide it. This topic is choosing the data-flow shape.',
+    handoff:
+      'The shape says when data is processed. The next choice says where it lives afterwards: which store is the source of truth, how files are laid out for the queries that will actually run, and how long each class of data is kept. That is storage, layout and lifecycle.',
+  },
 ];
