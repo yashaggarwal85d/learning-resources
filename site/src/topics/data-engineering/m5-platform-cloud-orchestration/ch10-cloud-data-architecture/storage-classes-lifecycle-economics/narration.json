@@ -1,0 +1,73 @@
+{
+  "topic": "de.storage-classes-lifecycle-economics",
+  "steps": [
+    {
+      "lines": [
+        "Someone sets a rule to delete anything older than ninety days, purely to save money, and it runs exactly as written.",
+        "A query that used to travel back in time to last month's version of a table worked yesterday. Today it errors, with no warning at the moment the file actually disappeared.",
+        { "beat": 0.3 },
+        "Nobody touched the table. The rule did exactly its job, on a file the table still needed."
+      ]
+    },
+    {
+      "lines": [
+        "Think about this before I answer it. The rule was configured correctly and ran on schedule, and the table was also behaving exactly as designed.",
+        "So what single thing did that rule never know about, that let it delete a file the table still needed?"
+      ],
+      "answer": [
+        "Whether a live snapshot still pointed at that file. A lifecycle rule only ever sees an object's age, its tags and its prefix.",
+        "It has no way to ask a table format's own metadata whether anything still references a given file, because that metadata lives entirely outside the bucket's own view of the world.",
+        "The fix is never a better cutoff. It's ordering: let the table release a file on its own terms, before any age-based rule is allowed near it."
+      ]
+    },
+    {
+      "lines": [
+        "Three clouds, and underneath different names, the exact same shape. A hot tier for data still being read, a cooler tier for data you touch occasionally, and an archive tier for data you barely touch at all.",
+        "Each one of those cooler tiers comes with a real minimum stay, stated up front, before you ever move a single byte into it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trade nobody reads the fine print on. An archive tier isn't just cheaper storage sitting there waiting for you.",
+        "It's a bet that you won't need that file back any time soon. Break that bet, and getting the file back costs you twice: a real fee per byte, and a real wait measured in hours, not seconds."
+      ]
+    },
+    {
+      "lines": [
+        "Automated tiering sounds like it solves this for you, and in one sense it does. It watches how often an object actually gets read, and quietly slides it down to a colder tier once nobody's touching it anymore.",
+        "What that automation doesn't do is make the decision free. Watching every object costs its own fee, charged per object, on top of whatever tier that object ends up sitting in."
+      ]
+    },
+    {
+      "lines": [
+        "Take the exact scenario from the opening and run it twice, on a stand-in you can actually watch. Delete the file first, then try to expire the snapshot, and the table comes out corrupted every single time.",
+        { "beat": 0.3 },
+        "Flip only the order. Expire the snapshot first, so nothing live points at that file anymore, and then run the identical delete. Nothing breaks, because by the time the rule runs, there's nothing left for it to break."
+      ]
+    },
+    {
+      "lines": [
+        "Object Lock asks you to trade flexibility for a guarantee, and one of its two modes means exactly that, with no asterisk. Governance mode blocks most people, but one specific permission can still lift it.",
+        "Compliance mode blocks everyone. Not most users, not even the account's own root user. The only way out of a compliance lock before its date arrives is deleting the entire account it lives in."
+      ]
+    },
+    {
+      "lines": [
+        "One shape, every cloud: hot, infrequent, archive, each with its own minimum stay you're committing to the moment you move data in.",
+        "Cheaper to store always means slower and costlier to read back. Automated tiering saves you the guesswork, not the bill.",
+        { "beat": 0.3 },
+        "And the one rule that actually matters: let the table expire its own snapshot before any age-based rule ever gets near that file. Next question is who's even allowed to touch any of this in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Work this one out yourself. A table expires its old snapshots every night at two in the morning. A bucket's lifecycle rule runs every night at one in the morning, and sweeps away anything past its cutoff.",
+        "Does running in that order put the table at the exact same risk as the one we opened with?"
+      ],
+      "answer": [
+        "Yes, and for the same reason as the hook. The lifecycle rule fires a full hour before that night's snapshot expiry has had any chance to release its files.",
+        "A nightly schedule doesn't change what the rule can see. It's still blind to the snapshot, so any file old enough to be swept is deleted while last night's snapshot may still need it."
+      ]
+    }
+  ]
+}
