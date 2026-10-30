@@ -4886,4 +4886,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. The next question is that choice itself: row-oriented versus columnar layout.",
   },
+  {
+    id: 'de.row-vs-columnar-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/row-vs-columnar-vs',
+    title: 'Row vs columnar vs hybrid layouts',
+    syllabusTitle: 'Row vs columnar vs hybrid layouts',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['row-vs-columnar-layout'],
+    uses: ['text-format-traps'],
+    declared: [],
+    bridge:
+      "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. This topic is that choice itself, measured directly: row-major storage, full column decomposition, and the PAX compromise in between.",
+    handoff:
+      "Every one of these layouts still has to survive a reader using a different version of the schema than the writer did. That's schema evolution.",
+  },
 ];
