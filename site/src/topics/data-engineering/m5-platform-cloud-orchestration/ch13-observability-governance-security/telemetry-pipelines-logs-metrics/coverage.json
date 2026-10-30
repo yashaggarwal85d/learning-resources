@@ -1,0 +1,95 @@
+{
+  "topic": "de.telemetry-pipelines-logs-metrics",
+  "syllabus": [
+    {
+      "clause": "structured logs with correlation IDs (run, task, asset, partition)",
+      "at": [
+        { "step": "Reveal: a log record as fields, not a sentence" },
+        { "step": "Reveal: what a hundred-task pipeline costs without it" }
+      ]
+    },
+    {
+      "clause": "metric types (counter, gauge, histogram)",
+      "at": [
+        { "step": "Reveal: counter" },
+        { "step": "Reveal: gauge" },
+        { "step": "Reveal: histogram" }
+      ]
+    },
+    {
+      "clause": "the pipeline golden signals (throughput, latency, error rate, consumer lag, freshness, backlog)",
+      "at": [
+        { "step": "Reveal: the six golden signals" }
+      ]
+    },
+    {
+      "clause": "push vs pull collection",
+      "at": [
+        { "step": "Reveal: push vs pull" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google SRE Book — Monitoring Distributed Systems",
+      "items": [
+        { "item": "The four golden signals of monitoring are latency, traffic, errors, and saturation.", "at": [{ "step": "Reveal: the six golden signals" }] },
+        { "item": "Dashboards should include some form of the four golden signals.", "at": [{ "deep": "Internals" }] },
+        { "item": "Saturation includes predictive signals of impending saturation.", "at": [{ "out": "not needed for a data pipeline's golden signals; service-saturation framing stays out of scope here" }] }
+      ]
+    },
+    {
+      "source": "Prometheus — Metric types",
+      "items": [
+        { "item": "Counter: monotonically increasing, reset only on restart; wrong for values that can decrease.", "at": [{ "step": "Reveal: counter" }] },
+        { "item": "Gauge: arbitrary up/down value (temperature, memory, concurrent requests).", "at": [{ "step": "Reveal: gauge" }] },
+        { "item": "Histogram: bucketed observation counts plus a sum; classic vs native histogram formats.", "at": [{ "step": "Reveal: histogram" }] }
+      ]
+    },
+    {
+      "source": "Prometheus — When to use the Pushgateway",
+      "items": [
+        { "item": "The Pushgateway exists for jobs that cannot be pulled (short-lived batch jobs).", "at": [{ "step": "Reveal: push vs pull" }] },
+        { "item": "Pitfalls when misused as a general collector: single point of failure/bottleneck, loses up-based health, never forgets stale series.", "at": [{ "step": "Reveal: push vs pull" }] }
+      ]
+    },
+    {
+      "source": "Prometheus — Metric and label naming / Instrumentation",
+      "items": [
+        { "item": "Every unique label-value combination is a new time series; high-cardinality labels multiply series count.", "at": [{ "step": "Lab beat: the series-explosion extension" }] },
+        { "item": "Concrete cardinality guidance (below 10 typical, over 100 is a red flag).", "at": [{ "step": "Lab beat: the series-explosion extension" }] }
+      ]
+    },
+    {
+      "source": "OpenTelemetry — Logging",
+      "items": [
+        { "item": "Logs can optionally carry trace and span IDs for correlation with traces.", "at": [{ "deep": "Where this goes next" }] }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 — Monitoring",
+      "items": [
+        { "item": "records-lag-max is the consumer-side fetch-manager metric for maximum consumer lag, published by the consumer.", "at": [{ "step": "Reveal: the six golden signals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The four golden signals (latency, traffic, errors, saturation) are the service-level base; a data pipeline's golden signals specialize them with freshness, backlog and consumer lag, which have no request/response service analogue.", "at": [{ "step": "Reveal: the six golden signals" }] },
+      { "item": "A counter is cumulative and monotonically increasing, reset only on restart; wrong for anything that can decrease.", "at": [{ "step": "Reveal: counter" }] },
+      { "item": "A gauge is a single value that can arbitrarily go up and down (queue depth, last-success timestamp).", "at": [{ "step": "Reveal: gauge" }] },
+      { "item": "A histogram records observations into configurable buckets plus a running sum; a quantile read off it is an estimate.", "at": [{ "step": "Reveal: histogram" }] },
+      { "item": "Averaging per-instance quantiles across machines is mathematically wrong.", "at": [{ "deep": "Internals" }] },
+      { "item": "Kafka's consumer lag is published by the consumer, not the broker, as records-lag-max.", "at": [{ "step": "Reveal: the six golden signals" }] },
+      { "item": "The Pushgateway exists for batch jobs a pull scraper can't reach, but misusing it as a general collector creates a single point of failure, loses up-based health, and never forgets stale series.", "at": [{ "step": "Reveal: push vs pull" }] },
+      { "item": "Every unique label-value combination is its own time series; high-cardinality labels multiply series count, with concrete guidance (under ~10, over ~100 is a design problem).", "at": [{ "step": "Lab beat: the series-explosion extension" }] },
+      { "item": "OpenTelemetry's Logs spec lets a log record carry TraceId/SpanId for correlation with a trace of the same execution context.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A correlation key of run_id, task_id, asset and partition lets every record of one run be selected across independent processes.", "at": [{ "step": "Reveal: a log record as fields, not a sentence" }] },
+      { "item": "A cron-scheduled job is the canonical batch case a pull scraper cannot reach between runs.", "at": [{ "step": "Reveal: push vs pull" }] },
+      { "item": "Freshness and error-budget vocabulary (SLI, SLO, error budget) belong to Chapter 11 §11.3; this topic only emits freshness as a metric, never as an SLO target.", "at": [{ "out": "Chapter 11 is unbuilt; logged as a declared gap in OUTLINE.md per CHAPTER.md's cross-chapter-id rule, resolved by a later seam pass" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
