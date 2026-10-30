@@ -1,0 +1,77 @@
+{
+  "topic": "de.linearizability",
+  "steps": [
+    {
+      "lines": [
+        "Notice how reasonable this setup sounds before anything goes wrong.",
+        "One leader, one place to read from, nothing about that description admits a second possibility.",
+        "The trap is exactly that the description stopped being true the moment the leader changed, and the client never found out."
+      ]
+    },
+    {
+      "lines": [
+        "Before you pick, think carefully about what order these two events actually happened in.",
+        "The write didn't just start earlier. It finished, entirely, before the read even began."
+      ],
+      "answer": [
+        "Not linearizable, and the reasoning is stricter than it might feel.",
+        "Once a write has completed, any correct account of what happened has to place it before anything that starts afterward.",
+        "A read placed after that write is required to see the new value, and this one didn't, so there is no legal account of this history at all."
+      ]
+    },
+    {
+      "lines": [
+        "Hold the two parts of this promise apart, because people usually remember only the first one.",
+        "Every operation gets to look like it happened all at once, somewhere inside its own interval.",
+        "But where inside that interval isn't free to choose. If one operation's answer came back before another even started, the first one's instant has to come first too."
+      ]
+    },
+    {
+      "lines": [
+        "This is worth sitting with longer than it first seems to deserve.",
+        "Checking one object on its own, in isolation, is enough. Nothing about the rest of the system has to be re-checked once every object passes that test individually.",
+        "And no operation that's still pending is ever allowed to hold up another one just to stay correct."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what the checker is actually doing here, because it's a search, not a shortcut.",
+        "It tries orderings until it finds one that both respects what the data is allowed to do and respects the order things really happened in.",
+        "For a history that's already correct, that search barely has to try."
+      ]
+    },
+    {
+      "lines": [
+        "Now feed the exact same search the broken version, and watch it come back empty.",
+        "Every ordering it tries breaks one of the two rules or the other. Not most orderings. Every single one.",
+        "That emptiness isn't the checker failing to find an answer. It is the answer, stated as plainly as a proof can state it."
+      ]
+    },
+    {
+      "lines": [
+        "Before you accept the fix as free, look closely at what it's actually trading away.",
+        "Confirming a quorum before answering does remove the stale value, completely.",
+        "But under perfectly synchronized clocks that confirmation still costs a full round trip somewhere, and once clocks carry real uncertainty, every single operation pays something close to that uncertainty, with no way around it."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the whole guarantee, not just its headline.",
+        "An instant for every operation, real time respected, checked one object at a time.",
+        "A stale leader's read has, formally, nowhere legal to go in that account. A quorum-confirmed one does.",
+        "And neither the guarantee nor the fix for violating it ever comes for free."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, separate what a good track record actually tells you from what a guarantee has to cover.",
+        "A guarantee that holds for every possible history is a much stronger claim than a system that simply hasn't hit a bad one yet."
+      ],
+      "answer": [
+        "No, and this is worth remembering past this one example.",
+        "Linearizability has to hold for every history the system could ever produce, not just the ones it happens to have produced so far.",
+        "A design missing the quorum check already contains the exact failure from the hook. The only thing missing is the partition that would reveal it."
+      ]
+    }
+  ]
+}

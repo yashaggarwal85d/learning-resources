@@ -1,0 +1,102 @@
+{
+  "topic": "de.storage-classes-lifecycle-economics",
+  "syllabus": [
+    {
+      "clause": "hot/infrequent/archive tiers across S3/GCS/Azure Blob, minimum-duration and retrieval charges",
+      "at": [
+        { "step": "Hot, infrequent, archive: the same three tiers, three vendors" },
+        { "step": "Cheaper to store, slower and costlier to read back" }
+      ]
+    },
+    {
+      "clause": "Intelligent-Tiering-style automation",
+      "at": [
+        { "step": "Automated tiering moves the data; it doesn't make the decision free" }
+      ]
+    },
+    {
+      "clause": "lifecycle rules vs table-format snapshot expiry (a lifecycle rule deleting files a live snapshot references corrupts the table)",
+      "at": [
+        { "step": "A rule saves money and breaks a table nobody touched" },
+        { "step": "What is the rule blind to?" },
+        { "step": "The ordering fix, reproduced" }
+      ]
+    },
+    {
+      "clause": "versioning plus Object Lock/WORM for ransomware and regulatory retention",
+      "at": [
+        { "step": "Object Lock trades flexibility for a guarantee you can't take back" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS: Understanding and managing Amazon S3 storage classes",
+      "items": [
+        { "item": "S3 Standard-IA/One Zone-IA: 30-day minimum; Glacier Instant/Flexible Retrieval: 90-day minimum; Glacier Deep Archive: 180-day minimum", "at": [{ "step": "Hot, infrequent, archive: the same three tiers, three vendors" }] }
+      ]
+    },
+    {
+      "source": "AWS: Transitioning objects using Amazon S3 Lifecycle",
+      "items": [
+        { "item": "Transitioning, deleting or overwriting before the minimum duration is charged for the remainder of that duration", "at": [{ "step": "Cheaper to store, slower and costlier to read back" }, { "deep": "Internals" }] },
+        { "item": "Chaining two minimum-duration transitions needs at least their combined minimum (worked example: 94 days)", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: Understanding archive retrieval options",
+      "items": [
+        { "item": "Expedited: 1-5 minutes; Standard: 3-5 hours (Flexible Retrieval) or 12 hours (Deep Archive); Bulk: 5-12 hours (Flexible Retrieval) or 48 hours (Deep Archive)", "at": [{ "step": "Cheaper to store, slower and costlier to read back" }] }
+      ]
+    },
+    {
+      "source": "AWS: Locking objects with Object Lock",
+      "items": [
+        { "item": "Compliance mode: no user including root can override; the only way around it is deleting the whole account", "at": [{ "step": "Object Lock trades flexibility for a guarantee you can't take back" }] },
+        { "item": "Governance mode: overridable only with s3:BypassGovernanceRetention and the explicit header; usable to rehearse compliance mode", "at": [{ "step": "Object Lock trades flexibility for a guarantee you can't take back" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Storage classes",
+      "items": [
+        { "item": "Nearline: 30-day minimum; Coldline: 90-day minimum; Archive: 365-day minimum", "at": [{ "step": "Hot, infrequent, archive: the same three tiers, three vendors" }] },
+        { "item": "Autoclass manages transitions automatically based on observed access", "at": [{ "out": "named by the Intelligent-Tiering clause in general; this topic's own automated-tiering example sticks to S3's own naming rather than repeating all three vendors' automation features" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn: Access tiers for blob data",
+      "items": [
+        { "item": "Cool: 30-day minimum; Cold: 90-day minimum; Archive: 180-day minimum, prorated early-deletion penalty", "at": [{ "step": "Hot, infrequent, archive: the same three tiers, three vendors" }] },
+        { "item": "Archive tier unreadable until rehydrated, up to 15 hours", "at": [{ "step": "Cheaper to store, slower and costlier to read back" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg: Maintenance",
+      "items": [
+        { "item": "expireSnapshots removes a snapshot from metadata, ending its time-travel availability", "at": [{ "step": "What is the rule blind to?" }] },
+        { "item": "A data file is kept until no snapshot that may need it for time travel or rollback still references it", "at": [{ "step": "What is the rule blind to?" }, { "step": "The ordering fix, reproduced" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A lifecycle rule's inputs are strictly age, tags, prefix and size — on all three clouds, none of them can see a table format's own metadata", "at": [{ "step": "What is the rule blind to?" }] },
+      { "item": "The hook's corruption is categorical, not a tuning mistake: no cutoff value for the lifecycle rule can fix it, because the rule has no way to ask whether anything still references a file", "at": [{ "step": "What is the rule blind to?" }] },
+      { "item": "Ordering, not a smarter rule, is the only fix: expire the snapshot before any age-based delete is allowed to run, every time, on every schedule", "at": [{ "step": "The ordering fix, reproduced" }, { "step": "Prove it" }] },
+      { "item": "Automated tiering removes the need to guess an access pattern but is not free: it carries its own per-object monitoring fee, separate from storage and retrieval", "at": [{ "step": "Automated tiering moves the data; it doesn't make the decision free" }] },
+      { "item": "Compliance-mode Object Lock's irreversibility is absolute by AWS's own wording ('the only way'), not a strong default that some override path quietly exists for", "at": [{ "step": "Object Lock trades flexibility for a guarantee you can't take back" }] },
+      { "item": "A nightly schedule changes nothing about the rule's blindness: running a lifecycle sweep before that night's snapshot expiry still corrupts, no matter how routine the schedule looks", "at": [{ "step": "Prove it" }] },
+      { "item": "Minimum storage duration is a commitment charged for the remainder of the period, not merely a recommendation: moving or deleting an object early is billed as if it had stayed the full minimum", "at": [{ "step": "Cheaper to store, slower and costlier to read back" }, { "deep": "Internals" }] },
+      { "item": "Retrieval cost on an archive tier is two separate things, not one: a per-byte fee and a real wait, and the wait differs by an order of magnitude between Expedited and Bulk", "at": [{ "step": "Cheaper to store, slower and costlier to read back" }] },
+      { "item": "All three clouds converge on the same three-tier shape (hot, infrequent, archive) under different vendor names, which is evidence of a shared cost structure in the underlying hardware, not a coincidence of API design", "at": [{ "step": "Hot, infrequent, archive: the same three tiers, three vendors" }] },
+      { "item": "Governance mode is not merely 'weaker' than compliance mode — AWS documents it as also serving a distinct purpose, rehearsing a compliance-mode retention policy before locking it in for real", "at": [{ "step": "Object Lock trades flexibility for a guarantee you can't take back" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}
