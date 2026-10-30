@@ -1,0 +1,74 @@
+{
+  "topic": "de.slo-burn-rate-alerting",
+  "syllabus": [
+    {
+      "clause": "symptom-based alerts on SLOs",
+      "at": [{ "step": "Reveal: symptom-based, not cause-based" }]
+    },
+    {
+      "clause": "multi-window multi-burn-rate rules",
+      "at": [
+        { "step": "Reveal: burn rate" },
+        { "step": "Reveal: a fixed threshold's two failures" },
+        { "step": "Reveal: the multi-window fix" },
+        { "step": "Reveal: the recommended thresholds — and their limit" }
+      ]
+    },
+    {
+      "clause": "schedule-aware freshness alerts (no page for an expected gap)",
+      "at": [{ "step": "Reveal: schedule-aware freshness" }]
+    },
+    {
+      "clause": "deduplication and owner routing",
+      "at": [{ "step": "Reveal: dedup and owner routing" }]
+    },
+    {
+      "clause": "the 'every page must be actionable' test",
+      "at": [{ "step": "Reveal: the actionable-page test, applied" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google SRE Workbook — Alerting on SLOs",
+      "items": [
+        { "item": "Burn rate's definition and burn-rate-1 as exact budget exhaustion at window end.", "at": [{ "step": "Reveal: burn rate" }] },
+        { "item": "The progression from a fixed threshold through burn rate to multiwindow, multi-burn-rate alerting.", "at": [{ "step": "Reveal: a fixed threshold's two failures" }] },
+        { "item": "The 1/12 short-window guideline.", "at": [{ "step": "Reveal: the multi-window fix" }] },
+        { "item": "The recommended starting thresholds.", "at": [{ "step": "Reveal: the recommended thresholds — and their limit" }] },
+        { "item": "The low-availability caveat.", "at": [{ "step": "Reveal: the recommended thresholds — and their limit" }] }
+      ]
+    },
+    {
+      "source": "Google SRE Book — Monitoring Distributed Systems",
+      "items": [
+        { "item": "\"Every page should be actionable.\"", "at": [{ "step": "Reveal: symptom-based, not cause-based" }] },
+        { "item": "Unfocused alerting burns triage time and still misses real problems.", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Prometheus — Alerting rules",
+      "items": [
+        { "item": "Prometheus' own alert-rule syntax (expr, for, grouping), matching the workbook's example expressions.", "at": [{ "deep": "Lab" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Burn rate is how fast, relative to the SLO, the error budget is spent; burn rate 1 exhausts it exactly at the window's end.", "at": [{ "step": "Reveal: burn rate" }] },
+      { "item": "A fixed-duration threshold gives the same detection time to a severe and a mild incident, and can keep firing long after the incident ends.", "at": [{ "step": "Reveal: a fixed threshold's two failures" }] },
+      { "item": "A short window at roughly 1/12 the long window clears the alert soon after the problem does, fixing the reset-time failure.", "at": [{ "step": "Reveal: the multi-window fix" }] },
+      { "item": "The workbook's own recommended thresholds (2%/1hr, 5%/6hr page; 10%/3day ticket) can mathematically fail to fire at all for a low enough SLO target.", "at": [{ "step": "Reveal: the recommended thresholds — and their limit" }] },
+      { "item": "A fixed age threshold for freshness pages every night on a table that is supposed to look old right before its scheduled run; measuring against the expected schedule instead fixes it, and this is this topic's own addition, not sourced from the workbook.", "at": [{ "step": "Reveal: schedule-aware freshness" }] },
+      { "item": "Deduplicating alerts from one upstream failure into one page, routed by ownership, prevents one real incident from paging many people for the same cause.", "at": [{ "step": "Reveal: dedup and owner routing" }] },
+      { "item": "\"Every page should be actionable\" is the SRE book's own stated principle, with a real cost (triage time, missed real incidents) when alerting ignores it.", "at": [{ "step": "Reveal: symptom-based, not cause-based" }] },
+      { "item": "Topic 1's freshness metric and golden signals are the base this topic turns into an alert.", "at": [{ "topic": "Telemetry for pipelines: logs, metrics, traces", "quote": "the pipeline golden signals", "domain": "data-engineering" }] },
+      { "item": "Chapter 11's SLI/SLO/error-budget definitions and on-call/ownership material are built on but unresolvable (Chapter 11 unbuilt), so declared rather than used.", "at": [{ "out": "Chapter 11 unbuilt; declared per CHAPTER.md's cross-chapter-id rule" }] },
+      { "item": "A freshness SLO stated as a percentage over a rolling window (e.g. 99% over 30 days) is the same error-budget shape as any other SLO, just with a different SLI.", "at": [{ "deep": "Internals" }] },
+      { "item": "The dedup example in this topic is drawn by hand on the pipeline strip, without invoking OpenLineage, because topic 11 (which introduces machine-read lineage) comes later.", "at": [{ "step": "Reveal: dedup and owner routing" }] },
+      { "item": "Applying the actionable-page test to a short list of candidate alerts is the topic's own closing exercise, distinct from computing burn rate itself.", "at": [{ "step": "Reveal: the actionable-page test, applied" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
