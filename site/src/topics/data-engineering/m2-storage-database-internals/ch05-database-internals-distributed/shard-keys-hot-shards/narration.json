@@ -1,0 +1,90 @@
+{
+  "topic": "de.shard-keys-hot-shards",
+  "steps": [
+    {
+      "lines": [
+        "Two thousand distinct user accounts, hashed across ten shards.",
+        "By the usual advice, that's more than enough variety to spread the load evenly.",
+        "Watch one shard end up doing almost half the work anyway."
+      ]
+    },
+    {
+      "lines": [
+        "Commit to an answer before the reveal.",
+        "This shard key has thousands of distinct values, each one hashed uniformly at random.",
+        "Does that alone guarantee the load across shards comes out even?"
+      ],
+      "answer": [
+        "It's tempting to think enough distinct values is the whole story.",
+        "But cardinality only describes how many different keys exist, and how evenly those keys themselves land on shards. It says nothing about how much traffic any single one of them actually drives.",
+        "So no. One celebrity account can out-traffic a thousand ordinary ones combined, no matter how uniformly the keys themselves are hashed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact failure, measured on a real, generated workload.",
+        "Two thousand users, one of them a celebrity account driving a huge share of all traffic, hashed across ten shards.",
+        "The celebrity's own shard, by itself, carries nearly half of everything."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch the actual fix, applied to only that one key.",
+        "Split the celebrity's own key into several salted sub-keys, each one hashing to a different shard, while every other user's key stays exactly where it was.",
+        "That one key's traffic spreads out, and the hottest shard drops back down close to its fair share."
+      ]
+    },
+    {
+      "lines": [
+        "One more real cost sits inside secondary indexes, once data is spread across shards.",
+        "A local index lives inside its own shard. Ask it a question without the partition key in hand, and it still has to check every single shard, one by one.",
+        "A global index re-partitions by its own separate key, so that identical question only has to reach the handful of partitions that could actually hold the answer."
+      ]
+    },
+    {
+      "lines": [
+        "One more prediction before this topic's second reveal.",
+        "A shard splits its key range into two, while real writes keep arriving the entire time. Imagine no one ever pauses to let the new boundary settle.",
+        "What happens to the writes that are already in flight?"
+      ],
+      "answer": [
+        "It's tempting to assume a split is just a background bookkeeping operation that writes don't even notice.",
+        "But a write routed by a client that hasn't yet learned the new boundary still believes the old, single shard owns that key. Some of those keys now belong to the other half of the split.",
+        "So a real, measurable fraction of those writes land on the wrong one of the two new shards."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact scenario, measured directly on a batch of writes arriving mid-split.",
+        "Without any pause at all, over half of them get routed by the stale boundary and land on the wrong shard.",
+        "With one brief pause, every writer waiting for the new boundary before resuming, none of them do."
+      ]
+    },
+    {
+      "lines": [
+        "These aren't hypothetical mechanisms. Real systems document every one of them.",
+        "Vitess reshards a keyspace through exactly this kind of read-only cutover window. CockroachDB splits a range in two the moment it grows past its own size threshold.",
+        "DynamoDB's adaptive capacity goes one step further, automatically isolating a hot item onto its own partition without anyone having to notice the celebrity key first."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "Cardinality and load are different things entirely. Salting fixes one hot key without touching anyone else's data. A local index needs the partition key already in hand; a global one doesn't.",
+        "And moving data under load always costs a real pause — the question is only whether that pause happens on purpose, or gets skipped and pays for itself in misrouted writes."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. A table is sharded by customer ID, millions of distinct customers, every one of them hashed uniformly.",
+        "One of those customers is a massive retail chain, generating ten times the traffic of the next biggest account.",
+        "Given everything just measured here: does having millions of distinct, evenly-hashed IDs mean this load is already spread out fine?"
+      ],
+      "answer": [
+        "It's tempting to point at the sheer number of distinct customer IDs and assume the problem solved itself.",
+        "But this is the exact same mechanism as the very first thing shown here. That one massive chain is a celebrity key by another name, no matter how many millions of other IDs surround it.",
+        "So no. It still makes its own shard hot, and the fix is the same one already measured: salt that one key specifically, not re-choose the shard key for every customer."
+      ]
+    }
+  ]
+}
