@@ -4567,6 +4567,26 @@ export const TOPICS: TopicMeta[] = [
       "The executor's job is to run a task and the scheduler's job is to retry it if it fails. That retry is only safe if running the task twice does no harm. The next topic is exactly that property, and the two kinds of failure that make it necessary.",
   },
   {
+    id: 'de.idempotent-tasks-failure-semantics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/idempotent-tasks-failure-semantics',
+    title: 'Idempotent tasks and failure semantics',
+    syllabusTitle: 'Idempotent tasks and failure semantics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['idempotent-tasks-failure-semantics', 'zombie-task-detection', 'trigger-rule-propagation'],
+    uses: ['de.orchestrator-architecture-scheduler', 'ch9.exactly-once-effect-recipe', 'ch9.deterministic-batch-id'],
+    declared: [],
+    bridge:
+      "The executor's job is to retry a failed task, but that retry is only safe if running the task twice does no harm. This topic is that property — at-least-once execution, the overwrite-vs-append line between a harmless retry and a doubled row count, and the trigger rules and heartbeat mechanism that decide who runs and who's declared dead, run and read back from a real metadata database.",
+    handoff:
+      "An idempotent task can safely be re-run for one interval. A backfill re-runs it for every interval across years of history — the same safety property, at a scale where it also becomes a risk to whatever source or warehouse absorbs that much repeated work. The next topic is exactly that scale.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
