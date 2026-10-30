@@ -19,8 +19,8 @@ function Row({ y, label, value, valueColor = C.crema, o = 1 }: { y: number; labe
 export function Hook({ t }: StepCtx) {
   return (
     <Svg label="a toy partition, 400 real records in — a naive scan to the last few records scans 396 of them; a sparse-index seek for the same record scans 4. Which one is Kafka's own design?" h={200}>
-      <Row y={70} label="naive scan, to offset 395" value="396 records scanned" o={easeOut(seg(t, 0, 0.6))} />
-      <Row y={130} label="sparse-index seek, same offset" value="4 records scanned" valueColor={C.focus} o={easeOut(seg(t, 0.4, 1))} />
+      <Row y={70} label="naive scan" value="396 scanned" o={easeOut(seg(t, 0, 0.6))} />
+      <Row y={130} label="sparse-index seek" value="4 scanned" valueColor={C.focus} o={easeOut(seg(t, 0.4, 1))} />
     </Svg>
   );
 }
@@ -73,8 +73,8 @@ export function PredictIndexCorrectness({}: StepCtx) {
 export function RevealZeroCopy({ t }: StepCtx) {
   return (
     <Svg label="two data paths from disk to a consumer's socket: a naive one with four copies, Kafka's own with effectively one" h={200}>
-      <Row y={70} label="naive path" value="disk → kernel → user → kernel → NIC" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="sendfile path" value="disk → pagecache → NIC" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+      <Row y={70} label="naive path" value="four copies" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="sendfile path" value="one copy" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
@@ -104,7 +104,7 @@ export function Recap({ t }: StepCtx) {
     <Svg label="a segment that rolls at a size limit, a sparse index that still seeks fast, a zero-copy read path, and an offset the consumer owns, not the broker" h={260}>
       <Row y={50} label="a partition" value="segments on real disk" o={easeOut(seg(t, 0, 0.3))} />
       <Row y={95} label="a sparse index" value="a few entries, fast seeks" o={easeOut(seg(t, 0.1, 0.4))} />
-      <Row y={140} label="zero-copy reads" value="pagecache straight to the NIC" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.6))} />
+      <Row y={140} label="zero-copy reads" value="pagecache to NIC" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.6))} />
       <Row y={185} label="an offset" value="the consumer's own integer" o={easeOut(seg(t, 0.5, 0.85))} />
     </Svg>
   );

@@ -8,11 +8,12 @@ proof that a consumer's offset change mutates no partition state. Zero-copy/`sen
 claims from Kafka's own documentation and source, since no real broker runs in this sandbox.
 
 - Apache Kafka, Design documentation ("Persistence", "Efficiency", "Consumer Position",
-  "Configuring The Log Cleaner"): read from `docs/design/design.md` in the Apache Kafka source
-  tree (trunk, post-4.4), since the live rendered page at
+  "Configuring The Log Cleaner"):
+  [kafka.apache.org/44/design/design/](https://kafka.apache.org/44/design/design/) (the
+  version-pinned page; the unversioned
   [kafka.apache.org/documentation/#design](https://kafka.apache.org/documentation/#design)
-  could not be fetched as static HTML. Page caching, zero-copy/`sendfile`, consumer-owned
-  offsets, and the active segment's compaction exemption.
+  assembles client-side and can't be fetched as static HTML). Page caching, zero-copy/`sendfile`,
+  consumer-owned offsets, and the active segment's compaction exemption.
 - Apache Kafka source, `TopicConfig.java` and `LogConfig.java`/`ServerLogConfigs.java`:
   [github.com/apache/kafka](https://github.com/apache/kafka/blob/trunk/clients/src/main/java/org/apache/kafka/common/config/TopicConfig.java).
   The real `segment.bytes` (one gigabyte), `segment.ms` (seven days) and

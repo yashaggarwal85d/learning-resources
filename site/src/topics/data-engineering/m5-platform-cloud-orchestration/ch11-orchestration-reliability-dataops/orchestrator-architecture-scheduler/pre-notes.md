@@ -1,0 +1,8 @@
+- **Scheduler**: the Airflow process that decides what should run now and submits tasks to run. *Where you meet it:* the thing everyone calls "Airflow" when they mean the whole system.
+- **Executor**: the strategy the scheduler uses to actually run a task — a setting on the scheduler, not a separate process by default. *Where you meet it:* choosing LocalExecutor vs CeleryExecutor in a config file.
+- **Dag**: a directed graph of tasks and their dependencies, defined in a Python file. *Where you meet it:* every pipeline this chapter schedules.
+- **Metadata database**: the durable store (usually PostgreSQL or MySQL) holding the state of every Dag, run and task. *Where you meet it:* the thing that makes a restarted scheduler pick up exactly where it left off.
+- **Row lock**: a database mechanism that lets one transaction hold exclusive claim on a specific row until it commits or rolls back. *Where you meet it:* two processes racing to claim the same work item.
+- **Broker**: a message queue (such as Redis or RabbitMQ) that hands tasks from a scheduler to a pool of workers. *Where you meet it:* the extra moving part CeleryExecutor adds.
+- **Pod**: a Kubernetes-managed container instance. *Where you meet it:* KubernetesExecutor starting one per task.
+- **Idempotent**: safe to run more than once without changing the result beyond the first run. *Where you meet it:* why a retried task is or isn't safe (the next topic).

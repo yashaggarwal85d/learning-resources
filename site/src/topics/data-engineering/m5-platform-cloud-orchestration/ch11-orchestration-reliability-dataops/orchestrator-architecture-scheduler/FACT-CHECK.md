@@ -1,0 +1,29 @@
+# Fact-check — de.orchestrator-architecture-scheduler
+
+Role: adversarial fact-checker, not the author. Every claim re-derived from the fetched source text in `sources/`, or from this topic's own executed `examples.py`, not from memory of writing `OUTLINE.md`.
+
+## Claims
+
+| # | Claim | Status | Evidence |
+|---|---|---|---|
+| 1 | A minimal Airflow installation needs a scheduler, a Dag processor, an API server and a metadata database. | Confirmed | Airflow 3.3.2 Architecture Overview, quoted verbatim, "Required components". |
+| 2 | The executor is a configuration property of the scheduler, not a separate component, and runs within the scheduler process. | Confirmed | Same source, quoted verbatim. Correction to the chapter plan's wording: `OUTLINE.md`'s storyboard originally implied the executor is a distinct architectural box; it is drawn in step 2 as a label *inside* the scheduler box instead, to match the source exactly. |
+| 3 | The Dag processor is a required component in all Airflow 3 deployments and always runs as a standalone process. | Confirmed | Same source, "Separate Dag processing architecture", quoted verbatim. |
+| 4 | Workers never run task code in their own process; they start a subprocess per task instance and the subprocess never reaches the metadata database directly, instead talking to the Execution API. | Confirmed | Same source, "Task execution architecture", quoted verbatim. |
+| 5 | CeleryExecutor workers can run as a long-running process; KubernetesExecutor workers run as a pod per task. | Confirmed | Same source, "Optional components", quoted verbatim. |
+| 6 | `SELECT ... FOR UPDATE SKIP LOCKED` lets multiple consumers split rows from a queue-like table without lock contention; it provides an inconsistent view unsuitable for general-purpose reads. | Confirmed | PostgreSQL `SELECT` documentation, `FOR UPDATE` clause, quoted verbatim. |
+| 7 | Airflow 3's first release was 22 April 2025; Airflow 2 (final minor 2.11.2) reaches EOL/Terminated 22 April 2026. | Confirmed, with a wording fix | Airflow 3.3.2 "Supported versions" Version Life Cycle table, quoted verbatim. The chapter plan (`CHAPTER.md`) stated this in the past tense ("reached end of life 22 Apr 2026"); as of this fetch (30 Oct 2026) that date is in the future, so this topic's own reel and narration say "reaches end of life" or "is scheduled to reach end of life," not "reached," to stay accurate as of research time. |
+| 8 | Two concurrent "scheduler" processes claiming rows from one shared queue table with `SKIP LOCKED` never claim the same row twice. | Confirmed, executed | `examples.py: demonstrate_skip_locked_coordination`, run against this sandbox's own PostgreSQL 16 cluster (`airflow_meta` database); 10/10 tasks claimed, 0 duplicates, every run. |
+| 9 | DAG-parsing cost (Airflow's `DagBag`) grows with the number of DAG files, from about 1.5-2 ms/file at 100 files to about the same per-file rate at 5,000 files (near-linear total growth, 0.16s to 10.2s observed on this sandbox's last run). | Confirmed, executed | `examples.py: measure_dag_parsing_cost`, run against Airflow 3.3.2 installed in this sandbox; see the exact numbers in the run log attached to this topic's `references.md`. |
+| 10 | The scheduler's own CPU is not usually what limits throughput as DAG count grows; the metadata database's write/read load is the more common ceiling. | Confirmed as a documented design fact, not independently load-tested here | This specific comparative claim (scheduler CPU vs. metadata-DB load as the *bottleneck*) is not stated as a measured number in Airflow's own documentation or in this topic's `examples.py` — the DagBag benchmark measures Dag-processor-side parse cost only, not a live scheduler loop's CPU-vs-DB split under load. The reel and narration are corrected to present this as the documented architectural reasoning (every state transition is a metadata-DB write, scheduler work is comparatively cheap per task) rather than as this topic's own measured result, and `coverage.json`/`post-notes.md` disclose that a live multi-scheduler load test is out of scope for this topic's machine and session time. |
+
+## Currency check
+
+- Airflow's own documentation is read from the `stable` alias, which resolved to 3.3.2 at fetch time (30 Oct 2026) and is the version actually installed and exercised in this sandbox (`airflow version` -> `3.3.2`), so there is no version mismatch between the source and the executed examples.
+- The PostgreSQL `SELECT`/`FOR UPDATE` documentation was fetched from the `current` alias, which resolved to the PostgreSQL 18 manual; the `SKIP LOCKED` mechanism itself is unchanged since its introduction in PostgreSQL 9.5 and matches this sandbox's actual PostgreSQL 16 behaviour exactly (confirmed by the executed demo). No currency risk.
+- Claim 7's EOL date is a forward-looking, documented target date, not a past event; corrected per the table above.
+
+## Red-team notes
+
+- Tried to break the "two schedulers never double-claim" result by shortening the simulated per-row work (`time.sleep(0.01)`) to zero: the result held (0 duplicates) because the lock is held across the `SELECT ... FOR UPDATE` and the following `UPDATE` within one transaction regardless of how much work happens in between, which is the actual mechanism, not an artifact of the sleep. Noted in `post-notes.md` → Internals so a reader doesn't mistake the sleep for the safety mechanism.
+- Tried the predict-step's tempting wrong answer ("eventually one wins but duplicates happen on the way") as a design on paper: it would be true of a naive `SELECT ... FOR UPDATE` *without* `SKIP LOCKED`, where the second scheduler blocks instead of skipping, and could act on stale data after the first commits — SKIP LOCKED specifically avoids that by never waiting. This distinction is in step 4's `explain` text.
