@@ -1,0 +1,86 @@
+{
+  "topic": "de.partitioned-log-segments-indexes",
+  "steps": [
+    {
+      "lines": [
+        "A toy log, hundreds of records deep, with nothing sorted for lookup.",
+        "Reading one near the end by starting from the very beginning touches almost every record on the way there.",
+        "Reading that exact same record a second way touches only a handful. Nothing about the data changed between the two. What changed is how it was found."
+      ]
+    },
+    {
+      "lines": [
+        "Worth being precise about what a partition actually is, before going further.",
+        "It isn't some abstract queue sitting in memory somewhere. It's a folder of ordinary files, sitting on a real disk.",
+        "One of those files is still being written to. Every other one is finished, and nothing in it will ever change again."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The file currently being written to has just reached its size limit.",
+        "The next record still has to land somewhere. Does the write simply wait? Does something old get thrown away to make room? Or does something else happen entirely?"
+      ],
+      "answer": [
+        "A new file opens, and the write lands there instead.",
+        "A size limit on one file isn't a ceiling on the whole partition. It's just the point where that file stops growing and a fresh one starts.",
+        "Throwing away an old file is a completely different decision, made on its own schedule, never triggered just because the newest file happened to fill up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that happening for real, not just argued for.",
+        "Records keep landing, one after another, and the file currently open keeps growing with them.",
+        "The moment it crosses its real configured limit, a new file opens, and it happens again, more than once, over the course of one ordinary run."
+      ]
+    },
+    {
+      "lines": [
+        "Every one of those records landed somewhere in a log file. A second, much smaller file sits beside it, and it's worth asking what that one actually tracks.",
+        "It doesn't name a byte position for every single record — that would make it almost as large as the log itself.",
+        "It only checks in every so often. A handful of checkpoints is enough to get a search close, and a short walk forward from there finds the exact record."
+      ]
+    },
+    {
+      "lines": [
+        "Worth asking directly, before trusting it any further.",
+        "That index only checks in occasionally, not on every record.",
+        "Does skipping most records like that risk a seek ever coming back with the wrong one?"
+      ],
+      "answer": [
+        "Never. The index only narrows a search down to roughly the right spot.",
+        "A short, exact scan from there always finds the one record actually asked for, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece of the picture is worth opening: what actually happens when bytes travel from that disk to whoever's reading them.",
+        "The ordinary way means copying the same bytes back and forth between the operating system and the program reading them, more than once, before a single byte ever reaches the network.",
+        "The real design skips most of that. The operating system already keeps a copy of recently read data in its own memory, and a single call hands that exact copy straight to the network, with nothing extra in between."
+      ]
+    },
+    {
+      "lines": [
+        "One more question worth asking directly: who actually remembers how far a reader has gotten through a partition?",
+        "Not the system holding the data. The reader keeps that number itself, entirely on its own side.",
+        "Which means a reader can step that number backward on purpose and read something it already read before, and nothing about the underlying files has to know, or care, that it happened — checked directly, byte for byte, before and after."
+      ]
+    },
+    {
+      "lines": [
+        "Every number shown so far came from one real run, happening just now, not a diagram drawn ahead of time.",
+        "The size at which a file actually rolled, and how many checkpoints a sparse file ended up holding against how many records actually exist.",
+        "How many records each kind of search actually had to look at to find the identical one, and a reader stepping backward, checked to change nothing at all."
+      ]
+    },
+    {
+      "lines": [
+        "A partition, then, is nothing more mysterious than files on a disk, one of them still growing.",
+        "A size limit that starts a fresh file rather than blocking anything.",
+        "A small index that checks in occasionally and still finds anything quickly.",
+        "A read path that hands over memory the system already had sitting ready, with almost nothing copied twice.",
+        "And a reader's own position, which belongs to the reader alone, and nobody else."
+      ]
+    }
+  ]
+}
