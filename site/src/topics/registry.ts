@@ -4574,4 +4574,36 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'Now there is a list of numbers the system must meet. The next question is how big the thing is: how many events a second, how many bytes a year, and what that does to storage, network and cost. That is capacity estimation, and it is the arithmetic every later choice rests on.',
   },
+  {
+    id: 'de.back-envelope-capacity-estimation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/back-envelope-capacity-estimation',
+    title: 'Back-of-envelope capacity estimation',
+    syllabusTitle: 'Back-of-envelope capacity estimation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['capacity-estimate-chain', 'peak-to-average-sizing', 'littles-law-inflight-sizing', 'dated-reference-numbers'],
+    uses: ['ask-to-slo-translation', 'six-dimension-requirement-checklist', 'latency-percentiles'],
+    declared: [
+      'littles-law',
+      'bandwidth-delay-product',
+      'throughput-vs-latency',
+      'latency-numbers',
+      'memory-hierarchy',
+      'latency-bandwidth-cost',
+      'transfer-pricing',
+      'read-write-amplification',
+      'lsm-compaction-rum',
+      'connection-pool-sizing',
+      'object-storage-billing-model',
+    ],
+    bridge:
+      'Now there is a list of numbers the system must meet. The next question is how big the thing is: how many events a second, how many bytes a year, and what that does to storage, network and cost. This topic is capacity estimation, and it is the arithmetic every later choice rests on.',
+    handoff:
+      "With the load known, the first structural choice is when work happens: continuously as data arrives, in scheduled batches, or some mix. The freshness SLO from the first topic and the volumes from this one decide it. The next topic is choosing the data-flow shape.",
+  },
 ];
