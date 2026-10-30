@@ -4607,6 +4607,26 @@ export const TOPICS: TopicMeta[] = [
       "These objects say what to run and roughly where. They do not say how much. How much to reserve, how much to allow, and who dies first when the node runs short is the next topic: requests, limits, quality of service and eviction.",
   },
   {
+    id: 'de.requests-limits-qos-eviction',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/requests-limits-qos-eviction',
+    title: 'Requests, limits, QoS and eviction',
+    syllabusTitle: 'Requests, limits, QoS and eviction',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['requests-vs-limits', 'qos-classes-eviction', 'pdb-priority-preemption', 'in-place-pod-resize'],
+    uses: ['cgroup-memory-cpu-limits', 'oom-kill-vs-runtime-oom', 'k8s-workload-objects', 'k8s-reconciliation-loop', 'k8s-placement-and-storage'],
+    declared: [],
+    bridge:
+      "These objects say what to run and roughly where, not how much. This topic is the reservation the scheduler makes, the ceiling the kubelet enforces, and the order in which pods die when a node runs out: requests, limits, quality of service and eviction.",
+    handoff:
+      "A pod with the right resources still has to be a pod that is meant to end. A nightly pipeline is not a service: it runs, finishes and must be retried with care. The next topic is the Kubernetes objects built for exactly that: Jobs and CronJobs.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',

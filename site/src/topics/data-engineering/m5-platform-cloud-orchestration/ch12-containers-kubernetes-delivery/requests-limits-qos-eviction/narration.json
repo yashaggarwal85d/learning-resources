@@ -1,0 +1,94 @@
+{
+  "topic": "de.requests-limits-qos-eviction",
+  "steps": [
+    {
+      "lines": [
+        "A machine is running low on memory, and three workloads on it were all given the exact same ceiling.",
+        "One asked for exactly what it's using. One asked for less than it's currently using. One never asked for anything at all.",
+        { "beat": 0.4 },
+        "Two separate systems are about to make two separate decisions about which of them goes."
+      ]
+    },
+    {
+      "lines": [
+        "Rank them by how safe each one actually is: the one that asked for exactly enough, the one that's quietly over its own ask, and the one that never made an ask in the first place.",
+        { "beat": 0.4 },
+        "Which gets removed first?"
+      ],
+      "answer": [
+        "There's no special rule that singles out the one that asked for nothing. It simply counts as over its own ask by definition, the same bucket as the one that's over for a different reason.",
+        "Between those two, what actually breaks the tie is importance first, then by how far over each one is — not which category either one belongs to."
+      ]
+    },
+    {
+      "lines": [
+        "Keep two different numbers apart in your head, because two entirely different systems read them.",
+        "One number is a promise made ahead of time, used only to decide where something can even fit.",
+        "The other is a ceiling enforced the whole time something runs, by something that doesn't care what was promised earlier."
+      ]
+    },
+    {
+      "lines": [
+        "Three tiers, and every one of them falls out of comparing those same two numbers against each other.",
+        "Ask for exactly what you'll be allowed to use, and you land in the safest tier there is.",
+        "Ask for something, anything, without matching it exactly, and you land in the middle tier.",
+        "Ask for nothing at all, and there's nowhere safer left to land."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trap worth naming explicitly: the system removing things under pressure, and the system killing things outright, are not reading the same list.",
+        "One of them ranks purely by how far over its own ask something is. The other reads a single number that a workload's tier sets directly.",
+        { "beat": 0.3 },
+        "Most of the time those two lists agree with each other. Nothing anywhere promises they always will."
+      ]
+    },
+    {
+      "lines": [
+        "Even the safest tier has exactly one way to fall, and it isn't another workload's fault.",
+        "If something the machine itself needs to keep running starts eating into memory nobody reserved for it, the safest tier isn't immune anymore. Something still has to give, chosen by how important it is, not by how safe its tier usually makes it."
+      ]
+    },
+    {
+      "lines": [
+        "One system checks in on a regular interval, not continuously.",
+        { "beat": 0.4 },
+        "If something grows faster than that interval can catch, which system actually decides what dies: the one checking periodically, or the one watching every single moment?"
+      ],
+      "answer": [
+        "The one watching every moment wins that race, every time the growth outruns the interval.",
+        "That's the entire reason those two separate lists can end up disagreeing about who actually goes."
+      ]
+    },
+    {
+      "lines": [
+        "A hard ceiling on processing time gets you throttled the instant you cross your own share, whether or not anyone else needed that share right then.",
+        "One well known argument says that's reason enough to drop the ceiling entirely and rely only on the promise made ahead of time. Name that for exactly what it is: one practitioner's stance, not a rule the system itself enforces.",
+        { "beat": 0.3 },
+        "What the ceiling actually buys, mechanically, is a cap on how far any one thing can burst, which is the only reason anyone sharing that machine can plan around it at all."
+      ]
+    },
+    {
+      "lines": [
+        "A budget protecting against disruption sounds like it should cover everything that could remove a workload.",
+        "It doesn't. It only covers the kind someone chose to start, like clearing a machine for maintenance.",
+        { "beat": 0.3 },
+        "Being removed because the machine itself ran short was never that kind of disruption, and that budget was never watching for it."
+      ]
+    },
+    {
+      "lines": [
+        "Something waiting to be placed can only displace something already running if it genuinely outranks it; equal footing never settles the question either way.",
+        "And whatever gets displaced still gets its normal moment to shut down properly first.",
+        { "beat": 0.3 },
+        "Separately, you can hand a running thing new numbers without restarting it, but you can never use that same move to quietly promote it into a safer tier than it was born into."
+      ]
+    },
+    {
+      "lines": [
+        "The right numbers on a workload still don't say anything about when that workload is supposed to be finished.",
+        "A nightly run isn't a service kept alive forever; it has to run, finish, and be retried carefully if it doesn't. That's exactly what's built next."
+      ]
+    }
+  ]
+}
