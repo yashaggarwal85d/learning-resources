@@ -4547,6 +4547,26 @@ export const TOPICS: TopicMeta[] = [
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
   {
+    id: 'de.orchestrator-architecture-scheduler',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
+    title: 'Orchestrator architecture: scheduler, executor, metadata DB',
+    syllabusTitle: 'Orchestrator architecture: scheduler, executor, metadata DB',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['orchestrator-architecture-scheduler', 'executor-model-comparison', 'ha-scheduler-row-locks'],
+    uses: ['ch9.partitioned-log-model', 'ch1.process-model'],
+    declared: ['cron-and-dags-familiarity'],
+    bridge:
+      "Chapters 1 through 10 built pipelines that are each correct on their own. Nothing yet has said what decides when ten thousand of them run, survives a crashed worker, or keeps working when the thing coordinating it all needs to scale past one machine. This chapter opens with that architecture.",
+    handoff:
+      "The executor's job is to run a task and the scheduler's job is to retry it if it fails. That retry is only safe if running the task twice does no harm. The next topic is exactly that property, and the two kinds of failure that make it necessary.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -4585,6 +4605,26 @@ export const TOPICS: TopicMeta[] = [
       "This chapter treated a platform as something you can observe, classify, protect and trace. Every one of those mechanisms leaned on assumptions about clocks, messages and failures that this course has not yet stated precisely: a timestamp, an alert's window, a lease, a lock. This topic states those assumptions: the timing and failure models every distributed protocol is correct relative to.",
     handoff:
       "A model says processes may be slow and messages may be late, but it gives them no shared clock to measure how late. The next topic is what the clocks a machine does have actually promise, and why 'last write wins by timestamp' quietly loses writes.",
+  },
+  {
+    id: 'de.physical-clocks-why-they-lie',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/physical-clocks-why-they-lie',
+    title: 'Physical clocks and why they lie',
+    syllabusTitle: 'Physical clocks and why they lie',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['clock-drift-ntp-error', 'wall-vs-monotonic-clock', 'last-write-wins-clock-hazard', 'bounded-error-clock-interval'],
+    uses: ['timing-models-sync-partial-async', 'memory-hierarchy', 'latency-numbers', 'latency-bandwidth-cost', 'process-model', 'signals', 'cpu-memory-profiling', 'replication-ack-modes'],
+    declared: ['cap-pacelc'],
+    bridge:
+      "The last topic stated the model every protocol is correct relative to, but gave processes no shared clock to measure delay by. This topic is what the clocks a real machine actually has — a drifting crystal, NTP's own correction, a wall clock and a monotonic clock — really promise, and why 'last write wins by timestamp' quietly loses writes even when every clock reports itself synchronised.",
+    handoff:
+      "A bounded-error clock admits when it can't order two events, but it still needs real time to reason about, and real time is exactly what's unreliable here. The next topic drops the clock entirely and asks what 'happened before' can mean using only the messages processes actually exchange.",
   },
   {
     id: 'de.ingestion-modes-push-vs',
@@ -4705,5 +4745,45 @@ export const TOPICS: TopicMeta[] = [
       "Chapter 8 moved data from where it is produced to where it can be read, once and in order. This chapter takes the other kind of source: not a database to be read, but a stream someone is already appending to. This topic is the thing every later topic in this chapter assumes exists: the partitioned log itself, as bytes on disk.",
     handoff:
       "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
+  },
+  {
+    id: 'de.dag-scheduling-stage-boundaries',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
+    title: 'DAG scheduling and stage boundaries',
+    syllabusTitle: 'DAG scheduling and stage boundaries',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['spark-narrow-wide-dependency', 'spark-stage-boundary'],
+    uses: ['spark-task-hierarchy'],
+    declared: [],
+    bridge:
+      "Topic 1 gave the hierarchy's names. This topic answers the question it left open: exactly which operators force the scheduler to cut a new stage, and why that cut is where real work — a shuffle — has to happen.",
+    handoff:
+      "A stage boundary is a promise that a shuffle happens there. The next topic opens that promise: what a shuffle actually writes to disk and sends over the network to make the next stage's input exist.",
+  },
+  {
+    id: 'de.failure-domains-regions-zones',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
+    title: 'Failure domains: regions, zones, cells',
+    syllabusTitle: 'Failure domains: regions, zones, cells',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['failure-domain-blast-radius'],
+    uses: [],
+    declared: ['cloud-basics'],
+    bridge:
+      'Milestones 1-4 built correct pipelines without asking where they run. This chapter is that question, starting with the most basic one: when a piece of the cloud disappears, how much of the system goes with it?',
+    handoff:
+      "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
   },
 ];

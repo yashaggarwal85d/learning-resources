@@ -1,0 +1,87 @@
+{
+  "topic": "de.orchestrator-architecture-scheduler",
+  "syllabus": [
+    {
+      "clause": "Airflow 3 components (API server, scheduler, separate DAG processor, triggerer, workers talking through the Task Execution API/Task SDK instead of the metadata DB, Edge executor for remote workers)",
+      "at": [
+        { "step": "Reveal: the three required parts" },
+        { "deep": "Internals" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "Local/Celery/Kubernetes executors",
+      "at": [
+        { "step": "Reveal: executors, three shapes" }
+      ]
+    },
+    {
+      "clause": "HA schedulers coordinating via row locks (SKIP LOCKED)",
+      "at": [
+        { "step": "Predict: two schedulers, one metadata DB" },
+        { "step": "Reveal: HA via row locks, measured" }
+      ]
+    },
+    {
+      "clause": "DAG-parsing cost and the metadata DB as the scaling ceiling",
+      "at": [
+        { "step": "Reveal: DAG-parsing cost, measured" },
+        { "step": "Reveal: the metadata DB as the real ceiling" }
+      ]
+    },
+    {
+      "clause": "Airflow 2 reached end of life 22 Apr 2026",
+      "at": [
+        { "step": "Reveal: the metadata DB as the real ceiling" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Architecture Overview (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "required components: scheduler (executor runs inside it, not separate), Dag processor, API server, metadata database", "at": [{ "step": "Reveal: the three required parts" }] },
+        { "item": "optional components: worker (CeleryExecutor long-running process, or KubernetesExecutor pod), triggerer (asyncio event loop), plugins folder", "at": [{ "step": "Reveal: executors, three shapes" }] },
+        { "item": "the Dag processor is mandatory in Airflow 3, always a standalone process, isolating the scheduler from Dag-author code", "at": [{ "step": "Reveal: the three required parts" }] },
+        { "item": "workers talk to Airflow through the Execution API / Task SDK rather than the metadata database directly", "at": [{ "deep": "Internals" }] },
+        { "item": "task execution architecture: one subprocess per task instance, never pooled or reused; the worker holds the task's short-lived credentials", "at": [{ "deep": "Internals" }] },
+        { "item": "three deployment shapes diagrammed: basic (single machine, LocalExecutor), distributed (separate Deployment Manager / Dag author / Operations User roles), separate-Dag-processing (security isolation)", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Supported versions (Airflow 3.3.2 documentation, Version Life Cycle table)",
+      "items": [
+        { "item": "Airflow 3's first release was 22 Apr 2025; as of this fetch it is in Maintenance state with no EOL date set", "at": [{ "deep": "Internals" }] },
+        { "item": "Airflow 2 (final minor 2.11.2) entered Limited Maintenance 22 Oct 2025 and reaches EOL/Terminated 22 Apr 2026", "at": [{ "step": "Reveal: the metadata DB as the real ceiling" }] }
+      ]
+    },
+    {
+      "source": "SELECT, FOR UPDATE clause (PostgreSQL documentation)",
+      "items": [
+        { "item": "SKIP LOCKED lets multiple consumers split rows from a queue-like table without contention", "at": [{ "step": "Predict: two schedulers, one metadata DB" }, { "step": "Reveal: HA via row locks, measured" }] },
+        { "item": "SKIP LOCKED is explicitly documented as unsuitable for general-purpose reads (an inconsistent view), appropriate only for a queue-claiming pattern", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The executor isn't a fifth architectural box next to the scheduler — Airflow 3's own documentation is explicit that it's a configuration property the scheduler runs internally, which is exactly why swapping LocalExecutor for CeleryExecutor changes where tasks run without changing what the scheduler process itself is.", "at": [{ "step": "Reveal: the three required parts" }] },
+      { "item": "The Dag processor's mandatory separation in Airflow 3 is a security boundary, not a performance optimisation — it exists so the scheduler process never has to execute Dag-author-supplied code directly, even though parsing that code is also, incidentally, where this topic's measured scaling cost lives.", "at": [{ "step": "Reveal: the three required parts" }] },
+      { "item": "A worker never running task code in its own process (one subprocess per task instance, nothing pooled) is a sizing fact, not a reliability one: it means N concurrent task instances cost N subprocesses regardless of language, which is the resource the pool mechanism (topic 5) actually bounds.", "at": [{ "deep": "Internals" }] },
+      { "item": "SKIP LOCKED's safety doesn't come from holding a lock for the duration of the work — this topic's own fact-check tried removing the simulated delay entirely and the zero-duplicate result held, because the lock only has to survive from SELECT to the following UPDATE's commit, which is the actual guarantee, not an artifact of how long the simulated work takes.", "at": [{ "step": "Reveal: HA via row locks, measured" }] },
+      { "item": "The measured DAG-parsing scaling result (roughly constant per-file cost from 100 to 5,000 files) says something narrower than 'more DAGs make Airflow slower' — it's specifically the Dag processor's own parse-and-serialize pass, which a versioned Dag bundle backend (Git) can at least avoid re-paying needlessly when workers and the processor would otherwise race on which Dag version they see.", "at": [{ "step": "Reveal: DAG-parsing cost, measured" }] },
+      { "item": "The claim that the metadata database, not scheduler CPU, is usually the real ceiling is this topic's documented architectural reasoning (every task-instance state transition is a DB write), not an independently load-tested number from this topic's own session — the fact-check and post-notes both flag that a live multi-scheduler load test is out of scope for this machine and session time.", "at": [{ "step": "Reveal: the metadata DB as the real ceiling" }] },
+      { "item": "Airflow 2's documented EOL date (22 Apr 2026) is a forward-looking target as of this topic's research date (30 Oct 2026), not a past event — the reel and narration both say 'reaches' rather than 'reached' to stay accurate about when the fact-check was actually run.", "at": [{ "step": "Reveal: the metadata DB as the real ceiling" }] },
+      { "item": "The Edge executor (for workers outside the cluster network) is named in Airflow's own architecture page as one of the executor shapes, but this topic's hands-on comparison stops at Local/Celery/Kubernetes because those are the three the syllabus line actually names; Edge is carried only as a sourced pointer.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic's own 'Prove it' scenario (DAG count jumping overnight with no change to the DAGs themselves) has its answer already measured two steps earlier: the thing to profile first is parsing and metadata-DB write volume, not the scheduler process's own CPU, exactly because that's what steps 6-7 showed, not a new claim introduced at the end.", "at": [{ "step": "Prove it" }] },
+      { "item": "A reader who has only used Airflow 2 may expect 'the scheduler' to mean one undifferentiated process; this topic's own vocabulary (scheduler, Dag processor, API server, metadata DB as four distinct required parts, with the executor as a fifth, internal property) is Airflow 3's architecture specifically, and the next topic's idempotency discussion assumes this vocabulary rather than re-deriving it.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
