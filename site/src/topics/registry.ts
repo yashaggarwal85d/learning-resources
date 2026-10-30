@@ -4546,4 +4546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.driver-executors-task-hierarchy',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
+    title: 'Driver, executors and the task hierarchy',
+    syllabusTitle: 'Driver, executors and the task hierarchy',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['spark-task-hierarchy', 'spark-driver-executor-model'],
+    uses: [],
+    declared: [],
+    bridge:
+      "Milestone 2 ended with data that sits in files and tables, durable and queryable. The moment that data is too big for one query to touch on one machine, someone has to decide how the work is cut up, and this chapter's one running system, Apache Spark, makes every one of those decisions something you can watch rather than take on faith.",
+    handoff:
+      "Four levels of hierarchy says how big a computation is. It says nothing yet about where the DAG scheduler decides to cut a job into stages in the first place — the next topic's own rule, and the one that turns 'job' into 'stage' for real.",
+  },
 ];

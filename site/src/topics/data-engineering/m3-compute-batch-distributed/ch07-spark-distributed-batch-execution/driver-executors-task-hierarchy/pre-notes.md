@@ -1,0 +1,5 @@
+- **Partition**: a chunk of a dataset Spark processes independently. *Where you meet it:* this reel's own four-vs-eight partition comparison.
+- **Action**: a Spark operation that actually runs a computation and returns or writes a result (`count()`, `collect()`, `save()`), as opposed to a transformation that only describes one. *Where you meet it:* every job in this reel is triggered by calling `count()`.
+- **DataFrame**: Spark's table-shaped, distributed collection, the thing a partition is a piece of. *Where you meet it:* the one DataFrame this reel repartitions and counts.
+- **Shuffle**: data moving between partitions across the network so that related rows end up together, the thing that forces a new stage. *Where you meet it:* named here only as the reason a stage boundary exists; the next topic opens what it actually does.
+- **JVM**: the Java Virtual Machine process that Spark's driver and executors each run inside. *Where you meet it:* why "local mode" runs everything in one JVM instead of many.
