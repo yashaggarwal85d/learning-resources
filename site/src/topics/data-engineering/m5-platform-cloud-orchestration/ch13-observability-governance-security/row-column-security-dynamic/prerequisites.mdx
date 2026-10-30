@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: classification, keys, and the policy models
+
+<ul class="resources">
+  <Resource kind="reel" title="Data classification and sensitive-data discovery" domain="data-engineering" host="de.data-classification-sensitive-data" by="the tier and category a row or column mask reads" />
+  <Resource kind="reel" title="Envelope encryption, KMS and key rotation" domain="data-engineering" host="de.envelope-encryption-kms-key" by="file-level encryption, the one defence against a direct file read" />
+  <Resource kind="reel" title="Access-control models: RBAC, ABAC, policy-as-code" domain="data-engineering" host="de.access-control-models-rbac" by="the decision and enforcement points this topic puts inside the query engine" />
+  <Resource kind="reel" title="Reading EXPLAIN across engines" domain="data-engineering" host="de.reading-explain-across-engines" by="the plan-reading this topic uses to show a policy's own cost" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Row Security Policies" href="https://www.postgresql.org/docs/current/ddl-rowsecurity.html" by="PostgreSQL documentation">Per-user row policies, their bypass rules, and the leakproof exception.</Resource>
+  <Resource kind="reading" title="Understanding column-level security" href="https://docs.snowflake.com/en/user-guide/security-column-ddm-intro" by="Snowflake documentation">Masking policies as schema-level objects, applied at query runtime.</Resource>
+  <Resource kind="reading" title="Understanding row access policies" href="https://docs.snowflake.com/en/user-guide/security-row-intro" by="Snowflake documentation">Row access policies and how they filter query output.</Resource>
+  <Resource kind="reading" title="Introduction to BigQuery row-level security" href="https://docs.cloud.google.com/bigquery/docs/row-level-security-intro" by="Google Cloud documentation">Row-level security filters that behave like a WHERE clause.</Resource>
+  <Resource kind="reading" title="Data filtering and cell-level security in Lake Formation" href="https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html" by="AWS documentation">Column, row and cell-level security, scoped to read operations.</Resource>
+  <Resource kind="reading" title="Create and manage row filter and column mask policies" href="https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac/policies" by="Databricks on AWS documentation">UDF-backed row filters and column masks in Unity Catalog.</Resource>
+  <Resource kind="reading" title="Open Policy Agent access control" href="https://trino.io/docs/current/security/opa-access-control.html" by="Trino documentation">Row filters and column masks retrieved from OPA at query time.</Resource>
+</ul>
+
+</section>

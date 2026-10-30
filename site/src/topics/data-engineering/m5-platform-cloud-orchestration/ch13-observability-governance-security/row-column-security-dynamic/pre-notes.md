@@ -1,0 +1,8 @@
+- **Query plan**: the engine's own representation of how it will execute a query — scans, joins, filters, in what order. *Where you meet it:* "Reveal: what it costs the plan."
+- **Predicate pushdown**: moving a filter as early as possible in the plan, so fewer rows ever get read or processed. *Where you meet it:* the same reveal, as what makes a pushed-down policy cheap.
+- **View**: a named, stored query, re-run each time it's read. *Where you meet it:* contrasted against a materialized view in "Reveal: the derived table nobody masked."
+- **Materialized view**: a view whose result is actually stored and must be explicitly refreshed. *Where you meet it:* the same reveal — a materialized view can go stale relative to a policy added after it was last built.
+- **Mask**: replacing a column's real value with a redacted or transformed one for callers who shouldn't see the real value. *Where you meet it:* the Hook, and every engine's own version of it.
+- **Row filter**: a rule that hides entire rows from a caller rather than transforming a column. *Where you meet it:* "Reveal: a row policy, mechanically," and again across the five engines.
+- **Role**: a named bundle of permissions assigned to a user — what topic 7's RBAC and ABAC rules are evaluated against to decide if a mask or filter applies. *Where you meet it:* throughout, as the thing a policy is written in terms of.
+- **Least privilege**: granting only the access a task actually requires. *Where you meet it:* the Hook, as the reason the mask existed at all.

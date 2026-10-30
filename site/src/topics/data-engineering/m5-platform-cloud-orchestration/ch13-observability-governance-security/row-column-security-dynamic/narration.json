@@ -1,0 +1,85 @@
+{
+  "topic": "de.row-column-security-dynamic",
+  "steps": [
+    {
+      "lines": [
+        "A shop masks one column on its customers table for the analyst role, so an analyst never sees a raw email address.",
+        "And yet an analyst keeps recovering real addresses anyway. They tried three different paths to get there. Before I tell you which one actually worked, think about which of those three the mask should have stopped."
+      ]
+    },
+    {
+      "lines": [
+        "So, three paths. A query that reads the masked column, straight, through the normal table. A query against a table someone built earlier, derived from that same data. And a read of the file sitting underneath all of it, in storage.",
+        "Which of those three does the mask actually cover? Just the first? All three? Work it out before I go on."
+      ],
+      "answer": [
+        "Only the first one. The mask is attached to a column on the live table, and it's checked only when the engine runs a query against that exact table.",
+        "A table built earlier from that data, and a file read straight from storage, never go anywhere near that check. Neither one ever asks the engine anything at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the distinction underneath all of this.",
+        "The policy doesn't live in some application's own code, checking requests as they come in. It lives inside the engine itself, checked at the exact place a row or a column actually gets read.",
+        "An application-side check only ever protects the requests that happen to go through that one application. Put the check inside the engine instead, and it doesn't matter who's asking — every single caller runs into it."
+      ]
+    },
+    {
+      "lines": [
+        "Let's get concrete about how one real system actually does this.",
+        "Postgres runs a row policy's own condition against every row before it even looks at anything the user themselves asked for. There's exactly one kind of exception: a function the system can prove will never leak anything, which the planner's allowed to run earlier.",
+        "And three kinds of people skip the policy outright: a superuser, a role marked to bypass it specifically, and ordinarily, whoever owns the table in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Now, that same idea shows up under five completely different names, depending on which system you're in.",
+        "Snowflake calls it masking and row-access policies. Databricks calls it row filters and column masks. BigQuery calls it row-level security. AWS calls it a data filter. Trino hands the whole decision off to a separate policy engine.",
+        "Strip away each one's own vocabulary, and it's the same single idea underneath every time: a rule, evaluated by the engine, right when something gets read."
+      ]
+    },
+    {
+      "lines": [
+        "None of this comes for free, though — it shows up in the query's own plan.",
+        "Push the policy down into the scan itself, and the engine only ever touches the rows the policy was going to let through anyway. Don't push it down, and the engine scans every single row first, then throws most of them away afterward.",
+        "And here's a sneaky one: if a result got cached before anyone added the mask, that cache is now quietly handing back the exact values the mask exists to hide."
+      ]
+    },
+    {
+      "lines": [
+        "First of the paths around all of this: a table someone built from the data, before the mask ever existed.",
+        "That table just keeps serving whatever values it was built with. As far as the engine's concerned, it's not connected to the original column's mask at all anymore — it's simply a table, full stop."
+      ]
+    },
+    {
+      "lines": [
+        "Second path: an export, taken out of the system at some point in the past.",
+        "That export is just a copy now. The policy was never written to reach a copy sitting somewhere else — it only ever governs a query running against the one live table it's actually attached to."
+      ]
+    },
+    {
+      "lines": [
+        "And the third, maybe the most direct of all: reading the file itself, straight off of storage.",
+        "There's no query happening there at all, which means the engine is never even in the picture — and if the engine's never asked, there's nothing left standing in the way except whatever's encrypting that file in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling all of that together.",
+        "An engine-side check beats an application-side one because it reaches every single caller, not just the ones going through one particular app. Five different systems, one shared idea underneath, each with its own real cost sitting in the plan.",
+        "And three separate paths — an old derived table, an old export, a direct read of the file — sit completely outside anything any of that policy ever touches."
+      ]
+    },
+    {
+      "lines": [
+        "One more time, with a slightly different setup.",
+        "A mask gets added to a column today. An export was taken a month back. A table built from the data was last refreshed just yesterday — the day before today's mask went on.",
+        "Right now, at this moment: does just the export carry unmasked values, or does the refreshed table carry them too?"
+      ],
+      "answer": [
+        "Both of them do. What matters isn't how recent the refresh was — it's whether the refresh happened before or after the mask existed.",
+        "Yesterday is still before today, so that table's last refresh ran before the mask went on. It picked up exactly the same unmasked values the month-old export did."
+      ]
+    }
+  ]
+}
