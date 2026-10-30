@@ -1,0 +1,82 @@
+{
+  "topic": "de.consensus-inside-data-systems",
+  "syllabus": [
+    {
+      "clause": "where Raft and Paxos actually run in a data stack (Kafka KRaft, etcd for Kubernetes, per-range Raft in CockroachDB/TiKV, Multi-Paxos per DynamoDB partition)",
+      "at": [
+        { "step": "Reveal: one global group vs. many per-range groups" },
+        { "step": "Reveal: where this actually runs" }
+      ]
+    },
+    {
+      "clause": "what a commit costs in round trips",
+      "at": [
+        { "step": "Predict: does a transaction spanning two ranges cost the same as a normal write?" },
+        { "step": "Reveal: the round-trip cost, measured" }
+      ]
+    },
+    {
+      "clause": "what losing quorum looks like operationally",
+      "at": [
+        { "step": "Predict: does a write need every node to agree, or just most of them?" },
+        { "step": "Reveal: majority, measured against unanimity" },
+        { "step": "Reveal: losing quorum, operationally" }
+      ]
+    },
+    {
+      "clause": "theory in Ch.14, build depth → Rust Systems Engineering Ch.26 and M7 Capstone C (Ch.36)",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Raft Consensus Algorithm (raft.github.io)",
+      "items": [
+        { "item": "consensus involves multiple servers agreeing on values; once they reach a decision, that decision is final", "at": [{ "step": "Reveal: majority, measured against unanimity" }] },
+        { "item": "typical consensus algorithms make progress when any majority of their servers is available; if more servers fail, they stop making progress but never return an incorrect result", "at": [{ "step": "Reveal: losing quorum, operationally" }] }
+      ]
+    },
+    {
+      "source": "KRaft (Apache Kafka documentation)",
+      "items": [
+        { "item": "specific Kafka servers are selected to be controllers, and they participate in the metadata quorum", "at": [{ "step": "Reveal: where this actually runs" }] },
+        { "item": "a majority of the controllers must be alive in order to maintain availability", "at": [{ "step": "Reveal: where this actually runs" }] }
+      ]
+    },
+    {
+      "source": "etcd versus other key-value stores (etcd documentation)",
+      "items": [
+        { "item": "etcd replicates all data within a single consistent replication group", "at": [{ "step": "Reveal: one global group vs. many per-range groups" }] },
+        { "item": "since there's only a single replication group, a modification only needs to go through the raft protocol once to commit", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Replication Layer (CockroachDB documentation)",
+      "items": [
+        { "item": "CockroachDB uses a consensus algorithm to require that a quorum of replicas agrees on any changes to a range before those changes are committed", "at": [{ "step": "Reveal: one global group vs. many per-range groups" }] },
+        { "item": "the Raft leader coordinates all writes to its group and heartbeats followers, who become candidates and hold new elections if heartbeats stop", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A majority quorum's safety guarantee doesn't come from any one majority being large — it comes from the fact that any two majorities drawn from the same group must overlap by at least one member, so two different majorities can never commit conflicting values without that overlapping member having agreed to both.", "at": [{ "step": "Reveal: majority, measured against unanimity" }] },
+      { "item": "Refusing a write below quorum isn't a conservative default that could be relaxed for availability — accepting a write without quorum would let two disconnected minorities both believe they're authoritative, which is the exact split-brain scenario consensus exists to prevent.", "at": [{ "step": "Reveal: losing quorum, operationally" }] },
+      { "item": "etcd's own single-replication-group design is a deliberate trade, not an oversight: the documentation itself states it buys a simpler protocol and lower latency specifically because the whole dataset is small enough that one group suffices — it isn't the right choice at a scale where that assumption breaks.", "at": [{ "step": "Reveal: one global group vs. many per-range groups" }] },
+      { "item": "Per-range consensus multiplies the number of leader elections and heartbeat streams a cluster has to run, proportional to the number of ranges — the blast-radius improvement this topic measures isn't free; it's a real operational cost traded for a smaller failure domain.", "at": [{ "deep": "Internals" }] },
+      { "item": "A cross-range transaction's extra round trips come from needing agreement at two separate levels at once: each range's own consensus group must agree internally, and then the ranges themselves must agree with each other that both sides are ready to commit — two-phase commit coordinates the second level, not the first.", "at": [{ "step": "Reveal: the round-trip cost, measured" }] },
+      { "item": "Multi-Paxos, as DynamoDB documents using it per partition, solves the identical per-partition quorum problem Raft solves in CockroachDB and TiKV — the algorithmic difference between Paxos and Raft (left to Chapter 14) doesn't change this topic's own operational claims about blast radius or round-trip cost.", "at": [{ "step": "Reveal: where this actually runs" }] },
+      { "item": "Kafka's KRaft quorum is deliberately small (typically three or five controllers) and separate from the much larger set of brokers it coordinates — the controllers alone need quorum; a broker going down doesn't touch the metadata quorum at all.", "at": [{ "step": "Reveal: where this actually runs" }] },
+      { "item": "This topic's own 'Prove it' answer generalizes the per-range result directly: a failure that removes exactly one member from several independent groups is a fundamentally different event from one that removes a majority from a single group, even when the total number of affected members is identical.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's own executable claims use a fixed, named set of unreachable members rather than a randomized failure model, specifically so the majority-vs-unanimity and global-vs-per-range contrasts are deterministic and don't depend on which particular members happen to fail in a given run.", "at": [{ "deep": "Internals" }] },
+      { "item": "The theory of how Raft and Paxos themselves reach agreement (leader election, log replication, the Paxos protocol's own phases) is assumed from Chapter 14 rather than re-derived here — this topic's own contribution is entirely about where that theory runs operationally and what it costs.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
