@@ -5083,6 +5083,26 @@ export const TOPICS: TopicMeta[] = [
       "A governance model is judged the day somebody wants to change something. Before a schema change or a deprecation, the question is who will be hurt, and the lineage graph can answer it. The last topic of this chapter is computing exactly that: lineage-driven impact analysis.",
   },
   {
+    id: 'de.lineage-driven-impact-analysis',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/lineage-driven-impact-analysis',
+    title: 'Lineage-driven impact analysis',
+    syllabusTitle: 'Lineage-driven impact analysis',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.4' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['blast-radius-scoring', 'stale-propagation-along-lineage', 'owner-notification-deprecation-workflow'],
+    uses: ['openlineage-run-job-dataset-events', 'openlineage-facets', 'column-lineage-parse-vs-runtime', 'lineage-coverage-gaps', 'metadata-graph-entities-relationships', 'technical-vs-business-catalog', 'federated-computational-governance', 'self-serve-table-registration-gate', 'error-budget-burn-rate', 'actionable-page-test', 'dag', 'graph-traversal', 'critical-path', 'tag-propagation-lineage'],
+    declared: ['data-incident-response-blast-radius', 'contract-enforcement-ci'],
+    bridge:
+      "A governance model is judged the day somebody wants to change something. Before a schema change or a deprecation, the question is who will be hurt, and the lineage graph can answer it. This last topic of the chapter is computing exactly that: lineage-driven impact analysis.",
+    handoff:
+      "This chapter treated a platform as something you can observe, classify, protect and trace. Every one of those mechanisms leaned on assumptions about clocks, messages and failures that this course has not yet stated precisely: a timestamp, an alert's window, a lease, a lock. The next chapter states those assumptions, starting with the timing and failure models every distributed protocol is correct relative to.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',

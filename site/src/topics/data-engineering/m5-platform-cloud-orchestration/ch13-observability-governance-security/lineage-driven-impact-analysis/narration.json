@@ -1,0 +1,79 @@
+{
+  "topic": "de.lineage-driven-impact-analysis",
+  "steps": [
+    {
+      "lines": [
+        "An engineer wants to rename a column that half the pipeline has quietly been calling by one particular name for years.",
+        "The catalog's own index says a small handful of tables actually read it. How many owners genuinely need to hear about this before it ships — and how many will still be missed, even if the lineage behind it works exactly as designed?"
+      ]
+    },
+    {
+      "lines": [
+        "So which of these numbers do you actually trust here?",
+        "The catalog's own count, a full graph walk's count — or is neither one, on its own, the real answer to who should be told before this change goes out? Sit with that for a second before I go on."
+      ],
+      "answer": [
+        "Neither one alone gets you there. A static catalog only knows what it was told directly, so it tends to undercount by a wide margin.",
+        "A full graph walk finds everyone downstream, which is genuinely more complete — but it also drags in some tables that never actually touch the column in question at all."
+      ]
+    },
+    {
+      "lines": [
+        "So, start at the table the renamed column actually lives in, and follow every single edge downstream from there.",
+        "Any number of hops, and it doesn't matter yet which particular column is carrying the data forward — on the real run just done here, that walk turns up far more consumers than the catalog's static list ever had on record."
+      ]
+    },
+    {
+      "lines": [
+        "Now narrow it. Follow only the edges where that specific column actually keeps propagating, tracked straight through every rename along the way — whether it's copied over directly or just shapes a downstream value without appearing by name.",
+        "On that exact same graph, this narrower walk excludes a few specific, named tables the broader walk had wrongly pulled in — tables that, it turns out, never touched this column at all."
+      ],
+      "takeaway": "Table-level lineage finds who's downstream; column-level lineage finds who actually reads the thing changing."
+    },
+    {
+      "lines": [
+        "Blast radius is one question. A run failing outright turns out to be a genuinely different one.",
+        "When the whole partition goes bad, every column in it becomes suspect, not just the one somebody happened to be tracking — so staleness has to spread along the full table-level graph, not the narrower column-level one.",
+        "On the real run here, that marks every single table-level dependent stale, full stop."
+      ],
+      "takeaway": "Blast radius and stale propagation ask different questions, so they walk the graph differently."
+    },
+    {
+      "lines": [
+        "Here's the step that actually keeps this usable at scale: resolve every affected table back to whoever owns it, and send exactly one message per owner, listing everything of theirs that's touched.",
+        "On the real run here, a double-digit number of affected tables collapses down into just a small handful of notifications — nobody on this list hears the same news twice."
+      ],
+      "takeaway": "Deduplicating by owner, not by table, is what keeps one incident from flooding an inbox."
+    },
+    {
+      "lines": [
+        "A table that still has live dependents simply can't be pulled out from under them.",
+        "On the real run here, trying to deprecate a table while dependents are still outstanding gets refused outright — and the refusal names, specifically, exactly which owners still haven't signed off."
+      ]
+    },
+    {
+      "lines": [
+        "Now flip it: once every one of those dependent owners has actually signed off — or a table never had any dependents to begin with — that same workflow goes ahead and proceeds.",
+        "Both of those cases run for real, on the exact same graph: a table with no dependents deprecates immediately, while the dependent-heavy one only goes through once every last sign-off has actually landed."
+      ]
+    },
+    {
+      "lines": [
+        "So, gathering all of this together.",
+        "Six different pieces, all working together here. A static index misses people. A full graph walk pulls in too many, by name. Narrowing to the column alone gets it right.",
+        "A bad partition doesn't care which single value somebody cared about — it taints the whole row. Each person hears from this exactly once. And nothing gets retired until every last signature is actually in."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, worth sitting with for a moment.",
+        "Somewhere, a table gets read by name, straight out of a script that never once calls the lineage API.",
+        "As the rest of this graph's coverage keeps getting better and better over time, will blast-radius scoring, stale propagation, or owner notification ever actually catch sight of that particular reader? And why, or why not?"
+      ],
+      "answer": [
+        "Never — not from this particular gap, anyway. Every one of these methods only walks edges that already exist somewhere in the graph.",
+        "A reader that never reports a single run leaves no edge behind for any of them to follow, no matter how complete the rest of the graph eventually becomes."
+      ]
+    }
+  ]
+}

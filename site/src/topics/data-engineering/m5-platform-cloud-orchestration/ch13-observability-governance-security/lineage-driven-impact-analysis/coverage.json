@@ -1,0 +1,70 @@
+{
+  "topic": "de.lineage-driven-impact-analysis",
+  "syllabus": [
+    {
+      "clause": "blast-radius scoring before a schema change or deprecation",
+      "at": [
+        { "step": "Reveal: walking the graph, table by table" },
+        { "step": "Reveal: walking the graph, column by column" }
+      ]
+    },
+    {
+      "clause": "stale-table propagation",
+      "at": [{ "step": "Reveal: a failed partition spreads differently" }]
+    },
+    {
+      "clause": "automated notification of dependent owners",
+      "at": [{ "step": "Reveal: one notice per owner, not per table" }]
+    },
+    {
+      "clause": "deprecation workflows",
+      "at": [
+        { "step": "Reveal: deprecation, blocked" },
+        { "step": "Reveal: deprecation, cleared" }
+      ]
+    },
+    {
+      "clause": "lineage as the backbone of incident triage (§11.3) and contract enforcement (§11.4)",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Marquez — Get a lineage graph (API docs)",
+      "items": [
+        { "item": "A lineage graph node is a dataset node, a dataset field node, or a job node, addressed by a namespaced nodeId.", "at": [{ "step": "Reveal: walking the graph, table by table" }] },
+        { "item": "An edge in the lineage graph carries an origin node ID and a destination node ID.", "at": [{ "step": "Reveal: walking the graph, table by table" }] }
+      ]
+    },
+    {
+      "source": "DataHub — Data Lineage Impact Analysis: How to Run One",
+      "items": [
+        { "item": "An impact analysis reads the lineage graph outward from a chosen asset; downstream answers what breaks, upstream answers where a wrong value came from.", "at": [{ "step": "Predict: whose number is right?" }] },
+        { "item": "Table-level lineage says which datasets are connected; column-level lineage says which of them actually read the specific field being changed.", "at": [{ "step": "Reveal: walking the graph, column by column" }] }
+      ]
+    },
+    {
+      "source": "Google SRE Workbook — Incident Response",
+      "items": [
+        { "item": "Assessing the incident's impact is the first step of an active-incident response, with mitigation prioritized above root cause.", "at": [{ "step": "Reveal: a failed partition spreads differently" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "This topic's table-level and column-level walks are a BFS/DFS graph traversal exactly as Chapter 1's own refresher topic named it, applied here to a lineage graph instead of a task DAG — the same algorithm, a different kind of node.", "at": [{ "topic": "Graph algorithms for pipeline DAGs", "quote": "BFS/DFS", "domain": "data-engineering" }] },
+      { "item": "The deduplicated, per-owner notification this topic builds is the same deduplication-and-routing idea topic 3 introduced for paging, now applied to a lineage-derived affected-table list instead of a firing alert.", "at": [{ "topic": "SLO burn-rate alerting", "quote": "deduplication and owner routing", "domain": "data-engineering" }] },
+      { "item": "The column this topic tracks through a rename is exactly the kind of tag-propagation path topic 4 first named for sensitivity tags — here the thing propagating is the column's own identity through a lineage graph, not a classification tag, but the propagate-along-the-graph mechanism is the same shape.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "tag propagation along lineage", "domain": "data-engineering" }] },
+      { "item": "The catalog this topic's notifications resolve each affected table's owner from is topic 10's own catalog, and the technical-vs-business split that topic drew (what a crawler can see vs what a person must name) is echoed here in the gap between the graph's table-level reach and what a human still has to judge in a deprecation sign-off.", "at": [{ "topic": "Metadata platforms and active catalogs", "quote": "technical vs business catalog", "domain": "data-engineering" }] },
+      { "item": "The deprecation workflow's sign-off gate is the same automate-vs-human split topic 13 drew: whether a table has live dependents is a rule a program checks for itself, but whose sign-off actually counts and when a table is safe to retire still runs through the governance model topic 13 built.", "at": [{ "topic": "Federated governance operating model", "quote": "central policy is applied computationally", "domain": "data-engineering" }] },
+      { "item": "DataHub's own distinction between table-level and column-level lineage precision is exactly what this topic's two walk functions demonstrate with a real, planted graph rather than describing in the abstract: the three named false positives are the concrete cost of table-level imprecision DataHub's blog only states in general terms.", "at": [{ "step": "Reveal: walking the graph, column by column" }] },
+      { "item": "The Google SRE Workbook's own priority order (assess impact, then mitigate, with root cause last) is why this topic treats stale propagation as a table-level, not column-level, question: a failed partition needs its blast marked wide and fast, not narrowed precisely first.", "at": [{ "step": "Reveal: a failed partition spreads differently" }] },
+      { "item": "The uninstrumented partner reader is this topic's own worked instance of topic 11's own disclosed limit (lineage-coverage-gaps): a genuine consumer with no OpenLineage event behind it is invisible to every algorithm in this topic, not a hypothetical edge case.", "at": [{ "step": "Prove it" }] },
+      { "item": "Marquez's own node model (dataset, dataset field, or job, each with in/out edges) is the same three-kind-of-node shape this topic's own EDGES structure encodes directly in Python, without calling Marquez itself, since this sandbox has no connected Marquez server.", "at": [{ "step": "Reveal: walking the graph, table by table" }] },
+      { "item": "The ten real asserted numbers in this topic's own lab run (three catalog entries, fourteen table-level, eleven column-level, three named false positives, ten stale, four notifications, two deprecation outcomes) are each a direct output of a graph-traversal function, not a hand-typed illustration — the same discipline every topic in this chapter has held to.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

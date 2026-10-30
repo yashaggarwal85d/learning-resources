@@ -1,0 +1,7 @@
+- **Blast radius**: everything downstream that a proposed change could affect, found by walking the lineage graph outward from it. *Where you meet it:* throughout.
+- **Downstream and upstream**: downstream is what reads from a table; upstream is what it reads from. *Where you meet it:* "Reveal: walking the graph, table by table."
+- **Transitive dependency**: a dependent reached through one or more intermediate hops, not directly connected. *Where you meet it:* the same reveal.
+- **Owner**: the domain team responsible for a table, resolved from the catalog. *Where you meet it:* "Reveal: one notice per owner, not per table."
+- **Deprecation**: retiring a table, announced and tracked until every remaining reader has moved on or signed off. *Where you meet it:* "Reveal: deprecation, blocked."
+- **Stale**: marked as potentially wrong because something it depends on failed or changed. *Where you meet it:* "Reveal: a failed partition spreads differently."
+- **Graph traversal**: visiting every node reachable from a starting point by following its edges. *Where you meet it:* throughout.
