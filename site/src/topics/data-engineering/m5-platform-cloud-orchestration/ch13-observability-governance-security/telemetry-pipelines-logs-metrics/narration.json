@@ -1,0 +1,99 @@
+{
+  "topic": "de.telemetry-pipelines-logs-metrics",
+  "steps": [
+    {
+      "lines": [
+        "Here's a pipeline that looks, from the outside, completely healthy.",
+        "Every single task in last night's run reported success. Nothing paged. And yet the table a stakeholder reads from was still stale when they opened it this morning.",
+        "So the pipeline wasn't actually lying to anyone. It was just never asked the one question that mattered."
+      ]
+    },
+    {
+      "lines": [
+        "Before I tell you what that question is, commit to an answer yourself.",
+        "The pipeline already had three numbers sitting there: whether every task succeeded, how many rows got written, and how old the newest partition actually is.",
+        "Which one of those three would have told you, in the middle of the night, that something was wrong?"
+      ],
+      "answer": [
+        "Task success doesn't do it, because a task can exit cleanly while doing essentially nothing useful.",
+        "Row count doesn't do it either. A job can rewrite yesterday's same rows every single night and report a perfectly healthy count.",
+        "Only the age of the newest partition measures what a reader actually experiences, regardless of what the task itself believes happened."
+      ]
+    },
+    {
+      "lines": [
+        "That gap starts with how you even write down what happened.",
+        "A sentence in a log file is something a human has to read and interpret. A structured record just carries the same named fields every single time: which run, which task, which asset, which partition.",
+        "That one small discipline is what makes everything after it possible."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that discipline is actually worth.",
+        "Mix four separate runs together into one pile of log lines, and a human is stuck reading every one of them to find the run they care about.",
+        "Ask the same question of the structured version, by that one key, and you get back only the records that actually belong to your run. Nothing else."
+      ]
+    },
+    {
+      "lines": [
+        "Now, not every number behaves the same way, and picking the wrong shape for one will bite you later.",
+        "Rows processed only ever climbs. It's a running total, and the only thing that can bring it back down is the process itself restarting.",
+        "That's the entire contract of what's called a counter: up, or back to the start. Nothing in between."
+      ]
+    },
+    {
+      "lines": [
+        "A queue, on the other hand, genuinely falls. Things get drained out of it, not just added.",
+        "Try to force that falling number through something that only knows how to increase, and watch what happens to a real queue that drained down to seventy.",
+        "The honest answer a counter can give you isn't seventy. It's zero, because resetting is the only decrease it has."
+      ]
+    },
+    {
+      "lines": [
+        "Task duration is a different shape of problem entirely, because it isn't one number at all. It's a whole distribution of them.",
+        "A histogram handles that by sorting observations into buckets and keeping a running sum alongside them.",
+        "But read a percentile back out of those buckets and remember what you're holding: an estimate interpolated between bucket edges, not an exact figure, and definitely not something you can average across two separate machines."
+      ]
+    },
+    {
+      "lines": [
+        "Put four of those pieces together and you get six signals worth watching on any pipeline.",
+        "Three carry straight over from any web service: how fast, how often it fails, how much is flowing through. Three are specific to a pipeline: how far behind a consumer is, how big a backlog has grown, and how fresh the data actually is.",
+        "That last one is the one with no equivalent anywhere else. A request-response service has nothing like it. And it's the one that would have caught last night's failure instantly: a partition that sat over ten hours old while every task bar on the dashboard stayed green the entire time."
+      ]
+    },
+    {
+      "lines": [
+        "Getting that number out of the pipeline is its own small problem, because of how it gets collected.",
+        "A scraper that checks in every fifteen seconds simply never catches a job that starts and finishes in four. It isn't unlucky. It's structurally impossible for it to see.",
+        "Pushing the value in instead solves that, but be careful: a gateway built for pushing keeps repeating that same old number forever, long after the job that sent it is gone, unless someone deletes it."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing worth trying before you call any of this done: add a single label splitting that same counter by customer.",
+        "It looks like a small, reasonable addition. It is not. Each distinct customer now gets its own separate series, stored and queried independently.",
+        "Ten customers, ten series. Ten thousand customers, ten thousand series, out of what used to be one."
+      ]
+    },
+    {
+      "lines": [
+        "So here's everything this pipeline now actually has to say about itself.",
+        "A record carries its own fields and its own key. Each number gets the metric shape it actually behaves like. Six signals are watched, one with no equivalent outside a pipeline.",
+        "And every one of those signals got there by being pushed or pulled, deliberately, not by accident."
+      ]
+    },
+    {
+      "lines": [
+        "One more to actually commit to, because this is the test that matters.",
+        "A brand new stage gets added to this pipeline. It has no instrumentation yet, it runs faster than any reasonable scrape interval, and three other jobs read whatever it writes.",
+        "Is wiring up throughput and error rate enough, or is there something else this stage needs before you'd trust it?"
+      ],
+      "answer": [
+        "Throughput and error rate only tell you the job ran and didn't crash. That's exactly the all-green picture from the very start of this topic.",
+        "What's missing is freshness: whether what it wrote is actually new, pushed at the end of each run, because nothing running faster than the scrape interval can be reliably pulled.",
+        "Skip that, and you've built the same silent failure you opened this topic with, just one stage further down the pipeline."
+      ]
+    }
+  ]
+}
