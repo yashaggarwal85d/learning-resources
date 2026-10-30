@@ -1,0 +1,80 @@
+{
+  "topic": "de.kubernetes-workload-primitives",
+  "steps": [
+    {
+      "lines": [
+        "Delete a running pod by hand, and watch what happens next.",
+        "A new one takes its place almost immediately, without anyone asking for it.",
+        { "beat": 0.4 },
+        "Edit a setting on a live pod, and the same thing happens: it quietly reverts. Something is enforcing a decision you didn't make in that moment."
+      ]
+    },
+    {
+      "lines": [
+        "Three identical pods, managed as one group. Delete one of them by hand.",
+        "A minute passes. Nothing you did again, no command you typed a second time.",
+        { "beat": 0.4 },
+        "How many pods are running now, and whose decision was that?"
+      ],
+      "answer": [
+        "Three again, and it was never your decision to begin with. The group's own controller noticed the gap and closed it.",
+        "That deleted pod wasn't special. It was simply the actual count falling short of the declared one, for one tick of a loop that runs constantly."
+      ]
+    },
+    {
+      "lines": [
+        "Separate what's declared from what's actually true right now. Those are two different things, watched by a third thing in between.",
+        "That watcher never stops comparing the two, and never waits to be told the gap exists.",
+        { "beat": 0.3 },
+        "Every object in this whole platform works this exact same way underneath."
+      ]
+    },
+    {
+      "lines": [
+        "The smallest unit that actually gets placed somewhere is one of these.",
+        "Multiply it by a count, and you get one shape: copies that don't care which one answers a request.",
+        "Give each copy its own name and its own storage that follows it around, and you get a completely different shape: ones that are never interchangeable, even though they started from the same blueprint."
+      ]
+    },
+    {
+      "lines": [
+        "Behind one stable name, the thing answering a request can change entirely from one moment to the next.",
+        "Whoever's calling that name never has to know, or care, which copy picked up."
+      ]
+    },
+    {
+      "lines": [
+        "Two kinds of configuration object sit right next to each other, and one of them sounds like it protects something.",
+        "It doesn't, not by itself. The encoding on that value only disguises it from a glance; it isn't locked away from anyone who already has a way in.",
+        { "beat": 0.3 },
+        "Treat that value as exposed until something else is actually turned on to protect it."
+      ]
+    },
+    {
+      "lines": [
+        "Three roles, and it's worth keeping them apart: one thing already exists and is simply available, one thing is only ever a request for some, and the third is what turns a request into something that actually gets built on demand.",
+        "Without that third piece, a human has to pre-build every option by hand before anyone can ask for one."
+      ]
+    },
+    {
+      "lines": [
+        "One mark on a place says: stay out, unless you're explicitly allowed in.",
+        "A matching permission lets something past that mark, but notice the word: lets, not forces. Being allowed in is not the same as being sent there.",
+        { "beat": 0.3 },
+        "A completely separate pull, toward or away from a place, is a different decision made on different grounds entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Hold onto that one loop you just learned, because it's the only idea in this whole refresher.",
+        "Everything still ahead in this chapter is that identical loop, just looking at a different kind of gap each time."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what none of this told you yet: how much to set aside for any of it, or who gets sacrificed first when a machine runs short.",
+        "That's the very next thing."
+      ]
+    }
+  ]
+}

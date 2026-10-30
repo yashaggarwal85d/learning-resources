@@ -4587,6 +4587,26 @@ export const TOPICS: TopicMeta[] = [
       "A limit is a kernel file, not a runtime setting layered on top of it. Reading it right, and reading the right probe for a slow start, is what the next topic's QoS classes, eviction order and CPU-limit debate both build on.",
   },
   {
+    id: 'de.kubernetes-workload-primitives',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/kubernetes-workload-primitives',
+    title: 'Kubernetes workload primitives',
+    syllabusTitle: 'Kubernetes workload primitives',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.2' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['k8s-workload-objects', 'k8s-reconciliation-loop', 'k8s-placement-and-storage'],
+    uses: ['container-config-injection', 'cgroup-memory-cpu-limits'],
+    declared: [],
+    bridge:
+      "A limit is a number in a kernel file. Someone has to write that number and decide which machine the process lands on. In a data platform that someone is Kubernetes. This refresher is the objects it is made of, and the one loop all of them share.",
+    handoff:
+      "These objects say what to run and roughly where. They do not say how much. How much to reserve, how much to allow, and who dies first when the node runs short is the next topic: requests, limits, quality of service and eviction.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
