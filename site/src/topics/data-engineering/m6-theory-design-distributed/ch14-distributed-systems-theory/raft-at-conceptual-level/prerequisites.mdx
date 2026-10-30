@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the models Raft has to deliver
+
+<ul class="resources">
+  <Resource kind="reel" title="Timing and failure models" domain="data-engineering" host="de.timing-failure-models" by="Chapter 14, topic 1" />
+  <Resource kind="reel" title="Lamport clocks and happens-before" domain="data-engineering" host="de.lamport-clocks-happens-before" by="Chapter 14, topic 3" />
+  <Resource kind="reel" title="Linearizability" domain="data-engineering" host="de.linearizability" by="Chapter 14, topic 5" />
+  <Resource kind="reel" title="CAP, stated precisely, and PACELC" domain="data-engineering" host="de.cap-stated-precisely-pacelc" by="Chapter 14, topic 8" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The source this topic quotes directly
+
+<ul class="resources">
+  <Resource kind="reading" title="In Search of an Understandable Consensus Algorithm (Extended Version)" href="https://raft.github.io/raft.pdf" by="Ongaro and Ousterhout">The terms, voting restriction, log matching property, commit rule, Figure 8, and joint consensus, each in the paper's own words.</Resource>
+  <Resource kind="reading" title="Consensus: Bridging Theory and Practice" href="https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf" by="Diego Ongaro, PhD thesis">Named for the single-server membership-change variant, not taught here.</Resource>
+  <Resource kind="reading" title="Paxos Made Simple" href="https://lamport.azurewebsites.net/pubs/paxos-simple.pdf" by="Leslie Lamport">Named for the Paxos family Raft is proven equivalent to, not taught here.</Resource>
+</ul>
+
+</section>

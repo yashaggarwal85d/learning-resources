@@ -4787,6 +4787,26 @@ export const TOPICS: TopicMeta[] = [
       "CAP and PACELC name the choice a system makes; they say nothing about the mechanisms that make a choice survivable, a leader failing mid-write, a coordinator dying mid-transaction. The next topics build those mechanisms, starting with Raft.",
   },
   {
+    id: 'de.raft-at-conceptual-level',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/raft-at-conceptual-level',
+    title: 'Raft at the conceptual level',
+    syllabusTitle: 'Raft at the conceptual level',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.6' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['raft-terms-election-voting-restriction', 'raft-log-matching-and-commitment', 'raft-membership-and-snapshots', 'raft-vs-paxos-equivalence'],
+    uses: ['timing-models-sync-partial-async', 'safety-vs-liveness-in-a-model', 'lamport-scalar-clock', 'linearizability-definition', 'stale-leader-read', 'two-phase-commit', 'wal-lsn-fsync'],
+    declared: ['consensus-raft-paxos-in-systems'],
+    bridge:
+      "CAP says which models are impossible to keep during a partition; it does not say how to get the ones that remain. The strongest one that is still possible, a single agreed order of writes across replicas, has a standard mechanism, and it is the one Chapter 5 named by its use but never opened: Raft.",
+    handoff:
+      "Raft guarantees there is at most one leader per term. It does not stop a leader from the previous term, paused by a garbage collection, from waking up and acting as if it still led. A consensus protocol cannot fix that alone; something outside it must refuse the old leader's writes. That is the next topic: leases, fencing tokens and split brain.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',

@@ -1,0 +1,86 @@
+{
+  "topic": "de.raft-at-conceptual-level",
+  "syllabus": [
+    {
+      "clause": "terms, leader election with the up-to-date-log voting restriction",
+      "at": [
+        { "step": "Reveal: terms as a logical clock" },
+        { "step": "Reveal: the voting restriction" }
+      ]
+    },
+    {
+      "clause": "log matching property",
+      "at": [{ "step": "Reveal: the log matching property, enforced on every append" }]
+    },
+    {
+      "clause": "commitment only for current-term entries",
+      "at": [{ "step": "Reveal: why counting replicas of an old-term entry is unsafe" }]
+    },
+    {
+      "clause": "membership change (joint consensus / single-server changes), snapshots",
+      "at": [{ "step": "Reveal: joint consensus for membership change" }]
+    },
+    {
+      "clause": "what Raft adds over Multi-Paxos is understandability, not new power",
+      "at": [{ "step": "Recap" }]
+    },
+    {
+      "clause": "Message formats and conflict repair: → Rust Systems Engineering Ch.26.",
+      "at": [{ "deep": "Message formats and conflict repair: left to the Rust track" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Ongaro and Ousterhout: In Search of an Understandable Consensus Algorithm",
+      "items": [
+        { "item": "terms as a logical clock, and the voting restriction's up-to-date comparison", "at": [{ "step": "Reveal: terms as a logical clock" }, { "step": "Reveal: the voting restriction" }] },
+        { "item": "the Log Matching property and AppendEntries's consistency check", "at": [{ "step": "Reveal: the log matching property, enforced on every append" }] },
+        { "item": "the current-term-only commit rule and its own Figure 8 counter-example", "at": [{ "step": "Reveal: why counting replicas of an old-term entry is unsafe" }] },
+        { "item": "joint consensus's overlapping majorities for membership change", "at": [{ "step": "Reveal: joint consensus for membership change" }] },
+        { "item": "the claim that Raft is equivalent to Multi-Paxos but more understandable", "at": [{ "step": "Recap" }] }
+      ]
+    },
+    {
+      "source": "Ongaro: Consensus: Bridging Theory and Practice (PhD thesis)",
+      "items": [
+        { "item": "named for the single-server membership-change variant, not taught here", "at": [{ "out": "named in CHAPTER.md's Leaves out; owned by the Rust track's skipped topic" }] }
+      ]
+    },
+    {
+      "source": "Lamport: Paxos Made Simple",
+      "items": [
+        { "item": "named as the Paxos family Raft is proven equivalent to, not taught here", "at": [{ "out": "named in CHAPTER.md's Leaves out; the skipped consensus-problem and Paxos syllabus topics" }] }
+      ]
+    },
+    {
+      "source": "de.linearizability (internal cross-reference)",
+      "items": [
+        { "item": "the stale-leader-read hazard this topic's hook dramatizes at the replicated-log level", "at": [{ "step": "Hook: a leader crashes before telling anyone an entry is committed" }] }
+      ]
+    },
+    {
+      "source": "de.cap-stated-precisely-pacelc (internal cross-reference)",
+      "items": [
+        { "item": "this topic answers topic 8's handoff: the strongest model CAP permits needs a mechanism", "at": [{ "deep": "Where this goes next" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Terms act as a logical clock in Raft, letting servers detect obsolete information such as stale leaders; a server that sees a higher term updates its own, and a request with a stale term is rejected.", "at": [{ "step": "Reveal: terms as a logical clock" }] },
+      { "item": "A voter grants its vote only if the candidate's log is at least as up-to-date as its own, compared by last term first and log length as a tiebreaker; this restriction is what guarantees Leader Completeness.", "at": [{ "step": "Reveal: the voting restriction" }] },
+      { "item": "If two logs contain an entry with the same index and term, the logs are identical in all entries up through that index, maintained by AppendEntries's consistency check on every append.", "at": [{ "step": "Reveal: the log matching property, enforced on every append" }] },
+      { "item": "Raft never commits log entries from previous terms by counting replicas; only an entry from the leader's current term is committed this way, and once it is, every prior entry is committed indirectly through the Log Matching property.", "at": [{ "step": "Reveal: why counting replicas of an old-term entry is unsafe" }] },
+      { "item": "The paper's own worked scenario shows an entry from an earlier term sitting on a majority of servers while still being safe for a later candidate with a higher last term to overwrite.", "at": [{ "step": "Reveal: why counting replicas of an old-term entry is unsafe" }] },
+      { "item": "Changing cluster membership routes through a transitional joint-consensus configuration requiring majorities of both the old and new configurations at once, to guarantee safety during the transition.", "at": [{ "step": "Reveal: joint consensus for membership change" }] },
+      { "item": "Raft produces a result equivalent to Multi-Paxos and is as efficient, but its structure makes it simpler and more understandable; the two algorithms have identical decision-making power.", "at": [{ "step": "Recap" }] },
+      { "item": "An entry sitting on only two of five servers when its leader crashes is not committed, because commitment requires a majority, and the new leader is free to overwrite it.", "at": [{ "step": "Predict: is that entry committed, and can the new leader overwrite it?" }] },
+      { "item": "Once a leader's own current-term entry reaches a majority, that entry is committed instantly, independent of whether the leader survives to announce it, because any future candidate missing it fails the voting restriction's check against every server that holds it.", "at": [{ "step": "Prove it: the leader's own current-term entry just reached a majority, then it crashes — is the new leader free to overwrite it?" }] },
+      { "item": "The FLP impossibility result, the consensus problem, and Paxos itself are left to the Deep dive and the skipped syllabus topics, not derived here.", "at": [{ "out": "named in CHAPTER.md's Leaves out" }] },
+      { "item": "Raft's message formats, PreVote, CheckQuorum, and a working implementation are left to the Rust Systems Engineering track, not built here.", "at": [{ "out": "named in CHAPTER.md's Leaves out; Rust Systems Engineering Ch.26" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
