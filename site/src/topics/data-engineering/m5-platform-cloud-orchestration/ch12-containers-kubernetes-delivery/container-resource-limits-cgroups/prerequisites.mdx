@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Images, layers and local environments" domain="data-engineering" host="de.images-layers-local-environments" by="the image this topic's container is built from" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="resources">
+
+### <span class="n">02</span> cgroups and the JVM
+
+<ul class="resources">
+  <Resource kind="reading" title="Control Group v2" href="https://docs.kernel.org/admin-guide/cgroup-v2.html" by="The Linux kernel documentation" length="20 min">memory.max, memory.oom.group, memory.events and cpu.max — the source for this topic's limit and throttling claims.</Resource>
+  <Resource kind="reading" title="java(1)" href="https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html" by="Oracle, Java SE 21" length="5 min">MaxRAMPercentage and the JVM's container-aware default heap sizing.</Resource>
+  <Resource kind="reading" title="Configuration" href="https://spark.apache.org/docs/latest/configuration.html" by="Apache Spark documentation" length="10 min">memoryOverheadFactor and the floor this topic's Spark-overhead step draws on.</Resource>
+  <Resource kind="reading" title="Liveness, Readiness, and Startup Probes" href="https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes" by="Kubernetes documentation" length="10 min">The three probes and what each one decides on failure.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,6 @@
+- **cgroup**: a Linux kernel mechanism that tracks and limits a group of processes' resource use; a container's memory and CPU limits are cgroup v2 files. *Where you meet it:* every step of this topic.
+- **`memory.max`**: the cgroup v2 file holding a group's hard memory ceiling; crossing it invokes the kernel's own OOM killer. *Where you meet it:* the kernel-file and three-deaths steps.
+- **OOM killer**: the kernel subsystem that picks and kills a process (or the whole cgroup) when a memory limit is crossed and can't be satisfied by reclaiming memory. *Where you meet it:* the kernel-file step.
+- **Heap vs non-heap**: a JVM's heap holds its objects; non-heap covers metaspace, thread stacks and native buffers, all counted against the same container limit. *Where you meet it:* the hook and JVM-sizing steps.
+- **`cpu.max`**: the cgroup v2 file holding a group's CPU quota and period in microseconds; exceeding the quota throttles the group until the next period. *Where you meet it:* the CPU-quota steps.
+- **Liveness, readiness, startup probe**: three Kubernetes health checks with three different actions on failure — restart, remove from service, and hold the others back. *Where you meet it:* the probes step.

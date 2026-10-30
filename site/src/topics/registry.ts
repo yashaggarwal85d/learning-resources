@@ -4567,6 +4567,26 @@ export const TOPICS: TopicMeta[] = [
       "An image is a frozen filesystem. Running it is something else: a Linux process in a control group, with a limit written in a kernel file. What that limit does when the process asks for more is the next topic.",
   },
   {
+    id: 'de.container-resource-limits-cgroups',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/container-resource-limits-cgroups',
+    title: 'Container resource limits: cgroups and OOM',
+    syllabusTitle: 'Container resource limits: cgroups and OOM',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['cgroup-memory-cpu-limits', 'oom-kill-vs-runtime-oom', 'health-probes-restart-loops'],
+    uses: ['image-layers-build-cache', 'process-model', 'signals', 'exit-status', 'process-inspection', 'cpu-memory-profiling'],
+    declared: [],
+    bridge:
+      'An image is a frozen filesystem. Running it is a Linux process in a control group, with a limit written in a kernel file — and that file does not care whether the memory it counts is JVM heap or anything else. This topic is an executor pod killed while its heap looks almost calm, and the kernel file that killed it anyway.',
+    handoff:
+      "A limit is a kernel file, not a runtime setting layered on top of it. Reading it right, and reading the right probe for a slow start, is what the next topic's QoS classes, eviction order and CPU-limit debate both build on.",
+  },
+  {
     id: 'de.timing-failure-models',
     domain: 'data-engineering',
     slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/timing-failure-models',
