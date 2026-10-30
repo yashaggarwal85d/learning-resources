@@ -4547,6 +4547,46 @@ export const TOPICS: TopicMeta[] = [
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
   {
+    id: 'de.driver-executors-task-hierarchy',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
+    title: 'Driver, executors and the task hierarchy',
+    syllabusTitle: 'Driver, executors and the task hierarchy',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['spark-task-hierarchy', 'spark-driver-executor-model'],
+    uses: [],
+    declared: [],
+    bridge:
+      "Milestone 2 ended with data that sits in files and tables, durable and queryable. The moment that data is too big for one query to touch on one machine, someone has to decide how the work is cut up, and this chapter's one running system, Apache Spark, makes every one of those decisions something you can watch rather than take on faith.",
+    handoff:
+      "Four levels of hierarchy says how big a computation is. It says nothing yet about where the DAG scheduler decides to cut a job into stages in the first place — the next topic's own rule, and the one that turns 'job' into 'stage' for real.",
+  },
+  {
+    id: 'de.timing-failure-models',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/timing-failure-models',
+    title: 'Timing and failure models',
+    syllabusTitle: 'Timing and failure models',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['timing-models-sync-partial-async', 'fault-models-crash-omission-byzantine', 'link-models-fair-loss-reliable', 'safety-vs-liveness-in-a-model'],
+    uses: ['bandwidth-delay-product', 'throughput-vs-latency', 'signals', 'exit-status', 'fsync', 'fsync-failure', 'replication-ack-modes', 'wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "This chapter treated a platform as something you can observe, classify, protect and trace. Every one of those mechanisms leaned on assumptions about clocks, messages and failures that this course has not yet stated precisely: a timestamp, an alert's window, a lease, a lock. This topic states those assumptions: the timing and failure models every distributed protocol is correct relative to.",
+    handoff:
+      "A model says processes may be slow and messages may be late, but it gives them no shared clock to measure how late. The next topic is what the clocks a machine does have actually promise, and why 'last write wins by timestamp' quietly loses writes.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
@@ -4625,5 +4665,25 @@ export const TOPICS: TopicMeta[] = [
       "Now there is telemetry worth reading. A dashboard that nobody watches changes nothing; an alert that fires on every blip teaches people to ignore it. This topic is the rule that decides when a symptom is worth waking someone: SLO burn-rate alerting.",
     handoff:
       "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. That is classification, and it is where the governance half of this chapter starts.",
+  },
+  {
+    id: 'de.partitioned-log-segments-indexes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
+    title: 'Partitioned log storage: segments and indexes',
+    syllabusTitle: 'Partitioned log storage: segments and indexes',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['partition-segment-index', 'zero-copy-log-read'],
+    uses: [],
+    declared: ['basic familiarity with append-only files and binary search'],
+    bridge:
+      "Chapter 8 moved data from where it is produced to where it can be read, once and in order. This chapter takes the other kind of source: not a database to be read, but a stream someone is already appending to. This topic is the thing every later topic in this chapter assumes exists: the partitioned log itself, as bytes on disk.",
+    handoff:
+      "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
   },
 ];

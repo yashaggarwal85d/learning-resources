@@ -1,0 +1,6 @@
+- **Partition**: one ordered, append-only sequence of records within a Kafka topic; the unit this whole chapter builds on. *Where you meet it:* every step, as a real toy directory of files.
+- **Append-only file**: a file records are only ever added to the end of, never rewritten in place. *Where you meet it:* the setup step, as the real segment files on disk.
+- **Offset**: a record's position within a partition, a plain integer assigned once and never reused. *Where you meet it:* every step, read directly off the toy log's own run.
+- **Sparse index**: an index that skips most positions on purpose, narrowing a search close enough that a short scan finishes it. *Where you meet it:* the sparse-index reveal, built and measured for real.
+- **Binary search**: finding a target by repeatedly halving the range it could be in. *Where you meet it:* the sparse-index seek, which binary-searches the handful of index entries before scanning locally.
+- **Page cache**: the operating system's own in-memory cache of recently read or written disk blocks, shared by every process on the machine. *Where you meet it:* the zero-copy reveal, named and sourced from Kafka's own documentation.

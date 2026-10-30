@@ -1,0 +1,59 @@
+{
+  "topic": "de.driver-executors-task-hierarchy",
+  "steps": [
+    {
+      "lines": [
+        "Application. Job. Stage. Task. You've heard all four words, probably nodded along every time.",
+        "Here's the test. Pick any one of them, and say exactly what fixes its count.",
+        "Most people can't, on the spot. So let's actually measure it, instead of reciting it."
+      ]
+    },
+    {
+      "lines": [
+        "I ran this for real, on a real Spark session. Four partitions, one count.",
+        "One job ran. That part's obvious, one action, one job.",
+        "But its one stage got exactly four tasks. Not three, not five. One task for every partition, no more."
+      ]
+    },
+    {
+      "lines": [
+        "Now commit to an answer before I give you mine.",
+        "Same data, same four partitions, sitting right there, unchanged. I call count on it a second time.",
+        "Does Spark reuse that first job, since nothing about the data moved, or does something new happen?"
+      ],
+      "answer": [
+        "The instinct is to say the same job, because the data really hasn't changed at all.",
+        "But a job was never a property of the data. It's what one action spawns, full stop.",
+        "Call the action twice and you get two jobs, every single time, even against identical data."
+      ]
+    },
+    {
+      "lines": [
+        "I checked this directly against Spark's own status tracker, not a guess.",
+        "The second count got a job id the first one never had.",
+        "Same DataFrame both times. Different job, because a different action is what triggered it."
+      ]
+    },
+    {
+      "lines": [
+        "One more measurement. Same million rows, repartitioned from four pieces into eight.",
+        "Count it again, and the task count for that stage follows the new partition count exactly. Eight.",
+        "Not the row count. Not the data size. The partition count, and only that."
+      ]
+    },
+    {
+      "lines": [
+        "Last piece, and it's worth being precise here, because Spark's own glossary already is.",
+        "The driver is the process running your program's main function, and it owns the SparkContext.",
+        "Executors are a completely separate set of processes, one set per application, and they're the ones that actually run the tasks the driver sends them."
+      ]
+    },
+    {
+      "lines": [
+        "So, four words, four fixed scopes, and now you've actually watched each one get fixed.",
+        "Each action you call gets exactly one job of its own. Whatever forces a shuffle is what cuts a new stage inside it.",
+        "And every single task you see in that stage is simply one partition's worth of work. Nothing about any of that was ever a guess."
+      ]
+    }
+  ]
+}
