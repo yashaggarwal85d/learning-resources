@@ -4627,6 +4627,26 @@ export const TOPICS: TopicMeta[] = [
       "A bounded-error clock admits when it can't order two events, but it still needs real time to reason about, and real time is exactly what's unreliable here. The next topic drops the clock entirely and asks what 'happened before' can mean using only the messages processes actually exchange.",
   },
   {
+    id: 'de.lamport-clocks-happens-before',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/lamport-clocks-happens-before',
+    title: 'Lamport clocks and happens-before',
+    syllabusTitle: 'Lamport clocks and happens-before',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['happens-before-partial-order', 'lamport-scalar-clock', 'clock-condition-total-order'],
+    uses: ['timing-models-sync-partial-async', 'clock-drift-ntp-error', 'last-write-wins-clock-hazard', 'dag', 'graph-traversal'],
+    declared: [],
+    bridge:
+      "If a timestamp cannot be trusted to order two writes, what can? Not a time at all, but who could have known what: a write that a node had seen when it made another write is ordered before it, whatever the clocks said. This topic is that relation, happens-before, and the one number that respects it: a Lamport clock.",
+    handoff:
+      "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. That is the vector clock.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',

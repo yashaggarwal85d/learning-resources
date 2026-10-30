@@ -1,0 +1,7 @@
+- **Event**: a single, instantaneous step in one process's history, such as sending a message, receiving one, or any other action worth tracking. *Where you meet it:* every dot on this chapter's space-time diagrams.
+- **Message send and receive**: sending a message and receiving it are each their own event, on two different processes. *Where you meet it:* the second of happens-before's three conditions.
+- **Partial order**: an ordering where some pairs are comparable and others simply aren't, unlike a clock's total order of every moment. *Where you meet it:* happens-before itself, which leaves concurrent pairs unordered.
+- **Total order**: an ordering where every pair is comparable, one way or the other, with no exceptions. *Where you meet it:* what a scalar clock's tie-break turns happens-before into.
+- **Causality**: the relationship between a cause and the effect it brings about. *Where you meet it:* whether a system's ordering of two events reflects a real cause, or only a number.
+- **Counter**: an integer a process keeps and updates itself, with no outside coordination. *Where you meet it:* the one piece of state a scalar clock needs.
+- **Tie-break**: a fixed, arbitrary rule used to settle a comparison that would otherwise be undecided. *Where you meet it:* resolving two processes' equal counter values into a definite order.
