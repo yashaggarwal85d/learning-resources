@@ -1,0 +1,92 @@
+{
+  "topic": "de.access-control-models-rbac",
+  "steps": [
+    {
+      "lines": [
+        "Picture a shop with a good number of teams, a good number of datasets, and a handful of separate environments.",
+        "Security's instruction is simple enough on paper: give every single team its own role for every single dataset, in every single environment. That's supposed to be least privilege. Before I tell you anything else, go ahead and work out how many roles that actually produces."
+      ]
+    },
+    {
+      "lines": [
+        "Now, the data science team gets handed a brand new dataset, and it's got a restricted column in it.",
+        "Under that same role-per-everything approach, is that one change, or something much closer to one change per team? And if instead you'd written one rule that just reads a tag on the data itself, how many changes would that take?"
+      ],
+      "answer": [
+        "A role that's tied to one specific team and one specific dataset has to be touched separately for every single team that needs the new one — that's the role-per-everything cost.",
+        "A rule that reads a tag instead only needs that tag applied once, to the new dataset. Every team's existing rule is already written to read it, so nothing about any of those rules has to change at all."
+      ]
+    },
+    {
+      "lines": [
+        "So let's actually work through why that number from the start got so large.",
+        "It's not addition — it's multiplication. Every team, crossed with every dataset, crossed with every environment.",
+        "And it never settles down. Add one more team, one more dataset, one more environment, and the whole count jumps again, until nobody can honestly tell you what any single role in that pile actually grants anymore."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's the alternative, and it comes from a completely different place to start from.",
+        "Instead of writing a rule about a team and a dataset, you write a rule about a property — a tag sitting right there on the data itself, like its sensitivity tier.",
+        "A small handful of rules like that, read off those tags, does the entire job that grid of roles was trying to do. And it doesn't grow at all as the shop adds more teams or more datasets."
+      ]
+    },
+    {
+      "lines": [
+        "There's a design choice underneath all of this that's worth pulling apart on its own.",
+        "Right where the data actually gets read, there's a point that has to ask a question. Somewhere else entirely, a separate system actually answers it.",
+        "Keep those two things apart, and suddenly every single place in the company that touches data — a warehouse, an API, anything — can share that one answering system, and get audited through that one place."
+      ]
+    },
+    {
+      "lines": [
+        "So, what does asking that question actually get you back?",
+        "You send over who's asking, what they're trying to do, and what they're trying to do it to. What comes back is a verdict.",
+        "Sometimes that's a flat yes or no. Sometimes it's something more specific — strip out these particular rows, or hide this one column entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Now, where does the system even learn who someone is in the first place?",
+        "A person proves who they are exactly once, at the company's own identity system. Every other system downstream just trusts that single proof instead of asking all over again itself."
+      ]
+    },
+    {
+      "lines": [
+        "But proving who you are is genuinely not the same job as actually having an account somewhere.",
+        "There's a separate piece of machinery whose entire job is creating accounts, updating them, and removing them, in every connected system, as people join the company, move teams, or leave entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Put those two pieces together, and here's the payoff.",
+        "Because every downstream system trusts that same identity source, and that same account-syncing feed, removing one person in one place removes their access absolutely everywhere, all at once — no separate ticket needed for each system they ever touched."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something worth sitting with, because it's genuinely counterintuitive.",
+        "A rule can be evaluated perfectly, every single time it runs, and still be handing out access for a reason that stopped being true months ago — a project that wrapped up, a role someone no longer has.",
+        "Nothing about the rule itself is wrong in that situation. That's exactly why someone still has to periodically sit down, look at who has what, and ask whether it still makes sense."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this all together.",
+        "A role for every combination only ever grows. A rule that reads a property of the data itself stays flat, no matter how much the shop grows around it.",
+        "Keep the asking and the answering separate, and one system serves everywhere. Proving identity and keeping accounts in sync are two different jobs. And even a perfectly correct rule still needs someone checking whether its reasons still hold."
+      ]
+    },
+    {
+      "lines": [
+        "One more pass at that same shop, and work through it yourself first.",
+        "The grid's still exactly as big as it was at the start. One new restricted dataset needs to land in every single team's hands at once.",
+        "Under the role-per-everything approach, how many actual changes does that take now? And under the tag-based rule, how many?"
+      ],
+      "answer": [
+        "Under the role grid, that new dataset has to be wired into every team across every environment separately — dozens of individual changes, not one.",
+        "Under the tag-based rule, it's exactly one change: tag the new dataset once. Every rule that was already reading that tag picks it up automatically, with nothing else touched."
+      ]
+    }
+  ]
+}

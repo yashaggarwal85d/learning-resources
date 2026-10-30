@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: classification, keys and pseudonymisation
+
+<ul class="resources">
+  <Resource kind="reel" title="Data classification and sensitive-data discovery" domain="data-engineering" host="de.data-classification-sensitive-data" by="the tags an ABAC rule actually reads" />
+  <Resource kind="reel" title="Envelope encryption, KMS and key rotation" domain="data-engineering" host="de.envelope-encryption-kms-key" by="crypto-shredding, the granularity-of-the-key idea this topic's reviews echo" />
+  <Resource kind="reel" title="Pseudonymisation vs anonymisation" domain="data-engineering" host="de.pseudonymisation-vs-anonymisation" by="whether a dataset is personal data at all, decided before who may read it" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Role Based Access Control" href="https://csrc.nist.gov/projects/role-based-access-control" by="NIST">The RBAC reference model's own vocabulary.</Resource>
+  <Resource kind="reading" title="SP 800-162: Guide to ABAC" href="https://csrc.nist.gov/pubs/sp/800/162/final" by="NIST">The federal definition of attribute-based access control.</Resource>
+  <Resource kind="reading" title="Philosophy" href="https://www.openpolicyagent.org/docs/philosophy" by="Open Policy Agent documentation">Decoupling policy from the service it governs.</Resource>
+  <Resource kind="reading" title="Terms & concepts" href="https://docs.cedarpolicy.com/overview/terminology.html" by="Cedar Policy Language Reference Guide">Principals, actions, resources and Cedar's own ABAC support.</Resource>
+  <Resource kind="reading" title="Open Policy Agent access control" href="https://trino.io/docs/current/security/opa-access-control.html" by="Trino documentation">Row filtering and column masking, sourced from OPA.</Resource>
+  <Resource kind="reading" title="Attribute-based access control in Unity Catalog" href="https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac/" by="Databricks on AWS documentation">ABAC built on governed tags.</Resource>
+  <Resource kind="reading" title="OpenID Connect Core 1.0" href="https://openid.net/specs/openid-connect-core-1_0.html" by="OpenID Foundation">An identity layer on top of OAuth 2.0.</Resource>
+  <Resource kind="reading" title="RFC 7644: SCIM Protocol" href="https://www.rfc-editor.org/rfc/rfc7644" by="IETF">Provisioning and managing identity data across domains.</Resource>
+  <Resource kind="reading" title="SAML V2.0 Core" href="https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf" by="OASIS Standard">XML-encoded assertions about authentication and authorization.</Resource>
+</ul>
+
+</section>

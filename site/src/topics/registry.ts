@@ -4847,6 +4847,26 @@ export const TOPICS: TopicMeta[] = [
       "Whether a dataset is personal data decides what you must protect. The next question is who inside your own company may read it, and how that rule is written down so a machine can apply it: access-control models.",
   },
   {
+    id: 'de.access-control-models-rbac',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/access-control-models-rbac',
+    title: 'Access-control models: RBAC, ABAC, policy-as-code',
+    syllabusTitle: 'Access-control models: RBAC, ABAC, policy-as-code',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['rbac-role-explosion', 'abac-tag-based-policy', 'policy-decision-enforcement-points', 'policy-engines-opa-cedar', 'idp-federation-scim-access-review'],
+    uses: ['sensitivity-tier-and-category', 'tag-propagation-lineage', 'discovery-false-negatives', 'crypto-shredding-key-deletion', 'file-permissions'],
+    declared: ['data-cloud-iam-identity-ch10', 'data-catalog-credential-vending-ch10'],
+    bridge:
+      "Whether a dataset is personal data decides what you must protect. The next question is who inside your own company may read it, and how that rule is written down so a machine can apply it. This topic is the access-control models: roles, attributes and policy as code.",
+    handoff:
+      "A policy says what is allowed. Something still has to enforce it where the data is read, and an application-level check is the weakest place to do it. The next topic is enforcing it inside the query engine: row filters, column masks and the paths around them.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',

@@ -1,0 +1,9 @@
+- **Authentication vs authorisation**: authentication proves who you are; authorisation decides what you're allowed to do once you're proven. *Where you meet it:* the whole reveal arc — IdP federation is authentication, everything else in this topic is authorisation.
+- **Role**: a named bundle of permissions assigned to a user. *Where you meet it:* "Reveal: the role count, done out."
+- **Group**: a collection of users managed together, often how a role is actually assigned. *Where you meet it:* named alongside SCIM's own user/group resources.
+- **Attribute**: a property of a subject, object or the environment (a tier, a department, a time of day). *Where you meet it:* "Reveal: one rule, read from tags, instead."
+- **Policy**: a written rule deciding what's allowed, evaluated against attributes or roles. *Where you meet it:* throughout — it's the whole topic's subject.
+- **Identity provider**: the single system a company trusts to authenticate its people. *Where you meet it:* "Reveal: identity comes from outside, through the IdP."
+- **Single sign-on**: proving your identity once and having every downstream system trust that proof. *Where you meet it:* the same reveal, as the payoff of federation.
+- **Provisioning**: creating, updating and removing accounts and group membership to match a source of truth. *Where you meet it:* "Reveal: provisioning keeps accounts and groups in sync."
+- **Least privilege**: granting only the access a task actually requires, nothing more. *Where you meet it:* the Hook, as security's own stated goal for the role grid.
