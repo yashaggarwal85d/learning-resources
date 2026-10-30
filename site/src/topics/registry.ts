@@ -4847,6 +4847,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything in this topic made one group of replicas agree. A transaction that touches data on several groups needs all of them to agree on the same outcome, commit or abort, even if the one deciding crashes halfway. That is atomic commitment, and its textbook protocol has a famous flaw. Two-phase commit is the next topic.",
   },
   {
+    id: 'de.two-phase-commit-blocking',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/two-phase-commit-blocking',
+    title: 'Two-phase commit and its blocking problem',
+    syllabusTitle: 'Two-phase commit and its blocking problem',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.7' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['two-phase-commit-blocking-in-doubt', 'three-phase-commit-limits', 'paxos-commit-consensus-replicated-participants'],
+    uses: ['two-phase-commit', 'raft-log-matching-and-commitment', 'raft-terms-election-voting-restriction', 'timing-models-sync-partial-async', 'fault-models-crash-omission-byzantine', 'locking-deadlock-detection', 'strict-serializability-definition'],
+    declared: ['consensus-raft-paxos-in-systems', 'distributed-sql-architecture'],
+    bridge:
+      "Everything in the last topic made one group of replicas agree. A transaction that touches data on several groups needs all of them to agree on the same outcome, commit or abort, even if the one deciding crashes halfway. This topic is that atomic commitment, and the famous flaw in its textbook protocol: two-phase commit and its blocking problem.",
+    handoff:
+      "Two-phase commit, with consensus under it, delivers an atomic outcome across shards. It does not stop a message from being delivered twice, or a producer from retrying, or a consumer from crashing after it acted and before it recorded that it had. Pipelines live in exactly that world, and the phrase they use for it, exactly-once, is the subject of the last topic of this chapter.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
