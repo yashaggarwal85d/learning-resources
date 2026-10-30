@@ -4667,6 +4667,26 @@ export const TOPICS: TopicMeta[] = [
       "A Spark executor is disposable: lose one and the stage is redone. Not everything on a cluster can be treated that way. A Kafka broker owns data on a disk and a Flink job owns state that took hours to build. The next topic is how Kubernetes runs processes that must keep their identity.",
   },
   {
+    id: 'de.stateful-streaming-on-kubernetes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/stateful-streaming-on-kubernetes',
+    title: 'Stateful streaming on Kubernetes: Kafka, Flink',
+    syllabusTitle: 'Stateful streaming on Kubernetes: Kafka, Flink',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['statefulset-stable-identity-storage', 'isr-safe-rolling-restart', 'flink-operator-upgrade-modes'],
+    uses: ['k8s-workload-objects', 'k8s-placement-and-storage', 'k8s-reconciliation-loop', 'requests-vs-limits', 'pdb-priority-preemption', 'qos-classes-eviction', 'in-place-pod-resize'],
+    declared: ['consensus-raft-paxos-in-systems'],
+    bridge:
+      "A Spark executor is disposable: lose one and the stage is redone. Not everything on a cluster can be treated that way. A Kafka broker owns data on a disk and a Flink job owns state that took hours to build. This topic is how Kubernetes runs processes that must keep their identity.",
+    handoff:
+      "Everything in this chapter is a document: a Dockerfile, a manifest, an operator resource. The last question is who is allowed to change those documents on a running cluster, and what happens when someone changes the cluster by hand. That is GitOps.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',

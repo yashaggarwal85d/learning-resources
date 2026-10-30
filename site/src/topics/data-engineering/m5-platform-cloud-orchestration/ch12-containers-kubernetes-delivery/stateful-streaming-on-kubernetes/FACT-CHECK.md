@@ -1,0 +1,26 @@
+# Fact-check — `de.stateful-streaming-on-kubernetes`
+
+| # | Claim | Source | Verified |
+|---|---|---|---|
+| 1 | A StatefulSet maintains a sticky, persistent identity per Pod across rescheduling | Kubernetes StatefulSet docs | ✅ quoted |
+| 2 | `volumeClaimTemplates` gives each Pod its own PVC; `persistentVolumeClaimRetentionPolicy` (`whenDeleted`/`whenScaled`, each Delete/Retain) controls whether scaling or deleting deletes the volume | Kubernetes StatefulSet docs | ✅ quoted |
+| 3 | Strimzi does not use a plain StatefulSet because of workarounds needed for things like asymmetric storage and because StatefulSet Pods are confined to one Kubernetes cluster | Strimzi proposal 031 | ✅ quoted |
+| 4 | Strimzi's own resources for this are `StrimziPodSet` (internal, operator-managed) and `KafkaNodePool` (user-facing); a KRaft-mode Kafka cluster requires Kafka + KafkaNodePool resources | Strimzi deploying docs (1.3.0) | ✅ quoted |
+| 5 | Rack awareness is configured via `rack.topologyKey` (e.g. `topology.kubernetes.io/zone`) and described as improving fault tolerance for a deployment within one location | Strimzi deploying docs | ✅ quoted |
+| 6 | `KafkaRoller`'s own source comment states the rolling-restart invariant: "rolling should happen without impacting any topic's min.isr" | KafkaRoller.java source | ✅ quoted |
+| 7 | `KafkaAvailability` determines whether a broker can be rolled without affecting `acks=all` producers on topics with `min.in.sync.replicas` set, and logs exactly that it would "remove it from ISR, stalling producers with acks=all" when it can't | KafkaAvailability.java source | ✅ quoted (two-line Javadoc comment, verified as two separate quotes because the source wraps mid-sentence) |
+| 8 | Strimzi 0.46.0 removed support for ZooKeeper-based clusters and KRaft migration; clusters must already run KRaft before upgrading | Strimzi 0.46.0 release notes (mirrored copy; github.com itself returns HTTP 403 from this sandbox) | ✅ quoted |
+| 9 | The Flink Kubernetes Operator supports three upgrade modes — stateless, last-state, savepoint — each with a different state-carrying mechanism | Flink K8s Operator Job Management docs | ✅ quoted |
+| 10 | Savepoint mode is the mode offering "maximal safety and the possibility to serve as a backup or fork point"; it requires a running job and falls back to the last checkpoint if the job is unhealthy, failing the upgrade if no checkpoint exists | Flink K8s Operator Job Management docs | ✅ quoted |
+| 11 | A checkpoint's lifecycle is owned by Flink and deleted automatically on termination (unless configured to retain); a savepoint's lifecycle is owned by the user and is never auto-deleted by Flink | Flink Checkpoints vs. Savepoints docs | ✅ quoted |
+| 12 | `FileSystemCheckpointStorage` is configured with a filesystem URL (object storage included, e.g. HDFS/S3-style paths) and persists checkpoint snapshots there | Flink Checkpoints docs | ✅ quoted |
+| 13 | `EmbeddedRocksDBStateBackend` holds in-flight state in a RocksDB database stored, by default, on the TaskManager's local data directories — the checkpoint is a copy elsewhere, not where live state is kept | Flink State Backends docs | ✅ quoted |
+| 14 | The operator ships a built-in autoscaler that adjusts parallelism per vertex based on observed load, not per job | Flink K8s Operator Autoscaler docs | ✅ quoted |
+| 15 | Chapter 9 §9.1 (replication/ISR/KRaft as its own topic) and §9.3 (checkpoints vs savepoints as its own topic) don't exist yet in `registry.ts`; `consensus-raft-paxos-in-systems` is used elsewhere in the registry (`de.linearizability`) as a `declared`, not `introduced`, concept | direct `registry.ts` inspection | ✅ confirmed by grep, see OUTLINE.md |
+
+## Red-team notes
+
+- The two KafkaAvailability quotes needed to be split at the exact line break in the source Javadoc comment: `node scripts/sources.mjs check` normalizes whitespace but does not strip a mid-comment `*` continuation marker, so a quote spanning that line break with the words joined by a plain space fails even though the sentence reads continuously to a human. Fixed by quoting each source line as its own `>` block.
+- Did not claim Strimzi's `deleteClaim: true/false` volume field is the same mechanism as Kubernetes' native `persistentVolumeClaimRetentionPolicy` — they coexist but are different: Strimzi manages its own pods via `StrimziPodSet`, not a native StatefulSet, so the native retention-policy field doesn't apply to a Strimzi-managed Kafka cluster's pods. The topic draws the general principle (a claim-retention choice exists and decides whether scaling/deleting destroys data) from the Kubernetes StatefulSet docs as CHAPTER.md's scope clause asks, and names Strimzi's own `deleteClaim` field as the actual mechanism Strimzi users configure.
+- Did not claim an exact percentage or number for cross-AZ replication cost (no source for stateful-streaming specifically gives one); the cost is named qualitatively and left to Chapter 10's own egress material, per CHAPTER.md's "leaves out".
+- Checked that `in-place-pod-resize`, `consensus-raft-paxos-in-systems`'s declared-not-introduced status, and all other `uses`/`declared` ids actually exist in `registry.ts` before writing the registry entry (see OUTLINE.md's declared-gap section).
