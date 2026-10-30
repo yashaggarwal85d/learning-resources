@@ -5286,4 +5286,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Getting the join right once, in one script, proves the idea. It does not stop the next engineer on the next model from writing the same join wrong, or from computing the 'same' feature a second way for the live service. The next topic is the platform built to make that impossible: the feature store, and the online/offline consistency it exists to guarantee.",
   },
+  {
+    id: 'de.feature-stores-online-offline',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/feature-stores-online-offline',
+    title: 'Feature stores and online/offline consistency',
+    syllabusTitle: 'Feature stores and online/offline consistency',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['feature-store-single-definition', 'online-offline-materialization', 'train-serve-skew-causes', 'feature-freshness-sla'],
+    uses: ['label-feature-timeline-join', 'post-outcome-field-leakage', 'feature-ttl-staleness'],
+    declared: [],
+    bridge:
+      "Getting the join right once, in one script, proves the idea. It does not stop the next engineer on the next model from writing the same join wrong, or from computing the 'same' feature a second way for the live service. This topic is the platform built to make that impossible: the feature store, and the online/offline consistency it exists to guarantee.",
+    handoff:
+      "A feature store guarantees the definition is the same. It cannot tell you, after the fact, whether the value a real request actually saw matched what training assumed — that has to be measured, not assumed, and the way to measure it is to log the exact vector the model scored.",
+  },
 ];

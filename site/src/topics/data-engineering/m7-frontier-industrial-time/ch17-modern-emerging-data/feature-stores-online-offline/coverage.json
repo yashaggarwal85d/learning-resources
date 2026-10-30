@@ -1,0 +1,86 @@
+{
+  "topic": "de.feature-stores-online-offline",
+  "syllabus": [
+    {
+      "clause": "one feature definition materialized to an offline store (lakehouse tables) and an online store (low-latency KV)",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Reveal: one definition, two stores" }
+      ]
+    },
+    {
+      "clause": "freshness SLAs",
+      "at": [
+        { "step": "Predict: freshness SLA" },
+        { "step": "Reveal: skew cause three, measured" }
+      ]
+    },
+    {
+      "clause": "train/serve skew sources (different code paths, different joins, stale online values)",
+      "at": [
+        { "step": "Predict: which skew cause" },
+        { "step": "Reveal: skew cause one, measured" },
+        { "step": "Reveal: skew cause two, measured" },
+        { "step": "Reveal: skew cause three, measured" }
+      ]
+    },
+    {
+      "clause": "Feast (OSS), Tecton (acquired by Databricks, 2025), Hopsworks, cloud-native feature stores",
+      "at": [
+        { "step": "Reveal: the named platforms, placed" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Offline store (Feast documentation)",
+      "items": [
+        { "item": "an offline store is an interface over historical, time-series feature values already sitting in a data source", "at": [{ "step": "Reveal: one definition, two stores" }] },
+        { "item": "offline stores are used to build training datasets and to materialize into an online store", "at": [{ "step": "Reveal: one definition, two stores" }] },
+        { "item": "only one offline store is active at a time, and not every offline store is compatible with every data source", "at": [{ "out": "a pluggability/compatibility detail named in the Feast documentation but not taught in this topic's reel or deep notes; the topic teaches the architecture and the guarantee, not provider compatibility rules" }] }
+      ]
+    },
+    {
+      "source": "Online store (Feast documentation)",
+      "items": [
+        { "item": "online stores are populated via materialization, triggered through a materialize command on a schedule or on demand", "at": [{ "step": "Reveal: skew cause three, measured" }] },
+        { "item": "the online store keeps only the latest feature value per entity key; no historical values are stored", "at": [{ "step": "Reveal: skew cause three, measured" }] }
+      ]
+    },
+    {
+      "source": "Features and Feature Groups (Hopsworks documentation)",
+      "items": [
+        { "item": "Hopsworks' online store keeps only the latest values per feature group and is backed by RonDB, a low-latency, high-throughput store", "at": [{ "step": "Reveal: the named platforms, placed" }] },
+        { "item": "Hopsworks' offline store holds historical values, used for training data and batch scoring", "at": [{ "step": "Reveal: the named platforms, placed" }] }
+      ]
+    },
+    {
+      "source": "Tecton is Joining Databricks to Power Real-Time Data for Personalized AI Agents (Databricks Blog)",
+      "items": [
+        { "item": "Tecton self-describes as the leading real-time enterprise feature store for use cases like fraud detection, risk scoring and personalization", "at": [{ "step": "Reveal: the named platforms, placed" }] },
+        { "item": "the acquisition's stated purpose is to unite Tecton's online/real-time data serving with Databricks' Agent Bricks, dated August 22, 2025", "at": [{ "step": "Reveal: the named platforms, placed" }, { "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A feature store's real guarantee is narrower than it sounds: it guarantees one definition reaches both stores, not that every consumer of the feature goes through the store at all — a hand-written query that recomputes the 'same' feature outside the store is invisible to the guarantee entirely, which is why 'we have a feature store' doesn't by itself rule out skew cause one.", "at": [{ "step": "Prove it" }] },
+      { "item": "Materialization lag and a wrong join look identical in a symptom (the online value doesn't match the offline one) but have opposite fixes: a lag is fixed by materializing more often or widening the SLA, while a wrong join is fixed by changing what the serving code asks for — treating a lag bug as a join bug (or vice versa) wastes an incident on the wrong half of the system.", "at": [{ "step": "Reveal: skew cause three, measured" }] },
+      { "item": "The different-code-path skew cause is structurally identical to topic 1's post-outcome leakage in one sense: both are failures that no amount of 'fixing the timing' can repair, because the bug isn't in when the join happens but in what gets computed.", "at": [{ "step": "Reveal: skew cause one, measured" }] },
+      { "item": "A freshness SLA stated as a number does something a vaguer standard can't: it turns 'is this stale' from a judgment call made after a customer complains into a check a monitor can run continuously, which is the entire reason this topic insists on minutes, not adjectives.", "at": [{ "step": "Predict: freshness SLA" }] },
+      { "item": "Feast's own online-store guarantee ('only the latest feature values are stored, no historical values') is a design choice with a cost: it is exactly what makes low-latency lookups possible, and exactly what makes the online store unable to answer topic 1's as-of question on its own — the offline store exists because the online store deliberately forgot history.", "at": [{ "step": "Reveal: one definition, two stores" }] },
+      { "item": "Hopsworks' independent description of the same offline/online split (confirmed from a second vendor's own documentation, not assumed from Feast alone) is what lets this topic claim the split is architectural rather than one open-source project's particular design.", "at": [{ "deep": "Internals" }] },
+      { "item": "The Databricks/Tecton acquisition is evidence for, not against, this topic's architecture claim: Databricks explicitly frames the deal as adding online/real-time serving to its own platform, which only makes sense if 'online serving' is a distinct, acquirable capability separate from the offline/training side Databricks already had.", "at": [{ "step": "Reveal: the named platforms, placed" }] },
+      { "item": "This topic's own measured mismatch rates (code path, join, staleness) were produced by isolating one condition at a time while holding the other two at their non-buggy baseline — without that isolation, a single experiment showing 'the online and offline values disagree' couldn't distinguish which of the three causes was responsible.", "at": [{ "deep": "Lab" }] },
+      { "item": "A cloud warehouse's own low-latency serving layer, named as the 'no second system' option, doesn't remove the offline/online distinction — it just means both roles are played by configurations of the same underlying engine rather than two separate products, which is the same trade Feast's own documentation notes ('the stores are configurable and can even be the same engine playing both roles').", "at": [{ "step": "Reveal: the named platforms, placed" }] },
+      { "item": "Zero measured mismatches under identical code (this topic's own control experiment) is itself evidence worth stating explicitly: it rules out the possibility that the measured skew rates in the buggy conditions are an artifact of the simulation itself rather than of the specific bug introduced.", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
