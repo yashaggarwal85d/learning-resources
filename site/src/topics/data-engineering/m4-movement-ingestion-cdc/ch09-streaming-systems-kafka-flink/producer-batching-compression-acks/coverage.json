@@ -1,0 +1,134 @@
+{
+  "topic": "de.producer-batching-compression-acks",
+  "syllabus": [
+    {
+      "clause": "record accumulator per partition, batch.size and linger.ms (default 5 ms since Kafka 4.0)",
+      "at": [
+        { "step": "Setup: the accumulator" },
+        { "step": "Reveal: the race, in real numbers" }
+      ]
+    },
+    {
+      "clause": "compression per batch (zstd/lz4)",
+      "at": [
+        { "step": "Reveal: compression is a batch trick, not a record trick" }
+      ]
+    },
+    {
+      "clause": "sticky partitioning",
+      "at": [
+        { "step": "Reveal: sticky partitioning, in real numbers" }
+      ]
+    },
+    {
+      "clause": "acks=0/1/all and why idempotence + acks=all is the default since 3.0",
+      "at": [
+        { "step": "Reveal: acks, and what each level actually risks" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Kafka producer configuration reference",
+      "items": [
+        {
+          "item": "a batch closes at batch.size or linger.ms, whichever happens first",
+          "at": [{ "step": "Predict: the clock runs out before the buffer fills. What happens?" }]
+        },
+        {
+          "item": "linger.ms defaults to five, changed from zero in Kafka 4.0, because larger batches typically match or beat the added wait under load",
+          "at": [{ "step": "Reveal: the race, in real numbers" }]
+        },
+        {
+          "item": "compression is of whole batches, not individual records",
+          "at": [{ "step": "Reveal: compression is a batch trick, not a record trick" }]
+        },
+        {
+          "item": "acks=0/1/all each wait for a different point and give a different durability guarantee",
+          "at": [{ "step": "Reveal: acks, and what each level actually risks" }]
+        },
+        {
+          "item": "idempotence requires acks=all",
+          "at": [{ "deep": "Production failures this topic warns about" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka, KIP-679 (producer defaults changed in 3.0)",
+      "items": [
+        {
+          "item": "enable.idempotence changed false to true and acks changed one to all as Kafka 3.0's client defaults",
+          "at": [{ "step": "Reveal: acks, and what each level actually risks" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka, KIP-480 (Sticky Partitioner)",
+      "items": [
+        {
+          "item": "the default no-key partitioner used to round-robin; sticking to one partition per batch instead fills bigger batches",
+          "at": [{ "step": "Predict: sticking to one partition — bigger batches, or smaller?" }]
+        },
+        {
+          "item": "the sticky partition changes only when a new batch opens, not mid-batch",
+          "at": [{ "step": "Predict: sticking to one partition — bigger batches, or smaller?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      {
+        "item": "Records for a keyless, unpartitioned send collect in an in-memory accumulator, one buffer per partition.",
+        "at": [{ "step": "Setup: the accumulator" }]
+      },
+      {
+        "item": "A batch closes when it hits batch.size or linger.ms elapses, whichever happens first.",
+        "at": [{ "step": "Predict: the clock runs out before the buffer fills. What happens?" }]
+      },
+      {
+        "item": "linger.ms defaults to five, not zero, since Kafka 4.0, specifically because the efficiency gain from slightly larger batches tends to match or beat the added wait under load.",
+        "at": [{ "step": "Reveal: the race, in real numbers" }]
+      },
+      {
+        "item": "A whole batch is compressed once, not record by record, so bigger batches compress better.",
+        "at": [{ "step": "Reveal: compression is a batch trick, not a record trick" }]
+      },
+      {
+        "item": "The default partitioner used to be pure round-robin; sticky partitioning sticks to one partition for a batch's lifetime, then moves to the next.",
+        "at": [{ "step": "Reveal: sticky partitioning, in real numbers" }]
+      },
+      {
+        "item": "acks=0 waits for nothing, acks=1 waits for the leader only, acks=all waits for the full in-sync-replica set.",
+        "at": [{ "step": "Reveal: acks, and what each level actually risks" }]
+      },
+      {
+        "item": "Kafka 3.0 changed the client defaults to enable.idempotence true and acks all, specifically to make the strongest guarantee the out-of-the-box behavior.",
+        "at": [{ "step": "Reveal: acks, and what each level actually risks" }]
+      },
+      {
+        "item": "Idempotence requires acks=all; a conflicting config with idempotence explicitly enabled throws rather than silently downgrading.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      },
+      {
+        "item": "max.in.flight.requests.per.connection governs how many batches can be outstanding at once and interacts with ordering once retries are involved.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "What makes a replica count as in-sync, and what the high watermark is, is the next topic's job, not this one's.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "This topic uses the previous topic's partition/segment/offset vocabulary without re-teaching it.",
+        "at": [{ "step": "Setup: the accumulator" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -4827,6 +4827,26 @@ export const TOPICS: TopicMeta[] = [
       "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
   },
   {
+    id: 'de.producer-batching-compression-acks',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/producer-batching-compression-acks',
+    title: 'Producer batching, compression and acks',
+    syllabusTitle: 'Producer batching, compression and acks',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['producer-batching-linger', 'acks-durability-tradeoff'],
+    uses: ['partition-segment-index'],
+    declared: [],
+    bridge:
+      "A partition is a log a producer writes to. This topic is what a producer actually does before that write ever reaches the broker: batching, compressing, and deciding how much durability to wait for.",
+    handoff:
+      "acks=all means waiting for every in-sync replica, not just the leader. What makes a replica count as in-sync, and what happens when one falls behind or a leader dies, is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
