@@ -1,0 +1,99 @@
+{
+  "topic": "de.serializability-vs-strict-serializability",
+  "syllabus": [
+    {
+      "clause": "transactional (multi-object) models vs single-object ones",
+      "at": [{ "step": "Reveal: serializability is one total order, multi-object, no clock" }]
+    },
+    {
+      "clause": "serializability allows \"time travel\" (stale reads, causal reversal)",
+      "at": [
+        { "step": "Reveal: serializability is one total order, multi-object, no clock" },
+        { "step": "Reveal: order can run backward even without a stale read" }
+      ]
+    },
+    {
+      "clause": "strict serializability = serializability + real-time order",
+      "at": [{ "step": "Reveal: strict serializability is the same check, real time added back" }]
+    },
+    {
+      "clause": "the two-axis map of models (single/multi-object × ordering strength) and which systems claim which",
+      "at": [{ "step": "Reveal: the two-axis map, placed from documentation" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Jepsen: Serializability",
+      "items": [
+        { "item": "the total-order, no-real-time, no-per-process definition", "at": [{ "step": "Reveal: serializability is one total order, multi-object, no clock" }] },
+        { "item": "the ANSI SQL 1999 spec's own wording", "at": [{ "deep": "Internals: the same two checkers as topic 6, lifted to whole transactions" }] }
+      ]
+    },
+    {
+      "source": "Jepsen: Strong Serializability",
+      "items": [
+        { "item": "the real-time-precedence sentence CHAPTER.md names verbatim", "at": [{ "step": "Reveal: strict serializability is the same check, real time added back" }] }
+      ]
+    },
+    {
+      "source": "Peter Bailis: Linearizability versus Serializability",
+      "items": [
+        { "item": "single-operation/single-object/real-time vs multi-operation/multi-object/arbitrary-total-order", "at": [{ "step": "Reveal: serializability is one total order, multi-object, no clock" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL Documentation: Transaction Isolation",
+      "items": [
+        { "item": "the \"same effect as running them one at a time in some order\" wording, with no real-time promise", "at": [{ "deep": "Lab: the hook's history, measured on a real PostgreSQL 16, not simulated" }] }
+      ]
+    },
+    {
+      "source": "etcd API Guarantees",
+      "items": [
+        { "item": "the strict-serializability claim for all KV API calls", "at": [{ "step": "Reveal: the two-axis map, placed from documentation" }] }
+      ]
+    },
+    {
+      "source": "Spanner: Google's Globally-Distributed Database",
+      "items": [
+        { "item": "the external-consistency definition, equated with linearizability's real-time rule lifted to transactions", "at": [{ "step": "Reveal: the two-axis map, placed from documentation" }] }
+      ]
+    },
+    {
+      "source": "Sandbox PostgreSQL 16 (measured, not a documented source)",
+      "items": [
+        { "item": "the two measured scenarios: a non-overlapping transaction inheriting a commit for free, and an overlapping one legally missing it", "at": [{ "step": "Reveal: measured on a real Postgres, not assumed" }] }
+      ]
+    },
+    {
+      "source": "de.linearizability (internal cross-reference)",
+      "items": [
+        { "item": "strict serializability is linearizability's real-time rule, lifted from one object to a whole database", "at": [{ "deep": "Internals: the same two checkers as topic 6, lifted to whole transactions" }] }
+      ]
+    },
+    {
+      "source": "de.sequential-causal-consistency (internal cross-reference)",
+      "items": [
+        { "item": "serializability is sequential consistency's multi-object cousin, built from the identical checker shape", "at": [{ "deep": "Internals: the same two checkers as topic 6, lifted to whole transactions" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Serializability requires only that transactions appear to execute in some total order, with no real-time or even per-process constraint.", "at": [{ "step": "Reveal: serializability is one total order, multi-object, no clock" }] },
+      { "item": "Strict serializability is the identical requirement with one rule added: if transaction A completes before transaction B begins, A must appear before B in the serial order.", "at": [{ "step": "Reveal: strict serializability is the same check, real time added back" }] },
+      { "item": "Linearizability is single-operation, single-object, real-time order; serializability is multi-operation, multi-object, arbitrary total order, per Bailis's own framing.", "at": [{ "step": "Reveal: serializability is one total order, multi-object, no clock" }] },
+      { "item": "A client who has just observed a commit can, under serializability alone, issue a subsequent read that legally returns a value from before that commit, with no bug and no documentation violated.", "at": [{ "step": "Hook: confirmed, then refreshed, then gone" }] },
+      { "item": "On this sandbox's PostgreSQL 16, a fresh SERIALIZABLE transaction opened strictly after a sibling's commit always observed that commit, because MVCC takes its snapshot at BEGIN, not because of any documented real-time guarantee.", "at": [{ "step": "Reveal: measured on a real Postgres, not assumed" }] },
+      { "item": "On the same PostgreSQL 16, a SERIALIZABLE transaction already open when a sibling committed did not observe that commit even on a later read taken after the commit finished, confirmed by the underlying table holding more rows than that transaction ever saw.", "at": [{ "step": "Reveal: measured on a real Postgres, not assumed" }] },
+      { "item": "etcd's own API-guarantees documentation claims strict serializability for all KV API calls; Spanner's own paper claims external consistency, which it states is equivalent to linearizability lifted to transactions; PostgreSQL's own documentation places SERIALIZABLE one rung below both, with no real-time promise.", "at": [{ "step": "Reveal: the two-axis map, placed from documentation" }] },
+      { "item": "Two transactions with no causal link between them (neither reads what the other wrote) can be placed in either order in a serializable database's serial order, independent of which one actually ran first in real time.", "at": [{ "step": "Reveal: order can run backward even without a stale read" }] },
+      { "item": "A database with no concurrency at all, running every transaction to completion before the next begins, is trivially strictly serializable, because the single legal serial order and real-time order are forced to coincide.", "at": [{ "step": "Prove it: a database that runs every transaction literally one at a time — strictly serializable?" }] },
+      { "item": "A streaming-replica demonstration of the stale-read clause was not measured in this sandbox and stays sourced-only; the non-replica time-travel demonstration (an already-open transaction missing a mid-flight sibling commit) was measured directly and stands in for it.", "at": [{ "deep": "Lab: the hook's history, measured on a real PostgreSQL 16, not simulated" }] },
+      { "item": "The isolation anomalies' dependency-graph definitions and snapshot-isolation/SSI mechanics are left to Chapter 5 and not re-derived here.", "at": [{ "out": "named in CHAPTER.md's Leaves out; built in Chapter 5, not repeated here" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

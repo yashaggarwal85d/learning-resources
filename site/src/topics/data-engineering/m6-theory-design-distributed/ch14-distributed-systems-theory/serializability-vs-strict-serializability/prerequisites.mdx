@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: two single-object models to carry over
+
+<ul class="resources">
+  <Resource kind="reel" title="Linearizability" domain="data-engineering" host="de.linearizability" by="Chapter 14, topic 5" />
+  <Resource kind="reel" title="Sequential and causal consistency" domain="data-engineering" host="de.sequential-causal-consistency" by="Chapter 14, topic 6" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Serializability" href="https://jepsen.io/consistency/models/serializable" by="Jepsen consistency models">The total-order, no-real-time definition, and the ANSI SQL 1999 wording.</Resource>
+  <Resource kind="reading" title="Strong Serializability" href="https://jepsen.io/consistency/models/strong-serializable" by="Jepsen consistency models">The exact real-time-added-back sentence CHAPTER.md names.</Resource>
+  <Resource kind="reading" title="Linearizability versus Serializability" href="http://www.bailis.org/blog/linearizability-versus-serializability/" by="Peter Bailis">The single-object/multi-object, single-operation/multi-operation framing.</Resource>
+  <Resource kind="reading" title="Transaction Isolation" href="https://www.postgresql.org/docs/current/transaction-iso.html" by="PostgreSQL Documentation">PostgreSQL's own wording for what `SERIALIZABLE` promises, and doesn't.</Resource>
+  <Resource kind="reading" title="API guarantees" href="https://etcd.io/docs/v3.5/learning/api_guarantees/" by="etcd documentation">etcd's own strict-serializability claim.</Resource>
+  <Resource kind="reading" title="Spanner: Google's Globally-Distributed Database" href="https://research.google.com/archive/spanner-osdi2012.pdf" by="Corbett et al., OSDI 2012">Spanner's own definition of external consistency.</Resource>
+</ul>
+
+</section>

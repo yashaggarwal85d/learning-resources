@@ -4887,6 +4887,26 @@ export const TOPICS: TopicMeta[] = [
       "Both models so far are about single objects: one register, one key. A database gives transactions that touch many objects at once, and there the same two ideas, order and real time, come in two more strengths with a famously confusing difference. That is the next topic: serializability versus strict serializability.",
   },
   {
+    id: 'de.serializability-vs-strict-serializability',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/serializability-vs-strict-serializability',
+    title: 'Serializability vs strict serializability',
+    syllabusTitle: 'Serializability vs strict serializability',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['serializable-definition-time-travel', 'strict-serializability-definition', 'consistency-model-map'],
+    uses: ['linearizability-definition', 'linearizability-locality', 'sequential-consistency-definition', 'causal-consistency-definition', 'serializability-2pl-ssi', 'snapshot-isolation', 'isolation-anomalies', 'acid-guarantees', 'session-guarantees-formal'],
+    declared: ['distributed-sql-architecture'],
+    bridge:
+      "Both models so far are about single objects: one register, one key. A database gives transactions that touch many objects at once, and there the same two ideas, order and real time, come in two more strengths with a famously confusing difference. This topic is serializability versus strict serializability, and the map that places every model so far.",
+    handoff:
+      "The map shows a ladder of models, and the strongest rungs cost the most. The next question is whether you can simply have the top rung everywhere. You cannot, and the result that says why, CAP, is usually quoted wrongly. The next topic states it precisely.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',

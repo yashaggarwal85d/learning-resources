@@ -1,0 +1,76 @@
+{
+  "topic": "de.serializability-vs-strict-serializability",
+  "steps": [
+    {
+      "lines": [
+        "Sit with how ordinary this failure looks before reaching for an explanation.",
+        "Confirmed, refresh, gone. No error message, no outage, nothing a monitoring dashboard would ever flag.",
+        "The store's documentation is accurate the entire time, and that's exactly what makes this worth slowing down for."
+      ]
+    },
+    {
+      "lines": [
+        "Before you pick, notice what the word serializable is actually a claim about.",
+        "It's a claim about order. Whether that order lines up with the clock on the wall is a completely separate question."
+      ],
+      "answer": [
+        "It allows this outright, no replica needed anywhere.",
+        "Serializable only promises that some total order over transactions exists and is legal.",
+        "Nothing in that promise says the order has to agree with when things actually happened."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what the checker is actually required to satisfy here, and what it isn't.",
+        "Every transaction, as a whole, gets placed somewhere in one shared order, and each one's reads have to make sense given what came before it in that order.",
+        "That's the entire requirement. Feed it the hook's own history and an order exists: put the refresh first."
+      ]
+    },
+    {
+      "lines": [
+        "Notice that nothing about the database itself changed between this check and the last one.",
+        "One extra rule got added: if a transaction finished before another one began, the order has to agree with that.",
+        "Run the exact same search under that one extra rule, and this time nothing comes back. Not a different answer. No answer."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention to which half of this was measured and which half is just a documented promise.",
+        "A transaction that opens after a commit finishes saw it, every time, because of how snapshots get taken, not because of any promise written down anywhere.",
+        "A transaction already running when a sibling committed never saw that commit, even on its very next read, taken well after the commit was done."
+      ]
+    },
+    {
+      "lines": [
+        "Go slowly here, because each of these three claims is quoted from a different document.",
+        "etcd's own guarantees page claims the strongest cell on this map outright, no hedging.",
+        "Spanner's paper claims the identical property under a different name. Postgres's own documentation places itself one rung down, and says so plainly."
+      ]
+    },
+    {
+      "lines": [
+        "Separate what actually forces an order here from what merely could have.",
+        "These two transactions never touched the same data, so nothing requires one to come before the other in real time or in the serial order.",
+        "A database is free to reverse them, and that freedom has nothing to do with a stale read or a bug."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the whole relationship, not just two words that rhyme.",
+        "Serializable: one order over whole transactions, nothing about when. Strict serializable: the identical check, with the clock added back in.",
+        "One of those was measured directly on a real database today, not taken on faith from a name."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, think about what freedom concurrency normally buys a database, and what happens when there's none of it.",
+        "With zero concurrency, there was never a second legal order to choose between in the first place."
+      ],
+      "answer": [
+        "Yes, and the reason is almost too simple to notice.",
+        "Run every transaction fully, one at a time, in submission order, and that order is the only legal one there is.",
+        "Since each transaction finishes before the next starts, that same order already respects real time. The extra rule costs nothing when there was never a choice to begin with."
+      ]
+    }
+  ]
+}
