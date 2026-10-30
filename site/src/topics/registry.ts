@@ -4867,6 +4867,26 @@ export const TOPICS: TopicMeta[] = [
       "Two-phase commit, with consensus under it, delivers an atomic outcome across shards. It does not stop a message from being delivered twice, or a producer from retrying, or a consumer from crashing after it acted and before it recorded that it had. Pipelines live in exactly that world, and the phrase they use for it, exactly-once, is the subject of the last topic of this chapter.",
   },
   {
+    id: 'de.exactly-once-as-end',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/exactly-once-as-end',
+    title: 'Exactly-once as an end-to-end property',
+    syllabusTitle: 'Exactly-once as an end-to-end property',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.8' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['end-to-end-argument', 'at-least-once-plus-idempotence', 'atomic-offset-output-commit', 'exactly-once-boundary-external-effects'],
+    uses: ['link-models-fair-loss-reliable', 'timing-models-sync-partial-async', 'two-phase-commit-blocking-in-doubt', 'fencing-token-epoch', 'table-commit-as-cas', 'kafka-isr-non-majority-quorum', 'resilient-client-patterns', 'merge-statement', 'upsert-atomicity', 'two-phase-commit'],
+    declared: ['queues-vs-logs'],
+    bridge:
+      "Two-phase commit, with consensus under it, delivers an atomic outcome across shards. It does not stop a message from being delivered twice, or a producer from retrying, or a consumer from crashing after it acted and before it recorded that it had. Pipelines live in exactly that world, and the phrase they use for it, exactly-once, is the subject of this last topic of the chapter.",
+    handoff:
+      "The theory is now complete enough to use: a model to reason in, an order without clocks, a ladder of consistency models, one impossibility result, and the mechanisms that buy what the result allows. The next chapter does not add theory. It applies it: given a vague request for a data system, how do you turn it into measurable requirements first, so that every later choice can be defended. The first topic of the next chapter is that step: requirements into service-level objectives.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
