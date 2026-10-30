@@ -2,14 +2,14 @@
 
 ## Apache Kafka: Design (the "Persistence" and "Efficiency" sections)
 
-URL: https://raw.githubusercontent.com/apache/kafka/trunk/docs/design/design.md (the rendered page at https://kafka.apache.org/documentation/#design assembles client-side from this same Markdown source and could not be fetched as static HTML by `sources.mjs fetch` — see Notes below — so this topic fetches and quotes the source Markdown directly). Read at trunk, `gradle.properties` version `4.5.0-SNAPSHOT`, the in-development successor to the current 4.4 release the Kafka downloads page lists as newest; no version-specific change to these paragraphs was found between the 4.4 branch and trunk.
-Version: Apache Kafka, trunk (post-4.4), file `docs/design/design.md`.
+URL: https://kafka.apache.org/44/design/design/ (the version-pinned page renders as static HTML and was fetched directly; the unversioned https://kafka.apache.org/documentation/#design assembles client-side and returns only a redirect shell to a plain fetch — see Notes below).
+Version: Apache Kafka 4.4 documentation.
 
-> Keeping track of _what_ has been consumed is, surprisingly, one of the key performance points of a messaging system.
+> Keeping track of what has been consumed is, surprisingly, one of the key performance points of a messaging system.
 
 > Kafka handles this differently. Our topic is divided into a set of totally ordered partitions, each of which is consumed by exactly one consumer within each subscribing consumer group at any given time. This means that the position of a consumer in each partition is just a single integer, the offset of the next message to consume. This makes the state about what has been consumed very small, just one number for each partition. This state can be periodically checkpointed. This makes the equivalent of message acknowledgements very cheap.
 
-> There is a side benefit of this decision. A consumer can deliberately _rewind_ back to an old offset and re-consume data. This violates the common contract of a queue, but turns out to be an essential feature for many consumers.
+> There is a side benefit of this decision. A consumer can deliberately rewind back to an old offset and re-consume data. This violates the common contract of a queue, but turns out to be an essential feature for many consumers.
 
 > The key fact about disk performance is that the throughput of hard drives has been diverging from the latency of a disk seek for the last decade.
 
@@ -56,5 +56,5 @@ Read (not quoted, since this is source code rather than documentation prose) to 
 
 Notes on this topic's research:
 
-- `kafka.apache.org/documentation/#design` and the versioned variants (`/44/design.html`, `/44/documentation.html`) all returned either a client-side-redirect shell page or HTTP 404 to a plain `curl` fetch (`node scripts/sources.mjs fetch`), because the live site assembles the Design page from Hugo-built fragments client-side. The underlying source text is public in the Apache Kafka repository under `docs/design/design.md`, which `node scripts/sources.mjs check` can still verify every quote above against (cached locally from the repository checkout, not re-fetched over HTTP each run — see the topic's build note for how `sources.mjs check` was pointed at this file).
+- `kafka.apache.org/documentation/#design` (the unversioned, "always current" link) and the bare `/44/design.html`/`/44/documentation.html` guesses all returned either a client-side-redirect shell page or HTTP 404 to a plain fetch. The version-pinned, fully-rendered page `kafka.apache.org/44/design/design/` (the same path pattern Chapter 8's `ingestion-modes-push-vs` topic already uses for its own Kafka citation) fetches cleanly and is what every quote above is checked against.
 - This is the first chapter-9 topic; no earlier-chapter source file is reused.

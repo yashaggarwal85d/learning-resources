@@ -1,0 +1,78 @@
+{
+  "topic": "de.physical-clocks-why-they-lie",
+  "steps": [
+    {
+      "lines": [
+        "Sit with that word for a second. Synchronised sounds like a solved problem, a box you check once and move past.",
+        "But both nodes can honestly report synchronisation and still disagree by more than the gap between two real writes.",
+        "So the question worth holding onto is what synchronised actually bounds, and what it quietly leaves unbounded."
+      ]
+    },
+    {
+      "lines": [
+        "Before you pick, notice what each answer is actually claiming about how the store decides.",
+        "One answer blames a particular clock's speed. The other blames nothing about speed at all, only about real time.",
+        "Ask yourself which of those two things a timestamp comparison can even tell apart."
+      ],
+      "answer": [
+        "The later write, always, however fast or slow either clock happens to run.",
+        "A faster clock does not lose. It wins, by stamping an earlier real event with a larger number than a correct clock gives a later one.",
+        "Last-write-wins keeps the larger number, so the genuinely later write is the one thrown away."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the instinct that a correction happens once and the clock is simply fixed from then on.",
+        "An oscillator drifts continuously, so the correction has to run continuously too, against a target that never stops moving.",
+        "And that correction's own accuracy depends on something the protocol has no way to verify from inside itself: whether the path there and back took equally long."
+      ]
+    },
+    {
+      "lines": [
+        "Don't file this under a one-second rounding error. Spread over a full day, it is nothing like one.",
+        "Two clocks, each behaving exactly as its own design intends, compute different values for the same instant for that entire day.",
+        "Notice that neither clock is malfunctioning. Correctness and agreement turned out to be two separate things."
+      ]
+    },
+    {
+      "lines": [
+        "Keep these two clocks apart in your head, because collapsing them is where this goes wrong.",
+        "One answers how long something took. The other answers when something happened, and only on the machine that read it.",
+        "Neither was ever built to answer which of two events, on two different machines, happened first. A paused process defeats both anyway."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the reframing worth keeping. A bounded clock is not more accurate than a point reading.",
+        "It is honest about how inaccurate it might be, and that is the strictly more useful property for a protocol to lean on.",
+        "A lease works the same way: it only survives if it outlasts the worst skew the clocks could ever disagree by, not the skew they usually show."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what changes when the only thing you alter is which clock reads the result.",
+        "The identical skewed pair becomes a confident wrong answer under one reading, and an honest admission of doubt under the other.",
+        "Neither reading added information. One of them just stopped pretending to have it."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of this, not just the vocabulary.",
+        "A crystal drifts continuously, and the correction for it carries its own error bar, not a clean fix.",
+        "One extra second, split between two equally valid rules, cost a whole day of mutual disagreement, not a passing instant.",
+        "No clock type orders events across machines, and a bounded clock's real gift is admitting what it does not know instead of guessing."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, ask what typical actually measures, as opposed to what a lease actually has to survive.",
+        "A month of real numbers tells you what usually happens. It tells you nothing about the one day that will not be usual."
+      ],
+      "answer": [
+        "No. A lease is only safe if it outlasts the worst skew the two clocks could ever disagree by during its own length.",
+        "A single bad day, a delayed correction, a temperature swing, is exactly the case a typical number was computed to ignore.",
+        "And it is exactly the case the lease has to survive."
+      ]
+    }
+  ]
+}
