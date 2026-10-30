@@ -4671,4 +4671,41 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'Data is now somewhere, laid out for its main query. What turns it into answers is the engine, and what delivers the answers is the serving store. The next topic is choosing both: by state size, latency and query shape, and by who has to operate them.',
   },
+  {
+    id: 'de.processing-serving-choices',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/processing-serving-choices',
+    title: 'Processing and serving choices',
+    syllabusTitle: 'Processing and serving choices',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['engine-choice-by-state-latency-skill', 'serving-store-by-query-shape', 'pre-aggregation-vs-on-query', 'amplification-ledger'],
+    uses: [
+      'data-flow-shape-decision',
+      'layout-from-dominant-access-path',
+      'system-of-record-vs-derived',
+      'capacity-estimate-chain',
+      'incremental-view-maintenance',
+      'arrow-columnar-format',
+      'polars-lazy-expressions',
+      'lsm-compaction-rum',
+    ],
+    declared: [
+      'analytical-serving-layers',
+      'cache-patterns-eviction',
+      'redis-valkey-internals',
+      'rocksdb-state-backend-sizing',
+      'flink-state-backend-mechanics',
+      'realtime-olap-ingestion',
+      'duckdb-single-node-renaissance',
+    ],
+    bridge:
+      'Data is now somewhere, laid out for its main query. What turns it into answers is the engine, and what delivers the answers is the serving store. This topic is choosing both: by state size, latency and query shape, and by who has to operate them.',
+    handoff:
+      'A design chosen for the normal day works on the normal day. Real data arrives twice, arrives late, and is sometimes replayed on purpose. The next topic is designing those paths first: correctness under replay and late data.',
+  },
 ];
