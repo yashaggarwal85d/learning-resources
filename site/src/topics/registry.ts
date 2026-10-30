@@ -4567,6 +4567,26 @@ export const TOPICS: TopicMeta[] = [
       "The executor's job is to run a task and the scheduler's job is to retry it if it fails. That retry is only safe if running the task twice does no harm. The next topic is exactly that property, and the two kinds of failure that make it necessary.",
   },
   {
+    id: 'de.idempotent-tasks-failure-semantics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/idempotent-tasks-failure-semantics',
+    title: 'Idempotent tasks and failure semantics',
+    syllabusTitle: 'Idempotent tasks and failure semantics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['idempotent-tasks-failure-semantics', 'zombie-task-detection', 'trigger-rule-propagation'],
+    uses: ['de.orchestrator-architecture-scheduler', 'ch9.exactly-once-effect-recipe', 'ch9.deterministic-batch-id'],
+    declared: [],
+    bridge:
+      "The executor's job is to retry a failed task, but that retry is only safe if running the task twice does no harm. This topic is that property — at-least-once execution, the overwrite-vs-append line between a harmless retry and a doubled row count, and the trigger rules and heartbeat mechanism that decide who runs and who's declared dead, run and read back from a real metadata database.",
+    handoff:
+      "An idempotent task can safely be re-run for one interval. A backfill re-runs it for every interval across years of history — the same safety property, at a scale where it also becomes a risk to whatever source or warehouse absorbs that much repeated work. The next topic is exactly that scale.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -4625,6 +4645,46 @@ export const TOPICS: TopicMeta[] = [
       "The last topic stated the model every protocol is correct relative to, but gave processes no shared clock to measure delay by. This topic is what the clocks a real machine actually has — a drifting crystal, NTP's own correction, a wall clock and a monotonic clock — really promise, and why 'last write wins by timestamp' quietly loses writes even when every clock reports itself synchronised.",
     handoff:
       "A bounded-error clock admits when it can't order two events, but it still needs real time to reason about, and real time is exactly what's unreliable here. The next topic drops the clock entirely and asks what 'happened before' can mean using only the messages processes actually exchange.",
+  },
+  {
+    id: 'de.lamport-clocks-happens-before',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/lamport-clocks-happens-before',
+    title: 'Lamport clocks and happens-before',
+    syllabusTitle: 'Lamport clocks and happens-before',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['happens-before-partial-order', 'lamport-scalar-clock', 'clock-condition-total-order'],
+    uses: ['timing-models-sync-partial-async', 'clock-drift-ntp-error', 'last-write-wins-clock-hazard', 'dag', 'graph-traversal'],
+    declared: [],
+    bridge:
+      "If a timestamp cannot be trusted to order two writes, what can? Not a time at all, but who could have known what: a write that a node had seen when it made another write is ordered before it, whatever the clocks said. This topic is that relation, happens-before, and the one number that respects it: a Lamport clock.",
+    handoff:
+      "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. That is the vector clock.",
+  },
+  {
+    id: 'de.vector-clocks-version-vectors',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/vector-clocks-version-vectors',
+    title: 'Vector clocks and version vectors',
+    syllabusTitle: 'Vector clocks and version vectors',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['vector-clock-exact-causality', 'version-vector-vs-vector-clock', 'dotted-version-vector', 'siblings-and-metadata-growth'],
+    uses: ['happens-before-partial-order', 'lamport-scalar-clock', 'clock-condition-total-order', 'last-write-wins-clock-hazard'],
+    declared: ['session-consistency-guarantees', 'partitioning-schemes', 'cap-pacelc'],
+    bridge:
+      "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. This topic is that clock: vector clocks and the version vectors real stores use.",
+    handoff:
+      "Now there is a way to say exactly which writes were ordered and which were concurrent, without a trusted clock. The next question is the one a client asks: what may a read return? The strongest answer, the one that makes a replicated register behave like a single variable, is linearizability.",
   },
   {
     id: 'de.ingestion-modes-push-vs',
@@ -4727,6 +4787,26 @@ export const TOPICS: TopicMeta[] = [
       "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. How a key hierarchy delivers that, and what rotating or deleting a key really does to the data, is the next topic: envelope encryption.",
   },
   {
+    id: 'de.envelope-encryption-kms-key',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/envelope-encryption-kms-key',
+    title: 'Envelope encryption, KMS and key rotation',
+    syllabusTitle: 'Envelope encryption, KMS and key rotation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['dek-kek-envelope-hierarchy', 'kek-rotation-vs-dek-reencryption', 'customer-managed-byok-external-keys', 'crypto-shredding-key-deletion'],
+    uses: ['sensitivity-tier-and-category', 'automated-sensitive-data-discovery', 'object-storage'],
+    declared: ['data-eu-regulatory-architecture-ch10', 'data-cloud-kms-mechanics-ch10', 'data-table-format-files-ch06', 'cryptographic-hash'],
+    bridge:
+      "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. This topic is how a key hierarchy delivers that, and what rotating or deleting a key really does to the data: envelope encryption.",
+    handoff:
+      "Encryption makes data unreadable to a thief. It does not change what the data legally is for the people who hold the key, and it does not help once an analyst has decrypted it. The next topic is the line between data that can be tied to a person and data that cannot: pseudonymisation versus anonymisation.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
@@ -4745,6 +4825,26 @@ export const TOPICS: TopicMeta[] = [
       "Chapter 8 moved data from where it is produced to where it can be read, once and in order. This chapter takes the other kind of source: not a database to be read, but a stream someone is already appending to. This topic is the thing every later topic in this chapter assumes exists: the partitioned log itself, as bytes on disk.",
     handoff:
       "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
+  },
+  {
+    id: 'de.producer-batching-compression-acks',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/producer-batching-compression-acks',
+    title: 'Producer batching, compression and acks',
+    syllabusTitle: 'Producer batching, compression and acks',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['producer-batching-linger', 'acks-durability-tradeoff'],
+    uses: ['partition-segment-index'],
+    declared: [],
+    bridge:
+      "A partition is a log a producer writes to. This topic is what a producer actually does before that write ever reaches the broker: batching, compressing, and deciding how much durability to wait for.",
+    handoff:
+      "acks=all means waiting for every in-sync replica, not just the leader. What makes a replica count as in-sync, and what happens when one falls behind or a leader dies, is the next topic.",
   },
   {
     id: 'de.dag-scheduling-stage-boundaries',
@@ -4825,5 +4925,25 @@ export const TOPICS: TopicMeta[] = [
       "This chapter opened at the single physical page an engine reads and writes and closed at a sketch that approximates an entire distribution in a few kilobytes. The next chapter turns to the files these engines and sketches actually read and write at rest, starting with the oldest and most trap-ridden of them: plain-text interchange formats like CSV and JSON.",
     handoff:
       "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. The next question is that choice itself: row-oriented versus columnar layout.",
+  },
+  {
+    id: 'de.row-vs-columnar-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/row-vs-columnar-vs',
+    title: 'Row vs columnar vs hybrid layouts',
+    syllabusTitle: 'Row vs columnar vs hybrid layouts',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['row-vs-columnar-layout'],
+    uses: ['text-format-traps'],
+    declared: [],
+    bridge:
+      "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. This topic is that choice itself, measured directly: row-major storage, full column decomposition, and the PAX compromise in between.",
+    handoff:
+      "Every one of these layouts still has to survive a reader using a different version of the schema than the writer did. That's schema evolution.",
   },
 ];

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: partitioned log storage
+
+This topic uses the previous topic's vocabulary — a partition as a directory of segment files,
+with an offset as the consumer's own single integer — without re-teaching it. If segments,
+offsets or the sparse index are unfamiliar, start with
+[Partitioned log storage: segments and indexes](../partitioned-log-segments-indexes/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Producer Configs" href="https://kafka.apache.org/44/generated/producer_config.html" by="Apache Kafka docs">The real `batch.size`, `linger.ms`, `compression.type`, `acks` and `enable.idempotence` defaults this topic's toy accumulator scales down from.</Resource>
+  <Resource kind="reading" title="KIP-679: Producer will enable the strongest delivery guarantee by default" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-679%3A+Producer+will+enable+the+strongest+delivery+guarantee+by+default" by="Apache Kafka wiki">The exact Kafka 3.0 default-change table for `enable.idempotence` and `acks`.</Resource>
+  <Resource kind="reading" title="KIP-480: Sticky Partitioner" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-480%3A+Sticky+Partitioner" by="Apache Kafka wiki">Why the default partitioner sticks to one partition per batch instead of round-robining.</Resource>
+</ul>
+
+</section>
