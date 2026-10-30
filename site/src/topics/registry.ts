@@ -5466,4 +5466,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Any of these tools, in any mode, can still bring a warehouse to its knees if enough analysts ask it the same expensive question at once. The next topic is the engine layer that catches that load before the warehouse has to: pre-aggregation, materialized views, result caching and acceleration.",
   },
+  {
+    id: 'de.bi-serving-layer-performance',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/bi-serving-layer-performance',
+    title: 'BI serving-layer performance',
+    syllabusTitle: 'BI serving-layer performance',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.7' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['pre-aggregation-vs-materialized-view-vs-cache', 'warehouse-acceleration-engine-scope', 'concurrency-ceiling-and-queueing'],
+    uses: ['bi-query-modes-import-live-direct', 'headless-bi-many-tools-one-metric', 'grain-and-freshness-documentation', 'de-to-bi-handoff-contract'],
+    declared: [],
+    bridge:
+      "Any of these tools, in any mode, can still bring a warehouse to its knees if enough analysts ask it the same expensive question at once. This topic is the engine layer that catches that load before the warehouse has to: rollups, materialized views, result caching, and the named acceleration engines that do all three under one name — with their own documented limits.",
+    handoff:
+      "Everything in this section assumed data engineering still moves the data at all. The chapter's last topic asks what happens when a vendor claims it doesn't have to: 'zero-ETL,' and what that name is actually hiding.",
+  },
 ];
