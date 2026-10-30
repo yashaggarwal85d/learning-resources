@@ -4547,6 +4547,26 @@ export const TOPICS: TopicMeta[] = [
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
   {
+    id: 'de.replication-lag-session-guarantees',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/replication-lag-session-guarantees',
+    title: 'Replication lag and session guarantees',
+    syllabusTitle: 'Replication lag and session guarantees',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['session-consistency-guarantees'],
+    uses: ['physical-vs-logical-replication'],
+    declared: [],
+    bridge:
+      "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. This topic measures that lag directly, breaks read-your-writes with it, and fixes the break with a real LSN token.",
+    handoff:
+      "Lag is what a network partition costs you in the normal case. The next topic names precisely what it costs you in the worst case: CAP and PACELC.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
