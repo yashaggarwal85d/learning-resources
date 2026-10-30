@@ -1,0 +1,115 @@
+{
+  "topic": "de.envelope-encryption-kms-key",
+  "syllabus": [
+    {
+      "clause": "DEK/KEK hierarchy and what the KMS actually sees",
+      "at": [{ "step": "Reveal: the DEK/KEK hierarchy — what the KMS actually sees" }]
+    },
+    {
+      "clause": "KEK rotation without re-encrypting data vs DEK re-encryption after compromise",
+      "at": [{ "step": "Reveal: rotation versus compromise" }]
+    },
+    {
+      "clause": "customer-managed, BYOK and external/hold-your-own keys",
+      "at": [{ "step": "Reveal: customer-managed, BYOK, external — a control-versus-availability scale" }]
+    },
+    {
+      "clause": "TLS and mTLS in transit",
+      "at": [{ "step": "Reveal: TLS and mTLS — the wire, not the disk" }]
+    },
+    {
+      "clause": "client- vs server-side encryption",
+      "at": [{ "step": "Reveal: client- versus server-side — down to the file" }]
+    },
+    {
+      "clause": "key deletion as crypto-shredding",
+      "at": [{ "step": "Reveal: key deletion as crypto-shredding" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google Cloud KMS — Envelope encryption",
+      "items": [
+        { "item": "The DEK is wrapped by a KEK; the KEK never leaves Cloud KMS.", "at": [{ "step": "Reveal: the DEK/KEK hierarchy — what the KMS actually sees" }] }
+      ]
+    },
+    {
+      "source": "AWS KMS — AWS KMS keys (concepts)",
+      "items": [
+        { "item": "Data keys ('customer data keys') are returned encrypted under a KMS key.", "at": [{ "step": "Reveal: the DEK/KEK hierarchy — what the KMS actually sees" }] }
+      ]
+    },
+    {
+      "source": "AWS KMS — Rotate AWS KMS keys",
+      "items": [
+        { "item": "Rotation has no effect on the data; it does not re-encrypt data.", "at": [{ "step": "Reveal: rotation versus compromise" }] },
+        { "item": "Rotation will not mitigate the effect of a compromised data key.", "at": [{ "step": "Reveal: rotation versus compromise" }] }
+      ]
+    },
+    {
+      "source": "AWS KMS — Delete an AWS KMS key",
+      "items": [
+        { "item": "A 7-30 day waiting period, default 30, before irreversible deletion.", "at": [{ "step": "Reveal: key deletion as crypto-shredding" }] }
+      ]
+    },
+    {
+      "source": "AWS KMS — External key stores",
+      "items": [
+        { "item": "An external key store is backed by a key manager the customer owns outside AWS.", "at": [{ "step": "Reveal: customer-managed, BYOK, external — a control-versus-availability scale" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud — Cloud External Key Manager",
+      "items": [
+        { "item": "Cloud EKM uses external keys managed within a supported external key manager.", "at": [{ "step": "Reveal: customer-managed, BYOK, external — a control-versus-availability scale" }] }
+      ]
+    },
+    {
+      "source": "RFC 8446 — The Transport Layer Security (TLS) Protocol Version 1.3",
+      "items": [
+        { "item": "TLS's primary goal is a secure channel between two peers.", "at": [{ "step": "Reveal: TLS and mTLS — the wire, not the disk" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg — Encryption",
+      "items": [
+        { "item": "Data, delete, manifest and manifest-list files are encrypted and tamper-proofed before reaching storage.", "at": [{ "step": "Reveal: client- versus server-side — down to the file" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet — Encryption",
+      "items": [
+        { "item": "A data key is encrypted with a master key, remotely in a KMS or locally.", "at": [{ "step": "Reveal: client- versus server-side — down to the file" }] }
+      ]
+    },
+    {
+      "source": "NIST SP 800-57 Part 1 Revision 5",
+      "items": [
+        { "item": "General key-management guidance and best practices, the standards backing for this topic's vocabulary.", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "GDPR, Article 32 — Security of processing",
+      "items": [
+        { "item": "Pseudonymisation and encryption of personal data named as an appropriate security measure.", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A DEK encrypts data locally; a KEK held in the KMS only ever wraps and unwraps the DEK, never touching the data itself.", "at": [{ "step": "Reveal: the DEK/KEK hierarchy — what the KMS actually sees" }] },
+      { "item": "KEK rotation re-wraps DEKs with zero data re-encryption; a DEK compromise is a structurally different problem that forces re-encrypting every block under that DEK.", "at": [{ "step": "Reveal: rotation versus compromise" }] },
+      { "item": "Provider-managed, customer-managed, BYOK and external key control form a single scale: more control trades directly against more availability risk (an external key manager's outage becomes a data outage).", "at": [{ "step": "Reveal: customer-managed, BYOK, external — a control-versus-availability scale" }] },
+      { "item": "TLS and mTLS protect data in motion between two peers; they say nothing about data once it is written to disk, or about either endpoint's own security.", "at": [{ "step": "Reveal: TLS and mTLS — the wire, not the disk" }] },
+      { "item": "Iceberg and Parquet both implement the same DEK/KEK envelope shape at the file format level, not just at the KMS level.", "at": [{ "step": "Reveal: client- versus server-side — down to the file" }] },
+      { "item": "Crypto-shredding: destroying a key makes everything it encrypted unreadable everywhere without touching the data itself; the granularity of the key is the granularity of what gets erased, which topic 9 depends on directly.", "at": [{ "step": "Reveal: key deletion as crypto-shredding" }] },
+      { "item": "Chapter 10's cloud-KMS-mechanics and EU-key-residency material, and Chapter 6's table-format files, are cited by CHAPTER.md as uses but are unresolvable (both unbuilt in the relevant respect), so declared rather than used.", "at": [{ "out": "Chapter 10 unbuilt; Chapter 6 has no table-format-file id yet; declared per CHAPTER.md's cross-chapter-id rule" }] },
+      { "item": "Topic 4's tier/category tags are what a key hierarchy actually protects once applied; this topic assumes a column is already classified restricted before asking how to protect it.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "a sensitivity tier", "domain": "data-engineering" }] },
+      { "item": "NIST SP 800-57's own three-part structure (general guidance, government policy, cryptographic-feature usage) situates this topic's vocabulary within a wider standards document this topic does not fully cover.", "at": [{ "deep": "Internals" }] },
+      { "item": "The predict question's two parts (a leaked key under annual rotation; a request to make one subject's data unrecoverable) map directly onto this topic's two sharpest claims: rotation does not fix a leaked DEK, and key deletion is the crypto-shredding operation that answers the erasure question.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
