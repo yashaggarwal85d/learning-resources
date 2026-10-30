@@ -4708,4 +4708,41 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'A design chosen for the normal day works on the normal day. Real data arrives twice, arrives late, and is sometimes replayed on purpose. The next topic is designing those paths first: correctness under replay and late data.',
   },
+  {
+    id: 'de.correctness-under-replay-late',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/correctness-under-replay-late',
+    title: 'Correctness under replay and late data',
+    syllabusTitle: 'Correctness under replay and late data',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['replay-backfill-as-first-class-path', 'deterministic-transform-requirement', 'correction-window-late-data', 'versioned-outputs'],
+    uses: [
+      'correctness-as-specification',
+      'data-flow-shape-decision',
+      'system-of-record-vs-derived',
+      'merge-statement',
+      'upsert-atomicity',
+      'event-stream-compression',
+      'idempotent-merge-load',
+      'bounded-reprocessing-window',
+    ],
+    declared: [
+      'at-least-once-plus-idempotence',
+      'atomic-offset-output-commit',
+      'exactly-once-boundary-external-effects',
+      'watermark-trigger-mechanics',
+      'kafka-delivery-semantics',
+      'event-time-late-data-semantics',
+      'iceberg-snapshot-branch-mechanics',
+    ],
+    bridge:
+      'A design chosen for the normal day works on the normal day. Real data arrives twice, arrives late, and is sometimes replayed on purpose. This topic is designing those paths first: correctness under replay and late data.',
+    handoff:
+      'A pipeline that is correct under replay and late data can still be down. Sources go quiet, brokers fail, a bad deploy ships, a region disappears. The next topic is enumerating those failures before they happen: failure-mode analysis and recovery.',
+  },
 ];
