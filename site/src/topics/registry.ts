@@ -4546,4 +4546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.images-layers-local-environments',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/images-layers-local-environments',
+    title: 'Images, layers and local environments',
+    syllabusTitle: 'Images, layers and local environments',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['image-layers-build-cache', 'compose-local-stack', 'container-config-injection'],
+    uses: ['ci-pipelines', 'dependency-pinning', 'process-model'],
+    declared: ['basic Docker use'],
+    bridge:
+      "Chapter 11 ended on the gates a pipeline change must pass before it may ship. A change that passes them still has to run somewhere, as a process on a machine it did not choose. This refresher opens that somewhere, starting with the artefact every scheduled pipeline is actually deployed as: the container image and its layers.",
+    handoff:
+      "An image is a frozen filesystem. Running it is something else: a Linux process in a control group, with a limit written in a kernel file. What that limit does when the process asks for more is the next topic.",
+  },
 ];
