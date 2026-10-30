@@ -4780,4 +4780,36 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'A design now meets its SLOs, survives replay and has a recovery plan for every failure. It also has a price, and almost always one line of it dominates. The next topic is finding that line: the cost model, and the single lever that moves it.',
   },
+  {
+    id: 'de.cost-model-dominant-cost',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/cost-model-dominant-cost',
+    title: 'Cost model and dominant cost lever',
+    syllabusTitle: 'Cost model and dominant cost lever',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['cost-per-business-unit', 'cost-waterfall-dominant-lever', 'lever-with-second-order-effect'],
+    uses: [
+      'capacity-estimate-chain',
+      'amplification-ledger',
+      'serving-store-by-query-shape',
+      'pre-aggregation-vs-on-query',
+      'layout-from-dominant-access-path',
+      'object-storage-billing-model',
+      'bytes-scanned-vs-compute-time-billing',
+      'compute-storage-separation',
+      'noisy-neighbor-isolation',
+      'transfer-pricing',
+      'bandwidth-delay-product',
+    ],
+    declared: [],
+    bridge:
+      'A design now meets its SLOs, survives replay and has a recovery plan for every failure. It also has a price, and almost always one line of it dominates. This topic is finding that line: the cost model, and the single lever that moves it.',
+    handoff:
+      'Every topic so far produced a piece of a design: an SLO, an estimate, a shape, a layout, an engine, a correctness plan, a failure table, a cost. The last method topic is the skill of putting them in front of someone and defending them: stating the alternatives, recording the decision, and saying what would change your mind.',
+  },
 ];
