@@ -1,0 +1,74 @@
+{
+  "topic": "de.destination-side-interrogation",
+  "syllabus": [
+    {
+      "clause": "consumers and use cases (BI, ML, operational API, regulatory)",
+      "at": [{ "step": "Reveal: list every consumer, not just the one who asked" }, { "step": "Reveal: one dataset, several consumers, several stores" }]
+    },
+    {
+      "clause": "freshness, query frequency, scan size and latency SLAs",
+      "at": [{ "step": "Reveal: the sharp question turns vague into concrete" }]
+    },
+    {
+      "clause": "aggregation grain and modeling",
+      "at": [{ "step": "Reveal: grain, concurrency, and retention" }]
+    },
+    {
+      "clause": "concurrency and scaling",
+      "at": [{ "step": "Reveal: grain, concurrency, and retention" }]
+    },
+    {
+      "clause": "retention, archival and reprocessing",
+      "at": [{ "step": "Reveal: grain, concurrency, and retention" }]
+    },
+    {
+      "clause": "monitoring and debugging of delivery",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "access control, sensitive-data handling and export paths",
+      "at": [{ "step": "Reveal: export paths are a design input" }]
+    },
+    {
+      "clause": "how the use case and load will evolve",
+      "at": [{ "step": "Reveal: a bet is not a fact" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google SRE Book — Service Level Objectives (Chapter 4)",
+      "items": [
+        { "item": "Publishing SLOs sets expectations for system behavior, so users can tell whether a service fits their use case.", "at": [{ "step": "Reveal: one dataset, several consumers, several stores" }] },
+        { "item": "A service that fits a photo-sharing use case can be the wrong fit for an archival-records use case, even with the same stated guarantees.", "at": [{ "step": "Reveal: one dataset, several consumers, several stores" }] }
+      ]
+    },
+    {
+      "source": "Google SRE Workbook — Implementing SLOs (Chapter 2)",
+      "items": [
+        { "item": "Freshness is the proportion of data updated more recently than a stated threshold, ideally weighted by actual user access.", "at": [{ "step": "Reveal: the sharp question turns vague into concrete" }] },
+        { "item": "A critical user journey — a sequence of tasks core to one user's experience — is the unit to organize questions around, not a component in isolation.", "at": [{ "step": "Reveal: list every consumer, not just the one who asked" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "One dataset can have several consumers, and each one can need its own serving store.", "at": [{ "step": "Reveal: one dataset, several consumers, several stores" }] },
+      { "item": "A bet is not a fact, and the design has to mark which answers are which.", "at": [{ "step": "Reveal: a bet is not a fact" }] },
+      { "item": "An export path is a design input, not an afterthought, because it bypasses whatever policy the engine enforces.", "at": [{ "step": "Reveal: export paths are a design input" }] },
+      { "item": "A vague prompt can read two equally faithful ways, which is why the interview has to run before either design gets built.", "at": [{ "step": "Predict: which question would have picked one design?" }] },
+      { "item": "The sharp question — what do you do the moment you see it — turns an unchecked adjective into a bound the design can actually meet.", "at": [{ "step": "Reveal: the sharp question turns vague into concrete" }] },
+      { "item": "Asking for grain before a model is built avoids rebuilding it the first time a dashboard needs one level finer.", "at": [{ "step": "Reveal: grain, concurrency, and retention" }] },
+      { "item": "This topic leaves out source-side questions (topic 10), the design method's own answers (topics 1-9), and the access-control mechanisms themselves (Chapter 13).", "at": [{ "deep": "Internals" }] },
+      { "item": "A destination interview and critical-user-journey framing are established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop the questions; the rest of the chapter now runs them on real problems, starting with clickstream and ad-click analytics.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A second, differently worded vague prompt forks exactly the same way the first one did, under the same five questions.", "at": [{ "step": "Prove it: a single view of the customer" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -4876,4 +4876,38 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'The source interview says what goes into the pipeline. The consumer interview says what has to come out, and it is the one that most changes the design: who reads it, how fresh, how often, how big a query, who may see which part. That is the destination side, next.',
   },
+  {
+    id: 'de.destination-side-interrogation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/destination-side-interrogation',
+    title: 'Destination-side interrogation',
+    syllabusTitle: 'Destination-side interrogation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['destination-interrogation-checklist', 'five-answers-that-change-the-design', 'export-paths-as-design-input'],
+    uses: [
+      'source-interrogation-checklist',
+      'answers-as-measurements-not-adjectives',
+      'ask-to-slo-translation',
+      'six-dimension-requirement-checklist',
+      'serving-store-by-query-shape',
+      'layout-from-dominant-access-path',
+      'tiering-retention-designed-up-front',
+      'fact-grain',
+    ],
+    declared: [
+      'abac-tag-based-policy',
+      'engine-enforced-row-column-security',
+      'policy-bypass-paths',
+      'schedule-aware-freshness-alert',
+    ],
+    bridge:
+      'The source interview says what goes into the pipeline. The consumer interview says what has to come out, and it is the one that most changes the design: who reads it, how fresh, how often, how big a query, who may see which part. This topic is the destination side.',
+    handoff:
+      'With the method and the questions in hand, the rest of the chapter runs them on real problems, one decision at a time. The first is the largest data stream most companies own: clicks. Clickstream and ad-click analytics at billions of events a day is the first worked design.',
+  },
 ];
