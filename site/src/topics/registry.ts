@@ -4633,4 +4633,42 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'The shape says when data is processed. The next choice says where it lives afterwards: which store is the source of truth, how files are laid out for the queries that will actually run, and how long each class of data is kept. That is storage, layout and lifecycle.',
   },
+  {
+    id: 'de.storage-layout-lifecycle-decisions',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch15-data-system-design/storage-layout-lifecycle-decisions',
+    title: 'Storage, layout and lifecycle decisions',
+    syllabusTitle: 'Storage, layout and lifecycle decisions',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 15, title: 'Data-System Design', section: '15.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['system-of-record-vs-derived', 'layout-from-dominant-access-path', 'tiering-retention-designed-up-front'],
+    uses: [
+      'data-flow-shape-decision',
+      'capacity-estimate-chain',
+      'fact-grain',
+      'fact-table-types-transaction-snapshot-accumulating-factless',
+      'medallion-bronze-silver-gold',
+      'partition-pruning-plan-vs-run-time',
+      'partition-overhead',
+      'block-range-summary-pruning',
+      'composite-index-column-order',
+      'object-storage-billing-model',
+    ],
+    declared: [
+      'erasure-vs-time-travel-snapshot-expiry',
+      'per-subject-crypto-shredding-cost',
+      'sensitivity-tier-and-category',
+      'iceberg-delta-hudi-table-format-mechanics',
+      'parquet-row-group-encoding',
+      'small-files-problem',
+    ],
+    bridge:
+      'The shape says when data is processed. The next choice says where it lives afterwards: which store is the source of truth, how files are laid out for the queries that will actually run, and how long each class of data is kept. This topic is storage, layout and lifecycle.',
+    handoff:
+      'Data is now somewhere, laid out for its main query. What turns it into answers is the engine, and what delivers the answers is the serving store. The next topic is choosing both: by state size, latency and query shape, and by who has to operate them.',
+  },
 ];
