@@ -5546,4 +5546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every number in this topic came from requests generated against the shop's real schema with a uniform customer id — data far tidier than any real traffic actually is. The next topic asks what changes once the data looks the way real data looks: a few customers dominating the traffic, not an even spread.",
   },
+  {
+    id: 'de.representative-data-workload-skew',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch18-capstones-benchmarking/representative-data-workload-skew',
+    title: 'Representative data and workload skew',
+    syllabusTitle: 'Representative data and workload skew',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 18, title: 'Capstones and Benchmarking', section: '18.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['uniform-vs-zipfian-key-generation', 'cross-column-correlation-cardinality-miss', 'explicit-scale-factor', 'seeded-generator-as-artifact'],
+    uses: ['closed-loop-vs-constant-rate-generator', 'fanout-tail-amplification', 'steady-state-detection'],
+    declared: [],
+    bridge:
+      "Every number in the last topic came from requests generated against the shop's real schema with a uniform customer id — data far tidier than any real traffic actually is. This topic is what changes once the data looks the way real data looks: a few customers dominating the traffic under a Zipfian key, correlated columns breaking a cardinality estimator that assumes independence, and a seeded generator that makes both reproducible instead of a one-off.",
+    handoff:
+      "A single query, on one table, measured honestly with a realistic key distribution, is still one benchmark built by hand for one chapter. The next topic names the suites an entire industry built the same way, at a scale this course's own harness cannot reach, and the trap the method gets built to resist: a vendor choosing which true number to publish.",
+  },
 ];
