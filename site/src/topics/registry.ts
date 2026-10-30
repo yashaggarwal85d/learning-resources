@@ -4647,6 +4647,26 @@ export const TOPICS: TopicMeta[] = [
       "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. That is the vector clock.",
   },
   {
+    id: 'de.vector-clocks-version-vectors',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/vector-clocks-version-vectors',
+    title: 'Vector clocks and version vectors',
+    syllabusTitle: 'Vector clocks and version vectors',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['vector-clock-exact-causality', 'version-vector-vs-vector-clock', 'dotted-version-vector', 'siblings-and-metadata-growth'],
+    uses: ['happens-before-partial-order', 'lamport-scalar-clock', 'clock-condition-total-order', 'last-write-wins-clock-hazard'],
+    declared: ['session-consistency-guarantees', 'partitioning-schemes', 'cap-pacelc'],
+    bridge:
+      "A Lamport clock never contradicts causality, but it also cannot tell you when two events were independent: it orders everything. A store that has to detect conflicting concurrent writes needs a clock that can say so. This topic is that clock: vector clocks and the version vectors real stores use.",
+    handoff:
+      "Now there is a way to say exactly which writes were ordered and which were concurrent, without a trusted clock. The next question is the one a client asks: what may a read return? The strongest answer, the one that makes a replicated register behave like a single variable, is linearizability.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',

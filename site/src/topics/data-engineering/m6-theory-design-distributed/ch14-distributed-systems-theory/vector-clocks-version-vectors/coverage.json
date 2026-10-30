@@ -1,0 +1,69 @@
+{
+  "topic": "de.vector-clocks-version-vectors",
+  "syllabus": [
+    {
+      "clause": "per-process counters that capture causality exactly and detect concurrency",
+      "at": [{ "step": "Reveal: one counter per process, merged by the largest value seen" }, { "step": "Predict: which version does the store keep?" }]
+    },
+    {
+      "clause": "version vectors (per replica) vs vector clocks (per process)",
+      "at": [{ "step": "Reveal: the same rule, pointed at a replica instead of a process" }]
+    },
+    {
+      "clause": "dotted version vectors",
+      "at": [{ "step": "Reveal: the dot that tells two writes apart" }]
+    },
+    {
+      "clause": "sibling explosion and metadata growth",
+      "at": [{ "step": "Reveal: siblings, and the setting that lets them multiply" }, { "deep": "Production: sibling explosion, and the three settings that cause it" }]
+    },
+    {
+      "clause": "how Dynamo-style stores surface conflicts to the application",
+      "at": [{ "step": "Reveal: the Dynamo example, five versions, one real trace" }, { "step": "Hook: two carts, two replicas, one partition, and a reconnect with two versions" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dynamo: Amazon's Highly Available Key-value Store (DeCandia et al., SOSP 2007)",
+      "items": [
+        { "item": "the vector-clock dominance comparison rule, stated directly", "at": [{ "step": "Reveal: one counter per process, merged by the largest value seen" }] },
+        { "item": "the D1 through D5 worked example, including the reconciling write", "at": [{ "step": "Reveal: the Dynamo example, five versions, one real trace" }, { "deep": "Internals: the comparison rule, and why Dynamo's own worked example is the whole mechanism" }] },
+        { "item": "the clock truncation scheme (drop the oldest pair past a threshold) and its named risk", "at": [{ "step": "Prove it: can truncating a vector make an ordered pair look concurrent?" }] },
+        { "item": "the get/put context mechanism surfacing conflicting versions to the application", "at": [{ "step": "Hook: two carts, two replicas, one partition, and a reconnect with two versions" }] }
+      ]
+    },
+    {
+      "source": "Dotted Version Vectors: Logical Clocks for Optimistic Replication (Preguiça, Baquero, Almeida, Fonte, Gonçalves, 2010)",
+      "items": [
+        { "item": "the same-coordinator false-merge problem (two clients' concurrent writes through one replica registering as non-concurrent)", "at": [{ "step": "Reveal: the dot that tells two writes apart" }, { "deep": "Lab: a same-coordinator write a plain version vector cannot tell apart" }] },
+        { "item": "a dot as a single event identifier distinguishing updates a plain version vector would conflate", "at": [{ "step": "Reveal: the dot that tells two writes apart" }] }
+      ]
+    },
+    {
+      "source": "Causal Context (Riak KV documentation)",
+      "items": [
+        { "item": "allow_mult controlling whether siblings are created versus falling back to timestamp resolution", "at": [{ "step": "Reveal: siblings, and the setting that lets them multiply" }, { "deep": "Production: sibling explosion, and the three settings that cause it" }] },
+        { "item": "vector clocks alone cannot identify which value came from which concurrent update, causing duplicate-sibling explosion under out-of-order delivery", "at": [{ "deep": "Production: sibling explosion, and the three settings that cause it" }] },
+        { "item": "dotted version vectors bounding sibling count to the number of genuinely concurrent updates", "at": [{ "step": "Reveal: the dot that tells two writes apart" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A vector clock keeps one counter per process, incremented on its own events and merged by element-wise maximum on message receipt.", "at": [{ "step": "Reveal: one counter per process, merged by the largest value seen" }] },
+      { "item": "One vector dominates another exactly when every entry is greater than or equal and at least one is strictly greater; this holds exactly when the first event happened-before the second.", "at": [{ "step": "Reveal: one counter per process, merged by the largest value seen" }] },
+      { "item": "Two vectors where neither dominates the other are concurrent; unlike a scalar clock, a vector clock detects this exactly, with no false positives or negatives.", "at": [{ "step": "Predict: which version does the store keep?" }] },
+      { "item": "A version vector is the same mechanism applied to versions of one data item at the replicas that have coordinated a write to it, rather than to events at processes in general.", "at": [{ "step": "Reveal: the same rule, pointed at a replica instead of a process" }] },
+      { "item": "Dynamo surfaces concurrent, causally unrelated versions to the application via get(), with a context the application must return on put() to supersede the versions it reconciled.", "at": [{ "step": "Reveal: the Dynamo example, five versions, one real trace" }] },
+      { "item": "Dynamo truncates its vector clocks past a fixed number of entries (named as ten) by dropping the oldest pair, which can cause a genuinely ordered pair of versions to be mistaken for concurrent.", "at": [{ "step": "Prove it: can truncating a vector make an ordered pair look concurrent?" }] },
+      { "item": "Siblings are concurrent, unmerged versions a store returns together when neither dominates; allow_mult controls whether a store creates them or falls back to last-write-wins.", "at": [{ "step": "Reveal: siblings, and the setting that lets them multiply" }] },
+      { "item": "A plain vector clock cannot distinguish two concurrent updates coordinated by the same replica, since both bump that replica's entry identically; this is the root cause of sibling explosion under duplicate or out-of-order delivery.", "at": [{ "step": "Reveal: the dot that tells two writes apart" }] },
+      { "item": "A dotted version vector adds a single event identifier (a dot) to a version vector's context, letting updates with an identical underlying vector still be told apart, bounding sibling growth to genuine concurrency.", "at": [{ "step": "Reveal: the dot that tells two writes apart" }] },
+      { "item": "Session consistency guarantees, partitioning schemes and CAP/PACELC are named cross-chapter concepts this topic assumes familiarity with eventually, but Chapter 5's own topics introducing them are not yet built.", "at": [{ "out": "declared concepts (session-consistency-guarantees, partitioning-schemes, cap-pacelc); logged in OUTLINE.md's Changes from the chapter plan, not taught in this topic" }] },
+      { "item": "CRDTs (conflict-free replicated data types) remove the need for application-side sibling reconciliation by defining a merge function in the data type itself, but are a distinct mechanism from siblings and dots.", "at": [{ "deep": "Frontier: from siblings to a merge the application never has to write" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
