@@ -5386,4 +5386,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Everything in this section assumed a feature is a number or a category. An embedding is a feature too — a few hundred numbers standing for a document — and it drifts exactly the same way, except re-embedding the whole corpus to fix it is not free. The next topic is what keeping embeddings fresh actually costs at scale.",
   },
+  {
+    id: 'de.embedding-pipelines-at-scale',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/embedding-pipelines-at-scale',
+    title: 'Embedding pipelines at scale',
+    syllabusTitle: 'Embedding pipelines at scale',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.1.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['embedding-batch-throughput-cost', 'content-hash-incremental-reembed', 'vector-delete-tombstone-propagation', 'dual-index-model-backfill'],
+    uses: ['data-drift-vs-concept-drift', 'schema-and-null-rate-drift'],
+    declared: [],
+    bridge:
+      "Everything in this section assumed a feature is a number or a category. An embedding is a feature too — a few hundred numbers standing for a document — and it drifts exactly the same way, except re-embedding the whole corpus to fix it is not free. This topic is what keeping embeddings fresh actually costs at scale: throughput and its price, hashing to avoid redoing untouched work, tombstones for what should no longer be found, and the backfill a model change forces.",
+    handoff:
+      "Fresh vectors still have to live somewhere a query can search. The last question before this chapter leaves embeddings behind is not which index algorithm to run — the syllabus does not ask for that here — but which kind of store to run it in at all, decided from the shape of your corpus and your traffic rather than a benchmark chart.",
+  },
 ];

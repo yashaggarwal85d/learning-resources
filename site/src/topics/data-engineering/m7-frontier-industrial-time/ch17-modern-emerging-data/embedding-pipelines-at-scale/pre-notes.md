@@ -1,0 +1,7 @@
+- **Embedding**: a few hundred numbers standing for a chunk of text, used for similarity search.
+- **Token**: the unit a model counts text in; throughput and API rate limits are both measured per token.
+- **Batch size**: how many chunks get encoded together in one pass; bigger batches generally mean higher throughput, up to a point.
+- **Content hash**: a fingerprint of a chunk's exact text, used to detect whether it changed since it was last embedded.
+- **Tombstone**: a marker left behind for a deleted item, so it stops being returned without needing an immediate physical delete.
+- **Dual index**: two complete, separate indexes kept side by side during a transition, so queries always have one to answer from.
+- **Cut-over**: the moment queries switch from one index to another, only once the new one is fully ready.
