@@ -1,0 +1,7 @@
+- **Transaction**: a group of reads and writes over one or more objects, treated as one unit. *Where you meet it:* the "place order" and "refresh order list" steps in the hook, each a whole transaction.
+- **Multi-object**: an operation (here, a transaction) touching more than one object or row. *Where you meet it:* the thing topic 5's single-register linearizability never had to consider.
+- **Serial order**: an order in which transactions run one at a time, with no interleaving. *Where you meet it:* the single ordering serializability promises exists, even if real time disagrees with it.
+- **Stale read**: a read that returns a value older than one a completed write has already produced. *Where you meet it:* the hook's refresh, and topic 5's stale-leader read, generalized to transactions.
+- **Real-time order**: the actual clock-on-the-wall order transactions began and ended in. *Where you meet it:* the one rule serializability drops and strict serializability adds back.
+- **External consistency**: Spanner's own name for strict serializability. *Where you meet it:* the Spanner paper's own quoted definition.
+- **Isolation level**: a database's named promise about what one transaction may observe of others running concurrently. *Where you meet it:* PostgreSQL's `SERIALIZABLE`, measured directly on this topic's sandbox.
