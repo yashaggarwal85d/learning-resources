@@ -4607,6 +4607,26 @@ export const TOPICS: TopicMeta[] = [
       "Partitioning's own clean theory runs into a real practical failure the moment one key gets far more traffic than the rest. The next topic is exactly that: shard keys and the hot shards a bad one creates.",
   },
   {
+    id: 'de.shard-keys-hot-shards',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/shard-keys-hot-shards',
+    title: 'Shard keys, hot shards and resharding',
+    syllabusTitle: 'Shard keys, hot shards and resharding',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['shard-key-resharding'],
+    uses: ['partitioning-schemes'],
+    declared: [],
+    bridge:
+      "Partitioning's own clean theory runs into a real practical failure the moment one key gets far more traffic than the rest. This topic is exactly that: choosing a shard key from real access patterns, the celebrity-key failure a bad one creates, and what resharding actually costs to fix it.",
+    handoff:
+      "Every mechanism in this section so far assumed replicas and shards stay in sync and agree on membership changes without a formal protocol for it. The next topic is that protocol: consensus.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
