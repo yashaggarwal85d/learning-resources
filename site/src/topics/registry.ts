@@ -5446,4 +5446,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A contract names what the mart promises. It says nothing about which actual tool an analyst opens to use it. The next topic, a refresher, is that tool: the BI layer itself.",
   },
+  {
+    id: 'de.bi-tools-as-warehouse',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch17-modern-emerging-data/bi-tools-as-warehouse',
+    title: 'BI tools as warehouse consumers',
+    syllabusTitle: 'BI tools as warehouse consumers',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 17, title: 'The Modern and Emerging Data Stack', section: '17.7' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['bi-query-modes-import-live-direct', 'headless-bi-many-tools-one-metric'],
+    uses: ['de-to-bi-handoff-contract', 'grain-and-freshness-documentation', 'semantic-layer-metric-compilation'],
+    declared: [],
+    bridge:
+      "A contract names what the mart promises. It says nothing about which actual tool an analyst opens to use it. This refresher is that tool: Looker, Power BI, Tableau and the open-source alternatives, and the three different ways any of them can actually query the warehouse underneath.",
+    handoff:
+      "Any of these tools, in any mode, can still bring a warehouse to its knees if enough analysts ask it the same expensive question at once. The next topic is the engine layer that catches that load before the warehouse has to: pre-aggregation, materialized views, result caching and acceleration.",
+  },
 ];
