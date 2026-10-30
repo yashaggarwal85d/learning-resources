@@ -4546,4 +4546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.orchestrator-architecture-scheduler',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
+    title: 'Orchestrator architecture: scheduler, executor, metadata DB',
+    syllabusTitle: 'Orchestrator architecture: scheduler, executor, metadata DB',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['orchestrator-architecture-scheduler', 'executor-model-comparison', 'ha-scheduler-row-locks'],
+    uses: ['ch9.partitioned-log-model', 'ch1.process-model'],
+    declared: ['cron-and-dags-familiarity'],
+    bridge:
+      "Chapters 1 through 10 built pipelines that are each correct on their own. Nothing yet has said what decides when ten thousand of them run, survives a crashed worker, or keeps working when the thing coordinating it all needs to scale past one machine. This chapter opens with that architecture.",
+    handoff:
+      "The executor's job is to run a task and the scheduler's job is to retry it if it fails. That retry is only safe if running the task twice does no harm. The next topic is exactly that property, and the two kinds of failure that make it necessary.",
+  },
 ];
