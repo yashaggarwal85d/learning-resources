@@ -4587,6 +4587,26 @@ export const TOPICS: TopicMeta[] = [
       "A model says processes may be slow and messages may be late, but it gives them no shared clock to measure how late. The next topic is what the clocks a machine does have actually promise, and why 'last write wins by timestamp' quietly loses writes.",
   },
   {
+    id: 'de.physical-clocks-why-they-lie',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/physical-clocks-why-they-lie',
+    title: 'Physical clocks and why they lie',
+    syllabusTitle: 'Physical clocks and why they lie',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.2' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['clock-drift-ntp-error', 'wall-vs-monotonic-clock', 'last-write-wins-clock-hazard', 'bounded-error-clock-interval'],
+    uses: ['timing-models-sync-partial-async', 'memory-hierarchy', 'latency-numbers', 'latency-bandwidth-cost', 'process-model', 'signals', 'cpu-memory-profiling', 'replication-ack-modes'],
+    declared: ['cap-pacelc'],
+    bridge:
+      "The last topic stated the model every protocol is correct relative to, but gave processes no shared clock to measure delay by. This topic is what the clocks a real machine actually has — a drifting crystal, NTP's own correction, a wall clock and a monotonic clock — really promise, and why 'last write wins by timestamp' quietly loses writes even when every clock reports itself synchronised.",
+    handoff:
+      "A bounded-error clock admits when it can't order two events, but it still needs real time to reason about, and real time is exactly what's unreliable here. The next topic drops the clock entirely and asks what 'happened before' can mean using only the messages processes actually exchange.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',

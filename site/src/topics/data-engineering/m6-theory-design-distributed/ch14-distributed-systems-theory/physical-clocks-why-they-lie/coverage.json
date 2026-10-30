@@ -1,0 +1,89 @@
+{
+  "topic": "de.physical-clocks-why-they-lie",
+  "syllabus": [
+    {
+      "clause": "quartz drift, NTP synchronization error, leap-second smearing, VM pauses, wall-clock vs monotonic clocks",
+      "at": [{ "step": "Reveal: a crystal drifts continuously, and NTP's own fix has its own error bar" }, { "step": "Reveal: a leap second, smeared by one clock and stepped by another" }, { "step": "Reveal: wall clock, monotonic clock, and the pause neither survives" }]
+    },
+    {
+      "clause": "PTP and bounded-error clock services (e.g. AWS ClockBound)",
+      "at": [{ "step": "Reveal: an honest interval beats a confident, wrong point" }, { "deep": "Frontier: TrueTime and ClockBound, side by side" }]
+    },
+    {
+      "clause": "Why \"last write wins by timestamp\" silently drops writes",
+      "at": [{ "step": "Hook: two synchronised nodes, one register, and a later write that vanishes" }, { "step": "Reveal: the lab, the same skewed pair, read two different ways" }]
+    },
+    {
+      "clause": "why lease-based protocols must budget for maximum skew",
+      "at": [{ "step": "Prove it: is a lease sized to last month's typical clock skew safe?" }, { "deep": "Internals: what NTP actually promises" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spanner: Google's Globally-Distributed Database (Corbett et al., OSDI 2012)",
+      "items": [
+        { "item": "TrueTime's uncertainty generally under ten ms, from multiple modern clock references", "at": [{ "deep": "Frontier: TrueTime and ClockBound, side by side" }] },
+        { "item": "TTinterval as an interval with bounded time uncertainty, unlike a standard point-reading clock API", "at": [{ "step": "Reveal: an honest interval beats a confident, wrong point" }] },
+        { "item": "uncertainty derived from conservatively applied worst-case clock drift plus time-master uncertainty and communication delay", "at": [{ "deep": "Internals: what NTP actually promises" }] }
+      ]
+    },
+    {
+      "source": "RFC 5905: Network Time Protocol Version 4 (Mills, Martin, Burbank, Kasch, IETF 2010)",
+      "items": [
+        { "item": "the four-timestamp offset and round-trip delay formulas, and the symmetric-path assumption behind them", "at": [{ "deep": "Internals: what NTP actually promises" }] },
+        { "item": "the slew-vs-step correction choice, and why a stepped correction can move the wall clock backward", "at": [{ "step": "Reveal: wall clock, monotonic clock, and the pause neither survives" }] }
+      ]
+    },
+    {
+      "source": "Leap Smear (Public NTP, Google for Developers)",
+      "items": [
+        { "item": "the 24-hour linear noon-to-noon smear as Google's recommended standard, adopted by AWS", "at": [{ "step": "Reveal: a leap second, smeared by one clock and stepped by another" }] },
+        { "item": "smeared time briefly deviating from UTC during the smear window and realigning after 24 hours", "at": [{ "deep": "Production: a leap second's day-long shadow" }] }
+      ]
+    },
+    {
+      "source": "Dynamo | Apache Cassandra Documentation, and Dynamo: Amazon's Highly Available Key-value Store (DeCandia et al., SOSP 2007)",
+      "items": [
+        { "item": "Cassandra's own documented last-write-wins conflict-resolution rule, by timestamp", "at": [{ "step": "Reveal: the lab, the same skewed pair, read two different ways" }] },
+        { "item": "last-write-wins named as one of Dynamo's own reconciliation choices, contrasted with the vector-clock default it actually ships", "at": [{ "deep": "Lab: a bounded-error clock reading the same skewed pair" }] }
+      ]
+    },
+    {
+      "source": "clock_gettime(2) — Linux manual page",
+      "items": [
+        { "item": "CLOCK_REALTIME as settable and subject to discontinuous jumps; CLOCK_MONOTONIC as nonsettable and unaffected by them", "at": [{ "step": "Reveal: wall clock, monotonic clock, and the pause neither survives" }] }
+      ]
+    },
+    {
+      "source": "AWS ClockBound (aws/clock-bound, GitHub)",
+      "items": [
+        { "item": "ClockBound's Clock Error Bound as a window of (earliest, latest) timestamps within which true time exists", "at": [{ "deep": "Frontier: TrueTime and ClockBound, side by side" }] },
+        { "item": "synchronisation from a PTP Hardware Clock, an NTP source, or a VMClock device", "at": [{ "out": "named in Frontier for completeness; not taught as a reel-level claim" }] }
+      ]
+    },
+    {
+      "source": "How to do distributed locking (Kleppmann, 2016)",
+      "items": [
+        { "item": "a paused process (garbage collection, hypervisor live migration) holding a stale clock reading for an unbounded time", "at": [{ "step": "Reveal: wall clock, monotonic clock, and the pause neither survives" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A node reporting itself synchronised to NTP is not the same as two nodes' clocks agreeing closely enough to order every pair of writes correctly.", "at": [{ "step": "Hook: two synchronised nodes, one register, and a later write that vanishes" }] },
+      { "item": "Last-write-wins under clock skew discards the genuinely later write whenever skew exceeds the real-time gap between the writes, regardless of which node's clock is the faster one.", "at": [{ "step": "Predict: whose sale is actually gone?" }] },
+      { "item": "A quartz oscillator drifts continuously; NTP's correction is a continuous process against a continuously moving target, not a one-time fix.", "at": [{ "step": "Reveal: a crystal drifts continuously, and NTP's own fix has its own error bar" }] },
+      { "item": "NTP's offset formula assumes a symmetric network path; an asymmetric path biases the offset estimate without the protocol being able to detect it from the four timestamps alone.", "at": [{ "deep": "Internals: what NTP actually promises" }] },
+      { "item": "A leap second handled by smearing on one clock and stepping on another produces a full day of disagreement between two equally correct clocks, not a one-second blip.", "at": [{ "step": "Reveal: a leap second, smeared by one clock and stepped by another" }] },
+      { "item": "A wall clock can jump (forward or back) when corrected; a monotonic clock never jumps but is meaningless across machines; a paused process can hold either stale for an unbounded time.", "at": [{ "step": "Reveal: wall clock, monotonic clock, and the pause neither survives" }] },
+      { "item": "A bounded-error clock returns an interval (earliest, latest) instead of a point, so two overlapping intervals are an honest, explicit signal that two events cannot be ordered.", "at": [{ "step": "Reveal: an honest interval beats a confident, wrong point" }] },
+      { "item": "A lease is only safe once its length exceeds the maximum clock skew the two parties could ever disagree by, not the skew that is merely typical.", "at": [{ "step": "Prove it: is a lease sized to last month's typical clock skew safe?" }] },
+      { "item": "TrueTime and AWS ClockBound are two real, independently built, named production systems implementing the same bounded-error-interval idea this topic's lab reproduces.", "at": [{ "deep": "Frontier: TrueTime and ClockBound, side by side" }] },
+      { "item": "Hybrid logical clocks combine a physical-clock component with a logical counter to get monotonicity across machines without needing tightly bounded clock uncertainty; this is a distinct mechanism from the bounded-error physical clocks this topic covers.", "at": [{ "out": "a *(skipped)* syllabus sub-point; named only in CHAPTER.md's framing, not taught in this topic — happens-before and logical clocks are topic 3's own subject" }] },
+      { "item": "The real 2012, 2015 and 2016 leap-second incidents (Linux kernel futex and timer bugs triggered by the leap second) are named production incidents, not reproduced in this topic's lab.", "at": [{ "deep": "Production: a leap second's day-long shadow" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
