@@ -1,0 +1,85 @@
+{
+  "topic": "de.federated-governance-operating-model",
+  "steps": [
+    {
+      "lines": [
+        "Picture a regulator calling three different teams, each running their own slice of the shop's data, and asking for one thing: every table holding restricted personal information, and who owns it, by tomorrow.",
+        "A central team that keeps that list by hand will take weeks, and it'll still be wrong the day it's delivered. But if there's no central rule at all, every domain just answers in its own way — and none of those answers agree."
+      ]
+    },
+    {
+      "lines": [
+        "So think about what actually has to sit centrally here.",
+        "Could be the policy itself. Could be who owns each table. Could be the tooling everyone uses. Or maybe it's some mix of those three — and the real question is which one can't be allowed to bend, even a little, for any domain."
+      ],
+      "answer": [
+        "It's not that one team has to run every table itself — each domain keeps its own table, its own tooling even.",
+        "What has to stay central is the policy. And it only works if it's written into code the platform runs, not just a request someone's supposed to honor."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the shape underneath this. Each domain treats its own dataset like something it builds and stands behind — a product, not a byproduct of some pipeline.",
+        "A shared platform gives every domain the same self-serve tooling, so nobody's waiting on a central team to do their work for them.",
+        "And the body that writes policy writes it exactly once. The person who named this whole arrangement calls it federated computational governance — because it's the platform carrying the policy out, not a person checking it by hand."
+      ]
+    },
+    {
+      "lines": [
+        "There's an old observation, from nineteen sixty-eight, that applies here directly.",
+        "Any group that sets out to design a system ends up building a design that copies the shape of its own communication — the org chart leaks straight into the architecture, whether anyone intends it or not.",
+        "Now run that backward, on purpose. Pick the team structure you actually want the system to have, and the architecture that comes out tends to follow the boundaries you already drew."
+      ],
+      "takeaway": "That law runs forward by accident; running it backward on purpose is how you get the architecture you actually want."
+    },
+    {
+      "lines": [
+        "Not every governance call belongs to the same kind of decision-maker, though.",
+        "Something that's really just a rule sitting on an attribute — mask this tagged column, block any table with no listed owner, fail a contract that's missing a required field — that can run itself, no person needed.",
+        "But is this particular table business-critical? Is this retention exception actually backed by a real legal reason? What does a column full of free text actually contain? None of those have an attribute to check against — they need a person who can look and decide."
+      ]
+    },
+    {
+      "lines": [
+        "Before any table gets to call itself discoverable, it has to clear a sequence of checks.",
+        "The first one just makes sure every column in it actually has a name and a declared type.",
+        "The second looks for an attached contract — one with an id, a version number, and a named owner. On the run just done here, one candidate table's contract was missing its version, and it got turned back at exactly that gate."
+      ]
+    },
+    {
+      "lines": [
+        "One more gate stands after those two: every single column has to carry a classification tag — always a sensitivity tier, and a category too, wherever one actually applies.",
+        "On the same run, a column holding free-form text that nobody's scanner had ever tagged got turned back here as well — and the system said exactly which gate caught it, not just that something failed."
+      ],
+      "takeaway": "Three gates, three different reasons — a table that's turned back always comes with the exact rule it broke."
+    },
+    {
+      "lines": [
+        "But there's a limit to what any of these gates can settle on their own.",
+        "None of them can tell you a table matters more than another one does — that's a judgment about the business, not a property sitting in the data.",
+        "None of them can grant an exception to a retention rule; that needs an actual legal justification behind it.",
+        "And none of them can look at an untagged column and decide what it really holds — the gate already missed it once, by definition.",
+        "Each of those needs a specific person whose name is on the decision."
+      ]
+    },
+    {
+      "lines": [
+        "So, stepping back across all of it.",
+        "Each domain owns what it builds; a shared platform carries the tooling; the policy itself stays written centrally, once, and the platform enforces it.",
+        "Run that old law about organizations backward, and choose your team shape on purpose. A rule over an attribute runs by itself; a judgment call keeps someone's name attached to it.",
+        "And every one of these three gates, when it turns a table back, says exactly why."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder case to sit with for a second.",
+        "Say a brand-new domain team wants to shorten how long it keeps its own table's data — but only within the limit the policy already states, nothing beyond it.",
+        "Is that the platform's call to make on its own, or does it still need somebody to sign off by name?"
+      ],
+      "answer": [
+        "It's the platform's call. What made the earlier retention case need a person was asking to go past the stated limit, which only a legal reason can justify.",
+        "Staying fully inside a limit the policy already wrote down is exactly the shape of thing a rule over an attribute was built to handle on its own."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+- **Domain team**: the group that owns a dataset day to day — its schema, its quality, its contract. *Where you meet it:* throughout.
+- **Data product**: a dataset treated as something a domain publishes and supports, not a side effect of a pipeline. *Where you meet it:* "Reveal: the operating shape."
+- **Platform team**: the group that builds the self-serve tooling every domain uses, rather than running pipelines for them. *Where you meet it:* the same reveal.
+- **Policy**: a rule written once, centrally, meant to apply to every domain's data the same way. *Where you meet it:* the same reveal.
+- **Steward**: the named person responsible for a judgement call a rule cannot make on its own. *Where you meet it:* "Reveal: what the gates cannot decide."
+- **Guardrail**: an enforced limit that still leaves the domain team free to act inside it. *Where you meet it:* "Prove it."
+- **Self-serve**: a domain team doing something itself through the platform's tooling, without asking a central team to do it for them. *Where you meet it:* "Reveal: the operating shape."
+- **Centralised vs. federated**: one body deciding everything, versus local autonomy bounded by a shared, enforced policy. *Where you meet it:* "Predict: what must be central?"

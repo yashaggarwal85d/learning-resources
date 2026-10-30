@@ -1,0 +1,57 @@
+{
+  "topic": "de.federated-governance-operating-model",
+  "syllabus": [
+    {
+      "clause": "domain teams own data products, a platform team supplies self-serve tooling, central policy is applied computationally",
+      "at": [{ "step": "Reveal: the operating shape" }]
+    },
+    {
+      "clause": "reverse Conway's law",
+      "at": [{ "step": "Reveal: reverse Conway's law" }]
+    },
+    {
+      "clause": "what must stay human stewardship (criticality, retention exceptions, ambiguous PII classification) vs what to automate",
+      "at": [
+        { "step": "Reveal: automate, or ask a person?" },
+        { "step": "Reveal: what the gates cannot decide" }
+      ]
+    },
+    {
+      "clause": "links to §3.4 (data mesh) and §19.1 (team topology)",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dehghani — Data Mesh Principles and Logical Architecture",
+      "items": [
+        { "item": "A governance model requires automated execution of decisions by the platform; Dehghani calls this federated computational governance.", "at": [{ "step": "Reveal: the operating shape" }] },
+        { "item": "The federation of domain and platform product owners creates a set of global rules applied to all data products and their interfaces.", "at": [{ "step": "Reveal: the operating shape" }] }
+      ]
+    },
+    {
+      "source": "Conway — How Do Committees Invent?",
+      "items": [
+        { "item": "Organizations which design systems are constrained to produce designs which are copies of their own communication structures (Datamation, April 1968).", "at": [{ "step": "Reveal: reverse Conway's law" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Dehghani's fourth principle, quoted directly in this topic, is the same federated computational governance Chapter 3's own data-mesh topic introduced as a named concept — this topic is where that name gets a concrete, running mechanism (the registration gate) rather than staying a definition.", "at": [{ "topic": "Data mesh and data products", "quote": "federated computational governance", "domain": "data-engineering" }] },
+      { "item": "The registration gate's classification check reuses the same tier-and-category tag topic 4 defined, and its rejection of an untagged free-text column is the same false-negative failure mode topic 4 named first — a scanner that never saw the column, not a tagging error.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "false negatives in free text", "domain": "data-engineering" }] },
+      { "item": "The automated half of this topic's decision split (a rule over an attribute) is exactly the tag-based policy topic 7 introduced as the alternative to enumerating roles — this topic shows that same tag-based rule applied at the point a table is admitted, not just at query time.", "at": [{ "topic": "Access-control models: RBAC, ABAC, policy-as-code", "quote": "attribute/tag-based policies", "domain": "data-engineering" }] },
+      { "item": "Central policy applied computationally, this topic's own first clause, is the same shift topic 8 made for row and column security: a rule a person used to apply by hand becomes something the engine (there) or the platform (here) enforces on every table without being asked again.", "at": [{ "topic": "Row/column security and dynamic masking in-engine", "quote": "enforce in the query engine, not the application", "domain": "data-engineering" }] },
+      { "item": "A table admitted by the registration gate becomes discoverable in the same catalog topic 10 built, and the technical-vs-business split that topic drew (what a crawler can see vs what a person must name) is the same split this topic draws between a rule over an attribute and a judgement only a steward can make.", "at": [{ "topic": "Metadata platforms and active catalogs", "quote": "technical vs business catalog", "domain": "data-engineering" }] },
+      { "item": "The contract fields this topic's registration gate checks (id, version, owner) are a stand-in for what Chapter 11's own contract-enforcement-in-CI topic would otherwise check at commit time — logged as a declared gap rather than assumed, since no section 11.4 entry exists yet.", "at": [{ "step": "Reveal: the registration gate, schema and contract" }] },
+      { "item": "Placing a check as a gate before a table can be read by anyone, rather than as a post-hoc scan after it is already discoverable, is the same gate-vs-scan distinction topic 12 drew for data itself — here applied to a table's own right to exist in the catalog at all.", "at": [{ "topic": "Data quality frameworks", "quote": "where checks run (in-pipeline gates vs post-hoc scans)", "domain": "data-engineering" }] },
+      { "item": "A registered table's lineage, once it starts moving data, reports itself through the same run/job/dataset event model topic 11 built — this topic composes that mechanism rather than repeating it, exactly as CHAPTER.md's own leaves-out line states.", "at": [{ "topic": "OpenLineage: events, facets and lineage graphs", "quote": "the run/job/dataset event model (START/COMPLETE/FAIL)", "domain": "data-engineering" }] },
+      { "item": "The six-decision automate-vs-human split, run and asserted in examples.py, is the Outcomes line's own test case made concrete: three decisions resolve to a stated rule, three resolve to a named steward with a reason, and no decision sits in both categories.", "at": [{ "step": "Reveal: automate, or ask a person?" }] },
+      { "item": "Conway's own 1968 sentence, quoted in full, draws a line this topic then crosses deliberately: the forward law is something that happens to an organization; the reverse is a choice a platform team can make about which team split to create in the first place.", "at": [{ "step": "Reveal: reverse Conway's law" }] },
+      { "item": "The registration gate's bug (initially rejecting a non-personal column for having category: None, when only tier is required to be non-null) is a concrete instance of this chapter's own recurring theme: a check that is too strict produces a false rejection, the mirror image of topic 4's false negative from a check that is too permissive.", "at": [{ "step": "Reveal: what the gates cannot decide" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

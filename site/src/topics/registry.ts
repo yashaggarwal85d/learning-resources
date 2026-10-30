@@ -5043,6 +5043,26 @@ export const TOPICS: TopicMeta[] = [
       "Catalog, lineage and quality checks are tools. Tools do not decide who owns a table, who fixes a failing check, or which rules a domain team may change. The next topic is the operating model that puts people and policy around those tools: federated governance.",
   },
   {
+    id: 'de.federated-governance-operating-model',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/federated-governance-operating-model',
+    title: 'Federated governance operating model',
+    syllabusTitle: 'Federated governance operating model',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.4' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['federated-computational-governance', 'reverse-conways-law', 'automate-vs-human-stewardship', 'self-serve-table-registration-gate'],
+    uses: ['data-mesh-four-principles', 'data-as-a-product', 'data-contract-specification', 'open-data-contract-standard', 'sensitivity-tier-and-category', 'abac-tag-based-policy', 'row-column-policies-in-engine', 'technical-vs-business-catalog', 'dq-gates-vs-posthoc-scans', 'discovery-false-negatives', 'openlineage-run-job-dataset-events'],
+    declared: ['contract-enforcement-ci', 'compliance-regimes'],
+    bridge:
+      "Catalog, lineage and quality checks are tools. Tools do not decide who owns a table, who fixes a failing check, or which rules a domain team may change. This topic is the operating model that puts people and policy around those tools: federated governance.",
+    handoff:
+      "A governance model is judged the day somebody wants to change something. Before a schema change or a deprecation, the question is who will be hurt, and the lineage graph can answer it. The last topic of this chapter is computing exactly that: lineage-driven impact analysis.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
