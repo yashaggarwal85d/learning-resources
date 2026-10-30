@@ -4546,4 +4546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.isa-95-hierarchy-automation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/isa-95-hierarchy-automation',
+    title: 'ISA-95 hierarchy and the automation pyramid',
+    syllabusTitle: 'ISA-95 hierarchy and the automation pyramid',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['isa95-levels-data-ownership', 'equipment-hierarchy-dimension', 'hierarchy-as-of-versioning'],
+    uses: ['conformed-dimension', 'scd-type-2', 'key-types-natural-surrogate-durable-hash', 'idempotent-merge-load', 'as-of-join'],
+    declared: [],
+    bridge:
+      "Chapter 15 ended by borrowing words it did not stop to teach: assets, hierarchies, OPC UA, historians, series that compress, sensors that lie. This chapter is that domain, and it opens where those designs started: the ISA-95 hierarchy and the automation pyramid that decides what a plant's data means.",
+    handoff:
+      "The hierarchy says where a machine sits and which system owns which data. It says nothing yet about what the machines make. The next topic is the objects that move through that hierarchy: work orders, runs, batches and the lots whose parentage a recall depends on.",
+  },
 ];
