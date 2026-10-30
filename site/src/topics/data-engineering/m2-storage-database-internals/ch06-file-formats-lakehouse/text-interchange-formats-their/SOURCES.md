@@ -40,9 +40,18 @@ Version: RFC 8259, December 2017
 > the sense that implementations will agree exactly on their
 > numeric values.
 
+> JSON text exchanged between systems that are not part of a closed
+> ecosystem MUST be encoded using UTF-8 [RFC3629].
+
+> Implementations MUST NOT add a byte order mark (U+FEFF) to the
+> beginning of a networked-transmitted JSON text. In the interests of
+> interoperability, implementations that parse JSON texts MAY ignore
+> the presence of a byte order mark rather than treating it as an
+> error.
+
 Contents:
 - Section 6: "Numbers": JSON places no limit on a number's magnitude or precision, but warns that real parsers typically use IEEE 754 binary64, so an integer outside ±(2^53 − 1) is not guaranteed to round-trip exactly.
-- Section 8.1: JSON text must be encoded as UTF-8 (the RFC's own recommendation; earlier JSON predates this requirement, which is why UTF-16/UTF-32 JSON and stray BOMs still appear in the wild).
+- Section 8.1: JSON text exchanged outside a closed ecosystem MUST be UTF-8 (earlier JSON specifications didn't require this, which is why older UTF-16/UTF-32 JSON still appears); a writer MUST NOT prepend a BOM, and a reader MAY (not MUST) tolerate one instead of erroring — so a strict reader rejecting a BOM, as Python's own `json` module does, is RFC-conformant, not a bug.
 - The grammar (Section 2): no distinct type for an integer versus a float; both are "number", which is itself part of why precision is a parser decision, not a format one.
 
 ## Unicode FAQ: UTF-8, UTF-16, UTF-32 & BOM

@@ -1,0 +1,31 @@
+# Fact-check: Partitioned log storage: segments and indexes (`de.partitioned-log-segments-indexes`)
+
+Role: adversarial fact-checker, re-deriving every claim in `OUTLINE.md`'s claims list from the fetched source text in `sources/` (none fetched beyond what `SOURCES.md` already cites — no new claim needed a new source), and red-teaming the predict step and every explanation.
+
+| # | Claim | Status | Evidence |
+|---|---|---|---|
+| 1 | A partition is a directory of segment files, one of which is open for appends. | Confirmed | Implicit throughout the Kafka Design doc's Persistence/Efficiency sections and explicit in "Configuring The Log Cleaner" ("all log segments are eligible for compaction except for the last segment, i.e. the one currently being written to"), which only makes sense if a partition is more than one segment file with exactly one currently open. |
+| 2 | The offset index is sparse, not one entry per record. | Confirmed, downgraded from "read, not quoted" to disclosed-as-read-from-source-code | The design doc's prose never states the index is sparse in these words; this plan's SOURCES.md note already discloses the sparse-index claim is read from the Kafka source tree's `storage/internals/log` class names and comments, not a documentation quote. Kept as a `reel.tsx`-level claim (it is accurate and a well-known, stable property of Kafka's `OffsetIndex`), but downgraded in `post-notes.md`'s Internals section to name the real config knob (`log.index.interval.bytes`) only after fetching Kafka's own configuration documentation for that key at build time — not asserted here from this fact-check pass alone. |
+| 3 | The active segment is never compacted, even past the minimum compaction lag. | Confirmed | Direct quote, "Configuring The Log Cleaner": "The active segment will not be compacted even if all of its messages are older than the minimum compaction time lag." |
+| 4 | Kafka favors the OS page cache over an in-process cache by design. | Confirmed | Direct quote, "Don't fear the filesystem!": "using the filesystem and relying on pagecache is superior to maintaining an in-memory cache." |
+| 5 | `sendfile` avoids a user-space copy on the read path. | Confirmed | Direct quote: "Using sendfile, this re-copying is avoided by allowing the OS to send the data from pagecache to the network directly." |
+| 6 | The zero-copy optimization's benefit compounds across multiple consumers. | Confirmed | Direct quote: "data is copied into pagecache exactly once and reused on each consumption instead of being stored in memory and copied out to user-space every time it is read." |
+| 7 | The broker does not track per-consumer, per-record consumption state; the consumer's position is a single integer it owns. | Confirmed | Direct quote, "Consumer Position": "the position of a consumer in each partition is just a single integer, the offset of the next message to consume." |
+| 8 | A consumer can rewind to an old offset and re-read. | Confirmed | Direct quote: "A consumer can deliberately rewind back to an old offset and re-consume data." |
+| 9 | `sendfile`/zero-copy is not used when TLS is enabled. | Confirmed | Direct quote: "TLS/SSL libraries operate at the user space... Due to this restriction, sendfile is not used when SSL is enabled." Kept to post-notes "Production" only, as planned — not a reel claim, so no currency risk to the reel itself. |
+
+## Currency check
+
+- The design doc text quoted above is read from the Apache Kafka `trunk` branch (`4.5.0-SNAPSHOT` per `gradle.properties` at read time), not a pinned 4.4 release tag — the live `kafka.apache.org` site could not be fetched as static HTML (disclosed in `SOURCES.md`). A `git diff` between the 4.4 release branch and trunk for `docs/design/design.md` was not run in this pass (no network access to compare branches beyond the single trunk checkout already cloned); the quoted paragraphs are long-stable, architecture-level prose (not a changing config default), so the risk of a substantive change between 4.4 and trunk is low, but the build step should re-run `node scripts/sources.mjs check` against this same cached text before shipping, and spot-check the 4.4 tag's `docs/design/design.md` directly if a second checkout becomes convenient.
+- `log.segment.bytes` and `log.roll.ms` (named in `OUTLINE.md`'s storyboard but not yet quoted from a source) must be fetched from Kafka's own `configuration.html`/broker-configs reference before `examples.py` and `reel.tsx` put a specific default number on screen — flagged as an open item for the build stage, not fabricated here.
+
+## Red team: the predict step (step 3)
+
+- **Question:** "the segment is full. What happens to the next record?"
+- **Wrong option (a), "the broker blocks until space frees up":** tempting because it matches a bounded-buffer mental model (a disk "fills up" the way a queue does); wrong because segment size is a per-file roll trigger, not a capacity ceiling — the partition keeps growing onto a new file.
+- **Wrong option (c), "the oldest segment is deleted to make room":** tempting because it matches a ring-buffer/circular-log mental model, which some logging systems do use; wrong in Kafka specifically because deletion is retention-policy-driven (age or total size across the whole partition, taught in topic 6) and happens independently of, and much less often than, a single segment filling up.
+- **Edge case checked:** what if `log.retention.bytes` is reached at the exact moment a segment also rolls? Both can be true simultaneously (a roll and a subsequent retention-driven deletion of some other, now-too-old segment), but they are still two independent mechanisms triggered by two independent conditions — the predict step's framing ("what happens to the next record" specifically) stays correct regardless, since the question is about where the *next write* goes, which is always "the new segment," never "it's rejected" or "something old is deleted first."
+
+## Corrections applied to OUTLINE.md
+
+- None required to the claims list itself; one clarification added to the Internals post-notes plan (claim 2 above) to defer the specific config-knob name to a build-time fetch rather than assert it from this pass.
