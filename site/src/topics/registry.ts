@@ -4606,4 +4606,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Logs and metrics are written by one process and read in one place. A single order, though, crosses a Kafka topic, a Spark job and a warehouse, and no process sees the whole journey. The next topic is how a trace follows one record across those hops: OpenTelemetry.",
   },
+  {
+    id: 'de.opentelemetry-across-batch-streaming',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/opentelemetry-across-batch-streaming',
+    title: 'OpenTelemetry across batch and streaming',
+    syllabusTitle: 'OpenTelemetry across batch and streaming',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['otel-signals-collector', 'trace-context-propagation-kafka-headers', 'span-links-fan-in', 'otel-vs-openlineage'],
+    uses: ['structured-logs-correlation-ids', 'pipeline-golden-signals', 'push-vs-pull-metrics'],
+    declared: ['queues-vs-logs', 'physical-vs-logical-replication-cdc', 'cdc-architecture-ch8', 'kafka-records-headers-ch9'],
+    bridge:
+      "Logs and metrics are written by one process and read in one place. A single order, though, crosses a Kafka topic, a Spark job and a warehouse, and no process sees the whole journey. This topic is how a trace follows one record across those hops.",
+    handoff:
+      "Now there is telemetry worth reading. A dashboard that nobody watches changes nothing; an alert that fires on every blip teaches people to ignore it. The next topic is the rule that decides when a symptom is worth waking someone: SLO burn-rate alerting.",
+  },
 ];
