@@ -4647,6 +4647,26 @@ export const TOPICS: TopicMeta[] = [
       "Now there is telemetry worth reading. A dashboard that nobody watches changes nothing; an alert that fires on every blip teaches people to ignore it. The next topic is the rule that decides when a symptom is worth waking someone: SLO burn-rate alerting.",
   },
   {
+    id: 'de.slo-burn-rate-alerting',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/slo-burn-rate-alerting',
+    title: 'SLO burn-rate alerting',
+    syllabusTitle: 'SLO burn-rate alerting',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['error-budget-burn-rate', 'multi-window-multi-burn-rate-alert', 'schedule-aware-freshness-alert', 'actionable-page-test'],
+    uses: ['pipeline-golden-signals', 'metric-types-counter-gauge-histogram'],
+    declared: ['data-slis-slos-error-budgets', 'data-incident-response-blast-radius', 'littles-law'],
+    bridge:
+      "Now there is telemetry worth reading. A dashboard that nobody watches changes nothing; an alert that fires on every blip teaches people to ignore it. This topic is the rule that decides when a symptom is worth waking someone: SLO burn-rate alerting.",
+    handoff:
+      "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. That is classification, and it is where the governance half of this chapter starts.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
