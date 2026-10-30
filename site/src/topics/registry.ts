@@ -4727,6 +4727,26 @@ export const TOPICS: TopicMeta[] = [
       "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. How a key hierarchy delivers that, and what rotating or deleting a key really does to the data, is the next topic: envelope encryption.",
   },
   {
+    id: 'de.envelope-encryption-kms-key',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/envelope-encryption-kms-key',
+    title: 'Envelope encryption, KMS and key rotation',
+    syllabusTitle: 'Envelope encryption, KMS and key rotation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['dek-kek-envelope-hierarchy', 'kek-rotation-vs-dek-reencryption', 'customer-managed-byok-external-keys', 'crypto-shredding-key-deletion'],
+    uses: ['sensitivity-tier-and-category', 'automated-sensitive-data-discovery', 'object-storage'],
+    declared: ['data-eu-regulatory-architecture-ch10', 'data-cloud-kms-mechanics-ch10', 'data-table-format-files-ch06', 'cryptographic-hash'],
+    bridge:
+      "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. This topic is how a key hierarchy delivers that, and what rotating or deleting a key really does to the data: envelope encryption.",
+    handoff:
+      "Encryption makes data unreadable to a thief. It does not change what the data legally is for the people who hold the key, and it does not help once an analyst has decrypted it. The next topic is the line between data that can be tied to a person and data that cannot: pseudonymisation versus anonymisation.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
