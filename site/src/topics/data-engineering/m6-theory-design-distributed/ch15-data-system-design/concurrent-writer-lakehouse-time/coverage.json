@@ -1,0 +1,63 @@
+{
+  "topic": "de.concurrent-writer-lakehouse-time",
+  "syllabus": [
+    {
+      "clause": "catalog-level atomic commits, optimiztic concurrency and conflict retry",
+      "at": [{ "step": "Reveal: every commit is one atomic swap" }, { "step": "Reveal: partition writers so conflicts are rare" }]
+    },
+    {
+      "clause": "schema evolution policy",
+      "at": [{ "step": "Reveal: schema evolution as a written decision" }]
+    },
+    {
+      "clause": "snapshot expiration vs time-travel and audit requirements",
+      "at": [{ "step": "Reveal: the retention-and-audit collision" }]
+    },
+    {
+      "clause": "maintenance scheduling (§6.3)",
+      "at": [{ "step": "Reveal: maintenance is a writer too" }, { "step": "Reveal: scheduling maintenance against ingest" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg Specification",
+      "items": [
+        { "item": "An atomic swap of one table metadata file for another provides the basis for serializable isolation.", "at": [{ "step": "Reveal: every commit is one atomic swap" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg documentation — \"Branching and Tagging\"",
+      "items": [
+        { "item": "Tags can be used for retaining important historical snapshots for auditing purposes.", "at": [{ "step": "Reveal: the retention-and-audit collision" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake documentation — \"Concurrency control\"",
+      "items": [
+        { "item": "ConcurrentAppendException occurs when a concurrent operation adds files in the same partition your operation reads.", "at": [{ "step": "Reveal: partition writers so conflicts are rare" }] },
+        { "item": "Partitioning a table by the same columns used in two operations' conditions can make their file sets disjoint, avoiding the conflict.", "at": [{ "step": "Reveal: partition writers so conflicts are rare" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Every commit is one atomic swap of a single pointer — writers succeed, retry, or fail by touching the same files.", "at": [{ "step": "Reveal: partition writers so conflicts are rare" }] },
+      { "item": "A retention policy and a legal-hold tag coexist without changing each other — the tag survives; the rest still expires.", "at": [{ "step": "Reveal: the retention-and-audit collision" }] },
+      { "item": "Maintenance is a writer too, and scheduling it against the writers it serves is the design decision, not an afterthought.", "at": [{ "step": "Reveal: scheduling maintenance against ingest" }] },
+      { "item": "A retry doesn't change which files two writers touch — it only repeats the same collision until one gives up.", "at": [{ "step": "Predict: which decision prevents both?" }] },
+      { "item": "A new writer's partition overlap should be checked against every existing writer before it ships, not discovered from a production conflict.", "at": [{ "step": "Prove it: a new writer joins the table" }] },
+      { "item": "Who may change the schema, and under which review, is a written decision, never a default every writer quietly assumes.", "at": [{ "step": "Reveal: schema evolution as a written decision" }] },
+      { "item": "This topic leaves out the commit protocols, snapshot structures, catalog implementations and maintenance procedures, erasure itself, the CDC merge, and the optimistic-versus-pessimistic concurrency theory.", "at": [{ "deep": "Internals" }] },
+      { "item": "Optimistic concurrency via atomic metadata swap and tag-based retention are established lakehouse practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its concurrent-writer design; the next design is a resumable multi-terabyte historical backfill, the biggest writer the table will see.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "Treated as background housekeeping, a maintenance job can starve the very ingest it was supposed to keep tidy for.", "at": [{ "step": "Reveal: maintenance is a writer too" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
