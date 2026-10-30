@@ -1,21 +1,103 @@
 {
   "topic": "de.opentelemetry-across-batch-streaming",
+  "syllabus": [
+    {
+      "clause": "OTel signals and the Collector",
+      "at": [{ "step": "Reveal: OTel's signals and the Collector" }]
+    },
+    {
+      "clause": "W3C trace-context propagation through Kafka headers",
+      "at": [{ "step": "Reveal: the traceparent header" }]
+    },
+    {
+      "clause": "span links for fan-in batch steps",
+      "at": [
+        { "step": "Reveal: why links, not parent-child, for a batch receive" },
+        { "step": "Reveal: the link limit, and what it costs" }
+      ]
+    },
+    {
+      "clause": "semantic conventions for messaging and databases",
+      "at": [{ "step": "Reveal: semantic conventions" }]
+    },
+    {
+      "clause": "following one record from CDC to warehouse",
+      "at": [{ "step": "Reveal: the honest break — CDC to warehouse" }]
+    },
+    {
+      "clause": "OTel (operational telemetry) vs OpenLineage (lineage metadata) as complements (§13.3)",
+      "at": [{ "step": "Reveal: OTel vs OpenLineage" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OpenTelemetry — Signals",
+      "items": [
+        { "item": "OpenTelemetry's defined signals: traces, metrics, logs, baggage; profiles/events proposal-stage.", "at": [{ "step": "Reveal: OTel's signals and the Collector" }] }
+      ]
+    },
+    {
+      "source": "OpenTelemetry — Collector",
+      "items": [
+        { "item": "The Collector's role: vendor-agnostic receive/process/export pipeline.", "at": [{ "step": "Reveal: OTel's signals and the Collector" }] }
+      ]
+    },
+    {
+      "source": "W3C Trace Context (Recommendation)",
+      "items": [
+        { "item": "traceparent's format (version-trace_id-parent_id-flags) and minimum propagation requirement.", "at": [{ "step": "Reveal: the traceparent header" }] },
+        { "item": "tracestate as the optional vendor-specific extension.", "at": [{ "out": "not needed for this topic's single-vendor example; named only in passing" }] }
+      ]
+    },
+    {
+      "source": "OpenTelemetry — Semantic conventions for messaging spans",
+      "items": [
+        { "item": "Why links, not parent/child, are the default correlation mechanism for messaging.", "at": [{ "step": "Reveal: why links, not parent-child, for a batch receive" }] },
+        { "item": "Send/Process/Receive span naming and when each applies.", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "OpenTelemetry — Semantic conventions for Kafka",
+      "items": [
+        { "item": "Kafka-specific and shared messaging attributes (messaging.destination.name, messaging.destination.partition.id).", "at": [{ "step": "Reveal: semantic conventions" }] }
+      ]
+    },
+    {
+      "source": "OpenTelemetry — Tracing SDK specification",
+      "items": [
+        { "item": "Span limits are configurable, including a default LinkCountLimit of 128.", "at": [{ "step": "Reveal: the link limit, and what it costs" }] }
+      ]
+    },
+    {
+      "source": "Debezium — Distributed Tracing",
+      "items": [
+        { "item": "Debezium supports OTel tracing, but a CDC write is a real break point requiring explicit trace-metadata passing.", "at": [{ "step": "Reveal: the honest break — CDC to warehouse" }] }
+      ]
+    },
+    {
+      "source": "OpenLineage — Object Model",
+      "items": [
+        { "item": "OpenLineage's object model: Jobs, Datasets, Runs and RunEvents.", "at": [{ "step": "Reveal: OTel vs OpenLineage" }] }
+      ]
+    }
+  ],
   "expert": {
     "by": "self-review",
     "date": "2026-10-30",
     "items": [
-      { "item": "OpenTelemetry defines traces, metrics, logs and baggage as its signals (profiles/events still proposal-stage), and the Collector is a vendor-agnostic receive/process/export pipeline so applications export once (OTLP).", "at": [{ "out": "here, referenced from a named step not a reel beat" }] },
-      { "item": "traceparent carries version-trace_id-parent_id-flags in a fixed, portable format; every compliant tool must at minimum forward it.", "at": [{ "out": "here" }] },
-      { "item": "Messaging spans use links, not parent/child, as the default correlation because a span can have only one parent, batch fan-in has many producers, and consumption can happen inside another ambient span.", "at": [{ "out": "here" }] },
-      { "item": "A span's link count is configurable with a default limit (128); a batch receive accounting for more messages than that drops links beyond the limit.", "at": [{ "out": "here" }] },
-      { "item": "Kafka-specific and shared messaging semantic-convention attributes (messaging.destination.name, messaging.destination.partition.id) make a Kafka trace and a database trace queryable the same way.", "at": [{ "out": "here" }] },
-      { "item": "Debezium supports OpenTelemetry tracing, but a CDC write is a real break point: trace metadata must be explicitly passed through it, not assumed to propagate.", "at": [{ "out": "here" }] },
-      { "item": "OpenLineage's object model (Job, Dataset, Run, RunEvent) answers a different question than OTel: what a job read/wrote per run, not what happened during one execution.", "at": [{ "out": "here, named as the complement; full model is topic 11" }] },
-      { "item": "Topic 1's correlation key (run/task/asset/partition) and golden signals are the base this topic adds a trace on top of.", "at": [{ "out": "uses, not re-taught" }] },
-      { "item": "Chapter 8's CDC architecture and Chapter 9's Kafka records/headers and Flink/Spark consumers are the concrete systems this topic's trace crosses — both chapters are unbuilt as of this topic's build, so their ids are declared, not used, per CHAPTER.md's cross-chapter-id rule.", "at": [{ "out": "declared" }] },
-      { "item": "A quantile/percentile, a Kafka record as carrier (queues-vs-logs), and logical decoding (CDC) are prior-chapter ideas this topic leans on without re-teaching.", "at": [{ "out": "uses" }] },
-      { "item": "The W3C Trace Context Recommendation is the standard OpenTelemetry's HTTP/Kafka-header propagation implements; a Kafka hop has no HTTP request, so the header map is carried in the record's own headers instead.", "at": [{ "out": "here" }] },
-      { "item": "A trace and a log can be correlated by TraceId/SpanId (topic 1's forward pointer), but a trace and a lineage event share only the idea of a run identifier, not a data model.", "at": [{ "out": "here, closing the loop topic 1 opened" }] }
+      { "item": "OpenTelemetry defines traces, metrics, logs and baggage as its signals, and the Collector is a vendor-agnostic receive/process/export pipeline so applications export once (OTLP).", "at": [{ "step": "Reveal: OTel's signals and the Collector" }] },
+      { "item": "traceparent carries version-trace_id-parent_id-flags in a fixed, portable format; every compliant tool must at minimum forward it.", "at": [{ "step": "Reveal: the traceparent header" }] },
+      { "item": "Messaging spans use links, not parent/child, as the default correlation because a span can have only one parent, batch fan-in has many producers, and consumption can happen inside another ambient span.", "at": [{ "step": "Reveal: why links, not parent-child, for a batch receive" }] },
+      { "item": "A span's link count is configurable with a default limit (128); a batch receive accounting for more messages than that drops links beyond the limit.", "at": [{ "step": "Reveal: the link limit, and what it costs" }] },
+      { "item": "Kafka-specific and shared messaging semantic-convention attributes make a Kafka trace and a database trace queryable the same way.", "at": [{ "step": "Reveal: semantic conventions" }] },
+      { "item": "Debezium supports OpenTelemetry tracing, but a CDC write is a real break point: trace metadata must be explicitly passed through it, not assumed to propagate.", "at": [{ "step": "Reveal: the honest break — CDC to warehouse" }] },
+      { "item": "OpenLineage's object model answers a different question than OTel: what a job read/wrote per run, not what happened during one execution.", "at": [{ "step": "Reveal: OTel vs OpenLineage" }] },
+      { "item": "Topic 1's correlation key and golden signals are the base this topic adds a trace on top of.", "at": [{ "topic": "Telemetry for pipelines: logs, metrics, traces", "quote": "structured logs with correlation IDs", "domain": "data-engineering" }] },
+      { "item": "Chapter 8's CDC architecture and Chapter 9's Kafka records/headers and Flink/Spark consumers are the concrete systems this topic's trace crosses; both are unbuilt as of this topic's build, so declared not used.", "at": [{ "out": "Chapter 8/9 unbuilt; declared per CHAPTER.md's cross-chapter-id rule" }] },
+      { "item": "The W3C Trace Context Recommendation is the standard OpenTelemetry's propagation implements; a Kafka hop has no HTTP request, so the header map is carried in the record's own headers instead.", "at": [{ "step": "Reveal: the traceparent header" }] },
+      { "item": "A trace and a log can be correlated by TraceId/SpanId (topic 1's forward pointer); a trace and a lineage event share only the idea of a run identifier, not a data model.", "at": [{ "step": "Reveal: OTel vs OpenLineage" }] },
+      { "item": "A nightly aggregation reading far more messages than the link limit is the concrete case where the limit actually bites, not a hypothetical.", "at": [{ "step": "Prove it" }] }
     ]
-  }
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
 }
