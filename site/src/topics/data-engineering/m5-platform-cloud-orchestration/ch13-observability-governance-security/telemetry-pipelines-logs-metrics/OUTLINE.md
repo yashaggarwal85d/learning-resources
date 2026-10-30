@@ -35,18 +35,24 @@ successful partition; decide push or pull for a given job, citing what each lose
 
 - **Introduces:** `structured-logs-correlation-ids`, `metric-types-counter-gauge-histogram`,
   `pipeline-golden-signals`, `push-vs-pull-metrics`.
-- **Uses:** `latency-percentiles`, `quantile-sketches`, `cron`, `process-model`, `exit-status`
-  (all Chapter 1/4/5, live in `registry.ts`).
-- **Declared (gap, logged per CHAPTER.md §"Cross-chapter ids"):** Chapter 11 §11.3 "Data
-  SLIs, SLOs and error budgets" (freshness as an SLI) — Chapter 11 is not yet planned or
-  built, so its `introduces` id does not exist in `registry.ts`. This topic treats
-  freshness only as a metric to emit, never as an SLO target (that is topic 3's job,
-  which has the same gap and the same resolution), and the gap closes automatically once
-  Chapter 11 ships and a seam pass reconciles the pointer.
+- **Uses:** `latency-percentiles`, `cron`, `process-model`, `exit-status` (all Chapter 1/4,
+  live in `registry.ts`).
+- **Declared (gap, logged per CHAPTER.md §"Cross-chapter ids"):** (1) Chapter 11 §11.3
+  "Data SLIs, SLOs and error budgets" (freshness as an SLI) — Chapter 11 is not yet
+  planned or built, so its `introduces` id does not exist in `registry.ts`. This topic
+  treats freshness only as a metric to emit, never as an SLO target (that is topic 3's
+  job, which has the same gap and the same resolution), and the gap closes automatically
+  once Chapter 11 ships and a seam pass reconciles the pointer. (2) "A quantile read off
+  a histogram's buckets is an estimate, and averaging per-instance quantiles is wrong" —
+  `CHAPTER.md` cites this as `uses: quantile-sketches` from Chapter 5, but Chapter 5's
+  syllabus marks "Streaming quantiles service" *(skipped)* (§5.6), so no topic introduces
+  that id; `quantile-sketches` does not exist in `registry.ts`. Treated as `declared`
+  general statistical knowledge instead, and logged as a `CHAPTER.md` citation bug under
+  "Changes from the chapter plan" below.
 
 ## Storyboard (11 steps)
 
-1. **Hook + Predict.** The shop's `analytics.daily_revenue` table is stale. Every task
+1. **Hook + Predict.** The shop's `orders-rollup` → `analytics.daily_revenue` table is stale. Every task
    shows green, no alert fired, a stakeholder found it at 9 a.m. Which one number, which
    the pipeline already had, would have told you at 2 a.m.? Predict: tasks succeeded,
    rows written, or the age of the newest partition.
@@ -148,14 +154,22 @@ takeaway as a fourth; recap at step 10; Prove it at step 11.
    with a trace of the same execution context. — OpenTelemetry Logs spec (named as the
    bridge to topic 2; propagation mechanics are topic 2's, not taught here).
 9. A quantile read off histogram buckets is an estimate, and averaging per-instance
-   quantiles across machines is mathematically wrong. — Chapter 5's quantile-sketch topic
-   (`uses`, not re-derived here).
+   quantiles across machines is mathematically wrong. — general statistical knowledge,
+   `declared` (not a Chapter 5 `uses` pointer: see "Changes from the chapter plan").
 10. The `examples.py` measured experiments (1–5 above), executed and asserted. —
     `FACT-CHECK.md`.
 
 ## Changes from the chapter plan
 
-None yet identified; one open item to track through fact-check: Chapter 11 §11.3's
-`introduces` id for the freshness-as-SLI concept does not exist in `registry.ts` because
-Chapter 11 is unbuilt (see Concept ledger → Declared). Logged here per `CHAPTER.md`'s own
-"Cross-chapter ids" rule rather than guessed.
+Two gaps, neither changing what the topic teaches, both logged per `CHAPTER.md`'s own
+"Cross-chapter ids" rule rather than guessed:
+
+1. Chapter 11 §11.3's `introduces` id for the freshness-as-SLI concept does not exist in
+   `registry.ts` because Chapter 11 is unbuilt (see Concept ledger → Declared).
+2. `CHAPTER.md`'s own `uses` list for this topic cites `quantile-sketches` from "Chapter
+   5", but Chapter 5's syllabus marks the one topic that would introduce it, "Streaming
+   quantiles service" (§5.6), *(skipped)* — so the id is never introduced and does not
+   exist in `registry.ts`. This is a citation bug in `CHAPTER.md` itself (not a
+   prerequisite-ordering bug, since no live topic needs to move), so it is not reordered;
+   recorded here and the statistical fact ("a quantile is an estimate; per-instance
+   quantiles can't be averaged") is carried as `declared` general knowledge instead.
