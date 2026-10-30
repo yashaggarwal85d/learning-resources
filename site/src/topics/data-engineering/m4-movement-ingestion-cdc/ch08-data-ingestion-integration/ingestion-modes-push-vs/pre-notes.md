@@ -1,0 +1,4 @@
+- **ETL**: extract, transform, load — moving data from a source system into somewhere it can be analysed, background assumed from earlier work. *Where you meet it:* the general activity this whole chapter names the front door of.
+- **Medallion layers (bronze, silver, gold)**: Chapter 3's own naming for raw, cleaned and aggregated data. *Where you meet it:* where the four positions this topic introduces eventually land, named only as a destination, not re-taught.
+- **Lambda and Kappa architecture**: Chapter 3's own two ways to combine or replace a batch path with a streaming one. *Where you meet it:* this topic's batch/streaming spectrum is the ingestion-mode version of the same choice, not a restatement of it.
+- **Throughput and latency**: throughput is how much moves per unit time; latency is how long one item takes to arrive. *Where you meet it:* the two axes this topic's own measured numbers (rows per tick, delay per row) put real figures on.
