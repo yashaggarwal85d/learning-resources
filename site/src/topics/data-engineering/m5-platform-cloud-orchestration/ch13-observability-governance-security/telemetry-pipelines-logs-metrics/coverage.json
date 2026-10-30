@@ -1,0 +1,19 @@
+{
+  "topic": "de.telemetry-pipelines-logs-metrics",
+  "expert": {
+    "items": [
+      "The four golden signals — latency, traffic, errors, saturation — are the service-level base; a data pipeline's golden signals specialize them with freshness, backlog and consumer lag, which have no request/response service analogue (SRE book; here).",
+      "A counter is a cumulative, monotonically increasing value, reset only on restart; wrong for anything that can decrease (Prometheus metric types; here).",
+      "A gauge is a single value that can arbitrarily go up and down (queue depth, last-success timestamp) (Prometheus metric types; here).",
+      "A histogram records observations into configurable buckets plus a running sum, and is 'essentially a bucketed counter'; classic vs native histogram formats differ in efficiency and transfer atomicity (Prometheus metric types; here).",
+      "A quantile read off a histogram's buckets is an estimate, not an exact value, and averaging per-instance quantiles across machines is mathematically wrong (Chapter 5's quantile-sketch topic; uses, not re-taught here).",
+      "Kafka's consumer lag is published by the consumer, not the broker, as `records-lag-max` under the consumer-fetch-manager JMX metrics (Kafka 4.4 Monitoring docs; here, as the concrete lag signal).",
+      "Prometheus's pull model cannot scrape a batch job that exits before a scrape; the Pushgateway exists for exactly that case, but misusing it as a general collector creates a single point of failure/bottleneck, loses the automatic `up`-based health check, and never forgets stale series on its own (Prometheus pushing docs; here).",
+      "Every unique label-value combination is its own time series; high-cardinality labels (user IDs, emails) multiply series count, with concrete guidance to keep cardinality under ~10 per metric and treat over 100 as a design problem (Prometheus naming/instrumentation docs; here, as the series-explosion lab extension and the bridge to the *(skipped)* cardinality/cost syllabus topic).",
+      "OpenTelemetry's Logs specification lets a log record carry TraceId/SpanId for correlation with a trace of the same execution context (OpenTelemetry Logs spec; named here as the bridge, taught as propagation mechanics in topic 2).",
+      "A correlation key composed of run_id, task_id, asset and partition lets every record of one pipeline run be selected across independent processes, which an unstructured log line cannot do (synthesized from the syllabus line and demonstrated in examples.py; here).",
+      "A cron-scheduled job is the canonical batch case that a pull scraper cannot reach between runs (Chapter 1's process-model/cron topic; uses, not re-taught here).",
+      "Freshness and error-budget vocabulary (SLI, SLO, error budget) are defined in Chapter 11 §11.3; this topic treats freshness only as a metric to emit, not as an SLO target, which is topic 3's job (Chapter 11; uses/declared, resolved against registry.ts at build time)."
+    ]
+  }
+}
