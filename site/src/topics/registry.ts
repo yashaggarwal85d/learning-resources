@@ -4687,6 +4687,26 @@ export const TOPICS: TopicMeta[] = [
       "Now there is a way to say exactly which writes were ordered and which were concurrent, without a trusted clock. The next question is the one a client asks: what may a read return? The strongest answer, the one that makes a replicated register behave like a single variable, is linearizability.",
   },
   {
+    id: 'de.linearizability',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/linearizability',
+    title: 'Linearizability',
+    syllabusTitle: 'Linearizability',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['linearizability-definition', 'linearizability-locality', 'linearizable-vs-sequential-cost', 'stale-leader-read'],
+    uses: ['happens-before-partial-order', 'timing-models-sync-partial-async', 'snapshot-isolation', 'serializability-2pl-ssi', 'occ-vs-pcc'],
+    declared: ['cap-pacelc', 'consensus-raft-paxos-in-systems', 'session-consistency-guarantees'],
+    bridge:
+      "Now there is a way to say exactly which writes were ordered and which were concurrent, without a trusted clock. The next question is the one a client asks: what may a read return? The strongest answer, the one that makes a replicated register behave like a single variable, is linearizability.",
+    handoff:
+      "Linearizability is the strongest single-object answer and, by the Attiya-Welch result, the most expensive. Most systems offer something weaker on purpose. The next topic states the two main weaker models, sequential consistency, which drops the real-time rule, and causal consistency, which drops almost everything but cause and effect.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
