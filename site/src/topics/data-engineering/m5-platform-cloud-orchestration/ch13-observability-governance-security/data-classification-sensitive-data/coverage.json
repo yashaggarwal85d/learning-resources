@@ -1,0 +1,99 @@
+{
+  "topic": "de.data-classification-sensitive-data",
+  "syllabus": [
+    {
+      "clause": "classification schemes (public → restricted; PII, PHI, PCI)",
+      "at": [{ "step": "Reveal: two labels, not one" }]
+    },
+    {
+      "clause": "automated discovery (pattern, ML and LLM classifiers in Macie, Purview, Unity Catalog, Sensitive Data Protection)",
+      "at": [
+        { "step": "Reveal: pattern and checksum detection" },
+        { "step": "Reveal: ML and LLM classifiers, by vendor" }
+      ]
+    },
+    {
+      "clause": "tag propagation along lineage",
+      "at": [{ "step": "Reveal: tag propagation along lineage" }]
+    },
+    {
+      "clause": "false negatives in free text",
+      "at": [{ "step": "Reveal: false negatives in free text, measured" }]
+    },
+    {
+      "clause": "classification as the input every later policy depends on",
+      "at": [{ "step": "Reveal: classification as every later policy's input" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "GDPR, Article 4 — Definitions",
+      "items": [
+        { "item": "The legal definition of personal data.", "at": [{ "step": "Reveal: two labels, not one" }] }
+      ]
+    },
+    {
+      "source": "GDPR, Article 9 — Processing of special categories of personal data",
+      "items": [
+        { "item": "The legal basis for a stricter default on categories like health data.", "at": [{ "step": "Reveal: two labels, not one" }] }
+      ]
+    },
+    {
+      "source": "Amazon Macie — Using managed data identifiers",
+      "items": [
+        { "item": "Macie combines pattern matching and machine learning in its managed data identifiers.", "at": [{ "step": "Reveal: ML and LLM classifiers, by vendor" }] }
+      ]
+    },
+    {
+      "source": "Amazon Macie — Building custom data identifiers",
+      "items": [
+        { "item": "A custom data identifier is a regex plus optional proximity rules.", "at": [{ "step": "Reveal: pattern and checksum detection" }] }
+      ]
+    },
+    {
+      "source": "Amazon Macie — Running sensitive data discovery jobs",
+      "items": [
+        { "item": "Macie's discovery jobs automate discovery, logging and reporting.", "at": [{ "step": "Reveal: ML and LLM classifiers, by vendor" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Purview — Learn about sensitive information types",
+      "items": [
+        { "item": "SITs are pattern-based classifiers.", "at": [{ "step": "Reveal: pattern and checksum detection" }] },
+        { "item": "Built-in SITs can be used as-is or copied and customized.", "at": [{ "step": "Reveal: ML and LLM classifiers, by vendor" }] }
+      ]
+    },
+    {
+      "source": "Databricks — Data Classification",
+      "items": [
+        { "item": "Databricks Data Classification uses an agentic AI system to classify and tag Unity Catalog tables.", "at": [{ "step": "Reveal: ML and LLM classifiers, by vendor" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud — InfoType detector reference (Sensitive Data Protection)",
+      "items": [
+        { "item": "InfoTypes define what Sensitive Data Protection scans for.", "at": [{ "step": "Reveal: ML and LLM classifiers, by vendor" }] },
+        { "item": "Built-in infoType detectors are not a perfectly accurate detection method.", "at": [{ "step": "Reveal: false negatives in free text, measured" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A sensitivity tier (how carefully to handle data) and a category (which rules apply) are orthogonal labels a column can carry independently.", "at": [{ "step": "Reveal: two labels, not one" }] },
+      { "item": "A checksum like Luhn catches a shape that is also internally consistent, cutting false positives relative to a bare regex.", "at": [{ "step": "Reveal: pattern and checksum detection" }] },
+      { "item": "Four vendor products (Macie, Purview, Databricks Unity Catalog, Google Sensitive Data Protection) each document their own mix of pattern, ML and LLM/agentic classification.", "at": [{ "step": "Reveal: ML and LLM classifiers, by vendor" }] },
+      { "item": "A tag must propagate along the lineage graph; a hash preserves the tag's relevance (the data is still personal data) while breaking direct readability, and an aggregate can genuinely lose it.", "at": [{ "step": "Reveal: tag propagation along lineage" }] },
+      { "item": "A pattern scanner's precision and recall are near-perfect on structured columns and measurably worse on free text, which is the topic's own worked demonstration, not a vendor-claimed number.", "at": [{ "step": "Reveal: false negatives in free text, measured" }] },
+      { "item": "A policy that protects only tagged columns fails open whenever discovery misses a column — classification is the input every later policy in this chapter depends on.", "at": [{ "step": "Reveal: classification as every later policy's input" }] },
+      { "item": "Tag propagation needs lineage metadata that topic 11 (OpenLineage) introduces as a machine-readable graph; this topic draws propagation on the chapter's pipeline strip by hand.", "at": [{ "step": "Reveal: tag propagation along lineage" }] },
+      { "item": "The Luhn checksum itself is a standard, publicly documented algorithm, implemented and tested directly in examples.py against known valid and invalid numbers.", "at": [{ "deep": "Internals" }] },
+      { "item": "Chapter 10's EU-regulatory-architecture and cloud-discovery-products material is cited by CHAPTER.md as uses but is unresolvable (Chapter 10 unbuilt), so declared rather than used.", "at": [{ "out": "Chapter 10 unbuilt; declared per CHAPTER.md's cross-chapter-id rule" }] },
+      { "item": "Topic 1's golden signals and structured-logs ids are the base this topic adds a classification-coverage signal to.", "at": [{ "topic": "Telemetry for pipelines: logs, metrics, traces", "quote": "the pipeline golden signals", "domain": "data-engineering" }] },
+      { "item": "Access-control models, in-engine enforcement and the right-to-erasure topics (7, 8, 9) all consume this topic's tags as their own policy input, making a missed tag a silent policy gap, not just a missed label.", "at": [{ "step": "Reveal: classification as every later policy's input" }] },
+      { "item": "The fraction of truly sensitive data left unprotected by a tag-only policy, given a known discovery miss rate, is a direct multiplication the topic's own 'Prove it' step computes.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
