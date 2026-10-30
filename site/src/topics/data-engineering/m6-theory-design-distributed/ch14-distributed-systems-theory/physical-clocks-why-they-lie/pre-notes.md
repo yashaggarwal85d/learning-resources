@@ -1,0 +1,10 @@
+- **Quartz drift**: the continuous rate error of a crystal oscillator, usually stated in parts per million. *Where you meet it:* the seconds-per-day figure behind Spanner's own worst-case uncertainty bound.
+- **NTP (Network Time Protocol)**: the protocol most machines use to correct their clock against a remote time source over the network. *Where you meet it:* the four-timestamp exchange this topic's offset and delay formulas come from.
+- **Offset**: the difference between a local clock's reading and the true time, estimated by NTP from a round trip. *Where you meet it:* the number NTP is trying to correct for.
+- **Round-trip delay**: the total time a request-response exchange takes, as measured by the requester. *Where you meet it:* the other half of NTP's own four-timestamp formula, alongside offset.
+- **Symmetric path**: a network path where the outbound and return legs take the same amount of time. *Where you meet it:* the assumption NTP's offset formula silently depends on, and what breaks it.
+- **Slew vs. step**: two ways a clock can be corrected — a slew nudges the rate gradually, a step jumps the reading immediately. *Where you meet it:* why a corrected wall clock can move backward.
+- **Leap second**: an extra second occasionally inserted into civil time to keep it aligned with the Earth's rotation. *Where you meet it:* the reason some clocks smear a correction over a day instead of applying it all at once.
+- **Wall clock**: a clock reading that corresponds to real calendar time, and that can jump when corrected. *Where you meet it:* `CLOCK_REALTIME`, and the clock last-write-wins uses to timestamp a write.
+- **Monotonic clock**: a clock that only ever moves forward, used for measuring durations rather than calendar time. *Where you meet it:* `CLOCK_MONOTONIC`, which means nothing when compared across two different machines.
+- **Bounded-error clock**: a clock that reports a range (earliest, latest) instead of a single instant, with a guarantee that the true time lies inside it. *Where you meet it:* Spanner's TrueTime and AWS ClockBound, and this topic's own simulated version.
