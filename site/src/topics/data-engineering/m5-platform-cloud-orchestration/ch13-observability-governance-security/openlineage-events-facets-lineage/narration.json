@@ -1,0 +1,81 @@
+{
+  "topic": "de.openlineage-events-facets-lineage",
+  "steps": [
+    {
+      "lines": [
+        "A number in the shop's revenue table doesn't look right.",
+        "The catalog's own note says it's derived from orders — but which columns, through which steps, actually produced it? And would reading the query's own text even agree with what the engine actually did?"
+      ]
+    },
+    {
+      "lines": [
+        "So here's the question, before I tell you.",
+        "One query, two tricky parts: a condition buried in a case statement, and a table name the query doesn't know until it runs. Read just the text — does that alone find every column the job actually touches?"
+      ],
+      "answer": [
+        "No. Reading the text alone finds exactly what the query spells out, word for word — nothing more.",
+        "A condition buried inside a case statement, and a table name still a blank waiting to be filled — both sit outside what plain text can ever show you."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the three things every one of these events is built from.",
+        "A job is the defined piece of work. A run is one time that job actually happened. And a dataset is whatever it read, or whatever it wrote.",
+        "A run begins, and eventually settles into some final state — and anything reported after that only adds detail, it never erases what came before."
+      ]
+    },
+    {
+      "lines": [
+        "Now, what actually gets attached to one of these events?",
+        "A facet. A named, optional little bundle of extra detail — a schema, a column mapping, the job's own query — each one pointing back to its own versioned definition.",
+        "Because that pointer is right there, a reader that's never heard of a particular facet can just skip straight past it, and keep reading everything else just fine."
+      ]
+    },
+    {
+      "lines": [
+        "Who's actually sending these events out in the first place?",
+        "Airflow's own provider package does, these days — the older integration it replaced gets no more fixes at all. Spark does it through a listener wired straight into the engine. Flink and dbt each have their own.",
+        "Different tools, every one of them. Same event, every time."
+      ]
+    },
+    {
+      "lines": [
+        "And on the other end, who's actually reading all of this?",
+        "Marquez is the reference server for it — built and given away by the very project that defined the standard in the first place. A commercial catalog reads the identical event. So does a cloud provider's own.",
+        "Nothing about the format itself plays favorites."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece, and it's a small one that matters a lot.",
+        "A single run can carry a note naming exactly which run spawned it — a job's own run pointing back to the task that triggered it, and that task pointing back to whatever kicked off the whole thing.",
+        "Follow that thread from any one failing node, and it leads you straight back to one shared trigger."
+      ]
+    },
+    {
+      "lines": [
+        "Back to that opening question now — text, or the engine's own plan?",
+        "Reading the query's text finds exactly the table and column names written right there. Reading the engine's own resolved plan sees something the text never could — the condition inside that case statement, and whatever value that blank parameter actually resolved to.",
+        "Same question, two different answers — and only one of them is complete."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this all together.",
+        "A job, a run, a dataset — one begins, then eventually settles. A facet hangs optional extra detail off of any of the three. Tools emit it, other tools read it, and the format never favors any one of them.",
+        "A run can name whichever run spawned it, tracing any failure back to its one shared trigger. And reading the plan the engine actually ran always sees at least as much as reading the query's own text — usually more."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario, and this one's got a twist worth sitting with.",
+        "A daily job writes its own output table under a name built fresh from each run's date — a different literal string, every single day.",
+        "Collected straight from the engine's resolved plan, does that job's lineage end up as one dataset node over time, or a brand new one every day? And why?"
+      ],
+      "answer": [
+        "A brand new one, every single day. Lineage collection has no idea two different literal names are supposed to mean the same table to a person reading it.",
+        "It records exactly the resolved name it actually saw, nothing more — unless something upstream deliberately normalizes that name first, before the event ever goes out."
+      ]
+    }
+  ]
+}

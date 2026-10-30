@@ -1,0 +1,7 @@
+- **Lineage**: the record of where a dataset's values came from and what touched them on the way. *Where you meet it:* throughout; it's the whole topic's subject.
+- **Job**: a defined piece of work that reads or writes datasets. *Where you meet it:* "Reveal: a job, a run, a dataset."
+- **Run**: one occurrence of a job, in time, with a state that starts and then settles. *Where you meet it:* the same reveal.
+- **Facet**: a named, optional, versioned piece of metadata attached to a run, job or dataset. *Where you meet it:* "Reveal: facets, attached and versioned."
+- **Listener**: code attached to an engine (Spark) that emits lineage events as the engine runs. *Where you meet it:* "Reveal: who emits the events."
+- **Logical plan**: the engine's own resolved description of a query, after names and parameters are filled in. *Where you meet it:* "Reveal: reading text versus reading the plan."
+- **DIRECT / INDIRECT**: whether an output column's value was derived from an input, or only affected by it (a filter, a condition). *Where you meet it:* the same reveal.

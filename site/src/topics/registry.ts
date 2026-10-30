@@ -4983,6 +4983,26 @@ export const TOPICS: TopicMeta[] = [
       "A catalog can store a lineage edge, but someone has to produce it. If each tool invents its own format, every catalog needs a custom connector per tool. The next topic is the open standard jobs use to report what they read and wrote: OpenLineage.",
   },
   {
+    id: 'de.openlineage-events-facets-lineage',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/openlineage-events-facets-lineage',
+    title: 'OpenLineage: events, facets and lineage graphs',
+    syllabusTitle: 'OpenLineage: events, facets and lineage graphs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['openlineage-run-job-dataset-events', 'openlineage-facets', 'openlineage-integrations-consumers', 'column-lineage-parse-vs-runtime', 'lineage-coverage-gaps'],
+    uses: ['otel-vs-openlineage', 'structured-logs-correlation-ids', 'metadata-graph-entities-relationships', 'crawl-vs-push-ingestion'],
+    declared: ['dag-execution-model', 'graph-traversal', 'logical-vs-physical-query-plan', 'spark-listener-and-plan', 'airflow-runs-and-tasks', 'dbt-in-ci'],
+    bridge:
+      "A catalog can store a lineage edge, but someone has to produce it. If each tool invents its own format, every catalog needs a custom connector per tool. This topic is the open standard jobs use to report what they read and wrote: OpenLineage, its events, facets and the graphs they build.",
+    handoff:
+      "Lineage tells you where data came from and went. It does not tell you whether the data at either end is any good. The next topic is how a dataset's contents are checked: data-quality frameworks, where the checks run and what they cost.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',

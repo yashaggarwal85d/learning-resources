@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: telemetry, OpenTelemetry, and the catalog
+
+<ul class="resources">
+  <Resource kind="reel" title="Telemetry for pipelines: logs, metrics, traces" domain="data-engineering" host="de.telemetry-pipelines-logs-metrics" by="a run id is the correlation key this topic's events carry" />
+  <Resource kind="reel" title="OpenTelemetry across batch and streaming" domain="data-engineering" host="de.opentelemetry-across-batch-streaming" by="named this topic's complement: operational telemetry versus lineage metadata" />
+  <Resource kind="reel" title="Metadata platforms and active catalogs" domain="data-engineering" host="de.metadata-platforms-active-catalogs" by="the graph a lineage event's job and dataset nodes fill into" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Object Model" href="https://openlineage.io/docs/spec/object-model" by="OpenLineage specification">The job, run and dataset event model.</Resource>
+  <Resource kind="reading" title="Facets & Extensibility" href="https://openlineage.io/docs/spec/facets" by="OpenLineage specification">Optional, versioned metadata attached to an event.</Resource>
+  <Resource kind="reading" title="Column Lineage Dataset Facet" href="https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet" by="OpenLineage specification">DIRECT versus INDIRECT, and the CONDITIONAL subtype.</Resource>
+  <Resource kind="reading" title="Airflow Integration" href="https://openlineage.io/docs/integrations/airflow/" by="OpenLineage documentation">The current provider package versus the retired legacy integration.</Resource>
+  <Resource kind="reading" title="Spark Column Lineage" href="https://openlineage.io/docs/integrations/spark/spark_column_lineage" by="OpenLineage documentation">SQL-text parsing versus traversing the resolved logical plan.</Resource>
+  <Resource kind="reading" title="Marquez" href="https://marquezproject.ai/" by="Marquez project">The reference implementation, released by WeWork.</Resource>
+  <Resource kind="reading" title="Parent Run Facet" href="https://openlineage.io/docs/spec/facets/run-facets/parent_run" by="OpenLineage specification">A run naming the job that spawned it.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,90 @@
+{
+  "topic": "de.openlineage-events-facets-lineage",
+  "syllabus": [
+    {
+      "clause": "the run/job/dataset event model (START/COMPLETE/FAIL)",
+      "at": [{ "step": "Reveal: a job, a run, a dataset" }]
+    },
+    {
+      "clause": "facets (schema, column lineage, data quality, SQL)",
+      "at": [{ "step": "Reveal: facets, attached and versioned" }]
+    },
+    {
+      "clause": "integrations (Airflow provider built in, Spark listener, Flink, dbt)",
+      "at": [{ "step": "Reveal: who emits the events" }]
+    },
+    {
+      "clause": "consumers (Marquez reference server, DataHub, cloud catalogs)",
+      "at": [{ "step": "Reveal: who reads the events" }]
+    },
+    {
+      "clause": "column lineage from SQL parsing vs runtime plans",
+      "at": [{ "step": "Reveal: reading text versus reading the plan" }]
+    },
+    {
+      "clause": "the gaps static lineage misses",
+      "at": [{ "step": "Prove it" }, { "step": "Reveal: reading text versus reading the plan" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OpenLineage — Object Model",
+      "items": [
+        { "item": "A Job is a process that consumes or produces Datasets; a Run is one occurrence of a Job in time.", "at": [{ "step": "Reveal: a job, a run, a dataset" }] }
+      ]
+    },
+    {
+      "source": "OpenLineage — Facets & Extensibility",
+      "items": [
+        { "item": "A facet is an atomic piece of metadata, carrying a _schemaURL field pointing to its own versioned schema.", "at": [{ "step": "Reveal: facets, attached and versioned" }] }
+      ]
+    },
+    {
+      "source": "OpenLineage — Column Lineage Dataset Facet",
+      "items": [
+        { "item": "DIRECT means derived from the input; INDIRECT means impacted but not derived, with CONDITIONAL (IF, CASE WHEN, COALESCE) as one INDIRECT subtype.", "at": [{ "step": "Reveal: reading text versus reading the plan" }] }
+      ]
+    },
+    {
+      "source": "OpenLineage — Airflow Integration",
+      "items": [
+        { "item": "The Airflow integration moved to the official provider package, supporting Airflow 2.7 and newer; the legacy integration gets no more fixes.", "at": [{ "step": "Reveal: who emits the events" }] }
+      ]
+    },
+    {
+      "source": "OpenLineage — Spark Column Lineage",
+      "items": [
+        { "item": "SQL-text parsing of a JDBC relation collects only the table and field names written in the query, nothing else.", "at": [{ "step": "Reveal: reading text versus reading the plan" }] }
+      ]
+    },
+    {
+      "source": "Marquez — Project site",
+      "items": [
+        { "item": "Marquez was released and open-sourced by WeWork.", "at": [{ "step": "Reveal: who reads the events" }] }
+      ]
+    },
+    {
+      "source": "OpenLineage — Parent Run Facet",
+      "items": [
+        { "item": "A parent run facet lets a run report which job spawned it, so job hierarchy is preserved.", "at": [{ "step": "Reveal: a run that names its parent" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A run event's additive design (later events for the same run only add detail, never replace a prior one) is what lets a long-running job emit a START immediately and fill in its outputs only once it actually knows them at COMPLETE — the model fits streaming emission, not just a single final report.", "at": [{ "step": "Reveal: a job, a run, a dataset" }] },
+      { "item": "A facet's own versioned _schemaURL is what makes the format extensible without breaking old consumers: a consumer that has never heard of a given facet name can skip it entirely and still correctly read every facet it does recognise.", "at": [{ "step": "Reveal: facets, attached and versioned" }] },
+      { "item": "Naming the Airflow provider's legacy predecessor as unmaintained, with a version cutoff, is the same kind of fact this chapter flagged for Amundsen in the catalog topic — a status a syllabus can freeze that a primary source keeps moving past.", "at": [{ "topic": "Metadata platforms and active catalogs", "quote": "pull crawlers vs push/event-based ingestion", "domain": "data-engineering" }] },
+      { "item": "That Marquez, DataHub and a cloud catalog can all consume the same OpenLineage event stream is the direct payoff of the catalog topic's own architecture point: a graph of entities and named edges is exactly the shape an inbound lineage event fills in, whichever catalog is doing the filling.", "at": [{ "topic": "Metadata platforms and active catalogs", "quote": "architecture of metadata graphs", "domain": "data-engineering" }] },
+      { "item": "OpenTelemetry and OpenLineage sharing only the idea of a run identifier, not the rest of their data, is why a trace and a lineage graph have to be joined deliberately rather than merged automatically — this topic is the lineage half of that pair the tracing topic named but didn't build.", "at": [{ "topic": "OpenTelemetry across batch and streaming", "quote": "OTel (operational telemetry) vs OpenLineage (lineage metadata) as complements", "domain": "data-engineering" }] },
+      { "item": "The parent run facet's own worked example (an Airflow DAG execution spawning tasks which spawn Spark jobs) is the same three-hop chain this topic's own lab reproduces in miniature — a task's run naming the DAG run that triggered it.", "at": [{ "step": "Reveal: a run that names its parent" }] },
+      { "item": "SQL-text parsing and runtime-plan traversal disagreeing on the exact same query is not a bug in one of them — they are answering different questions (what the query says versus what the engine resolved it to), and a design that only has the text-parsed graph has quietly accepted the smaller answer.", "at": [{ "step": "Reveal: reading text versus reading the plan" }] },
+      { "item": "The predict question's two scenarios (a CASE and a parameterised table name, then a daily job's date-built table name) both test the same underlying claim from different angles: lineage collection records exactly what it was shown, nothing it could reasonably infer about what a human would call the same dataset.", "at": [{ "step": "Prove it" }] },
+      { "item": "A column-lineage comparison that shows the runtime path finding strictly more edges than the text-parsed path, never fewer, is the honest shape of the claim — text parsing is a subset of what plan traversal sees, not a different and sometimes-better alternative to it.", "at": [{ "step": "Reveal: reading text versus reading the plan" }] },
+      { "item": "This topic's lab posts real, schema-shaped events to a local HTTP receiver at Marquez's own ingestion path rather than to Marquez itself — a deliberate, disclosed scope limit (no Docker or JVM catalog on the build machine), not a claim that the full reference server was exercised.", "at": [{ "step": "Reveal: who reads the events" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
