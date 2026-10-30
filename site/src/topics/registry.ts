@@ -4546,4 +4546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.telemetry-pipelines-logs-metrics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
+    title: 'Telemetry for pipelines: logs, metrics, traces',
+    syllabusTitle: 'Telemetry for pipelines: logs, metrics, traces',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['structured-logs-correlation-ids', 'metric-types-counter-gauge-histogram', 'pipeline-golden-signals', 'push-vs-pull-metrics'],
+    uses: ['latency-percentiles', 'cron', 'process-model', 'exit-status'],
+    declared: ['data-slis-slos-error-budgets', 'quantile-cannot-be-averaged'],
+    bridge:
+      "The platform is now delivered and kept converged. That says nothing about whether it is healthy. This topic opens exactly that question: what a pipeline must emit, in logs, metrics and traces, for an incident to be visible in minutes instead of when a stakeholder notices.",
+    handoff:
+      "Logs and metrics are written by one process and read in one place. A single order, though, crosses a Kafka topic, a Spark job and a warehouse, and no process sees the whole journey. The next topic is how a trace follows one record across those hops: OpenTelemetry.",
+  },
 ];
