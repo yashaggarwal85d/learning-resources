@@ -4827,6 +4827,26 @@ export const TOPICS: TopicMeta[] = [
       "Fencing tokens and leader election both need a small, strongly consistent service that hands out the next number and holds the lease. Real data systems rely on a few such services, and on a replicated log that is not quite a majority quorum. The next topic places them: ZooKeeper, etcd, Kafka's KRaft and its in-sync replicas, and the table-format commit.",
   },
   {
+    id: 'de.coordination-services-replicated-logs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/coordination-services-replicated-logs',
+    title: 'Coordination services and replicated logs in data systems',
+    syllabusTitle: 'Coordination services and replicated logs in data systems',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.6' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['zookeeper-etcd-guarantees', 'kraft-controller-quorum', 'kafka-isr-non-majority-quorum', 'table-commit-as-cas'],
+    uses: ['raft-terms-election-voting-restriction', 'raft-log-matching-and-commitment', 'fencing-token-epoch', 'leader-lease-clock-bound', 'linearizability-definition', 'strict-serializability-definition', 'consistency-model-map', 'replication-ack-modes', 'physical-vs-logical-replication', 'occ-vs-pcc'],
+    declared: ['consensus-raft-paxos-in-systems', 'queues-vs-logs', 'k8s-reconciliation-loop'],
+    bridge:
+      "Fencing tokens and leader election both need a small, strongly consistent service that hands out the next number and holds the lease. Real data systems rely on a few such services, and on a replicated log that is not quite a majority quorum. This topic places them: ZooKeeper, etcd, Kafka's KRaft and its in-sync replicas, and the table-format commit.",
+    handoff:
+      "Everything in this topic made one group of replicas agree. A transaction that touches data on several groups needs all of them to agree on the same outcome, commit or abort, even if the one deciding crashes halfway. That is atomic commitment, and its textbook protocol has a famous flaw. Two-phase commit is the next topic.",
+  },
+  {
     id: 'de.ingestion-modes-push-vs',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ingestion-modes-push-vs',
