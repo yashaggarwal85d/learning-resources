@@ -1,0 +1,6 @@
+- **Accumulator**: the producer's own in-memory buffer, one per partition, where records wait before a request ever leaves the client. *Where you meet it:* the setup step, and every reveal after it.
+- **Batch**: the group of records sent together in one request to a partition's leader. *Where you meet it:* every step; the whole reel is about what decides a batch's size.
+- **Linger**: a deliberate, bounded wait the producer adds before sending an under-full batch, trading a little latency for a bigger batch. *Where you meet it:* the setup and the first predict/reveal pair.
+- **Compression**: shrinking the bytes a batch takes on the wire and on disk, done once per batch rather than per record. *Where you meet it:* the compression reveal, measured for real.
+- **Partitioner**: the piece of client logic that decides which partition a keyless record lands in. *Where you meet it:* the second predict/reveal pair.
+- **Acknowledgement (acks)**: how far the producer waits — leader only, or every in-sync replica — before considering a write done. *Where you meet it:* the acks reveal, with a real toy crash behind it.

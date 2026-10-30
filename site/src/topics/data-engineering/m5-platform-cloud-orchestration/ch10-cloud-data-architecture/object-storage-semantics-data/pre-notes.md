@@ -1,0 +1,6 @@
+- **Bucket**: the top-level container for a set of objects in a cloud object store. *Where you meet it:* the name you pick when you first create storage for a project.
+- **Key**: the full path-like string that names one object inside a bucket. *Where you meet it:* `logs/2026/10/30/part-00000.json` as the thing you pass to a GET or PUT call.
+- **ETag**: an opaque tag the store computes for an object's current content and returns on every write or read. *Where you meet it:* a value you never compute yourself, only compare.
+- **Precondition**: a condition attached to a request that the server checks before doing the work, failing the request if it doesn't hold. *Where you meet it:* an HTTP header like `If-Match` or `If-None-Match`.
+- **Compare-and-swap**: an operation that only succeeds if some value is still what the caller expects it to be, atomically. *Where you meet it:* the pattern behind a lock, a lease, or a safe counter increment with no database involved.
+- **HTTP status code**: a short number returned with every HTTP response describing what happened — `200` succeeded, `404` not found, `412` a precondition failed, `503` the server is asking you to slow down. *Where you meet it:* what a client library raises as an exception when a request didn't go as expected.

@@ -4587,6 +4587,26 @@ export const TOPICS: TopicMeta[] = [
       "An idempotent task can safely be re-run for one interval. A backfill re-runs it for every interval across years of history — the same safety property, at a scale where it also becomes a risk to whatever source or warehouse absorbs that much repeated work. The next topic is exactly that scale.",
   },
   {
+    id: 'de.data-intervals-catchup-backfills',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-intervals-catchup-backfills',
+    title: 'Data intervals, catchup and backfills',
+    syllabusTitle: 'Data intervals, catchup and backfills',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['data-interval-semantics', 'resumable-backfill-design', 'backfill-blast-radius'],
+    uses: ['de.idempotent-tasks-failure-semantics', 'ch8.database-extraction-without-hurting', 'ch9.partition-replay'],
+    declared: [],
+    bridge:
+      "An idempotent task is safe to re-run once. A backfill re-runs it across years of history, at a scale where the same safety property becomes a different kind of risk entirely: to the scheduler's own state, and to the source it reads from. This topic is both.",
+    handoff:
+      "A backfill re-runs a fixed number of tasks over a fixed range. Many pipelines need the number of tasks itself to depend on the data — one task per file, one per partition, decided at run time. That is the next mechanism.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -4847,6 +4867,26 @@ export const TOPICS: TopicMeta[] = [
       "A partition is a log a producer writes to. What a producer actually sends, and when, and what it risks by not waiting for an acknowledgement, is the next topic.",
   },
   {
+    id: 'de.producer-batching-compression-acks',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/producer-batching-compression-acks',
+    title: 'Producer batching, compression and acks',
+    syllabusTitle: 'Producer batching, compression and acks',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['producer-batching-linger', 'acks-durability-tradeoff'],
+    uses: ['partition-segment-index'],
+    declared: [],
+    bridge:
+      "A partition is a log a producer writes to. This topic is what a producer actually does before that write ever reaches the broker: batching, compressing, and deciding how much durability to wait for.",
+    handoff:
+      "acks=all means waiting for every in-sync replica, not just the leader. What makes a replica count as in-sync, and what happens when one falls behind or a leader dies, is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
@@ -4885,6 +4925,26 @@ export const TOPICS: TopicMeta[] = [
       'Milestones 1-4 built correct pipelines without asking where they run. This chapter is that question, starting with the most basic one: when a piece of the cloud disappears, how much of the system goes with it?',
     handoff:
       "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
+  },
+  {
+    id: 'de.object-storage-semantics-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/object-storage-semantics-data',
+    title: 'Object storage semantics for data engineers',
+    syllabusTitle: 'Object storage semantics for data engineers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['object-store-consistency-guarantee', 'conditional-write-compare-swap', 'prefix-throttling-hot-key'],
+    uses: ['failure-domain-blast-radius'],
+    declared: ['basic-http', 'object-storage-vocabulary'],
+    bridge:
+      "That map called object storage 'regional,' which sounds safe, but safety here means something exact — not 'the bytes survive,' but 'what does a read see right after a write, and what can two writers actually coordinate on, using only the store itself.'",
+    handoff:
+      'A conditional write protects one key. It says nothing about how long that byte should even exist, or what it costs to keep it — which is the next question.',
   },
   {
     id: 'de.text-interchange-formats-their',

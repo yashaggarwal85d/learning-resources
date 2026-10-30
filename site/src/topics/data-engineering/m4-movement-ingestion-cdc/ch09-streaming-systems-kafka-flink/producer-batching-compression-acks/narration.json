@@ -1,0 +1,86 @@
+{
+  "topic": "de.producer-batching-compression-acks",
+  "steps": [
+    {
+      "lines": [
+        "A team wants the lowest latency they can get, so they tell the producer never to wait on purpose at all.",
+        "For the exact same pile of records, that choice ends up sending twice as many requests as the setting Kafka ships with by default.",
+        "Worth sitting with that for a second. Why would telling a system to wait a little, on purpose, ever help it move faster overall?"
+      ]
+    },
+    {
+      "lines": [
+        "Before any of that makes sense, it's worth being precise about where a record actually goes the instant it's handed to the producer.",
+        "It doesn't go anywhere near a broker yet. It sits in memory, in a buffer that belongs to one partition.",
+        "That buffer is racing two separate limits at once: a size it isn't allowed to cross, and a clock counting down."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The buffer hasn't reached its size limit. The clock counting down has just run out anyway.",
+        "What happens to whatever's sitting in that buffer right now? Does it keep waiting? Get sent as it stands? Or get thrown away?"
+      ],
+      "answer": [
+        "It goes out exactly as it stands, even partly full.",
+        "The size limit was never a floor the clock had to wait for. It's a ceiling, and the clock only ever promises an upper bound on how long anything waits.",
+        "Nothing about this design treats a half-full group of records as unfit to send. Whatever made it into the buffer goes out, in order, every time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that race run for real, on the identical pile of records, twice.",
+        "With no artificial wait at all, almost every request carries just one record, and the total request count lands in the thousands.",
+        "With a few milliseconds of patience added back in, the same pile goes out in roughly half as many requests, each one carrying several records instead of one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a quieter payoff of the very same batching, worth pulling apart on its own.",
+        "Squeeze a single record through a compressor, and it barely shrinks. There's almost nothing repeated inside one record for a compressor to exploit.",
+        "Squeeze a full batch of the same kind of records through that identical compressor, and it shrinks dramatically. Compression is something batches earn, not something a lone record can."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "No key on these records, and several partitions to choose from. Instead of spreading records across every partition in turn, the producer sticks to just one until its own batch closes.",
+        "Does sticking like that make the resulting batches bigger, or smaller?"
+      ],
+      "answer": [
+        "Bigger, and by a wide margin.",
+        "Spreading records across every partition in turn means each partition only ever gets a trickle, so its batch fills slowly.",
+        "Sticking to one partition until its batch closes lets far more consecutive records pile into that same batch first — and which partition gets picked next changes only once a batch closes, never partway through, so nothing stays favored for long."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that sticking behavior run for real, on the identical stream of keyless records, both ways.",
+        "Spread thin across every partition in turn, the average batch barely fills at all.",
+        "Stuck to one partition at a time instead, the average batch comes out noticeably fuller — the same total volume of records, grouped very differently."
+      ]
+    },
+    {
+      "lines": [
+        "One more decision is worth opening up: at what point does a producer get to call a record safe?",
+        "It could declare victory the instant it hands the record off, with no confirmation at all. It could wait for just the leader to write it down. Or it could wait until every replica that's actually keeping up has it too.",
+        "A real toy crash shows exactly what the gap between those middle two choices can cost. Trusting the leader alone loses real records the producer already believed were safe; waiting for every caught-up replica loses none."
+      ]
+    },
+    {
+      "lines": [
+        "Every number shown so far came from one real run, happening just now, not a diagram drawn ahead of time.",
+        "The request counts for both wait settings, and the compression gap between one record and a full batch.",
+        "The average batch sizes for both ways of choosing a partition, and the crash that cost one acknowledgement choice real records while costing the other choice nothing."
+      ]
+    },
+    {
+      "lines": [
+        "So: a batch that races a size limit against a clock, and goes out the moment either one is reached.",
+        "Compression that pays off once records are grouped together, not before.",
+        "A partitioner that prefers sticking around to spreading thin.",
+        "And an acknowledgement choice that decides, precisely, what a producer is even allowed to call safe."
+      ]
+    }
+  ]
+}
