@@ -4546,4 +4546,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A replica that's falling behind isn't just a retention risk — it's a real, measurable lag with real consequences for anything reading from it. The next topic is exactly that lag, and what an application can do about it.",
   },
+  {
+    id: 'de.timing-failure-models',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m6-theory-design-distributed/ch14-distributed-systems-theory/timing-failure-models',
+    title: 'Timing and failure models',
+    syllabusTitle: 'Timing and failure models',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 6, title: 'Theory & Design: Distributed Systems and System Design' },
+    chapter: { number: 14, title: 'Distributed Systems Theory', section: '14.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['timing-models-sync-partial-async', 'fault-models-crash-omission-byzantine', 'link-models-fair-loss-reliable', 'safety-vs-liveness-in-a-model'],
+    uses: ['bandwidth-delay-product', 'throughput-vs-latency', 'signals', 'exit-status', 'fsync', 'fsync-failure', 'replication-ack-modes', 'wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "This chapter treated a platform as something you can observe, classify, protect and trace. Every one of those mechanisms leaned on assumptions about clocks, messages and failures that this course has not yet stated precisely: a timestamp, an alert's window, a lease, a lock. This topic states those assumptions: the timing and failure models every distributed protocol is correct relative to.",
+    handoff:
+      "A model says processes may be slow and messages may be late, but it gives them no shared clock to measure how late. The next topic is what the clocks a machine does have actually promise, and why 'last write wins by timestamp' quietly loses writes.",
+  },
 ];

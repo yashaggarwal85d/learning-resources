@@ -1,0 +1,62 @@
+{
+  "topic": "de.timing-failure-models",
+  "syllabus": [
+    {
+      "clause": "synchronous vs partially synchronous (Dwork–Lynch–Stockmeyer GST) vs asynchronous networks",
+      "at": [{ "step": "Reveal: three timing models, the same space-time diagram" }]
+    },
+    {
+      "clause": "crash-stop, crash-recovery, omission and Byzantine faults",
+      "at": [{ "step": "Reveal: four fault classes, one hierarchy" }]
+    },
+    {
+      "clause": "fair-loss vs reliable links",
+      "at": [{ "step": "Reveal: a fair-loss link, and what turns it reliable" }]
+    },
+    {
+      "clause": "Every protocol's correctness claim is relative to one model, and production incidents start where the real system leaves that model",
+      "at": [{ "step": "Hook: a primary-backup register passes every test and loses an acknowledged write" }, { "deep": "Production: the incident this model explains" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Consensus in the Presence of Partial Synchrony (Dwork, Lynch, Stockmeyer, JACM 1988)",
+      "items": [
+        { "item": "fail-stop, omission and Byzantine fault definitions (§1)", "at": [{ "step": "Reveal: four fault classes, one hierarchy" }] },
+        { "item": "authenticated Byzantine as a distinct, intermediate fault class (§2.2)", "at": [{ "deep": "Internals: the model as a contract" }] },
+        { "item": "the two forms of partial synchrony: Δ unknown, and Δ holds from GST onward (§2.3)", "at": [{ "step": "Reveal: three timing models, the same space-time diagram" }] },
+        { "item": "the equivalence of the GST condition with safety-always/liveness-after-GST (§2.4)", "at": [{ "deep": "Internals: the model as a contract" }] },
+        { "item": "resiliency bounds (2t+1 vs 3t+1) as a consequence of the fault model, not a tuning choice (§1)", "at": [{ "deep": "Frontier: Byzantine's cost, and where it's actually paid" }] }
+      ]
+    },
+    {
+      "source": "Introduction to Distributed Algorithms lecture 1 (Guerraoui, EPFL, following Cachin–Guerraoui–Rodrigues)",
+      "items": [
+        { "item": "FL1 fair-loss property: a message sent infinitely often is delivered infinitely often", "at": [{ "step": "Reveal: a fair-loss link, and what turns it reliable" }] },
+        { "item": "PL1 validity (no loss) as the defining property of a reliable/perfect link", "at": [{ "step": "Reveal: a fair-loss link, and what turns it reliable" }] },
+        { "item": "reliable links as fair-loss links plus retransmission and deduplication, not a property of the wire itself", "at": [{ "deep": "Internals: the model as a contract" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Every correctness claim about a distributed protocol is relative to a system model: a protocol correct in one model can be wrong in another.", "at": [{ "step": "Hook: a primary-backup register passes every test and loses an acknowledged write" }] },
+      { "item": "A synchronous system has known bounds on message delay and relative processor speed; an asynchronous system has none.", "at": [{ "step": "Reveal: three timing models, the same space-time diagram" }] },
+      { "item": "Partial synchrony sits between them in two distinct forms: a bound that exists but is unknown, or a bound that only holds from some unknown global stabilization time (GST) onward.", "at": [{ "step": "Reveal: three timing models, the same space-time diagram" }] },
+      { "item": "GST is unknown to the processors themselves — the model gives the protocol no way to detect that stabilization has happened.", "at": [{ "deep": "Internals: the model as a contract" }] },
+      { "item": "A correctness condition splits into safety (never violated, whatever the timing) and liveness/termination (guaranteed only once the timing bound holds); the GST model is exactly equivalent to requiring safety always and termination only after GST.", "at": [{ "deep": "Internals: the model as a contract" }] },
+      { "item": "The classical fault hierarchy is crash-stop, omission and Byzantine, each containing the one before it; authenticated Byzantine sits between omission and unauthenticated Byzantine because forged signatures are ruled out.", "at": [{ "step": "Reveal: four fault classes, one hierarchy" }] },
+      { "item": "Byzantine tolerance requires strictly more replicas for the same resiliency than crash or omission tolerance (3t+1 vs 2t+1) because a Byzantine replica can actively lie, not just go silent.", "at": [{ "deep": "Frontier: Byzantine's cost, and where it's actually paid" }] },
+      { "item": "Crash-recovery (a process that restarts, possibly having lost its in-memory or even unflushed on-disk state) is a distinct, and in production more realistic, fault model that the classical DLS taxonomy does not itself include.", "at": [{ "step": "Reveal: four fault classes, one hierarchy" }, { "deep": "Internals: the model as a contract" }] },
+      { "item": "A fair-loss link only guarantees that a message retried infinitely often is eventually delivered; it may lose, reorder or duplicate any single attempt.", "at": [{ "step": "Reveal: a fair-loss link, and what turns it reliable" }] },
+      { "item": "A reliable (perfect) link is not a property of real wires — it is fair-loss plus retransmission and deduplication built on top, engineered, not given.", "at": [{ "step": "Reveal: a fair-loss link, and what turns it reliable" }] },
+      { "item": "\"Timeout means crashed\" is only a sound inference in a synchronous model; in a partially synchronous or asynchronous one a slow, live process and a crashed one are indistinguishable by timeout alone.", "at": [{ "deep": "Internals: the model as a contract" }] },
+      { "item": "The Two Generals problem shows no protocol over a lossy channel, however many rounds of acknowledgement, can let both parties be certain the other received the final message — the reason every 'reliable' layer rests on an accepted residual risk, not a guarantee.", "at": [{ "out": "named from Gray (1978) in references.md; the full text could not be independently fetched (SOURCES.md), so it is not taught as a verified claim beyond the well-established problem statement" }] },
+      { "item": "FLP shows deterministic consensus is impossible in a fully asynchronous system with even one crash fault — the reason every real consensus protocol either assumes partial synchrony or randomizes.", "at": [{ "out": "a *(skipped)* syllabus topic (§14.4); named in topic 9's Deep dive where it matters for Raft's randomized timeouts, not taught in this topic" }] },
+      { "item": "Hybrid logical clocks and TrueTime/commit-wait are the engineering answers to the problem physical clocks can't solve on their own; they are not timing/failure-model concepts and don't belong in this topic.", "at": [{ "out": "a *(skipped)* syllabus topic (§14.2); named in topic 2's Deep dive, not taught in this topic" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}
