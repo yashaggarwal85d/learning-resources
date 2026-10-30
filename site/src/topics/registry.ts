@@ -4567,6 +4567,26 @@ export const TOPICS: TopicMeta[] = [
       "The executor's job is to run a task and the scheduler's job is to retry it if it fails. That retry is only safe if running the task twice does no harm. The next topic is exactly that property, and the two kinds of failure that make it necessary.",
   },
   {
+    id: 'de.idempotent-tasks-failure-semantics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/idempotent-tasks-failure-semantics',
+    title: 'Idempotent tasks and failure semantics',
+    syllabusTitle: 'Idempotent tasks and failure semantics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['idempotent-tasks-failure-semantics', 'zombie-task-detection', 'trigger-rule-propagation'],
+    uses: ['de.orchestrator-architecture-scheduler', 'ch9.exactly-once-effect-recipe', 'ch9.deterministic-batch-id'],
+    declared: [],
+    bridge:
+      "The executor's job is to retry a failed task, but that retry is only safe if running the task twice does no harm. This topic is that property — at-least-once execution, the overwrite-vs-append line between a harmless retry and a doubled row count, and the trigger rules and heartbeat mechanism that decide who runs and who's declared dead, run and read back from a real metadata database.",
+    handoff:
+      "An idempotent task can safely be re-run for one interval. A backfill re-runs it for every interval across years of history — the same safety property, at a scale where it also becomes a risk to whatever source or warehouse absorbs that much repeated work. The next topic is exactly that scale.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -4765,6 +4785,26 @@ export const TOPICS: TopicMeta[] = [
       "Observability tells you the platform is healthy. It says nothing about what the platform holds. Before anything can be protected, masked or deleted, someone has to know which columns are personal data. This topic is classification, and it is where the governance half of this chapter starts.",
     handoff:
       "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. How a key hierarchy delivers that, and what rotating or deleting a key really does to the data, is the next topic: envelope encryption.",
+  },
+  {
+    id: 'de.envelope-encryption-kms-key',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/envelope-encryption-kms-key',
+    title: 'Envelope encryption, KMS and key rotation',
+    syllabusTitle: 'Envelope encryption, KMS and key rotation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['dek-kek-envelope-hierarchy', 'kek-rotation-vs-dek-reencryption', 'customer-managed-byok-external-keys', 'crypto-shredding-key-deletion'],
+    uses: ['sensitivity-tier-and-category', 'automated-sensitive-data-discovery', 'object-storage'],
+    declared: ['data-eu-regulatory-architecture-ch10', 'data-cloud-kms-mechanics-ch10', 'data-table-format-files-ch06', 'cryptographic-hash'],
+    bridge:
+      "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. This topic is how a key hierarchy delivers that, and what rotating or deleting a key really does to the data: envelope encryption.",
+    handoff:
+      "Encryption makes data unreadable to a thief. It does not change what the data legally is for the people who hold the key, and it does not help once an analyst has decrypted it. The next topic is the line between data that can be tied to a person and data that cannot: pseudonymisation versus anonymisation.",
   },
   {
     id: 'de.partitioned-log-segments-indexes',

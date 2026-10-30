@@ -1,0 +1,81 @@
+{
+  "topic": "de.envelope-encryption-kms-key",
+  "steps": [
+    {
+      "lines": [
+        "Picture a data key for last quarter's customer files, sitting right there in a log line where it never should have been.",
+        "Security takes a look and says, we rotate our keys every year, so this is fine."
+      ]
+    },
+    {
+      "lines": [
+        "At the same time, over in legal, someone wants one specific customer's data gone. Not just deleted — truly unrecoverable, everywhere, backups included.",
+        "So before I tell you anything else, which operation actually closes that leak? And separately, which one grants legal's request?"
+      ],
+      "answer": [
+        "Spinning the key forward does nothing for a key that's already out in the wild — it only changes the wrapping, not the thing that leaked.",
+        "What actually closes the leak is encrypting under a brand new key. And what legal is really asking for is the other operation entirely: destroying a key outright."
+      ]
+    },
+    {
+      "lines": [
+        "So let's build the picture properly, piece by piece.",
+        "One key does the actual work, encrypting the data itself, right where it lives.",
+        "A second key, sitting up in the key management service, never touches that data at all. Its whole job is wrapping and unwrapping the first key. That's genuinely the only thing the service ever sees."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's where people get tripped up, and it's worth being precise about.",
+        "Spin that second key forward, and every key underneath it gets re-wrapped. Not one byte of the actual data moves.",
+        "But say one of those first keys gets out. Spinning the second key forward changes nothing about that. The only real fix is a fresh key and encrypting everything that was sitting under the old one, block by block."
+      ]
+    },
+    {
+      "lines": [
+        "Who actually holds that second key matters more than people think.",
+        "Let your provider manage it, and you've handed over the most control for the least hassle.",
+        "Hold it entirely yourself, outside your provider altogether, and you've taken back the most control there is. But now, if your own key system goes down, so does your provider's ability to touch your data at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a distinction that trips people up constantly, and it's worth saying plainly.",
+        "A secure connection between two systems — that's a completely separate job from protecting data sitting on a disk.",
+        "Read the actual standard, and its own stated goal is just a secure channel between two parties talking to each other. Once the data's written down somewhere, that channel has nothing more to say about it."
+      ]
+    },
+    {
+      "lines": [
+        "This same idea shows up down at the level of an actual file format, not just at the service layer.",
+        "One major table format encrypts and tamper-proofs its data, its deletes, and its manifests before any of it ever reaches storage.",
+        "A widely used columnar file format does something strikingly similar — wrapping a file's own key under a master key, sometimes down to individual columns. Same underlying shape, one layer further down."
+      ]
+    },
+    {
+      "lines": [
+        "Now for the move that actually makes something unrecoverable, on purpose.",
+        "Destroy the key that protected a piece of data, and that data becomes unreadable everywhere it exists, instantly, without touching a single byte of it directly.",
+        "But here's the catch worth remembering: you only erase what that particular key protected. Nothing more, and nothing less. The key's own reach is the erasure's own reach."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling all of that together.",
+        "One key does the real work; a second key just wraps it, and that's genuinely all the service ever sees. Spinning a key forward doesn't fix a key that's already leaked — only fresh encryption does.",
+        "Holding more control costs you more exposure if that control goes down. A secure channel guards the wire, never the disk. And destroying a key erases exactly, and only, what it protected."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario, and I want you to work through it before I say anything.",
+        "A key for some customer data leaks out through a log line. Since then, the key above it has been spun forward twice.",
+        "Is that customer's data still exposed, or did those two rotations already take care of it?"
+      ],
+      "answer": [
+        "Still exposed, completely. Spinning the upper key forward only changes which key wraps the leaked one — the leaked key itself never changes, and it still opens every single block it ever touched.",
+        "The only thing that actually closes this is encrypting all of that data again, under a key that was never compromised in the first place."
+      ]
+    }
+  ]
+}
