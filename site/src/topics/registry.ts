@@ -4587,6 +4587,26 @@ export const TOPICS: TopicMeta[] = [
       "Every replication topic so far assumed the same data lived on every node. The next topic is the orthogonal axis: splitting the data itself across nodes, starting with the real schemes for doing it.",
   },
   {
+    id: 'de.partitioning-schemes-range-hash',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/partitioning-schemes-range-hash',
+    title: 'Partitioning schemes: range, hash, consistent hashing',
+    syllabusTitle: 'Partitioning schemes: range, hash, consistent hashing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['partitioning-schemes'],
+    uses: ['cap-pacelc'],
+    declared: ['consistent-hashing', 'ring-placement', 'virtual-node', 'minimal-remapping'],
+    bridge:
+      "Every replication topic so far assumed the same data lived on every node. This topic is the orthogonal axis: splitting the data itself across nodes, with range and hash partitioning's own real trade-offs and consistent hashing's answer to membership change.",
+    handoff:
+      "Partitioning's own clean theory runs into a real practical failure the moment one key gets far more traffic than the rest. The next topic is exactly that: shard keys and the hot shards a bad one creates.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
