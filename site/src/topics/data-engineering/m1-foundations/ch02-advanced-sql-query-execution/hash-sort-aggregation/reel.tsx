@@ -50,7 +50,6 @@ const reel: Reel = {
       ),
       duration: 4.2,
       fig: '558.673 ms vs. 1174.777 ms',
-      takeaway: 'At low cardinality, a hash table this small never has a reason to lose.',
       Visual: S.RevealLowCard,
     },
     {
@@ -63,6 +62,7 @@ const reel: Reel = {
       ),
       duration: 4.2,
       fig: 'one entry per group',
+      takeaway: 'At low cardinality, a hash table this small never has a reason to lose.',
       Visual: S.HashAggMechanism,
     },
     {
