@@ -5506,4 +5506,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "That closes this chapter's look at where the data stack is heading. Everything in it, from a point-in-time join to a managed zero-ETL feed, is a claim someone has to be able to test, not just trust. The next chapter is the method for testing claims like that honestly: how to benchmark a system so the number you report is the number that's actually true, starting with the first way a benchmark lies — the warm-up period you forgot to discard.",
   },
+  {
+    id: 'de.warmup-steady-state-measurement',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch18-capstones-benchmarking/warmup-steady-state-measurement',
+    title: 'Warm-up and steady-state measurement',
+    syllabusTitle: 'Warm-up and steady-state measurement',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 18, title: 'Capstones and Benchmarking', section: '18.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['warmup-causes-taxonomy', 'steady-state-detection', 'repeated-trials-confidence-interval', 'cold-vs-hot-cache-reporting'],
+    uses: [],
+    declared: [],
+    bridge:
+      "That closes this chapter's look at where the data stack is heading. Everything in it, from a point-in-time join to a managed zero-ETL feed, is a claim someone has to be able to test, not just trust. This chapter is the method for testing claims like that honestly: how to benchmark a system so the number you report is the number that's actually true, starting with the first way a benchmark lies — the warm-up period you forgot to discard.",
+    handoff:
+      "A warmed-up, steady-state run still has to be summarized into one number someone reads, and the easiest way to summarize it is also the most dishonest: a mean. The next topic is why that single number hides exactly the tail that matters, and what to report instead.",
+  },
 ];
