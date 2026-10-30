@@ -4766,4 +4766,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Object storage is called 'regional' in that map, which sounds safe. What it actually promises about a read right after a write, and about listing a prefix, is a separate and much more exact question — and every table format later in this course is built on the exact answer.",
   },
+  {
+    id: 'de.text-interchange-formats-their',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
+    title: 'Text interchange formats and their traps',
+    syllabusTitle: 'Text interchange formats and their traps',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.1' },
+    minutes: 5,
+    verified: '2026-10-30',
+    introduces: ['text-format-traps'],
+    uses: [],
+    declared: [],
+    bridge:
+      "This chapter opened at the single physical page an engine reads and writes and closed at a sketch that approximates an entire distribution in a few kilobytes. The next chapter turns to the files these engines and sketches actually read and write at rest, starting with the oldest and most trap-ridden of them: plain-text interchange formats like CSV and JSON.",
+    handoff:
+      "A text format with no types and no schema is still, underneath, either a row at a time or a column at a time. The next question is that choice itself: row-oriented versus columnar layout.",
+  },
 ];
