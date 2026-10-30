@@ -4627,6 +4627,26 @@ export const TOPICS: TopicMeta[] = [
       "A pod with the right resources still has to be a pod that is meant to end. A nightly pipeline is not a service: it runs, finishes and must be retried with care. The next topic is the Kubernetes objects built for exactly that: Jobs and CronJobs.",
   },
   {
+    id: 'de.jobs-cronjobs-batch-pipelines',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/jobs-cronjobs-batch-pipelines',
+    title: 'Jobs and CronJobs for batch pipelines',
+    syllabusTitle: 'Jobs and CronJobs for batch pipelines',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.2' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['k8s-indexed-jobs-backoff-per-index', 'pod-failure-policy', 'cronjob-schedule-semantics'],
+    uses: ['requests-vs-limits', 'qos-classes-eviction', 'pdb-priority-preemption', 'cron', 'k8s-reconciliation-loop', 'k8s-workload-objects', 'oom-kill-vs-runtime-oom', 'idempotent-tasks-failure-semantics'],
+    declared: [],
+    bridge:
+      "A pod with the right resources still has to be a pod that is meant to end. A nightly pipeline is not a service: it runs, finishes and must be retried with care. This topic is the Kubernetes objects built for exactly that: Jobs, per-index retries, failure policy, and the CronJob that starts them.",
+    handoff:
+      "A Job runs a fixed set of pods you wrote down. Spark does something stranger: you start one pod, the driver, and it asks the API server to create the rest. The next topic opens that design and what happens to its shuffle data when one of those pods disappears.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',

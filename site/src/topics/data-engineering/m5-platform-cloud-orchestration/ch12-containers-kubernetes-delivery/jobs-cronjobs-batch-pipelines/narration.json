@@ -1,0 +1,109 @@
+{
+  "topic": "de.jobs-cronjobs-batch-pipelines",
+  "steps": [
+    {
+      "lines": [
+        "Picture a batch run split into many identical slices, almost all of them healthy.",
+        "One slice happens to carry a record that breaks its worker every single time it's tried.",
+        { "beat": 0.4 },
+        "With one shared allowance for failures across the whole run, that one broken slice is enough to take every other slice down with it."
+      ]
+    },
+    {
+      "lines": [
+        "What would let that one broken slice fail on its own, without dragging the healthy ones down, and what does the run report once it's over?",
+        { "beat": 0.4 },
+        "Does giving each slice its own failure allowance change whether the run itself still counts as having failed?"
+      ],
+      "answer": [
+        "Giving each slice its own failure allowance does exactly that: the broken one keeps retrying and eventually gets marked failed on its own, while every healthy slice finishes untouched.",
+        "But the overall run still reports itself as failed, even though nearly everything in it succeeded — one marked failure is enough."
+      ]
+    },
+    {
+      "lines": [
+        "Each worker in a run like this is told its own position in the line, by the control plane itself, through more than one channel at once.",
+        "That position is the only coordination it needs: a worker holding position three always handles slice three. Nothing hands out work from a shared pile."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a detail easy to miss: the control plane can start a worker's replacement the moment the old one looks like it's on its way out, before that old one has actually finished dying.",
+        { "beat": 0.3 },
+        "For one short window, two workers can both believe they hold the same position — so whatever that position's work actually does has to tolerate being done more than once."
+      ]
+    },
+    {
+      "lines": [
+        "Give each slice its own failure allowance, and a broken slice retries on its own account and eventually gets marked as such, without ever pausing the slices around it.",
+        "Every slice still gets its turn to run; only the final count of who made it and who didn't changes."
+      ]
+    },
+    {
+      "lines": [
+        "Left alone, every slice still runs even if most of them end up broken — the run simply reports more failures.",
+        { "beat": 0.3 },
+        "Put a ceiling on how many broken slices are tolerable, and crossing it stops the run early instead of letting the rest limp through."
+      ]
+    },
+    {
+      "lines": [
+        "A failure can be read two different ways depending on what actually caused it, and a run can be told to treat each way differently.",
+        "A worker that exits because its own code hit a real bug can be told to stop the whole run immediately, no more retries.",
+        "A worker that's removed only because the machine underneath it needed to be cleared can be told the opposite: don't count that one against the budget at all."
+      ]
+    },
+    {
+      "lines": [
+        "A worker partway through its slice gets forced off its machine for maintenance, not because of anything it did wrong.",
+        { "beat": 0.4 },
+        "Does that removal eat into the same failure allowance every other kind of failure draws from?"
+      ],
+      "answer": [
+        "Only if the run was explicitly told to treat that particular kind of removal as exempt. Nothing in the system assumes it on its own.",
+        "Leave that rule unwritten, and a maintenance-driven removal counts exactly like any other failure."
+      ]
+    },
+    {
+      "lines": [
+        "Not every run needs every slice to finish before it's genuinely done.",
+        "A run can instead be told which slice, or how many slices, succeeding is enough — and the moment that's true, it stops the rest and calls itself finished.",
+        { "beat": 0.3 },
+        "One slice's success can be the whole answer, with the other slices never needing to matter at all."
+      ]
+    },
+    {
+      "lines": [
+        "A finished run can be set to clean itself up automatically after a short wait, pods and all, which is genuinely convenient.",
+        { "beat": 0.3 },
+        "It also means whatever those workers printed on their way out disappears with them, unless something copied it out first."
+      ]
+    },
+    {
+      "lines": [
+        "A scheduled run is still going when its next scheduled start arrives, and there are only three ways that collision can be handled.",
+        "Let the new one start anyway, right alongside the old. Skip the new one entirely and wait. Or stop the old one outright to make room.",
+        "Same overlap, three completely different outcomes, chosen ahead of time."
+      ]
+    },
+    {
+      "lines": [
+        "A scheduler that's been offline for a while comes back to find it's missed a great many of its own scheduled starts.",
+        { "beat": 0.3 },
+        "Past a certain number of misses, it stops trying to catch every single one up and simply gives up on the backlog, logging that it did."
+      ]
+    },
+    {
+      "lines": [
+        "A schedule that reliably kicks off a run is not the same thing as a system that understands how those runs relate to each other.",
+        "It has no sense of one run depending on another, no notion of catching up a stretch of missed history, and nothing that strings failures across runs into an alert. That's a different layer entirely, built on top."
+      ]
+    },
+    {
+      "lines": [
+        "Giving a workload the right numbers still says nothing about when it's supposed to stop.",
+        "A nightly run isn't meant to live forever like a service; it has to finish, and be retried carefully when it doesn't — which is exactly what the next piece builds on top of."
+      ]
+    }
+  ]
+}
