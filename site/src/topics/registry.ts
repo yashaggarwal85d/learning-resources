@@ -4687,6 +4687,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything in this chapter is a document: a Dockerfile, a manifest, an operator resource. The last question is who is allowed to change those documents on a running cluster, and what happens when someone changes the cluster by hand. That is GitOps.",
   },
   {
+    id: 'de.gitops-reconciliation-data-platforms',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch12-containers-kubernetes-delivery/gitops-reconciliation-data-platforms',
+    title: 'GitOps reconciliation for data platforms',
+    syllabusTitle: 'GitOps reconciliation for data platforms',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 12, title: 'Containers, Kubernetes and Delivery', section: '12.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['gitops-pull-reconciliation', 'argo-flux-sync-drift-prune', 'gitops-secrets-handling', 'iac-vs-gitops-boundary'],
+    uses: ['k8s-reconciliation-loop', 'k8s-workload-objects', 'flink-operator-upgrade-modes', 'statefulset-stable-identity-storage', 'container-config-injection', 'ci-pipelines', 'commit-graph', 'pr-merge-strategies'],
+    declared: [],
+    bridge:
+      "Everything in this chapter is a document: a Dockerfile, a manifest, an operator resource. This topic is who is allowed to change those documents on a running cluster, and what happens when someone changes the cluster by hand: GitOps.",
+    handoff:
+      "The platform is now delivered and kept converged. That says nothing about whether it is healthy. The next chapter opens with exactly that question, how you would know: logs, metrics and traces for a pipeline, and the telemetry that turns a stale table into an alert.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
