@@ -5566,4 +5566,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A single query, on one table, measured honestly with a realistic key distribution, is still one benchmark built by hand for one chapter. The next topic names the suites an entire industry built the same way, at a scale this course's own harness cannot reach, and the trap the method gets built to resist: a vendor choosing which true number to publish.",
   },
+  {
+    id: 'de.analytical-benchmark-suites',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch18-capstones-benchmarking/analytical-benchmark-suites',
+    title: 'Analytical benchmark suites',
+    syllabusTitle: 'Analytical benchmark suites',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 18, title: 'Capstones and Benchmarking', section: '18.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['tpc-h-tpc-ds-stress-profile', 'clickbench-join-free-blindspot', 'join-order-benchmark-cardinality-stress', 'tpc-di-obsolete-status', 'benchmarketing-and-dewitt-clause'],
+    uses: ['uniform-vs-zipfian-key-generation', 'cross-column-correlation-cardinality-miss', 'seeded-generator-as-artifact', 'closed-loop-vs-constant-rate-generator', 'histogram-merge-vs-percentile-average', 'steady-state-detection'],
+    declared: [],
+    bridge:
+      "A single query, on one table, measured honestly with a realistic key distribution, is still one benchmark built by hand for one chapter. This topic names the suites an entire industry built the same way, at a scale this course's own harness cannot reach, and the trap the method gets built to resist: a vendor choosing which true number to publish.",
+    handoff:
+      "Every topic in this chapter built one piece of an honest benchmark: a warmed-up target, a load generator that doesn't lie about its own worst case, data shaped like real data, and the industry suites that apply all three at scale. None of that method decides, by itself, when a capstone is actually done, or who outside engineering has to agree the numbers mean what the team says they mean. The next chapter is that half of the job: writing the requirements and contracts that decide what 'done' even means, and communicating the trade-off this chapter's own numbers represent to someone who will never read a percentile.",
+  },
 ];
