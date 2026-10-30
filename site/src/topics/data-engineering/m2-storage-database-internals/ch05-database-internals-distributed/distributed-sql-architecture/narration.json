@@ -1,0 +1,90 @@
+{
+  "topic": "de.distributed-sql-architecture",
+  "steps": [
+    {
+      "lines": [
+        "Splitting a keyspace, agreeing on a write inside one piece of it, and coordinating several pieces together.",
+        "Every one of those three pieces was already built, on its own, earlier in this chapter.",
+        "Watch one real database run all three of them together, on every single write it handles."
+      ]
+    },
+    {
+      "lines": [
+        "Commit to an answer before the reveal.",
+        "This pattern a real distributed database actually runs on. Does it need some genuinely new mechanism nobody's built yet?",
+        "Or is the whole thing made entirely out of pieces this chapter already covered?"
+      ],
+      "answer": [
+        "It's tempting to assume reaching global scale needs an entirely new trick.",
+        "But a write touching two separate pieces of the keyspace really does just chain what's already there: each piece agrees on its own slice first, and a separate coordinating step gets both slices to agree together.",
+        "So no new mechanism. Just the pieces already built, chained together correctly."
+      ]
+    },
+    {
+      "lines": [
+        "Watch that exact chain, measured directly, on a transaction touching two separate pieces of the keyspace.",
+        "Each piece reaches its own internal agreement completely on its own, independently of the other.",
+        "Only once both have done that does a coordinating step get the two of them to agree with each other."
+      ]
+    },
+    {
+      "lines": [
+        "Now feed one real, troubling input into a clock that has to assign these timestamps.",
+        "Give its physical readings a genuine skew, twice, where the clock briefly jumps backward instead of forward.",
+        "Watch its actual output anyway. Every single timestamp it hands out still strictly increases."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece has to fit before any of this is trustworthy.",
+        "A commit gets assigned a timestamp, but has to sit and wait out its own clock's uncertainty window before anyone else is allowed to see it.",
+        "Watch what that wait actually buys: anything that starts after it is guaranteed a strictly later timestamp, no exceptions."
+      ]
+    },
+    {
+      "lines": [
+        "One more prediction before this topic's second reveal.",
+        "Two transactions are reading and changing the exact same row, and neither one ever takes a lock.",
+        "At what point does a scheme like that actually notice the two of them are in conflict?"
+      ],
+      "answer": [
+        "It's tempting to assume the second transaction gets stopped the instant it touches that row.",
+        "But with no lock at all standing in the way, nothing stops either one from doing its own full share of work against that row.",
+        "So the conflict only surfaces once a transaction actually tries to commit, against whatever already landed first."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact scenario, measured directly, end to end.",
+        "Both transactions read the identical row while it sits completely unlocked, the entire time.",
+        "Whichever one commits first simply succeeds. The other one only learns it lost the moment its own commit gets rejected."
+      ]
+    },
+    {
+      "lines": [
+        "One real cost sits underneath everything shown here so far.",
+        "A single machine running an ordinary database pays no extra trip across the network beyond the one its own client already made.",
+        "Spread that identical write across several pieces of a distributed keyspace, and it pays for several more trips on top."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "This pattern is a real composition: pieces agreeing internally, a clock that never slips backward, a wait that makes real-world ordering trustworthy, and a scheme that checks for conflicts only once work is already done.",
+        "None of it arrives for free. Every single piece of it has a real, measurable price attached."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. A team's entire dataset comfortably fits on a single ordinary machine, and every one of their writes stays inside one table.",
+        "They're deciding between a fully distributed database and just running plain, ordinary Postgres on one box.",
+        "Given everything just measured here: is paying for all this distributed machinery actually worth it for them?"
+      ],
+      "answer": [
+        "It's tempting to assume more distributed machinery is simply the stronger, safer choice by default.",
+        "But every single cost measured in this topic exists to solve one specific problem: coordinating data that's genuinely spread across separate machines. Their data was never spread across anything.",
+        "So no. None of that machinery buys them a single thing they actually need."
+      ]
+    }
+  ]
+}

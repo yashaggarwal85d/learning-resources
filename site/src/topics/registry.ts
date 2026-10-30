@@ -4647,6 +4647,26 @@ export const TOPICS: TopicMeta[] = [
       "Every mechanism in this section — replication, partitioning, consensus — is a building block. The next topic closes the section by showing a real system (Spanner's pattern) built from all of them at once.",
   },
   {
+    id: 'de.distributed-sql-architecture',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/distributed-sql-architecture',
+    title: 'Distributed SQL architecture',
+    syllabusTitle: 'Distributed SQL architecture',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['distributed-sql-architecture'],
+    uses: ['consensus-raft-paxos-in-systems', 'mvcc-versioning', 'two-phase-commit'],
+    declared: [],
+    bridge:
+      "Every mechanism in this section — replication, partitioning, consensus — is a building block. This topic closes the section by showing a real system built from all of them at once: the Spanner pattern, and the alternative systems and trade-offs that followed it.",
+    handoff:
+      "Every mechanism in this chapter so far protected a write. The next section turns to the read side most of that protection exists for in the first place: caching, starting with the patterns and eviction policies every cache is built from.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
