@@ -1,0 +1,83 @@
+{
+  "topic": "de.schema-change-rollout-expand",
+  "steps": [
+    {
+      "lines": [
+        "A column gets renamed in a single deploy, and every consumer downstream is just expected to pick up the new name on its own.",
+        "The next morning, several of those downstream dashboards are simply blank.",
+        "Nobody had actually gone and migrated any of them to the new name first.",
+        "The rename itself wasn't the mistake -- doing it in one single step was."
+      ]
+    },
+    {
+      "lines": [
+        "Worth asking before the answer gets shown.",
+        "Suppose that exact same rename got deployed at some quiet, low-traffic hour instead.",
+        "Would timing alone be enough to make a single-deploy rename safe?",
+        "Or does the danger here have nothing to do with timing at all?"
+      ],
+      "answer": "No, timing alone doesn't fix it. A renamed field still disappears out from under every consumer that's still reading it by its old name, no matter what hour the deploy happens to land in."
+    },
+    {
+      "lines": [
+        "Here's the pattern that actually does make it safe.",
+        "Split that same rename into three separate phases instead of doing it all at once.",
+        "First expand: add the new field right alongside the old one, so both exist together.",
+        "Then migrate every consumer across, one at a time, and only once that's finished, contract by removing the old field."
+      ]
+    },
+    {
+      "lines": [
+        "Before that expand step is even allowed to ship, it has to pass a couple of real rules.",
+        "Can a reader that's already using the new schema still make sense of data written under the old one?",
+        "And separately, can a reader still on the old schema make sense of data written under the new one?",
+        "Expanding the schema only counts as genuinely safe once both of those checks actually pass."
+      ],
+      "takeaway": "Expand only counts as safe once it genuinely passes both the backward and the forward rule."
+    },
+    {
+      "lines": [
+        "One more question worth sitting with first.",
+        "The expand step already passed both of those compatibility checks cleanly.",
+        "Does that mean contracting immediately afterward is just as safe as waiting for migrate to actually finish?",
+        "Or is there still something migrate alone is responsible for proving?"
+      ],
+      "answer": "No, it's not just as safe. Passing expand's compatibility check only proves the schema change itself is fine -- it says nothing about whether every single consumer has actually finished switching over to the new field yet."
+    },
+    {
+      "lines": [
+        "Here's exactly what happens when that gets skipped.",
+        "Run contract while even one consumer genuinely hasn't migrated yet, removing the old field it still depends on.",
+        "That one consumer raises a real, specific error reaching for a field that simply isn't there anymore.",
+        "Every other consumer, the ones that had already migrated, keeps working without any trouble at all."
+      ]
+    },
+    {
+      "lines": [
+        "All the way through that migrate phase, something else has to be true as well.",
+        "The producer is writing both the old field and the new field at the same time, for every single record.",
+        "That dual-write period is a real, measured window, not something left open indefinitely.",
+        "Once every consumer has actually migrated, that window closes and the old field gets to go away for good."
+      ],
+      "takeaway": "A dual-write window without a measured end is just a schema that never finished migrating."
+    },
+    {
+      "lines": [
+        "Pulling all of it together now.",
+        "Expand adds the new field, migrate moves every consumer across one at a time, and only then does contract remove the old one.",
+        "A real compatibility rule decides whether expand itself is even allowed to ship.",
+        "And a dual-write window with an actual, measured end is what keeps the whole rollout from just living forever."
+      ],
+      "takeaway": "A breaking change survives contact with production by never actually being deployed as one."
+    },
+    {
+      "lines": [
+        "One real test to close on, run against this shop's own actual orders table rather than just described.",
+        "That table's own amount field gets genuinely renamed to total underscore amount, following all three phases in order.",
+        "One consumer is deliberately left behind on purpose, still reading the field by its old name.",
+        "Does nothing happen to that consumer, or does something concrete and specific go wrong for it?"
+      ],
+      "answer": "Something concrete goes wrong for it specifically. That one laggard consumer raises a genuine error reaching for the renamed field, while every other consumer, already migrated, keeps working without any issue at all."
+    }
+  ]
+}

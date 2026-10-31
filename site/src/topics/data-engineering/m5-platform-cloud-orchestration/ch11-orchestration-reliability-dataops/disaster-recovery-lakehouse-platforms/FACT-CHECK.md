@@ -1,0 +1,23 @@
+# Fact-check
+
+1. **A multi-Region KMS key shares the same key material and key ID across regions, so data encrypted in one region decrypts in another without re-encrypting.** Sourced and reproduced directly: `examples.py` asserts AWS's own KMS Developer Guide states "AWS KMS supports multi-Region keys, which are AWS KMS keys in different AWS Regions that can be used interchangeably... Each set of related multi-Region keys has the same key material and key ID, so you can encrypt data in one AWS Region and decrypt it in a different AWS Region without re-encrypting or making a cross-Region call to AWS KMS," verified word for word against the fetched page text.
+
+2. **In S3 Object Lock's compliance mode, a protected object version can't be overwritten or deleted by any user, including the root user of the AWS account.** Sourced and reproduced directly: `examples.py` asserts the Amazon S3 User Guide's own text, verified word for word against the fetched page text.
+
+3. **An Iceberg manifest entry's path accessor returns a fully qualified, absolute path.** Sourced and reproduced directly: `examples.py` asserts Apache Iceberg's own `ManifestFile` Javadoc states "Returns fully qualified path to the file, suitable for constructing a Hadoop Path," verified word for word against the fetched page text.
+
+4. **A Delta Lake add action's path field can be an absolute path, not only a path relative to the table root.** Sourced and reproduced directly: `examples.py` asserts Delta Lake's own `PROTOCOL.md` states "A relative path to a data file from the root of the table or an absolute path to a file that should be added to the table," verified word for word against the fetched source text.
+
+5. **DORA requires an operational resilience testing programme encompassing a range of tests, including advanced testing, not a one-off drill.** Sourced and reproduced directly: `examples.py` asserts ESMA's own DORA page states "Operational resilience testing programme encompassing a range of tests, including advanced testing," verified word for word against the fetched page text.
+
+6. **A manifest holding an absolute path makes replicated bytes unreachable until the manifest itself is rewritten to the new region's paths.** Run and reproduced directly, this topic's own real experiment: `examples.py` writes a real local table with an absolute-path manifest, copies its data files to a second directory simulating a region move, deletes the original region's files, and shows the secondary region's manifest resolving zero of three files until the manifest's own paths are rewritten, after which all three resolve.
+
+7. **A table's data files can be completely intact in a second region while the table itself is unusable, because the catalog that locates it is a separate system a bucket copy never touches.** Run and reproduced directly: `examples.py` replicates a table's data and manifest files byte-for-byte, then shows a catalog lookup returning nothing when the catalog database itself was never backed up, and returning the manifest location once it is.
+
+8. **A region-scoped encryption key fails to decrypt ciphertext outside its own region; a genuinely multi-region key, holding the same key material, decrypts that same ciphertext without issue.** Run and reproduced directly: `examples.py` encrypts a real plaintext value with a real Fernet key, shows a second, independently generated key raising `InvalidToken` on the same ciphertext, and shows the original key succeeding.
+
+9. **A compliance-mode, write-once backup refuses a delete from an admin credential that successfully deletes an ordinary, mutable backup.** Run and reproduced directly: `examples.py` models both a mutable backup store and a retention-locked WORM store, shows the mutable store's object deleted by a simulated stolen admin credential, and shows the WORM store refusing that same delete while its retention period has not yet elapsed.
+
+10. **A timed, end-to-end restore (copy data, rewrite the manifest, resolve via the catalog) can be measured against an RTO target and shown to meet it.** Run and reproduced directly: `examples.py` times a full restore of the same three-file table and asserts the elapsed time is within the topic's own RTO target.
+
+11. **Kafka replication needing offset translation, and RPO/RTO being set per tier, are this topic's own framing of CHAPTER.md's stated scope, not independently sourced claims here.** Offset translation reuses Chapter 9's own treatment of Kafka replication (used, not re-taught, since no Kafka cluster runs in this sandbox); per-tier targets reuse topic 11's own tiered freshness/SLO framing, applied here to recovery rather than freshness.

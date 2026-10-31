@@ -1,0 +1,83 @@
+{
+  "topic": "de.data-incident-response-blast",
+  "steps": [
+    {
+      "lines": [
+        "A source quietly starts feeding duplicate rows into a revenue table, and nobody notices for days.",
+        "By the time someone does notice, the team's very first move isn't fixing anything.",
+        "It's trying to figure out which of the many dashboards downstream of that table are actually affected.",
+        "And nobody in the room had ever actually run that query before that night."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the loop this whole topic walks through, start to finish, on that exact incident.",
+        "Detect that something's wrong, then triage how severe and how wide it actually is.",
+        "Contain it so it stops spreading, then repair only what's actually broken.",
+        "And finally, write a postmortem -- not to assign blame, but to make the same failure harder to repeat."
+      ]
+    },
+    {
+      "lines": [
+        "Worth pausing on this before it's answered.",
+        "Dozens of dashboards sit somewhere downstream of the table that just went bad.",
+        "Is the safe move simply notifying every single one of them, just in case?",
+        "Or is there a better way to know exactly who's actually affected?"
+      ],
+      "answer": "No, notifying everyone isn't the safe default -- it trains people to ignore the next real alert. The better answer is computing exactly which downstream pieces genuinely depend on the broken one."
+    },
+    {
+      "lines": [
+        "Here's how that computation actually works.",
+        "A pipeline's own asset graph already declares which things depend on which other things.",
+        "Walking those declared connections tells you, with certainty, exactly which downstream pieces are genuinely at risk.",
+        "Nobody has to remember the dependency map, because the map was never hand-kept to begin with."
+      ],
+      "takeaway": "A guessed blast radius either misses someone or wakes everyone. A computed one does neither."
+    },
+    {
+      "lines": [
+        "One more question worth asking before the answer's shown.",
+        "A handful of the table's own partitions hold the actual bad rows.",
+        "Does containing this incident mean deleting those bad partitions right away?",
+        "Or is there a reason to leave them alone, at least for now?"
+      ],
+      "answer": "No, don't delete them yet. Mark those partitions as quarantined and stop anything downstream from reading them -- deleting first destroys the exact evidence a later postmortem will need."
+    },
+    {
+      "lines": [
+        "Here's that pattern, named directly.",
+        "Containing the incident means marking only the affected partitions and halting whatever reads from them -- nothing is erased.",
+        "Repairing it later means reloading only those same marked partitions, and nothing else in the table.",
+        "Both steps touch exactly the part that's actually wrong, and nothing more."
+      ],
+      "takeaway": "Containment and repair both work the same way: touch exactly the partitions that are actually wrong."
+    },
+    {
+      "lines": [
+        "Here's who actually runs all of this, sourced directly from a well-known incident-management account rather than invented for this course.",
+        "One person holds the overall state of the incident and decides who does what.",
+        "A second person is the only one actually allowed to touch the system while the incident is live.",
+        "A third person speaks for the whole team to everyone else, so updates don't come from five different directions at once."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it together now.",
+        "Detect, then triage how bad it really is, then contain by marking rather than deleting, then repair only the marked part.",
+        "Finally, a postmortem that assumes good intentions throughout and looks for what the system itself should have caught.",
+        "The hook's real cost wasn't the duplicate rows themselves. It was every hour spent simply guessing who else was touched."
+      ],
+      "takeaway": "The hook's real cost wasn't the duplicate rows. It was the hours spent guessing who else was affected."
+    },
+    {
+      "lines": [
+        "One real test to close on, run against an actual pipeline's own asset graph rather than just described.",
+        "A good number of downstream dashboards genuinely sit somewhere below this shop's own pipeline.",
+        "Running the real lineage computation against that real graph, how many of those dashboards does it actually implicate?",
+        "Almost all of them, because they all share the same pipeline somewhere upstream -- or a small, exact handful?"
+      ],
+      "answer": "Only a small, exact handful. The real graph's own declared connections single out a specific subset as genuinely downstream of the incident, and every other dashboard was never actually at risk at all."
+    }
+  ]
+}
