@@ -7598,6 +7598,25 @@ export const TOPICS: TopicMeta[] = [
       "Section 7.3's last topic ties every symptom in this section together: the Spark UI itself, the one instrument that actually shows spill, GC, retries and skew as evidence rather than theory.",
   },
   {
+    id: 'de.diagnosing-jobs-spark-ui',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/diagnosing-jobs-spark-ui',
+    title: 'Diagnosing jobs from the Spark UI',
+    syllabusTitle: 'Diagnosing jobs from the Spark UI',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-ui-diagnosis-method'],
+    uses: ['spark-skew-diagnosis', 'spark-spill-mechanics', 'spark-gc-symptoms', 'spark-task-retry-fetch-failure'],
+    bridge:
+      'Every failure mode in this section — spill, the cost of caching, GC, retries and resubmissions — leaves a trace in exactly one place. This closing topic is that place, the Spark UI, taught as a fixed triage order rather than five separate tools.',
+    handoff:
+      "Section 7.3 closes the chapter's batch-execution half: how a job runs, shuffles, spends memory and fails. The next section is the same engine asked to do something structurally different: compute incrementally, forever, over data that never finishes arriving.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -7956,6 +7975,26 @@ export const TOPICS: TopicMeta[] = [
       "GDPR by design governs what a pipeline may do with data it holds. This topic is the harder question underneath it: where the bytes are even allowed to sit, and who outside that jurisdiction might be legally entitled to demand them regardless — residency, sovereignty and localisation, kept as three separate questions instead of one blurred worry.",
     handoff:
       "Everything in Chapters 1-10 so far has mostly assumed modern, cloud-native systems and modern regulation. A huge amount of the world's actual operational data instead lives behind a decades-old enterprise system with its own extraction rules, and a factory floor with its own physics — which the next section is about.",
+  },
+  {
+    id: 'de.sap-extraction-paths-limits',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/sap-extraction-paths-limits',
+    title: 'SAP extraction paths and their limits',
+    syllabusTitle: 'SAP extraction paths and their limits',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.6' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['sap-extraction-mechanism-choice', 'sap-note-licensing-constraint', 'effective-dated-record-extraction'],
+    uses: ['purpose-limitation-tagging'],
+    declared: [],
+    bridge:
+      "A huge amount of the world's actual operational data lives behind a decades-old enterprise system with its own rules, not a modern cloud-native API — and nowhere is that more true than SAP. This topic is what can actually be extracted from it, by which of four mechanisms, and the one dated support note that turned a previously-common extraction path into a licensing problem overnight.",
+    handoff:
+      "SAP extraction is still, in the end, reading from a database or an API. A factory floor's PLCs and historians are not databases at all, and the one rule that matters most there has no SAP equivalent: a slow analytics consumer must never be able to push back on a production line.",
   },
   {
     id: 'de.text-interchange-formats-their',
