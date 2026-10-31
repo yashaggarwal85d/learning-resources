@@ -6871,6 +6871,26 @@ export const TOPICS: TopicMeta[] = [
       "A role answers who may act. It says nothing about the other kind of secret a pipeline needs — a database password, a third-party API key — which has to live somewhere between deployments, and that somewhere is its own discipline.",
   },
   {
+    id: 'de.secrets-management-pipelines',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/secrets-management-pipelines',
+    title: 'Secrets management for pipelines',
+    syllabusTitle: 'Secrets management for pipelines',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['dual-credential-rotation', 'dynamic-short-lived-db-credential'],
+    uses: ['short-lived-federated-credential'],
+    declared: [],
+    bridge:
+      'A role answers who may act. A database password or a third-party key is a different kind of secret, one that has to exist somewhere between deployments — and this topic is where it should live, and how it gets replaced without an outage.',
+    handoff:
+      'Identity and secrets answer who can act and with what. Neither answers what any of this actually costs — and a pipeline that is perfectly secure and perfectly correct can still be a budget incident, which is where this section ends.',
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
