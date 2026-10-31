@@ -6665,6 +6665,26 @@ export const TOPICS: TopicMeta[] = [
       "Rollups keep fewer points. Compression keeps the same points in fewer bits. The next topic is how that works for timestamps and floating-point values, where regularity buys a large reduction in one published system and almost nothing in another.",
   },
   {
+    id: 'de.time-series-compression',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/time-series-compression',
+    title: 'Time-series compression',
+    syllabusTitle: 'Time-series compression',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 18,
+    verified: '2026-10-31',
+    introduces: ['delta-of-delta-timestamps', 'xor-float-encoding-gorilla', 'chimp-trailing-zero-refinement', 'alp-decimal-aware-encoding', 'compression-ratio-is-data-property'],
+    uses: ['event-stream-compression', 'columnar-layout', 'ieee-754', 'float-non-associativity', 'decimal-precision-scale', 'latency-numbers', 'memory-hierarchy', 'regular-vs-irregular-series', 'signal-type-tag-metadata', 'mergeable-rollup-never-store-average'],
+    declared: ['columnar-layout'],
+    bridge:
+      "Rollups keep fewer points. Compression keeps the same points in fewer bits. This topic is how that works for timestamps and floats: the Facebook system built around it, the encoders that came after, and the measurement that shows which of them your data actually benefits from.",
+    handoff:
+      "A codec shrinks a series; the next problem is finding it. Every distinct combination of labels is its own series, and the index that maps labels to series is the first thing to run out. The next topic is series cardinality and the label index.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
