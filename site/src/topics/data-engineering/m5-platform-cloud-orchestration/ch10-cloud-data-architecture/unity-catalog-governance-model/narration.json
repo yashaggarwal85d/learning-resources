@@ -1,0 +1,73 @@
+{
+  "topic": "de.unity-catalog-governance-model",
+  "steps": [
+    {
+      "lines": [
+        "Watch what doesn't happen here. A new table appears inside a schema that was already tagged restricted, and nobody opens an editor to write it a rule.",
+        "It inherits the row filter and the column mask the instant it exists. A design built on per-table grants would have left this exact table briefly ungoverned."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, think about the timing problem. The policy was written before this table existed. For it to apply the moment the table appears, it can't be checking the table's name.",
+        "So what is it actually checking?"
+      ],
+      "answer": [
+        "A tag, checked live, every time — not a list someone has to keep updating.",
+        "The policy was never written against this table specifically. It was written against a label, and anything carrying that label is covered the instant it's looked at."
+      ]
+    },
+    {
+      "lines": [
+        "Two levels gets you one namespace per account, full stop. Watch what the third level buys: prod and staging sitting in the same metastore without a single name colliding.",
+        "That third level isn't decoration. It's the only reason two environments can coexist at all."
+      ]
+    },
+    {
+      "lines": [
+        "Don't file these under one heading called data. A table is rows and columns. A volume is a folder of files governed the same careful way. A function and a model get permissioned individually too.",
+        "A catalog scoped only to tables can't touch any of the other three."
+      ]
+    },
+    {
+      "lines": [
+        "This isn't a claim — it's run against a real permission tree. One grant, at the schema, reaches a table that already existed and a table created after, identically.",
+        "Notice what never happens: nobody goes back to grant it a second time."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this carefully, because it's easy to get backwards. The policy checks the tag, not the family tree — so a table with no tag yet is not covered, even sitting right there in a tagged schema.",
+        "Only once the tag itself is actually inherited does the policy start applying. The tag is the trigger, not the location."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with: neither of these lives behind a separate dashboard you have to go hunting through.",
+        "Lineage down to the column, and every access logged — both are just tables. You query them the same way you'd query anything else."
+      ]
+    },
+    {
+      "lines": [
+        "Two different problems that look alike from a distance. Federation reaches into another system live, for your own people, governed exactly like a native table.",
+        "Delta Sharing goes further: someone with no account on your platform at all reads your table, carrying nothing but a bearer token."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: a tag, checked live, is what makes governance apply itself — before anyone writes a rule for the specific object.",
+        "Three levels, four kinds of securable, one grant that never needs repeating, and a recipient who needs nothing but a token."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice what's missing from this scenario: no shared account, no shared platform, nothing in common at all between you and this partner.",
+        "Can they still read your table?"
+      ],
+      "answer": [
+        "Yes. The protocol names the recipient as a principal holding a bearer token, full stop.",
+        "The server hands back pre-signed file URLs or temporary cloud credentials — neither one asks what platform the recipient happens to run."
+      ]
+    }
+  ]
+}

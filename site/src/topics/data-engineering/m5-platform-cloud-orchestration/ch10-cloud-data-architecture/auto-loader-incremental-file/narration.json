@@ -1,0 +1,67 @@
+{
+  "topic": "de.auto-loader-incremental-file",
+  "steps": [
+    {
+      "lines": [
+        "Notice the two failure modes on the left: crash at the worst possible hour, or quietly lose a field forever and never know it happened.",
+        "The stream on the right didn't avoid the problem. It was configured, ahead of time, to handle exactly this."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, think about what goes wrong without this property. A restart sees the same file list it saw five minutes ago. Nothing in that list has changed.",
+        "What has to exist somewhere so the stream knows it already dealt with this?"
+      ],
+      "answer": [
+        "A durable memory — something that survives the restart itself, not just something held in a variable while the stream was running.",
+        "That's the whole job of a checkpoint. It isn't about speed. It's about the stream remembering its own history across a crash."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the urge to call one of these the upgrade and the other the legacy option. They have different costs, and one of those costs changes with scale.",
+        "Listing gets more expensive as the number of files grows. Notification doesn't — but it asks for more permission up front."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the second run closely. It's handed the exact same two files from before, plus one real newcomer. Only the newcomer gets through.",
+        "This isn't a claim about what should happen. It's the same checkpoint object, called twice, actually enforcing it."
+      ]
+    },
+    {
+      "lines": [
+        "Don't rank these top to bottom — notice what each one is willing to give up. One gives up a moment of availability. One gives up ever stopping. One gives up nothing except your patience.",
+        "Picking the wrong one for your situation isn't a small mistake — it's building the exact failure mode you were trying to avoid."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with: this isn't a trash bin. It's a structured record — the field, and exactly which file it came from.",
+        "Which means recovering it later isn't digging through logs. It's just a query."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what this doesn't need: no checkpoint to manage, no schema evolution to configure, no always-on process sitting and waiting.",
+        "For the job it's built for, that's not a weaker tool. It's the right amount of machinery."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: discovery mode is a cost decision, and schema-evolution mode is a failure-shape decision — two separate choices, not one knob.",
+        "And nothing that doesn't match the schema has to be silently gone. It just has to be looked at."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice what's absent from this job: no surprise columns expected, no files arriving unpredictably, no reason for anything to be always running.",
+        "Does that job actually need everything Auto Loader builds in?"
+      ],
+      "answer": [
+        "No. A stable, periodic, predictable load is exactly the case the lighter tool was built for.",
+        "Reaching for the heavier machinery here wouldn't make the pipeline safer — it would just be machinery nobody needed."
+      ]
+    }
+  ]
+}

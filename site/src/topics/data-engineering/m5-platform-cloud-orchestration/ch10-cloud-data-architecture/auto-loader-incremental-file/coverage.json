@@ -1,0 +1,87 @@
+{
+  "topic": "de.auto-loader-incremental-file",
+  "syllabus": [
+    {
+      "clause": "directory-listing vs file-notification discovery",
+      "at": [
+        { "step": "Two ways to notice a new file landed" }
+      ]
+    },
+    {
+      "clause": "the checkpointed (RocksDB) set of seen files that yields exactly-once file ingestion",
+      "at": [
+        { "step": "What does a restarted stream need to avoid re-ingesting a file?" },
+        { "step": "The same file, listed twice, ingested once" }
+      ]
+    },
+    {
+      "clause": "schema inference and evolution modes",
+      "at": [
+        { "step": "Four modes, four different reactions to a new column" }
+      ]
+    },
+    {
+      "clause": "the rescued-data column",
+      "at": [
+        { "step": "A new column shows up overnight, and nothing breaks" },
+        { "step": "Nothing gets silently dropped — it goes to one place" }
+      ]
+    },
+    {
+      "clause": "vs idempotent COPY INTO batch loads (§8.1)",
+      "at": [
+        { "step": "A lighter answer for the simpler case" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Databricks: What is Auto Loader?",
+      "items": [
+        { "item": "A RocksDB-backed checkpoint persists discovered-file metadata at the checkpoint location, giving exactly-once processing and resumability after failure", "at": [{ "step": "What does a restarted stream need to avoid re-ingesting a file?" }] },
+        { "item": "Directory-listing cost scales with files ingested, not directories scanned", "at": [{ "step": "Two ways to notice a new file landed" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Compare Auto Loader file detection modes",
+      "items": [
+        { "item": "Directory listing is the default; file notification is Databricks' own recommended mode for most workloads, and neither guarantees discovery/processing order", "at": [{ "step": "Two ways to notice a new file landed" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Configure schema inference and evolution in Auto Loader",
+      "items": [
+        { "item": "addNewColumns fails once then resumes with the wider schema; rescue never fails and routes new columns to the rescue column; failOnNewColumns fails and stays failed until fixed", "at": [{ "step": "Four modes, four different reactions to a new column" }] },
+        { "item": "The rescued data column captures a JSON blob of the mismatched fields plus the source file path, rather than dropping them", "at": [{ "step": "Nothing gets silently dropped — it goes to one place" }] }
+      ]
+    },
+    {
+      "source": "Databricks: COPY INTO",
+      "items": [
+        { "item": "COPY INTO is retryable and idempotent: already-loaded files are skipped even if modified since, unless force disables that idempotency", "at": [{ "step": "A lighter answer for the simpler case" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that schema evolution is a deliberate configuration choice, not an automatic safety net; a learner who thinks any Auto Loader stream absorbs new columns without configuration has missed that addNewColumns still fails the stream once", "at": [{ "step": "A new column shows up overnight, and nothing breaks" }] },
+      { "item": "The predict step's correct answer is structural (a durable memory of what's been seen), not an implementation detail (RocksDB specifically); a learner should be able to state the property before learning the vendor's chosen storage engine", "at": [{ "step": "What does a restarted stream need to avoid re-ingesting a file?" }] },
+      { "item": "The two discovery modes are a real cost trade-off, not a quality trade-off; a learner who thinks file notification is strictly 'better' has missed that directory listing needs no extra permission configuration, which is sometimes the deciding factor", "at": [{ "step": "Two ways to notice a new file landed" }] },
+      { "item": "The restart-and-replay reproduction holds the checkpoint's state across two separate calls to prove persistence survives a restart, not just that a single run doesn't duplicate work within itself", "at": [{ "step": "The same file, listed twice, ingested once" }] },
+      { "item": "The four schema-evolution modes are deliberately not ranked best-to-worst; a learner should be able to state which one they'd pick for an unattended overnight pipeline versus one with a human on call, not just list all four", "at": [{ "step": "Four modes, four different reactions to a new column" }] },
+      { "item": "The rescued-data column's own documented structure (a JSON blob plus the source file path) is what makes the production pitfall in post-notes.md possible — captured but unmonitored is still effectively lost in practice, even though it isn't dropped in the pipeline", "at": [{ "step": "Nothing gets silently dropped — it goes to one place" }] },
+      { "item": "COPY INTO and Auto Loader's checkpoint are not presented as competing implementations of the same idea; a learner should state the actual axis they differ on (operating cadence: periodic batch vs always-on stream), not cost or reliability", "at": [{ "step": "A lighter answer for the simpler case" }] },
+      { "item": "The recap's three lines are not independent trivia; a learner who can name both discovery modes and all four schema modes but can't say why a checkpoint is what makes a replay safe has learned vocabulary, not the mechanism", "at": [{ "step": "In one breath" }] },
+      { "item": "The prove-it scenario (stable schema, fixed location, daily cadence) is deliberately the shape that doesn't need Auto Loader's always-on machinery; a learner should be able to name the specific property (stability + periodicity) that makes COPY INTO sufficient", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot run a real Databricks Auto Loader stream in this sandbox; an expert reviewer should expect the disclosed local simulation of the checkpoint and schema-evolution mechanisms in examples.py, not a live workspace run", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}
