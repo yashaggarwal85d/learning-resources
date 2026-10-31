@@ -7391,6 +7391,26 @@ export const TOPICS: TopicMeta[] = [
       "Compute is only useful once data actually arrives on it. Databricks' own answer to 'a file landed in object storage, now what' is next.",
   },
   {
+    id: 'de.auto-loader-incremental-file',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/auto-loader-incremental-file',
+    title: 'Auto Loader incremental file ingestion',
+    syllabusTitle: 'Auto Loader incremental file ingestion',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['auto-loader-discovery-checkpoint', 'rescued-data-column'],
+    uses: ['object-store-consistency-guarantee', 'databricks-compute-sku-model'],
+    declared: [],
+    bridge:
+      "Compute is only useful once data actually arrives on it, and Databricks' own answer to 'files keep landing in object storage' is this topic: how it discovers new files, how it guarantees each one is ingested exactly once, and what happens to a row that doesn't match the schema it expected.",
+    handoff:
+      "Discovering and ingesting files is only useful if the result is governed the moment it lands — and Databricks' governance layer, which this chapter's catalog-and-vending pattern takes a concrete, fully-worked shape in, is next.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
