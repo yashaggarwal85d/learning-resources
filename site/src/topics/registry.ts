@@ -6065,6 +6065,26 @@ export const TOPICS: TopicMeta[] = [
       "Sizing says how many partitions and how big. It says nothing about which partitioner decided which row lands in which one — the next topic's own question.",
   },
   {
+    id: 'de.hash-range-partitioning-pruning',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/hash-range-partitioning-pruning',
+    title: 'Hash and range partitioning, partition pruning',
+    syllabusTitle: 'Hash and range partitioning, partition pruning',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-hash-range-partitioner', 'spark-partition-pruning'],
+    uses: ['spark-partition-sizing', 'spark-catalyst-pipeline'],
+    declared: [],
+    bridge:
+      "Sizing decided how many pieces. This topic decides which row goes in which piece, and shows the one case — exchange elimination — where Spark notices it doesn't need to re-decide at all.",
+    handoff:
+      "Pruning skips reading partitions that can't match. Bucketing, next, goes further: pre-arranging the partitions at write time so a later join skips the shuffle entirely, not just the read.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',

@@ -1,0 +1,110 @@
+{
+  "topic": "de.hash-range-partitioning-pruning",
+  "syllabus": [
+    {
+      "clause": "hash partitioner vs sampled range partitioner (global sorts)",
+      "at": [{ "step": "Reveal: two different partitioners, named in the plan" }]
+    },
+    {
+      "clause": "exchange elimination when an existing output partitioning already satisfies the required distribution",
+      "at": [
+        { "step": "Predict: two steps, the same key" },
+        { "step": "Reveal: one shuffle, shared across both" },
+        { "step": "Predict: two steps, two different keys" },
+        { "step": "Reveal: two real shuffles this time" }
+      ]
+    },
+    {
+      "clause": "static partition pruning on Hive-style directory layouts and DSv2 partition-stats filtering",
+      "at": [
+        { "step": "Predict: filtering a Hive-style layout" },
+        { "step": "Reveal: named directly in the scan node" },
+        { "deep": "DSv2 partition-stats filtering, the sourced-only half" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "partitioning.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "HashPartitioning puts all rows sharing the same hash of its expressions into the same partition",
+          "at": [{ "step": "Reveal: two different partitioners, named in the plan" }]
+        },
+        {
+          "item": "RangePartitioning splits rows by a total ordering, a stronger guarantee than mere grouping",
+          "at": [{ "step": "Reveal: two different partitioners, named in the plan" }]
+        }
+      ]
+    },
+    {
+      "source": "Parquet Files — Partition Discovery (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "Hive-style partitioning stores data in directories with partitioning column values encoded in the path itself",
+          "at": [{ "step": "Predict: filtering a Hive-style layout" }]
+        }
+      ]
+    },
+    {
+      "source": "SupportsPushDownFilters.java (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "a data source implements this interface specifically to push filters down and reduce how much data a scan reads",
+          "at": [{ "deep": "DSv2 partition-stats filtering, the sourced-only half" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "RangePartitioning's own 'sampled' mechanism (named in the syllabus clause as 'sampled range partitioner') samples the data first to estimate range boundaries before the real shuffle runs — a separate sampling job this topic's own plan-text measurement doesn't independently isolate, since the rangepartitioning tag alone confirms the partitioner used, not the sampling step that chose its boundaries.",
+        "at": [{ "out": "the sampling step behind range partitioning's own boundary selection named only; not independently measured" }]
+      },
+      {
+        "item": "DSv2's own partition-stats filtering (named in the syllabus clause alongside static Hive-style pruning) is a separate mechanism from directory-based pruning: a DSv2-compatible source can report per-partition statistics a query can filter against at plan time, without that source necessarily using Hive-style directories at all — this topic's own examples.py measures the directory-based case specifically, disclosing the DSv2 statistics path as sourced-only via its own interface.",
+        "at": [{ "out": "DSv2 partition-stats filtering named via SupportsPushDownFilters.java; not independently measured against a real DSv2 source" }]
+      },
+      {
+        "item": "HashPartitioning's own partition-id formula (a modulo of a Murmur3 hash of the partitioning expressions) is deterministic and version-pinned specifically because stateful streaming operators depend on the same row always landing in the same partition across restarts — a correctness requirement named in the source's own scaladoc, beyond the batch-query partitioning this topic measures.",
+        "at": [{ "out": "the Murmur3-hash partition-id formula and its streaming-correctness requirement named only; this topic measures batch partitioning behaviour" }]
+      },
+      {
+        "item": "A third family, dynamic partition pruning (DPP), uses a runtime filter result from one side of a join to prune the other side's partitions at execution time, not at plan time — a different mechanism from this topic's own static, plan-time pruning, covered as its own later topic in this chapter.",
+        "at": [{ "out": "dynamic partition pruning named only; this topic measures static, plan-time pruning specifically" }]
+      },
+      {
+        "item": "ShuffleExchangeExec's own ENSURE_REQUIREMENTS tag (visible in a real plan alongside REPARTITION_BY_NUM for an explicit repartition call) marks a shuffle the planner added itself to satisfy an operator's required distribution — the exact mechanism this topic's own same-key/different-key window comparison exercises, distinguishing a planner-added shuffle from a user-requested one.",
+        "at": [{ "step": "Reveal: one shuffle, shared across both" }]
+      },
+      {
+        "item": "Static partition pruning requires the filter predicate to reference the partitioning column directly and be resolvable at plan time (a literal or a foldable expression) — a filter whose value is only known at runtime (such as a subquery result) cannot prune statically at all, which is precisely the gap dynamic partition pruning exists to close.",
+        "at": [{ "out": "the static-pruning predicate requirement named only; the runtime case is dynamic partition pruning, a separate later topic" }]
+      },
+      {
+        "item": "A hash-partitioned join between two tables, each already partitioned by the join key with matching partition counts, exercises the exact same exchange-elimination mechanism this topic measures via window steps — a join's own ClusteredDistribution requirement is satisfied the same way a window's PartitionBy requirement is, just on a different physical operator.",
+        "at": [{ "out": "exchange elimination on a join's own ClusteredDistribution requirement named only; this topic measures the mechanism via window operators specifically" }]
+      },
+      {
+        "item": "Spark's own ReusedExchange node (distinct from the plain Exchange-elimination this topic measures) appears when two genuinely identical subplans, not merely two compatible distribution requirements, get deduplicated into one physical execution — a related but separate optimisation from the requirement-satisfaction case this topic's own examples.py isolates.",
+        "at": [{ "out": "ReusedExchange named only as a related, separate mechanism; this topic's own measurement isolates requirement-based elimination, not subplan deduplication" }]
+      },
+      {
+        "item": "AQE's own runtime coalescePartitions feature, disabled for this topic's whole session, can merge small post-shuffle partitions together after execution begins — a dynamic, cost-based adjustment layered on top of the static Exchange count this topic measures from the up-front plan, and would otherwise obscure the exact 1-vs-2 contrast the window comparison relies on.",
+        "at": [{ "out": "AQE's own coalescePartitions runtime adjustment named only; this topic disables AQE specifically to keep the up-front plan-time Exchange count legible" }]
+      },
+      {
+        "item": "Bucket pruning, the storage-partitioned-join mechanism this chapter covers next, differs from this topic's own directory-based static pruning in that it skips whole files within a directory by a hash of the bucketing column rather than skipping whole directories by an equality predicate on a Hive-style partition column — a related but distinct pruning granularity this topic does not measure.",
+        "at": [{ "out": "bucket pruning named only as the next topic's own, finer-grained mechanism; this topic measures directory-level static pruning specifically" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
