@@ -1,0 +1,137 @@
+{
+  "topic": "de.kraft-metadata-replicated-log",
+  "syllabus": [
+    {
+      "clause": "Kafka 4.0 removed ZooKeeper: a Raft-based controller quorum writes cluster metadata to __cluster_metadata, brokers replay it and are fenced by heartbeats",
+      "at": [
+        { "step": "Setup: one log instead of two systems" },
+        { "step": "Reveal: the metadata log, fetched like any other" },
+        { "step": "Reveal: heartbeat fencing, in real numbers" }
+      ]
+    },
+    {
+      "clause": "metadata snapshots, pre-vote (KIP-996), dynamic controller quorums (KIP-853)",
+      "at": [
+        { "step": "Setup: one log instead of two systems" },
+        { "step": "Reveal: pre-vote, measured" },
+        { "step": "Reveal: dynamic quorums, one change at a time" }
+      ]
+    },
+    {
+      "clause": "the mandatory 3.9 bridge migration from ZooKeeper",
+      "at": [
+        { "deep": "Production failures this topic warns about" }
+      ]
+    },
+    {
+      "clause": "theory in Ch.14; → Rust Systems Engineering Ch.26",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Kafka, KIP-500",
+      "items": [
+        {
+          "item": "the controller nodes comprise a Raft quorum that manages the metadata log; a three-node quorum survives one failure, a five-node quorum survives two",
+          "at": [{ "step": "Setup: one log instead of two systems" }]
+        },
+        {
+          "item": "brokers fetch metadata updates via MetadataFetch rather than having the controller push them, and that same fetch doubles as a heartbeat",
+          "at": [
+            { "step": "Predict: controller pushes updates, or brokers pull them?" },
+            { "step": "Reveal: the metadata log, fetched like any other" },
+            { "step": "Reveal: heartbeat fencing, in real numbers" }
+          ]
+        },
+        {
+          "item": "the failure this design fixes: a broker partitioned from the controller but not from ZooKeeper kept serving stale metadata",
+          "at": [{ "step": "Hook: the broker that kept serving stale metadata" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka, KIP-866 (ZooKeeper to KRaft Migration)",
+      "items": [
+        {
+          "item": "the bridge release is a named, required intermediate step of the migration, with a dual-write rollback mechanism",
+          "at": [{ "deep": "Production failures this topic warns about" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka, KIP-996 (Pre-Vote)",
+      "items": [
+        {
+          "item": "pre-vote canvasses for a likely win before bumping the epoch and sending a real, disruptive vote request",
+          "at": [
+            { "step": "Predict: why does an unwinnable candidate still disrupt?" },
+            { "step": "Reveal: pre-vote, measured" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka, KIP-853 (dynamic controller quorums)",
+      "items": [
+        {
+          "item": "voters are added or removed via AddVoter/RemoveVoter RPCs, with only one voter-change operation allowed at a time",
+          "at": [{ "step": "Reveal: dynamic quorums, one change at a time" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A broker's periodic fetch of the metadata log is the same request that proves it is alive to the controller.",
+        "at": [{ "step": "Reveal: the metadata log, fetched like any other" }]
+      },
+      {
+        "item": "A broker is fenced once its time since the last heartbeat exceeds a configured timeout, regardless of whether it is still network-reachable.",
+        "at": [{ "step": "Reveal: heartbeat fencing, in real numbers" }]
+      },
+      {
+        "item": "A standard Raft vote request bumps the term/epoch unconditionally, before the outcome of the election is known.",
+        "at": [{ "step": "Predict: why does an unwinnable candidate still disrupt?" }]
+      },
+      {
+        "item": "Pre-vote's canvass is informal and does not itself bump any persistent state.",
+        "at": [{ "step": "Reveal: pre-vote, measured" }]
+      },
+      {
+        "item": "Dynamic quorum membership changes close an operability gap that raw Raft does not solve by itself.",
+        "at": [{ "step": "Reveal: dynamic quorums, one change at a time" }]
+      },
+      {
+        "item": "Metadata snapshots bound how much log a newly joining or recovering broker must replay.",
+        "at": [{ "step": "Setup: one log instead of two systems" }]
+      },
+      {
+        "item": "No source fetchable in this sandbox confirms a specific version naming the mandatory bridge release.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      },
+      {
+        "item": "The controller quorum replaces ZooKeeper only for Kafka's own cluster metadata, not for anything a Kafka client talks to directly.",
+        "at": [{ "step": "Hook: the broker that kept serving stale metadata" }]
+      },
+      {
+        "item": "This topic reuses the pull-based fetch pattern from ordinary partition replication rather than inventing a new mechanism for metadata.",
+        "at": [{ "step": "Setup: one log instead of two systems" }]
+      },
+      {
+        "item": "Formal consensus theory and the Rust build-it-yourself depth are explicitly out of scope for this topic.",
+        "at": [{ "deep": "Frontier" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "topic": "de.container-resource-limits-cgroups",
+  "syllabus": [
+    {
+      "clause": "cgroups v2 memory and CPU limits",
+      "at": [
+        { "step": "The limit is a kernel file" },
+        { "step": "CPU: a quota and a period" },
+        { "deep": "The limit is a kernel file" },
+        { "deep": "CPU quota and throttling" }
+      ]
+    },
+    {
+      "clause": "CFS quota throttling",
+      "at": [
+        { "step": "CPU: a quota and a period" },
+        { "step": "Throttled on an idle node?" },
+        { "deep": "CPU quota and throttling" }
+      ]
+    },
+    {
+      "clause": "OOMKilled (kernel) vs JVM OutOfMemoryError vs Python RSS growth",
+      "at": [
+        { "step": "A healthy heap, killed anyway" },
+        { "step": "What did the kernel count?" },
+        { "step": "Three ways to die of memory" },
+        { "deep": "Three ways to die of memory" }
+      ]
+    },
+    {
+      "clause": "container-aware JVM sizing",
+      "at": [
+        { "step": "The JVM doesn't size itself to the limit" },
+        { "deep": "Sizing the JVM and Spark inside a container" }
+      ]
+    },
+    {
+      "clause": "Spark memoryOverhead",
+      "at": [
+        { "step": "Spark's memoryOverhead arithmetic" },
+        { "deep": "Sizing the JVM and Spark inside a container" }
+      ]
+    },
+    {
+      "clause": "liveness vs readiness vs startup probes and the restart loops a wrong probe causes",
+      "at": [
+        { "step": "Three probes, three actions" },
+        { "deep": "In code review" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Linux kernel documentation, Control Group v2",
+      "items": [
+        { "item": "memory.max is a hard limit; crossing it invokes the cgroup's OOM killer", "at": [{ "step": "The limit is a kernel file" }] },
+        { "item": "memory.oom.group default (0) decides per-task vs whole-group kill", "at": [{ "deep": "The limit is a kernel file" }] },
+        { "item": "memory.events' oom and oom_kill are separate counters", "at": [{ "step": "Three ways to die of memory" }] },
+        { "item": "cpu.max is \"$MAX $PERIOD\" in microseconds; \"max 100000\" is the unthrottled default", "at": [{ "step": "CPU: a quota and a period" }] },
+        { "item": "cpu.stat's nr_periods/nr_throttled/throttled_usec when the CPU controller is enabled", "at": [{ "step": "CPU: a quota and a period" }] },
+        { "item": "tasks with oom_score_adj set to the protected value are an exception to oom.group", "at": [{ "out": "too deep for this topic's scope; belongs with topic 4's eviction/oom_score_adj material, where qos-classes-eviction is introduced" }] }
+      ]
+    },
+    {
+      "source": "Linux kernel documentation, CFS Bandwidth Control",
+      "items": [
+        { "item": "a group that exceeds its quota is throttled until the next period regardless of system-wide load", "at": [{ "step": "Throttled on an idle node?" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Liveness, Readiness, and Startup Probes",
+      "items": [
+        { "item": "a startup probe holds liveness and readiness back until it succeeds", "at": [{ "step": "Three probes, three actions" }] },
+        { "item": "a liveness probe failure restarts the container", "at": [{ "step": "Three probes, three actions" }] },
+        { "item": "a readiness probe failure removes the pod from service without restarting it", "at": [{ "step": "Three probes, three actions" }] },
+        { "item": "initialDelaySeconds and failureThreshold tuning", "at": [{ "out": "a configuration-tuning detail; this topic's outcome is choosing which probe, not tuning its parameters" }] }
+      ]
+    },
+    {
+      "source": "Oracle java(1), Java SE 21",
+      "items": [
+        { "item": "-XX:MaxRAMPercentage defaults to 25 percent of the container's memory limit", "at": [{ "step": "The JVM doesn't size itself to the limit" }] }
+      ]
+    },
+    {
+      "source": "Apache Spark 4.2.0, Configuration",
+      "items": [
+        { "item": "memoryOverheadFactor defaults to 0.10, except Kubernetes non-JVM jobs at 0.40", "at": [{ "step": "Spark's memoryOverhead arithmetic" }] },
+        { "item": "overhead is floored at a minimum (384 MiB)", "at": [{ "step": "Spark's memoryOverhead arithmetic" }] },
+        { "item": "the full set of memory-related Spark configuration keys beyond overhead (e.g. spark.memory.fraction)", "at": [{ "out": "Spark's own in-JVM memory-management split (execution vs storage) is a separate topic from container-level overhead sizing, and isn't this topic's outcome" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "exit code 137 is 128 plus SIGKILL's signal number, the kernel OOM killer's own signal", "at": [{ "step": "Three ways to die of memory" }] },
+      { "item": "raising a container's memory limit alone doesn't fix a non-heap-driven OOMKilled, because MaxRAMPercentage keeps heap a fixed fraction of a now-larger limit", "at": [{ "deep": "Sizing the JVM and Spark inside a container" }] },
+      { "item": "the real JVM OutOfMemoryError in this topic's lab must free heap before printing, since printing itself needs an allocation the almost-full heap may not have", "at": [{ "deep": "Try it" }] },
+      { "item": "a Python process's RSS growth is measured via resource.getrusage, which is already in KiB on Linux", "at": [{ "deep": "Try it" }] },
+      { "item": "whether to set a CPU limit at all is a live debate this topic only names; topic 4 (QoS classes and eviction) argues it", "at": [{ "step": "CPU: a quota and a period" }] },
+      { "item": "the executor-memory-model concept from chapter 7 (unplanned at this writing) can't yet be linked as a used concept id; logged as a gap per CHAPTER.md's cross-chapter-id rule rather than guessed", "at": [{ "out": "chapter 7 is unplanned/unbuilt at this writing; a seam pass should add the link once that id exists in registry.ts" }] },
+      { "item": "a readiness probe failure does not restart the container, only removes it from the Service's endpoints; the container keeps running and can recover on its own", "at": [{ "step": "Three probes, three actions" }] },
+      { "item": "memory.max accepts the literal string \"max\" to mean no limit, the same vocabulary cpu.max uses for its own quota field", "at": [{ "deep": "The limit is a kernel file" }] },
+      { "item": "a pod's CPU limit (and hence its cpu.max quota) is derived from the container spec's own resources.limits.cpu, converted to the cgroup's microsecond units by the kubelet", "at": [{ "step": "CPU: a quota and a period" }] },
+      { "item": "the Python RSS example never frees its list before the process exits, unlike the JVM example, because ru_maxrss reports the high-water mark for the whole process lifetime, not a live reading", "at": [{ "deep": "Try it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

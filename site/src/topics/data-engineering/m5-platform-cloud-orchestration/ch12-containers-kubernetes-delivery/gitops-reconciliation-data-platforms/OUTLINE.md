@@ -1,0 +1,26 @@
+# Outline — `de.gitops-reconciliation-data-platforms`
+
+Full topic, §12.3, hosts the chapter's final lab. Bridges from topic 7's handoff ("who is allowed to change those documents on a running cluster") and is the last topic of Chapter 12, handing off to Chapter 13 (observability).
+
+## Declared cross-chapter gap
+
+CHAPTER.md's brief names Chapter 10 §10.4 (Infrastructure as code and FinOps) and Chapter 11 §11.4 (CI/CD for data pipelines, write-audit-publish) as material this topic builds on and should draw `uses` ids from. Checked `registry.ts` directly: neither chapter has a §10.4 or §11.4 topic built yet (Chapter 10 only has §10.1 topics; Chapter 11 only has §11.1 topics). Per the same cross-chapter-id rule topics 6 and 7 already hit (Chapter 7 §7.3, Chapter 9 §9.1/§9.3), this is logged as a declared gap rather than a guessed id. `uses` draws only on ids that actually exist: `k8s-reconciliation-loop`, `k8s-workload-objects`, `flink-operator-upgrade-modes`, `statefulset-stable-identity-storage` (both introduced by topic 7), `container-config-injection` (topic 1), `ci-pipelines`, `commit-graph`, `pr-merge-strategies` (Chapter 1's Git refreshers). `coverage.json`'s `gapReview.open` stays empty — the IaC-vs-GitOps seam and the CI/write-audit-publish gates this topic leaves out are described qualitatively from CHAPTER.md's own clause text, not assumed as taught background.
+
+## Steps
+
+1. **Hook** — a 3 a.m. `kubectl edit` fixes an incident and nobody tells anyone; three weeks later a deploy silently reverts it. Predict: with automated sync on but self-heal off, what happens to the manual edit after a Git change that doesn't touch that field?
+2. **The loop, with Git as the spec** — Argo CD's own words: the application controller "continuously monitors running applications and compares the current, live state against the desired target state." Same reconciliation loop as topic 3, now with Git as the desired state instead of a resource's own `spec`.
+3. **Flux, and OCI as a source too** — Flux's own definition of GitOps; the newer "Gitless GitOps" direction, OCI registries as a source alongside Git. Named honestly as two separate, real projects (Argo CD, Flux), same discipline as topic 6's two Spark operators.
+4. **Helm/Kustomize: a chart or a base, not a cluster** — "Helm is only used to inflate charts with `helm template`." The rendered diff is what the reconciler actually applies.
+5. **Promotion by pull request** — staging to production as a commit changing a version or overlay; review, history, rollback are Git's own (`commit-graph`, `pr-merge-strategies`, used not re-taught).
+6. **Predict resolves: self-heal, off** — by default, a manual live edit does *not* trigger automated sync; self-heal must be switched on for Argo CD to react to it. Without self-heal, the 3 a.m. edit survives an unrelated Git change (because the field the edit touched is untouched by that sync) but is still live drift waiting to be overwritten.
+7. **Automatic drift correction, and its guard** — self-heal switched on; pruning deletes what's no longer in Git, with the allow-empty guard against pruning to nothing; `Prune=false` as a per-resource opt-out.
+8. **The field another controller legitimately owns** — `ignoreDifferences` on `spec.replicas` for a Deployment under an autoscaler, Argo CD's own worked example.
+9. **A Secret in Git is a leak** — External Secrets Operator syncs from an external store, reconciling when the source changes; SOPS commits secrets encrypted (KMS, age, or PGP, its own README), leaving the decrypted Secret in the cluster as what it still exposes.
+10. **Progressive delivery, and why a stream job resists it** — Argo Rollouts' canary/blue-green, its own words: "blue-green, canary, canary analysis, experimentation, and progressive delivery." Design reasoning (not sourced): a deployment that restarts a stateful job from empty state is a data incident — topic 7's three upgrade modes are exactly why a stream job can't just be redeployed naively.
+11. **IaC vs. GitOps, the seam** — the cloud account/network/bucket/cluster/IAM is IaC (declared gap: Chapter 10 §10.4); the objects inside the cluster are GitOps; the seam is the identity and secret store a cluster needs from outside.
+12. **Recap / handoff** — the platform is delivered and kept converged; that says nothing about whether it's healthy. Chapter 13 opens with exactly that question.
+
+## Lab
+
+Hosts the chapter's §12.3 lab: promote a Flink job from staging to production through Argo CD with a savepoint-preserving upgrade; introduce manual drift with `kubectl edit` and observe reconciliation; roll back and verify no state loss. The sandbox has no Docker/kubectl/kind/k3s and no reachable Argo CD or Flink operator (confirmed again, same as every topic in this chapter), so per CHAPTER.md's own fallback order: the drift-and-rollback half is modeled computationally in `examples.py` against Argo CD's own documented sync/self-heal/prune semantics (a plain-Deployment-equivalent decision model, since no live Argo CD exists to run it against either), and the Flink savepoint-preserving-upgrade half is disclosed as sourced-only, reusing topic 7's already-verified upgrade-mode facts rather than re-deriving them.

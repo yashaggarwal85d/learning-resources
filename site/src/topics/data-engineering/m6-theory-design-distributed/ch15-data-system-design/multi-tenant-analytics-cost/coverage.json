@@ -1,0 +1,57 @@
+{
+  "topic": "de.multi-tenant-analytics-cost",
+  "syllabus": [
+    {
+      "clause": "per-tenant isolation (shared tables with row-level security vs schema/database per tenant)",
+      "at": [{ "step": "Reveal: the isolation spectrum, priced" }, { "step": "Reveal: what forces a tenant up the spectrum" }]
+    },
+    {
+      "clause": "noisy-neighbor control",
+      "at": [{ "step": "Reveal: noisy-neighbour control, simulated" }, { "step": "Reveal: fairness is the actual design question" }]
+    },
+    {
+      "clause": "per-tenant retention and erasure",
+      "at": [{ "step": "Reveal: retention and erasure, coupled to isolation" }]
+    },
+    {
+      "clause": "metering usage into a cost-attribution model",
+      "at": [{ "step": "Reveal: metering, allocation and the remainder" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Snowflake documentation, \"QUERY_ATTRIBUTION_HISTORY view\"",
+      "items": [
+        { "item": "The view can be used to determine the compute cost of a given query run on a warehouse.", "at": [{ "step": "Reveal: metering, allocation and the remainder" }] },
+        { "item": "CREDITS_ATTRIBUTED_COMPUTE excludes warehouse idle time.", "at": [{ "step": "Reveal: metering, allocation and the remainder" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud documentation, \"INFORMATION_SCHEMA.JOBS view\"",
+      "items": [
+        { "item": "total_bytes_billed, total_slot_ms and labels are documented fields of the JOBS view.", "at": [{ "step": "Reveal: metering, allocation and the remainder" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The isolation spectrum trades cost against blast radius; nothing on it is free, including the cheapest rung.", "at": [{ "step": "Reveal: what forces a tenant up the spectrum" }] },
+      { "item": "A quota without a fairness rule just moves who gets starved rather than solving the problem.", "at": [{ "step": "Reveal: fairness is the actual design question" }] },
+      { "item": "Per-tenant erasure cost is a direct consequence of the isolation level already chosen, not a separate decision.", "at": [{ "step": "Reveal: retention and erasure, coupled to isolation" }] },
+      { "item": "The unattributable remainder needs a stated policy, because a metering view documents what it does not cover.", "at": [{ "step": "Reveal: metering, allocation and the remainder" }] },
+      { "item": "A bigger warehouse fixes neither the isolation gap nor the attribution gap the hook describes.", "at": [{ "step": "Predict: which two controls would have prevented this?" }] },
+      { "item": "A metering view has a real cost of its own that scales with query count, and can become the next bottleneck at ten times the tenant count.", "at": [{ "step": "Prove it: ten times the tenants" }] },
+      { "item": "This topic leaves out the isolation-spectrum theory, row/column security mechanisms, FinOps practice, engine resource-governance internals, and the Chapter 13 erasure mechanisms.", "at": [{ "deep": "Internals" }] },
+      { "item": "Tenant isolation spectrums, noisy-neighbour quotas, and usage-based cost attribution are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its isolation and attribution model; the next design must compose erasure across the lakehouse and its backups.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A shared warehouse with no per-tenant limit lets one tenant's heavy query degrade every neighbour, with no way to even identify the cause.", "at": [{ "step": "Hook: one seller slows every dashboard" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

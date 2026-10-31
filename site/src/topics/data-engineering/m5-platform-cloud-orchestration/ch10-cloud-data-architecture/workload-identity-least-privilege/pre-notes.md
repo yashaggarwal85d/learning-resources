@@ -1,0 +1,6 @@
+- **Role**: an identity with no long-lived credential of its own, assumed temporarily rather than logged into. *Where you meet it:* an IAM role, a service account's workload identity, anything a workload "assumes" rather than "signs in as."
+- **Trust policy**: the policy on a role that decides who (or what) may assume it. *Where you meet it:* the `AssumeRolePolicyDocument` on an IAM role.
+- **Permission policy**: the policy that decides what an already-assumed role may actually do. *Where you meet it:* the policy attached to a role granting specific actions on specific resources.
+- **Permission boundary**: a managed policy that caps the maximum permissions an identity's own policies can grant, by intersection. *Where you meet it:* set on an IAM user or role, never granting anything by itself.
+- **Federated credential**: a short-lived credential issued after a workload proves its identity to a broker, rather than a static key issued once and kept forever. *Where you meet it:* AWS IRSA/EKS Pod Identity, GKE Workload Identity Federation, Entra workload identity.
+- **Privilege escalation**: gaining permissions beyond what you were directly granted, typically by exploiting a gap between two separate permission checks. *Where you meet it:* the `PassRole` pattern this topic reproduces.

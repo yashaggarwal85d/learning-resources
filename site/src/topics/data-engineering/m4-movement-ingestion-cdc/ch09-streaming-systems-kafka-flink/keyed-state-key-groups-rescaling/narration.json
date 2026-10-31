@@ -1,0 +1,99 @@
+{
+  "topic": "de.keyed-state-key-groups-rescaling",
+  "steps": [
+    {
+      "lines": [
+        "Kill off one worker on purpose, right in the middle of everything, and time how long it takes to come back.",
+        "That time has nothing to do with how many steps the whole job happens to be made of.",
+        "It tracks one thing only: how much was actually sitting on that one worker when it went down."
+      ]
+    },
+    {
+      "lines": [
+        "A picture gets taken of everything, consistently, while the whole thing keeps on running underneath.",
+        "What that picture actually contains, piece by piece, for work that's organized around a key, is the open question here.",
+        "Answering that is also what makes resizing the whole thing afterward even possible at all."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The whole thing gets resized, bigger or smaller, and whatever was being kept has to go somewhere.",
+        "Does each individual piece get relocated on its own, one at a time, or does something else happen instead?"
+      ],
+      "answer": [
+        "Something else happens. Fixed groups move together, as whole blocks.",
+        "Every single piece was already sorted into one of a fixed number of groups, decided from the very start.",
+        "Resizing moves those groups around whole. It never reaches in and relocates one piece by itself."
+      ]
+    },
+    {
+      "lines": [
+        "Every single piece gets sorted into exactly one of a fixed number of groups, and that sorting never changes.",
+        "That number of groups gets decided once, way up front, completely separate from how many workers happen to exist right now.",
+        "From that point on, it's the groups that get handed out to workers, never the individual pieces."
+      ]
+    },
+    {
+      "lines": [
+        "Resize the whole thing, and entire groups slide over to different workers, all at once, as one unit.",
+        "No group ever gets torn in half across two different workers. That split simply doesn't happen.",
+        "Check every single piece afterward, and it comes back exactly as it was, nothing lost or changed."
+      ]
+    },
+    {
+      "lines": [
+        "One way of keeping things close by is plain and fast, but only holds as much as memory allows.",
+        "A different way trades some of that speed away, in exchange for far more room, out on disk instead.",
+        "Pick one over the other, and that's the trade being made: quick and limited, or roomier and slower."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "One version of the job is simple. A very different version does a whole lot more, step after step.",
+        "Does that heavier, more involved version take noticeably longer to come back after the exact same kind of failure?"
+      ],
+      "answer": [
+        "No. What each version is doing makes no difference at all to that.",
+        "Coming back only depends on how much was sitting on the worker that went down, nothing about the job's shape.",
+        "Run both, lose the same worker both times, and they come back in exactly the same amount of time."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, side by side, one simple and one far more elaborate, losing the identical worker.",
+        "They come back in the same amount of time, every single time, with no exception at all.",
+        "Only a worker holding noticeably more actually takes noticeably longer. Nothing else about the job matters here."
+      ]
+    },
+    {
+      "lines": [
+        "Leave something sitting untouched for long enough, and it quietly expires and gets cleared away on its own.",
+        "Nobody has to go reach in and remove it by hand. That cleanup just happens, on a best effort basis.",
+        "A shape can also change a little over time, but only within a narrow, clearly spelled out set of allowed moves."
+      ]
+    },
+    {
+      "lines": [
+        "A much bigger jump, from an older version of everything to a genuinely newer one, is a separate question.",
+        "Check what's officially supported for carrying something forward, and that newest jump just isn't listed there at all.",
+        "The real reason underneath that gap is a rewrite of exactly how things get encoded and stored."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The groups that really did move whole, and checked out clean afterward, every single time.",
+        "The coming-back time that really didn't care how elaborate either version of the job happened to be."
+      ]
+    },
+    {
+      "lines": [
+        "So: a fixed number of groups, decided once, never shifting with how many workers exist right now.",
+        "Resizing slides those whole groups around, never tears one apart, and whatever's inside checks out clean.",
+        "One way of keeping things close trades speed for room elsewhere, and an old version doesn't just carry straight through a big jump."
+      ]
+    }
+  ]
+}

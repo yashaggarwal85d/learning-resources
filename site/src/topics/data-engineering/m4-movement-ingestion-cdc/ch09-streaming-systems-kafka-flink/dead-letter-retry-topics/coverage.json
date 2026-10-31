@@ -1,0 +1,133 @@
+{
+  "topic": "de.dead-letter-retry-topics",
+  "syllabus": [
+    {
+      "clause": "poison messages that block a partition",
+      "at": [
+        { "step": "Hook: one bad record, an entire frozen queue" },
+        { "step": "Setup: when eventually never comes" }
+      ]
+    },
+    {
+      "clause": "non-blocking retry topics with tiered delays",
+      "at": [
+        { "step": "Predict: divert it instead of retrying in place" },
+        { "step": "Reveal: the partition stops waiting" },
+        { "step": "Predict: every tier exhausted" }
+      ]
+    },
+    {
+      "clause": "the ordering they sacrifice",
+      "at": [{ "step": "Reveal: the cost, named outright" }]
+    },
+    {
+      "clause": "DLQ payload and metadata design",
+      "at": [{ "step": "Reveal: a bounded, diagnosable endpoint" }]
+    },
+    {
+      "clause": "alerting and replay tooling",
+      "at": [{ "deep": "Frontier" }]
+    },
+    {
+      "clause": "Kafka Connect errors.tolerance",
+      "at": [{ "step": "Reveal: two current, named mechanisms" }]
+    },
+    {
+      "clause": "Kafka Streams DLQ handlers from 4.2",
+      "at": [{ "step": "Reveal: two current, named mechanisms" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "User Guide (Apache Kafka Connect docs)",
+      "items": [
+        {
+          "item": "errors.tolerance controls whether a connector dead-letters a bad record or fails the whole task",
+          "at": [{ "step": "Reveal: two current, named mechanisms" }]
+        }
+      ]
+    },
+    {
+      "source": "KIP-1034: Dead letter queue in Kafka Streams (Apache Kafka wiki)",
+      "items": [
+        {
+          "item": "Kafka Streams gained its own first-class dead-letter-queue handler mechanism",
+          "at": [{ "step": "Reveal: two current, named mechanisms" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.2.0 Release Notes",
+      "items": [
+        {
+          "item": "KIP-1034's dead-letter queue support for Kafka Streams shipped in the 4.2.0 release",
+          "at": [{ "step": "Reveal: two current, named mechanisms" }]
+        }
+      ]
+    },
+    {
+      "source": "Error Handling Patterns in Kafka (Confluent blog)",
+      "items": [
+        {
+          "item": "events routed through a retry path are not guaranteed to be processed in the same sequence received in the source topic, because the retry path is slower and has fewer instances",
+          "at": [{ "step": "Reveal: the cost, named outright" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Retrying a poison record in place isn't a smaller version of this problem — it's a structurally different failure, because the ordering guarantee that makes the retry safe to attempt is the exact mechanism that also blocks everything behind it.",
+        "at": [{ "step": "Setup: when eventually never comes" }]
+      },
+      {
+        "item": "Diverting a record off the partition doesn't fix the underlying failure — it only relocates where that failure's cost is paid, from availability (a stalled partition) to consistency (broken relative order).",
+        "at": [{ "step": "Reveal: the partition stops waiting" }]
+      },
+      {
+        "item": "A tiered retry schedule is a bet about failure duration, not failure cause — it buys a record time to recover from a transient fault, but offers nothing against a fault that is permanent from the first attempt.",
+        "at": [{ "step": "Predict: every tier exhausted" }]
+      },
+      {
+        "item": "A dead-letter record's value is entirely in what it carries, not in the fact that it exists — a record dead-lettered with no original offset or exception is no more actionable than one silently dropped.",
+        "at": [{ "step": "Reveal: a bounded, diagnosable endpoint" }]
+      },
+      {
+        "item": "The ordering cost this topic names isn't unique to retry topics — it's the same at-least-once-style trade this chapter has made before (duplicates traded for availability), applied here to sequence instead of delivery count.",
+        "at": [{ "step": "Reveal: the cost, named outright" }]
+      },
+      {
+        "item": "Kafka Connect's errors.tolerance and Kafka Streams' DLQ handler solve the same problem at different layers of the same ecosystem, which is why Streams needed its own mechanism even after Connect already had one.",
+        "at": [{ "step": "Reveal: two current, named mechanisms" }]
+      },
+      {
+        "item": "A retry topic and a dead-letter topic are the same primitive — a separate topic holding records the main flow can't currently handle — used at two different points of a record's life: mid-retry versus retry-exhausted.",
+        "at": [{ "step": "Reveal: a bounded, diagnosable endpoint" }]
+      },
+      {
+        "item": "The toy BlockingPartition and NonBlockingRetryFlow models are deliberately simplified standalone demonstrations, not ports of a real Kafka cluster's retry machinery, and the orders processed in each run are this run's own output, not cited figures.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Deduplication and dead-lettering solve opposite failure directions: dedup assumes a record can eventually succeed and guards against seeing it twice; dead-lettering assumes a record can never succeed and guards against it blocking everything else.",
+        "at": [{ "step": "Setup: when eventually never comes" }]
+      },
+      {
+        "item": "Naming the ordering cost explicitly, rather than leaving it implicit, is what lets a downstream consumer decide whether strict order actually matters for its own logic — an undisclosed cost can't be designed around.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "A dead-letter topic being bounded and observable is what makes it fundamentally different from an infinite retry loop or a silent drop — both of those also 'handle' exhaustion, just without leaving anything an operator can act on.",
+        "at": [{ "step": "Predict: every tier exhausted" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
