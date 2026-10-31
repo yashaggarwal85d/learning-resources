@@ -6251,6 +6251,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything in this section has been about correctness inside a single stream-processing step. The engines that actually run these steps continuously, at scale, recovering from failure without losing or duplicating state, are the subject of the rest of this chapter — starting with how such an engine is even structured.",
   },
   {
+    id: 'de.flink-runtime-architecture',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/flink-runtime-architecture',
+    title: 'Flink runtime architecture',
+    syllabusTitle: 'Flink runtime architecture',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['flink-jobmanager-taskmanager-slots', 'credit-based-backpressure'],
+    uses: [],
+    declared: ['task-scheduling-network-buffering-basics'],
+    bridge:
+      "Everything in this section so far has been about correctness inside a single stream-processing step, regardless of what runs it. This topic is the machine that actually runs it, continuously, at scale: Flink's own runtime.",
+    handoff:
+      "A TaskManager that crashes mid-job must not simply lose everything it was computing. How Flink makes that recoverable, with a precise correctness guarantee, is the next topic: checkpointing.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
