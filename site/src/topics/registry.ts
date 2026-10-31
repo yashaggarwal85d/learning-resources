@@ -6371,6 +6371,26 @@ export const TOPICS: TopicMeta[] = [
       "Every engine in this chapter eventually has to put its output somewhere a person, or another system, can actually query. The next two topics are those two destinations: the lakehouse, and a real-time OLAP store.",
   },
   {
+    id: 'de.streaming-into-lakehouse',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/streaming-into-lakehouse',
+    title: 'Streaming into the lakehouse',
+    syllabusTitle: 'Streaming into the lakehouse',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['topic-to-table-materialisation', 'streaming-write-commit-tradeoff'],
+    uses: ['lakehouse-merge-rewrite', 'cdc-landing-strategies', 'two-phase-commit-sink'],
+    declared: [],
+    bridge:
+      "Every engine in this chapter eventually has to put its output somewhere a person or another system can actually query. This topic is the first of two destinations: a lakehouse table, and the real, unavoidable trade-off between how fresh that table is and how many small files it accumulates getting there.",
+    handoff:
+      "A lakehouse table is read by a batch-style query engine. The other destination this chapter's streams can land on is built to answer a query in milliseconds against data that arrived seconds ago, and that is the chapter's last topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
