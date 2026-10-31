@@ -75,7 +75,7 @@ const reel: Reel = {
       ),
       duration: 4.6,
       fig: 'log base two of sixteen, tight',
-      takeaway: 'Union by rank bounds every tree’s height at log₂ n, by a doubling argument: a rank only rises when a tree at least doubles.',
+      takeaway: 'Union by rank bounds height at log₂ n: a rank only rises when a tree at least doubles.',
       Visual: S.RankBound,
     },
     {
@@ -90,7 +90,7 @@ const reel: Reel = {
       ),
       duration: 4.4,
       fig: 'depth fifteen collapses to one, in one Find',
-      takeaway: 'Path compression is layered on top of rank, not a replacement for it: one Find can still cost Θ(log n), but it pays off every later Find through the same nodes.',
+      takeaway: 'Compression is layered on rank, not a replacement: it pays off every later Find through the same nodes.',
       Visual: S.Compression,
     },
     {
@@ -135,7 +135,7 @@ const reel: Reel = {
       ),
       duration: 4.8,
       fig: 'α(n) under five',
-      takeaway: 'O(α(n)) describes the average over a long run of operations, never a promise about any single call: a lone Find can still cost Θ(log n).',
+      takeaway: 'O(α(n)) describes the average over many operations, never a promise about any single call.',
       Visual: S.AlphaBound,
     },
     {
@@ -151,7 +151,7 @@ const reel: Reel = {
       ),
       duration: 5.2,
       fig: 'five merge, five already-together, both orders',
-      takeaway: 'Union–find is the cheapest common building block for three different questions — Kruskal’s cycle test, incremental components, entity-resolution clustering — never the whole algorithm by itself.',
+      takeaway: 'Union–find is the cheapest common building block for three different questions, never the whole algorithm by itself.',
       Visual: S.ThreeUses,
     },
     {
