@@ -7171,6 +7171,26 @@ export const TOPICS: TopicMeta[] = [
       "Those four dimensions are universal, but every cloud sells the services that generate them under a different name. The next section is a map: the same mechanism under three vendors' three different product names.",
   },
   {
+    id: 'de.cross-cloud-data-service-mapping',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/cross-cloud-data-service-mapping',
+    title: 'Cross-cloud data-service mapping',
+    syllabusTitle: 'Cross-cloud data-service mapping',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.2' },
+    minutes: 5,
+    verified: '2026-10-31',
+    introduces: ['cross-cloud-service-rosetta'],
+    uses: [],
+    declared: [],
+    bridge:
+      "Section 10.1 was true everywhere, under generic names. From here the chapter has to say which vendor's product actually does each job — this topic is the one table that makes every later cross-cloud reference make sense.",
+    handoff:
+      "Four of this table's cells — catalog, storage, Spark, identity — all converge on one mechanism that every governed lakehouse now uses, under four different product names. That mechanism is next.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
@@ -7889,6 +7909,26 @@ export const TOPICS: TopicMeta[] = [
       "A historian and a broker both assume the plant can reach them. A WAN does not stay up. This topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, drops by policy when the buffer fills, and corrects its clock when the link returns.",
     handoff:
       "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. The last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell, its standardised submodels, and the role it plays in EU data spaces and the digital product passport.",
+  },
+  {
+    id: 'de.asset-administration-shell-digital',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/asset-administration-shell-digital',
+    title: 'Asset Administration Shell digital twins',
+    syllabusTitle: 'Asset Administration Shell digital twins',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['aas-structure-submodels-semantic-ids', 'aas-type-vs-instance-shell', 'aas-rest-api-aasx-package', 'aas-in-data-spaces-and-product-passports'],
+    uses: ['equipment-hierarchy-dimension', 'isa95-levels-data-ownership', 'opc-ua-companion-specification', 'opc-ua-address-space-nodes-references', 'energy-per-unit-kpi', 'operational-vs-analytical-copy-ownership', 'historian-to-lakehouse-extraction-semantics', 'data-contract-specification', 'open-data-contract-standard', 'data-as-a-product', 'runtime-schema-validation', 'sensitivity-tier-and-category'],
+    declared: [],
+    bridge:
+      "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. This last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell and its standard submodels, and the part it plays when data crosses company boundaries in a data space or a digital product passport.",
+    handoff:
+      "That closes the chapter, from a plant's hierarchy through the time series its machines produce to the shell that describes them. One idea from it travels straight into the next: the as-of join that attaches the right temperature to a pressure spike is the same join that attaches the right feature to a label, and getting it wrong leaks the future into a model. The next chapter is the data layer of machine learning and of language models, and it opens there: point-in-time correct training data.",
   },
   {
     id: 'de.communicating-tradeoffs-decision-makers',
