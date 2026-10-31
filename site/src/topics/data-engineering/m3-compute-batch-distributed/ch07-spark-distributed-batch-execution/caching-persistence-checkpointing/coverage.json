@@ -1,0 +1,104 @@
+{
+  "topic": "de.caching-persistence-checkpointing",
+  "syllabus": [
+    {
+      "clause": "storage levels (memory/disk, serialised, replicated), LRU eviction and recomputation; cache keeps lineage while checkpoint (reliable) and localCheckpoint truncate it; when caching hurts (memory stolen from execution, cache of a non-deterministic plan).",
+      "at": [
+        { "step": "Reveal: cached -- run one pays once, run two reuses it" },
+        { "step": "Elaborate: why -- the cached data sits ready, unused computation behind it" },
+        { "step": "Reveal: memory-only recomputes, memory-and-disk reads back" },
+        { "step": "Elaborate: why -- the storage level decides what eviction costs you" },
+        { "step": "Reveal: a non-deterministic answer, frozen once cached" },
+        { "deep": "Checkpoint truncates lineage" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"RDD Programming Guide\" (persistence section)",
+      "items": [
+        {
+          "item": "without persist/cache, an action may recompute a transformed RDD from scratch; persist/cache keep it around for faster reuse next time",
+          "at": [{ "step": "Reveal: the baseline -- uncached, both runs genuinely redo the work" }]
+        },
+        {
+          "item": "cache() defaults to MEMORY_ONLY, which does not cache partitions that don't fit and recomputes them on the fly each time they're needed",
+          "at": [{ "step": "Reveal: memory-only recomputes, memory-and-disk reads back" }]
+        },
+        {
+          "item": "MEMORY_AND_DISK stores partitions that don't fit in memory on disk and reads them from there when needed, instead of recomputing",
+          "at": [{ "step": "Reveal: memory-only recomputes, memory-and-disk reads back" }]
+        }
+      ]
+    },
+    {
+      "source": "StorageLevel.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "a storage level is represented as independent flags -- use memory, use disk, deserialized, replication count -- confirming the documented levels are named combinations of the same four choices",
+          "at": [{ "step": "Elaborate: why -- the storage level decides what eviction costs you" }]
+        }
+      ]
+    },
+    {
+      "source": "ReliableCheckpointRDD.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "a reliable checkpoint's own RDD reads purely from checkpoint files on reliable storage, carrying no reference to the RDD it was checkpointed from",
+          "at": [{ "deep": "Checkpoint truncates lineage" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "localCheckpoint() truncates lineage the same way reliable checkpoint() does, but writes to executor-local storage instead of reliable storage -- faster, but lost entirely if the executor holding the data dies, unlike a reliable checkpoint which survives executor loss. This topic's own examples.py measures cache's lineage-preserving recomputation/eviction behavior, not either checkpoint variant's own write path.",
+        "at": [{ "out": "localCheckpoint's own local-vs-reliable trade-off named only, per the syllabus clause's own explicit mention; this topic's own examples.py does not measure either checkpoint variant directly" }]
+      },
+      {
+        "item": "A non-deterministic plan cached partway through a job can silently produce different downstream results on retry: if a task reading the cached data fails after only some partitions were cached, Spark recomputes the missing partitions from the original (non-deterministic) computation, producing values that disagree with the partitions that were already cached successfully -- a correctness hazard distinct from this topic's own clean before/after cache contrast.",
+        "at": [{ "out": "the partial-cache-plus-retry correctness hazard for a non-deterministic plan named only; this topic's own examples.py measures the simpler cached-vs-uncached contrast on a plan that fully materializes in one action" }]
+      },
+      {
+        "item": "LRU is the eviction policy Spark's own MemoryStore uses when storage memory runs out and borrowed execution memory is reclaimed -- the least-recently-used cached block is dropped first, which is why a job with several differently-sized cached DataFrames doesn't necessarily lose the largest or newest one first.",
+        "at": [{ "out": "LRU as the specific eviction policy named only; this topic's own examples.py forces eviction with a single large filler rather than distinguishing LRU from another policy across several cached blocks" }]
+      },
+      {
+        "item": "Caching stealing execution memory from the rest of the job (rather than simply costing the memory it uses) is itself a form of the previous topic's own spill: a cache that claims storage memory under memory pressure can force a concurrently-running task's own sort or aggregation into spilling that it otherwise wouldn't have needed to.",
+        "at": [{ "out": "caching-induced spill in a concurrently-running task named only, cross-referencing the previous topic's own spill mechanics; this topic's own examples.py measures caching's recomputation/eviction behavior in isolation, not its knock-on effect on a sibling task's spill" }]
+      },
+      {
+        "item": "Spark also automatically persists some intermediate shuffle data (e.g. the map output of a shuffle) even without the user calling persist, specifically so a node failure during the shuffle doesn't force recomputing the entire input -- a distinct, automatic form of the same underlying idea this topic's own examples.py measures only as an explicit, user-chosen cache() or persist() call.",
+        "at": [{ "out": "Spark's own automatic shuffle-output persistence named only; this topic's own examples.py measures only explicit, user-requested caching" }]
+      },
+      {
+        "item": "Serialized storage levels (MEMORY_ONLY_SER, MEMORY_AND_DISK_SER) trade more CPU on read for a smaller memory footprint than the deserialized default -- a third axis (serialized vs. not) independent of the memory-vs-disk axis this topic's own examples.py measures directly.",
+        "at": [{ "out": "the serialized-vs-deserialized storage-level axis named only; this topic's own examples.py measures only the memory-vs-disk eviction axis, using the deserialized default" }]
+      },
+      {
+        "item": "Replicated storage levels (MEMORY_ONLY_2, etc.) trade cache memory for faster fault recovery -- if one executor holding a replica dies, Spark can read the surviving replica instead of recomputing the lost partition at all, a third strategy beyond 'recompute' and 'spill to disk' for surviving data loss.",
+        "at": [{ "out": "replicated storage levels as a third survival strategy named only; this topic's own examples.py measures the simpler recompute-vs-disk-spill contrast without replication" }]
+      },
+      {
+        "item": "unpersist() explicitly releases a cached dataset's own storage immediately, rather than waiting for LRU eviction under pressure or garbage collection of the DataFrame reference -- the deliberate, intentional counterpart to the involuntary eviction this topic's own second claim measures as happening under memory pressure instead.",
+        "at": [{ "out": "unpersist()'s own deliberate, immediate release named only, as the counterpart to the eviction this topic measures; this topic's own examples.py isolates its three scenarios with separate SparkSessions rather than exercising unpersist() as a measured claim" }]
+      },
+      {
+        "item": "checkpoint() requires a checkpoint directory to be set on the SparkContext first (setCheckpointDir), and is itself eager, not lazy -- calling it immediately triggers a job that writes the data out, unlike cache()/persist(), which only mark an RDD for caching and materialize it lazily on the next action.",
+        "at": [{ "out": "checkpoint()'s own eager-materialization behavior and its setCheckpointDir precondition named only; this topic's own examples.py measures cache()'s lazy materialization, not checkpoint()'s eager one" }]
+      },
+      {
+        "item": "In PySpark specifically, cached objects are always serialized through the Pickle library regardless of which storage level is chosen, so the serialized-vs-deserialized axis that matters in Scala/Java is largely invisible from the Python API -- a language-specific wrinkle on top of the storage-level axis this topic's own examples.py measures in Python throughout.",
+        "at": [{ "out": "PySpark's own always-Pickle serialization behavior named only, sourced directly from the RDD Programming Guide's own note; this topic's own examples.py runs entirely in PySpark, where this wrinkle applies to every measured scenario" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
