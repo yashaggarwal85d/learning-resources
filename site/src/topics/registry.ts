@@ -5465,6 +5465,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything in this section has treated the Dag, and its tasks, as the unit the orchestrator schedules. Dagster's model asks whether the Dag is even the right unit to think in, or whether the data products themselves -- the assets -- should be the thing the system is built around.",
   },
   {
+    id: 'de.asset-centric-orchestration-dagster',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/asset-centric-orchestration-dagster',
+    title: 'Asset-centric orchestration (Dagster model)',
+    syllabusTitle: 'Asset-centric orchestration (Dagster model)',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['software-defined-asset-model', 'asset-check-quality-gate'],
+    uses: ['de.data-aware-event-driven-scheduling', 'de.orchestrator-architecture-scheduler', 'ch13.lineage-graph-model'],
+    declared: [],
+    bridge:
+      "Data-aware scheduling let a task DAG react to an asset update, but the DAG itself still thinks in actions. Dagster's model asks what happens if the graph is built out of the data products themselves from the start, with lineage falling out for free.",
+    handoff:
+      "Two orchestration philosophies, task-first and asset-first, have each earned their place by now, and durable, long-lived workflows are a third shape again. Choosing among a wider field of named tools is the last topic of this model-building section.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
