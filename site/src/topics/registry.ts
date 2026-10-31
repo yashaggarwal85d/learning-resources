@@ -6885,6 +6885,26 @@ export const TOPICS: TopicMeta[] = [
       "A broker carries the current value; a historian keeps the past. The next topic is the process historian, the system that has stored plant data for decades, and the compression it applies before it stores a single point: exception filtering, then swinging-door.",
   },
   {
+    id: 'de.process-historians-swinging-door',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/process-historians-swinging-door',
+    title: 'Process historians and swinging-door compression',
+    syllabusTitle: 'Process historians and swinging-door compression',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 18,
+    verified: '2026-10-31',
+    introduces: ['exception-deadband-filtering', 'swinging-door-compression-error-band', 'recorded-vs-interpolated-retrieval', 'historian-to-lakehouse-extraction-semantics'],
+    uses: ['opc-ua-subscription-monitored-item-deadband', 'delta-of-delta-timestamps', 'compression-ratio-is-data-property', 'regular-vs-irregular-series', 'aggregate-by-signal-type', 'filled-value-is-a-claim', 'read-only-extraction-load-budget', 'operational-vs-analytical-copy-ownership', 'quality-flag-and-quarantine-not-delete', 'mqtt-qos-retained-will', 'unified-namespace-pattern-and-limits'],
+    declared: [],
+    bridge:
+      "A broker carries the current value; a historian keeps the past. This topic is the process historian: the system that has stored plant data for decades, the exception filter and swinging-door compression it applies before a point is kept, and what that does to every number you later extract from it.",
+    handoff:
+      "A historian and a broker both assume the plant can reach them. A WAN does not stay up. The next topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, and corrects its clock when the link returns.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
