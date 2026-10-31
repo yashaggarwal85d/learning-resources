@@ -1,0 +1,73 @@
+{
+  "topic": "de.gdpr-by-design-pipelines",
+  "steps": [
+    {
+      "lines": [
+        "Watch the gap here, not the request itself. Five business days to produce a record, and the only copy anyone can find is years out of date.",
+        "Now watch the alternative: the same record, built fresh, on demand, straight from the pipeline's own current lineage and tags."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, separate two different kinds of worry. How much data you collected, and how long you kept it, are not the question here.",
+        "Of these four principles, which one actually governs whether reusing this data for something new is even allowed?"
+      ],
+      "answer": [
+        "Purpose limitation — the reason it was collected in the first place.",
+        "Minimisation is about volume. Storage limitation is about time. Only purpose limitation decides whether a different use of the same data is permitted at all."
+      ]
+    },
+    {
+      "lines": [
+        "Notice where this tag gets written. Not inferred later by someone guessing. Written down, at the moment the data arrives.",
+        "Watch what happens when a query asks for a different purpose than the tag allows. It doesn't get flagged for review — it gets blocked outright."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the urge to treat this as cleanup. Nothing here gets scrubbed after the fact.",
+        "The decision happens once, at the moment of ingestion — a field the purpose never needed simply never gets stored in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that actually matters: a policy that says data gets deleted is not the same thing as data that gets deleted.",
+        "Watch the job run against records of different ages. The ones past their window are gone. The ones still inside it are untouched."
+      ]
+    },
+    {
+      "lines": [
+        "Don't picture someone updating a document by hand. That's exactly the failure mode from the opening.",
+        "Watch the record build itself instead, straight from which job touched which tagged data — current, because it's regenerated, not remembered."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this isn't a feeling of seriousness. It's three specific categories, named precisely, and nothing else.",
+        "Large-scale profiling with real legal effect. Large-scale special-category data. Large-scale public monitoring. If it's not one of these three, this particular requirement doesn't apply."
+      ]
+    },
+    {
+      "lines": [
+        "Watch when this clock actually starts. Not the moment the breach happened — the moment the team found out about it.",
+        "Which means everything that makes that window survivable has to already exist before the clock starts ticking, not get built during it."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: a tag turns reuse into a check, a retention job has to actually delete, and a record that assembles itself can never go stale the way a slide deck did.",
+        "Purpose, minimisation, storage limitation, the record, the DPIA trigger, the breach clock — six separate mechanisms, one underlying discipline: law enforced by the pipeline itself, not by someone remembering a policy."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice two things about this scenario that look relevant but actually aren't: how old the data is, and how many fields it has.",
+        "Given fraud-detection data reused for a marketing campaign, with no new consent and no new tag — which principle does this actually violate?"
+      ],
+      "answer": [
+        "Purpose limitation — the new use is incompatible with the original one.",
+        "The data's age and its field count are both beside the point. The violation is reusing data for a purpose it was never tagged for, which a purpose-tag check at query time would have caught."
+      ]
+    }
+  ]
+}

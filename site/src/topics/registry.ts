@@ -7521,6 +7521,25 @@ export const TOPICS: TopicMeta[] = [
       'GC pauses can make an executor miss its heartbeat and get declared dead. The next topic is exactly that: what Spark does when a task or an executor actually fails, GC-induced or otherwise.',
   },
   {
+    id: 'de.task-retry-fetch-failure-speculation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/task-retry-fetch-failure-speculation',
+    title: 'Task retry, fetch failure and speculation',
+    syllabusTitle: 'Task retry, fetch failure and speculation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-task-retry-fetch-failure', 'spark-speculative-execution'],
+    uses: ['spark-shuffle-mechanics', 'spark-task-hierarchy'],
+    bridge:
+      "GC can kill an executor. This topic is what Spark does about any executor or task death, GC-caused or not: retrying the task, and, when the death took shuffle files with it, resubmitting the whole stage that produced them.",
+    handoff:
+      "Section 7.3's last topic ties every symptom in this section together: the Spark UI itself, the one instrument that actually shows spill, GC, retries and skew as evidence rather than theory.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -7839,6 +7858,26 @@ export const TOPICS: TopicMeta[] = [
       "A reproducible platform is the precondition for answering what it costs fairly. This topic is that answer in practice: the guardrails that actually stop a cost overrun rather than just alert on it after the bill arrives, and the commitment-vs-flexibility trade-off behind every multi-year discount.",
     handoff:
       "Everything in this chapter so far assumed the pipeline was free to run anywhere the cloud allows. For data about a person who lives in the EU, that assumption is false by law before it is false by architecture — which the next section makes exact.",
+  },
+  {
+    id: 'de.gdpr-by-design-pipelines',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/gdpr-by-design-pipelines',
+    title: 'GDPR by design in pipelines',
+    syllabusTitle: 'GDPR by design in pipelines',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['purpose-limitation-tagging', 'retention-enforced-deletion', 'art30-record-from-lineage'],
+    uses: ['managed-table-maintenance-service', 'lifecycle-snapshot-corruption'],
+    declared: ['a general, non-legal awareness that GDPR exists and concerns personal data'],
+    bridge:
+      "Everything in this chapter so far assumed a pipeline was free to run anywhere and process anything the architecture allowed. For data about a person who lives in the EU, that assumption is false by law before it is false by architecture — and this topic is where the law becomes a pipeline design: purpose tags, enforced retention, and a record of processing a regulator can actually be shown.",
+    handoff:
+      "GDPR by design governs what a pipeline may do with data it holds. It says nothing yet about where that data is allowed to physically sit, or who outside the EU might be legally entitled to demand it — which is a harder, more architectural question, and the one this section ends on.",
   },
   {
     id: 'de.text-interchange-formats-their',
