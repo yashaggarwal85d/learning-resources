@@ -1,0 +1,84 @@
+{
+  "topic": "de.incremental-extraction-high-watermark",
+  "steps": [
+    {
+      "lines": [
+        "A nightly reconciliation between the source and the warehouse is off by a handful of rows.",
+        "That gap is exactly what makes this bug dangerous: nothing about it looks like a failure.",
+        "A cursor only ever checks whether it ran, never whether what it read was the whole truth, so a row can vanish from its view while every dashboard still shows green."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you where.",
+        "An incremental cursor built on a last-modified column only ever asks for rows newer than wherever it last stopped.",
+        "So what kind of change, however you tune that cursor, can it simply never catch?"
+      ],
+      "answer": [
+        "A row updating twice inside the same run looks like the dangerous case, but it isn't — re-reading an unchanged row is exactly what a safe, repeatable merge is built to shrug off.",
+        "A row deleted outright is the real blind spot. There's no column left on it to compare against anything, because there's no row left at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the mechanism underneath that blind spot, and it's subtler than a simple deletion.",
+        "A transaction's own notion of 'now' is fixed the moment it starts, and never moves again for as long as that transaction stays open.",
+        "So a transaction that starts early, works slowly, and only commits much later still stamps its row with that early starting moment — not with whenever it actually finishes.",
+        "An application server that stamps its own rows by hand runs into the same family of trouble for a much plainer reason: its clock simply disagrees with its neighbours'."
+      ]
+    },
+    {
+      "lines": [
+        "I ran this directly against a real database rather than just describing it.",
+        "While that slow transaction sat open, a cursor run looked for new rows, found none, and still pushed its own watermark forward anyway.",
+        "The transaction then committed, carrying a timestamp from before that watermark moved. Every strict run after that point looks for something newer than the watermark and simply never finds it again."
+      ]
+    },
+    {
+      "lines": [
+        "The same disagreement shows up again in a completely different kind of cursor.",
+        "A database sequence hands out a number and never takes it back, even if the transaction that asked for it rolls back entirely.",
+        "So a transaction that grabbed its number early but commits late can still land behind one that grabbed a later number and committed sooner. The ordering you'd expect from the numbers and the order things actually commit in can simply disagree."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fix, and I ran it for real too.",
+        "Re-reading a short margin of time behind the watermark, instead of stopping exactly at it, picks that missed row straight back up.",
+        "And because the way it's written back in keys off that row's own identity rather than blindly inserting, running that same re-read three times over left the row exactly as it was. Once."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing before moving on: how wide does that margin actually need to be?",
+        "Exactly as wide as the slowest transaction this particular source ever runs, measured, not guessed at.",
+        "Pick anything shorter, and you've simply recreated the same blind spot you were trying to fix, just with smaller numbers."
+      ]
+    },
+    {
+      "lines": [
+        "Now the one failure none of this actually repairs.",
+        "A row that gets deleted outright leaves nothing behind. No timestamp, no trace, nothing at all for any query to compare against a watermark.",
+        "Widen that lookback margin as far as you like. There's simply no signal left in the data for it to find."
+      ]
+    },
+    {
+      "lines": [
+        "So: four separate ways a cursor like this can miss a row, and I reproduced every one of them for real.",
+        "Lookback paired with a safe, repeatable write-back fixes three of those four completely.",
+        "What's left isn't just one stubborn case. Any source whose transactions run long enough, or whose in-between states actually matter, has already outgrown what a cursor like this can promise.",
+        "That's not a dead end, it's a handoff. Reading a database's own change log directly, rather than polling a column after the fact, is built to cover exactly the ground a cursor can't."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, run for real against the database directly, bypassing the application layer entirely.",
+        "A bulk update changes a whole batch of rows but never touches their last-modified column at all. Does the next cursor run catch any of it?"
+      ],
+      "answer": [
+        "It doesn't, and the reason is almost embarrassingly simple: that column only ever changes because something explicitly wrote a new value into it.",
+        "Skip writing it, and you've recreated the exact same blind spot as an outright deletion — a real change sitting in the table with absolutely no timestamp announcing that it happened."
+      ]
+    }
+  ]
+}

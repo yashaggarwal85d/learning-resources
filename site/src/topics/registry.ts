@@ -6225,6 +6225,26 @@ export const TOPICS: TopicMeta[] = [
       "A full extract is safe but does the same work every night. The obvious saving is to read only what changed since last time. That saving has a famous bug.",
   },
   {
+    id: 'de.incremental-extraction-high-watermark',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/incremental-extraction-high-watermark',
+    title: 'Incremental extraction with high-watermark cursors',
+    syllabusTitle: 'Incremental extraction with high-watermark cursors',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['high-watermark-cursor', 'cursor-miss-modes', 'lookback-idempotent-merge'],
+    uses: ['merge-statement', 'upsert-atomicity', 'idempotent-merge-load', 'parallel-range-extraction', 'isolation-anomalies'],
+    declared: [],
+    bridge:
+      "A full extract is safe but redoes all the work every night. The obvious saving is to read only what changed since last time, and this topic is that saving, the four ways its cursor lies, and the lookback-plus-merge repair.",
+    handoff:
+      "A cursor works only when the source is a database you can query. Many sources are not: a vendor's REST API, with its own pagination, limits and failures, is the next shape of the same problem.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
