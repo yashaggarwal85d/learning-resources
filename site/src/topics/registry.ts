@@ -6497,6 +6497,26 @@ export const TOPICS: TopicMeta[] = [
       "Reading the database's own log is complete and cheap, and it is a bargain with the source. What exactly the log contains, and how a consumer holds a place in it, depends on the engine. The first to open is PostgreSQL's.",
   },
   {
+    id: 'de.postgresql-logical-decoding-internals',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/postgresql-logical-decoding-internals',
+    title: 'PostgreSQL logical decoding internals',
+    syllabusTitle: 'PostgreSQL logical decoding internals',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['logical-decoding-slot', 'replica-identity-before-image', 'failover-slot-sync'],
+    uses: ['wal-lsn-fsync', 'checkpoint-recovery-redo-undo', 'physical-vs-logical-replication', 'query-vs-log-cdc'],
+    declared: [],
+    bridge:
+      "Reading the database's own log is complete and cheap, and it is a bargain with the source. What the log contains and how a consumer holds a place in it depends on the engine. This topic opens PostgreSQL's: the slot, the plugin, the publication and the identity setting that decides what a change carries.",
+    handoff:
+      "PostgreSQL gives a consumer a slot that remembers its place for it. MySQL does it differently: the consumer keeps its own position in a file-based log. The next topic is that log, and the contrasting designs of Oracle and SQL Server.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',

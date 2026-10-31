@@ -1,0 +1,120 @@
+{
+  "topic": "de.postgresql-logical-decoding-internals",
+  "syllabus": [
+    {
+      "clause": "WAL, logical replication slots, output plugins (pgoutput, decoderbufs), publications, REPLICA IDENTITY (DEFAULT vs FULL for before-images), restart_lsn vs confirmed_flush_lsn",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: does a second peek repeat the first" },
+        { "step": "Reveal: decoding is WAL, turned into row changes" },
+        { "step": "Reveal: the before-image, measured" },
+        { "step": "Reveal: a slot's position is a promise, not a guarantee" },
+        { "step": "Reveal: repeats, measured" },
+        { "step": "Reveal: two positions, two different jobs" },
+        { "step": "Reveal: the two positions, measured" },
+        { "step": "Recap" }
+      ]
+    },
+    {
+      "clause": "decoding on standbys (PG16) and failover-synchronised slots (PG17) so CDC survives a primary failover",
+      "at": [{ "step": "Prove it" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Logical Decoding Concepts (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "Logical decoding is the process of extracting all persistent changes to a database's tables into a coherent, easy to understand format",
+          "at": [{ "step": "Reveal: decoding is WAL, turned into row changes" }]
+        },
+        {
+          "item": "Slots persist independently of the connection using them and are crash-safe, but a slot's position is persisted only at checkpoint, so a crash can cause recent changes to be sent again",
+          "at": [{ "step": "Reveal: a slot's position is a promise, not a guarantee" }]
+        }
+      ]
+    },
+    {
+      "source": "pg_replication_slots (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "restart_lsn is the oldest WAL still required by the consumer of a slot; confirmed_flush_lsn is the point up to which the consumer has confirmed receiving data",
+          "at": [{ "step": "Reveal: two positions, two different jobs" }]
+        }
+      ]
+    },
+    {
+      "source": "ALTER TABLE / REPLICA IDENTITY (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "REPLICA IDENTITY changes what is written to the WAL to identify an updated or deleted row: DEFAULT the primary key, FULL every column, NOTHING none of it",
+          "at": [{ "step": "Reveal: the before-image, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 16 and 17 release notes",
+      "items": [
+        {
+          "item": "PostgreSQL 16 allows logical decoding on standbys; PostgreSQL 17 enables the failover of logical slots and has pg_upgrade migrate valid logical slots",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The before-image a decoded update carries is not a property of the output plugin or the slot, but of the single per-table REPLICA IDENTITY setting, measured directly by changing one row's own primary key under all three settings in turn.",
+        "at": [{ "step": "Reveal: the before-image, measured" }]
+      },
+      {
+        "item": "A table's own primary-key column, not an arbitrary unique column, is what DEFAULT logs, measured directly by updating the key column itself rather than a non-key column, which produces no old-key line under either DEFAULT or NOTHING and would have hidden the real distinction.",
+        "at": [{ "step": "Reveal: the before-image, measured" }]
+      },
+      {
+        "item": "A slot's repeat-tolerance is not a hypothetical crash scenario but a directly measurable property of any unconfirmed read: two peeks of the identical unconsumed data return byte-identical output, because peeking never advances the slot's own position.",
+        "at": [{ "step": "Reveal: repeats, measured" }]
+      },
+      {
+        "item": "confirmed_flush_lsn and restart_lsn answer two different questions — how far a consumer has acknowledged, and how much WAL the server must still keep — and only the first one moves on a confirmed read, measured directly against this sandbox's own slot.",
+        "at": [{ "step": "Reveal: the two positions, measured" }]
+      },
+      {
+        "item": "Decoding reports transactions in the order they committed, not the order they began, measured directly by committing two interleaved transactions in the reverse of their start order and confirming the decoded stream follows commit order.",
+        "at": [{ "step": "Reveal: decoding is WAL, turned into row changes" }]
+      },
+      {
+        "item": "This sandbox's own server is confirmed to be PostgreSQL 16 by reading server_version directly, which is what makes the standby-decoding feature nameable as available in principle and the failover-slot feature confirmed unavailable, rather than assumed either way.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The absence of a failover and a synced column on this server's own pg_replication_slots view is read directly from information_schema, not inferred from the version number alone, so the claim that failover slots cannot be created here is itself a measured fact.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The wrong half of the first predict question — that a slot remembers what a mere peek showed it — is ruled out by the documentation's own wording that position moves only at confirmation, and by the identical-twice measurement.",
+        "at": [{ "step": "Predict: does a second peek repeat the first" }]
+      },
+      {
+        "item": "The wrong half of the final predict question — that a slot surviving its own server's crash is the same as surviving a failover to a different server — is ruled out by the plain fact that a slot is server-local state, never replicated anywhere on its own.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic hosts the failover-slot leg of the 8.2 lab only as far as one PostgreSQL 16 machine allows, per CHAPTER.md's own instruction; the real two-node promotion is sourced from the PG17 release notes and Debezium's slot.failover documentation, not measured.",
+        "at": [{ "out": "disclosed limit of the lab, per CHAPTER.md" }]
+      },
+      {
+        "item": "The engine-specific comparison with MySQL, Oracle and SQL Server's own capture mechanisms is topic 11's own subject, used here only as the handoff this topic names, not re-derived.",
+        "at": [{ "out": "named as pointing to topic 11's own full treatment" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
