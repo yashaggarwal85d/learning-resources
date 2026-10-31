@@ -6364,4 +6364,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every format so far has been one file, self-contained. The next section is the one format that won the lakehouse: Parquet, starting from its own file anatomy.",
   },
+  {
+    id: 'de.parquet-file-anatomy',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/parquet-file-anatomy',
+    title: 'Parquet file anatomy',
+    syllabusTitle: 'Parquet file anatomy',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['parquet-file-anatomy'],
+    uses: ['row-vs-columnar-layout', 'schema-evolution-column-matching'],
+    declared: [],
+    bridge:
+      "Every format so far has been one file, self-contained, and this topic opens the one that won the lakehouse: Parquet's own file anatomy, read directly from a file this sandbox writes and inspects byte by byte.",
+    handoff:
+      "A row group is just column chunks, and a column chunk is just pages of values — but those values are rarely stored as plain, unencoded bytes. The next topic is exactly how they're encoded.",
+  },
 ];
