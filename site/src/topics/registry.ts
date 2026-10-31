@@ -6351,6 +6351,26 @@ export const TOPICS: TopicMeta[] = [
       "Kafka Streams takes almost the same changelog-and-table idea and implements it as a library inside your own application, with no separate cluster at all. Seeing the same idea built the other way sharpens both. That's next.",
   },
   {
+    id: 'de.kafka-streams-ktable-duality',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/kafka-streams-ktable-duality',
+    title: 'Kafka Streams and the KStream/KTable duality',
+    syllabusTitle: 'Kafka Streams and the KStream/KTable duality',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['kafka-streams-task-model', 'stream-table-duality', 'changelog-backed-state-store'],
+    uses: ['retention-vs-compaction', 'isr-high-watermark', 'kafka-transaction-coordinator', 'rebalance-protocol-comparison', 'dynamic-table-changelog-modes'],
+    declared: [],
+    bridge:
+      "Flink SQL formalized streams as changelogs of dynamic tables, run by a separate cluster. Kafka Streams builds almost the identical idea — a stream and a table as two views of the same thing — as a library with no cluster of its own at all, and this topic is that contrast, concretely.",
+    handoff:
+      "Every engine in this chapter eventually has to put its output somewhere a person, or another system, can actually query. The next two topics are those two destinations: the lakehouse, and a real-time OLAP store.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
