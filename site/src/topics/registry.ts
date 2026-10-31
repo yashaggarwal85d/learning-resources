@@ -5505,6 +5505,26 @@ export const TOPICS: TopicMeta[] = [
       "Every tool compared here still assumes a task or a run finishes in minutes to hours. Some real workflows are paced by humans and last for days or months, and that is a different orchestration problem, which the next section narrows down to one decision.",
   },
   {
+    id: 'de.choosing-dag-asset-durable',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/choosing-dag-asset-durable',
+    title: 'Choosing DAG, asset or durable models',
+    syllabusTitle: 'Choosing DAG, asset or durable models',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['orchestration-model-decision-rule', 'hybrid-batch-durable-handoff'],
+    uses: ['de.orchestrator-architecture-scheduler', 'de.idempotent-tasks-failure-semantics', 'de.software-defined-asset-model', 'de.orchestrator-selection-decision-rule'],
+    declared: [],
+    bridge:
+      "Every tool compared in the landscape topic still assumes a task or a run finishes in minutes to hours. This topic is the one decision that matters once it doesn't: whether the work is a batch DAG, a data-product asset, or a long-lived, code-first durable workflow, and how to hand off between them.",
+    handoff:
+      "Choosing the right model for how a pipeline runs doesn't yet say anything about whether it is healthy once running. The next section turns from scheduling correctness to operating the result: what quality a pipeline promises, and what happens when it breaks that promise.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
