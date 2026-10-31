@@ -6604,4 +6604,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and which rows it can skip entirely. That's data skipping.",
   },
+  {
+    id: 'de.data-skipping-statistics-page',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/data-skipping-statistics-page',
+    title: 'Data skipping: statistics, page indexes, bloom filters',
+    syllabusTitle: 'Data skipping: statistics, page indexes, bloom filters',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['parquet-data-skipping'],
+    uses: ['parquet-file-anatomy', 'dremel-shredding-levels'],
+    declared: [],
+    bridge:
+      "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and rows it can skip entirely. This topic is exactly that: row-group statistics, the page index, bloom filters, and why none of it prunes anything if the data isn't sorted first.",
+    handoff:
+      "Every skipping trick so far lived inside one Parquet file's own footer. The next section asks what happens once there isn't one file anymore, but a whole table of them sitting in object storage with no file you can safely edit in place.",
+  },
 ];

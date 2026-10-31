@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Parquet file anatomy" domain="data-engineering" host="de.parquet-file-anatomy" by="This chapter's fourth topic" />
+  <Resource kind="reel" title="Nested data: repetition and definition levels" domain="data-engineering" host="de.nested-data-repetition-definition" by="This chapter's sixth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache Parquet Format: parquet.thrift" href="https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift" by="Apache Parquet">The Statistics struct and the exact truncated-bound example this topic's own bug reproduces.</Resource>
+  <Resource kind="reading" title="Parquet Page Index" href="https://github.com/apache/parquet-format/blob/master/PageIndex.md" by="Apache Parquet">The ColumnIndex/OffsetIndex design for page-level skipping.</Resource>
+  <Resource kind="reading" title="Parquet Bloom Filter" href="https://github.com/apache/parquet-format/blob/master/BloomFilter.md" by="Apache Parquet">The split-block Bloom filter's exact algorithm and its own false-positive-rate example.</Resource>
+</ul>
+
+</section>
