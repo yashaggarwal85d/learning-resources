@@ -1,0 +1,194 @@
+{
+  "topic": "dsa.bloom-filters-false-positive",
+  "syllabus": [
+    {
+      "clause": "k hash functions over m bits, FPR ≈ (1 − e^{−kn/m})^k",
+      "at": [
+        { "step": "The structure" },
+        { "step": "The rate, derived" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "optimal k = (m/n) ln 2, ~1.44 log₂(1/ε) bits per key",
+      "at": [
+        { "step": "The optimum" },
+        { "step": "The bound" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "double hashing to derive k probes",
+      "at": [
+        { "step": "Derived probes" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "no deletes",
+      "at": [
+        { "step": "No deletes" },
+        { "deep": "Production failures this topic warns about" }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering §5.6.",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Broder and Mitzenmacher, \"Network applications of Bloom filters: a survey\"",
+      "items": [
+        {
+          "item": "The one-line derivation: a bit is still zero after kn settings with probability ≈ e^{-kn/m}; the false-positive rate (1 - e^{-kn/m})^k follows, \"very close (within O(1/m))\" to exact",
+          "at": [
+            { "step": "The rate, derived" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "The counting lower bound m ≥ n·log₂(1/ε), and Bloom's own optimum within a factor log₂e ≈ 1.44 of it",
+          "at": [
+            { "step": "The bound" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Kirsch and Mitzenmacher, \"Less hashing, same performance: building a better Bloom filter\"",
+      "items": [
+        {
+          "item": "Two hash functions simulate k via g_i(x) = h1(x) + i·h2(x) mod m, with no loss in the asymptotic false-positive probability",
+          "at": [
+            { "step": "Derived probes" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "LevelDB util/bloom.cc",
+      "items": [
+        {
+          "item": "k_ = bits_per_key * 0.69 (truncated, not rounded), clamped to 1..30; minimum filter size 64 bits; k stored as the filter's last byte; probe delta a 17-bit rotate, citing Kirsch-Mitzenmacher",
+          "at": [
+            { "step": "The structure" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB wiki, \"RocksDB Bloom Filter\"",
+      "items": [
+        {
+          "item": "9.9 bits/key ≈ 1% false-positive rate; format_version=5 (6.6+) reaches below 0.1% at 16 bits/key; the Ribbon filter (6.15.0+) saves about 30% of the space at the same rate",
+          "at": [
+            { "step": "Chapter 5 reconciliation" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Bloom, \"Space/time trade-offs in hash coding with allowable errors\" (citation only, not read)",
+      "items": [
+        {
+          "item": "The structure's own origin, attributed by name and date only",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Bose et al., \"On the false-positive rate of Bloom filters\" (citation only, abstract not read)",
+      "items": [
+        {
+          "item": "The textbook formula is an approximation, not the exact false-positive probability",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Why setting an already-set bit again costs nothing and loses nothing: the structure only ever asks \"is this bit one\", never \"who set this bit\" or \"how many times\"",
+        "at": [
+          { "step": "A bit that's already one" }
+        ]
+      },
+      {
+        "item": "Why no false negative is ever possible by construction: a bit, once set, is never cleared, so every bit a real insert set stays set forever",
+        "at": [
+          { "step": "The structure" }
+        ]
+      },
+      {
+        "item": "Why the rate-vs-k curve has a flat valley near its minimum, and why that is exactly what licenses LevelDB's truncation and other implementations' rounding of k without a measurable cost",
+        "at": [
+          { "step": "The optimum" },
+          { "deep": "Lab" }
+        ]
+      },
+      {
+        "item": "Why cutting the false-positive rate by ten thousand times costs a small, fixed number of extra bits per key rather than ten thousand times the memory: each extra bit per key multiplies the rate by a constant factor, so the cost of rarity is additive in bits, not multiplicative in space",
+        "at": [
+          { "step": "Not ten thousand times" }
+        ]
+      },
+      {
+        "item": "Why the 1.44 gap between the Bloom filter's achievable rate and the information-theoretic floor is a fixed constant that never grows, no matter how rare the target rate gets",
+        "at": [
+          { "step": "The bound" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That the double-hashing arithmetic here (spreading k probes for one key) and Chapter 3's double hashing (resolving a collision between two keys) share the same formula shape but solve different problems, stated explicitly rather than left for the reader to notice",
+        "at": [
+          { "step": "Derived probes" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why an immutable LSM run's filter never needs a delete at all: the run's key set is fixed at creation, and a logically deleted key is handled by a tombstone in a newer run, not by editing the old filter",
+        "at": [
+          { "step": "No deletes" }
+        ]
+      },
+      {
+        "item": "The real implementation bug this topic's own build hit: a hand-rolled hash combiner can leave correlation between a key's k probes invisible to a glance at the code, inflating the real false-positive rate several times over the formula's prediction, caught only by measuring against the derived formula, not by reading the code",
+        "at": [
+          { "deep": "Production failures this topic warns about" }
+        ]
+      },
+      {
+        "item": "Why Chapter 5 topic 28's 9.9-bits-per-key, about-1%-false-positive-rate figure is not a separately measured fact but a direct instance of this topic's own formula at k=7",
+        "at": [
+          { "step": "Chapter 5 reconciliation" }
+        ]
+      },
+      {
+        "item": "That the skipped structures (cuckoo, quotient, xor/binary-fuse/ribbon filters) exist specifically to beat one or both of this structure's two costs — no deletes, and the 1.44x gap — named once, not built, so a reader isn't left thinking the Bloom filter is the end of the story",
+        "at": [
+          { "deep": "Frontier" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
