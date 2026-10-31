@@ -1,0 +1,106 @@
+{
+  "topic": "de.sap-extraction-paths-limits",
+  "syllabus": [
+    {
+      "clause": "S/4HANA/ECC data reality (FI/CO, MM, PP, QM tables; CDS views as the semantic extraction layer)",
+      "at": [
+        { "step": "Raw tables, and the semantic layer built over them" }
+      ]
+    },
+    {
+      "clause": "mechanisms: ODP delta queues, SLT trigger-based replication, OData, database-level CDC",
+      "at": [
+        { "step": "Before the mechanisms: what actually changed here?" },
+        { "step": "Four mechanisms, four different things they can actually see" }
+      ]
+    },
+    {
+      "clause": "SAP Note 3255746 (Feb 2024: third-party use of ODP RFC APIs not permitted)",
+      "at": [
+        { "step": "A pipeline that worked perfectly for two years, and still failed an audit" },
+        { "step": "SAP's own note, stated precisely" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "SAP's push to Datasphere / Business Data Cloud (Feb 2025, incl. SAP Databricks) — connector, legal and delta-capability trade-offs",
+      "at": [
+        { "step": "The vendor-preferred path, and a named outside partner" }
+      ]
+    },
+    {
+      "clause": "SuccessFactors HR via OData with effective-dated records",
+      "at": [
+        { "step": "Effective-dated records: a different cursor problem entirely" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "(inherently SCD)",
+      "at": [
+        { "topic": "SCD Type 2 implementation", "domain": "data-engineering", "quote": "current flags, hash-diff change detection" }
+      ]
+    },
+    {
+      "clause": "special-category data (works-council scope)",
+      "at": [
+        { "topic": "DPO, DPIA and works-council co-determination", "domain": "data-engineering", "quote": "DPO consultation and DPIA" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Matillion: Tech note — SAP note 3255746 impact on SAP ODP data extraction",
+      "items": [
+        { "item": "SAP Note 3255746 restricts third-party use of the RFC modules in the SAP ODP framework specifically, first published in 2022 as unsupported-use guidance, then tightened in version 4 (2 February 2024) to an outright prohibition, then updated again on 7 July 2024 to point customers at SAP Datasphere", "at": [{ "step": "SAP's own note, stated precisely" }] },
+        { "item": "SAP's rules also name SLT Replication Server, an ABAP adapter, HANA log-based replication and SAP Database Trigger as technologies that must not move data out of SAP", "at": [{ "step": "Four mechanisms, four different things they can actually see" }] }
+      ]
+    },
+    {
+      "source": "Theobald Software: SAP Note 3255746",
+      "items": [
+        { "item": "RFC as a protocol, and table/CDS view extraction, DeltaQ, BAPIs and function modules all remain fully usable — only the ODP Data Replication API over RFC in SAP-to-non-SAP scenarios is restricted", "at": [{ "step": "Before the mechanisms: what actually changed here?" }] }
+      ]
+    },
+    {
+      "source": "DEV Community: CDS and SAP Datasphere",
+      "items": [
+        { "item": "CDS views are written in a SQL-like language enriched with annotations and relationships, add meaning through hierarchies and associations, and can be published as OData services", "at": [{ "step": "Raw tables, and the semantic layer built over them" }] }
+      ]
+    },
+    {
+      "source": "Databricks: SAP Databricks launch announcement",
+      "items": [
+        { "item": "On 13 February 2025, Databricks and SAP announced SAP Databricks, natively integrated into SAP Business Data Cloud, with bi-directional Delta Sharing and Unity Catalog governance, sold by SAP", "at": [{ "step": "The vendor-preferred path, and a named outside partner" }] }
+      ]
+    },
+    {
+      "source": "SAP Knowledge Base Articles 2853045 / 3774633",
+      "items": [
+        { "item": "SuccessFactors' OData API uses asOfDate/fromDate/toDate to control which version of an effective-dated record a query returns; a record outside its effective start/end date relative to that date is filtered out entirely, not returned stale", "at": [{ "step": "Effective-dated records: a different cursor problem entirely" }, { "step": "Prove it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that licensing status, not technical behavior, is what changed; a learner who answers 'the pipeline broke' has missed the entire point of the topic", "at": [{ "step": "A pipeline that worked perfectly for two years, and still failed an audit" }] },
+      { "item": "The predict step's correct answer names the specific restricted combination (ODP over RFC, third-party, moving data out of SAP) rather than a vague 'SAP banned extraction'; a learner who picks the blanket-ban option has missed the note's actual scope", "at": [{ "step": "Before the mechanisms: what actually changed here?" }] },
+      { "item": "The CDS-view step's point is that the semantic layer exists because the raw tables are not meant to be read directly, not that raw tables are unusable; a learner should be able to state why a CDS view is the preferred read path", "at": [{ "step": "Raw tables, and the semantic layer built over them" }] },
+      { "item": "The four-mechanism comparison is precise about which specific capability each mechanism lacks (OData's deletes), not a vague ranking of mechanisms as better or worse overall", "at": [{ "step": "Four mechanisms, four different things they can actually see" }] },
+      { "item": "The note-history step states three dated stages precisely (2022 unsupported, 2 February 2024 prohibited, 7 July 2024 redirected to Datasphere) sourced from Matillion's own tech note, not an invented timeline", "at": [{ "step": "SAP's own note, stated precisely" }] },
+      { "item": "The Datasphere/Databricks step states SAP's own strategic direction as SAP's own stated direction, not as a claim that every customer has already moved or must move", "at": [{ "step": "The vendor-preferred path, and a named outside partner" }] },
+      { "item": "The effective-dated-record step's point is a visibility failure (nothing returned), not a staleness failure (an old value returned); a learner who describes the failure as 'you get outdated data' has missed KBA 3774633's own documented behavior", "at": [{ "step": "Effective-dated records: a different cursor problem entirely" }] },
+      { "item": "The special-category framing names the regulatory stakes of HR data without re-teaching GDPR mechanics already covered in topic 17; this topic only raises the stakes, it does not duplicate that lesson", "at": [{ "deep": "Internals" }] },
+      { "item": "The final predict step's correct answer identifies a stale as-of date as the failure, not a delete-visibility gap or a licensing issue; a learner who picks the OData-delete or Note 3255746 options has conflated this topic's two separate failure modes", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot connect to a real S/4HANA, ECC or SuccessFactors tenant in this sandbox; examples.py reproduces the mechanism-capability comparison, the licensing check, and the effective-dated query filtering as a disclosed structural simulation against synthetic data, not a live system", "at": [{ "deep": "Internals" }] },
+      { "item": "The dropped syllabus parentheticals '(inherently SCD)' and '(works-council scope)' are both handled as forward-references to real, confirmed syllabus topics rather than silently dropped, consistent with this chapter's established handling of trailing clauses", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

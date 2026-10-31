@@ -1,0 +1,67 @@
+{
+  "topic": "de.sap-extraction-paths-limits",
+  "steps": [
+    {
+      "lines": [
+        "Watch what actually breaks here. Nothing technical. The pipeline runs exactly the same way it always has.",
+        "What breaks is licensing. The endpoint it was built on was never supposed to be used this way, and that fact didn't exist until someone wrote it down."
+      ]
+    },
+    {
+      "lines": [
+        "Before the four mechanisms, notice what the hook is actually testing. Not whether the connector still runs — it does.",
+        "It's testing which specific combination of mechanism and use crossed a line SAP drew somewhere else entirely. Which one do you think it is?"
+      ],
+      "answer": [
+        "The operational data provisioning framework, used over R F C, by a tool outside SAP, moving data out.",
+        "That exact combination is what got restricted. The protocol itself, and most of the other mechanisms, were never touched."
+      ]
+    },
+    {
+      "lines": [
+        "Look at what sits underneath that semantic view. Cryptic, application-built field names nobody designed for a human to read.",
+        "A C D S view is SAP's own answer to that — names and relationships added on top, so an extraction tool reads the view, not the raw mess beneath it."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what each mechanism actually notices, not how fast it runs.",
+        "Three of these catch every insert, update and delete. One of them — the REST-based one — has a documented blind spot: it can quietly miss a delete entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Follow this note through its own history, because the wording changed meaning each time.",
+        "Unsupported, then outright prohibited, then redirected toward SAP's own replacement platform. Three different statements, three different years, and the connector itself never moved."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this isn't a side project. SAP built this with an outside partner, inside its own flagship platform.",
+        "Data moves both directions between the two environments, and a separate catalog governs who can see what on either side."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what this query actually returns when the date is wrong, not just that it returns something.",
+        "It doesn't hand back an old version of the record. It hands back nothing at all — which looks exactly like the record never existed."
+      ]
+    },
+    {
+      "lines": [
+        "If you keep one thing: a mechanism's real limit is what it can see, not how fast it runs.",
+        "Views exist because raw tables weren't meant to be read directly. A support note's wording is a clock, not a warning you read once. And a wrong date doesn't return stale data — it returns none."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice what this team's pipeline is actually doing: running the same as-of date every single night.",
+        "A brand-new record just started existing after that date. What does the query do with it?"
+      ],
+      "answer": [
+        "The new record falls outside that fixed date's effective window, so it's filtered out entirely.",
+        "Not a missed delete, and not a licensing problem — those are this topic's other two failure modes. This one is a stale date quietly hiding a record that already exists."
+      ]
+    }
+  ]
+}
