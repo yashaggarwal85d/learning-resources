@@ -5445,6 +5445,26 @@ export const TOPICS: TopicMeta[] = [
       "A deferred task still waits for something specific it already knows to watch for. Some pipelines need the opposite: a run triggered not by a clock or a known wait, but by data itself becoming available somewhere else.",
   },
   {
+    id: 'de.data-aware-event-driven-scheduling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-aware-event-driven-scheduling',
+    title: 'Data-aware and event-driven scheduling',
+    syllabusTitle: 'Data-aware and event-driven scheduling',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['data-aware-asset-scheduling', 'thundering-herd-event-trigger'],
+    uses: ['ch9.message-queue-delivery-semantics', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "A deferred task waits for one specific thing it already knows to watch. This topic is scheduling a whole run not by a clock or a known wait, but by an asset elsewhere becoming freshly available -- and the crowd-and-miss problems that triggering model brings with it.",
+    handoff:
+      "Everything in this section has treated the Dag, and its tasks, as the unit the orchestrator schedules. Dagster's model asks whether the Dag is even the right unit to think in, or whether the data products themselves -- the assets -- should be the thing the system is built around.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',

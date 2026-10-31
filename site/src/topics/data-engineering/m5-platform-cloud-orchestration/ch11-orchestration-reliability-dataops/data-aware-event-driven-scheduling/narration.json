@@ -1,0 +1,83 @@
+{
+  "topic": "de.data-aware-event-driven-scheduling",
+  "steps": [
+    {
+      "lines": [
+        "Picture the shop's hourly orders data landing, the moment it's ready to be read.",
+        "Eleven completely separate pipelines are all sitting there, each one waiting specifically for that exact moment.",
+        "The instant it lands, all eleven wake up and start running, within the very same second.",
+        "Each one of those eleven immediately needs its own share of compute to actually run."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact scenario, scaled down and measured for real rather than just described.",
+        "One single pipeline updates one piece of data, nothing more.",
+        "Six entirely separate pipelines are each individually set up to watch that one piece of data.",
+        "Reading the real timestamps back from the database: all six of them got a new run created, apart by only a few millionths of a second."
+      ],
+      "takeaway": "One asset update doesn't trigger one Dag. It triggers every Dag scheduled on it, together."
+    },
+    {
+      "lines": [
+        "Before going further, here's something worth guessing at.",
+        "All six of those watchers are tied to the exact same piece of data, triggered by the exact same single update.",
+        "Does the system spread their six new runs out over time to ease the load, or does it just let all six happen essentially at once?",
+        "Make your guess before the measured numbers from a moment ago settle it."
+      ],
+      "answer": "Nothing spaces them out. Every single pipeline watching that piece of data reacts the moment it changes, at essentially the same instant as every other pipeline watching it."
+    },
+    {
+      "lines": [
+        "So what exactly is being watched here? It helps to name it properly.",
+        "This unit of data was called one thing for a long stretch of this system's early history, then given a cleaner new name later on.",
+        "On top of that, a dedicated watcher component can reach outside the system entirely, pulling from an external message queue rather than only reacting to work done inside it.",
+        "That's the full picture: a named, trackable unit of data, and a way to tie its freshness to the outside world."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a trickier scenario worth pausing on.",
+        "Say the upstream data gets sliced up by the hour, but whatever consumes it downstream is sliced up by the whole day instead.",
+        "What happens to an upstream slice that lands right in the middle of one of those hours, once it needs to line up with a daily slice?",
+        "Think about whether that mismatch simply breaks, or whether something is built to handle it."
+      ],
+      "answer": "It doesn't break. A dedicated translator exists specifically for this mismatch, and it converts the finer upstream slice into whichever coarser downstream slice it actually belongs to, no matter how differently the two are sliced."
+    },
+    {
+      "lines": [
+        "Watch that translator run for real, on four genuine timestamps, not a made-up example.",
+        "Three of those four timestamps all fall inside the exact same hour.",
+        "Run live: all three of those same-hour timestamps collapse down into one single downstream slice.",
+        "The fourth timestamp, landing barely a moment into the very next hour, maps to a different slice entirely, exactly as it should."
+      ],
+      "takeaway": "A partition mapper translates a key. It never forces two mismatched schedules to agree."
+    },
+    {
+      "lines": [
+        "Worth naming a genuinely different take on this same idea, sourced directly rather than run here.",
+        "One well-known alternative system skips writing an explicit trigger entirely. Instead, you simply state the condition under which a given piece of data should refresh.",
+        "On top of that, it adds a separate promise about freshness itself: a policy that actively complains the moment a piece of data falls behind what it promised.",
+        "Two closely related ideas, solving two genuinely different problems: one decides when to run something, the other watches whether what ran is actually still fresh enough to trust."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole comparison together now.",
+        "Reacting the instant fresh data shows up is fast, but it's only as trustworthy as whatever announces that the data actually showed up.",
+        "Running on a fixed clock instead never misses that announcement, simply because it was never listening for one in the first place.",
+        "The cost of that reliability is real too: a fixed clock will happily run against data that was never actually ready yet."
+      ],
+      "takeaway": "Data-driven scheduling trades predictability for speed. Time-based trades speed for never missing a run."
+    },
+    {
+      "lines": [
+        "Back to exactly where this all started.",
+        "Those same eleven pipelines from the very beginning, all still watching that same hourly piece of data, about to see it update again.",
+        "Everything measured here used six watchers on one update. Scale that up to eleven watching the same single update.",
+        "Does anything about that larger number change how together those eleven reactions actually land?"
+      ],
+      "answer": "Nothing changes. The mechanism doesn't count how many pipelines are watching before deciding whether to space them out. Every single one of them reacts to that one update at essentially the same moment, whether six are watching or eleven or far more."
+    }
+  ]
+}
