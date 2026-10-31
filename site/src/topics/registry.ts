@@ -7209,6 +7209,26 @@ export const TOPICS: TopicMeta[] = [
       'The model says where memory lives. The next topic is the first thing that happens when it runs out: spill, the direct and usually first symptom of memory pressure.',
   },
   {
+    id: 'de.spill-shuffle-memory-pressure',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/spill-shuffle-memory-pressure',
+    title: 'Spill and shuffle memory pressure',
+    syllabusTitle: 'Spill and shuffle memory pressure',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-spill-mechanics'],
+    uses: ['spark-unified-memory-manager', 'spark-skew-diagnosis'],
+    declared: ['dsa-external-merge-sort'],
+    bridge:
+      "The memory model names the regions. Spill is what execution memory does the instant it's exceeded: the same external-merge-sort idea Algorithms Chapter 6 already taught, now triggered by a Spark task instead of a single process.",
+    handoff:
+      'Spill is memory pressure the engine handles automatically, if slowly. The next topic is memory pressure deliberately chosen on purpose — caching — and when that choice helps or hurts.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',

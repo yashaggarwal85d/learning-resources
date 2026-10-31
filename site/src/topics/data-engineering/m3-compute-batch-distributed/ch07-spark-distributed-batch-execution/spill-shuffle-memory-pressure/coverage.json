@@ -1,0 +1,90 @@
+{
+  "topic": "de.spill-shuffle-memory-pressure",
+  "syllabus": [
+    {
+      "clause": "when sorts and hash aggregations exceed execution memory they spill sorted runs to disk and merge (external merge sort, §1.3; → Data Structures & Algorithms Ch.6); reading spill (memory) vs spill (disk) metrics; why adding executor memory often fails to fix a skewed or over-wide task.",
+      "at": [
+        { "step": "Reveal: the baseline -- a genuine spill, two numbers" },
+        { "step": "Elaborate: the memory figure counts more than the disk figure" },
+        { "step": "Reveal: no -- it barely moves, the other three stay put" },
+        { "step": "Elaborate: why -- memory handed out evenly helps only one worker" },
+        { "deep": "External merge sort's own mechanics" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "UnsafeExternalSorter.java (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "sort-and-spill happens specifically in response to memory pressure",
+          "at": [{ "step": "Reveal: the baseline -- a genuine spill, two numbers" }]
+        },
+        {
+          "item": "the memory-spilled figure includes page-rounding and pointer-array overhead never actually written to disk, which is why the two counters differ for the same spill event",
+          "at": [{ "step": "Elaborate: the memory figure counts more than the disk figure" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark \"Tuning Spark\" docs",
+      "items": [
+        {
+          "item": "execution memory is used for computation in shuffles, joins, sorts and aggregations; without caching, a job can use the entire unified pool for execution, avoiding unnecessary spills",
+          "at": [{ "step": "Elaborate: why -- memory handed out evenly helps only one worker" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "External merge sort itself (run generation via replacement selection, heap-driven k-way merge, fan-in vs. number of passes as a function of the memory budget) is taught in full in Data Structures & Algorithms Chapter 6 -- this topic names the mechanism Spark's own spill triggers but does not re-derive the algorithm's own passes/fan-in analysis.",
+        "at": [{ "out": "external merge sort's own algorithmic mechanics named only, per the syllabus clause's own explicit cross-reference; this topic's own examples.py measures the spill event's metrics, not the merge algorithm's internal pass count" }]
+      },
+      {
+        "item": "A hash aggregation (ObjectHashAggregateExec, used for non-combinable aggregates like collect_list) does not spill the way a sort does at all for a single oversized group -- its own sort-based fallback only triggers on too many concurrent distinct-key buffers, never on one key's buffer alone being too large, so a single very wide group can OOM outright rather than spill, confirmed directly while designing this topic's own probes.",
+        "at": [{ "out": "the hash-aggregation-cannot-spill-one-wide-group gotcha named only; this topic's own examples.py measures a sort spill specifically, which genuinely does spill under pressure" }]
+      },
+      {
+        "item": "spark.sql.windowExec.buffer.spill.threshold and spark.sql.sortMergeJoinExec.buffer.spill.threshold are separate, operator-specific spill thresholds beyond the general UnsafeExternalSorter path this topic measures -- window functions and sort-merge joins each have their own buffering and spill behavior distinct from a plain sortWithinPartitions.",
+        "at": [{ "out": "operator-specific spill thresholds for windows and sort-merge joins named only; this topic's own examples.py measures a plain sort's own spill" }]
+      },
+      {
+        "item": "spark.shuffle.spill.numElementsForceSpillThreshold forces a spill once an in-memory collection holds more than a fixed element count, independent of actual memory pressure -- a safety valve against pathological cases (e.g. a hash map so large per-element overhead dominates) distinct from the memory-pressure-triggered spill this topic's own examples.py measures.",
+        "at": [{ "out": "the element-count-based forced-spill safety valve named only; this topic's own examples.py measures a memory-pressure-triggered spill, not the count-based one" }]
+      },
+      {
+        "item": "Concurrency multiplies memory demand directly: with N cores running N tasks concurrently on one executor, the unified pool is shared N ways at once, so a task's own effective share shrinks as concurrency rises -- which is exactly why this topic's own measured 'add 4x memory' case barely helped: the extra memory was still divided across 2 concurrently-running tasks (local[2]), not handed entirely to the one that needed it.",
+        "at": [{ "out": "the concurrency-multiplies-memory-demand mechanism named only as the deeper reason behind claim 3's own result; this topic's own examples.py measures the resulting spill numbers, not the per-task memory-share arithmetic directly" }]
+      },
+      {
+        "item": "spark.sql.adaptive.enabled with AQE's own skew-join splitting (an earlier chapter topic) can eliminate a skewed SHUFFLE partition before a sort or aggregation ever runs on it -- a different, earlier intervention point than this topic's own spill metrics, which only describe what happens once a task is already running with more data than it can hold.",
+        "at": [{ "out": "AQE skew-join splitting as an earlier, different intervention point, named only, cross-referencing this chapter's own AQE topic; this topic's own examples.py disables AQE to isolate the spill mechanism directly" }]
+      },
+      {
+        "item": "The two spill metrics (memoryBytesSpilled, diskBytesSpilled) are cumulative per-task counters across every spill a task performs during its own lifetime, not a single spill event's own size -- a task that spills multiple times (e.g. repeatedly filling and draining its sort buffer) reports the sum, which this topic's own examples.py reads as a single number without needing to distinguish how many individual spills contributed to it.",
+        "at": [{ "out": "the cumulative-across-multiple-spills nature of the two counters named only; this topic's own examples.py treats the final cumulative value as the measurement, which is sufficient for the claims it makes" }]
+      },
+      {
+        "item": "Grace hash join and hybrid hash join (a later-chapter topic, §4.3) apply the identical spill-to-disk-and-recursively-partition idea to a HASH join build side that doesn't fit in memory, rather than to a sort -- the same underlying memory-pressure response, applied to a different operator shape.",
+        "at": [{ "out": "grace/hybrid hash join's own application of the same idea, named only, cross-referencing the syllabus's own later mention of memory budgets and spilling joins; this topic's own examples.py measures a sort's own spill" }]
+      },
+      {
+        "item": "Caching (the next topic) is a form of memory pressure the application chooses deliberately, trading some execution-memory headroom (and therefore spill risk) for reuse across multiple uses of the same data -- the opposite of this topic's spill, which the engine triggers automatically and the application never explicitly asked for.",
+        "at": [{ "out": "caching's own deliberate-choice framing, named only as the contrast the next topic opens with; this topic's own examples.py measures only automatic, engine-triggered spill" }]
+      },
+      {
+        "item": "A task's own spill count and size are visible directly in the Spark UI's Stages tab per-task table (Shuffle Spill (Memory) and Shuffle Spill (Disk) columns) without needing the REST API this topic's own examples.py uses -- the UI and the REST API expose the identical underlying metrics through two different interfaces.",
+        "at": [{ "out": "the Spark UI's own equivalent display of the same metrics, named only; this topic's own examples.py reads the metrics via the REST API directly rather than screen-scraping the UI" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
