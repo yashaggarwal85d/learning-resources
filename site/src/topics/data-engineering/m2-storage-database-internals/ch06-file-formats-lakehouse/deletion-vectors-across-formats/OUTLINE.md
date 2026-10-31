@@ -1,0 +1,14 @@
+# Outline — de.deletion-vectors-across-formats
+
+DE §6.3 · 10 steps
+
+1. **Hook** — bridge from topic 14: "Merge-on-read's own delete files are themselves a mechanism worth a topic on their own. This topic is exactly that: the deletion vector, a per-file RoaringBitmap, built directly in this sandbox and compared across Delta, Iceberg v3 and Hudi."
+2. **Predict** — a data file needs 1,200 of its 50,000 rows marked deleted, without rewriting the file. What's the cheapest way to record that? (A) List every deleted row's position in a plain list. (B) Encode it as a bitmap, one bit per row position. Correct: depends on how many rows — that's exactly why the real format switches.
+3. **Reveal: a deletion vector is a bitmap, not a list** — Iceberg's own words: "Deletion vectors identify deleted rows of a file by encoding deleted positions in a bitmap. A set bit at position P indicates that the row at position P is deleted."
+4. **Reveal: reproduced for real — a small deletion vector stays an array** (takeaway) — real measured result: 1,200 deleted positions, built as a real container, stays under the RoaringBitmap format's own 4,096-element threshold and is stored as a plain array of positions, at a real, measured byte size.
+5. **Predict: what happens once the deletion count crosses that threshold?** — (A) The array just keeps growing, one entry per deleted row. (B) The container switches to a fixed-size bitset. Correct: B.
+6. **Reveal: reproduced for real — a large deletion vector becomes a bitset** (takeaway) — real measured result: 5,000 deleted positions switch the same container to a fixed 8,192-byte bitset, exactly as the RoaringBitmap format spec itself defines the array/bitset crossover.
+7. **Reveal: the real cost a deletion vector leaves behind at read time** — real measured numbers: scanning the file while applying the deletion vector costs measurably more than scanning it with no deletes at all — every row pays a real bitmap lookup.
+8. **Reveal: reproduced for real — compaction pays that cost back** (takeaway) — real measured result: after compaction purges the deleted rows from the file for good, scanning the compacted file is faster than scanning with the deletion vector applied — no lookup, fewer rows.
+9. **Reveal: the same bitmap, three formats, one real difference** — Delta's deletion vectors (its own protocol, in experimental support mode since Delta Lake 2.3.0), Iceberg v3's deletion vectors stored as a Puffin blob with at most one per data file, and Hudi's own mechanism: not a bitmap at all, but record-level delete markers written directly into its merge-on-read log files.
+10. **Recap** — a deletion vector is a real bitmap indexed by row position, with a real array-vs-bitset size tradeoff at a fixed threshold; it adds a real, measured cost at every read until compaction purges it for good.

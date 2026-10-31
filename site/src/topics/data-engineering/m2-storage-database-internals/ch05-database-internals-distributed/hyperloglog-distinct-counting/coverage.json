@@ -1,0 +1,144 @@
+{
+  "topic": "de.hyperloglog-distinct-counting",
+  "syllabus": [
+    {
+      "clause": "leading-zero estimation, registers and harmonic mean, HLL++ bias correction and sparse mode",
+      "at": [
+        { "step": "Reveal: each register tracks the longest run of leading zeros it has seen" },
+        { "step": "Reveal: a harmonic mean, not an arithmetic one, is what tames one unlucky outlier" },
+        { "step": "Reveal: a measured bias correction and a sparse mode for small counts" }
+      ]
+    },
+    {
+      "clause": "mergeability across partitions and time",
+      "at": [
+        { "step": "Predict: does merging two sketches from separate partitions match one built over all the combined data" },
+        { "step": "Reveal: a real sketch's measured error shrinks as more registers get used" }
+      ]
+    },
+    {
+      "clause": "what APPROX_COUNT_DISTINCT returns vs exact COUNT(DISTINCT)",
+      "at": [{ "step": "Reveal: a warehouse's own approximate count trades exactness for speed on purpose" }]
+    },
+    {
+      "clause": "Theta/KMV sketches when you need set intersection and difference",
+      "at": [
+        { "step": "Reveal: a warehouse's own approximate count trades exactness for speed on purpose" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Flajolet, Fusy, Gandouet, Meunier — HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm",
+      "items": [
+        {
+          "item": "the register observable is the position of the leftmost set bit of a hashed value",
+          "at": [{ "step": "Reveal: each register tracks the longest run of leading zeros it has seen" }]
+        },
+        {
+          "item": "the evaluation function uses a harmonic mean across registers, not a geometric or arithmetic one",
+          "at": [{ "step": "Reveal: a harmonic mean, not an arithmetic one, is what tames one unlucky outlier" }]
+        }
+      ]
+    },
+    {
+      "source": "Heule, Nunkesser, Hall — HyperLogLog in Practice",
+      "items": [
+        {
+          "item": "a measured, interpolated bias-correction table fixes the raw estimator's real small-cardinality bias",
+          "at": [{ "step": "Reveal: a measured bias correction and a sparse mode for small counts" }]
+        },
+        {
+          "item": "a sparse representation stores only non-empty register pairs until that costs more than a dense array",
+          "at": [{ "step": "Reveal: a measured bias correction and a sparse mode for small counts" }]
+        }
+      ]
+    },
+    {
+      "source": "BigQuery documentation — Approximate aggregate functions",
+      "items": [
+        {
+          "item": "`APPROX_COUNT_DISTINCT` returns a statistical estimate, not necessarily the exact value, trading accuracy for performance on very large input",
+          "at": [{ "step": "Reveal: a warehouse's own approximate count trades exactness for speed on purpose" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache DataSketches documentation — Theta Sketch Set Operations Accuracy",
+      "items": [
+        {
+          "item": "Theta-sketch union, intersection and difference obey real, documented accuracy rules, and a mixed operation's result can hold anywhere from zero to all of the union's retained values",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a real HyperLogLog sketch's error against an exact count on a Zipf-skewed stream shrinks monotonically from 4.24% at 256 registers to 0.47% at 16,384 registers; merging two partitioned sketches produces an estimate identical to a single combined-stream sketch; a real Count-Min Sketch never undercounts a key's true frequency",
+          "at": [
+            { "step": "Reveal: a real sketch's measured error shrinks as more registers get used" },
+            { "step": "Predict: does merging two sketches from separate partitions match one built over all the combined data" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The hook's own claim (estimating 'how many' without storing any of the values) is only possible because the structure deliberately throws away everything about a key except where its hash lands and how long a trailing pattern in that hash runs — this topic's own predict step is built to surface that this throwing-away is still lossless enough for exact mergeability, not merely approximately good enough.",
+        "at": [{ "step": "Hook: a handful of small registers estimates how many distinct values passed by" }]
+      },
+      {
+        "item": "Mergeability being exact rather than approximate is not a coincidence of this particular structure; it falls directly out of choosing a maximum (rather than a sum or average) as the per-register combination rule, since the maximum of two maximums over disjoint subsets equals the maximum over the union — a property an arithmetic running total would not have.",
+        "at": [{ "step": "Predict: does merging two sketches from separate partitions match one built over all the combined data" }]
+      },
+      {
+        "item": "A hashed value landing in exactly one register, chosen by part of its own hash, is what makes stochastic averaging across registers valid at all: each register effectively sees an independent random sample of the stream, which is the statistical assumption the harmonic-mean reveal and the error-vs-memory measurement both depend on.",
+        "at": [{ "step": "Reveal: each register tracks the longest run of leading zeros it has seen" }]
+      },
+      {
+        "item": "Choosing a harmonic mean is not an arbitrary refinement; it specifically addresses the fact that register values are order statistics of a geometric-like distribution, where a plain arithmetic average is dominated by the rare, very large outlier register in exactly the way a harmonic mean is not.",
+        "at": [{ "step": "Reveal: a harmonic mean, not an arithmetic one, is what tames one unlucky outlier" }]
+      },
+      {
+        "item": "The monotonic error-vs-register-count relationship this topic measures directly is not guaranteed to be perfectly smooth at every single register count on every run; what is guaranteed, and what this topic's own measurement actually checks, is that going from the smallest tested register count to the largest shows real, substantial improvement, not an occasional lucky draw.",
+        "at": [{ "step": "Reveal: a real sketch's measured error shrinks as more registers get used" }]
+      },
+      {
+        "item": "HLL++'s two refinements target two different real costs of the base structure: bias correction fixes an accuracy problem that exists even with the ideal amount of memory already allocated, while sparse mode fixes a memory-waste problem that exists even with a perfectly unbiased estimator — conflating the two would miss that either refinement could in principle be adopted without the other.",
+        "at": [{ "step": "Reveal: a measured bias correction and a sparse mode for small counts" }]
+      },
+      {
+        "item": "A warehouse choosing to ship an approximate function at all, rather than only ever computing an exact `COUNT(DISTINCT)`, is itself evidence that the real cost of exact distinct-counting at warehouse scale (a full shuffle and dedup of every value) is high enough that a documented, named trade-off is worth offering as a first-class function rather than leaving users to discover the cost the hard way.",
+        "at": [{ "step": "Reveal: a warehouse's own approximate count trades exactness for speed on purpose" }]
+      },
+      {
+        "item": "This topic's own lab deliberately builds a Count-Min Sketch alongside HyperLogLog, even though Count-Min Sketch is a skipped syllabus entry with no topic of its own, because showing two structures that are both small and fixed-memory but answer genuinely different questions (how many distinct, vs. how many of this one) makes the shape of the whole sketch family clearer than either structure alone would.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "This topic establishes which single number a tiny structure can approximate about a stream (how many distinct values); it says nothing about approximating an entire distribution's shape at once, which is exactly the shift the next, closing topic makes by moving from a single count to a quantile sketch.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "The 'Prove it' step's own scenario is built so the tempting wrong answer (the existing rolling sketch already answers it) fails for a structural reason, not a tuning one: no amount of additional registers or merging strategy turns a cardinality estimator into a set-difference answerer, since the two structures retain fundamentally different information about the underlying set.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic's own register-and-harmonic-mean material is the direct cardinality-counting analogue of topic 30's own membership-filter material: both families accept a small, bounded chance of error in exchange for a massive reduction in memory, but answer structurally different kinds of question (yes-or-no membership vs. a single aggregate count) using the same small-fixed-memory philosophy.",
+        "at": [{ "topic": "Bloom, cuckoo and xor filters", "domain": "data-engineering", "quote": "approximate membership with no false negatives" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "topic": "de.deletion-vectors-across-formats",
+  "steps": [
+    {
+      "lines": [
+        "Last topic ended with a small log file holding a deferred change, merged in only when someone reads. That log file deserves its own close look.",
+        "Today's question is what's actually inside it, and today it gets built for real, bit by bit, and checked against three real table formats at once."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a data file whose rows mostly need to stay exactly as they are, except for a small slice that has to be marked gone, without rewriting a single byte of the file.",
+        "What's the leanest possible way to record which rows those are?"
+      ],
+      "answer": [
+        "There's no single leanest answer in the abstract — it depends entirely on how many rows you're marking.",
+        "A plain list and a bitmap trade places as the cheaper option, and the crossover point is exactly what's worth building next."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual shape it takes. Picture every row in the file laid out in order, and a single bit sitting beside each one.",
+        "A bit flipped on means its row is gone. Nothing about the file itself ever changes — only this separate strip of bits does."
+      ]
+    },
+    {
+      "lines": [
+        "This wasn't just described — it was actually built. A small slice of rows, well under a real fixed threshold the format itself defines, got marked this way for real.",
+        "And under that threshold, the honest, cheapest structure turned out to be nothing more than a short, plain list of exactly which positions were marked."
+      ]
+    },
+    {
+      "lines": [
+        "Now push on that same idea harder. Keep marking more and more rows gone, climbing well past wherever that threshold sits.",
+        "Does the list just keep stretching forever, one more entry for every additional row, or does something about its shape actually change?"
+      ],
+      "answer": [
+        "Something changes, and deliberately so. Past that threshold, a growing list stops being the cheap option at all.",
+        "The structure switches to one fixed-size strip of bits instead — one that costs exactly the same no matter how many more rows get added."
+      ]
+    },
+    {
+      "lines": [
+        "Also built for real, and past that same threshold this time: the structure really did flip over into one fixed-size strip of bits.",
+        "And that's the whole point of the switch — past a certain density, a bitmap beats a list every single time, by never growing another byte larger."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the catch nobody should skip past. Marking a row gone this way costs almost nothing to write — but it was never actually free.",
+        "Every single time anyone reads that file afterward, they now have to check this extra strip of bits against every row, just to know what's still really there."
+      ]
+    },
+    {
+      "lines": [
+        "And that extra checking was measured directly, not assumed — reading the file while honoring those marks really did take noticeably longer than reading it with nothing marked at all.",
+        "The fix is a deliberate housekeeping pass that finally rewrites the file for real, dropping every marked row for good — and once that ran, reading sped right back up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something worth sitting with. Two of the three major table formats agreed on building this exact same bit-strip trick — not just a similar idea, but literally the same underlying format, on purpose, for compatibility.",
+        "The third format never adopted that trick at all. It solves the identical problem by writing a note straight into its own small side file instead — no bit strip in sight."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it. A strip of bits beside a file buys you a delete that costs nothing to write.",
+        "But that bargain was never free — every read pays a little of it back, right up until a deliberate rewrite clears the debt for good."
+      ]
+    }
+  ]
+}
