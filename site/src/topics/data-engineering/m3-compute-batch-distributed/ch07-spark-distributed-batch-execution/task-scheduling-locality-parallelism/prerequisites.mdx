@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: §7.1's own shuffle-mechanics topic
+
+<ul class="resources">
+  <Resource kind="reel" title="Sort-based shuffle mechanics" domain="data-engineering" host="de.sort-based-shuffle-mechanics" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Configuration — spark.default.parallelism" href="https://spark.apache.org/docs/latest/configuration.html" by="Apache Spark documentation">The local-mode definition of default parallelism as the core count, measured directly.</Resource>
+  <Resource kind="reading" title="Performance Tuning — spark.sql.shuffle.partitions" href="https://spark.apache.org/docs/latest/sql-performance-tuning.html" by="Apache Spark documentation">The SQL-layer shuffle-partition setting and its default of 200, measured directly.</Resource>
+  <Resource kind="reading" title="Job Scheduling — FIFO and FAIR pools" href="https://spark.apache.org/docs/latest/job-scheduling.html" by="Apache Spark documentation">FIFO as Spark's own default and FAIR as the opt-in alternative, named and quoted.</Resource>
+  <Resource kind="reading" title="TaskSchedulerImpl.scala — delay scheduling" href="https://raw.githubusercontent.com/apache/spark/v4.0.0/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala" by="Apache Spark project, GitHub, tag v4.0.0">The scheduler's own description of delay scheduling, quoted directly.</Resource>
+</ul>
+
+</section>

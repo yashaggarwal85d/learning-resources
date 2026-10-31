@@ -1,0 +1,87 @@
+{
+  "topic": "de.nested-data-repetition-definition",
+  "steps": [
+    {
+      "lines": [
+        "What you're looking at is a small set of nested records, flattened by hand into two plain columns, and then rebuilt back into their original shape.",
+        "One of those records has several items inside it, one has none at all, and one has exactly one — deliberately, so every edge case this topic cares about actually shows up.",
+        "Both directions of that process, flattening and rebuilding, are checked against each other directly: what comes back out has to match what went in, exactly."
+      ]
+    },
+    {
+      "lines": [
+        "Picture scanning that flattened column top to bottom, one value after another, with no sign anywhere of where one original record ends and the next begins.",
+        "Here's the question: one of those original records has an empty list inside it. When that record gets flattened, does it leave any trace in the column at all, or does it just disappear?",
+        "Think about what a reader scanning only that flat column would need in order to notice a record was ever there, if that record contributed no actual values of its own."
+      ],
+      "answer": [
+        "It leaves exactly one trace behind: a single marker entry, even though the record itself contributed nothing else to the column.",
+        "Without that marker, a reader would have no way to tell 'this record had an empty list' apart from 'this record doesn't exist at all' or 'more values are still coming.'",
+        "That single entry is doing real work: it's the only thing standing between an empty list and a completely invisible record."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how a reader actually tells those records apart in that flat column: every value carries a small number alongside it, separate from the value itself.",
+        "Most of the time that number stays at its lowest setting, which simply means 'this is the start of a fresh record.' It only changes when the same repeating field fires again within the same record.",
+        "So scanning down the column, a jump back to that lowest number is the one and only signal a record boundary has been crossed — nothing else in the stream says so directly."
+      ]
+    },
+    {
+      "lines": [
+        "Now look specifically at the record with the empty list, and what its one marker entry actually carries alongside it.",
+        "That marker's own accompanying number is set even lower than the number used for 'a field that's simply missing one level deep' — it's as low as that number ever goes.",
+        "That distinction matters: a list that exists but happens to be empty isn't the same fact as a field that was never written at all, and a reader needs to be able to tell those two apart.",
+        "Remember this whenever a nested field surprises you by producing output for a record that seemingly has nothing in it: an empty list still writes something, specifically to say 'empty,' not 'absent.'"
+      ]
+    },
+    {
+      "lines": [
+        "Now make the picture one level more complicated: a second field, sitting inside those same list items, that can itself be missing independently of whether the item exists at all.",
+        "Here's the question worth sitting with: how many different settings does that small accompanying number need, now that there are two separate things that could each be missing?",
+        "Count what actually has to be distinguished: the surrounding list could be empty, an item inside it could exist without this particular field filled in, or the field could be filled in completely."
+      ],
+      "answer": [
+        "It needs three distinct settings, one for each of those genuinely different situations, not just a single yes-or-no flag.",
+        "The highest setting means both the item and this field inside it are fully present. One step down means the item exists but this particular field was left out. The lowest means there was no item there in the first place.",
+        "Every additional field in a value's path that could be left out, whether because it repeats or because it's simply optional, adds one more setting that number has to be able to represent."
+      ]
+    },
+    {
+      "lines": [
+        "Walk that same flattened column again, now watching only this second field's accompanying number as it changes from one entry to the next.",
+        "The highest value appears whenever both the surrounding item and this field are genuinely present. One step down shows up when the item is there but this field itself was left blank. And the very lowest shows up exactly where the empty-list marker from before sits.",
+        "One single number, attached to one single value, is carrying the presence or absence of two completely different ancestors at once — nothing else in the file needs to say more."
+      ]
+    },
+    {
+      "lines": [
+        "Put both of those accompanying numbers back together, side by side, and reconstructing the original records turns out to need surprisingly little extra machinery.",
+        "A reader walks both flattened columns at the same pace, one entry at a time, and the very first number — the one that marks a fresh record — is the only signal it needs to know when to close off the record it's building and start a new one.",
+        "There's no tree to walk and no recursive structure to rebuild by hand; a flat scan, watching one small number, is enough to recover exactly what nested record each value belonged to."
+      ]
+    },
+    {
+      "lines": [
+        "A completely different format solves the exact same problem in a noticeably different way: instead of one shared pair of numbers riding alongside every value, it keeps one separate pair of buffers for each level of nesting.",
+        "For a list field specifically, that pair is a running count of how many items came before each record, plus a separate flag saying whether the list itself is present at all.",
+        "Read two consecutive entries from that running count and subtract one from the other, and what falls out is exactly how many items belonged to that particular record — the same fact the other format's numbers were carrying, just arranged differently."
+      ]
+    },
+    {
+      "lines": [
+        "A third format takes a third approach to the same underlying problem, and it's worth seeing all three side by side rather than picking only one.",
+        "Instead of a running count, it stores the item count for each record directly, plus that same separate presence flag for the list field.",
+        "Compare that direct count against the running-count version from a moment ago, record by record, and they land on exactly the same numbers — two different storage choices describing one identical fact.",
+        "Whichever of these three a file actually uses, the underlying information a reader needs to reconstruct nesting never actually changes, only where that information gets written down."
+      ]
+    },
+    {
+      "lines": [
+        "Step back from any one format and the real pattern becomes visible: three completely different storage layouts, and all three end up encoding the exact same underlying fact about where structure lives.",
+        "One keeps a single shared pair of numbers riding alongside every leaf value, no matter how deep that value sits. The other two instead keep a separate small buffer for every individual level of nesting a schema happens to have.",
+        "Either way, nesting isn't free: a record with an empty list still has to contribute something to every field that would have lived inside it, purely to say that nothing was there — real work a flat, unnested record never has to do at all."
+      ]
+    }
+  ]
+}

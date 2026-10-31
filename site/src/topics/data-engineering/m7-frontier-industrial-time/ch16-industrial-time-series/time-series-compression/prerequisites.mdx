@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: timestamps, resampling, joins and rollups
+
+<ul class="resources">
+  <Resource kind="reel" title="Timestamps, clocks and time zones in telemetry" domain="data-engineering" host="de.timestamps-clocks-time-zones" by="this chapter, for the trustworthy timestamp this topic's delta-of-delta encoder assumes" />
+  <Resource kind="reel" title="Resampling and gap filling" domain="data-engineering" host="de.resampling-gap-filling" by="this chapter, for the regular-vs-irregular series distinction this topic measures directly" />
+  <Resource kind="reel" title="As-of alignment of unsynchronized streams" domain="data-engineering" host="de.as-alignment-unsynchronized-streams" by="this chapter, for the tag/signal metadata this topic's dictionary-encoding step builds on" />
+  <Resource kind="reel" title="Downsampling, rollups and retention tiers" domain="data-engineering" host="de.downsampling-rollups-retention-tiers" by="the previous topic of this chapter, for the other way to keep fewer bytes" />
+  <Resource kind="reel" title="Numeric representation and its data bugs" domain="data-engineering" host="de.numeric-representation-data-bugs" by="Chapter 1, for the IEEE-754 bit layout this topic's XOR encoder operates on directly" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Gorilla: A Fast, Scalable, In-Memory Time Series Database" href="https://vldb.org/pvldb/vol8/p1816-teller.pdf" by="Pelkonen et al., VLDB 2015">The Milestone 7 case study: the delta-of-delta and XOR encoding rules this topic's encoder reproduces exactly, including the paper's own worked bit-count examples.</Resource>
+  <Resource kind="reading" title="Chimp: Efficient Lossless Floating Point Compression for Time Series Databases" href="https://vldb.org/pvldb/vol15/p3058-liakos.pdf" by="Liakos et al., PVLDB 2022">The trailing-zero threshold and Chimp128's wider comparison window, run in a disclosed simplified form.</Resource>
+  <Resource kind="reading" title="ALP: Adaptive Lossless floating-Point Compression" href="https://ir.cwi.nl/pub/33334/33334.pdf" by="Afroozeh, Kuffo and Boncz, SIGMOD 2024">Named and quoted for the decimal-aware encoding idea and the claim that older float codecs barely beat general-purpose compression (sourced-only, not run directly).</Resource>
+  <Resource kind="reading" title="ALP library" href="https://duckdb.org/library/alp/" by="DuckDB documentation">The default-codec claim, exercised for real by writing this topic's three regimes to Parquet and measuring the resulting file size.</Resource>
+</ul>
+
+</section>

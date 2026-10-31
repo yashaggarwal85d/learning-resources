@@ -1,0 +1,77 @@
+{
+  "topic": "de.as-alignment-unsynchronized-streams",
+  "steps": [
+    {
+      "lines": [
+        "A root-cause question asks what the oven's temperature was at the exact moment a part went out of limits.",
+        "Matched on equal timestamps, the two sensors almost never land on the same instant, so the query comes back nearly empty.",
+        "Matched with no limit on how far back to look, it returns an answer every time, including one pulled from nearly an hour before."
+      ]
+    },
+    {
+      "lines": [
+        "For every reading on the fast, dense sensor, take the most recent reading from the slower, sparser one that happened at or before it.",
+        "That's the same backward-matching join already used earlier in this course for ordinary business facts.",
+        "Here it's simply matching two sensors against each other instead of a fact against a reference table."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "The two sensors' clocks are already known to disagree by some fixed, measured amount.",
+        "Setting the matching window tighter than that disagreement, does the join actually become more accurate?"
+      ],
+      "answer": [
+        "It doesn't, and that's the trap.",
+        "Below that clock disagreement, every match being excluded was already correct, so tightening further only throws good matches away."
+      ]
+    },
+    {
+      "lines": [
+        "Put it to the test directly.",
+        "A matching window narrower than the clocks' own known disagreement excludes at least as many matches as one set right at that disagreement.",
+        "Nothing is gained by going tighter, and genuinely correct matches are lost."
+      ]
+    },
+    {
+      "lines": [
+        "Running the identical join through two completely different engines, they agree on every single row.",
+        "As the matching window shrinks past how often the slower sensor actually reports, the share of unmatched rows climbs away from zero.",
+        "Right at that reporting rate, and wider, every row still finds a match."
+      ]
+    },
+    {
+      "lines": [
+        "On a signal whose true path between samples is already known, a plain backward match just holds the last reading flat until a newer one arrives.",
+        "Filling in the point between the sample before and the sample after recovers something much closer to the signal's real path.",
+        "That better value only exists by looking at a sample that, in a live system, hasn't happened yet."
+      ]
+    },
+    {
+      "lines": [
+        "Without first grouping the match by which piece of equipment each reading came from, a reading from one machine can get paired with the nearest reading from a completely different one.",
+        "No error gets raised anywhere in that process.",
+        "The row that comes back simply looks plausible and is quietly wrong."
+      ]
+    },
+    {
+      "lines": [
+        "A backward match takes whatever was most recently true at or before a given moment.",
+        "A matching window tighter than a known clock disagreement helps nothing at all.",
+        "A more accurate value bought by looking ahead carries the same cost as a feature that leaks the future.",
+        "And grouping by equipment first isn't an optional tuning step, it's what keeps the match honest."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "A separate pipeline's matching join has no limit on staleness and no grouping by equipment at all, and it has never once come back empty.",
+        "Does never once coming back empty count as a sign that this join is working well?"
+      ],
+      "answer": [
+        "It doesn't. That's close to the opposite of a good sign.",
+        "With no staleness limit, nothing is ever too old to count, and with no grouping, nothing is ever rejected for coming from the wrong machine — never coming back empty is exactly what that combination guarantees."
+      ]
+    }
+  ]
+}

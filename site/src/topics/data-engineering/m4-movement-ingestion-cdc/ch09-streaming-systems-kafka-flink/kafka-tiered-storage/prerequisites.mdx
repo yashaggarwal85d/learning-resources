@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: segments, compaction, and what order means
+
+This topic builds on the segment-rolling model, compaction's own distinct retention rule, and the
+partition-ordering vocabulary, without re-teaching any of them. If segments, compaction, or
+ordering are unfamiliar, start with
+[Partitioned logs, segments and indexes](../partitioned-log-segments-indexes/),
+[Retention and log compaction](../retention-log-compaction/), and
+[Kafka ordering guarantees](../kafka-ordering-guarantees/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="KIP-405: Kafka Tiered Storage (Apache Kafka wiki)" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-405%3A+Kafka+Tiered+Storage" by="Apache Kafka wiki">Production-ready since Kafka 3.9, the remote log manager's own design, and the compacted-topics non-goal this topic's reveals cite.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 operations documentation: Tiered Storage" href="https://kafka.apache.org/44/operations/tiered-storage/" by="Apache Kafka docs">The two-tier model, the `RemoteStorageManager` interface, local-vs-total retention, and the documented compacted-topics limitation.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 configuration reference: Tiered Storage Configs" href="https://kafka.apache.org/44/configuration/tiered-storage-configs/" by="Apache Kafka docs">`log.local.retention.ms`'s exact definition and its relationship to `log.retention.ms`, this topic's retention reveal cites.</Resource>
+</ul>
+
+</section>

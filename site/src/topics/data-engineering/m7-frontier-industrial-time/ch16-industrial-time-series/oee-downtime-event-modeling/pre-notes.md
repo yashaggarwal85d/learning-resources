@@ -1,0 +1,6 @@
+- **OEE**: Overall Equipment Effectiveness, a single number combining three factors of a manufacturing process's performance. *Where you meet it:* this topic's own subject.
+- **Ideal cycle time**: the fastest time a process can make one part under optimal conditions, from the OEE reference this topic sources. *Where you meet it:* the Performance factor's own formula.
+- **Micro-stop**: a stop too short for anyone to log a reason for. *Where you meet it:* folded into Performance rather than Availability.
+- **Changeover**: switching a line from making one product to another. *Where you meet it:* this topic's shift-boundary and planned/unplanned examples.
+- **Gaps and islands**: turning a stream of change events into contiguous intervals, from this course's earlier SQL topics. *Where you meet it:* the machine-state interval table this topic derives from raw events.
+- **Censored observation**: a measurement that was cut off before it finished, from basic statistics. *Where you meet it:* the interval after this topic's last observed failure.

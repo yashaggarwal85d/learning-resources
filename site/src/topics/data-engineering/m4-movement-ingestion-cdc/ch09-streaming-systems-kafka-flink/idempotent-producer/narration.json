@@ -1,0 +1,85 @@
+{
+  "topic": "de.idempotent-producer",
+  "steps": [
+    {
+      "lines": [
+        "Take that exact same retry from before and run it with one setting turned off.",
+        "A real duplicate lands, right on cue.",
+        "Flip that one setting back on, run the identical scenario again, and this time nothing extra lands at all — the rejection itself gets logged."
+      ]
+    },
+    {
+      "lines": [
+        "From here on, every batch leaving the sender carries a little more with it.",
+        "An identity, a marker for which attempt this is, and a running count.",
+        "And on the receiving side, a small table quietly remembers the last count it accepted from each sender."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The exact same batch, carrying the exact same count, shows up a second time.",
+        "Does the receiving side have any actual way to notice that?"
+      ],
+      "answer": [
+        "Yes, it genuinely can.",
+        "That running count travels along specifically so a repeat stands out immediately.",
+        "No extra flag or signal from the sender is needed at all."
+      ]
+    },
+    {
+      "lines": [
+        "The rule turns out to be strict in a useful way.",
+        "Only a count exactly one higher than the last one accepted gets through.",
+        "A resend still carries the old count, so it gets recognized and turned away on the spot."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "This time the exact same count goes out, but aimed at a completely different lane.",
+        "Does that same rejection rule catch this one too?"
+      ],
+      "answer": [
+        "No, it doesn't, and that's by design.",
+        "Each lane keeps its own separate running count, with nothing shared between them.",
+        "The same number showing up in a different lane is simply a brand new, perfectly valid write."
+      ]
+    },
+    {
+      "lines": [
+        "Every single lane starts its own count from scratch, completely independent of every other one.",
+        "Seeing the same number twice, in two different lanes, isn't a coincidence worth worrying about.",
+        "It's just two separate writes, each one valid on its own terms."
+      ]
+    },
+    {
+      "lines": [
+        "A sender restarts and is handed a brand new marker for this fresh attempt.",
+        "Something still trying to write under the old marker hasn't gone away yet.",
+        "That straggler gets recognized as belonging to a finished attempt and is turned away, no matter what count it's still carrying."
+      ]
+    },
+    {
+      "lines": [
+        "So here's exactly how far this protection reaches, stated precisely.",
+        "One sender, one attempt, one lane — that's the whole boundary.",
+        "It says nothing at all about two different senders producing what looks like the same record, and nothing survives a restart on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel so far came from one real run of this topic's own toy sender-and-receiver model, happening just now.",
+        "The repeat getting caught, the different-lane write sailing through untouched.",
+        "And the straggler from an old attempt getting turned away, all confirmed directly."
+      ]
+    },
+    {
+      "lines": [
+        "So: an identity says who's writing, a marker says which attempt this is, and a running count catches an exact repeat.",
+        "All of it scoped to one sender, one attempt, one lane, on purpose.",
+        "Nothing wider than that is covered without doing more work on top."
+      ]
+    }
+  ]
+}

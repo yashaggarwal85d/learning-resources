@@ -1,0 +1,89 @@
+{
+  "topic": "de.requirements-into-slos",
+  "steps": [
+    {
+      "lines": [
+        "A head of marketing asks for one thing: real-time, accurate revenue on the executive dashboard.",
+        "Engineering builds a streaming job to answer it. Finance keeps its own separate total. At the first board meeting, the two numbers don't agree.",
+        "Both teams genuinely met the sentence they were handed. So what did that sentence actually fail to say?"
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Real-time sounds like a claim about speed. Is the gap between these two numbers really a speed problem, one system answering slower than the other?",
+        "Or is it about something neither word ever pinned down at all: exactly what gets counted, and when a number is allowed to stop changing?"
+      ],
+      "answer": [
+        "It isn't speed. Neither system was slow, and neither one miscounted by its own definition.",
+        "The sentence never said whether an order counts the moment it's placed or only once it finishes settling, and it never said when a number becomes final.",
+        "That's a gap in what gets counted, not in how fast it arrives — exactly the kind of gap a fixed checklist exists to catch before anyone writes a line of code."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fixed habit that catches it: five questions, asked of this exact sentence, every single time.",
+        "Who is this measured for. Where, exactly, is it measured. At what percentile. Over what window. And what happens the moment it's missed.",
+        "Answer all five for the dashboard, and real-time stops being a mood and becomes one number: a maximum staleness the dashboard is actually built to meet."
+      ]
+    },
+    {
+      "lines": [
+        "Now run the same sentence through a second checklist: six dimensions, every time, no exceptions.",
+        "Freshness and latency both come back with a real number for this ask.",
+        "Two of the six come back with nothing at all. Those two are precisely where the two teams, left to their own judgment, quietly chose differently."
+      ]
+    },
+    {
+      "lines": [
+        "Take just one of those six words — correct — and it turns out to not be one idea at all.",
+        "Run the identical dashboard ask through four separate definitions of what correct could mean here, and each one hands back a genuinely different system, with a genuinely different dominant cost.",
+        "Four systems, not four phrasings of the same system."
+      ]
+    },
+    {
+      "lines": [
+        "So which of those four does this dashboard actually need?",
+        "Look at what actually happens if the number is wrong: a board loses a little confidence in a meeting, nothing more.",
+        "That's a far cheaper consequence than a bill going out wrong, and it's the consequence — not habit, not what sounds more rigorous — that should be picking the system."
+      ]
+    },
+    {
+      "lines": [
+        "Try the identical five questions on a second ask: just make it reliable.",
+        "Who is this for. Where is it measured. At what percentile. Over what window. What happens on a miss.",
+        "Every single one comes back empty. Not vague — empty. Nobody has proposed anything to measure yet."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Suppose the entire room spends an hour and genuinely agrees on what reliable should mean here.",
+        "Does that agreement, on its own, turn the sentence into something an engineer can actually build against?"
+      ],
+      "answer": [
+        "No, and this is the trap worth naming directly.",
+        "Agreeing on a word is a fact about the room, not a measurement about the system.",
+        "Until somebody names where it's measured, what number counts as meeting it, over what window, and what happens on a miss, there is still nothing to build — exactly what the five questions are there to expose."
+      ]
+    },
+    {
+      "lines": [
+        "So: five questions that turn a vague word into one number. Six dimensions that make sure nothing gets silently skipped.",
+        "Correct, chosen before anything is built, from the actual cost of being wrong — not discovered afterward.",
+        "And an unmeasurable ask, rejected outright, no matter how much the room agrees on its wording."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: the warehouse must never show a customer someone else's order.",
+        "Which of the six dimensions does that sentence actually name? And given the real consequence of getting it wrong, which of the four definitions of correct does it force?"
+      ],
+      "answer": [
+        "That's a correctness requirement, and the consequence is a privacy incident, not a wrong total.",
+        "A privacy incident doesn't tolerate a small, bounded rate of being wrong the way a revenue dashboard does — it forces something much closer to the strict, exactly-once end of the four definitions.",
+        "Showing the wrong order isn't downtime, which is what availability actually measures; it's the system confidently handing out the wrong answer, a correctness failure with teeth."
+      ]
+    }
+  ]
+}

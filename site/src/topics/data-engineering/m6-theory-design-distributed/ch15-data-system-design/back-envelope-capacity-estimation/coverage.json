@@ -1,0 +1,66 @@
+{
+  "topic": "de.back-envelope-capacity-estimation",
+  "syllabus": [
+    {
+      "clause": "events/s, bytes/day, storage/year with replication and compaction overhead",
+      "at": [{ "step": "Reveal: the estimate chain, one row per beat" }]
+    },
+    {
+      "clause": "peak-to-average ratio",
+      "at": [{ "step": "Reveal: what the peak-to-average ratio actually changes" }]
+    },
+    {
+      "clause": "Little's law for in-flight work",
+      "at": [
+        { "step": "Reveal: Little's Law" },
+        { "step": "Reveal: sizing consumers and a connection pool from the in-flight count" }
+      ]
+    },
+    {
+      "clause": "the reference numbers to carry in your head (memory/SSD/network latencies, per-partition Kafka throughput, object-store request costs and limits, warehouse scan rates)",
+      "at": [
+        { "step": "Reveal: three reference numbers, each with its own ceiling named" },
+        { "step": "Reveal: using a reference number correctly, and incorrectly" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "LinkedIn Engineering — Benchmarking Apache Kafka: 2 Million Writes Per Second",
+      "items": [
+        { "item": "Hardware used for the benchmark (six-core 2.5GHz Xeon, six 7200RPM SATA drives JBOD, 32GB RAM, 1Gb Ethernet, three machines).", "at": [{ "step": "Reveal: three reference numbers, each with its own ceiling named" }] },
+        { "item": "Single-producer, no-replication throughput: 821,557 records/sec.", "at": [{ "step": "Reveal: three reference numbers, each with its own ceiling named" }] },
+        { "item": "Single-producer, 3x async-replication throughput: 786,980 records/sec — barely lower per client.", "at": [{ "deep": "Production failures this topic warns about" }] },
+        { "item": "The 'total data written is three times higher' statement under 3x replication.", "at": [{ "step": "Reveal: the estimate chain, one row per beat" }] }
+      ]
+    },
+    {
+      "source": "AWS — Best practices design patterns: optimizing Amazon S3 performance",
+      "items": [
+        { "item": "The per-prefix request-rate floor: at least 3,500 PUT/COPY/POST/DELETE and 5,500 GET/HEAD requests/sec.", "at": [{ "step": "Reveal: three reference numbers, each with its own ceiling named" }] },
+        { "item": "No limit on prefixes per bucket; ten prefixes parallelize to 55,000 reads/sec.", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A business volume becomes a design rate through one chain of real multiplications (events per order, divide by seconds a day, peak ratio, bytes per event, retention, replication) — not a single read of the headline number.", "at": [{ "step": "Reveal: the estimate chain, one row per beat" }] },
+      { "item": "The peak-to-average ratio is what a system is actually provisioned for; the mean rate is only what it's expected to handle on an average day.", "at": [{ "step": "Reveal: what the peak-to-average ratio actually changes" }] },
+      { "item": "Little's Law (L = λW) holds for any stable queueing system and turns a design rate plus a processing time into a real in-flight count.", "at": [{ "step": "Reveal: Little's Law" }] },
+      { "item": "Dividing the in-flight count by one consumer's own capacity gives the actual number of consumers, connections or queue slots to provision.", "at": [{ "step": "Reveal: sizing consumers and a connection pool from the in-flight count" }] },
+      { "item": "A reference number (a benchmark, a request limit, a measured rate) is only useful paired with what it is not — a planning figure, a hard ceiling, or a vendor claim, respectively.", "at": [{ "step": "Reveal: three reference numbers, each with its own ceiling named" }] },
+      { "item": "The same benchmark number can support a narrow, correct claim (one partition won't bottleneck a far lower design rate) while failing to support a broad, incorrect one (this cluster will hit that rate).", "at": [{ "step": "Reveal: using a reference number correctly, and incorrectly" }] },
+      { "item": "A warehouse scan rate belongs in the reference-numbers table only as a real, run measurement with its own hardware disclosed — never as a quoted vendor figure.", "at": [{ "deep": "Lab" }] },
+      { "item": "Little's Law's generality (it holds regardless of the arrival or service distribution, given stability) is why one formula sizes queues, pools and in-flight buffers alike, without a different derivation for each.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic fixes the shop's own planning constants (orders a day, events an order, peak ratio, bytes an event, replication, retention) that every later design topic in this chapter imports as its starting numbers.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "Provisioning directly off a blog post's benchmark number, without naming what it is not, is this topic's own named production failure mode.", "at": [{ "deep": "Production failures this topic warns about" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

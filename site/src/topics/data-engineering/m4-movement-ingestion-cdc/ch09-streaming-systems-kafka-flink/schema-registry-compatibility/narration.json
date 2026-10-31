@@ -1,0 +1,85 @@
+{
+  "topic": "de.schema-registry-compatibility",
+  "steps": [
+    {
+      "lines": [
+        "Somebody drops a field they're sure nobody's using anymore.",
+        "Nothing stops them. Nothing even warns them.",
+        "And for days, everyone still reading that field just quietly sees nothing where a value used to be."
+      ]
+    },
+    {
+      "lines": [
+        "An earlier fix assumed a record's fields still mean exactly what they meant when it was first written.",
+        "That assumption needs something actually enforcing it, not just hoping everyone plays along.",
+        "That enforcement is the whole reason this exists at all."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Same change, same dropped field, but checked against a stricter rule this time instead of a lenient one.",
+        "Does the stricter rule actually catch it, or does it slip through just the same?"
+      ],
+      "answer": [
+        "It catches it, and that's exactly the point of choosing a stricter rule.",
+        "Checked against what still-reading consumers actually depend on, this change simply never ships.",
+        "The rule that was active, not the change itself, decided whether anyone noticed in time."
+      ]
+    },
+    {
+      "lines": [
+        "One direction asks whether something newer can still make sense of something older.",
+        "The other direction asks the exact opposite question instead.",
+        "And one stricter option refuses to take anyone's word for it, checking every version that's ever existed."
+      ]
+    },
+    {
+      "lines": [
+        "Drop a field, and the lenient direction shrugs it off without complaint.",
+        "Require a brand-new one with nothing to fall back on, and that same direction refuses outright.",
+        "Same kind of change on paper. Completely different outcome, depending only on which rule is actually watching."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "The same rename, kept in its original spot, run past three different ways of describing a record's shape.",
+        "Does every one of them treat that rename the same way?"
+      ],
+      "answer": [
+        "Not even close.",
+        "One of them couldn't care less what anything is called, only where it sits.",
+        "Give that one the same spot under a different name, and it never even notices the difference."
+      ]
+    },
+    {
+      "lines": [
+        "One of these three tracks identity by name, falling back on a stated default when a name goes missing.",
+        "Another tracks identity by position instead, so a rename passes clean but reusing that same position does not.",
+        "And the third was never really built with any of this in mind, so somebody else has to make the rules up for it."
+      ]
+    },
+    {
+      "lines": [
+        "How types get grouped together for checking is its own separate decision, worth making on purpose.",
+        "And out on the wire, nobody sends the whole description along with every single message.",
+        "Just a small tag pointing back to wherever the full description already lives."
+      ]
+    },
+    {
+      "lines": [
+        "Every figure in this reel came from one real run, happening just now, of this topic's own toy models.",
+        "The rule that caught what a looser one would have missed.",
+        "And the small tag that made the full round trip and still came back exactly right."
+      ]
+    },
+    {
+      "lines": [
+        "So: pick the rule that actually matches who's upgrading first.",
+        "Know that not every format agrees on what even counts as the same field.",
+        "And remember that passing every one of these checks still isn't the same as being right."
+      ]
+    }
+  ]
+}

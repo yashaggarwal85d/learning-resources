@@ -1,0 +1,7 @@
+- **As-of join**: matching each left row to the nearest preceding right row by time, from Chapter 2's business-fact joins. *Where you meet it:* this topic's own subject, applied to two sensors.
+- **Tolerance**: a bound on how stale an as-of match is allowed to be before it's dropped. *Where you meet it:* the null-rate-against-tolerance section.
+- **Partition key**: a column (here, equipment) matched for equality before the nearest-preceding search runs. *Where you meet it:* why an as-of join across many sensors needs a `by` column.
+- **Step approximation**: a backward as-of match's value, held flat until the next sample arrives. *Where you meet it:* the comparison against interpolation on a known ramp.
+- **Look-ahead**: using a value that occurs after the point being evaluated, unavailable in a true real-time pipeline. *Where you meet it:* the cost of interpolating at join time, and the pointer to Chapter 17's training-set leakage.
+- **Clock offset**: the known disagreement between two sensors' clocks, from topic 7. *Where you meet it:* why a tolerance tighter than the offset can't help.
+- **Point-in-time join**: Chapter 2's name for the same backward-match mechanism applied to business facts rather than telemetry. *Where you meet it:* the identity this topic states and stops at.

@@ -1,0 +1,127 @@
+{
+  "topic": "de.time-series-storage-engine",
+  "syllabus": [
+    {
+      "clause": "Prometheus TSDB (in-memory head block, WAL, 2-hour blocks, compaction, out-of-order ingestion window);",
+      "at": [
+        { "step": "Reveal: the head block, the WAL, and the capacity formula" },
+        { "step": "Reveal: compaction merges blocks, and a query can skip the rest" },
+        { "step": "Predict: does a wider out-of-order window change what gets rejected?" },
+        { "step": "Reveal: the window shifts the line, and still has one" }
+      ]
+    },
+    {
+      "clause": "TimescaleDB hypertables (time-partitioned chunks, columnstore compression);",
+      "at": [{ "step": "Reveal: TimescaleDB's chunks, pruned the same way" }]
+    },
+    {
+      "clause": "InfluxDB 3 (Arrow in memory, Parquet on object storage, DataFusion queries);",
+      "at": [{ "step": "Reveal: InfluxDB 3's buffer, WAL, and Parquet, on a clock" }]
+    },
+    {
+      "clause": "horizontally scaled backends (Mimir, Thanos, VictoriaMetrics).",
+      "at": [{ "step": "Reveal: three scaled-out backends, one shared pattern" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Prometheus: Storage",
+      "items": [
+        {
+          "item": "ingested samples are grouped into two-hour blocks with a chunks subdirectory, a metadata file and an index file; the head block is secured by a WAL in 128MB segments; compaction merges blocks up to 10% of retention time or 31 days; default retention is 15 days; capacity is retention_time_seconds times ingested_samples_per_second times bytes_per_sample at 1-2 bytes per sample",
+          "at": [
+            { "step": "Reveal: the head block, the WAL, and the capacity formula" },
+            { "step": "Reveal: compaction merges blocks, and a query can skip the rest" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Prometheus: Configuration (out-of-order sample window)",
+      "items": [
+        {
+          "item": "a sample is ingested as long as its timestamp is at or after the TSDB max time minus the out-of-order time window, which defaults to zero",
+          "at": [{ "step": "Reveal: the window shifts the line, and still has one" }]
+        }
+      ]
+    },
+    {
+      "source": "Tiger Data (TimescaleDB): Understand hypertables",
+      "items": [
+        {
+          "item": "a hypertable automatically partitions data by time into chunks, and a query identifies the correct chunk and runs on it instead of scanning the entire table",
+          "at": [{ "step": "Reveal: TimescaleDB's chunks, pruned the same way" }]
+        }
+      ]
+    },
+    {
+      "source": "InfluxData: InfluxDB 3 Core durability",
+      "items": [
+        {
+          "item": "the write buffer flushes to the WAL every second, the queryable buffer holds fifteen minutes by default, and every ten minutes the oldest data is persisted to Parquet while the most recent five minutes stays in memory",
+          "at": [{ "step": "Reveal: InfluxDB 3's buffer, WAL, and Parquet, on a clock" }]
+        }
+      ]
+    },
+    {
+      "source": "Thanos: Design document",
+      "items": [
+        {
+          "item": "a sidecar uploads Prometheus's block files to object storage, and a store node acts as a gateway to that bucket",
+          "at": [{ "step": "Reveal: three scaled-out backends, one shared pattern" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A restart that takes minutes to replay a log and a backup that quietly loses hours aren't two unrelated failures — they're the same fact (the head block only exists in memory and the WAL) producing two different symptoms depending on which recovery path you take.",
+        "at": [{ "step": "Hook: a long restart, and a backup missing three hours" }]
+      },
+      {
+        "item": "A capacity formula that multiplies three independently knowable numbers together turns 'how much disk will this need' from a guess made after the fact into a number anyone can check before provisioning anything.",
+        "at": [{ "step": "Reveal: the head block, the WAL, and the capacity formula" }]
+      },
+      {
+        "item": "Chunk metadata that lets a query skip a whole block without reading it is only possible because the block's time range was fixed the moment it became immutable — a structure has to stop changing before anything can be indexed about it this cheaply.",
+        "at": [{ "step": "Reveal: compaction merges blocks, and a query can skip the rest" }]
+      },
+      {
+        "item": "The honest prediction isn't 'a wider window fixes late data' or 'it doesn't help at all' — it's that the window relocates the boundary between accepted and rejected without ever erasing that boundary.",
+        "at": [{ "step": "Predict: does a wider out-of-order window change what gets rejected?" }]
+      },
+      {
+        "item": "Two engines that call their time-partitioned unit different names, a block versus a chunk, are still solving the identical problem: let a query rule out most of the data before touching any of it.",
+        "at": [{ "step": "Reveal: TimescaleDB's chunks, pruned the same way" }]
+      },
+      {
+        "item": "A pipeline with several different timings at different stages isn't an accident of engineering — each stage is choosing a different point on the same durability-versus-cost trade-off the earlier stage already made.",
+        "at": [{ "step": "Reveal: InfluxDB 3's buffer, WAL, and Parquet, on a clock" }]
+      },
+      {
+        "item": "Three competing projects arriving at the same architecture independently is a stronger argument for that architecture than any single one of their own marketing pages could be.",
+        "at": [{ "step": "Reveal: three scaled-out backends, one shared pattern" }]
+      },
+      {
+        "item": "Every engine in this topic draws the same line somewhere between what stays in fast, volatile memory and what moves to slow, durable storage — the interesting differences are only in where each one draws it and on what clock.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Naming which specific structure (head, WAL, block) a piece of data currently lives in is what makes a recovery plan verifiable instead of hopeful — a backup strategy that can't name this has no way to know what it actually protects.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Being able to say exactly what a specific recovery method does and doesn't cover, instead of just that it 'should work,' is the difference between a backup plan and a backup assumption.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
