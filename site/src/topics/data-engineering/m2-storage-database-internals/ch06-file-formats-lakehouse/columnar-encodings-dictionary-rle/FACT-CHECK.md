@@ -1,0 +1,29 @@
+# Fact-check — de.columnar-encodings-dictionary-rle
+
+## Claims table
+
+| # | Claim | Source |
+|---|---|---|
+| 1 | Dictionary encoding stores a dictionary of encountered values per column chunk, with values stored as integer indexes; if the dictionary grows too big in size or distinct-value count, the encoding falls back to PLAIN. | Encodings.md, dictionary encoding description + fallback sentence |
+| 2 | A dictionary-encoded data page's format is a 1-byte bit width (max 32) followed by RLE/bit-packed entry IDs at that bit width. | Encodings.md, dictionary data page format |
+| 3 | The RLE/bit-packing hybrid combines bit-packing and run-length encoding to store repeated values more efficiently, and is scoped to exactly three uses: repetition/definition levels, dictionary indices, and booleans in data pages. | Encodings.md, RLE/bit-packing description and scope list |
+| 4 | DELTA_BINARY_PACKED's algorithm: (1) compute consecutive differences, seeded by the previous block's last value or, for the first block, the sequence's first value stored in the header; (2) compute the frame of reference (the block's minimum delta) and subtract it from every delta so all stored values are non-negative. | Encodings.md, DELTA_BINARY_PACKED's numbered algorithm steps |
+| 5 | DELTA_BINARY_PACKED's own spec example uses a short block size "to keep the examples short" — real block sizes are larger (the spec's own recommended values are block size 128, 4 miniblocks per block). | Encodings.md, DELTA_BINARY_PACKED worked example and block-size/miniblock-count recommendation |
+| 6 | RLE/bit-packing uses a single bit width for the whole page because level/index ranges are small over the entire page; DELTA_BINARY_PACKED instead uses a per-miniblock bit width — the direct contrast this topic draws. | Encodings.md, comparison sentence between the two encodings |
+| 7 | DELTA_BYTE_ARRAY (incremental encoding / front compression) stores, for each string after the first, the prefix length shared with the previous string plus the un-shared suffix; it is always preferred over PLAIN for byte array columns. | Encodings.md, DELTA_BYTE_ARRAY definition and preference sentence |
+| 8 | BYTE_STREAM_SPLIT creates K byte-streams of length N, where K is the data type's byte size and N is the element count — a byte-transposition, not a size reduction by itself. | Encodings.md, BYTE_STREAM_SPLIT description |
+| 9 | BYTE_STREAM_SPLIT's own stated benefit is not a smaller encoded size but a better compression ratio and speed once a general-purpose compressor runs afterward. | Encodings.md, "does not reduce the size...but can lead to a significantly better compression ratio" |
+| 10 | FSST targets high-cardinality string columns where dictionary compression does not work well, while still allowing random access to individual compressed strings and equality comparison without decompression. | FSST README, opening description and equality-comparison sentence |
+
+## Currency check
+
+Fetched 2026-10-31 from `apache/parquet-format`'s `master` branch (`Encodings.md`) and `cwida/fsst`'s `master` branch (`README.md`) — both canonical, actively maintained repositories for their respective specs. Dictionary/RLE/delta/byte-stream-split encodings are long-stable, foundational parts of the Parquet spec (unchanged for years); FSST's description of its own scope and guarantees is equally stable. No currency risk.
+
+## Red-team
+
+1. **Is the dictionary fallback in `examples.py` a real threshold or an invented one that always behaves as expected?** The high-cardinality column is constructed with 200 fully distinct strings (`assert len(set(...)) == ROW_COUNT`) against a `DICTIONARY_FALLBACK_LIMIT = 40`; the fallback branch is exercised for real (not hardcoded to a fixed answer) by comparing the measured distinct count against the limit at runtime, so the topic shows the actual decision, not an assumed one.
+2. **Are the three delta/split encoders hand-verified against the spec, or only self-consistent with their own encode/decode pair?** Each of the three (DELTA_BINARY_PACKED, DELTA_BYTE_ARRAY, BYTE_STREAM_SPLIT) is checked in `examples.py` against the Parquet specification's own published worked example (exact intermediate values: deltas, frame-of-reference minimum, bit width; prefix/suffix lengths and concatenated bytes; the exact transposed byte sequence) before being applied to this topic's own dataset — an external-ground-truth check, not just round-tripping.
+3. **Does "96% smaller" for shipment IDs overstate a cherry-picked case?** The dataset's shipment IDs are generated as a near-sorted, monotonically-increasing sequence with small (1-2) consecutive deltas by construction, matching the exact scenario the spec describes DELTA_BINARY_PACKED as targeting; the topic's predict step (6) and its contrast with RLE/bit-packing (step 5, 8) make that precondition explicit rather than presenting the number as universal.
+4. **Is ALP in scope, hand-implemented, or just named?** ALP and FSST are both named only at the conceptual level this topic's outcomes commit to (ALP's decimal-scaling/frame-of-reference/exceptions summary, FSST's symbol-table targeting of high-cardinality strings) — neither is hand-implemented in `examples.py`, since both are substantially more involved encoders than the five that are implemented, and the chapter plan scopes a full implementation of either to a later, dedicated topic if one exists; this topic's claims about them are traced only to the spec's/README's own summary sentences, not to behavior demonstrated in code.
+
+Problem Solving: None — a specification-reading and spec-conformance topic. All five hand-rolled encoders ran correctly on the first execution of `examples.py`, including the three self-checks against the Parquet spec's own worked examples; no bugs were found or needed fixing while building this topic's own code.
