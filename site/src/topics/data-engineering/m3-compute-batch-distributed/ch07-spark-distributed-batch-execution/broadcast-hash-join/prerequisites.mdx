@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: bucketing and storage-partitioned joins
+
+<ul class="resources">
+  <Resource kind="reel" title="Bucketing and storage-partitioned joins" domain="data-engineering" host="de.bucketing-storage-partitioned-joins" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Performance Tuning — Automatically Broadcasting Joins" href="https://spark.apache.org/docs/latest/sql-performance-tuning.html" by="Apache Spark documentation">The broadcast threshold's own default and behaviour, and the join-hint mechanism that can override it.</Resource>
+  <Resource kind="reading" title="BroadcastHashJoinExec.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/BroadcastHashJoinExec.scala" by="Apache Spark source, GitHub">The scaladoc stating directly that the large side is never shuffled once the small side is broadcast.</Resource>
+  <Resource kind="reading" title="BroadcastExchangeExec.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/exchange/BroadcastExchangeExec.scala" by="Apache Spark source, GitHub">The collect-transform-broadcast mechanism behind the driver-memory risk from stale statistics.</Resource>
+</ul>
+
+</section>
