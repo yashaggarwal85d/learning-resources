@@ -1,0 +1,90 @@
+{
+  "topic": "de.replication-isr-high-watermark",
+  "steps": [
+    {
+      "lines": [
+        "A producer can be told a record is durable, and still be wrong about it.",
+        "What that promise actually means depends entirely on whose acknowledgement it waited for before believing it.",
+        "A real toy leader crash makes that gap concrete: one acknowledgement choice loses records it believed were safe, and a stricter choice loses none of them."
+      ]
+    },
+    {
+      "lines": [
+        "Every replica of a partition keeps its own copy of the log, and they don't all move at the same pace.",
+        "Picture a leader on top, its followers underneath, and a single ruler running through all of them.",
+        "Each one has its own mark on that ruler, and right now those marks sit at different places."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The leader's own mark sits furthest along that ruler. Every follower trails somewhere behind it.",
+        "Which single position should a reader actually be allowed to trust as committed: the leader's own mark, the slowest in-sync replica's mark, or just whichever follower happens to be quickest?"
+      ],
+      "answer": [
+        "The slowest in-sync replica's mark, not the leader's own.",
+        "Trusting the leader's own mark assumes the leader never fails — if it died the instant after writing, there would be nothing backing that write up at all.",
+        "And picking one quick follower ignores the rest of the in-sync group entirely, when the whole point is that every member of that group has to have it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that same replica picture, with real positions behind it.",
+        "The leader has pushed furthest along its own copy. One follower trails a little behind it, another trails considerably further back.",
+        "The committed line sits exactly at that slowest follower's mark, nowhere near the leader's own — and that gap between them is precisely what a crash can expose."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "A follower that was down comes back holding more in its own log than its own recorded line says is safe.",
+        "Is it fine for that follower to just trust its own recorded line and cut everything past it, or does it need to ask for something else first?"
+      ],
+      "answer": [
+        "It needs to ask for something else: the end position of the current leadership period, not its own recorded line.",
+        "A follower's own recorded line is always at least one round trip behind what it has actually fetched, so trusting it blindly can throw away a message that was never genuinely in question.",
+        "A bare position number alone can't tell the difference between caught up but unconfirmed, and genuinely holding data the leader never had — only that leadership-period marker can make that distinction."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly that choice, played out on a short two-message log.",
+        "Cut the log down to the follower's own recorded line, and the second message disappears — gone, even though it was never actually divergent.",
+        "Cut it down to the current leadership period's end position instead, and that same second message survives untouched."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "Imagine network trouble knocks every follower out of the in-sync group, leaving only the former leader standing alone.",
+        "Classically, does that lone remaining replica keep accepting writes that were meant to wait for the whole in-sync group, or does it quietly stop?"
+      ],
+      "answer": [
+        "Classically, it keeps accepting them.",
+        "The old rule only ever checks whether the in-sync group is empty before letting the committed line keep moving — it never checks that group's size against any configured minimum.",
+        "Whether risky elections are allowed later is a completely separate decision about who gets to lead after a failure. It has nothing to do with whether a write was ever safe to accept in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact gap, run for real, under two different rules.",
+        "Under the rule that only checks the group isn't empty, writes made while the group is shrunk keep getting accepted — and every single one of them is later lost when that lone replica fails uncleanly.",
+        "Under a rule that also checks the group's size against a configured minimum, none of those writes are ever accepted in the first place, so none of them are lost either."
+      ]
+    },
+    {
+      "lines": [
+        "Every number shown so far came from one real run, happening just now, not a diagram drawn ahead of time.",
+        "The gap between the committed line and the leader's own furthest position.",
+        "The two different truncation outcomes for the same short log, and the loss counts under both rules for letting that committed line move."
+      ]
+    },
+    {
+      "lines": [
+        "So: a replica column racing toward a line that only ever moves at the pace of its slowest in-sync member, never the leader's own.",
+        "A truncation rule that trusts a leadership-period marker over a follower's own stale recollection of what was safe.",
+        "And a minimum that has to be actively checked before that committed line is allowed to move at all, not just assumed to hold."
+      ]
+    }
+  ]
+}
