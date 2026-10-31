@@ -6585,6 +6585,26 @@ export const TOPICS: TopicMeta[] = [
       "Once a reading has a trustworthy time, the next problem is that the sensors do not sample on the same grid. One reports every millisecond, another every ten seconds, another only when it changes. The next topic is how to put such series onto a grid without inventing data.",
   },
   {
+    id: 'de.resampling-gap-filling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/resampling-gap-filling',
+    title: 'Resampling and gap filling',
+    syllabusTitle: 'Resampling and gap filling',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['regular-vs-irregular-series', 'aggregate-by-signal-type', 'gap-fill-locf-interpolate-max-gap', 'filled-value-is-a-claim', 'signal-type-tag-metadata'],
+    uses: ['device-gateway-ingest-timestamps', 'event-time-source-decision', 'power-vs-energy-integration', 'cumulative-counter-to-interval-consumption', 'machine-state-interval-model', 'measure-additivity-classes', 'percentile-cont-disc', 'lag-lead-change-detection'],
+    declared: [],
+    bridge:
+      "Once a reading has a trustworthy time, the next problem is that the sensors do not sample on the same grid. One reports every millisecond, another every ten seconds, another only when it changes. This topic is how to put such series onto a grid without inventing data, and how to tell the grid when a value was made up.",
+    handoff:
+      "Resampling puts one series on a grid. The question that matters more often is across series: what was the temperature at the moment the pressure spiked, when the two were never sampled together? The next topic is the as-of join.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
