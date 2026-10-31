@@ -6105,6 +6105,26 @@ export const TOPICS: TopicMeta[] = [
       "Bucketing avoids a shuffle by agreement at write time. The next three topics are about the shuffle when it does happen — the actual join strategies and how Spark picks one.",
   },
   {
+    id: 'de.broadcast-hash-join',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/broadcast-hash-join',
+    title: 'Broadcast hash join',
+    syllabusTitle: 'Broadcast hash join',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-broadcast-hash-join', 'spark-broadcast-nested-loop'],
+    uses: ['spark-catalyst-pipeline', 'spark-shuffle-mechanics'],
+    declared: [],
+    bridge:
+      "Bucketing avoids a shuffle by agreement. Broadcasting avoids it by a different trick entirely: making one side small enough to copy everywhere, so there is nothing left to shuffle.",
+    handoff:
+      "Broadcasting is the strategy for when one side is small. The next topic is what happens when neither side is — the two shuffle join strategies, chosen against each other.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
