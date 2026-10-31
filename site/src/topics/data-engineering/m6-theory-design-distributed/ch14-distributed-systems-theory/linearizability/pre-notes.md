@@ -1,0 +1,8 @@
+- **Operation**: a single call made on a data object, such as a read or a write. *Where you meet it:* every bar in the chapter's history strip.
+- **Invocation and response**: the moment an operation is called, and the moment it returns a result. *Where you meet it:* the two ends of every operation's interval.
+- **History**: a recorded sequence of invocations and responses, across one or more clients. *Where you meet it:* the exact thing a linearizability checker takes as input.
+- **Register**: the simplest kind of object this chapter uses: a single value that can be read and written. *Where you meet it:* the shop's `stock` register, in every hook so far.
+- **Atomic**: happening all at once, with no observable in-between state. *Where you meet it:* the core promise linearizability makes about every operation.
+- **Real time**: the actual clock-on-the-wall order in which operations were invoked and returned, independent of any logical clock. *Where you meet it:* the rule a stale-leader read breaks.
+- **Stale read**: a read that returns a value older than one a completed write has already produced. *Where you meet it:* this topic's hook, and the reason a deposed leader's reads are dangerous.
+- **Leader**: in a replicated system, the one node currently responsible for coordinating writes (and often reads). *Where you meet it:* the role that can be silently replaced out from under a client.

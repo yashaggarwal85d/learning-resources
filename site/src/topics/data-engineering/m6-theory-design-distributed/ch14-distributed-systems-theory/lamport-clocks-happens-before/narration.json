@@ -1,0 +1,77 @@
+{
+  "topic": "de.lamport-clocks-happens-before",
+  "steps": [
+    {
+      "lines": [
+        "Notice the trap built into the question before you even reach for a tool.",
+        "Agreeing on a reading and agreeing on who caused what turn out to be two separate problems, and the clocks only ever answer the first one.",
+        "So set the clocks aside entirely, and ask what else you actually have to work with."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, think about what the log actually has to do with every single pair of events it holds.",
+        "It has no option to leave a pair unresolved. Every two events get placed somewhere, whether or not anything connects them."
+      ],
+      "answer": [
+        "No, and that gap matters more than it sounds.",
+        "A placement the log is forced to make and a fact about which event truly came first are not the same claim.",
+        "Two events that never exchanged a message and never shared a process still land somewhere in that log, and that placement is a tie-break, not evidence."
+      ]
+    },
+    {
+      "lines": [
+        "Hold onto exactly what counts here, because the definition is stricter than instinct suggests.",
+        "Same service in order counts. A message's send linked to its own receipt counts. A chain built out of those steps counts.",
+        "Nothing else does. Outside that chain, in either direction, the relationship has a name too: concurrent."
+      ]
+    },
+    {
+      "lines": [
+        "Watch how little this rule actually needs to know to do its job.",
+        "Bump the counter before every event on your own service. Hand that number to anyone you send a message to.",
+        "On receipt, jump your own counter past whatever number just arrived. That's the entire mechanism, and it's already enough."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with, because it looks like it should matter and it doesn't.",
+        "Feed this same chain through a simulator that skews the real clocks on purpose, however badly.",
+        "The counters never once consult a physical clock, so there is nothing in that skew for them to be fooled by."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what breaking a tie by identity actually buys you here.",
+        "It doesn't add any new information about causes. It just guarantees every pair, tied or not, ends up somewhere in one definite line.",
+        "That line is exactly strong enough to hand a shared resource to requests in an order nobody can call backwards."
+      ]
+    },
+    {
+      "lines": [
+        "This is the moment to go back and check the promise you were given earlier, because it was narrower than it sounded.",
+        "A real cause always gets a smaller number. That direction holds, no exceptions.",
+        "But a smaller number proving a real cause was never promised, and two complete strangers can still get numbers that look exactly like one."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the exact shape of what you just saw, not a looser version of it.",
+        "Happens-before is only program order plus linked sends and receipts, nothing softer than that.",
+        "A counter bumped locally, and advanced past every message it receives, respects that chain no matter what any physical clock is doing.",
+        "And the line that counter produces is useful precisely because it never goes backwards, even though it still can't tell you who was ever truly independent of whom."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, separate what the rule actually guarantees from what would be convenient for it to guarantee.",
+        "One direction of that guarantee was proven. Ask yourself whether the other direction ever was."
+      ],
+      "answer": [
+        "No, and this is the exact mistake the hook was built to expose.",
+        "The guarantee only runs one way: a real cause always gets a larger number afterward.",
+        "Two events that never touched each other can still end up with any two numbers at all, and reading that gap as a dependency invents a cause that was never there."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "topic": "de.cap-stated-precisely-pacelc",
+  "syllabus": [
+    {
+      "clause": "Gilbert–Lynch's formal statement (linearizability + availability of every non-failed node + arbitrary message loss) and proof sketch",
+      "at": [
+        { "step": "Reveal: the theorem, in its own three exact conditions" },
+        { "step": "Reveal: the proof, on the shop's own register" }
+      ]
+    },
+    {
+      "clause": "the common misreadings (\"pick two\", treating CP/AP as a system label, ignoring latency)",
+      "at": [{ "step": "Reveal: \"pick two\" is wrong, and why" }]
+    },
+    {
+      "clause": "PACELC's else-branch latency/consistency trade-off (§5.3 gives the system classification)",
+      "at": [{ "step": "Reveal: PACELC's else-branch" }]
+    },
+    {
+      "clause": "why Spanner is \"effectively CA\" only because partitions are rare, not impossible",
+      "at": [{ "step": "Reveal: Spanner is \"effectively CA\", not literally" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Gilbert and Lynch: Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services",
+      "items": [
+        { "item": "the availability liveness property and the fair-execution partition condition", "at": [{ "step": "Reveal: the theorem, in its own three exact conditions" }] }
+      ]
+    },
+    {
+      "source": "Gilbert and Lynch: Perspectives on the CAP Theorem",
+      "items": [
+        { "item": "the atomic/available definitions and the two-group-split proof sketch", "at": [{ "step": "Reveal: the proof, on the shop's own register" }] }
+      ]
+    },
+    {
+      "source": "Brewer: CAP Twelve Years Later",
+      "items": [
+        { "item": "Brewer's own admission that \"2 of 3\" always oversimplified the tensions", "at": [{ "step": "Reveal: \"pick two\" is wrong, and why" }] }
+      ]
+    },
+    {
+      "source": "Abadi: Consistency Tradeoffs in Modern Distributed Database System Design (abstract)",
+      "items": [
+        { "item": "PACELC named as a unification of CAP with the latency/consistency tradeoff", "at": [{ "step": "Reveal: PACELC's else-branch" }] }
+      ]
+    },
+    {
+      "source": "Abadi: Problems with CAP, and Yahoo's little known NoSQL system",
+      "items": [
+        { "item": "PACELC's own definition and the three worked system classifications", "at": [{ "step": "Reveal: PACELC's else-branch" }] }
+      ]
+    },
+    {
+      "source": "Brewer: Inside Cloud Spanner and the CAP Theorem",
+      "items": [
+        { "item": "the \"technically no, effectively yes\" answer about Spanner being CA", "at": [{ "step": "Reveal: Spanner is \"effectively CA\", not literally" }] }
+      ]
+    },
+    {
+      "source": "de.linearizability (internal cross-reference)",
+      "items": [
+        { "item": "atomic in CAP is topic 5's linearizability, referenced here, not re-quoted", "at": [{ "deep": "Internals: the proof is one statement about indistinguishability" }] }
+      ]
+    },
+    {
+      "source": "de.sequential-causal-consistency (internal cross-reference)",
+      "items": [
+        { "item": "the relaxation this topic's lab contrasts with linearizability under a partition", "at": [{ "deep": "Internals: the proof is one statement about indistinguishability" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The CAP theorem states that in a network subject to communication failures, no web service can implement an atomic read/write shared memory that guarantees a response to every request.", "at": [{ "step": "Reveal: the theorem, in its own three exact conditions" }] },
+      { "item": "Availability is a liveness property: every request to a non-failing node eventually receives a response.", "at": [{ "step": "Reveal: the theorem, in its own three exact conditions" }] },
+      { "item": "The proof splits replicas into two groups with all messages between them lost; the minority group cannot distinguish a write having happened on the other side from nothing having happened, so it must refuse or risk answering incorrectly.", "at": [{ "step": "Reveal: the proof, on the shop's own register" }] },
+      { "item": "A partition is not something a system chooses; the real choice CAP forces is consistency versus availability, made per operation during a partition, not declared once for the whole system.", "at": [{ "step": "Reveal: \"pick two\" is wrong, and why" }] },
+      { "item": "Brewer's own words call the \"2 of 3\" formulation misleading because it oversimplified the tensions among the three properties.", "at": [{ "step": "Reveal: \"pick two\" is wrong, and why" }] },
+      { "item": "PACELC adds an else-branch CAP says nothing about: even with no partition, a system still trades latency against consistency, because replicating before answering costs time.", "at": [{ "step": "Reveal: PACELC's else-branch" }] },
+      { "item": "Dynamo-family systems are PA/EL, fully ACID systems are PC/EC, and PNUTS splits the two as PC/EL, each classified from the author's own quoted assignment.", "at": [{ "step": "Reveal: PACELC's else-branch" }] },
+      { "item": "Spanner's own architect states Spanner is technically a CP system, because partitions can and do happen at Google, and during some of them Spanner forfeits availability to keep consistency.", "at": [{ "step": "Reveal: Spanner is \"effectively CA\", not literally" }] },
+      { "item": "Spanner is \"effectively CA\" only because partitions are rare enough on a private network that users can plan as if they do not occur, a statement about probability, not an exemption from the theorem.", "at": [{ "step": "Reveal: Spanner is \"effectively CA\", not literally" }] },
+      { "item": "A system that has never yet experienced a partition is not exempt from CAP; the theorem constrains what a design must sacrifice if a partition occurs, independent of how often that has happened so far.", "at": [{ "step": "Prove it: a system that has never yet experienced a partition — does CAP apply?" }] },
+      { "item": "The mechanisms systems use to actually survive partitions and failures (leader election, fencing, coordination services) are left to the following topics, not derived here.", "at": [{ "out": "named in CHAPTER.md's Leaves out; built in topics 9-13" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

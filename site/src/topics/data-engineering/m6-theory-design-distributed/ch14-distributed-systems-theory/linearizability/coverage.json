@@ -1,0 +1,75 @@
+{
+  "topic": "de.linearizability",
+  "syllabus": [
+    {
+      "clause": "single-object, real-time-respecting atomicity (Herlihy & Wing, 1990)",
+      "at": [{ "step": "Reveal: every operation takes effect at one instant inside its own interval" }]
+    },
+    {
+      "clause": "locality/composability",
+      "at": [{ "step": "Reveal: linearizable objects compose, and never make another operation wait" }]
+    },
+    {
+      "clause": "why it costs at least a round-trip per operation (Attiya–Welch lower bound)",
+      "at": [{ "step": "Reveal: the fix, and what it actually costs" }, { "deep": "Frontier: the Attiya-Welch bound, stated precisely" }]
+    },
+    {
+      "clause": "why \"read from the leader\" is not linearizable without a lease or quorum read",
+      "at": [{ "step": "Hook: a read from the leader, after the leader has already been replaced" }, { "step": "Reveal: the identical checker, finding nothing at all" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Linearizability: A Correctness Condition for Concurrent Objects (Herlihy & Wing, TOPLAS 1990)",
+      "items": [
+        { "item": "the instantaneous-effect definition over a history of invocations and responses", "at": [{ "step": "Reveal: every operation takes effect at one instant inside its own interval" }] },
+        { "item": "the locality and nonblocking properties", "at": [{ "step": "Reveal: linearizable objects compose, and never make another operation wait" }] },
+        { "item": "the formal Ll/L2 conditions", "at": [{ "deep": "Internals: the Ll/L2 conditions, and what the checker is actually searching for" }] }
+      ]
+    },
+    {
+      "source": "Sequential Consistency versus Linearizability (Attiya & Welch, ACM TOCS 1994)",
+      "items": [
+        { "item": "the paper's own d/u model and its stated lower bounds", "at": [{ "deep": "Frontier: the Attiya-Welch bound, stated precisely" }] },
+        { "item": "the sum-of-response-times lower bound for sequential consistency under synchronized clocks, and the matching algorithm", "at": [{ "deep": "Frontier: the Attiya-Welch bound, stated precisely" }] },
+        { "item": "the main conclusion that linearizability is strictly more expensive under realistic timing assumptions", "at": [{ "step": "Reveal: the fix, and what it actually costs" }] }
+      ]
+    },
+    {
+      "source": "Raft: In Search of an Understandable Consensus Algorithm (Ongaro & Ousterhout)",
+      "items": [
+        { "item": "the stale-leader-read hazard, in the paper's own words", "at": [{ "step": "Hook: a read from the leader, after the leader has already been replaced" }] }
+      ]
+    },
+    {
+      "source": "etcd API guarantees (etcd documentation)",
+      "items": [
+        { "item": "the worked stale-read example and the default-linearizable, optional-serializable read modes", "at": [{ "out": "named in SOURCES.md for the production framing; the hook and lab use the chapter's own register, not etcd's specific API" }] }
+      ]
+    },
+    {
+      "source": "Linearizability (Jepsen consistency models)",
+      "items": [
+        { "item": "the plain-language real-time restatement, and Jepsen's own role as the production checking methodology", "at": [{ "deep": "Production: Jepsen, and the tools built to find exactly this" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Linearizability is a property of a recorded history of invocations and responses, not a property of an algorithm considered in isolation.", "at": [{ "step": "Reveal: every operation takes effect at one instant inside its own interval" }] },
+      { "item": "A linearizable history gives each operation the illusion of an instantaneous effect at some point between its invocation and response, and that point must respect real-time precedence: if one operation's response precedes another's invocation, its point must come first.", "at": [{ "step": "Reveal: every operation takes effect at one instant inside its own interval" }] },
+      { "item": "Linearizability is a local property: a system is linearizable exactly when every individual object is, which lets objects be verified and implemented independently.", "at": [{ "step": "Reveal: linearizable objects compose, and never make another operation wait" }] },
+      { "item": "Linearizability is also a nonblocking property: a pending operation is never required to wait for another to complete.", "at": [{ "step": "Reveal: linearizable objects compose, and never make another operation wait" }] },
+      { "item": "A read from a deposed leader can return a stale value even though a completed write has already superseded it, because the deposed leader is unaware a newer leader exists; this breaks the real-time rule and makes the history non-linearizable.", "at": [{ "step": "Hook: a read from the leader, after the leader has already been replaced" }] },
+      { "item": "Confirming leadership with a quorum (or bounding a deposed leader's remaining life with a lease) before answering a read removes the stale-leader anomaly.", "at": [{ "step": "Reveal: the fix, and what it actually costs" }] },
+      { "item": "Attiya and Welch's model defines d as worst-case network delay and u as worst-case clock/delay uncertainty (0 <= u < d); under synchronized clocks the sum of a read's and a write's worst-case response times is at least d for sequential consistency, and once u is positive, linearizability's per-operation cost floor is roughly u.", "at": [{ "deep": "Frontier: the Attiya-Welch bound, stated precisely" }] },
+      { "item": "The syllabus phrase 'at least a round trip' is a simplification of the Attiya-Welch result, not the paper's own stated theorem; the exact bound is in terms of d and u and differs across the synchronized and unsynchronized regimes.", "at": [{ "deep": "Frontier: the Attiya-Welch bound, stated precisely" }] },
+      { "item": "A linearizability checker searches for a total order over a history's operations that is both a legal sequential history of the object and consistent with the history's real-time precedence order; finding none is a formal proof the history is not linearizable.", "at": [{ "deep": "Internals: the Ll/L2 conditions, and what the checker is actually searching for" }] },
+      { "item": "Jepsen, Knossos, Porcupine and Elle are named production tools for checking real recorded histories at scale; none use brute-force permutation search, and Elle checks a distinct, transactional property rather than single-object linearizability.", "at": [{ "deep": "Production: Jepsen, and the tools built to find exactly this" }] },
+      { "item": "The NP-completeness of general linearizability checking is a known result, named but not proved in this topic.", "at": [{ "out": "named in CHAPTER.md's Leaves out; not proved or built here" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

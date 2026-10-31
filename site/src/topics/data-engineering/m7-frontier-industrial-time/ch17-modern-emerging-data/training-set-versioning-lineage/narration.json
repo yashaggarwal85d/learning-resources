@@ -1,0 +1,86 @@
+{
+  "topic": "de.training-set-versioning-lineage",
+  "steps": [
+    {
+      "lines": [
+        "A model's offline score was reported six months ago from a dataset nobody can rebuild today.",
+        "The tables underneath have since been compacted, and whoever ran that original query never saved it anywhere.",
+        "Same query, run again right now, would return something different, and nothing about running it warns you of that."
+      ]
+    },
+    {
+      "lines": [
+        "Two different tools exist for exactly this problem, built at two very different scales.",
+        "One is meant for branching an entire derived dataset inside a data lake. The other is meant for pinning a single file that sits right next to your training script.",
+        "Which one actually fits a dataset the size you're building right now?"
+      ],
+      "answer": [
+        "It isn't a matter of taste between two interchangeable tools.",
+        "A dataset the size of a whole derived table belongs with the lake-scale tool. A single file tracked alongside your code belongs with the file-scale one. Scale decides it, not preference."
+      ]
+    },
+    {
+      "lines": [
+        "Querying the current table means querying something that keeps moving underneath you.",
+        "A snapshot or a tag works completely differently: it's a name pointing at one exact state of the data, fixed the moment it was created.",
+        "Point a query at that name instead, and nothing happening to the live table afterward can change what it returns."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what a branch actually is under the hood.",
+        "It's a pointer aimed at one commit, plus whatever changes haven't been committed yet. Creating it duplicates nothing at all.",
+        "A tag does something simpler still: it just gives one specific commit a name you can come back to later.",
+        "Neither of those two things touches a single byte of the underlying data when it's created."
+      ]
+    },
+    {
+      "lines": [
+        "A completely different tool identifies a file by the hash of its contents, not by its name or where it sits.",
+        "Two files holding identical bytes land on the exact same hash, no matter what either one is called, and get stored once instead of twice.",
+        "Change even one byte inside that file, and the hash changes with it, every time."
+      ]
+    },
+    {
+      "lines": [
+        "Put the two mechanisms next to the two problems they were each built for.",
+        "A whole derived dataset inside a lake gets the branch: an isolated view you can build on and merge once it's validated.",
+        "A single file sitting beside your training script gets the content pin: a hash that travels along with the exact Git commit of the code that produced it.",
+        "Neither tool is better in general. Each one is simply built for its own scale."
+      ]
+    },
+    {
+      "lines": [
+        "None of this proves anything about which model actually trained on which data unless something writes that link down.",
+        "An experiment tracker's logged-model record does exactly that: it ties one model run to the exact dataset digest it trained on and the exact code commit that produced it, in a single entry.",
+        "Give that entry a name when you log it, and later you can search back through every run by the dataset that trained it."
+      ]
+    },
+    {
+      "lines": [
+        "A label is not a fixed fact sitting quietly in a column. It has its own definition, and that definition can change.",
+        "Widen or narrow the window that counts as a churn, and the exact same customer rows, with the exact same feature values, suddenly carry a different answer.",
+        "Pinning the features alone was never the whole job. If the label's own definition moved, calling it the same training set is already wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Put the whole shape back together.",
+        "Query a snapshot or a tag, never the current table as it happens to look right now. Pick the versioning tool by the scale of what you're actually pinning.",
+        "Link the dataset, the code and the model together in one tracked record. And keep an eye on the label's own version, not only the data feeding it.",
+        "Skip any one of those four and the rest stop meaning what you think they mean."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a team that calls itself reproducible because it re-runs the exact same SQL query against its live tables every quarter.",
+        "No snapshot anywhere in that process. No tag. Just the same text, sent again and again.",
+        "Does running an unchanged query count as reproducing an unchanged dataset?"
+      ],
+      "answer": [
+        "A query is only ever as stable as whatever it happens to be reading.",
+        "Without something pinning the source tables in place, the exact same query keeps quietly returning a different dataset every single time the tables underneath it move."
+      ]
+    }
+  ]
+}

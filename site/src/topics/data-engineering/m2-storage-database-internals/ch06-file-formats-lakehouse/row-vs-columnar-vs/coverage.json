@@ -1,0 +1,51 @@
+{
+  "topic": "de.row-vs-columnar-vs",
+  "syllabus": [
+    { "clause": "N-ary row storage", "at": [{ "step": "Hook" }] },
+    { "clause": "decomposition by column", "at": [{ "step": "Reveal: DSM wins the scan, loses the lookup" }] },
+    { "clause": "PAX (columnar within a block)", "at": [{ "step": "Reveal: PAX, the compromise" }] },
+    { "clause": "point lookups and writes", "at": [{ "step": "Hook" }, { "step": "Reveal: DSM wins the scan, loses the lookup" }] },
+    { "clause": "vs scans and compression", "at": [{ "step": "Reveal: the scan row storage cannot avoid" }, { "step": "Reveal: why Parquet is PAX" }] },
+    { "clause": "why one physical layout rarely serves both OLTP and OLAP", "at": [{ "step": "Recap" }, { "deep": "Why the page is the unit that matters" }] }
+  ],
+  "sources": [
+    {
+      "source": "PAX paper (Ailamaki, DeWitt, Hill, Skounakis, VLDB 2001)",
+      "items": [
+        { "item": "NSM stores records contiguously with an offset table locating each one", "at": [{ "step": "Hook" }] },
+        { "item": "DSM partitions a relation vertically into per-attribute sub-relations", "at": [{ "step": "Reveal: DSM wins the scan, loses the lookup" }] },
+        { "item": "a DSM point lookup costs a join across sub-relations", "at": [{ "step": "Reveal: DSM wins the scan, loses the lookup" }] },
+        { "item": "PAX groups attribute values into per-page minipages, keeping the same per-page data as NSM", "at": [{ "step": "Reveal: PAX, the compromise" }] },
+        { "item": "PAX only affects layout inside pages; it does not affect I/O behavior", "at": [{ "step": "Reveal: the surprising number" }, { "deep": "Why the page is the unit that matters" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet docs (Overview, Motivation)",
+      "items": [
+        { "item": "Parquet is a column-oriented file format for efficient storage and retrieval", "at": [{ "step": "Reveal: why Parquet is PAX" }] },
+        { "item": "Parquet allows compression and encoding to be specified per column", "at": [{ "step": "Reveal: why Parquet is PAX" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "NSM (row-major, slotted-page) storage makes a single-row point lookup one contiguous read, because every attribute of a row sits together.", "at": [{ "step": "Hook" }] },
+      { "item": "The same row-major layout has no way to skip attributes it doesn't need during a column scan, so a scan still touches every byte of every row.", "at": [{ "step": "Reveal: the scan row storage cannot avoid" }] },
+      { "item": "DSM (full column decomposition) makes a column scan touch only that column's own storage, but a point lookup now costs one read per attribute plus a join to reconstruct the row.", "at": [{ "step": "Reveal: DSM wins the scan, loses the lookup" }] },
+      { "item": "PAX keeps a row's attributes on one page (like NSM) but groups each attribute's values into a per-page minipage, so a point lookup still touches one page while a scan can skip straight to the minipage it needs.", "at": [{ "step": "Reveal: PAX, the compromise" }] },
+      { "item": "PAX's own design claim is that it changes layout inside a page only, not which pages are read: a column scan under PAX opens exactly as many pages as NSM would, with a much higher useful-byte fraction per page.", "at": [{ "step": "Reveal: the surprising number" }] },
+      { "item": "Parquet is the real-world payoff of this compromise: a column-oriented file format whose compression and encoding are tunable per column, which only makes sense once that column's values are already grouped together.", "at": [{ "step": "Reveal: why Parquet is PAX" }] },
+      { "item": "None of these three layouts is universally \"better\"; the right choice tracks the access pattern (point lookups and writes vs. scans) this topic measures directly, which is the same OLTP-vs-OLAP distinction Chapter 3 introduced.", "at": [{ "step": "Recap" }, { "deep": "Why the page is the unit that matters" }] },
+      { "item": "The Decomposition Storage Model (DSM) predates its modern columnar descendants by over a decade (proposed 1985, per the PAX paper's own citation); this topic measures its trade-off directly rather than treating \"columnar\" as a single undifferentiated idea.", "at": [{ "step": "Reveal: DSM wins the scan, loses the lookup" }] },
+      { "item": "A page remains the fixed unit of I/O across all three layouts in this topic; what changes between NSM, DSM and PAX is never how large a page is, but how values are arranged inside it (NSM, PAX) or whether attributes share a page at all (DSM).", "at": [{ "step": "Hook" }, { "deep": "Why the page is the unit that matters" }] },
+      { "item": "This topic's own byte-touched numbers (32 bytes/1 read, 32,000 bytes, 4 reads, 8,000 bytes, 1 page, 10 pages, 25%) are a sandbox's deterministic measurement on a 1,000-row, 4-attribute table — a worked illustration of the trade-off, not a claim about any production system's exact numbers.", "at": [{ "step": "Reveal: the surprising number" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "topic": "de.two-phase-commit-blocking",
+  "syllabus": [
+    {
+      "clause": "prepare/commit",
+      "at": [{ "step": "Reveal: what a yes vote actually promises" }]
+    },
+    {
+      "clause": "the coordinator as single point of blocking (participants in doubt hold locks)",
+      "at": [
+        { "step": "Hook: the coordinator decided, then vanished before telling anyone" },
+        { "step": "Reveal: in doubt, and why that means holding the locks" }
+      ]
+    },
+    {
+      "clause": "3PC and why it fails under partitions",
+      "at": [{ "step": "Reveal: 3PC's extra phase, and what it still needs to be true" }]
+    },
+    {
+      "clause": "Paxos Commit (Gray & Lamport, 2006) / 2PC over consensus-replicated participants as the production answer (Spanner, CockroachDB parallel commits)",
+      "at": [
+        { "step": "Reveal: Paxos Commit — a vote the coordinator's death can't erase" },
+        { "step": "Reveal: where production places the consensus group" }
+      ]
+    },
+    {
+      "clause": "Sagas and outbox patterns at the application level: §5.2, §8.2",
+      "at": [{ "step": "Reveal: sagas and the outbox, named and left for elsewhere" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Gray & Lamport: Consensus on Transaction Commit",
+      "items": [
+        { "item": "the 2F + 1 coordinators, F + 1 progress bound, and the 2PC-as-F=0-special-case statement", "at": [{ "step": "Reveal: Paxos Commit — a vote the coordinator's death can't erase" }] },
+        { "item": "the sentence naming traditional 3PC's multiple-coordinators inconsistency", "at": [{ "step": "Reveal: 3PC's extra phase, and what it still needs to be true" }] }
+      ]
+    },
+    {
+      "source": "Spanner: Google's Globally-Distributed Database",
+      "items": [
+        { "item": "each transaction manager's state stored in its own underlying Paxos group", "at": [{ "step": "Reveal: where production places the consensus group" }] }
+      ]
+    },
+    {
+      "source": "Cockroach Labs: Parallel Commits",
+      "items": [
+        { "item": "the STAGING transaction-record state and the single-round-trip latency win", "at": [{ "step": "Reveal: where production places the consensus group" }] }
+      ]
+    },
+    {
+      "source": "Skeen: Nonblocking Commit Protocols (named only, not quoted)",
+      "items": [
+        { "item": "3PC's pre-commit phase, naming Skeen's own protocol, without a verbatim quote (see SOURCES.md's sourcing note)", "at": [{ "step": "Reveal: 3PC's extra phase, and what it still needs to be true" }] }
+      ]
+    },
+    {
+      "source": "de.raft-at-conceptual-level (internal cross-reference)",
+      "items": [
+        { "item": "the small consensus log the lab's second half replicates the coordinator's decision through", "at": [{ "step": "Reveal: Paxos Commit — a vote the coordinator's death can't erase" }] }
+      ]
+    },
+    {
+      "source": "de.coordination-services-replicated-logs (internal cross-reference)",
+      "items": [
+        { "item": "etcd, named as the other real option CHAPTER.md's lab offers for replicating the decision", "at": [{ "step": "Reveal: where production places the consensus group" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Prepare asks every participant to durably promise it can commit; once every participant votes yes, the coordinator durably logs the decision and only then announces it to everyone.", "at": [{ "step": "Reveal: what a yes vote actually promises" }] },
+      { "item": "A participant that voted yes is in doubt: the final outcome could be either commit or abort, and it cannot discover which on its own, so it must hold its locks until the announcement arrives.", "at": [{ "step": "Reveal: in doubt, and why that means holding the locks" }] },
+      { "item": "If the coordinator crashes after logging its decision but before announcing it, every participant that voted yes blocks indefinitely, holding its locks, until the coordinator (or its decision) becomes reachable again.", "at": [{ "step": "Hook: the coordinator decided, then vanished before telling anyone" }] },
+      { "item": "Three-phase commit adds a pre-commit phase so a participant that received it can finish without waiting for a crashed coordinator, but this rescue depends on a timeout correctly meaning the coordinator crashed, which only holds when the network is not partitioned.", "at": [{ "step": "Reveal: 3PC's extra phase, and what it still needs to be true" }] },
+      { "item": "Paxos maintains a single consistent decision even if multiple processes each believe themselves the leader, which traditional three-phase commit protocols do not: there, multiple coordinators arising from a partition can lead to inconsistency.", "at": [{ "step": "Reveal: 3PC's extra phase, and what it still needs to be true" }] },
+      { "item": "Paxos Commit runs a Paxos consensus instance on each participant's commit/abort vote, using 2F + 1 coordinators and making progress once F + 1 of them are working, so the decision survives losing a minority of the coordinator group rather than depending on one machine.", "at": [{ "step": "Reveal: Paxos Commit — a vote the coordinator's death can't erase" }] },
+      { "item": "Classic Two-Phase Commit is the special F = 0 case of Paxos Commit: the same protocol with no fault tolerance built into the coordinator role at all.", "at": [{ "step": "Reveal: Paxos Commit — a vote the coordinator's death can't erase" }] },
+      { "item": "Spanner stores each transaction manager's state inside its own underlying Paxos group, so the state survives losing that group's leader; CockroachDB's Parallel Commits runs every participant's consensus round trip concurrently rather than in sequence, roughly halving commit latency.", "at": [{ "step": "Reveal: where production places the consensus group" }] },
+      { "item": "A saga replaces one atomic transaction with a sequence of local steps, each paired with a compensating action that can undo it, trading atomicity for eventual consistency managed at the application level; the transactional outbox pattern commits an event in the same local write and lets a separate process deliver it later.", "at": [{ "step": "Reveal: sagas and the outbox, named and left for elsewhere" }] },
+      { "item": "Replicating the coordinator's decision through a consensus log removes exactly the single-machine failure that caused blocking before; a participant can still end up in doubt from its own crash, a lost message, or the decision-replicating group itself losing its majority.", "at": [{ "step": "Prove it: replicating the coordinator's decision — what does it leave unfixed?" }] },
+      { "item": "Database-level 2PC and XA, the Raft mechanism reused to replicate the decision, Percolator, Calvin, FoundationDB, and saga/outbox implementations are left to other topics or chapters, not re-derived here.", "at": [{ "out": "named in CHAPTER.md's Leaves out; Chapter 5 topic 16, topic 9, and the skipped Transaction architectures beyond 2PC syllabus topic" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

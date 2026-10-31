@@ -1,0 +1,88 @@
+{
+  "topic": "de.feature-stores-online-offline",
+  "steps": [
+    {
+      "lines": [
+        "Here's a model that passes every offline test with room to spare.",
+        "The first week it actually serves real traffic, it gets visibly worse, and nobody can point to a line of code that changed.",
+        "If the model itself didn't move, something about how it reaches a feature's value did."
+      ]
+    },
+    {
+      "lines": [
+        "Two pipelines compute the same feature. One runs in training, one runs live, and they disagree by a few hours' worth of timezone.",
+        "Is that the sort of thing that just happens because a value got old, or is it something deeper?",
+        "Pick carefully, because the fix for one is completely different from the fix for the other."
+      ],
+      "answer": [
+        "Nothing here went stale. Both pipelines ran exactly on schedule.",
+        "The actual problem is that two separate pieces of code both claim to compute the same feature, and quietly don't."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the idea a feature store is actually built around.",
+        "Write the transformation once. Run that one definition into a store built for training, and the same definition into a store built for serving.",
+        "Two destinations, but only ever one piece of logic deciding what the feature means."
+      ]
+    },
+    {
+      "lines": [
+        "Try it with identical code on both sides, and the two stores agree on every single row.",
+        "Now let a second implementation quietly creep into the serving side, close to the original but not identical, and measure what happens.",
+        "The disagreement shows up immediately, and it's exactly as large as the difference between the two pieces of code."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a sneakier version of the same family of bug.",
+        "The serving code is identical in every way except one: instead of asking for the feature's value as of this request, it asks for whatever the value happens to be right now.",
+        "That's the very same leak from training, just moved to the moment a live prediction actually gets made."
+      ]
+    },
+    {
+      "lines": [
+        "A store refreshes its values every thirty minutes. A request comes in five minutes past the next scheduled refresh.",
+        "Does that count as late, or is five minutes close enough that it doesn't matter?",
+        "Think about what you'd actually want a monitor to alert on, not what feels intuitively fine."
+      ],
+      "answer": [
+        "A limit stated as a number doesn't bend for how small the overage looks.",
+        "Past that number, the honest answer is that the value is unknown, not that it's close enough to count."
+      ]
+    },
+    {
+      "lines": [
+        "Refreshing a store isn't a continuous stream. It happens in distinct pulses, with gaps in between.",
+        "Space those pulses forty five minutes apart against a thirty minute limit, and real requests land in that gap and genuinely violate it.",
+        "Shrink the gap to fifteen minutes instead, and every single request now arrives inside the limit, every time."
+      ]
+    },
+    {
+      "lines": [
+        "Four different names get used for this same two-pipe shape.",
+        "One is the open source reference version anyone can run themselves. One is a commercial, real time focused platform that recently became part of a much larger data company.",
+        "One is another independent open platform built around the identical split. And one isn't a separate system at all, just a warehouse doing both jobs itself.",
+        "Different names, different ownership, but the architecture underneath barely changes."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole picture back together.",
+        "One definition, compiled once, feeding a store built for training and a store built for serving.",
+        "A different implementation sneaking in, a different kind of join, or a refresh that simply hasn't caught up yet can each still break that promise on their own."
+      ]
+    },
+    {
+      "lines": [
+        "A team sets all of this up properly, then someone adds a dashboard that recomputes the same feature by hand, just to sanity check a number.",
+        "Does the architecture's guarantee still reach that dashboard, or did it just leave the building?",
+        "Whatever you pick, ask yourself what code path that dashboard's query actually runs through."
+      ],
+      "answer": [
+        "The guarantee only ever covers code that goes through the store in the first place.",
+        "A dashboard recomputing the feature on its own has stepped outside that boundary entirely, and it's the very first failure all over again, just wearing a different job title."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: telemetry for pipelines
+
+<ul class="resources">
+  <Resource kind="reel" title="Telemetry for pipelines: logs, metrics, traces" domain="data-engineering" host="de.telemetry-pipelines-logs-metrics" by="the correlation key and golden signals this topic adds a trace on top of" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Signals" href="https://opentelemetry.io/docs/concepts/signals/" by="OpenTelemetry documentation">Traces, metrics, logs and baggage, named directly.</Resource>
+  <Resource kind="reading" title="Collector" href="https://opentelemetry.io/docs/collector/" by="OpenTelemetry documentation">The vendor-agnostic receive/process/export pipeline.</Resource>
+  <Resource kind="reading" title="Trace Context" href="https://www.w3.org/TR/trace-context/" by="W3C Recommendation">The traceparent and tracestate header format this topic carries across a Kafka hop.</Resource>
+  <Resource kind="reading" title="Semantic conventions for messaging spans" href="https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/" by="OpenTelemetry semantic conventions">Why links, not parent-child, correlate a batch receive.</Resource>
+  <Resource kind="reading" title="Semantic conventions for Kafka" href="https://opentelemetry.io/docs/specs/semconv/messaging/kafka/" by="OpenTelemetry semantic conventions">The Kafka-specific attribute names this topic's reveal names.</Resource>
+  <Resource kind="reading" title="Tracing SDK" href="https://opentelemetry.io/docs/specs/otel/trace/sdk/" by="OpenTelemetry specification">The default span link count limit measured in this topic's own example.</Resource>
+  <Resource kind="reading" title="Distributed Tracing" href="https://debezium.io/documentation/reference/stable/integrations/tracing.html" by="Debezium documentation">The one real break in automatic propagation, named from the source.</Resource>
+  <Resource kind="reading" title="Object Model" href="https://openlineage.io/docs/spec/object-model" by="OpenLineage documentation">The complement this topic contrasts OpenTelemetry against.</Resource>
+</ul>
+
+</section>

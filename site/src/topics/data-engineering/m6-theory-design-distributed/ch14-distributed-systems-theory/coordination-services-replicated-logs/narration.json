@@ -1,0 +1,84 @@
+{
+  "topic": "de.coordination-services-replicated-logs",
+  "steps": [
+    {
+      "lines": [
+        "Notice that this write was never treated carelessly. It followed every rule it was given.",
+        "Both replicas the system cared about had it before anyone was told it succeeded.",
+        "The problem isn't the rule. It's that the replica which survives is the one the rule never counted."
+      ]
+    },
+    {
+      "lines": [
+        "Before choosing, separate the two switches at play here instead of treating this as one big unknown.",
+        "One switch decides how strong the starting promise was. The other decides what happens once that promise is tested by a failure.",
+        "Only one of the two actually determines whether the data comes back."
+      ],
+      "answer": [
+        "Unclean election is the one that matters here.",
+        "Turn it off, and the cluster refuses to move on without a replica that actually has the write — the data is safe, just temporarily out of reach.",
+        "Turn it on, and the surviving replica gets to lead anyway, missing write and all. The acknowledgment you were given is suddenly worth nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what's actually guaranteed here versus what's merely likely.",
+        "Writes agree with each other and happen in the order a client sent them. That's the whole promise.",
+        "A read, though, is handed to you by whichever replica you happen to be talking to — and that replica might not have heard the news yet."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention to what's being offered as a choice, not a default.",
+        "The strong answer is always available. The weaker, faster one is something you have to ask for explicitly, trading freshness for speed on your own terms.",
+        "Nobody gets the fast answer by accident here."
+      ]
+    },
+    {
+      "lines": [
+        "Sit with how unusual it is for a system to retire its own foundation after a decade of relying on it.",
+        "Years of leaning on one coordination service, and then a release that simply doesn't need it anymore.",
+        "What replaced it isn't new. It's the exact mechanism this chapter already opened up."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what's being traded here, because it isn't obvious from the replica count alone.",
+        "Needing fewer copies to tolerate the same number of failures sounds like a pure win. It isn't pure.",
+        "Every one of those copies now has to show up before anything is called done, which means the slowest one sets the pace, not the fastest."
+      ]
+    },
+    {
+      "lines": [
+        "Separate the protection this setting offers from the protection it still doesn't.",
+        "Insisting on every in-sync copy guards against any single one of them disappearing. Letting one copy alone count removes that guard before anything even goes wrong.",
+        "And even with the strongest setting, one particular edge case, a last surviving copy corrupting itself on its own restart, still slips through, which is exactly why a dedicated fix exists for it."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what happens to the loser here, because it isn't failure in any ordinary sense.",
+        "Two parties building on the same starting point, only one gets to land. The other doesn't error out.",
+        "It just looks at what actually won, builds again from there, and tries once more."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward what's actually shared across every mechanism in this topic, not the four different product names.",
+        "A small group of replicas, agreeing on one value, changing that value atomically whenever it needs to change.",
+        "Everything else, the session, the quorum shape, the pointer swap, is just which group was handed that one job."
+      ]
+    },
+    {
+      "lines": [
+        "Before answering, think about what that overlapping replica is actually guaranteed to do, not just guaranteed to exist.",
+        "Knowing a shared replica is somewhere in the crowd is one fact. Knowing the protocol reliably picks out whatever that replica is holding is a completely different fact."
+      ],
+      "answer": [
+        "No, the overlap alone isn't enough.",
+        "It guarantees a replica holding the latest write is somewhere inside the overlap, but not that any particular read protocol will notice it and prefer it over everything else it hears back.",
+        "You still need a rule, usually versioning or timestamps, for picking the right answer out of that overlap. The overlap just makes picking it possible."
+      ]
+    }
+  ]
+}

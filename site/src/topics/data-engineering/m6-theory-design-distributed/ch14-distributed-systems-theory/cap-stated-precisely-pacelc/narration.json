@@ -1,0 +1,75 @@
+{
+  "topic": "de.cap-stated-precisely-pacelc",
+  "steps": [
+    {
+      "lines": [
+        "Notice that nothing here looks broken from either customer's point of view.",
+        "Each one gets a clean confirmation. The system did exactly what it was built to do: keep answering, even while it couldn't talk to the other side.",
+        "That's the cost about to get named, not a bug report."
+      ]
+    },
+    {
+      "lines": [
+        "Before choosing, ask what the isolated side was actually free to do differently.",
+        "It could have refused the sale instead of confirming it. That refusal is the only alternative on the table once the network splits."
+      ],
+      "answer": [
+        "It kept availability, at the cost of consistency.",
+        "Every node kept responding right through the partition, and that's precisely what let both sides confirm the same unit.",
+        "Refusing on the isolated side was the one path not taken."
+      ]
+    },
+    {
+      "lines": [
+        "Hold these three conditions apart, because the proof only works if you don't blur them.",
+        "Atomic is a statement about order appearing instantaneous. Available is a statement about never staying silent. Partition tolerant is a statement about how much message loss the network is allowed.",
+        "The theorem's whole claim is that a design can't satisfy all three at once."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what the isolated replica can and can't know, not what actually happened elsewhere.",
+        "It never receives the majority's write, so its own local state looks exactly the same whether that write occurred or not.",
+        "Given no fact to tell the two worlds apart, any answer it gives is either a refusal or a gamble."
+      ]
+    },
+    {
+      "lines": [
+        "Separate the thing that happens to a system from the thing the system decides.",
+        "A partition isn't a decision anyone makes; it's an event. The decision is what to do once one is already underway, and that decision gets made fresh for each request.",
+        "A label stamped on the whole system can't capture something that granular."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this trade-off exists even on a day with no partition at all.",
+        "Replicating a write before answering costs time, so a system still has to pick between answering fast and answering with full consistency, partition or not.",
+        "Three real systems sit in three different corners of that choice, each by its own design."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention to which word is doing the real work in that sentence: effectively.",
+        "Technically, Spanner gives up availability during a partition, same as any CP system has to.",
+        "What changes is how rarely that moment arrives on a network built and run by one company end to end."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the whole argument, not just three letters that rhyme.",
+        "One theorem about a single moment of indecision. One else-branch about every other moment. One real system that pays the theorem's cost rarely, not never."
+      ]
+    },
+    {
+      "lines": [
+        "Before answering, ask what the theorem is actually a claim about: a design, or a track record.",
+        "A system that has gotten lucky still carries a choice baked into its design for the day a partition finally arrives."
+      ],
+      "answer": [
+        "No, luck isn't an exemption.",
+        "The theorem constrains what a design has to give up if a partition occurs, and says nothing about how often that will happen.",
+        "Years without one is a fact about history, not a property the design has that gets it out of the trade."
+      ]
+    }
+  ]
+}

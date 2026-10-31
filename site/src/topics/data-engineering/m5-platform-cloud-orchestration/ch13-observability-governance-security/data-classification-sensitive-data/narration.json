@@ -1,0 +1,82 @@
+{
+  "topic": "de.data-classification-sensitive-data",
+  "steps": [
+    {
+      "lines": [
+        "Picture the shop running its scanner over every structured table it has.",
+        "It finds every card number, every email address. Security looks at the report and signs off."
+      ]
+    },
+    {
+      "lines": [
+        "Then a support agent types something into a free-text note. A phone number, and the last four digits of a card, right in the middle of an ordinary sentence.",
+        "That note sits in a nightly export nobody ever pointed a scanner at. So here's what I want you to commit to first.",
+        "Does a good enough model classifier close that gap completely, close part of it, or does free text just keep a real, measurable miss rate no matter what you throw at it?"
+      ],
+      "answer": [
+        "No vendor actually claims complete coverage on free text — Google's own documentation says plainly that its built-in detectors aren't a perfectly accurate detection method.",
+        "A model genuinely helps. It just doesn't close the gap all the way, and that honest remainder is a number you have to carry forward, not assume away."
+      ]
+    },
+    {
+      "lines": [
+        "Before anything else, there are two separate labels here, and they get confused constantly.",
+        "One of them is about handling care — public, internal, confidential, restricted — and it's a judgment call your team makes.",
+        "The other is about which specific rules kick in — personal data, health information, payment data — and that one's a fact about what's actually in the column, not a choice. A column gets both, independently."
+      ]
+    },
+    {
+      "lines": [
+        "So how does a machine actually find this stuff in a structured column? Start with the simplest technique.",
+        "A regular expression catches a shape — something that looks like a card number, or an email address.",
+        "Add a checksum on top, the same one a real card number carries, and now you're catching a shape that's also internally consistent. Run that on the shop's own structured columns, and you get ninety-one percent precision, with every real instance found."
+      ]
+    },
+    {
+      "lines": [
+        "Every major platform documents its own version of the next step up from pattern matching.",
+        "Amazon's Macie adds trained detection on top of its pattern matching. Microsoft's Purview lets you copy a built-in classifier and customize it.",
+        "Databricks describes its own engine as an agentic AI system. Google scans by what it calls an info type. Four different names, the same three underlying techniques."
+      ]
+    },
+    {
+      "lines": [
+        "Now, a tag doesn't just sit on one column. It has to travel.",
+        "A tag set on an email column should reach every column that's derived from it downstream.",
+        "Hash that email, and the tag survives — it's still personal data, because a hash of a known set of values can be reversed by lookup. But aggregate it into a customer count, and the tag genuinely disappears. There's nothing left about any one person in a count."
+      ]
+    },
+    {
+      "lines": [
+        "Now go back to that free-text column and actually measure what the scanner catches.",
+        "On the structured columns, it was effectively perfect. Point the exact same scanner at free-text support notes instead, and recall drops to fifty percent.",
+        "Three notes out of six, containing a real phone number or a real card reference, come back completely missed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why that miss rate actually matters beyond this one topic.",
+        "A masking policy reads a tag. An erasure step reads a tag. An access rule reads a tag.",
+        "A missed tag isn't just a missed label sitting there unnoticed. It's one of those policies that silently never ran at all."
+      ]
+    },
+    {
+      "lines": [
+        "So, putting all of that together.",
+        "Two separate labels, not one. Pattern plus checksum for structured data, a model for the rest, each vendor naming its own version of the same three techniques.",
+        "A tag follows the lineage graph, surviving a hash and genuinely dying at an aggregate. And free text keeps a real miss rate that every later policy in this chapter has to account for."
+      ]
+    },
+    {
+      "lines": [
+        "One last calculation, and it's worth doing the arithmetic yourself before I give you the number.",
+        "Say a masking policy only protects columns that got tagged. Discovery on free text catches half of what's genuinely out there. And one in five of the shop's columns actually hold something sensitive.",
+        "What fraction of all its columns end up both sensitive and completely unprotected?"
+      ],
+      "answer": [
+        "Half of a fifth is still one in ten. Ten percent of every column in that shop is sensitive and was never tagged at all.",
+        "That's not a worst case — it's exactly what a fifty percent discovery recall leaves behind, every single time it runs."
+      ]
+    }
+  ]
+}

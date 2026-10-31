@@ -1,0 +1,8 @@
+- **Trace**: the full path of one request or record through a distributed system, made of spans. *Where you meet it:* this topic's own CDC-to-warehouse example, followed end to end.
+- **Span**: one unit of work inside a trace, with a start and an end. *Where you meet it:* every reveal in this topic is about what one span can and cannot carry.
+- **Parent span**: the span that directly caused another span to start. *Where you meet it:* "Reveal: why links, not parent-child," where a single parent field is shown breaking under a batch.
+- **Header**: a small piece of metadata carried alongside a message or request, separate from its payload. *Where you meet it:* `traceparent`, carried in a Kafka record's own header map.
+- **Context propagation**: passing trace identifiers along as work moves between processes. *Where you meet it:* this topic's whole subject, across a produce, a consume and a database write.
+- **Exporter**: the component that sends collected telemetry out to a backend. *Where you meet it:* named briefly as part of the OpenTelemetry Collector's job; not built here.
+- **Sampling**: deciding which traces to keep in full detail versus drop or shrink, for cost. *Where you meet it:* background only; this topic's own link limit is a related but separate idea (what one span keeps, not which traces are kept).
+- **CDC event**: one captured row change, the unit Chapter 8's change-data-capture tooling produces. *Where you meet it:* the first hop of this topic's own CDC-to-warehouse trace.

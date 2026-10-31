@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: consensus inside data systems, and partitioning schemes
+
+<ul class="resources">
+  <Resource kind="reel" title="Consensus inside data systems" domain="data-engineering" host="de.consensus-inside-data-systems" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Partitioning schemes: range, hash, consistent hashing" domain="data-engineering" host="de.partitioning-schemes-range-hash" by="the range-sharded keyspace this pattern is built on" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spanner: Google's Globally-Distributed Database" href="https://www.usenix.org/system/files/conference/osdi12/osdi12-final-16.pdf" by="Corbett et al., OSDI 2012">The Spanner pattern's own defining paper: range-sharded keyspace, Paxos groups, TrueTime, two-phase commit.</Resource>
+  <Resource kind="reading" title="Architecture Overview" href="https://docs.cockroachlabs.com/docs/stable/architecture/overview" by="CockroachDB documentation">The range-sharded keyspace and per-range Raft consensus, as CockroachDB documents its own implementation.</Resource>
+  <Resource kind="reading" title="Transaction Layer" href="https://docs.cockroachlabs.com/docs/stable/architecture/transaction-layer" by="CockroachDB documentation">Hybrid logical clocks and HLC-based transaction timestamps.</Resource>
+  <Resource kind="reading" title="Concurrency control in Aurora DSQL" href="https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-concurrency-control.html" by="AWS documentation">Aurora DSQL's own documented optimistic-concurrency alternative.</Resource>
+</ul>
+
+</section>

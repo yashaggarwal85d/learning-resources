@@ -1,0 +1,68 @@
+{
+  "topic": "de.zero-etl-replication",
+  "syllabus": [
+    {
+      "clause": "managed CDC from operational databases into analytics engines (Aurora/RDS/DynamoDB → Redshift, Microsoft Fabric mirroring, similar warehouse connectors)",
+      "at": [
+        { "step": "Reveal: managed CDC into an analytics engine" },
+        { "step": "Reveal: DynamoDB's own documented cadence" }
+      ]
+    },
+    {
+      "clause": "what \"zero\" hides — it is still log-based CDC",
+      "at": [
+        { "step": "Reveal: what \"zero\" actually hides" }
+      ]
+    },
+    {
+      "clause": "with schema-change, filtering and cost constraints you no longer control",
+      "at": [
+        { "step": "Reveal: the three costs of giving up pipeline control" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS — Zero-ETL integrations (Amazon Redshift)",
+      "items": [
+        { "item": "the following sources are currently supported for zero-ETL integrations: Aurora MySQL, Aurora PostgreSQL, DynamoDB, RDS for MySQL/Oracle/PostgreSQL, Oracle Database@AWS, plus named SaaS applications and self-managed databases", "at": [{ "step": "Reveal: managed CDC into an analytics engine" }] },
+        { "item": "to create a zero-ETL integration, you specify a source and a Redshift warehouse as target; after an initial data load, the integration replicates data from source to target", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS — DynamoDB zero-ETL integration with Amazon Redshift",
+      "items": [
+        { "item": "on activation, the integration exports the full DynamoDB table, then incrementally replicates updates every fifteen to thirty minutes using DynamoDB's own incremental exports", "at": [{ "step": "Reveal: DynamoDB's own documented cadence" }] },
+        { "item": "a zero-ETL integration requires the source DynamoDB table to have point-in-time recovery enabled", "at": [{ "step": "Reveal: DynamoDB's own documented cadence" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Fabric — Overview of Mirroring for SQL database",
+      "items": [
+        { "item": "mirroring for a SQL database in Fabric starts upon creation with no user action required, with no settings to configure", "at": [{ "step": "Reveal: managed CDC into an analytics engine" }] },
+        { "item": "mirrored data is stored as Delta Parquet files in OneLake", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's fraud-detection scenario is deliberately a case where a documented cadence, not a system failure, is the actual cause — there is no bug to find anywhere in this scenario, which is exactly why reading a vendor's own documented window as a freshness SLA has to happen before adoption, not after an incident.", "at": [{ "step": "Hook" }] },
+      { "item": "Naming Aurora, DynamoDB, RDS and Fabric mirroring together as instances of one mechanism matters because a learner who only remembers one vendor's name would wrongly conclude zero-ETL is a single product rather than a pattern that recurs across both major cloud platforms.", "at": [{ "step": "Reveal: managed CDC into an analytics engine" }] },
+      { "item": "DynamoDB's own documented window is stated as a range, fifteen to thirty minutes, not a single guaranteed number — a learner who collapses that range to its midpoint or its best case has already made the exact mistake the Prove It step is built to catch.", "at": [{ "step": "Reveal: DynamoDB's own documented cadence" }] },
+      { "item": "Calling zero-ETL 'managed log-based CDC' is this topic's central synthesis, built from this course's own already-taught CDC vocabulary rather than from either vendor's documentation directly — FACT-CHECK states this plainly as the course's own claim, not an AWS- or Microsoft-sourced one.", "at": [{ "step": "Reveal: what \"zero\" actually hides" }] },
+      { "item": "The sandbox reproduction uses a real Postgres logical replication slot, drained on a fixed cycle, as the stand-in for DynamoDB's own incremental-export mechanism — this topic is explicit throughout that the reproduction models the documented cadence and prerequisite shape, not DynamoDB's own internal implementation, which this sandbox cannot run.", "at": [{ "step": "Reveal: reproducing the shape on this sandbox's own Postgres" }] },
+      { "item": "The fraud order's invisibility between pulses in examples.py is asserted as a positive requirement of the test, not caught as an incidental side effect — the mechanism is working exactly as the documented cadence says it should, which is the whole point the hook opened with.", "at": [{ "deep": "Lab" }] },
+      { "item": "The three named costs (schema timing, filtering limits, vendor billing) are presented as a package that comes with giving up pipeline code, not as independent complaints — a team cannot selectively keep one lever (say, filtering control) while still adopting the managed integration for the others.", "at": [{ "step": "Reveal: the three costs of giving up pipeline control" }] },
+      { "item": "This topic's own closing arithmetic (a twenty-minute requirement against a fifteen-to-thirty-minute documented window) generalizes past DynamoDB specifically: any fixed window whose own worst case falls at or above a stated requirement cannot be trusted to meet that requirement on every cycle, regardless of which vendor documents the window.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's own 'Leaves out' line (CDC's own mechanism in depth, the streaming-lakehouse convergence ideas marked skipped in the rest of the syllabus subsection) keeps its scope to exactly what naming zero-ETL's real mechanism and costs requires, consistent with how every other topic in this chapter states its own boundaries explicitly.", "at": [{ "step": "Recap" }] },
+      { "item": "Choosing Postgres's wal_level and a logical replication slot as the prerequisite-and-cursor stand-in, rather than a simpler timestamp-column polling scheme, keeps the reproduction faithful to the actual category of mechanism (a WAL reader reading a replication stream) this course already taught, rather than substituting an easier-to-build but architecturally different approximation.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

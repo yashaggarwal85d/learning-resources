@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: general programming only
+
+This is the first topic of Chapter 9 and introduces its own vocabulary from scratch — it uses no
+earlier chapter's concepts. Chapter 8 (Data Ingestion, Integration and Change Data Capture), the
+chapter immediately before this one in the syllabus, was still being built in parallel when this
+topic was written (only its first topic had shipped); its last topic's reel is not linked here
+for that reason, not because it isn't the real bridge (`CHAPTER.md`'s bridge note quotes its
+handoff directly).
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Design" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka docs">Persistence, efficiency, zero-copy reads, and why a consumer's offset is a single integer it owns.</Resource>
+  <Resource kind="reading" title="TopicConfig.java" href="https://github.com/apache/kafka/blob/trunk/clients/src/main/java/org/apache/kafka/common/config/TopicConfig.java" by="Apache Kafka source">The real `segment.bytes`, `segment.ms` and `log.index.interval.bytes` settings this topic's toy log scales down from.</Resource>
+</ul>
+
+</section>

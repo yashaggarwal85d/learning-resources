@@ -1,0 +1,60 @@
+{
+  "topic": "de.text-interchange-formats-their",
+  "syllabus": [
+    { "clause": "CSV", "at": [{ "step": "Hook" }] },
+    { "clause": "quoting", "at": [{ "step": "Predict: does quoting fix everything?" }] },
+    { "clause": "escaping", "at": [{ "step": "Reveal: the embedded quote" }] },
+    { "clause": "embedded newlines", "at": [{ "step": "Reveal: the embedded newline" }] },
+    { "clause": "encodings and BOMs", "at": [{ "step": "Reveal: the BOM trap" }] },
+    { "clause": "no types or schema", "at": [{ "step": "Reveal: no types, no schema" }] },
+    { "clause": "JSON/JSONL", "at": [{ "step": "Reveal: the surprising number" }, { "deep": "The grammar underneath the traps" }] },
+    { "clause": "verbose", "at": [{ "deep": "The grammar underneath the traps" }] },
+    { "clause": "no columnar pushdown", "at": [{ "step": "Reveal: no types, no schema" }] },
+    { "clause": "number-precision loss", "at": [{ "step": "Reveal: the surprising number" }] },
+    { "clause": "XML", "at": [{ "step": "Reveal: no types, no schema" }] },
+    { "clause": "when you still must accept them at the edge and convert immediately", "at": [{ "step": "Reveal: no types, no schema" }, { "step": "Recap" }] }
+  ],
+  "sources": [
+    {
+      "source": "RFC 4180",
+      "items": [
+        { "item": "the last record in a file may or may not have an ending line break", "at": [{ "deep": "The grammar underneath the traps" }] },
+        { "item": "a field is quoted only when it contains a comma, CRLF or quote", "at": [{ "step": "Predict: does quoting fix everything?" }] },
+        { "item": "an embedded quote is escaped by doubling it", "at": [{ "step": "Reveal: the embedded quote" }] },
+        { "item": "an embedded line break inside a quoted field is legal data", "at": [{ "step": "Reveal: the embedded newline" }] }
+      ]
+    },
+    {
+      "source": "RFC 8259",
+      "items": [
+        { "item": "JSON's grammar has one numeric type with no built-in magnitude/precision limit", "at": [{ "step": "Reveal: the surprising number" }] },
+        { "item": "a double-precision parser only guarantees exact round-tripping for integers in [-(2^53-1), 2^53-1]", "at": [{ "step": "Reveal: the surprising number" }] },
+        { "item": "JSON text outside a closed ecosystem must be UTF-8", "at": [{ "step": "Reveal: the BOM trap" }] },
+        { "item": "a writer must never prepend a BOM; a reader may tolerate or reject one", "at": [{ "step": "Reveal: the BOM trap" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "CSV has no single formal standard; RFC 4180 documents common practice retroactively, and real producers (e.g. Excel) diverge from it, especially on quoting.", "at": [{ "step": "Hook" }] },
+      { "item": "A CSV field is quoted only when it contains a comma, a CRLF or a quote; readers must tolerate quoting applied inconsistently across producers.", "at": [{ "step": "Predict: does quoting fix everything?" }] },
+      { "item": "An embedded quote inside a quoted CSV field is escaped by doubling it (\"\"), never by a backslash.", "at": [{ "step": "Reveal: the embedded quote" }] },
+      { "item": "RFC 4180 rule 6 makes an embedded line break inside a quoted field legal, so a naive line-based CSV reader corrupts legitimate data.", "at": [{ "step": "Reveal: the embedded newline" }] },
+      { "item": "CSV carries no type system at all: every value is text until a reader infers a type, which is the root cause of classic bugs like a leading-zero ID or postal code being read as an integer.", "at": [{ "step": "Reveal: no types, no schema" }] },
+      { "item": "JSON's grammar has one numeric type (\"number\"), with no distinction between integer and float; a parser's own choice of representation (commonly IEEE 754 binary64) decides what round-trips exactly.", "at": [{ "step": "Reveal: the surprising number" }] },
+      { "item": "RFC 8259 states that an integer outside ±(2^53 − 1) is not guaranteed to survive a round trip once real binary64-based parsers are involved, even though the JSON grammar itself has no such limit.", "at": [{ "step": "Reveal: the surprising number" }] },
+      { "item": "JSON text exchanged outside a closed ecosystem must be UTF-8 (RFC 8259 §8.1); a writer must not prepend a BOM, and a reader may either tolerate or reject one it finds.", "at": [{ "step": "Reveal: the BOM trap" }] },
+      { "item": "A byte order mark (U+FEFF) at the start of a UTF-8 stream is purely a signature with no byte-order meaning in UTF-8 itself, and a parser that doesn't skip it reads it as the file's first, unexpected character.", "at": [{ "step": "Reveal: the BOM trap" }] },
+      { "item": "JSON itself has no per-record delimiter for streaming a sequence of values; JSON Lines (JSONL) is a separate convention — one JSON value per line, UTF-8, no BOM, '\\n' as the terminator — layered on top of JSON to make it splittable and streamable.", "at": [{ "deep": "The grammar underneath the traps" }] },
+      { "item": "Neither CSV nor JSON/JSONL supports columnar pushdown: a reader must parse every field of every row to answer even a single-column query, in contrast to the columnar formats later in this chapter.", "at": [{ "step": "Reveal: no types, no schema" }] },
+      { "item": "XML is named by the syllabus as a third text interchange format, more verbose than either CSV or JSON and typically paired with an external schema (XSD/DTD) enforced outside the file itself; this topic names it without building a deep example, matching the syllabus's own brief treatment.", "at": [{ "step": "Reveal: no types, no schema" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

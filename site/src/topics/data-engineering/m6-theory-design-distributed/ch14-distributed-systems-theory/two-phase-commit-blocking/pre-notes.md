@@ -1,0 +1,7 @@
+- **Coordinator**: the process that collects every participant's vote and decides commit or abort. *Where you meet it:* the machine that crashes in the hook, leaving its decision stranded.
+- **Participant**: a shard or service whose data the transaction touches, and whose vote the coordinator needs. *Where you meet it:* inventory and payments, each holding a lock it cannot release alone.
+- **Prepare**: the coordinator's first message, asking a participant to durably promise it can commit. *Where you meet it:* the vote that cannot be taken back once it's cast.
+- **In doubt**: a participant's state after voting yes but before hearing the final decision. *Where you meet it:* exactly where the hook's two shards sit for an hour.
+- **Lock-hold time**: how long a prepared participant keeps its locks while waiting to hear the outcome. *Where you meet it:* the number the lab measures after crashing the coordinator.
+- **Durable log**: the record a coordinator or a consensus group writes to survive its own crash. *Where you meet it:* the place "commit" is written before anyone is told.
+- **Consensus group**: a small set of replicas that together hold one decision no single member's crash can erase. *Where you meet it:* what Paxos Commit substitutes for a single coordinator machine.

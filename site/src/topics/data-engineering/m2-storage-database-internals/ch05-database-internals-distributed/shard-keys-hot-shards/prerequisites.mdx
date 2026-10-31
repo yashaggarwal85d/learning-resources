@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: partitioning schemes, and CAP/PACELC
+
+<ul class="resources">
+  <Resource kind="reel" title="Partitioning schemes: range, hash, consistent hashing" domain="data-engineering" host="de.partitioning-schemes-range-hash" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="CAP and PACELC in practice" domain="data-engineering" host="de.cap-pacelc-practice" by="the failure domains a shard and its replicas sit on" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Reshard" href="https://vitess.io/docs/reference/vreplication/reshard/" by="Vitess documentation">Online resharding and the write-pause cutover a correct reshard pays for.</Resource>
+  <Resource kind="reading" title="Distribution Layer" href="https://docs.cockroachlabs.com/docs/stable/architecture/distribution-layer" by="CockroachDB documentation">Range splitting once a range reaches its size threshold.</Resource>
+  <Resource kind="reading" title="DynamoDB burst and adaptive capacity" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/burst-adaptive-capacity.html" by="AWS documentation">Adaptive capacity isolating a hot item onto its own partition.</Resource>
+  <Resource kind="reading" title="General guidelines for secondary indexes in DynamoDB" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-indexes-general.html" by="AWS documentation">The documented local-vs-global secondary index scope difference.</Resource>
+</ul>
+
+</section>

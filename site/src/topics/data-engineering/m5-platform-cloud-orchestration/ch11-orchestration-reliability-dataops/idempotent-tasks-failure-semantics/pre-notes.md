@@ -1,0 +1,6 @@
+- **At-least-once**: a guarantee that a task runs one or more times, never zero — never that it runs exactly once. *Where you meet it:* why a retry can mean the work actually happened twice.
+- **Idempotent**: safe to run more than once without changing the result beyond the first run. *Where you meet it:* the property that makes a retry harmless instead of dangerous.
+- **Trigger rule**: the condition, attached to a task, that decides whether it runs given its upstream tasks' states. *Where you meet it:* `all_success` (the default) vs `one_failed`.
+- **Heartbeat**: a periodic "I'm still alive" signal a running task sends back to the scheduler. *Where you meet it:* the only way the scheduler can tell a worker died.
+- **Backoff**: waiting longer between each retry attempt, instead of retrying immediately. *Where you meet it:* giving a transient failure time to clear before trying again.
+- **Data interval**: the time range a scheduled run owns. *Where you meet it:* keying an output file or partition to exactly one run, so re-running overwrites the same place instead of adding to it.

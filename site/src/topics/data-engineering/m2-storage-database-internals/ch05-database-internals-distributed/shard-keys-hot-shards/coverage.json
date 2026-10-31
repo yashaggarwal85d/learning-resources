@@ -1,0 +1,85 @@
+{
+  "topic": "de.shard-keys-hot-shards",
+  "syllabus": [
+    {
+      "clause": "choosing a shard key from access patterns (tenant, user, time) and cardinality",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: does high cardinality alone guarantee even load?" },
+        { "step": "Reveal: cardinality alone, measured" }
+      ]
+    },
+    {
+      "clause": "celebrity keys and salting/splitting",
+      "at": [
+        { "step": "Reveal: cardinality alone, measured" },
+        { "step": "Reveal: salting the celebrity key" }
+      ]
+    },
+    {
+      "clause": "secondary indexes across shards (local vs global)",
+      "at": [
+        { "step": "Reveal: secondary indexes across shards" }
+      ]
+    },
+    {
+      "clause": "online resharding and range splits (Vitess, CockroachDB, DynamoDB partition splits) and the cost of moving data under load",
+      "at": [
+        { "step": "Predict: what happens without a write-pause window during a split?" },
+        { "step": "Reveal: the pause window, measured" },
+        { "step": "Reveal: the same mechanisms, in real systems" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Reshard (Vitess documentation)",
+      "items": [
+        { "item": "Reshard is used to create and manage workflows to horizontally shard an existing keyspace", "at": [{ "step": "Reveal: the same mechanisms, in real systems" }] },
+        { "item": "while switching write traffic, the source databases are temporarily made read-only while waiting for the targets to catch up", "at": [{ "step": "Reveal: the pause window, measured" }] }
+      ]
+    },
+    {
+      "source": "Distribution Layer (CockroachDB documentation)",
+      "items": [
+        { "item": "once a range reaches its size limit, CockroachDB splits it into two smaller ranges of contiguous key spaces", "at": [{ "step": "Reveal: the same mechanisms, in real systems" }] },
+        { "item": "a range split creates a new Raft group containing all of the same members as the range that was split", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "DynamoDB burst and adaptive capacity (AWS documentation)",
+      "items": [
+        { "item": "adaptive capacity automatically and instantly increases throughput capacity for partitions that receive more traffic", "at": [{ "step": "Reveal: the same mechanisms, in real systems" }] },
+        { "item": "under consistently high traffic to a single item, adaptive capacity can rebalance data so a partition contains only that single item", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "General guidelines for secondary indexes in DynamoDB (AWS documentation)",
+      "items": [
+        { "item": "a global secondary index is considered global because queries on it can span all of the data in the base table, across all partitions", "at": [{ "step": "Reveal: secondary indexes across shards" }] },
+        { "item": "a local secondary index is local because every one of its partitions is scoped to a base table partition sharing the same partition key value", "at": [{ "step": "Reveal: secondary indexes across shards" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A celebrity key isn't a sign the shard key was chosen badly in the usual sense — any shard key, however high its overall cardinality, can have one value that drives a disproportionate share of traffic; cardinality and traffic skew are independent properties of a workload.", "at": [{ "step": "Hook" }] },
+      { "item": "Salting only works because it targets the symptom at exactly the key that has it — splitting every key into salted sub-keys would fix nothing (it would just multiply the key count) while still leaving other keys' own relative traffic shares unchanged.", "at": [{ "step": "Reveal: salting the celebrity key" }] },
+      { "item": "A local secondary index's cost advantage is conditional, not unconditional: it only pays off when the query already supplies the base table's partition key; a query on a different attribute, without that key, degrades to exactly the cost of no index at all.", "at": [{ "step": "Reveal: secondary indexes across shards" }] },
+      { "item": "A global secondary index's own partitions can themselves develop a celebrity-key problem, independent of the base table's — if one indexed attribute value (e.g. one status) dominates query traffic, the fix is the identical salting technique applied to the GSI's own key, not a base-table change.", "at": [{ "deep": "Internals" }] },
+      { "item": "The write-pause window a correct resharding operation pays for isn't a performance accident to be optimized away — it's the only way every writer can agree on the new key-range boundary at the same logical instant; a 'faster' reshard that skips it trades correctness for speed, not just UX for speed.", "at": [{ "step": "Reveal: the pause window, measured" }] },
+      { "item": "Vitess's own documented cutover (making the source read-only while the target catches up) and CockroachDB's own range split (a new Raft group spun up for the new range) solve the identical membership-agreement problem through different mechanisms — a pause-then-switch versus a new consensus group taking over mid-flight.", "at": [{ "step": "Reveal: the same mechanisms, in real systems" }] },
+      { "item": "DynamoDB's adaptive capacity automates exactly the salting decision this topic's own examples.py makes by hand — the system detects a hot item and isolates it onto its own partition automatically, without an engineer having to notice the celebrity key first.", "at": [{ "step": "Reveal: the same mechanisms, in real systems" }] },
+      { "item": "Choosing a shard key from access patterns rather than cardinality alone means asking which queries need to land on one shard (a tenant's own data, a user's own timeline) before asking which key has the most distinct values — the two criteria can point to different keys entirely.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic's own executable claims isolate the celebrity-key effect cleanly by giving one key a fixed, large traffic share and splitting the remainder evenly among the rest, rather than a smooth Zipf curve, specifically so the salting fix's effect is measurable and not confounded by a second- or third-ranked heavy key landing on the same shard by chance.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own 'Prove it' answer generalizes topic 21's 'adding nodes doesn't fix a hot tail' result: no amount of key-space cardinality fixes a celebrity key, because the fix has to target the specific key driving the skew, not the shard count or the hashing scheme everyone else's data already sits under.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

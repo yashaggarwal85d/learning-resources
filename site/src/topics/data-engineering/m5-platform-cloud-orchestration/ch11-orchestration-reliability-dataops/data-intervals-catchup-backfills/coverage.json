@@ -1,0 +1,90 @@
+{
+  "topic": "de.data-intervals-catchup-backfills",
+  "syllabus": [
+    {
+      "clause": "logical date and data-interval semantics",
+      "at": [
+        { "step": "Reveal: logical date vs data interval, measured" }
+      ]
+    },
+    {
+      "clause": "catchup (off by default in Airflow 3)",
+      "at": [
+        { "step": "Reveal: catchup, off by default, measured" }
+      ]
+    },
+    {
+      "clause": "scheduler-managed backfills (Airflow 3: API/UI-driven, bounded concurrency, reprocess policy)",
+      "at": [
+        { "step": "Reveal: bounded concurrency, run for real" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "Dagster partition backfills (per-partition vs single-run)",
+      "at": [
+        { "step": "Reveal: Dagster's other shape" }
+      ]
+    },
+    {
+      "clause": "resumable backfill design",
+      "at": [
+        { "step": "Reveal: kill it, restart it, measured" }
+      ]
+    },
+    {
+      "clause": "and the blast radius of a 5-year backfill on shared sources and warehouses",
+      "at": [
+        { "step": "Predict: does a backfill get its own budget?" },
+        { "deep": "Production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dag Runs (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "the logical date denotes the start of the data interval, not when the run actually executes", "at": [{ "step": "Reveal: logical date vs data interval, measured" }] },
+        { "item": "catchup defaults to off (scheduler.catchup_by_default=False); the scheduler creates a run only for the latest interval unless catchup=True", "at": [{ "step": "Reveal: catchup, off by default, measured" }] }
+      ]
+    },
+    {
+      "source": "Backfill (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "backfill creates runs for past dates through the CLI, API or UI", "at": [{ "step": "Reveal: bounded concurrency, run for real" }] },
+        { "item": "max_active_runs on a backfill bounds concurrency independently of the Dag's own max_active_runs", "at": [{ "step": "Reveal: bounded concurrency, run for real" }] },
+        { "item": "the default reprocess behaviour (none) never creates a new run for a logical date that already has one, regardless of state", "at": [{ "step": "Prove it" }] },
+        { "item": "a partitioned Dag's --from-date/--to-date range is auto-detected and interpreted as a partition-date range, one run per partition", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Backfilling data (Dagster Docs)",
+      "items": [
+        { "item": "Dagster's default backfill launches one separate run per partition", "at": [{ "step": "Reveal: Dagster's other shape" }] },
+        { "item": "a single-run backfill (BackfillPolicy.single_run()) covers a whole partition range in one run instead", "at": [{ "step": "Reveal: Dagster's other shape" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The gap between a run's logical date and its actual execution time isn't a quirk of display — it's why a daily run 'for' January first can safely read data up to but not including January second, and why manually triggered runs (not on the schedule) don't get a meaningful data_interval unless explicitly given one.", "at": [{ "step": "Reveal: logical date vs data interval, measured" }] },
+      { "item": "Catchup being off by default in Airflow 3 is a behaviour every Dag author inherits silently: a Dag paused for two weeks and re-enabled with catchup=False will not 'catch up' on those two weeks at all, only schedule the latest interval going forward — a common surprise for anyone expecting Airflow 2's older defaults.", "at": [{ "step": "Reveal: catchup, off by default, measured" }] },
+      { "item": "Backfill's max_active_runs and the Dag's own max_active_runs are genuinely two separate knobs — a Dag configured for high normal-operation concurrency can still have its backfills throttled tighter (or looser) without touching its day-to-day scheduling behaviour at all.", "at": [{ "step": "Reveal: bounded concurrency, run for real" }] },
+      { "item": "This topic's own kill-and-resume demo is the concrete proof that 'resumable' means something specific and verifiable: not just that the backfill eventually finishes, but that the six already-successful runs kept their original start_date timestamps across the restart — direct evidence they were never re-executed, not just re-marked.", "at": [{ "step": "Reveal: kill it, restart it, measured" }] },
+      { "item": "Dagster's per-partition-vs-single-run choice is a real engineering trade, not a cosmetic one: single-run backfills only work when the asset's own code already operates on a partition_time_window or partition_key_range rather than one partition_key at a time — switching to single_run without rewriting that code silently breaks the asset.", "at": [{ "step": "Reveal: Dagster's other shape" }] },
+      { "item": "The blast-radius calculation generalizes past this topic's own numbers: any backfill's cost on a shared source is (requests per unit of history) times (how much history), compared against that source's own sustained budget — the same arithmetic applies whether the unit is a day, an hour, or a single API page.", "at": [{ "step": "Predict: does a backfill get its own budget?" }] },
+      { "item": "A reader who only remembers 'backfills are bounded and resumable' may assume that makes them safe by default — this topic's recap deliberately keeps the blast-radius finding in the same breath, because bounded concurrency protects the scheduler's own state, not the request budget of whatever the backfill reads from.", "at": [{ "deep": "Production" }] },
+      { "item": "The reprocess-behaviour predict step (none/failed/completed) matters most exactly when a backfill is re-run after partially succeeding — picking 'completed' by habit when 'none' was intended will silently redo already-correct work, the opposite failure mode from the one the hook warns about.", "at": [{ "step": "Prove it" }] },
+      { "item": "Airflow's auto-detection of a partitioned Dag's timetable (CronPartitionTimetable) means the exact same --from-date/--to-date CLI invocation behaves differently depending on the Dag's own timetable type — a detail easy to miss when copying a backfill command between a plain cron-scheduled Dag and a partitioned one.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic's logical-date and catchup measurements both call Airflow's CronDataIntervalTimetable directly rather than running a full scheduler cycle — a deliberate scope choice that isolates the timetable's own scheduling logic from the scheduler process's unrelated mechanics, which the backfill experiment (reveal 5 and 6) exercises instead.", "at": [{ "deep": "Internals" }] },
+      { "item": "'Resumable' in this topic's sense is distinct from the idempotency property topic 2 taught: idempotency makes a single re-run of one task harmless, while resumability here is about the orchestrator's own bookkeeping correctly skipping work it already knows is done — a backfill can be resumable even for tasks that aren't perfectly idempotent, as long as the orchestrator never re-queues the ones that finished.", "at": [{ "deep": "Outcomes" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

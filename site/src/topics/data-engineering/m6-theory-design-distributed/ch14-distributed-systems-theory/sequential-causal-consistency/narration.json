@@ -1,0 +1,76 @@
+{
+  "topic": "de.sequential-causal-consistency",
+  "steps": [
+    {
+      "lines": [
+        "Notice that none of these three things look like the same kind of problem at first glance.",
+        "A missing comment, a comment that shows back up, a reply sitting above the thing it's replying to.",
+        "One store produced all three, and by the end of this topic you'll be able to name exactly which guarantee each one breaks."
+      ]
+    },
+    {
+      "lines": [
+        "Before you pick, think about what the store is promising just by staying available through a partition.",
+        "Something has to give. The question is how much."
+      ],
+      "answer": [
+        "Causal, and the reasoning has nothing to do with causal being a nice compromise.",
+        "Sequential consistency and linearizability both require a node to stop answering during a partition if it can't be sure of the order.",
+        "A store that refuses to ever stop answering has already ruled those two out, no matter which anomalies it would like to avoid."
+      ]
+    },
+    {
+      "lines": [
+        "Hold onto what's still required here, because it's easy to assume this model gives everything up.",
+        "Every operation still lands in one shared order, and each process's own operations still show up in that order the way it issued them.",
+        "What's gone is any promise that the order tracks the clock on the wall."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what actually creates the ordering requirement in this example, because it isn't time.",
+        "Barbarella's answer depends on having read the question first. That dependency is what ties her reply to the question, not when her reply happened to arrive.",
+        "Her answer and Cyrus's answer depend on nothing of each other, so nothing forces them into one shared order anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "This result is worth slowing down for, because the two conditions attached to it are doing real work.",
+        "Always available, and one-way convergent. Drop either one and a stronger model becomes reachable again.",
+        "What's being claimed is narrow and precise: among stores that make both of those promises, nothing beats this one."
+      ]
+    },
+    {
+      "lines": [
+        "Go through these one at a time, because treating them as a bundle hides how independent they are.",
+        "Your own next read seeing your own last write. Your reads never sliding backward. Your writes landing everywhere in the order you made them. A write you make after a read never appearing to have happened before that read.",
+        "Each of those can fail while the other three hold perfectly, which is exactly why a store has to be checked against all four separately."
+      ]
+    },
+    {
+      "lines": [
+        "Map the hook back onto what you just learned, because both anomalies have exact names now.",
+        "The vanishing comment is a broken read-your-writes. The reply ahead of its comment is a broken writes-follow-reads.",
+        "What this topic won't do is tell you those four guarantees, added together, equal causal consistency. That claim needs more reading than got done here, so it stays unclaimed."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the ladder, not just two names on it.",
+        "Sequential consistency keeps one order and drops the clock. Causal consistency keeps almost nothing except cause and effect, and it's the proven ceiling once a store refuses to ever stop answering.",
+        "Four session guarantees sit underneath both, each one a separate, checkable promise about a single client's own session."
+      ]
+    },
+    {
+      "lines": [
+        "Before you answer, notice exactly whose behavior each of those two guarantees is actually about.",
+        "Both of them describe what one client sees of its own past operations, nothing about what a different client sees."
+      ],
+      "answer": [
+        "No, and the gap is exactly the chat example from earlier in this topic.",
+        "Read-your-writes and monotonic reads both stay inside one client's own session.",
+        "Causal consistency has to reach across clients. Nothing in those two guarantees says what Barbarella sees of Attiya's question at all."
+      ]
+    }
+  ]
+}

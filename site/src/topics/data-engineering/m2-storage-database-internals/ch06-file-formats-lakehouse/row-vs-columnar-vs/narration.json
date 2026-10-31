@@ -1,0 +1,66 @@
+{
+  "topic": "de.row-vs-columnar-vs",
+  "steps": [
+    {
+      "lines": [
+        "Picture a row of a table the ordinary way: every attribute of that one row sitting right next to each other on disk, in order.",
+        "Ask for that whole row back and the answer is almost embarrassingly simple. One contiguous slice of bytes, one read, done.",
+        "This is the layout nearly every database defaulted to for decades, and on this one question it's obviously the right call."
+      ]
+    },
+    {
+      "lines": [
+        "Row storage just won that question outright, so it's tempting to assume it's simply the better layout, full stop.",
+        "Here's the opposite question: not one whole row, but one single attribute, read across every row in the table.",
+        "Does the layout that just won the lookup also win when the access pattern flips around completely?"
+      ],
+      "answer": [
+        "It doesn't, and the reason is almost mechanical once you see it.",
+        "A row-major file has no concept of skipping just the attributes you don't want. To get to the next row's value of the one column you care about, a scanner still has to step past every other attribute in between.",
+        "That cost doesn't show up when you're reading one row. It shows up the moment you're reading one column, many times over."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that cost made concrete: ask for one column, across every row in the table, and watch how much of the file actually gets touched.",
+        "It isn't a slice of the file. It's the whole thing, because every attribute of every row sits in the path between one value of that column and the next.",
+        "The column you didn't ask for still has to travel through memory on its way past you."
+      ]
+    },
+    {
+      "lines": [
+        "So flip the layout completely: store each attribute in its own separate file, one file per column, nothing interleaved.",
+        "Now that same scan opens exactly the one file it needs and nothing else. The win is real and it's large.",
+        "But ask for a whole row back now, and you've traded one easy read for several separate ones, each from a different file, that then have to be joined back together into the row you actually wanted."
+      ]
+    },
+    {
+      "lines": [
+        "So neither extreme is free: one wins the lookup and loses the scan, the other does the reverse.",
+        "Here's the compromise a lot of real formats actually ship: keep a row's attributes together on the same page, the way row storage does, but inside that page, group each attribute's own values into their own little region.",
+        "A lookup still opens exactly one page, same as before. A scan still skips straight to the region holding the column it wants."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that's easy to miss: this layout doesn't change how many pages get opened for a scan at all. The reader still has to visit every page the row-major version would have visited.",
+        "What changes is how much of each page, once it's open, is actually useful to the scan.",
+        "Same number of pages opened. A quarter of each one worth reading. That gap is the entire trick."
+      ]
+    },
+    {
+      "lines": [
+        "This is not a hypothetical compromise invented for a diagram. It's the actual shape of the file format that ended up winning the lakehouse.",
+        "A column-oriented file, where the compression and the encoding for one attribute can be tuned completely independently of every other attribute in the table.",
+        "That per-column tuning is only possible because the values of one column are already sitting together, grouped, inside the page — which is exactly the layout the last two steps just measured."
+      ]
+    },
+    {
+      "lines": [
+        "Three layouts, three honest trade-offs: keep rows together and you win the lookup but pay for every scan.",
+        "Split by column completely and you win the scan but pay for every lookup, with a join tying the pieces back together.",
+        "Group columns inside the page instead of across separate files, and you keep the page count of the first layout with the useful-byte ratio of the second. The next question is what survives when the reader and the writer no longer agree on the schema."
+      ]
+    }
+  ]
+}

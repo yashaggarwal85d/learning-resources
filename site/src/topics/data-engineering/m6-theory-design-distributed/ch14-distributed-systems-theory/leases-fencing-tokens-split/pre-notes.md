@@ -1,0 +1,8 @@
+- **Lease**: a lock with an expiry time built in, so a crashed holder can't keep it forever. *Where you meet it:* the worker's lock in the hook, and Chubby's master lease.
+- **Lock**: a mechanism meant to let only one client act on a resource at a time. *Where you meet it:* the thing this whole topic shows is not, by itself, enough.
+- **Leader**: a server given the right to act for the cluster, usually by winning an election. *Where you meet it:* the role a lease lets a client hold without re-asking a quorum on every read.
+- **Garbage collection pause**: a stretch of time a managed-language process is frozen while its runtime reclaims memory. *Where you meet it:* the specific cause of the hook's pause, though any sufficiently long pause works the same way.
+- **Epoch**: a number that increases every time a role (leader, lock holder, producer) changes hands. *Where you meet it:* Kafka's producer epoch, and the general name for what this topic calls a fencing token.
+- **Token**: the fencing number itself, passed with every write for the resource to check. *Where you meet it:* Chubby's sequencer, ZooKeeper's zxid, Raft's term — each a token under a different name.
+- **Storage service**: whatever actually holds the data a lock is meant to protect. *Where you meet it:* the one party whose check can't be skipped by a pause, because it runs after the pause ends.
+- **Split brain**: two processes simultaneously believing each is the sole leader or lock holder. *Where you meet it:* exactly the state the hook's two workers were in for a window.

@@ -1,0 +1,88 @@
+{
+  "topic": "de.partitioning-schemes-range-hash",
+  "syllabus": [
+    {
+      "clause": "range partitioning (ordered scans, hot tails) vs hash partitioning (even spread, no range scans)",
+      "at": [
+        { "step": "Reveal: range partitioning" },
+        { "step": "Reveal: the hot tail, measured" },
+        { "step": "Reveal: hash partitioning" }
+      ]
+    },
+    {
+      "clause": "consistent hashing with virtual nodes and rendezvous hashing to limit data movement on membership change",
+      "at": [
+        { "step": "Reveal: consistent hashing and rendezvous hashing" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "algorithm in → Data Structures & Algorithms Ch.2",
+      "at": [{ "deep": "Frontier" }]
+    },
+    {
+      "clause": "request routing via client, proxy or coordinator",
+      "at": [
+        { "step": "Reveal: routing, and the independent axis" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "partitioning vs replication as independent axes",
+      "at": [
+        { "step": "Reveal: routing, and the independent axis" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Distribution Layer (CockroachDB documentation)",
+      "items": [
+        { "item": "CockroachDB stores data as a monolithic sorted map divided into contiguous ranges, so every key can always be found in a single range", "at": [{ "step": "Reveal: range partitioning" }] },
+        { "item": "defining the order of data makes it easy to find data within a particular range during a scan", "at": [{ "step": "Reveal: range partitioning" }] },
+        { "item": "each table's range splits into two once it reaches a size threshold, as the table grows", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Dynamo (Apache Cassandra documentation)",
+      "items": [
+        { "item": "Cassandra partitions data via consistent hashing; naive modulo hashing can invalidate almost all key-to-node mappings when a single node is added", "at": [{ "step": "Predict: how much data moves when a node joins under naive hashing?" }] },
+        { "item": "Cassandra maps every node to one or more tokens on a continuous hash ring; consistent hashing only has to move a small fraction of keys when the node count changes", "at": [{ "step": "Reveal: consistent hashing and rendezvous hashing" }] }
+      ]
+    },
+    {
+      "source": "Consistent Hashing and Random Trees (Karger et al., STOC 1997)",
+      "items": [
+        { "item": "consistent hashing assigns items to buckets so each bin gets roughly the same number; unlike standard hashing, a small change in the bucket set doesn't induce a total remapping", "at": [{ "step": "Reveal: consistent hashing and rendezvous hashing" }] }
+      ]
+    },
+    {
+      "source": "Rendezvous hashing (Wikipedia, restating Thaler & Ravishankar)",
+      "items": [
+        { "item": "rendezvous (HRW) hashing is simpler than consistent hashing, distributes objects uniformly, and needs no precomputed or stored tokens", "at": [{ "step": "Reveal: consistent hashing and rendezvous hashing" }] },
+        { "item": "the HRW assignment can be computed independently by any client, since it depends only on the identifiers for the set of sites", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A range partition's hot tail isn't caused by a bad key choice in the usual sense — any monotonically increasing key (order IDs, timestamps, auto-increment) produces it, because the newest key is, by definition, always the largest one.", "at": [{ "step": "Hook" }] },
+      { "item": "Splitting a range once it grows too large doesn't fix the hot tail — it just creates a new, smaller tail range that inherits the identical problem, which is why 'add capacity' alone never solves this topic's own 'Prove it' scenario.", "at": [{ "step": "Reveal: the hot tail, measured" }] },
+      { "item": "Hash partitioning doesn't avoid the ordered-scan cost by choice — it structurally can't support it, because a hash function is specifically designed so that adjacent input keys produce unrelated outputs, which is exactly what makes the spread even.", "at": [{ "step": "Reveal: hash partitioning" }] },
+      { "item": "Naive modulo hashing's fragility on resize isn't a minor inefficiency — every single key's placement formula literally contains the total node count, so changing that count changes nearly every key's answer simultaneously.", "at": [{ "step": "Predict: how much data moves when a node joins under naive hashing?" }] },
+      { "item": "Consistent hashing and rendezvous hashing solve the identical minimal-movement problem through opposite mechanisms: one precomputes a shared ring every node agrees on, the other needs no shared state at all and recomputes the answer independently every time.", "at": [{ "step": "Reveal: consistent hashing and rendezvous hashing" }] },
+      { "item": "Client-side, proxy, and coordinator routing trade the same two costs in different places: who has to know the full partition map, and how many network hops a request takes to reach the node that actually owns the data.", "at": [{ "deep": "Internals" }] },
+      { "item": "Partitioning and replication answer genuinely unrelated questions — a system could partition data across a thousand nodes with zero replication (one copy each), or replicate a single unpartitioned dataset across a thousand nodes (one partition, many copies); real systems do both only because both problems need solving, not because they're the same problem.", "at": [{ "step": "Reveal: routing, and the independent axis" }] },
+      { "item": "Choosing hash partitioning purely to avoid a hot tail can create a worse problem if the workload actually needs range scans — this topic's own measured range-scan cost under hash partitioning shows the opposite trade being made silently.", "at": [{ "deep": "Production failures this topic warns about" }] },
+      { "item": "This topic's own executable claims use a real SHA-256-based hash function rather than Python's built-in hash() specifically because the built-in is randomized per process run by default — a reproducible, portable hash is required to make 'moves a small fraction' a stable, checkable claim.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own 'Prove it' answer generalizes: no key-space partitioning scheme, by itself, can fix a workload where every write targets the newest key — the fix has to change which partition new writes land on, which means changing the key, not the cluster size.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
