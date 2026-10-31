@@ -5985,6 +5985,26 @@ export const TOPICS: TopicMeta[] = [
       "Compaction rewrites a log by key, out of record order. What 'in order' actually guarantees in Kafka — and what it never promised — is the next topic.",
   },
   {
+    id: 'de.kafka-ordering-guarantees',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/kafka-ordering-guarantees',
+    title: 'Kafka ordering guarantees',
+    syllabusTitle: 'Kafka ordering guarantees',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['kafka-ordering-scope', 'key-partition-stability'],
+    uses: ['partition-segment-index', 'producer-batching-linger', 'retention-vs-compaction'],
+    declared: [],
+    bridge:
+      "Compaction rewrites a log by key, out of send order. This topic says precisely what 'order' means in Kafka in the first place: total order within one partition, nothing promised across partitions, and a surprising way that promise can quietly break.",
+    handoff:
+      "A log that keeps everything forever costs money, and most of that cost is disk the broker itself has to hold. Letting old data live on cheaper storage, without changing what a consumer sees, is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',

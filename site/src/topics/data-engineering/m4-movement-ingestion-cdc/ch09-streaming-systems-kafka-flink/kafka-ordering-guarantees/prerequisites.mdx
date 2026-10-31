@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: segments, batching, and compaction's own ordering
+
+This topic builds on the partition-strip model, the producer's retry/acks vocabulary, and
+compaction's quiet order-preserving behavior, without re-teaching any of them. If segments,
+producer batching, or compaction are unfamiliar, start with
+[Partitioned logs, segments and indexes](../partitioned-log-segments-indexes/),
+[Producer batching, compression and acks](../producer-batching-compression-acks/), and
+[Retention and log compaction](../retention-log-compaction/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache Kafka 4.4 producer configuration reference" href="https://kafka.apache.org/44/generated/producer_config.html" by="Apache Kafka docs">`enable.idempotence`, `max.in.flight.requests.per.connection`, and the five-in-flight ordering limit this topic's second predict/reveal pair quotes directly.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 design documentation" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka docs">The "totally ordered partitions" scope claim and the default partitioner's key-hashing behavior this topic's first predict/reveal pair and last reveal cite.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 operations documentation: Basic Kafka Operations" href="https://kafka.apache.org/44/operations/basic-kafka-operations/" by="Apache Kafka docs">The key-to-partition mapping change on repartitioning this topic's hook and last reveal cite.</Resource>
+</ul>
+
+</section>
