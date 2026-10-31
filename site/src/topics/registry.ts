@@ -8705,4 +8705,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Object storage's own limits (no atomic rename, listing cost) are exactly what broke the table format everyone used before Iceberg and Delta existed: the plain directory-as-partition Hive table.",
   },
+  {
+    id: 'de.why-hive-style-tables',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/why-hive-style-tables',
+    title: 'Why Hive-style tables broke',
+    syllabusTitle: 'Why Hive-style tables broke',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['hive-table-breakage'],
+    uses: ['object-storage-guarantees'],
+    declared: [],
+    bridge:
+      "Object storage's own limits are exactly what broke the table format everyone used before modern formats existed. This topic is that breakage, reproduced directly: a reader catching a partial multi-file write, and a measured listing-cost curve as file count grows.",
+    handoff:
+      "Fixing 'no atomic multi-partition commit' means replacing file listing with an explicit, versioned table state. That's the snapshot.",
+  },
 ];
