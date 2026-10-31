@@ -5505,6 +5505,26 @@ export const TOPICS: TopicMeta[] = [
       "A cache in front of a database is one read-side pattern. The next topic is a different one this chapter hasn't yet connected to Chapter 3's own warehouse material: pre-aggregated, analytical serving layers.",
   },
   {
+    id: 'de.analytical-serving-layers',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/analytical-serving-layers',
+    title: 'Analytical serving layers',
+    syllabusTitle: 'Analytical serving layers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['analytical-serving-layers'],
+    uses: ['cache-patterns-eviction', 'partitioning-schemes'],
+    declared: [],
+    bridge:
+      "A cache in front of a database is one read-side pattern. This topic is a different one this chapter hasn't yet connected to Chapter 3's own warehouse material: pre-aggregation and materialized serving layers, and precisely when a real-time OLAP store earns its own cost over plain warehouse queries.",
+    handoff:
+      "Every read-side pattern so far assumed a reader pulling from a store. The next topic is the opposite direction entirely — a consumer reading what a producer wrote, through a queue or a log.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
