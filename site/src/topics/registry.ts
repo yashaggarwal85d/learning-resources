@@ -5485,6 +5485,26 @@ export const TOPICS: TopicMeta[] = [
       "Two orchestration philosophies, task-first and asset-first, have each earned their place by now, and durable, long-lived workflows are a third shape again. Choosing among a wider field of named tools is the last topic of this model-building section.",
   },
   {
+    id: 'de.orchestrator-landscape-selection',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-landscape-selection',
+    title: 'Orchestrator landscape and selection',
+    syllabusTitle: 'Orchestrator landscape and selection',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['orchestrator-selection-decision-rule'],
+    uses: ['de.orchestrator-architecture-scheduler', 'de.executor-model-comparison', 'de.software-defined-asset-model', 'de.data-aware-asset-scheduling', 'de.dynamic-task-mapping-fan', 'ch10.managed-service-cost-model'],
+    declared: [],
+    bridge:
+      "Task-first, asset-first and (next section) durable-first are three different shapes an orchestrator can take. Before choosing among durable-execution's narrower slice, it's worth surveying the field each of the first two shapes actually comes in, and the axes that should decide among them.",
+    handoff:
+      "Every tool compared here still assumes a task or a run finishes in minutes to hours. Some real workflows are paced by humans and last for days or months, and that is a different orchestration problem, which the next section narrows down to one decision.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
