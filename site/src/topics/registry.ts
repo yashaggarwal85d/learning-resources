@@ -7249,6 +7249,25 @@ export const TOPICS: TopicMeta[] = [
       'Spill is memory pressure the engine handles automatically, if slowly. The next topic is memory pressure deliberately chosen on purpose — caching — and when that choice helps or hurts.',
   },
   {
+    id: 'de.caching-persistence-checkpointing',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/caching-persistence-checkpointing',
+    title: 'Caching, persistence and checkpointing',
+    syllabusTitle: 'Caching, persistence and checkpointing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-cache-vs-checkpoint', 'spark-storage-levels'],
+    uses: ['spark-unified-memory-manager'],
+    bridge:
+      "Spill was memory pressure forced on the engine by too little room. Caching is the opposite: memory pressure the developer chooses on purpose, by asking Spark to keep something around — and it can steal exactly the execution memory the previous topic described.",
+    handoff:
+      "Caching and checkpointing are both about surviving across jobs. The next topic is about surviving within one: the JVM's own garbage collector, and the pauses it causes under the same memory pressure.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
