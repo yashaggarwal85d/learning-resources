@@ -6125,6 +6125,26 @@ export const TOPICS: TopicMeta[] = [
       "Deduplication assumes the consumer can process a record, eventually. Some records can never be processed — a malformed payload, a reference to a deleted entity — and blocking a whole partition behind one of them is its own failure. That's the next topic.",
   },
   {
+    id: 'de.dead-letter-retry-topics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/dead-letter-retry-topics',
+    title: 'Dead-letter and retry topics',
+    syllabusTitle: 'Dead-letter and retry topics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['poison-message-blocking', 'tiered-retry-topics', 'dlq-metadata-design'],
+    uses: ['kafka-ordering-scope', 'event-id-deduplication'],
+    declared: [],
+    bridge:
+      "Deduplication assumes a record can eventually be processed. Some records never can, and in a system that orders only within a partition, retrying one in place blocks everything behind it. This topic is the non-blocking alternative and the ordering it deliberately costs.",
+    handoff:
+      "A dead-lettered record, once fixed, needs to be put back into the flow — and so does an entire pipeline that was simply wrong for a while. Doing that safely, for a single record or for a whole time range, is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
