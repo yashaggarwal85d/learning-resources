@@ -1,0 +1,103 @@
+{
+  "topic": "de.managed-table-services-object",
+  "syllabus": [
+    {
+      "clause": "S3 Tables (table buckets, Iceberg-native, Dec 2024; automatic compaction, snapshot expiry and orphan-file removal; Iceberg REST endpoint)",
+      "at": [
+        { "step": "A managed service that was supposed to make this mistake impossible" },
+        { "step": "Four names, four different things actually automated" }
+      ]
+    },
+    {
+      "clause": "BigLake Iceberg tables in BigQuery, Unity Catalog managed Iceberg, Snowflake-managed Iceberg",
+      "at": [
+        { "step": "Four names, four different things actually automated" }
+      ]
+    },
+    {
+      "clause": "maintenance-as-a-service vs running your own rewrite_data_files/expire_snapshots jobs",
+      "at": [
+        { "step": "Someone still owns the job, just a different someone" }
+      ]
+    },
+    {
+      "clause": "per-request premiums",
+      "at": [
+        { "step": "The bill for not doing it yourself" }
+      ]
+    },
+    {
+      "clause": "engine skew on new spec versions (Iceberg v3 readers lag writers)",
+      "at": [
+        { "step": "What's actually different about the one engine that broke?" },
+        { "step": "AWS's own engine can't read its own newer format" },
+        { "step": "The same table, upgraded once, reproduced for real" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS News Blog: New – Amazon S3 Tables – Storage Optimized for Analytics Workloads",
+      "items": [
+        { "item": "S3 Tables launched December 3, 2024 with automatic compaction, snapshot management and unreferenced-file removal; up to 3x faster queries and 10x higher TPS claimed versus self-managed tables", "at": [{ "step": "Four names, four different things actually automated" }] }
+      ]
+    },
+    {
+      "source": "AWS: Working with Amazon S3 Tables and table buckets",
+      "items": [
+        { "item": "A table bucket is a storage type purpose-built for Iceberg tables, distinct from a general-purpose bucket", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: Working with Apache Iceberg V3",
+      "items": [
+        { "item": "Amazon Athena cannot read Iceberg V3 tables; AWS's own guidance calls the V2-to-V3 upgrade one-way and tells operators to verify every engine's support before upgrading", "at": [{ "step": "AWS's own engine can't read its own newer format" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: BigQuery tables for Apache Iceberg",
+      "items": [
+        { "item": "BigQuery's managed Iceberg tables automate compaction, clustering, and garbage collection past the time-travel window — a different automation set than AWS's", "at": [{ "step": "Four names, four different things actually automated" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Unity Catalog managed tables",
+      "items": [
+        { "item": "Unity Catalog manages all read/write/storage/optimization responsibilities, and its Iceberg REST Catalog grants external Iceberg clients read, write and create access", "at": [{ "step": "Four names, four different things actually automated" }] }
+      ]
+    },
+    {
+      "source": "Snowflake: Manage Apache Iceberg tables",
+      "items": [
+        { "item": "Snowflake performs maintenance automatically only on Snowflake-managed Iceberg tables; the customer's own engine must maintain externally managed ones", "at": [{ "step": "Four names, four different things actually automated" }] }
+      ]
+    },
+    {
+      "source": "AWS: Amazon S3 pricing",
+      "items": [
+        { "item": "S3 Tables charges a separate object-monitoring fee and a compaction processing fee (per object and per GB), on top of ordinary storage and request pricing", "at": [{ "step": "The bill for not doing it yourself" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that 'managed' doesn't mean 'immune to every failure mode'; a learner who concludes a managed service removes all operational risk has drawn the wrong lesson from topic 3 being solved", "at": [{ "step": "A managed service that was supposed to make this mistake impossible" }] },
+      { "item": "The predict step's correct answer is structural, not a vendor's mistake: the writer and the reader are simply two independently-versioned pieces of software, and nothing requires them to upgrade in lockstep", "at": [{ "step": "What's actually different about the one engine that broke?" }] },
+      { "item": "The four vendor cards are deliberately not reduced to a single checklist; a learner who comes away thinking 'they all do the same three things' has missed the entire teaching point of this topic, unlike topic 8's five-names-one-mechanism framing", "at": [{ "step": "Four names, four different things actually automated" }] },
+      { "item": "The per-request premium is additive to, not a replacement for, topic 6's four-dimension cost model — storage and requests are still billed normally underneath the monitoring and compaction fees", "at": [{ "step": "The bill for not doing it yourself" }] },
+      { "item": "'Maintenance as a service' is a timing-and-control trade, not a strictly cheaper-or-more-expensive one; a learner should be able to state which variable (cost or control) they're giving up before picking a side", "at": [{ "step": "Someone still owns the job, just a different someone" }] },
+      { "item": "Using Amazon Athena's own documented V3 gap as the example (rather than a generic unnamed engine) matters pedagogically: it proves this is a real, current, named constraint and not an invented worst case", "at": [{ "step": "AWS's own engine can't read its own newer format" }] },
+      { "item": "The worked reproduction's power is holding the table, the data and the files constant and varying only the metadata's format-version field — a learner who thinks the data itself needs to change for an engine to break has misunderstood the mechanism", "at": [{ "step": "The same table, upgraded once, reproduced for real" }] },
+      { "item": "The recap's three lines are not independent trivia; a learner who can name all four vendors but can't say why a one-way spec upgrade is risky has learned the vocabulary, not the lesson", "at": [{ "step": "In one breath" }] },
+      { "item": "The prove-it question generalizes past this topic: 'pin and freeze' is never a permanent fix for a moving external dependency, which is the same lesson as any vendor-controlled default that changes on its own schedule", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic deliberately reproduces the engine-skew mechanism against local metadata rather than against any of the five real managed services, since none can run in this sandbox — an expert reviewer should expect that disclosed substitution, not a live S3 Tables or Snowflake account", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

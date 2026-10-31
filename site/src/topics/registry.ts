@@ -7211,6 +7211,26 @@ export const TOPICS: TopicMeta[] = [
       "A catalog that vends credentials is also the natural place to make someone else run the table's own upkeep — compaction, snapshot expiry, orphan cleanup — as a service instead of a cron job you own.",
   },
   {
+    id: 'de.managed-table-services-object',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/managed-table-services-object',
+    title: 'Managed table services on object storage',
+    syllabusTitle: 'Managed table services on object storage',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['managed-table-maintenance-service', 'engine-spec-version-skew'],
+    uses: ['catalog-credential-vending', 'lifecycle-snapshot-corruption', 'cloud-cost-four-dimensions'],
+    declared: [],
+    bridge:
+      "A catalog that vends credentials is also the natural place to run a table's own upkeep for you. This topic is that idea under four names: S3 Tables, BigLake Iceberg tables, Unity Catalog managed Iceberg and Snowflake-managed Iceberg, and what each one actually automates versus what it still charges you to find out.",
+    handoff:
+      "Every one of these services runs on compute somewhere, billed either by the second it's reserved or by the request it serves — and that split, serverless against provisioned, is the section's last and most consequential cost question.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
