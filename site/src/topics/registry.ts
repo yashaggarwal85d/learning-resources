@@ -5925,6 +5925,26 @@ export const TOPICS: TopicMeta[] = [
       "Kafka's own cluster metadata — which broker leads which partition, which replicas are in sync — used to live in ZooKeeper, replicated by a completely different system. Kafka 4.0 replaced it with the same kind of log this chapter has been building. That's next.",
   },
   {
+    id: 'de.kraft-metadata-replicated-log',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/kraft-metadata-replicated-log',
+    title: 'KRaft: metadata as a replicated log',
+    syllabusTitle: 'KRaft: metadata as a replicated log',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['kraft-controller-quorum'],
+    uses: ['isr-high-watermark', 'leader-epoch-fencing'],
+    declared: [],
+    bridge:
+      "Ordinary partitions are replicated the way the previous topic described. Kafka's own cluster metadata used to be replicated by a completely different system, ZooKeeper. This topic is how Kafka 4.0 replaced that with the same kind of log it already runs for everything else.",
+    handoff:
+      "A partition's data is one thing; who is allowed to read it, together, as a group, and what happens when that group's membership changes, is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
