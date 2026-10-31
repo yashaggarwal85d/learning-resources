@@ -1,0 +1,91 @@
+{
+  "topic": "de.write-audit-publish-safe",
+  "steps": [
+    {
+      "lines": [
+        "A bad transformation gets deployed straight to production on an ordinary day, with nobody watching closely.",
+        "It silently corrupts a real week's worth of data, and the corruption sits there, completely unnoticed, until someone finally looks.",
+        "The exact same bad transformation, run through a write-audit-publish deploy instead, fails its audit within minutes of being written.",
+        "Production is never touched at all -- the bad write exists only on a branch nobody downstream was ever reading from."
+      ]
+    },
+    {
+      "lines": [
+        "Worth predicting before the next few steps settle it directly.",
+        "The prior topic's slim CI proves a change is safe before it ever gets merged into the project.",
+        "Is that exact same guarantee, safe to merge, also the guarantee that it's safe at the actual moment it reaches production?",
+        "Or can something still go wrong specifically at the moment of the write itself?"
+      ],
+      "answer": "No, passing CI isn't the same guarantee. A change can pass every single pre-merge test and still corrupt production the moment it actually writes -- that's a genuinely different failure, happening at a genuinely different moment."
+    },
+    {
+      "lines": [
+        "Here's the first real mechanism, built specifically to close that exact gap.",
+        "The write lands on a branch that's completely independent of the main table's own history.",
+        "That branch is somewhere production genuinely can't see yet -- not a copy, not a preview, nothing a real consumer could accidentally stumble into.",
+        "Nothing downstream reads from it at all, by construction, until something deliberately says otherwise."
+      ]
+    },
+    {
+      "lines": [
+        "Now the gate that decides what happens to that branch next.",
+        "A real audit runs directly against it -- the same diff technique and the same tolerance checks from earlier in this chapter.",
+        "A pass fast-forwards production straight to that branch's current state, in one single operation.",
+        "A fail leaves production exactly as it already was -- the bad write simply never arrives there at all."
+      ],
+      "takeaway": "An audit that blocks a bad write is only real if production genuinely never sees it."
+    },
+    {
+      "lines": [
+        "One more question worth sitting with before the next reveal answers it.",
+        "Blue-green deploys and canary rollouts are well-established patterns for deploying application code safely.",
+        "Does a table full of real data actually need that same kind of careful, staged rollout?",
+        "Or is a table somehow different enough that those same patterns just don't apply to it?"
+      ],
+      "answer": "Yes, a table needs the same care. A table swap and a partition-by-partition rollout work in exactly the same way a blue-green or canary application deploy does, with the same kind of measured safety built in."
+    },
+    {
+      "lines": [
+        "Here are both of those table-level patterns, demonstrated directly.",
+        "Two full copies of the same table, one currently live and one quietly being rebuilt in the background.",
+        "Swapping which one actually serves traffic is one single atomic pointer update, nothing more.",
+        "Separately, a canary rollout measures a change on exactly one partition first, and only expands further while every partition it reaches still looks genuinely healthy."
+      ]
+    },
+    {
+      "lines": [
+        "A different kind of safety net now, running entirely in parallel.",
+        "A new pipeline version runs alongside the old one, touching absolutely zero real production traffic while it runs.",
+        "Its output gets diffed directly against the old version's real output, before anyone actually decides to cut traffic over.",
+        "A real regression shows up clearly in that diff, caught with nothing in production ever having been put at risk."
+      ],
+      "takeaway": "A shadow run catches a regression with zero production traffic ever at risk."
+    },
+    {
+      "lines": [
+        "Two more tools, aimed at two different moments of risk.",
+        "New transform logic sits behind a flag, toggled on or off without any redeploy at all -- including flipping instantly back off the moment something looks wrong.",
+        "Separately, a bad publish that did slip all the way through every other check gets undone in a single operation.",
+        "That rollback restores the exact prior snapshot, not an approximation of it, and not a manual row-by-row undo."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling every one of these six mechanisms together now.",
+        "An audited branch write, a blue-green swap, a canary rollout, a shadow run, a feature flag, and a one-step rollback.",
+        "Six genuinely different mechanisms, aimed at six different moments where something could actually go wrong.",
+        "All six exist for exactly the same underlying reason: nothing unverified ever gets to touch what a real consumer actually reads."
+      ],
+      "takeaway": "Nothing unverified ever touches what a consumer actually reads."
+    },
+    {
+      "lines": [
+        "One real run to close on, against the shop's own production table.",
+        "Write one genuinely good batch to a real audit branch, and separately write one genuinely bad batch to another.",
+        "Audit each one for real, using the exact same audit logic, against the exact same production baseline.",
+        "Does either batch end up reaching production, or does only the one that actually passes the audit get there?"
+      ],
+      "answer": "Only the batch that passes the audit gets there. The good batch passes and is fast-forwarded straight into production, while the bad batch fails that exact same audit and production is left completely untouched."
+    }
+  ]
+}

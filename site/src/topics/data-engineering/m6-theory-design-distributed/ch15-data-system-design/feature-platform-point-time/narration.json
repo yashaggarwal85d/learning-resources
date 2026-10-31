@@ -1,0 +1,77 @@
+{
+  "topic": "de.feature-platform-point-time",
+  "steps": [
+    {
+      "lines": [
+        "The model's own offline score looked genuinely strong, and production lift sat at exactly nothing.",
+        "One feature, orders over the last month, was computed from the table's current state rather than from the click's own moment.",
+        "So a training row from months ago ended up counting orders that hadn't even happened yet at the time of that click."
+      ]
+    },
+    {
+      "lines": [
+        "An offline score that strong, with nothing to show for it online, is genuinely a sign the training data itself lied.",
+        "How would you have caught this before launch, and what single join rule actually prevents it?"
+      ],
+      "answer": [
+        "More rows joined the exact same wrong way just repeat the identical leak at a larger scale, never close it.",
+        "The real fix joins every feature as it was actually known at the event's own moment, never anything later than that."
+      ]
+    },
+    {
+      "lines": [
+        "One feature definition compiles two separate ways: a batch computation over history, and an incremental one for serving.",
+        "That single definition is genuinely what closes the gap where training and serving computed the same feature two different ways.",
+        "A feature computed one way for training and another for serving trains a model on something it will never actually see live."
+      ]
+    },
+    {
+      "lines": [
+        "Each feature's own freshness need decides which path it actually takes.",
+        "A feature updated once daily sits comfortably on batch; one needed fresh every event genuinely needs the stream.",
+        "The same logic runs on both paths, on purpose, so neither computation quietly drifts away from the other over time."
+      ]
+    },
+    {
+      "lines": [
+        "Building a training row for a past event means joining each feature exactly as it was known back then, never later.",
+        "A join that instead grabs today's latest value reaches straight into the future the model is actually being asked to predict."
+      ]
+    },
+    {
+      "lines": [
+        "The same planted feature, joined two different ways against one dataset, scored against a held-out future neither join had seen.",
+        "The join that reached ahead scored far better than its honest counterpart, and that gap is exactly the leak, now measured."
+      ]
+    },
+    {
+      "lines": [
+        "A sampled check keeps comparing the online store's value for an entity against what the offline computation says it should be.",
+        "That comparison runs as a standing service-level objective with its own alert, because skew arrives silently, never with a warning first.",
+        "A changed upstream column or a different rule for missing values is genuinely enough to quietly pull the two stores apart."
+      ]
+    },
+    {
+      "lines": [
+        "Turning on a brand-new feature only from today leaves every past training row with nothing in that column at all.",
+        "A proper backfill reconstructs each one of those point-in-time values from raw history, validated in shadow before anyone trusts it live."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually closed the gap between a strong offline score and a flat production lift: one feature definition feeding both stores, a join landing on the event's own moment instead of today, and a parity check that never stops running."
+      ]
+    },
+    {
+      "lines": [
+        "The feature count here grows by a full order of magnitude.",
+        "Every single join still lands correctly, exactly as it did before, because its correctness never depended on how many other features exist.",
+        "So what's actually the next bottleneck?"
+      ],
+      "answer": [
+        "A bigger join isn't actually what breaks, since each feature's own join depends only on that one feature and that one event.",
+        "What stops being affordable is checking every feature's parity at the same rate; the sampling and alert volume are the real bottleneck."
+      ]
+    }
+  ]
+}

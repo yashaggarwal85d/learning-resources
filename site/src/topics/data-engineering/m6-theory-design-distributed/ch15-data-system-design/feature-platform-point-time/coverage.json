@@ -1,0 +1,65 @@
+{
+  "topic": "de.feature-platform-point-time",
+  "syllabus": [
+    {
+      "clause": "offline and online stores fed from one definition",
+      "at": [{ "step": "Reveal: one feature definition, two computations" }]
+    },
+    {
+      "clause": "streaming and batch features",
+      "at": [{ "step": "Reveal: batch or streaming, chosen per feature" }]
+    },
+    {
+      "clause": "point-in-time joins for training sets",
+      "at": [{ "step": "Reveal: the point-in-time join, and the leak it closes" }]
+    },
+    {
+      "clause": "online/offline parity checks",
+      "at": [{ "step": "Reveal: parity as a continuous SLO" }]
+    },
+    {
+      "clause": "backfilling new features (§17.1)",
+      "at": [{ "step": "Reveal: backfilling a new feature's history" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Feast documentation, \"Point-in-time joins\"",
+      "items": [
+        { "item": "Feast joins features from one or more feature views onto an entity dataframe in a point-in-time correct way.", "at": [{ "step": "Reveal: the point-in-time join, and the leak it closes" }] },
+        { "item": "This means Feast is able to reproduce the state of features at a specific point in the past.", "at": [{ "step": "Reveal: the point-in-time join, and the leak it closes" }] },
+        { "item": "Feast will scan backward in time from the entity dataframe's own timestamp up to the feature view's TTL.", "at": [{ "step": "Reveal: the leakage measured" }] }
+      ]
+    },
+    {
+      "source": "Feast documentation, \"Online store\"",
+      "items": [
+        { "item": "Feast uses online stores to serve features at low latency.", "at": [{ "step": "Reveal: one feature definition, two computations" }] },
+        { "item": "Only the latest feature values are stored in the online store; no historical values are stored.", "at": [{ "step": "Reveal: parity as a continuous SLO" }] },
+        { "item": "Features can also be written directly to the online store via push sources.", "at": [{ "step": "Reveal: batch or streaming, chosen per feature" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A feature joined on a table's current state instead of the event's own time lets every future update leak into a training row that predates it.", "at": [{ "step": "Hook: a strong offline score, a flat online lift" }] },
+      { "item": "One feature definition compiling to both a batch and an incremental computation is what closes train and serve skew.", "at": [{ "step": "Reveal: one feature definition, two computations" }] },
+      { "item": "Each feature's own freshness need, not a blanket policy, decides whether it runs on batch or on a stream.", "at": [{ "step": "Reveal: batch or streaming, chosen per feature" }] },
+      { "item": "A join on the latest value reaches into the future; the join has to land on what was known at the event's own time.", "at": [{ "step": "Reveal: the point-in-time join, and the leak it closes" }] },
+      { "item": "The leaking join's score was optimistic by a measured, specific margin, not a vague risk.", "at": [{ "step": "Reveal: the leakage measured" }] },
+      { "item": "A parity check run once at launch catches nothing later; it has to be a standing SLO with its own alert.", "at": [{ "step": "Reveal: parity as a continuous SLO" }] },
+      { "item": "Adding a feature means reconstructing its point-in-time values from raw history, not turning it on only from today.", "at": [{ "step": "Reveal: backfilling a new feature's history" }] },
+      { "item": "At ten times the feature count, the next bottleneck is the parity check's own sampling and alert volume, not the join itself.", "at": [{ "step": "Prove it: ten times the features" }] },
+      { "item": "This topic leaves out ML modelling, feature engineering and embeddings, the online store and stream engine internals, and model training itself.", "at": [{ "deep": "Internals" }] },
+      { "item": "One feature definition feeding both stores, point-in-time joins, and continuous parity checks are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This platform serves software; the next two designs serve a factory floor where sensors lose their network and must keep running.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

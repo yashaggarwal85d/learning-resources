@@ -1,0 +1,84 @@
+{
+  "topic": "de.write-audit-publish-safe",
+  "syllabus": [
+    {
+      "clause": "WAP via an Iceberg audit branch fast-forwarded on success or a staging table with atomic swap/view repoint",
+      "at": [
+        { "step": "Reveal: write to an audit branch" },
+        { "step": "Reveal: audit, then fast-forward or block" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "blue-green tables",
+      "at": [{ "step": "Reveal: blue-green tables and a canary rollout" }]
+    },
+    {
+      "clause": "shadow runs diffed before cutover",
+      "at": [{ "step": "Reveal: a shadow run, diffed before cutover" }]
+    },
+    {
+      "clause": "canary by partition or tenant",
+      "at": [{ "step": "Reveal: blue-green tables and a canary rollout" }]
+    },
+    {
+      "clause": "feature-flagged transforms",
+      "at": [{ "step": "Reveal: a feature flag and a time-travel rollback" }]
+    },
+    {
+      "clause": "rollback via time travel",
+      "at": [
+        { "step": "Reveal: a feature flag and a time-travel rollback" },
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Branching and Tagging (Apache Iceberg documentation)",
+      "items": [
+        { "item": "Writes are performed on a separate audit-branch independent from the main table history", "at": [{ "step": "Reveal: write to an audit branch" }] },
+        { "item": "After validation, the main branch can be fastForward to the head of audit-branch to update the main table state", "at": [{ "step": "Reveal: audit, then fast-forward or block" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Write-audit-publish pattern with Apache Iceberg (AWS Big Data Blog)",
+      "items": [
+        { "item": "these updates aren't accessible to downstream users who can only access the main branch", "at": [{ "step": "Reveal: write to an audit branch" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real audit-branch experiments",
+      "items": [
+        { "item": "a good write deep-copied from the shop's own production baseline passes a real diff-and-tolerance audit and is fast-forwarded into production", "at": [{ "step": "Reveal: audit, then fast-forward or block" }, { "step": "Prove it" }] },
+        { "item": "a bad write carrying one real negative amount fails that exact same audit, and production is left byte-for-byte unchanged", "at": [{ "step": "Reveal: audit, then fast-forward or block" }, { "step": "Prove it" }] },
+        { "item": "a blue-green swap between two full table copies is measured as a single pointer update, not a row-by-row migration", "at": [{ "step": "Reveal: blue-green tables and a canary rollout" }] },
+        { "item": "a ten-partition canary rollout halts expansion the moment it reaches the one partition seeded with a real elevated error rate", "at": [{ "step": "Reveal: blue-green tables and a canary rollout" }] },
+        { "item": "a shadow run diffs a byte-identical re-run as safe to cut over and a regressed re-run as blocked, under the same audit used for the branch write", "at": [{ "step": "Reveal: a shadow run, diffed before cutover" }] },
+        { "item": "a feature-flagged transform reverts to its exact prior output the instant the flag is toggled back off, with no redeploy", "at": [{ "step": "Reveal: a feature flag and a time-travel rollback" }] },
+        { "item": "a one-operation time-travel rollback restores the exact prior snapshot after a bad publish, removing every row the bad write introduced", "at": [{ "step": "Reveal: a feature flag and a time-travel rollback" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's real lesson isn't that WAP catches more bugs than no audit at all -- a plain pre-merge test suite can catch the same planted bug. WAP's actual contribution is moving the catch to a point where production was never exposed, which matters precisely when a bug slips past every pre-merge check.", "at": [{ "step": "Hook" }] },
+      { "item": "fast-forward's legality check (target's current snapshot must still be an ancestor of source's) is the same rule a git fast-forward merge follows, and it's the reason a production table that moved while the audit branch was being written needs a real merge instead of a fast-forward -- a case this topic's own SnapshotTable would reject rather than silently resolve.", "at": [{ "deep": "Internals" }] },
+      { "item": "A reader might assume the audit branch's isolation is the whole safety story -- it isn't; isolation only prevents consumers from reading an unverified write. The audit step itself, and the discipline of never fast-forwarding on a failed audit, is what actually blocks a bad write, and a WAP flow that skips the audit gate is just a slower way to publish straight to production.", "at": [{ "step": "Reveal: audit, then fast-forward or block" }] },
+      { "item": "Blue-green and canary solve different risk shapes, not the same one at different speeds: blue-green is an all-or-nothing cutover good for changes whose correctness can be checked before any traffic moves, while canary is for changes whose real risk only shows up under the production workload itself, which is why it's measured partition by partition rather than swapped all at once.", "at": [{ "step": "Reveal: blue-green tables and a canary rollout" }] },
+      { "item": "A shadow run and the audit-branch gate reuse the exact same diff-and-tolerance technique from topic 16, applied at two different moments -- once to a branch write before a fast-forward, once to a parallel pipeline's output before a cutover -- which is the real reason this topic didn't need to invent a second comparison method.", "at": [{ "step": "Reveal: a shadow run, diffed before cutover" }] },
+      { "item": "This topic deliberately leaves out a true zero-copy branch (the chapter's one skipped syllabus entry) -- the audit branch demonstrated here is a full in-memory snapshot copy, which approximates the isolation a real zero-copy branch gives without its underlying storage-sharing mechanism.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A reader might assume a feature flag and a time-travel rollback are redundant safety nets for the same failure -- they protect against different moments: a flag reverts logic that hasn't yet produced a bad publish, while a rollback undoes one that already has. A flag can't undo rows already written, and a rollback can't prevent the next run from writing them again if the flag stays on.", "at": [{ "step": "Reveal: a feature flag and a time-travel rollback" }] },
+      { "item": "The diff technique the audit step runs is topic 16's, used here and not re-taught; Chapter 6's own snapshot and time-travel mechanics are the mechanism `time_travel_rollback` stands in for, also used and not re-taught.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic's six mechanisms aren't six independent tools a team picks one of -- a real deploy pipeline layers them: WAP protects the write itself, a canary or blue-green swap protects the cutover, a shadow run protects against a regression neither of those catches, and a flag plus rollback are the last line once something still got through.", "at": [{ "step": "Recap" }] },
+      { "item": "The good-write and bad-write demos deliberately reuse the exact same baseline data (the bad write is a deep copy with one row corrupted, not an independent random batch) specifically so the audit's tolerance check is meaningful: two genuinely independent random samples would differ by enough to fail the audit even when both are legitimate, which would make the demo's 'good write passes' case an artifact of lucky sampling rather than a real property of the audit.", "at": [{ "step": "Reveal: audit, then fast-forward or block" }, { "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
