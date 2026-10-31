@@ -1,0 +1,81 @@
+{
+  "topic": "de.orc-versus-parquet",
+  "steps": [
+    {
+      "lines": [
+        "A single Parquet file, however well encoded and however skippable, is still just one immutable file.",
+        "ORC is the one real rival that made nearly every one of the same layout decisions differently.",
+        "Same data, two very different shapes. The question this topic answers is what that difference actually costs, and what it actually buys."
+      ]
+    },
+    {
+      "lines": [
+        "Neither format gets any special configuration here. ORC's own row index is built in, one entry for every ten thousand rows, always present.",
+        "Does that fixed index prune finer than Parquet's bare row-group statistics, by default, with nothing turned on?"
+      ],
+      "answer": [
+        "Yes. Parquet's row-group size is a choice the writer makes, and it's often set larger than ten thousand rows, so ORC's fixed, always-on index can prune finer with no configuration at all.",
+        "Watch what happens on a real selective query over the same hundred thousand rows."
+      ]
+    },
+    {
+      "lines": [
+        "Inside an ORC stripe, each column is stored as several named streams, placed right next to each other in the file.",
+        "An ordinary integer column, for instance, becomes a present stream and a data stream.",
+        "Index streams always sit at the front of the stripe, so an ordinary scan never has to read them at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real measurement, on a hundred thousand rows. A selective query reads ten thousand rows under ORC's fixed row index.",
+        "The same query, under Parquet's bare row-group statistics at this row-group size, reads twenty-five thousand rows.",
+        "ORC's index needed no configuration to win that comparison."
+      ],
+      "takeaway": "ORC's row index needs no configuration — it prunes by default where Parquet's bare row-group stats are coarser."
+    },
+    {
+      "lines": [
+        "ORC's index is fixed at ten thousand rows, with nothing to configure. Does Parquet have any way to prune finer than that, once a writer turns something on?"
+      ],
+      "answer": [
+        "Yes. Parquet's own page index adds a second, finer layer of statistics inside each row group. It's opt-in, because that extra layer costs its own metadata.",
+        "Once it's turned on, it can out-prune ORC's fixed default."
+      ]
+    },
+    {
+      "lines": [
+        "Turn Parquet's page index on, and the same query now reads only twenty-five hundred rows — finer than ORC's fixed default.",
+        "That precision isn't free. The page index costs four times as many metadata bytes as ORC's own row index."
+      ]
+    },
+    {
+      "lines": [
+        "All three measured together: ten thousand rows and two hundred index bytes for ORC. Twenty-five thousand rows and eighty index bytes for Parquet's bare row-group statistics.",
+        "Twenty-five hundred rows and eight hundred index bytes once Parquet's page index is switched on."
+      ],
+      "takeaway": "Finer pruning always costs more index bytes — ORC and Parquet just sit at different points on that trade-off."
+    },
+    {
+      "lines": [
+        "Now the history behind ORC's own name in Hive. Before the zero point thirteen release, Hive only guaranteed atomicity and durability at the partition level.",
+        "The zero point thirteen release added full row-level transactions, built so that any storage format with a row identifier could use them.",
+        "But the actual integration work was only ever done for ORC — which is exactly why ORC became Hive's own default."
+      ]
+    },
+    {
+      "lines": [
+        "So why did Parquet become the lakehouse-wide default anyway? Parquet was built from the start to be used by any framework, with no ecosystem favored over another.",
+        "And the table formats this chapter turns to next chose Parquet as their own default storage format.",
+        "ORC hasn't disappeared — it still runs in legacy Hive tables, and in some Trino estates that still read them."
+      ],
+      "takeaway": "ORC's own transactional history made it Hive's default; Parquet's framework-neutral design made it the lakehouse's."
+    },
+    {
+      "lines": [
+        "Step back, and here's the shape of it. ORC's fixed row index beats a bare row-group default, with nothing configured.",
+        "Parquet's own opt-in page index beats ORC's fixed default, once it's turned on.",
+        "And the wider ecosystem picked Parquet anyway — not because ORC's index lost, but because Parquet was built to belong to everyone."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Parquet file anatomy" domain="data-engineering" host="de.parquet-file-anatomy" by="This chapter's first topic" />
+  <Resource kind="reel" title="Data skipping: statistics, page indexes, bloom filters" domain="data-engineering" host="de.data-skipping-statistics-page" by="This chapter's seventh topic" />
+  <Resource kind="reel" title="Variant type and shredding" domain="data-engineering" host="de.variant-type-shredding" by="This chapter's eighth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache ORC specification: ORCv1.md" href="https://orc.apache.org/specification/ORCv1/" by="Apache ORC">The stripe/stream layout and the built-in row-group index this topic's ORC-side measurement follows.</Resource>
+  <Resource kind="reading" title="Apache Hive: ACID and Transactions" href="https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions" by="Apache Hive">Hive's row-level ACID history and why only ORC got the integration work.</Resource>
+  <Resource kind="reading" title="Apache Parquet: Overview and Motivation" href="https://parquet.apache.org/docs/overview/" by="Apache Parquet">Parquet's own framework-neutral design goal and its ecosystem of implementations.</Resource>
+</ul>
+
+</section>
