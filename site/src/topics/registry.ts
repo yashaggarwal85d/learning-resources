@@ -5485,6 +5485,26 @@ export const TOPICS: TopicMeta[] = [
       "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. The next topic is one real engine's actual internals: Redis and Valkey.",
   },
   {
+    id: 'de.redis-valkey-internals',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/redis-valkey-internals',
+    title: 'Redis and Valkey internals',
+    syllabusTitle: 'Redis and Valkey internals',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['redis-valkey-internals'],
+    uses: ['cache-patterns-eviction'],
+    declared: [],
+    bridge:
+      "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. This topic is one real engine's actual internals: Redis/Valkey's own event loop, persistence model, replication, and the real licensing history that now decides which of the two you actually choose.",
+    handoff:
+      "A cache in front of a database is one read-side pattern. The next topic is a different one this chapter hasn't yet connected to Chapter 3's own warehouse material: pre-aggregated, analytical serving layers.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
