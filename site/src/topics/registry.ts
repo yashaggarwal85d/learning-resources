@@ -5585,6 +5585,26 @@ export const TOPICS: TopicMeta[] = [
       "Disaster recovery assumes nothing changed on purpose. The opposite risk -- a schema change made deliberately, rolled out badly -- is the chapter's last reliability topic.",
   },
   {
+    id: 'de.schema-change-rollout-expand',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/schema-change-rollout-expand',
+    title: 'Schema-change rollout: expand/contract',
+    syllabusTitle: 'Schema-change rollout: expand/contract',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['expand-migrate-contract-rollout', 'schema-registry-compatibility-modes'],
+    uses: ['de.data-slis-slos-error', 'cdc-schema-evolution-deletes'],
+    declared: [],
+    bridge:
+      "Disaster recovery assumes nothing changed on purpose. This topic is the opposite risk: a schema change made deliberately, and the three-step discipline that keeps it from becoming its own incident.",
+    handoff:
+      "A rollout done carefully by hand is still something a human has to remember to do carefully every time. The chapter's last section is about building that discipline into the testing and deployment pipeline itself, so it happens whether or not anyone remembers.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
