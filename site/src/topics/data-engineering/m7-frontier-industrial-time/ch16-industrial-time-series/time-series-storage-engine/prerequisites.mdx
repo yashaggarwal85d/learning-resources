@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: rollups, compression, cardinality, and the WAL/LSM foundations
+
+<ul class="resources">
+  <Resource kind="reel" title="Downsampling, rollups and retention tiers" domain="data-engineering" host="de.downsampling-rollups-retention-tiers" by="this chapter, for the retention-tier idea this topic's storage engines implement" />
+  <Resource kind="reel" title="Time-series compression" domain="data-engineering" host="de.time-series-compression" by="this chapter, for the chunk encoding Prometheus's own blocks apply" />
+  <Resource kind="reel" title="Series cardinality and the label index" domain="data-engineering" host="de.series-cardinality-label-index" by="the previous topic of this chapter, for the index this topic's storage layout has to support" />
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.write-ahead-logging-fsync" by="Chapter 5, for the WAL mechanism every engine in this topic relies on" />
+  <Resource kind="reel" title="Checkpoints and crash recovery" domain="data-engineering" host="de.checkpoints-crash-recovery" by="Chapter 5, for what a restart actually replays" />
+  <Resource kind="reel" title="LSM trees: write and read paths" domain="data-engineering" host="de.lsm-trees-write-read" by="Chapter 5, for the memtable/immutable-run analogy this topic maps Prometheus's head block and blocks onto" />
+  <Resource kind="reel" title="LSM compaction and the RUM trade-off" domain="data-engineering" host="de.lsm-compaction-rum-trade" by="Chapter 5, for the compaction idea Prometheus's own block merging follows" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Storage" href="https://prometheus.io/docs/prometheus/latest/storage/" by="Prometheus documentation">The head block, WAL, two-hour block, compaction and capacity-formula constants this topic's simulation runs at exactly.</Resource>
+  <Resource kind="reading" title="Configuration" href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/" by="Prometheus documentation">The out-of-order time window's exact accept/reject rule.</Resource>
+  <Resource kind="reading" title="Understand hypertables" href="https://docs.tigerdata.com/use-timescale/latest/hypertables/about-hypertables/" by="Tiger Data documentation">The chunk-exclusion behavior this topic's TimescaleDB-style simulation checks.</Resource>
+  <Resource kind="reading" title="Durability" href="https://docs.influxdata.com/influxdb3/core/reference/internals/durability/" by="InfluxDB 3 Core documentation">The exact WAL-flush, queryable-buffer and Parquet-persistence timings this topic's pipeline simulation runs at.</Resource>
+  <Resource kind="reading" title="Design" href="https://thanos.io/tip/thanos/design.md/" by="Thanos documentation">The sidecar-to-object-storage architecture named for the shared scaled-out pattern (sourced-only, not run directly).</Resource>
+</ul>
+
+</section>

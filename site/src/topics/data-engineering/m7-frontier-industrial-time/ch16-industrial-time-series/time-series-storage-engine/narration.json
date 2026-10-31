@@ -1,0 +1,83 @@
+{
+  "topic": "de.time-series-storage-engine",
+  "steps": [
+    {
+      "lines": [
+        "A server crashes, and when it comes back up it has to replay its write-ahead log before it can serve a single query.",
+        "That replay alone takes a long stretch of time.",
+        "Meanwhile, a second server using the exact same database was restored from a plain file-copy backup, and it's missing several hours that no amount of log replay can bring back."
+      ]
+    },
+    {
+      "lines": [
+        "The most recent block of data lives only in memory while it's still being written to.",
+        "A separate, sequential log on disk is what actually protects it — replay that log and the in-memory state comes back exactly as it was.",
+        "Multiply how long you plan to keep data by how many readings arrive each second by how many bytes each one costs, and you get the disk space the whole system actually needs."
+      ]
+    },
+    {
+      "lines": [
+        "Once a block has been sitting around for a while, it gets merged together with its neighbors into one larger, longer-lived block.",
+        "Every block, once finished, carries its own fixed start and end time as a label on itself.",
+        "A question that only cares about a narrow stretch of time can look at those labels and skip over entire blocks without ever opening them."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "A team decides that a stray reading arriving a bit late shouldn't be thrown away anymore, so they widen the system's tolerance for how late is too late.",
+        "Does that change get rid of the rejection rule entirely, or does it just move where that rule kicks in?"
+      ],
+      "answer": [
+        "It only moves where the rule kicks in.",
+        "A reading old enough to fall outside even the newly widened tolerance still gets rejected — the line didn't disappear, it just shifted further back."
+      ]
+    },
+    {
+      "lines": [
+        "With the system's default setting, any reading that arrives even slightly out of order gets rejected outright.",
+        "Widen that tolerance, and a reading that's only a little bit late now gets accepted instead.",
+        "But a reading old enough to fall outside even that wider tolerance still gets rejected, exactly the way it always would have."
+      ]
+    },
+    {
+      "lines": [
+        "A different kind of time-series database organizes its data into chunks instead of blocks, each one covering its own fixed stretch of time.",
+        "A question asking only about one particular day gets routed straight to that single day's chunk.",
+        "Every other chunk never even gets touched."
+      ]
+    },
+    {
+      "lines": [
+        "A newly written reading first lands in an ordinary in-memory buffer.",
+        "From there it reaches a durable, disk-backed log within roughly a second, and stays available for queries for several minutes after that.",
+        "Only once it's aged past that queryable window does the system finally write the oldest part of it out to long-term, column-oriented storage, on its own fixed schedule."
+      ]
+    },
+    {
+      "lines": [
+        "Three separate, competing projects each describe their own architecture using entirely their own vocabulary.",
+        "Strip that vocabulary away, though, and all three end up doing essentially the same thing underneath.",
+        "Each one takes the exact same block format and pushes it out to cheap, durable object storage, answering queries through a layer that itself holds no state of its own."
+      ]
+    },
+    {
+      "lines": [
+        "Every single engine in this topic draws the same basic line somewhere: fast, volatile memory on one side, slow but durable storage on the other.",
+        "A reading that arrives a little late just shifts where that acceptance line falls, rather than ever erasing it.",
+        "What actually differs from one engine to the next is only where exactly that memory-versus-storage line gets drawn, and on what clock it moves."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "Go back to the hook's two servers and their two very different recoveries.",
+        "Working only from how each piece of data is actually structured, with no guessing involved, can you state precisely what each server lost?"
+      ],
+      "answer": [
+        "You can.",
+        "The first server's replayed log recovers everything its in-memory block held at the exact moment it crashed; the second server's file-copy backup never touched that log at all, so whatever was only ever in memory is simply gone for good."
+      ]
+    }
+  ]
+}
