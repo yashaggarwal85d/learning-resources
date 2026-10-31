@@ -6205,6 +6205,26 @@ export const TOPICS: TopicMeta[] = [
       "Pull is the most common mode, and the most common thing it pulls from is a production database that was built to serve customers, not analysts. The next question is how to read it without becoming the outage.",
   },
   {
+    id: 'de.database-extraction-without-hurting',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/database-extraction-without-hurting',
+    title: 'Database extraction without hurting production',
+    syllabusTitle: 'Database extraction without hurting production',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['parallel-range-extraction', 'consistent-snapshot-export'],
+    uses: ['connection-pool-sizing', 'vacuum-xid-wraparound', 'snapshot-isolation', 'physical-vs-logical-replication', 'ingestion-modes-ownership'],
+    declared: ['sql-select'],
+    bridge:
+      "Pull is the most common mode, and the most common thing it pulls from is a production database. This topic is how to read one without becoming the outage: parallel range reads, a snapshot that is consistent across workers, and the quiet side effect of a slow extract on vacuum.",
+    handoff:
+      "A full extract is safe but does the same work every night. The obvious saving is to read only what changed since last time. That saving has a famous bug.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',

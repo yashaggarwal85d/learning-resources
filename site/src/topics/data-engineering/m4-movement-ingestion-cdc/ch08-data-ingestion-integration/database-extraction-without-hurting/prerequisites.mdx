@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Chapter 4's connection pooling, Chapter 5's vacuum, isolation and replication topics
+
+<ul class="resources">
+  <Resource kind="reel" title="Connection pooling and database clients" domain="data-engineering" host="de.connection-pooling-database-clients" by="Chapter 4, §4.2" />
+  <Resource kind="reel" title="Vacuum, bloat and transaction-ID wraparound" domain="data-engineering" host="de.vacuum-bloat-transaction-id" by="Chapter 5, §5.1" />
+  <Resource kind="reel" title="Snapshot isolation and write skew" domain="data-engineering" host="de.snapshot-isolation-write-skew" by="Chapter 5, §5.2" />
+  <Resource kind="reel" title="Physical vs logical replication" domain="data-engineering" host="de.physical-vs-logical-replication" by="Chapter 5, §5.3" />
+  <Resource kind="reel" title="Ingestion modes: push vs pull, batch vs streaming" domain="data-engineering" host="de.ingestion-modes-push-vs" by="Chapter 8, §8.1" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="JDBC To Other Databases" href="https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html" by="Apache Spark docs">What partitionColumn, lowerBound, upperBound and fetchsize actually control.</Resource>
+  <Resource kind="reading" title="COPY" href="https://www.postgresql.org/docs/current/sql-copy.html" by="PostgreSQL docs">The bulk path this topic measures against row-by-row SELECT.</Resource>
+  <Resource kind="reading" title="Snapshot Synchronization Functions" href="https://www.postgresql.org/docs/current/functions-admin.html" by="PostgreSQL docs">pg_export_snapshot and the consistent multi-table read it makes possible.</Resource>
+  <Resource kind="reading" title="High Availability, Load Balancing, and Replication: Hot Standby" href="https://www.postgresql.org/docs/current/hot-standby.html" by="PostgreSQL docs">What hot_standby_feedback actually trades away.</Resource>
+</ul>
+
+</section>
