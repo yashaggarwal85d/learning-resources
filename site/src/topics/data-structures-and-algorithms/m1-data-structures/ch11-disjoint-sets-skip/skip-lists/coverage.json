@@ -1,0 +1,216 @@
+{
+  "topic": "dsa.skip-lists",
+  "syllabus": [
+    {
+      "clause": "geometric tower heights",
+      "at": [
+        { "step": "Towers by coin flip" },
+        { "step": "The geometric tower, and its price" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "expected O(log n) search",
+      "at": [
+        { "step": "A search, traced" },
+        { "step": "The bound, and why one in four" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "simple ordered iteration",
+      "at": [
+        { "step": "Prove it" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "why they are easy to make concurrent",
+      "at": [
+        { "step": "Why a reader never sees a broken list" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "the memtable in LevelDB/RocksDB and Redis sorted sets (skip list + hash table) → Ch.14",
+      "at": [
+        { "step": "Same shape, two real systems" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "William Pugh, Skip Lists: A Probabilistic Alternative to Balanced Trees",
+      "items": [
+        {
+          "item": "The coin-flip level algorithm, the fraction p of nodes promoted from one level to the next, and the geometric height this produces",
+          "at": [
+            { "step": "Towers by coin flip" },
+            { "step": "How many reach the next level up?" },
+            { "step": "The geometric tower, and its price" }
+          ]
+        },
+        {
+          "item": "The expected search-cost bound L(n)/p + 1/(1-p), derived by climbing the search path backwards",
+          "at": [
+            { "step": "The bound, and why one in four" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "The recommendation of p = 1/4 over p = 1/2 for smaller constant overheads",
+          "at": [
+            { "step": "The bound, and why one in four" }
+          ]
+        },
+        {
+          "item": "The tail-probability result: for more than 250 elements, a search over three times its expected cost happens under one in a million times",
+          "at": [
+            { "step": "The bound, and why one in four" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "LevelDB `db/skiplist.h`",
+      "items": [
+        {
+          "item": "The thread-safety contract: writes need external synchronization, reads need no lock beyond the list not being destroyed",
+          "at": [
+            { "step": "A sorted buffer with no lock on reads" },
+            { "step": "Why a reader never sees a broken list" }
+          ]
+        },
+        {
+          "item": "The release-store/acquire-load pairing that makes a newly inserted node either fully visible or not visible at all, never half-built",
+          "at": [
+            { "step": "Why a reader never sees a broken list" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Prev() has no explicit backward pointer; it searches again for the last key less than the current one",
+          "at": [
+            { "step": "Prove it" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Redis sorted sets",
+      "items": [
+        {
+          "item": "A sorted set is implemented as a skip list paired with a hash table",
+          "at": [
+            { "step": "Same shape, two real systems" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Redis `src/t_zset.c`",
+      "items": [
+        {
+          "item": "zslRandomLevel's coin-flip level generator and the rank-tracking span logic used by ZRANK",
+          "at": [
+            { "step": "Same shape, two real systems" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "ZSKIPLIST_MAXLEVEL (32) and ZSKIPLIST_P (0.25), the real constants Redis ships with, confirmed via source but not run through this project's own quote checker (see SOURCES.md)",
+          "at": [
+            { "out": "Named only in FACT-CHECK.md and SOURCES.md's 'Not fetched' section; not shown on screen since the reel's own measured constants (from examples.py) stand in for them." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB `include/rocksdb/memtablerep.h` and `include/rocksdb/options.h`",
+      "items": [
+        {
+          "item": "The default, skiplist-based memtable's concurrent-insert support, and write_buffer_size's 64MB default",
+          "at": [
+            { "step": "Same shape, two real systems" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Why a balanced tree's rotation is specifically incompatible with a lock-free reader (several pointers must change together), not just 'balanced trees are complicated'",
+        "at": [
+          { "step": "A sorted buffer with no lock on reads" }
+        ]
+      },
+      {
+        "item": "That promotion is memoryless: the same fraction is promoted at every level, regardless of how many nodes already reached that level",
+        "at": [
+          { "step": "How many reach the next level up?" }
+        ]
+      },
+      {
+        "item": "The distinction between the measured average search cost and Pugh's separate, stronger tail-probability claim — one is reproduced here, the other is cited",
+        "at": [
+          { "step": "The bound, and why one in four" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why p = 1/4's bound is smaller than p = 1/2's even though p = 1/4 needs more comparisons at the base of each climb — the two bound terms move in opposite directions as p changes",
+        "at": [
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That the splice-write-count measurement is a necessary but not sufficient condition for lock-free safety; the atomicity/ordering half is a hardware/language-memory-model property this topic cites rather than measures",
+        "at": [
+          { "step": "Why a reader never sees a broken list" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That RocksDB's VectorRepFactory also reports concurrent-insert support, so 'only the skiplist memtable' overstates the real source — corrected to 'the default, skiplist-based memtable'",
+        "at": [
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "The span augmentation's cost: it adds bookkeeping to every insert so that rank queries never need a separate O(n) pass, the same trade-off as an order-statistic tree's subtree-size field",
+        "at": [
+          { "step": "Same shape, two real systems" }
+        ]
+      },
+      {
+        "item": "The explicit scope boundary: this topic is one writer, many readers; multiple concurrent writers racing is a harder problem left to Chapter 14",
+        "at": [
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "Why Prev() being 'just another search' is not a performance regression: it costs the same expected bound as any other search, not a separate linear scan",
+        "at": [
+          { "step": "Prove it" }
+        ]
+      },
+      {
+        "item": "The lab's own scale (two hundred thousand nodes for the height histograms, twenty thousand for the search-cost and splice measurements) as what turns the bound from an abstract formula into a felt, reproducible number",
+        "at": [
+          { "deep": "Lab" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
