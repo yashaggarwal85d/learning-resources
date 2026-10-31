@@ -6464,4 +6464,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "This closes the course's own technical arc: a schema, a query, a model, a pipeline, a benchmark, and now the contract, the trade-off, the decision and the incident that together decide whether any of it actually worked for the person who asked for it. What's left (Appendix A and B) is the assessment bank and career guidance — not reel topics, but the standing exercises this whole course now has the vocabulary to actually answer.",
   },
+  {
+    id: 'de.columnar-encodings-dictionary-rle',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/columnar-encodings-dictionary-rle',
+    title: 'Columnar encodings: dictionary, RLE, delta, byte-stream-split',
+    syllabusTitle: 'Columnar encodings: dictionary, RLE, delta, byte-stream-split',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['parquet-column-encodings'],
+    uses: ['parquet-file-anatomy'],
+    declared: [],
+    bridge:
+      "A row group is just column chunks, and a column chunk is just pages of values rarely stored as plain, unencoded bytes. This topic is exactly how they're encoded: dictionary, RLE/bit-packing, delta and byte-stream-split, each measured directly on a real column.",
+    handoff:
+      "Everything encoded so far has been a flat column. The next topic is what happens the moment a column is optional, repeated or nested — Dremel's own shredding model.",
+  },
 ];
