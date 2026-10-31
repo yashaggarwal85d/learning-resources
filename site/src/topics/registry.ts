@@ -6725,6 +6725,26 @@ export const TOPICS: TopicMeta[] = [
       "A series count, a codec and an index are three of the pieces of a storage engine. The next topic puts them together: how Prometheus, TimescaleDB and InfluxDB 3 actually lay out a write, a block and a compaction, and where each of them puts the line between memory and disk.",
   },
   {
+    id: 'de.time-series-storage-engine',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/time-series-storage-engine',
+    title: 'Time-series storage engine internals',
+    syllabusTitle: 'Time-series storage engine internals',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 18,
+    verified: '2026-10-31',
+    introduces: ['prometheus-head-wal-block-compaction', 'out-of-order-ingestion-window', 'hypertable-chunks-columnstore', 'influxdb3-wal-parquet-flow', 'scaled-out-tsdb-object-store-pattern'],
+    uses: ['wal-lsn-fsync', 'checkpoint-recovery-redo-undo', 'lsm-write-read-path', 'lsm-compaction-rum', 'partition-pruning-plan-vs-run-time', 'block-range-summary-pruning', 'delta-of-delta-timestamps', 'xor-float-encoding-gorilla', 'series-is-metric-plus-label-set', 'postings-index-intersection', 'mergeable-rollup-never-store-average', 'retention-tiers-query-routing', 'object-storage', 'conditional-writes'],
+    declared: [],
+    bridge:
+      "A series count, a codec and an index are three of the pieces of a storage engine. This topic puts them together: how Prometheus, TimescaleDB and InfluxDB 3 actually lay out a write, a block and a compaction, and where each of them puts the line between memory and disk.",
+    handoff:
+      "Four engines, four bets. The next topic is the decision: given a write rate, a query shape, a retention and a budget, when do you want a time-series database, when a warehouse and when the lakehouse?",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
