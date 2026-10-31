@@ -1,0 +1,63 @@
+{
+  "topic": "de.object-storage-as-database",
+  "syllabus": [
+    { "clause": "what S3/GCS/ADLS guarantee and what they don't: strong read-after-write consistency (S3 since Dec 2020), no atomic rename, LIST cost and latency, per-prefix request-rate limits, first-byte latency, request pricing", "at": [{ "step": "Reveal: strong consistency, since December 2020" }, { "step": "Reveal: no atomic rename, demonstrated for real" }, { "step": "Reveal: LIST isn't free" }] },
+    { "clause": "conditional writes (If-None-Match Aug 2024, If-Match and bucket-policy enforcement later in 2024) as the primitive that now enables catalog-free atomic commits", "at": [{ "step": "Reveal: a real conditional write actually rejects the loser" }, { "step": "Reveal: If-Match is the same primitive for updates" }, { "step": "Reveal: what conditional writes actually buy" }] }
+  ],
+  "sources": [
+    {
+      "source": "AWS, strong read-after-write consistency announcement (Dec 2020)",
+      "items": [
+        { "item": "S3 now delivers strong read-after-write consistency for every storage request, at no additional cost", "at": [{ "step": "Reveal: strong consistency, since December 2020" }] },
+        { "item": "S3 was previously eventually consistent", "at": [{ "step": "Reveal: strong consistency, since December 2020" }] }
+      ]
+    },
+    {
+      "source": "AWS, conditional writes announcement (Aug 2024)",
+      "items": [
+        { "item": "If-None-Match checks for object existence before creating it, via PutObject or CompleteMultipartUpload", "at": [{ "step": "Reveal: a real conditional write actually rejects the loser" }] },
+        { "item": "conditional writes let concurrent clients avoid overwriting each other's objects, with no client-side coordination", "at": [{ "step": "Reveal: what conditional writes actually buy" }] }
+      ]
+    },
+    {
+      "source": "AWS, conditional-write enforcement announcement (Nov 2024)",
+      "items": [
+        { "item": "bucket policies can use s3:if-match/s3:if-none-match condition keys to require conditional headers on every write", "at": [{ "deep": "One primitive, three problems" }] }
+      ]
+    },
+    {
+      "source": "AWS PutObject API reference",
+      "items": [
+        { "item": "If-None-Match fails with 412 Precondition Failed if the key already exists", "at": [{ "step": "Reveal: a real conditional write actually rejects the loser" }] },
+        { "item": "If-Match fails with 412 Precondition Failed if the ETag doesn't match", "at": [{ "step": "Reveal: If-Match is the same primitive for updates" }] }
+      ]
+    },
+    {
+      "source": "AWS S3 performance guidelines",
+      "items": [
+        { "item": "S3 sustains at least 3,500 PUT/COPY/POST/DELETE or 5,500 GET/HEAD requests per second per partitioned prefix", "at": [{ "step": "Reveal: LIST isn't free" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "moto's local S3-compatible server reproduces the HTTP-level protocol contract (conditional headers, 412 responses, ETags) faithfully, but its consistency and latency are an in-memory simulation, not a measurement of real AWS network behavior — this topic's demo verifies the protocol, not the production performance characteristics.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 'no atomic rename' demonstration stops deliberately between copy_object and delete_object to show a reachable crash state; in normal, uninterrupted operation the rename completes both calls and the old key is removed, so this isn't a claim that renames routinely leave duplicates, only that nothing in the protocol prevents it when something goes wrong between the two calls.", "at": [{ "step": "Reveal: no atomic rename, demonstrated for real" }] },
+      { "item": "The LIST-cost measurement asserts round-trip count (5 calls for 250 objects at 50 per page), not wall-clock latency, specifically because local-loopback timing in this sandbox isn't representative of real S3 network latency — the call-count scaling is the real, deterministic fact being demonstrated.", "at": [{ "step": "Reveal: LIST isn't free" }] },
+      { "item": "If-None-Match and If-Match solve different problems: If-None-Match is for creating a key that must not already exist (a new commit), while If-Match is for updating a key whose current state you've already read (a compare-and-swap) — conflating them would silently accept a creation that should have failed, or reject a legitimate first write.", "at": [{ "step": "Reveal: If-Match is the same primitive for updates" }] },
+      { "item": "Strong read-after-write consistency and the atomicity of a single PUT are two different guarantees — S3 has always made a single object's write atomic (you never see a partially-written object), but before December 2020 the visibility of a successful write to a subsequent read could still be delayed, which is the specific guarantee the Dec 2020 change added.", "at": [{ "step": "Reveal: strong consistency, since December 2020" }] },
+      { "item": "GCS and ADLS are cited here as the two other major providers with their own strongly-consistent read/write guarantees, not because their conditional-write mechanics are identical to S3's — ADLS, for instance, supports ETag-based conditional headers including a wildcard for 'only if absent,' the same shape as S3's but through Azure's own REST API, not a literal port of S3's headers.", "at": [{ "deep": "One primitive, three problems" }] },
+      { "item": "Request pricing is named in this topic's own outcomes as a real cost category every later table-format topic has to budget for, but this topic does not quantify a dollar figure for it — it is disclosed as unquantified in post-notes.md's Frontier section rather than silently omitted.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Per-prefix request-rate limits (at least 3,500 PUT/COPY/POST/DELETE or 5,500 GET/HEAD requests per second) apply per partitioned prefix, not per bucket — a bucket with many prefixes has no overall limit on the number of prefixes, so the real mitigation for a hot workload is spreading writes across more prefixes, not treating the whole bucket as rate-limited.", "at": [{ "step": "Reveal: LIST isn't free" }] },
+      { "item": "The December 2020 change made strong consistency the automatic default for every S3 customer with no opt-in and no application changes required — it wasn't a new API or a new header, just a change in the guarantee behind the same existing requests.", "at": [{ "step": "Reveal: strong consistency, since December 2020" }] },
+      { "item": "This topic's own handoff names the specific failure this substrate's limits caused historically: Hive's plain directory-as-partition tables, which depended on exactly the atomic-rename and fast-listing guarantees object storage doesn't provide — the next topic picks that failure up directly.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

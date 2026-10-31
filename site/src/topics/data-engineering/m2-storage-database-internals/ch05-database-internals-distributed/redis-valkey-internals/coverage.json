@@ -1,0 +1,144 @@
+{
+  "topic": "de.redis-valkey-internals",
+  "syllabus": [
+    {
+      "clause": "single-threaded event loop with I/O threads",
+      "at": [
+        { "step": "Predict: is Redis fast despite being single-threaded, or because of it" },
+        { "step": "Reveal: the event loop, with optional I/O threads" }
+      ]
+    },
+    {
+      "clause": "data structures as the API",
+      "at": [{ "step": "Hook: a real Redis instance runs every command on a single thread, yet handles tens of thousands a second" }]
+    },
+    {
+      "clause": "RDB vs AOF persistence",
+      "at": [{ "step": "Reveal: RDB vs AOF" }]
+    },
+    {
+      "clause": "async replication and the writes lost on failover",
+      "at": [{ "step": "Reveal: async replication's real failover loss" }]
+    },
+    {
+      "clause": "Redis Cluster's 16,384 hash slots",
+      "at": [{ "step": "Reveal: Redis Cluster's hash slots" }]
+    },
+    {
+      "clause": "licensing history (2024 move to RSALv2/SSPL, the BSD-licensed Valkey fork under the Linux Foundation, Redis 8 adding AGPLv3 in May 2025) as a platform-selection factor",
+      "at": [{ "step": "Reveal: the licensing history" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Redis's own documentation and source (redis.conf, benchmarks, persistence, replication, cluster spec)",
+      "items": [
+        {
+          "item": "command execution is single-threaded by default; I/O threads are an opt-in, off-by-default extra layered on top, for socket reads/writes only",
+          "at": [{ "step": "Reveal: the event loop, with optional I/O threads" }]
+        },
+        {
+          "item": "RDB snapshots the dataset periodically, losing whatever changed since the last snapshot on an unclean stop; AOF logs every write operation for replay",
+          "at": [{ "step": "Reveal: RDB vs AOF" }]
+        },
+        {
+          "item": "replication is asynchronous by default, and an acknowledged write can still be lost during a failover",
+          "at": [{ "step": "Reveal: async replication's real failover loss" }]
+        },
+        {
+          "item": "Redis Cluster's key space is split into 16,384 fixed hash slots, each owned by one node at a time",
+          "at": [{ "step": "Reveal: Redis Cluster's hash slots" }]
+        }
+      ]
+    },
+    {
+      "source": "Redis's and the Linux Foundation's own licensing announcements",
+      "items": [
+        {
+          "item": "the 2024 move to the dual RSALv2/SSPL source-available licenses, ending BSD distribution",
+          "at": [{ "step": "Reveal: the licensing history" }]
+        },
+        {
+          "item": "the same-year BSD-licensed Valkey fork, formed under the Linux Foundation in direct response to that licensing change",
+          "at": [{ "step": "Reveal: the licensing history" }]
+        },
+        {
+          "item": "Redis 8 adding AGPLv3 as a further licensing option in May 2025, confirming the syllabus's own dated claim",
+          "at": [{ "step": "Reveal: the licensing history" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a cache-aside layer against a real Redis instance and a real PostgreSQL cluster measures zero backing-store queries while a key stays warm, and more than one the instant it expires under concurrent readers",
+          "at": [{ "deep": "Lab" }]
+        },
+        {
+          "item": "async replication's own failover-loss window is reproduced for real: a real replica process, frozen with a real SIGSTOP the instant before a real write burst, cannot have advanced, so the master's new offset minus the replica's last-known offset is a real, measured, nonzero lag",
+          "at": [{ "step": "Reveal: async replication's real failover loss" }]
+        },
+        {
+          "item": "after a real SIGCONT, the replica drains the backlog and the measured lag closes to zero, with the burst's last key now present",
+          "at": [{ "deep": "Lab" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A single thread is not a constraint Redis works around; it is the actual mechanism behind its own throughput, because it eliminates the lock contention and cross-core coordination cost that a multi-threaded design would have to pay for every command.",
+        "at": [{ "step": "Hook: a real Redis instance runs every command on a single thread, yet handles tens of thousands a second" }]
+      },
+      {
+        "item": "The predict step's 'despite vs because of' framing is not rhetorical: a genuinely multi-threaded key-value store (one that locks per key or per shard) pays real coordination overhead on every command that Redis's single thread never pays at all, which is why the single-threaded design can outperform a naively parallel one on many real workloads.",
+        "at": [{ "step": "Predict: is Redis fast despite being single-threaded, or because of it" }]
+      },
+      {
+        "item": "I/O threads being opt-in and off by default, rather than on by default, reflects that most Redis workloads are CPU-bound on command execution itself, not on socket I/O — turning on I/O threads only helps once the single command thread is no longer the bottleneck.",
+        "at": [{ "step": "Reveal: the event loop, with optional I/O threads" }]
+      },
+      {
+        "item": "RDB and AOF are not mutually exclusive alternatives in production; many real deployments run both together (RDB for fast full restarts, AOF for the gap RDB leaves), which this topic's own binary framing simplifies for clarity without being wrong about either one's own individual trade-off.",
+        "at": [{ "step": "Reveal: RDB vs AOF" }]
+      },
+      {
+        "item": "The replication-lag measurement's own method (freezing the replica process with SIGSTOP rather than racing a live write burst against replication speed) is deliberately more reliable than timing a race: a frozen OS process is a real, physical guarantee it did not advance, whereas a timing race on fast local hardware can coincidentally show no lag on a given run even though the underlying risk is real.",
+        "at": [{ "step": "Reveal: async replication's real failover loss" }]
+      },
+      {
+        "item": "16,384 is not an arbitrary round number; Redis's own cluster specification ties it to keeping the per-node bitmap used for cluster-state gossip small enough to stay cheap to send on every heartbeat, which is why the slot count is fixed rather than scaled with cluster size.",
+        "at": [{ "step": "Reveal: Redis Cluster's hash slots" }]
+      },
+      {
+        "item": "The 2024 licensing move and the Valkey fork are not a story about one license being objectively better; they are a story about who gets to resell the software as a competing managed service, which is precisely the use RSALv2/SSPL restrict and BSD does not.",
+        "at": [{ "step": "Reveal: the licensing history" }]
+      },
+      {
+        "item": "Redis 8 adding AGPLv3 as a further option, rather than reverting to BSD, keeps the resale restriction intact for the dual-licensed base while giving users who specifically need OSI-approved open-source terms (which RSALv2/SSPL are not, but AGPLv3 is) a path to that without forcing them onto Valkey.",
+        "at": [{ "step": "Reveal: the licensing history" }]
+      },
+      {
+        "item": "This topic's own lab measurement (zero queries while warm, more than one on expiry) is the same cache-aside shape the prior two topics discussed abstractly; what this topic adds is that the shape now runs against one real, named engine's own actual command set and persistence model, not a simulated dictionary.",
+        "at": [{ "deep": "Lab" }]
+      },
+      {
+        "item": "This topic establishes what one real cache engine's own internals look like; it says nothing yet about how to serve pre-aggregated analytical queries at scale, which is exactly the gap the next topic closes by connecting this chapter's read-side material back to the warehouse content from earlier in the course.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "The hook's own throughput claim depends on the single-threaded design specifically for command execution, not for everything Redis does at once; background persistence (RDB's own fork-based snapshotting) and I/O threads both run genuinely concurrently with command execution, so 'single-threaded' describes one specific part of the system, not the whole process.",
+        "at": [{ "step": "Reveal: the event loop, with optional I/O threads" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

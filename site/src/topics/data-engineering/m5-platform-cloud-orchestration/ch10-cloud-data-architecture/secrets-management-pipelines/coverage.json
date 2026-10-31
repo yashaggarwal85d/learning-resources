@@ -1,0 +1,106 @@
+{
+  "topic": "de.secrets-management-pipelines",
+  "syllabus": [
+    {
+      "clause": "managed secret stores and Vault",
+      "at": [
+        { "step": "A secret store is not just a place to put a string" }
+      ]
+    },
+    {
+      "clause": "rotation without downtime (dual credentials)",
+      "at": [
+        { "step": "One password, revoked at the exact wrong instant" },
+        { "step": "What's the one change that prevents every one of those failures?" },
+        { "step": "Two roles, not one password, is the whole trick" }
+      ]
+    },
+    {
+      "clause": "dynamic short-lived database credentials",
+      "at": [
+        { "step": "A credential that expires without anyone revoking it" }
+      ]
+    },
+    {
+      "clause": "orchestrator secrets backends",
+      "at": [
+        { "step": "The orchestrator asks the real store, every time it runs" }
+      ]
+    },
+    {
+      "clause": "never in images, notebooks or DAG code",
+      "at": [
+        { "step": "Three surfaces, one mistake" }
+      ]
+    },
+    {
+      "clause": "key hierarchies and envelope encryption are §13.2",
+      "at": [
+        { "topic": "Envelope encryption, KMS and key rotation", "domain": "data-engineering", "quote": "DEK/KEK hierarchy and what the KMS actually sees" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS: Rotate AWS Secrets Manager secrets",
+      "items": [
+        { "item": "Managed rotation (no Lambda function) vs Lambda-function rotation", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: Lambda rotation functions",
+      "items": [
+        { "item": "Four-step rotation flow (createSecret, setSecret, testSecret, finishSecret) tracked by AWSPENDING/AWSCURRENT/AWSPREVIOUS staging labels", "at": [{ "deep": "Internals" }] },
+        { "item": "RDS MySQL alternating-users rotation creates a cloned user rather than overwriting the first", "at": [{ "step": "Two roles, not one password, is the whole trick" }] }
+      ]
+    },
+    {
+      "source": "HashiCorp Vault: Database secrets engine",
+      "items": [
+        { "item": "Dynamic roles issue a brand-new credential per lease, invalidated by Vault's own revocation system once the lease expires", "at": [{ "step": "A credential that expires without anyone revoking it" }] },
+        { "item": "Static roles rotate an existing database user's password on a schedule, a separate mechanism from dynamic roles", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn: About Azure Key Vault",
+      "items": [
+        { "item": "Authentication (Entra ID) is separate from authorization (RBAC or vault access policy)", "at": [{ "step": "A secret store is not just a place to put a string" }] },
+        { "item": "Secrets are addressed and versioned by URI; activity logging is a distinct, enabled feature", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Secret Manager overview",
+      "items": [
+        { "item": "A secret is metadata plus many immutable, individually-addressable versions", "at": [{ "step": "A secret store is not just a place to put a string" }] },
+        { "item": "IAM roles segregate who can access, manage, audit and rotate a secret as separate responsibilities", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Apache Airflow: Secrets Backend",
+      "items": [
+        { "item": "A secrets backend is checked first in a fixed, non-configurable search order, before environment variables and the metastore", "at": [{ "step": "The orchestrator asks the real store, every time it runs" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's failure is about the gap between revocation and consumer cutover, not about rotation itself being risky — a learner who thinks 'rotate less' is the fix hasn't located the actual defect", "at": [{ "step": "What's the one change that prevents every one of those failures?" }] },
+      { "item": "A dual-credential rotation only causes zero downtime if the old credential is cut on confirmed zero-usage, not on a fixed timer — a fixed timer just narrows the same race rather than closing it, which the prove-it step tests directly", "at": [{ "step": "Prove it" }] },
+      { "item": "Dynamic roles and static roles in Vault solve genuinely different problems (per-consumer freshly-minted credentials vs. scheduled rotation of one shared existing user), not two names for the same feature", "at": [{ "step": "A credential that expires without anyone revoking it" }] },
+      { "item": "An orchestrator's own metastore is an ordinary database from a security standpoint — anyone with read access to it can read whatever secret value was stored there directly, which is the actual reason task-time lookup against a real secrets backend matters", "at": [{ "step": "The orchestrator asks the real store, every time it runs" }] },
+      { "item": "Each of the three never-commit surfaces fails differently, not identically: an image layer is distributed to every puller, a notebook commits by accident via its own output cells, and DAG code persists in version-control history independent of whether the current file still has it", "at": [{ "step": "Three surfaces, one mistake" }] },
+      { "item": "A managed secret store's real value proposition is not 'storage' at all — access control, an audit trail and versioned rollback are the three things a plain environment variable or config file cannot provide at any price", "at": [{ "step": "A secret store is not just a place to put a string" }] },
+      { "item": "The 'alternating users' pattern AWS documents for RDS generalizes to any database that supports creating a second role with identical grants — nothing about it is RDS-specific, which is why it reproduces faithfully against local PostgreSQL", "at": [{ "step": "Two roles, not one password, is the whole trick" }] },
+      { "item": "Vault's own internals are sourced-only in this topic since Vault isn't installed locally; the dynamic-credential property demonstrated (self-expiring, no separate revoke) is reproduced with a different real mechanism (PostgreSQL's VALID UNTIL), which is disclosed, not presented as Vault itself running", "at": [{ "deep": "Internals" }] },
+      { "item": "A secrets backend being 'checked first' and 'non-configurable' in search order are two separate facts; the ordering guarantee is what prevents a stale metastore value from silently winning even when a secrets backend is enabled", "at": [{ "step": "The orchestrator asks the real store, every time it runs" }] },
+      { "item": "Rotation and least-privilege identity (the previous topic) are complementary, not substitutes: a workload-identity credential still has nothing to say about a third-party API key or a database password a role can't federate into", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

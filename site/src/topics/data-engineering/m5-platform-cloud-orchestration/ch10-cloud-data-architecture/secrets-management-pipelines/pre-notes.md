@@ -1,0 +1,6 @@
+- **Secret manager**: a managed service for storing sensitive values with access control, audit logging and versioning built in. *Where you meet it:* AWS Secrets Manager, Azure Key Vault, GCP Secret Manager.
+- **Vault**: HashiCorp's self-hosted secrets engine, known for issuing dynamic, short-lived credentials rather than only storing static ones. *Where you meet it:* a database secrets engine, a lease, a TTL.
+- **Rotation**: periodically replacing a credential's value. *Where you meet it:* a scheduled job or managed feature that updates both the secret store and the target system.
+- **Dynamic credential**: a credential generated fresh per request, valid only for a bounded lease. *Where you meet it:* Vault's database secrets engine, a cloud-native equivalent.
+- **Lease**: the time window a dynamic credential is valid for, after which it's automatically revoked. *Where you meet it:* a `lease_duration` returned alongside the credential itself.
+- **TTL**: time-to-live — how long something stays valid before it expires on its own. *Where you meet it:* the lifetime attached to a lease or a dynamic role.
