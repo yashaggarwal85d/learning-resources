@@ -1,0 +1,85 @@
+{
+  "topic": "de.destination-side-interrogation",
+  "steps": [
+    {
+      "lines": [
+        "The plant operations lead says exactly one sentence: we want real-time dashboards for the plants.",
+        "One engineer hears that sentence and builds a genuinely streaming pipeline feeding a sub-second operator display.",
+        "A second engineer hears the very same sentence and builds a minutes-refresh aggregate dashboard instead. Both of them read those six words entirely faithfully."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "That plant lead genuinely isn't an engineer, and almost certainly has no technical definition of real-time sitting anywhere in their head.",
+        "Asking them to define that exact term more precisely isn't actually going to fork anything. So what question actually would?"
+      ],
+      "answer": [
+        "That lead doesn't actually have a technical definition sitting around to hand you.",
+        "What they genuinely do have is a behavior: some specific thing they actually go do the instant that number changes on screen.",
+        "That behavior is precisely the question that turns an otherwise vague demand into something concrete enough to actually check against."
+      ]
+    },
+    {
+      "lines": [
+        "That plant lead's own box flips wide open to reveal three entirely different consumers already quietly reading this exact same data.",
+        "A quality report depends on it. A maintenance model depends on it too. So does a monthly compliance filing, sitting there the whole time.",
+        "Nobody in that first meeting ever actually asked about any of those three, yet the finished design still has to serve every single one."
+      ]
+    },
+    {
+      "lines": [
+        "A dashboard and a quality report can genuinely share one single warehouse aggregate between them without much trouble.",
+        "A maintenance model, on the other hand, needs its history held point-in-time correct, which is a fundamentally different requirement entirely.",
+        "A compliance filing needs something immutable and fully reproducible on demand. One single dataset, four genuinely different serving-store answers."
+      ]
+    },
+    {
+      "lines": [
+        "Real-time, said entirely on its own, isn't actually checkable against anything concrete.",
+        "I walk the floor the instant that number crosses a particular line is something else entirely: a real, stated trigger for real action.",
+        "That one sentence names the actual bound this freshness design now has to meet, rather than some borrowed adjective lifted straight out of a sales deck."
+      ]
+    },
+    {
+      "lines": [
+        "Four of these five answers are things the lead stated to you directly, right there in the room: how many lines, how often they actually check, how far back that filing has to reach.",
+        "The fifth answer, concerning where tenant count heads next year, is nothing more than an educated guess.",
+        "That one guess gets marked plainly as a guess, rather than quietly treated the exact same way as the other four, stated answers around it."
+      ]
+    },
+    {
+      "lines": [
+        "The level of detail each consumer genuinely needs gets asked up front, well before any model actually gets built around it.",
+        "How many people query all at once during that one Monday-morning report run matters just as much.",
+        "And how far back that filing genuinely has to be able to reprocess matters every bit as much as either of those."
+      ]
+    },
+    {
+      "lines": [
+        "A csv download and a bi extract both flip over to a stark red.",
+        "Each one of those two paths leaves the engine's own access policy behind completely, the instant that data actually crosses that particular boundary.",
+        "Which means an export path has to be designed around deliberately from the very start, never simply discovered later, well after the fact."
+      ]
+    },
+    {
+      "lines": [
+        "List every single consumer of the data, never only the one who happened to ask first.",
+        "Tie freshness directly to whatever that consumer actually does the moment they genuinely see the number.",
+        "Mark a bet plainly as a bet. Ask for grain, concurrency, and retention well up front. And treat every export path as its own policy gap, one that genuinely needs designing around."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: an entirely new prompt arrives, asking for a single view of the customer.",
+        "That prompt names a noun, nothing more — not a consumer, not a freshness bound, not a grain.",
+        "Does this design simply start from that noun directly, or does it start from those same five questions all over again?"
+      ],
+      "answer": [
+        "A single view of the customer is exactly as vague as real-time dashboards for the plants ever was.",
+        "It's a noun quietly standing in for a design nobody has actually specified yet, in any real detail.",
+        "Those same five questions fork this entirely new prompt in exactly the same way they forked the very first one."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "topic": "de.choosing-data-flow-shape",
+  "steps": [
+    {
+      "lines": [
+        "Three teams look at the same freshness promise and propose three completely different ways to build it.",
+        "One wants to process every event the instant it arrives. One wants to run everything once an hour. One splits the difference, running every few minutes.",
+        "All three are aiming at the same target. Which one actually hits it for the least money?"
+      ]
+    },
+    {
+      "lines": [
+        "The always-on option clears that target with room to spare, every single time.",
+        "Does having the most room to spare make it the obvious winner, or is there a cheaper option that still clears the bar?",
+        "And is there one more question, about redoing old work later, that could flip the answer entirely?"
+      ],
+      "answer": [
+        "Room to spare isn't free. It's infrastructure running continuously, whether or not the promise actually needs that much margin.",
+        "The real rule is: among everything that clears the bar, the cheapest one wins.",
+        "One thing can still flip that choice — how expensive it is to redo old output later, once the code that produced it changes."
+      ]
+    },
+    {
+      "lines": [
+        "Picture every option laid out against that one promised ceiling, as a bar each one either clears or doesn't.",
+        "An option whose bar sits above the ceiling is finished immediately. No amount of tuning moves a hard physical floor.",
+        "What's left afterward is a much shorter list than the one you started with."
+      ]
+    },
+    {
+      "lines": [
+        "Among the options still standing, the always-on one and the two-system hybrid both clear the bar too — just at a steeper running cost.",
+        "The option that only checks in every few minutes clears the same bar for noticeably less money.",
+        "Of everything still standing, that's the one that should actually win."
+      ]
+    },
+    {
+      "lines": [
+        "Two named answers to one shared problem live on this same card.",
+        "One answer keeps two separate systems running side by side, forever, so that redoing old work is already fast whenever it's needed.",
+        "The other answer keeps just one system, and redoes old work by rerunning that same job from a saved history of everything that happened.",
+        "A newer kind of engine chases that second answer's simplicity, without anyone having to hand-build the rerun logic themselves."
+      ]
+    },
+    {
+      "lines": [
+        "Running two systems side by side sounds like a compute problem, but by the account of the person who named this trade-off, it almost never is.",
+        "The real cost is keeping two completely different pieces of code producing the exact same answer, forever, as both keep changing.",
+        "The single-system answer pays a different, more honest cost: whenever it redoes old work, it briefly needs roughly twice its usual storage, until that run finishes."
+      ]
+    },
+    {
+      "lines": [
+        "Every place data enters this system from somewhere else makes its own separate choice.",
+        "Either the other side sends data over on its own schedule, and owns getting that delivery right.",
+        "Or this pipeline reaches out and asks for it, and from that moment on, this pipeline owns whatever goes wrong with that asking."
+      ]
+    },
+    {
+      "lines": [
+        "Say the side that gets asked for data simply has nothing new to report today, for reasons nobody yet knows.",
+        "Does the request that asked for it come back looking broken, the way a crash would?",
+        "Or does it come back looking exactly like any other day where genuinely nothing happened?"
+      ],
+      "answer": [
+        "It comes back looking exactly like nothing happened — because, as far as the request is concerned, nothing did.",
+        "The request itself reports success either way. It asked, and it got told there was nothing new.",
+        "Only something watching how long it's been since fresh data last showed up can tell a real failure apart from an ordinary quiet stretch."
+      ]
+    },
+    {
+      "lines": [
+        "One shared promise, one card, and the cheapest option that still clears it wins — not the one with the most spare room.",
+        "Two named answers to redoing old work sit on that card too, each paying its own honest cost rather than a free one.",
+        "And every place data comes in from elsewhere makes its own quiet choice about who finds out first when it stops."
+      ]
+    },
+    {
+      "lines": [
+        "Now a brand new request shows up, one that needs an answer in moments rather than minutes, to catch fraud before it ships.",
+        "Does shrinking the few-minutes option down far enough still get there in time?",
+        "Or does only the always-on option survive this much stricter version of the same promise?"
+      ],
+      "answer": [
+        "Only the always-on option survives. Checking in periodically, no matter how often, carries its own floor it can never shrink past.",
+        "And with nothing slower left as a fallback, the question about how expensive it is to redo old work now matters far more than it used to."
+      ]
+    }
+  ]
+}
