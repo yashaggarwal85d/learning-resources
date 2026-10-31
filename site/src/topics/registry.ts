@@ -5885,6 +5885,26 @@ export const TOPICS: TopicMeta[] = [
       "Knowing what a shuffle writes says nothing yet about how many tasks run it, or how evenly — the next topic's own concern, locality and parallelism.",
   },
   {
+    id: 'de.task-scheduling-locality-parallelism',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/task-scheduling-locality-parallelism',
+    title: 'Task scheduling, locality and parallelism',
+    syllabusTitle: 'Task scheduling, locality and parallelism',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-locality-levels', 'spark-shuffle-partitions-config'],
+    uses: ['spark-shuffle-mechanics'],
+    declared: [],
+    bridge:
+      "The shuffle produces blocks sitting on specific executors. This topic is about the scheduler's own choice of which executor runs the next task, given where its input actually lives.",
+    handoff:
+      "Locality and parallelism are about placing and sizing the tasks the planner already decided to run. The next two topics go one level up, into the planner itself: how Catalyst decided what to run in the first place.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -6463,5 +6483,45 @@ export const TOPICS: TopicMeta[] = [
       "Every format so far has been one file, self-contained, and this topic opens the one that won the lakehouse: Parquet's own file anatomy, read directly from a file this sandbox writes and inspects byte by byte.",
     handoff:
       "A row group is just column chunks, and a column chunk is just pages of values — but those values are rarely stored as plain, unencoded bytes. The next topic is exactly how they're encoded.",
+  },
+  {
+    id: 'de.blameless-postmortems-incident-communication',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/blameless-postmortems-incident-communication',
+    title: 'Blameless post-mortems and incident communication',
+    syllabusTitle: 'Blameless post-mortems and incident communication',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['blameless-postmortem-structure', 'impact-in-data-terms', 'contributing-factor-vs-blame', 'incident-communication-cadence'],
+    uses: ['data-contract', 'error-budget-ownership', 'slo-tiering'],
+    declared: [],
+    bridge:
+      "A decision written down and dated is still only tested the day it breaks. This topic is what happens next: naming the impact in the terms the chapter already taught, writing it down the way the chapter already taught, without naming a person to blame for it.",
+    handoff:
+      "This closes the course's own technical arc: a schema, a query, a model, a pipeline, a benchmark, and now the contract, the trade-off, the decision and the incident that together decide whether any of it actually worked for the person who asked for it. What's left (Appendix A and B) is the assessment bank and career guidance — not reel topics, but the standing exercises this whole course now has the vocabulary to actually answer.",
+  },
+  {
+    id: 'de.columnar-encodings-dictionary-rle',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/columnar-encodings-dictionary-rle',
+    title: 'Columnar encodings: dictionary, RLE, delta, byte-stream-split',
+    syllabusTitle: 'Columnar encodings: dictionary, RLE, delta, byte-stream-split',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['parquet-column-encodings'],
+    uses: ['parquet-file-anatomy'],
+    declared: [],
+    bridge:
+      "A row group is just column chunks, and a column chunk is just pages of values rarely stored as plain, unencoded bytes. This topic is exactly how they're encoded: dictionary, RLE/bit-packing, delta and byte-stream-split, each measured directly on a real column.",
+    handoff:
+      "Everything encoded so far has been a flat column. The next topic is what happens the moment a column is optional, repeated or nested — Dremel's own shredding model.",
   },
 ];
