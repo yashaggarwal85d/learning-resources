@@ -1,0 +1,109 @@
+{
+  "topic": "dsa.skip-lists",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Picture the write buffer inside a storage engine. New entries land constantly, the buffer has to stay sorted, and something needs to read it while that's happening.",
+        { "beat": 0.4 },
+        "A balanced tree keeps its shape by rotating subtrees, and a rotation touches a handful of pointers at once, as a unit. Catch a reader mid-rotation and it sees nonsense.",
+        { "beat": 0.4 },
+        "So throw away the rotation entirely. Let a coin decide how tall each entry's shortcut gets, once, and never touch that decision again."
+      ]
+    },
+    {
+      "lines": [
+        "Level zero is nothing special, just the sorted list itself.",
+        { "beat": 0.4 },
+        "Every key also gets a tower built from coin flips: heads climbs a level, tails stops it there.",
+        { "beat": 0.4 },
+        "Notice what's missing from that rule — no reference to how many keys exist, or to any other key's tower."
+      ]
+    },
+    {
+      "lines": [
+        "Say half the entries that reach the first level also reach a second, because the coin is fair.",
+        { "beat": 0.4 },
+        "Of the entries standing on that second level, about what share climb on to a third?"
+      ],
+      "answer": [
+        "The same half, again.",
+        "Each climb is its own fresh flip. A tower doesn't remember how it got to where it is, so the chance of going one level higher never changes."
+      ]
+    },
+    {
+      "lines": [
+        "That forgetfulness is the entire engine behind this shape. Tilt the coin toward tails and fewer towers climb at each level; tilt it toward heads and more do.",
+        { "beat": 0.4 },
+        "Run the tilted coin on a real list and count: close to one climb in four survives each level under the first setting, close to one in two under the second.",
+        { "beat": 0.4 },
+        "Count the pointers instead of the climbs and a similar story appears: a little over one pointer per entry on average, not dozens — cheap insurance against ever rebalancing anything."
+      ]
+    },
+    {
+      "lines": [
+        "Follow one search by hand. Begin at the tallest tower on the left.",
+        { "beat": 0.3 },
+        "Keep moving sideways as long as the next stop is still below the target.",
+        { "beat": 0.3 },
+        "The instant it isn't, step down a level instead and keep going.",
+        { "beat": 0.4 },
+        "Every search in this structure repeats that same two-move pattern until it runs out of levels."
+      ]
+    },
+    {
+      "lines": [
+        "Imagine a list holding twenty thousand entries. Guess: does one search typically cost around twenty comparisons, around two hundred, or around two thousand?"
+      ],
+      "answer": [
+        "Around twenty.",
+        "That's the logarithmic shape at work — doubling the list barely nudges the cost, which is the entire reason to climb down from a random height instead of crawling along the base."
+      ]
+    },
+    {
+      "lines": [
+        "Running that exact search on twenty thousand real entries lands comfortably under thirty comparisons either way the coin is tilted, and comfortably inside the theoretical ceiling each time.",
+        { "beat": 0.4 },
+        "Tilt the coin further toward tails and that ceiling actually drops a little further — the original author's own argument for preferring the less even coin.",
+        { "beat": 0.4 },
+        "He goes further still: past a couple hundred entries, a search running triple its typical cost is, by his own estimate, a once-in-a-million event."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that actually protects a reader. Dropping a new entry into the structure touches one pointer at each level that entry's tower reaches — nothing beyond that, no matter how large the structure already is.",
+        { "beat": 0.4 },
+        "Compare that to rebalancing a tree, where several pointers must flip together or the shape breaks.",
+        { "beat": 0.4 },
+        "One pointer at a time means a reader passing through mid-insert either sees the old picture or the new one complete — never something half-built in between."
+      ]
+    },
+    {
+      "lines": [
+        "Two pieces of software you may already rely on run exactly this idea.",
+        { "beat": 0.3 },
+        "A widely used storage engine's own write buffer is built this way, specifically so nothing reading it ever has to wait.",
+        { "beat": 0.4 },
+        "A widely used in-memory database keeps its ordered sets this way too, but tags each shortcut with how many entries it jumps over — turning 'where does this item rank' into adding up jumps instead of counting from the beginning."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what was never required anywhere in this: no rebalancing step, no invariant to repair, nothing recomputed after the fact.",
+        { "beat": 0.4 },
+        "One random choice, made once per entry at the moment it's inserted, is the whole mechanism — and that randomness is precisely why nothing ever has to stop the readers."
+      ]
+    },
+    {
+      "lines": [
+        "One more wrinkle before we close. The same storage engine's cursor can step forward or backward through its data, yet nothing in the structure stores a backward link at all.",
+        { "beat": 0.4 },
+        "So how does stepping backward actually happen?"
+      ],
+      "answer": [
+        "By running a brand new search, aimed at finding whatever sits just below where the cursor currently is.",
+        "No backward link was ever needed. Going backward is just a forward search with a different target, costing exactly what any other search here costs."
+      ]
+    }
+  ]
+}

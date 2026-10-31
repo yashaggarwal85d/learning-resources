@@ -1,0 +1,67 @@
+{
+  "topic": "de.deletion-vectors-across-formats",
+  "syllabus": [
+    { "clause": "a per-data-file bitmap of deleted row positions (RoaringBitmap) instead of rewriting the file or writing many positional delete files", "at": [{ "step": "Reveal: a deletion vector is a bitmap, not a list" }, { "step": "Reveal: reproduced for real — a small deletion vector stays an array" }] },
+    { "clause": "Delta DVs, Iceberg v3 DVs stored as Puffin blobs (at most one per data file), Hudi's equivalent", "at": [{ "step": "Reveal: the same bitmap, three formats, one real difference" }] },
+    { "clause": "the merge-on-read cost they leave behind and when to purge them", "at": [{ "step": "Reveal: the real cost a deletion vector leaves behind at read time" }, { "step": "Reveal: reproduced for real — compaction pays that cost back" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg table specification, Deletion Vectors",
+      "items": [
+        { "item": "deletion vectors identify deleted rows of a file by encoding deleted positions in a bitmap; a set bit at position P means the row at P is deleted", "at": [{ "step": "Reveal: a deletion vector is a bitmap, not a list" }] },
+        { "item": "there can be at most one deletion vector per data file in a snapshot, more efficient at execution time than position delete files", "at": [{ "step": "Reveal: the same bitmap, three formats, one real difference" }] },
+        { "item": "deletion vectors are stored using the deletion-vector-v1 blob definition from the Puffin spec", "at": [{ "step": "Reveal: the same bitmap, three formats, one real difference" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg Puffin specification, deletion-vector-v1 blob type",
+      "items": [
+        { "item": "the blob's big-endian length/CRC framing was chosen for compatibility with existing deletion vectors in Delta tables", "at": [{ "step": "Reveal: the same bitmap, three formats, one real difference" }] },
+        { "item": "the blob's properties include cardinality, the number of deleted rows (set positions)", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, What are deletion vectors? (docs.delta.io)",
+      "items": [
+        { "item": "by default a single-row delete rewrites the entire Parquet file; deletion vectors mark rows removed without rewriting it", "at": [{ "step": "Reveal: the real cost a deletion vector leaves behind at read time" }] },
+        { "item": "reads resolve current table state by applying the deletions noted by deletion vectors", "at": [{ "step": "Reveal: the real cost a deletion vector leaves behind at read time" }] },
+        { "item": "OPTIMIZE and REORG TABLE ... APPLY (PURGE) rewrite data files with deletion-vector modifications applied", "at": [{ "step": "Reveal: reproduced for real — compaction pays that cost back" }] },
+        { "item": "the feature is in experimental support mode as of Delta Lake 2.3.0+", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Hudi, Table and Query Types",
+      "items": [
+        { "item": "merge-on-read deletes are written as records directly into log files, merged dynamically with base files during query execution — no bitmap", "at": [{ "step": "Reveal: the same bitmap, three formats, one real difference" }] }
+      ]
+    },
+    {
+      "source": "RoaringFormatSpec",
+      "items": [
+        { "item": "a cardinality at or under 4,096 indicates an array container; above it indicates a bitset container", "at": [{ "step": "Predict: what happens once the deletion count crosses that threshold?" }, { "step": "Reveal: reproduced for real — a large deletion vector becomes a bitset" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The data file in examples.py is plain CSV text, not Parquet, and the container implementation is a simplified reimplementation of the Roaring format (reusing its real 4,096-element array/bitset threshold and 65,536-bit single-container bitset size) rather than the real RoaringBitmap library's run-length containers or on-disk serialization byte for byte — disclosed in the script's own docstring and FACT-CHECK.md red-team #1 and #2.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The claim that Delta and Iceberg share the bitmap format specifically (not just the same idea by different names, this chapter's earlier topic-14 framing) is sourced directly from the Puffin spec's own big-endian-for-Delta-compatibility text, a stronger and more specific claim that needed its own citation — FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: the same bitmap, three formats, one real difference" }] },
+      { "item": "Hudi is deliberately not described as having 'an equivalent deletion vector' — its docs never use that term for its MOR log-file deletes, and this topic frames it as a different architectural answer to the same question, not a bitmap by another name — FACT-CHECK.md red-team #4.", "at": [{ "step": "Reveal: the same bitmap, three formats, one real difference" }] },
+      { "item": "The read-cost demo's 'compaction' is a plain purge-and-rewrite of the CSV file, not a real columnar rewrite or a real query engine's physical plan change — the cost shape (DV-applied scan costs more, post-compaction scan costs less) is what transfers, consistent with topics 13 and 14's established disclosure pattern.", "at": [{ "deep": "Frontier" }] },
+      { "item": "No flaky-timing issue was hit in this topic's examples.py, unlike topic 14's isolated-merge-prep fix — the deletion-vector lookup's added per-row cost is large enough relative to this sandbox's I/O noise to assert directly with a 9-repeat median, verified robust across 5 consecutive runs.", "at": [{ "step": "Reveal: reproduced for real — compaction pays that cost back" }] },
+      { "item": "The on-screen counts (1,200; 5,000; 50,000; 2,400 bytes; 8,192 bytes) are all literal constants or literal-asserted values in examples.py, not values computed at runtime from a fraction, so the build's digit-provenance check can trace every one of them to executed truth.", "at": [{ "step": "Reveal: reproduced for real — a small deletion vector stays an array" }] },
+      { "item": "This topic does not cover schema evolution or column IDs — that is explicitly the next topic's subject, and this topic's own handoff names that boundary.", "at": [{ "step": "Recap" }] },
+      { "item": "The prerequisites panel lists topics 10-14 and Chapter 5 §5.6's probabilistic-structures material (the bitmap-sketch idea reused directly here) as declared background, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "Iceberg's spec text that a DV, once written, must replace all previously written position delete files for that data file is covered by this topic's sources but not individually dramatized on screen, since the reel's 10-step budget focuses on the array/bitset tradeoff and the cross-format comparison rather than Iceberg's own file-replacement bookkeeping rules.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Delta's deletion-vectors feature being 'experimental support mode' as of 2.3.0+ is named in Frontier, not claimed as stable-forever or default-on, matching the currency caveat already established for this chapter's Delta-sourced topics (13 and 14).", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

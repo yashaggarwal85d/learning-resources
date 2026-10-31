@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM-tree write and read paths">The memtable this topic's skip list is the structure of: sorted, in memory, flushed to an SSTable.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Order-statistic trees">The subtree-size augmentation that this topic's Redis `span` field is the same idea, on a skip list instead of a tree.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linked and intrusive lists">The O(1) splice this topic's insert reuses at every level.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The paper and the real code
+
+<ul class="resources">
+  <Resource kind="reading" title="Skip Lists: A Probabilistic Alternative to Balanced Trees" href="https://www.cl.cam.ac.uk/teaching/2005/Algorithms/skiplists.pdf" by="William Pugh, CACM 33(6), 1990">The paper this topic's height distribution, search-cost bound, and p = 1/4 recommendation are all drawn from.</Resource>
+  <Resource kind="reading" title="db/skiplist.h" href="https://raw.githubusercontent.com/google/leveldb/main/db/skiplist.h" by="LevelDB">The real thread-safety contract this topic's concurrency claim is quoted from, word for word.</Resource>
+</ul>
+
+</section>
+

@@ -1,0 +1,132 @@
+{
+  "topic": "de.iac-state-plan-drift",
+  "syllabus": [
+    {
+      "clause": "declarative desired state, state files and locking",
+      "at": [
+        { "step": "State: the tool's own record, not the live cloud" },
+        { "step": "Locking: the guard that stops two applies colliding" }
+      ]
+    },
+    {
+      "clause": "plan/apply",
+      "at": [
+        { "step": "Plan, then apply: dry run, then commit" }
+      ]
+    },
+    {
+      "clause": "drift detection and import",
+      "at": [
+        { "step": "Drift and import: two ends of the same surprise" }
+      ]
+    },
+    {
+      "clause": "module boundaries for data platforms (bucket + catalog + IAM as one unit)",
+      "at": [
+        { "step": "One unit: a bucket, its catalog entry, its IAM role" }
+      ]
+    },
+    {
+      "clause": "Terraform's 2023 BSL relicensing and the OpenTofu fork",
+      "at": [
+        { "step": "The license changed, and a fork answered" }
+      ]
+    },
+    {
+      "clause": "Pulumi/CDK general-purpose IaC",
+      "at": [
+        { "step": "A real programming language instead of a declarative file" }
+      ]
+    },
+    {
+      "clause": "policy-as-code gates on plans",
+      "at": [
+        { "step": "A plan that can't ship without a passed check" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "(in-cluster GitOps is §12.3).",
+      "at": [
+        { "topic": "GitOps reconciliation for data platforms", "domain": "data-engineering", "quote": "the split between IaC for cloud resources (§10.4) and GitOps for in-cluster state" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "HashiCorp: State",
+      "items": [
+        { "item": "State's primary purpose is storing bindings between remote objects and the resource instances declared in configuration, which Terraform uses to determine what changes to make", "at": [{ "step": "State: the tool's own record, not the live cloud" }] }
+      ]
+    },
+    {
+      "source": "HashiCorp: State: Locking",
+      "items": [
+        { "item": "Terraform locks state automatically on any operation that could write it, silently unless acquiring the lock takes longer than expected", "at": [{ "step": "Locking: the guard that stops two applies colliding" }] }
+      ]
+    },
+    {
+      "source": "HashiCorp: terraform plan command reference",
+      "items": [
+        { "item": "Plan alone does not carry out the proposed changes; without -out=FILE it creates a speculative plan with no intent to apply it", "at": [{ "step": "Plan, then apply: dry run, then commit" }] }
+      ]
+    },
+    {
+      "source": "HashiCorp: Import existing infrastructure resources",
+      "items": [
+        { "item": "Import requires a hand-written resource configuration block first and only imports into state, generating no configuration", "at": [{ "step": "Drift and import: two ends of the same surprise" }] }
+      ]
+    },
+    {
+      "source": "OpenTofu: Manifesto",
+      "items": [
+        { "item": "HashiCorp switched Terraform's license from the MPL to the Business Source License on August 10, 2023, with little advance notice; OpenTofu is the resulting fork, created after no response by August 25, maintained under the Linux Foundation", "at": [{ "step": "The license changed, and a fork answered" }] }
+      ]
+    },
+    {
+      "source": "Pulumi: How Pulumi IaC Works",
+      "items": [
+        { "item": "Pulumi defines infrastructure in general-purpose languages (Node.js, Python, Go, .NET, Java) plus YAML, not a declarative DSL", "at": [{ "step": "A real programming language instead of a declarative file" }] }
+      ]
+    },
+    {
+      "source": "AWS: What is the AWS CDK?",
+      "items": [
+        { "item": "AWS CDK uses a general-purpose language with real conditionals, loops, composition and inheritance, provisioning through AWS CloudFormation", "at": [{ "step": "A real programming language instead of a declarative file" }] }
+      ]
+    },
+    {
+      "source": "HashiCorp Sentinel: Documentation",
+      "items": [
+        { "item": "Sentinel is a policy-as-code tool that proactively enforces policy, preventing a disallowed deployment", "at": [{ "step": "A plan that can't ship without a passed check" }] }
+      ]
+    },
+    {
+      "source": "Open Policy Agent: Philosophy",
+      "items": [
+        { "item": "OPA decouples policy from the service it governs, letting policy be read, written, versioned and managed separately from the service itself", "at": [{ "step": "A plan that can't ship without a passed check" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that the second apply's plan was computed against an already-stale state, not that applies are inherently unsafe; a learner should be able to name exactly what made the second apply stale (an unlocked, concurrent write), not just that something went wrong", "at": [{ "step": "Eight seconds apart, and no error from either one" }] },
+      { "item": "The predict step's correct answer is structural (the tool's own last-known record), not a product-specific detail; a learner should be able to state why that record can go stale before learning the vendor's chosen backend", "at": [{ "step": "Before the mechanism: what is a plan actually diffed against?" }] },
+      { "item": "The locking reproduction tests a hard block on a second acquire call, not a race that sometimes loses — a learner who thinks locking just makes collisions 'less likely' has missed that a real lock either grants or refuses, with nothing in between", "at": [{ "step": "Locking: the guard that stops two applies colliding" }] },
+      { "item": "Drift and import are deliberately shown as the same gap approached from two directions, not two unrelated features; a learner should be able to say which one is passive discovery and which one is the deliberate fix", "at": [{ "step": "Drift and import: two ends of the same surprise" }] },
+      { "item": "The module-boundary step's point is that bundling is a review-unit decision, not a technical constraint; a learner who thinks Terraform forces three resources into one module has missed that this is a design choice this topic recommends, not a tool limitation", "at": [{ "step": "One unit: a bucket, its catalog entry, its IAM role" }] },
+      { "item": "The BSL/OpenTofu step states a legal change, not a technical one — a learner who thinks Terraform 'stopped working' on the relicensing date has missed the actual claim; the real dates and license names come from OpenTofu's own account of its own founding", "at": [{ "step": "The license changed, and a fork answered" }] },
+      { "item": "The Pulumi/CDK step's trade-off is specific (expressive power makes it easier to write imperative logic that breaks plan/apply safety), not a generic 'more flexible but riskier' hand-wave", "at": [{ "step": "A real programming language instead of a declarative file" }] },
+      { "item": "The policy-gate reproduction's point is the enforced block itself, not a claim about how Sentinel or OPA's actual rule languages work internally; an expert reviewer should expect a minimal allow/block simulation, not a reproduction of either tool's real rule engine", "at": [{ "step": "A plan that can't ship without a passed check" }] },
+      { "item": "The final predict step's correct answer names the policy gate specifically because it's the only listed mechanism that inspects a plan's own content before it ships; a learner who picks locking has conflated 'stops two operators colliding' with 'stops one bad plan from shipping'", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot run a real Terraform or OpenTofu binary in this sandbox because executing a downloaded external binary is blocked by this session's own safety controls; an expert reviewer should expect examples.py's disclosed structural simulation, not a real CLI run against a real backend", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}
