@@ -1,0 +1,85 @@
+{
+  "topic": "de.event-time-watermarks-completeness",
+  "steps": [
+    {
+      "lines": [
+        "One source just stops talking for a while.",
+        "Nothing crashed. Nothing errored. It simply has nothing new to say.",
+        "And somehow, that alone is enough to freeze everything downstream of it."
+      ]
+    },
+    {
+      "lines": [
+        "There's when something actually happened, out in the world.",
+        "And there's when your own system finally gets around to noticing it.",
+        "Those two can drift apart by a little, or by a lot, with nothing forcing them back together."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A claim gets made: nothing older than this point is still coming.",
+        "Can a real system actually promise that, and mean it every single time?"
+      ],
+      "answer": [
+        "Not really, no.",
+        "For almost any real, spread-out source, there's simply no way to be certain nothing older is still on its way.",
+        "So the claim ends up being an educated guess, not a promise."
+      ]
+    },
+    {
+      "lines": [
+        "That guess, in most real systems, is exactly what it has to be: a guess, not a fact.",
+        "And it isn't made once for the whole system. Each piece makes its own guess, separately.",
+        "Which means the overall answer is only ever as current as whichever piece has said the least."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "One of those pieces just goes quiet and stays quiet, with nothing explicitly watching for it.",
+        "Does the overall answer eventually move past it anyway, or does it just wait forever?"
+      ],
+      "answer": [
+        "It waits forever, which is exactly the trap.",
+        "Nothing automatically notices that silence means silence, rather than simply more data still to come.",
+        "Somebody has to actually decide, on purpose, how long is too long to wait."
+      ]
+    },
+    {
+      "lines": [
+        "Decide that, on purpose, and the quiet one gets politely written off.",
+        "Everyone else's progress counts again, instead of being held hostage to one gone-quiet voice.",
+        "The whole thing starts moving again, the moment that decision actually gets made."
+      ]
+    },
+    {
+      "lines": [
+        "There's a mirror version of this same problem, running the opposite direction entirely.",
+        "One piece races way out ahead of the rest, and whoever's listening has to hold onto everything it sends.",
+        "Rein that one in instead, and nobody downstream has to hoard nearly as much."
+      ]
+    },
+    {
+      "lines": [
+        "Pull that claim in tighter, and you hear back sooner — at the cost of getting some of it wrong the first time.",
+        "Loosen it instead, and you wait longer, but what you hear back is far more likely to already be right.",
+        "Neither one of those is simply the better choice. It depends entirely on what you actually need."
+      ]
+    },
+    {
+      "lines": [
+        "Every figure in this reel came from one real run, happening just now, of this topic's own toy models.",
+        "The freeze that really happened, and the fix that really thawed it back out.",
+        "And the trade-off itself, not asserted, but actually measured both ways."
+      ]
+    },
+    {
+      "lines": [
+        "So: two separate clocks, free to drift apart, with nothing forcing them back together.",
+        "A claim of completeness that's honest about being a guess, not a promise.",
+        "And a dial that always trades one thing for the other, in whichever direction you actually need it to."
+      ]
+    }
+  ]
+}

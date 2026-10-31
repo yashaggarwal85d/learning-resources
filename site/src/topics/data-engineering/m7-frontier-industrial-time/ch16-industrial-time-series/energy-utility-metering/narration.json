@@ -1,0 +1,94 @@
+{
+  "topic": "de.energy-utility-metering",
+  "steps": [
+    {
+      "lines": [
+        "Most days this line's energy total looks exactly like every other day.",
+        "Then one day it comes back astronomical, after a meter got swapped out for a new one.",
+        "A fix applied the week before, meant to clean up a different problem, had already quietly thrown away a real event without anyone noticing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one habit worth locking in before anything else.",
+        "A meter's own reading never resets itself on its own. It only ever climbs.",
+        "So how much was used in a given stretch of time is always a subtraction of two readings. That subtraction is reliable right up until the register itself does something unusual."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next few reveals answer it directly.",
+        "Subtract an earlier reading from a later one and the result comes back negative.",
+        "Does that one fact alone tell you what actually happened to the meter?"
+      ],
+      "answer": [
+        "It doesn't, and that's the whole trap.",
+        "A negative result can come from at least three completely different events, and each one needs its own, different repair.",
+        "Treating all three the same way is how a fix for one quietly breaks the other two."
+      ]
+    },
+    {
+      "lines": [
+        "Take the case where the register simply runs out of digits and wraps back around.",
+        "That sounds like lost information, but it genuinely isn't.",
+        "Once you know exactly how wide that register is, the true amount used across the wrap comes back out exactly, with nothing left to guess at."
+      ]
+    },
+    {
+      "lines": [
+        "Now the harder case: the device itself restarts, and its counter falls back down near nothing.",
+        "Whatever was used between the last good reading and that restart is simply gone from the record.",
+        "There's no clever formula that pulls that number back out of thin air. The honest thing to produce is a ceiling, built from how much time passed and the fastest this line is ever known to run."
+      ]
+    },
+    {
+      "lines": [
+        "Compare that honest ceiling against what used to happen here.",
+        "The older approach just threw out any negative result and quietly recorded zero for that stretch.",
+        "That's not a smaller version of the right answer. It's a confident, wrong one, standing in for an honest range nobody bothered to compute."
+      ]
+    },
+    {
+      "lines": [
+        "A third case looks nothing like the first two.",
+        "The physical equipment stays exactly where it is, but a brand new meter goes in, starting its own count from its own fresh zero.",
+        "Subtract straight across that boundary and you get a huge, meaningless number. Treat each side of the boundary as its own separate story, and the real figures on both sides fall right out."
+      ]
+    },
+    {
+      "lines": [
+        "Switch from counting to a different kind of reading entirely: a rate, sampled at whatever moments happened to be convenient.",
+        "Properly accounting for how far apart those moments actually were gives one number.",
+        "Pretending they were evenly spaced, and just averaging them, gives a different number that looks just as plausible on a page."
+      ]
+    },
+    {
+      "lines": [
+        "One shared meter sits upstream of several lines at once, and somebody has to decide how much of its total belongs to any one of them.",
+        "Split it by how many hours each line actually ran, and you get one answer.",
+        "Split the exact same total by how many parts each line actually made, and you get a different one.",
+        "That gap between them isn't noise. Turn it into a price, and it's a number someone in a budget meeting would actually argue about."
+      ]
+    },
+    {
+      "lines": [
+        "A subtraction that breaks three separate ways, each with its own distinct fix.",
+        "A loss that gets bounded honestly rather than papered over with a zero.",
+        "A boundary that gets split instead of subtracted straight across.",
+        "A rate handled as the varying thing it actually is, not flattened into a single average.",
+        "And a split-the-difference decision that turns directly into real money, once you bother to price it."
+      ]
+    },
+    {
+      "lines": [
+        "Someone needs exactly one figure for how much energy went into each good part, for a line fed by that same shared upstream meter.",
+        "Does which splitting rule got used actually change the number that ends up in the report?"
+      ],
+      "answer": [
+        "It absolutely does, every time.",
+        "The energy that meter actually used is a fixed fact once it's measured.",
+        "How much of that fact gets assigned to any one line was always a choice, and the final figure simply carries that choice along with it."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "topic": "de.kafka-streams-ktable-duality",
+  "steps": [
+    {
+      "lines": [
+        "Everything in this stretch ran on its own dedicated set of machines, coordinating with each other.",
+        "A different approach builds almost the same ideas with none of that at all.",
+        "What does that choice actually change, underneath?"
+      ]
+    },
+    {
+      "lines": [
+        "One earlier approach turned a changing flow into something table-shaped, run by its own dedicated set of machines underneath.",
+        "This part of the picture builds almost the identical idea in a completely different way.",
+        "As a plain library, with none of that dedicated machinery underneath it at all."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "With no dedicated machinery of its own to hand out work, nothing schedules anything across separate machines.",
+        "So what actually ends up deciding how many parallel pieces the whole thing can ever split into?"
+      ],
+      "answer": [
+        "Something upstream of it already decided that, long before any of this ever started.",
+        "A fixed count, set by how the incoming data was already divided up in the first place.",
+        "One parallel piece gets created for each one of those divisions, and that's the ceiling, full stop."
+      ]
+    },
+    {
+      "lines": [
+        "One parallel piece gets created for each division of the incoming data, nothing more, nothing less.",
+        "Once that assignment is made, it stays exactly as it was, forever, never reshuffled later.",
+        "That fixed assignment is what makes each piece a fixed unit of everything running in parallel."
+      ]
+    },
+    {
+      "lines": [
+        "Start up more copies of the whole thing than there are divisions of incoming data to hand out.",
+        "The extra copies still start up, but they simply sit there, doing nothing, for now.",
+        "The moment a busy copy goes down, one of those waiting copies steps straight in."
+      ]
+    },
+    {
+      "lines": [
+        "Something kept nearby for fast lookups lives wherever its own piece of the parallel work happens to run.",
+        "Every single change made to it also gets written out somewhere else, durably, on purpose.",
+        "That somewhere else can always be replayed later to rebuild the exact same thing from scratch."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "A warm, already-caught-up copy sits waiting on a completely different machine, just in case.",
+        "When the original fails, what does already having that waiting copy actually end up saving?"
+      ],
+      "answer": [
+        "Almost the entire cost of coming back, and here's exactly why.",
+        "Replaying absolutely everything from the very beginning is what normally takes so long.",
+        "A copy that was already caught up only has to replay the tiny gap since its last update, not everything."
+      ]
+    },
+    {
+      "lines": [
+        "With nothing warm sitting ready, coming back means replaying absolutely everything, from the very start.",
+        "With something warm already sitting there, caught up, the failed piece gets handed straight over to it instead.",
+        "Coming back shrinks down to just that small remaining gap, not the whole history."
+      ]
+    },
+    {
+      "lines": [
+        "A changing flow gets folded directly into something table-shaped, each new piece updating it in place.",
+        "That same table-shaped thing's own changes, read straight back out, are themselves a changing flow.",
+        "It's the exact same relationship already generalized, from a completely different angle, one part earlier."
+      ]
+    },
+    {
+      "lines": [
+        "One particular guarantee about processing each thing exactly once got made noticeably more efficient over time.",
+        "A newer way of coordinating who does what is now the default on freshly created setups.",
+        "Even so, some of that newer coordinator's own pieces are openly stated as not built yet."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The parallel pieces that really did cap out exactly at how the incoming data was divided.",
+        "The table-shaped thing that really did rebuild itself, perfectly, from its own changes read back out."
+      ]
+    },
+    {
+      "lines": [
+        "So: no dedicated machinery underneath, just a plain library doing the coordinating on its own.",
+        "One parallel piece per division of incoming data, an assignment that never shifts once made.",
+        "Something kept nearby, backed durably elsewhere. A changing flow and a table-shaped thing, the same relationship, read either way."
+      ]
+    }
+  ]
+}

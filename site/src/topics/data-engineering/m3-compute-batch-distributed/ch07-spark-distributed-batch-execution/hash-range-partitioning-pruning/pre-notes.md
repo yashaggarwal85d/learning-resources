@@ -1,0 +1,4 @@
+- **Exchange**: the physical plan node marking a real shuffle boundary, covered in this chapter's own earlier topics. *Where you meet it:* the node this topic counts, to see when it's reused versus repeated.
+- **Required distribution**: what an operator needs true of its input's own partitioning before it can run correctly (e.g. "every row with the same key in the same partition"). *Where you meet it:* the exact thing this topic's planner checks before deciding whether to add a new shuffle.
+- **Global sort**: an ordering that holds across the entire dataset, not just within one partition. *Where you meet it:* the reason sorting needs a different partitioner than grouping does.
+- **Predicate**: the condition inside a `WHERE`/`filter` clause. *Where you meet it:* the thing this topic's own static pruning checks against a directory layout before reading any file.

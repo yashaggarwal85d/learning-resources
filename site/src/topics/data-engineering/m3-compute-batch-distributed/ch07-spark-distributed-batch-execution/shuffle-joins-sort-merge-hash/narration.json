@@ -1,0 +1,63 @@
+{
+  "topic": "de.shuffle-joins-sort-merge-hash",
+  "steps": [
+    {
+      "lines": [
+        "Copying a small side everywhere only works when one side actually is small. Here's the harder case: two tables that are both too big for that trick. Spark still has to pick something.",
+        "So that's the real question for this topic. Left alone, with no hint at all, which of two valid strategies does the planner actually reach for?",
+        "Let's look at a real plan instead of guessing."
+      ]
+    },
+    {
+      "lines": [
+        "I measured this directly, and the plan names its own choice plainly.",
+        "Left alone, Spark sorts both sides of this join before merging them together. That's its own default, not one option among several it happens to try first.",
+        "Each side gets its own sort step, sitting right where the merge needs sorted input to work."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "Now a hint tells Spark to use the other approach instead, one built on hashing rather than sorting. Does that approach still sort the data first, the way the first one did?",
+        "Think about what a hash table actually needs from its input before you answer."
+      ],
+      "answer": [
+        "It's tempting to assume any matching strategy needs its input in some kind of order first.",
+        "But a hash table doesn't care about order at all. It just needs a place to put each value, so there's genuinely nothing to sort.",
+        "That absence of a sort isn't a shortcut on one side. It's the whole mechanism changing."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the sort is gone completely, not just shortened.",
+        "The hinted strategy produces a plan with no sort step anywhere in it at all. Not on the side that got the hint, and not on the other side either.",
+        "Switching the strategy removed an entire step from both halves of the join at once."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, moving from what each strategy does to how it fails.",
+        "Imagine the side this hash-based approach builds its lookup from grows far larger than planned. Does it slow down the same graceful way the sorting approach would?",
+        "Think about where each approach's own data actually has to live while it works."
+      ],
+      "answer": [
+        "It's easy to assume both approaches shuffle the same data, so both should struggle the same way.",
+        "But a sort can always spill extra data to disk and keep going, just more slowly. A lookup table being built has nowhere to spill to once it's too big.",
+        "One of these has a safety net built in. The other one doesn't."
+      ]
+    },
+    {
+      "lines": [
+        "And that's confirmed directly in Spark's own planner, in its own comments.",
+        "Building that lookup table is named outright as something that can run out of memory once it gets big enough. The sorting approach has nothing like it, because it can always fall back to disk.",
+        "Same job, two strategies, two completely different ways of running out of room."
+      ]
+    },
+    {
+      "lines": [
+        "So here's everything this topic actually showed you, named precisely.",
+        "Sorting both sides first is the planner's own default for two large tables. A hint can switch to hashing instead, which drops every sort on both sides — but trades away the safety net sorting had, risking real memory trouble if one side turns out bigger than expected."
+      ]
+    }
+  ]
+}

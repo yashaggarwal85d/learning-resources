@@ -1,0 +1,83 @@
+{
+  "topic": "de.mqtt-sparkplug-unified-namespace",
+  "steps": [
+    {
+      "lines": [
+        "An edge node out on the plant floor loses power in the middle of a shift.",
+        "Nothing about the broker or the dashboard changes right away, because neither one of them actually watched that connection die in real time.",
+        "The node eventually comes back online, republishes everything it knows, and every single one of its metrics shows up twice in the record."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "A dashboard kept trusting a dead node for a solid twenty minutes without anyone noticing anything was wrong.",
+        "What two separate fields, specifically built into this protocol, actually tell a consumer both that a node died and that what's arriving now is a genuine restart?"
+      ],
+      "answer": [
+        "A death certificate, and a pair of counters that reset.",
+        "The broker's own Will message marks the node dead the moment its connection actually breaks, while the birth-death counter and the sequence number, both reset on every rebirth, are what separate a real restart from old data arriving twice."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually happens when a real connection to a real broker gets killed partway through a stream of messages.",
+        "At the weakest delivery guarantee, some messages simply never arrive, but nothing ever shows up twice, because nobody ever tracked an acknowledgement to retry in the first place.",
+        "At the next guarantee up, nothing is ever permanently lost, but the broker ends up redelivering one message a second time, because it never actually got the acknowledgement before the connection died."
+      ]
+    },
+    {
+      "lines": [
+        "A retained message is simply the broker's own copy of the last value anyone published to a given topic.",
+        "Any client that asks, even one that only joins long after that value was first published, gets handed that same stored copy immediately.",
+        "A last will works the opposite way: the broker only ever publishes it once a client's connection dies without a clean goodbye, which is exactly what marks a node as actually gone."
+      ]
+    },
+    {
+      "lines": [
+        "This protocol's birth message is required to carry every single metric that node will ever report, for its entire life, not just the ones it happens to have ready right now.",
+        "That same birth message always carries sequence number zero, along with its own counter that only increments on a brand new connection, used specifically to match a birth to its own later death.",
+        "Every data message after that birth carries a sequence number exactly one higher than the last one, and once that counter reaches its ceiling, it wraps straight back down to zero again."
+      ]
+    },
+    {
+      "lines": [
+        "A system watching this sequence counter can simply notice when an expected number never shows up at all.",
+        "Picture the stream arriving as zero, one, two, three, then five — four never actually arrives.",
+        "The moment that gap is detected, the watching side asks the node to republish its entire birth message from scratch, rather than silently assuming nothing important was missed."
+      ]
+    },
+    {
+      "lines": [
+        "Imagine one single broker whose entire topic structure is laid out to directly mirror a plant's own physical equipment hierarchy.",
+        "Every system in that plant, instead of wiring up its own direct connection to every other system it needs to talk to, simply publishes its own state into that one shared structure.",
+        "Any consumer that needs to know what's happening anywhere in the plant can simply read from that exact same single place, instead of needing its own separate connection to each source."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part of this pattern that's easy to miss if you only ever look at what it does well.",
+        "Every single value sitting in that broker right now is only ever the most current one — there's no record anywhere of what a given value used to be a moment before.",
+        "Whatever you actually need history or replay for has to come from an entirely separate system, a durable log sitting behind this broker, because the broker itself was simply never built to keep one."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole picture together now.",
+        "Three different delivery guarantees that trade loss against duplication, a retained value and a death certificate that together explain exactly why that dashboard trusted a dead node for so long.",
+        "A real birth-and-death cycle with counters that detect a gap and trigger a fresh rebirth, and a broker that, on its own, can only ever tell you what's true right this moment."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "Picture a consumer that connects right after a ten-minute outage has ended, with access to nothing but this broker's own retained values and no separate durable log sitting behind it anywhere.",
+        "Working from only those retained values, can that consumer actually recover everything that was published to this broker while it was busy being offline?"
+      ],
+      "answer": [
+        "No, and this is the whole point of calling it a limit rather than a trade-off.",
+        "A retained value only ever holds the single latest reading for each topic, never a log of everything that happened in between, so without a durable log sitting behind the broker, that entire outage window is simply gone for good."
+      ]
+    }
+  ]
+}

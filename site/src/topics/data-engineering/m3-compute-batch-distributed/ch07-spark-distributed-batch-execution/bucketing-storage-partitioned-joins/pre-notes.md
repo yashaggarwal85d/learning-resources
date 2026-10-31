@@ -1,0 +1,4 @@
+- **Exchange**: the physical plan node marking a real shuffle boundary, covered in this chapter's own earlier topics. *Where you meet it:* the node this topic counts to confirm a join did or didn't pay for a shuffle.
+- **Persistent table**: a table registered with Spark's own catalog via `saveAsTable`, distinct from a file written with `save` alone. *Where you meet it:* the write path bucketing requires, named in this topic's own first source.
+- **Join key**: the column (or columns) a join's own equality condition compares. *Where you meet it:* the column this topic's tables are deliberately pre-split by, before any join runs.
+- **DSv2 (Data Source V2)**: Spark's newer, catalog-aware interface for an external table format (Iceberg, Delta and others) to report its own structure directly to the planner. *Where you meet it:* the interface storage-partitioned join depends on, in this topic's own sourced half.

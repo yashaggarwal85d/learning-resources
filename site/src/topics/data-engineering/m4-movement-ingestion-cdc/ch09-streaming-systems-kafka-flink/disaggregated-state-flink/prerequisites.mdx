@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: keyed state, key groups and rescaling
+
+This topic builds directly on the state-backend comparison and key-group rescaling unit the
+previous topic established — ForSt is introduced as a third backend alongside heap and RocksDB,
+and the checkpoint-near-metadata reveal here depends on the checkpoint/savepoint mechanics already
+covered. See
+[Keyed state, key groups and rescaling](../keyed-state-key-groups-rescaling/) first if any of
+that isn't familiar.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Disaggregated state in Flink 2.0" href="https://www.vldb.org/pvldb/vol18/p4846-mei.pdf" by="Mei et al., 2025 VLDB">The async execution framework, ForSt, and the reported recovery/scale-in/scale-out numbers.</Resource>
+  <Resource kind="reading" title="State Backends" href="https://nightlies.apache.org/flink/flink-docs-release-2.0/docs/ops/state/state_backends/" by="Apache Flink, 2.0 docs">The ForStStateBackend definition and remote-storage architecture.</Resource>
+  <Resource kind="reading" title="Working with State V2" href="https://nightlies.apache.org/flink/flink-docs-release-2.0/docs/dev/datastream/fault-tolerance/state_v2/" by="Apache Flink, 2.0 docs">The async state API's StateFuture mechanics.</Resource>
+</ul>
+
+</section>

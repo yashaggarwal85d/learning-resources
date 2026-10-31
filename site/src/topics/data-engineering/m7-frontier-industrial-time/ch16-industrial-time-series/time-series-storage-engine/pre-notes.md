@@ -1,0 +1,7 @@
+- **Write-ahead log**: a sequential, append-only record of writes, replayed to recover state a crash lost. *Where you meet it:* what every engine in this topic uses to survive a restart.
+- **Memtable**: an in-memory, mutable structure holding the most recent writes before they're flushed. *Where you meet it:* Prometheus's head block plays this role for a time series.
+- **Compaction**: merging smaller immutable structures into fewer, larger ones. *Where you meet it:* how Prometheus's two-hour blocks become longer-lived blocks.
+- **Partition**: splitting a table's rows by some key, often time, so a query can touch only the relevant slice. *Where you meet it:* TimescaleDB's chunks.
+- **Chunk**: TimescaleDB's own name for a time-partitioned slice of a hypertable. *Where you meet it:* the chunk-exclusion behavior this topic simulates.
+- **Parquet**: a columnar file format used for cold, queryable storage. *Where you meet it:* InfluxDB 3's persisted data, and every object-storage-backed scaled-out backend.
+- **Object storage**: durable, cheap, high-latency storage addressed by key rather than by file path. *Where you meet it:* what every scaled-out backend in this topic pushes its blocks out to.

@@ -1,0 +1,117 @@
+{
+  "topic": "de.series-cardinality-label-index",
+  "syllabus": [
+    {
+      "clause": "every distinct label set is a series;",
+      "at": [{ "step": "Reveal: a series is its metric name plus its full label set" }]
+    },
+    {
+      "clause": "inverted (postings) indexes from labels to series IDs;",
+      "at": [
+        { "step": "Predict: does a multi-label query have to scan every series?" },
+        { "step": "Reveal: a postings intersection skips most series; a regex can't" }
+      ]
+    },
+    {
+      "clause": "cardinality explosions from unbounded labels (request IDs, pod names);",
+      "at": [{ "step": "Reveal: one unbounded label multiplies every series it touches" }]
+    },
+    {
+      "clause": "how columnar TSDBs trade the per-series model for scan-based queries.",
+      "at": [{ "step": "Reveal: a scan-based model has no per-series index to blow up" }]
+    },
+    {
+      "clause": "Metric design for observability: §13.1.",
+      "at": [{ "step": "Recap" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Prometheus: Data model",
+      "items": [
+        {
+          "item": "every time series is uniquely identified by its metric name and optional key-value pairs called labels; the change of any label's value, including adding or removing labels, creates a new time series",
+          "at": [{ "step": "Reveal: a series is its metric name plus its full label set" }]
+        }
+      ]
+    },
+    {
+      "source": "Prometheus: Metric and label naming",
+      "items": [
+        {
+          "item": "every unique combination of key-value label pairs represents a new time series; do not use labels to store dimensions with high cardinality",
+          "at": [{ "step": "Hook: one label, and the server gets killed" }, { "step": "Reveal: one unbounded label multiplies every series it touches" }]
+        }
+      ]
+    },
+    {
+      "source": "Prometheus: TSDB format (postings)",
+      "items": [
+        {
+          "item": "postings sections store monotonically increasing lists of series references that contain a given label pair, with an offset table sorted by label name and value",
+          "at": [{ "step": "Reveal: a postings intersection skips most series; a regex can't" }]
+        }
+      ]
+    },
+    {
+      "source": "InfluxData: Introducing InfluxDB 3.0",
+      "items": [
+        {
+          "item": "InfluxDB 3.0 now supports unlimited cardinality",
+          "at": [{ "step": "Reveal: a scan-based model has no per-series index to blow up" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A one-line label addition isn't a small change to a dashboard query — it's a change to the identity rule of every series the pipeline tracks, which is why its blast radius is the whole metrics server, not one chart.",
+        "at": [{ "step": "Hook: one label, and the server gets killed" }]
+      },
+      {
+        "item": "Calling two readings 'the same series' or 'different series' isn't a judgment call — it's settled entirely by whether their label sets are identical, which is why a system can define cardinality exactly instead of estimating it.",
+        "at": [{ "step": "Reveal: a series is its metric name plus its full label set" }]
+      },
+      {
+        "item": "The gap between a worst-case cross product and the actual series count isn't noise to be ignored — it's the measurable effect of real-world constraints (not every sensor fits every piece of equipment) that a naive multiplication can't see.",
+        "at": [{ "step": "Reveal: worst-case cross product vs. the plant's own actual series count" }]
+      },
+      {
+        "item": "The honest answer to whether a multi-label query must scan every series is 'it depends on the matcher,' not a single yes or no — an equality matcher and a regex matcher are different problems with different costs, even inside the same query language.",
+        "at": [{ "step": "Predict: does a multi-label query have to scan every series?" }]
+      },
+      {
+        "item": "A postings intersection being cheap and a regex scan being expensive aren't two separate facts about two different systems — they're the same index's structure helping one access pattern and offering nothing to the other.",
+        "at": [{ "step": "Reveal: a postings intersection skips most series; a regex can't" }]
+      },
+      {
+        "item": "An unbounded label doesn't make the system slow — it makes the number of things the system has to track literally unbounded, which is a qualitatively different failure than a system merely running slower under load.",
+        "at": [{ "step": "Reveal: one unbounded label multiplies every series it touches" }]
+      },
+      {
+        "item": "A scan-based model doesn't avoid the cardinality problem — it changes which operation gets expensive, trading an index that can blow up for a scan that's merely proportional to data size, which is a real trade, not a free win.",
+        "at": [{ "step": "Reveal: a scan-based model has no per-series index to blow up" }]
+      },
+      {
+        "item": "Choosing between a per-series index and a scan-based engine is a decision about which queries you expect to run, not a decision about which architecture is objectively better — a point-lookup-heavy workload and a high-cardinality analytical workload want opposite answers.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A batch or lot ID belongs in a fact table joined to a series, not inside the series' own identity, because a fact table's rows can grow without bound while a series identity's growth is exactly what the system has to index.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Counting the series before and after a schema change, and being able to say exactly where the new series count came from, is what turns 'our memory usage exploded' from a mystery into an arithmetic fact anyone can check.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
