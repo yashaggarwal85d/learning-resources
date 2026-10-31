@@ -1,0 +1,68 @@
+{
+  "topic": "de.micro-batch-incremental-execution",
+  "steps": [
+    {
+      "lines": [
+        "Watch what changes here and nowhere before it.",
+        "Up to now, a plan ran its course and the job ended. Here, the exact same kind of plan wakes up again and again, on its own schedule, chasing data that keeps showing up after it's already started."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that actually looks like, measured directly.",
+        "A running query's own checkpoint folder grows by one new offset entry and one new commit entry, as a pair, every single trigger."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the answer comes.",
+        "Force the wait between triggers down to nothing, and give it almost no data to chew on. How fast can one pass through the plan actually go?"
+      ],
+      "answer": "Still not fast. A real floor remains, measured in the hundreds of milliseconds."
+    },
+    {
+      "lines": [
+        "Not down to single digits.",
+        "Measured: even stripped down this far, a steady pass through the plan never drops below a floor of a few hundred milliseconds."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why that floor refuses to move.",
+        "Planning a pass through the query and checking it in costs something real, on its own, no matter how little data rides along with it.",
+        "An empty pass still pays nearly the entire price."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of question.",
+        "Set the wait between triggers to three full seconds, but let each individual pass finish in well under one. Does the next one start the moment the last one ends, or does it still wait out the full three?"
+      ],
+      "answer": "It still waits out the full three. The clock decides, not how quickly the work finished."
+    },
+    {
+      "lines": [
+        "Here's exactly what the measurement shows.",
+        "Three seconds apart, every single time, even though each individual pass itself finishes in a small fraction of that."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the reasoning underneath both of today's measurements.",
+        "The second log never gets ahead of the first. Coming back after a crash means replaying exactly what was checked in beforehand, never assuming anything about work that was left unfinished."
+      ]
+    },
+    {
+      "lines": [
+        "Two ways of deciding when to go, placed side by side.",
+        "A fixed wait holds off until the clock says so. A run-until-empty setting instead keeps going, pass after pass, until nothing's left, and then stops entirely on its own."
+      ]
+    },
+    {
+      "lines": [
+        "One plan, run again and again, once per trigger.",
+        "A real floor that comes from the planning itself, a real wait that comes from the clock, and a real log that gets replayed rather than ever guessed at."
+      ]
+    }
+  ]
+}
