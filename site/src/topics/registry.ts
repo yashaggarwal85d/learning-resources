@@ -5805,6 +5805,26 @@ export const TOPICS: TopicMeta[] = [
       "A unit test catches a known kind of bug on a small fixture. It says nothing about whether a real change to a real table, at full scale, actually changed the output the way intended. That comparison is the next topic.",
   },
   {
+    id: 'de.data-diff-regression-testing',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-diff-regression-testing',
+    title: 'Data-diff regression testing',
+    syllabusTitle: 'Data-diff regression testing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['data-diff-join-vs-bisection', 'diff-tolerance-column-summary'],
+    uses: ['testing-pyramid-transformations', 'float-non-associativity'],
+    declared: [],
+    bridge:
+      "A unit test says a transformation behaves correctly on a small fixture. This topic is the check that a real change, on real data, actually changed the output the way intended and nothing else -- compared two full ways, and at a cost that has to be managed past a certain scale.",
+    handoff:
+      "Running this diff on every single pull request, against every model in a large project, is more compute than most teams can afford. Running it selectively, only where a change could actually reach, is the next topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -7091,6 +7111,26 @@ export const TOPICS: TopicMeta[] = [
       'Identity and secrets answer who can act and with what. Neither answers what any of this actually costs — and a pipeline that is perfectly secure and perfectly correct can still be a budget incident, which is where this section ends.',
   },
   {
+    id: 'de.cloud-cost-anatomy-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/cloud-cost-anatomy-data',
+    title: 'Cloud cost anatomy for data workloads',
+    syllabusTitle: 'Cloud cost anatomy for data workloads',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cloud-cost-four-dimensions', 'small-file-request-storm'],
+    uses: ['failure-domain-blast-radius', 'object-store-consistency-guarantee', 'storage-tier-lifecycle-tradeoff', 'conditional-write-compare-swap', 'prefix-throttling-hot-key'],
+    declared: [],
+    bridge:
+      "Identity and secrets answer who can act and with what. Neither answers what any of it costs — and this topic is the bill's real shape: storage, requests, compute, network and the managed-service premium, each priced separately instead of waved at as 'expensive.'",
+    handoff:
+      "Those four dimensions are universal, but every cloud sells the services that generate them under a different name. The next section is a map: the same mechanism under three vendors' three different product names.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
@@ -7789,6 +7829,26 @@ export const TOPICS: TopicMeta[] = [
       "A broker carries the current value; a historian keeps the past. This topic is the process historian: the system that has stored plant data for decades, the exception filter and swinging-door compression it applies before a point is kept, and what that does to every number you later extract from it.",
     handoff:
       "A historian and a broker both assume the plant can reach them. A WAN does not stay up. The next topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, and corrects its clock when the link returns.",
+  },
+  {
+    id: 'de.edge-buffering-store-forward',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/edge-buffering-store-forward',
+    title: 'Edge buffering and store-and-forward',
+    syllabusTitle: 'Edge buffering and store-and-forward',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['store-and-forward-durable-buffer', 'replay-in-order-idempotent-sequence', 'catch-up-time-littles-law', 'buffer-full-drop-policy-by-priority', 'clock-correction-on-reconnect', 'plant-local-autonomy-slo'],
+    uses: ['degraded-mode-design', 'rpo-rto-per-data-class', 'chunk-idempotent-checkpoint', 'throttle-backoff-signal', 'at-least-once-plus-idempotence', 'wal-lsn-fsync', 'littles-law', 'bandwidth-delay-product', 'idempotent-merge-load', 'mqtt-qos-retained-will', 'sparkplug-birth-death-seq-rebirth', 'gateway-replay-dedup-backfill', 'device-gateway-ingest-timestamps', 'exception-deadband-filtering', 'swinging-door-compression-error-band', 'mergeable-rollup-never-store-average', 'read-only-extraction-load-budget'],
+    declared: [],
+    bridge:
+      "A historian and a broker both assume the plant can reach them. A WAN does not stay up. This topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, drops by policy when the buffer fills, and corrects its clock when the link returns.",
+    handoff:
+      "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. The last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell, its standardised submodels, and the role it plays in EU data spaces and the digital product passport.",
   },
   {
     id: 'de.communicating-tradeoffs-decision-makers',
