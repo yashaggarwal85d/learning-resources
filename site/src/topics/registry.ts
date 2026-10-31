@@ -5207,6 +5207,26 @@ export const TOPICS: TopicMeta[] = [
       "A stage boundary is a promise that a shuffle happens there. The next topic opens that promise: what a shuffle actually writes to disk and sends over the network to make the next stage's input exist.",
   },
   {
+    id: 'de.sort-based-shuffle-mechanics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/sort-based-shuffle-mechanics',
+    title: 'Sort-based shuffle mechanics',
+    syllabusTitle: 'Sort-based shuffle mechanics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-shuffle-mechanics', 'spark-map-output-tracker'],
+    uses: ['spark-stage-boundary'],
+    declared: [],
+    bridge:
+      "The previous topic named the shuffle as the thing that happens at a stage boundary. This topic opens what that actually is on disk and over the wire: one sorted file and one index per map task, fetched by every reducer that needs a piece of it.",
+    handoff:
+      "Knowing what a shuffle writes says nothing yet about how many tasks run it, or how evenly — the next topic's own concern, locality and parallelism.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
