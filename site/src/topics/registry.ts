@@ -6125,6 +6125,26 @@ export const TOPICS: TopicMeta[] = [
       "Broadcasting is the strategy for when one side is small. The next topic is what happens when neither side is — the two shuffle join strategies, chosen against each other.",
   },
   {
+    id: 'de.shuffle-joins-sort-merge-hash',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/shuffle-joins-sort-merge-hash',
+    title: 'Shuffle joins: sort-merge vs shuffled hash',
+    syllabusTitle: 'Shuffle joins: sort-merge vs shuffled hash',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-sort-merge-join', 'spark-shuffled-hash-join'],
+    uses: ['spark-broadcast-hash-join', 'spark-shuffle-mechanics'],
+    declared: [],
+    bridge:
+      "Broadcasting handled the case where one side fits everywhere. This topic is the case where neither side does: both inputs have to be shuffled, and Spark has two different ways to then match them up.",
+    handoff:
+      "These two strategies are what AQE, next, is allowed to rewrite at runtime once real shuffle statistics exist — the planner's static choice meeting the evidence a static plan can't have.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
