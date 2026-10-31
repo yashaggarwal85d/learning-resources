@@ -6424,4 +6424,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A row group is just column chunks, and a column chunk is just pages of values — but those values are rarely stored as plain, unencoded bytes. The next topic is exactly how they're encoded.",
   },
+  {
+    id: 'de.blameless-postmortems-incident-communication',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/blameless-postmortems-incident-communication',
+    title: 'Blameless post-mortems and incident communication',
+    syllabusTitle: 'Blameless post-mortems and incident communication',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['blameless-postmortem-structure', 'impact-in-data-terms', 'contributing-factor-vs-blame', 'incident-communication-cadence'],
+    uses: ['data-contract', 'error-budget-ownership', 'slo-tiering'],
+    declared: [],
+    bridge:
+      "A decision written down and dated is still only tested the day it breaks. This topic is what happens next: naming the impact in the terms the chapter already taught, writing it down the way the chapter already taught, without naming a person to blame for it.",
+    handoff:
+      "This closes the course's own technical arc: a schema, a query, a model, a pipeline, a benchmark, and now the contract, the trade-off, the decision and the incident that together decide whether any of it actually worked for the person who asked for it. What's left (Appendix A and B) is the assessment bank and career guidance — not reel topics, but the standing exercises this whole course now has the vocabulary to actually answer.",
+  },
 ];
