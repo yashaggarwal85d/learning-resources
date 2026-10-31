@@ -7449,6 +7449,26 @@ export const TOPICS: TopicMeta[] = [
       "Discovering and ingesting files is only useful if the result is governed the moment it lands — and Databricks' governance layer, which this chapter's catalog-and-vending pattern takes a concrete, fully-worked shape in, is next.",
   },
   {
+    id: 'de.unity-catalog-governance-model',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/unity-catalog-governance-model',
+    title: 'Unity Catalog governance model',
+    syllabusTitle: 'Unity Catalog governance model',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['unity-catalog-namespace-securables', 'tag-based-abac-policy', 'delta-sharing-protocol'],
+    uses: ['catalog-credential-vending', 'row-column-policy-enforcement', 'auto-loader-discovery-checkpoint'],
+    declared: [],
+    bridge:
+      "This chapter's catalog-and-vending mechanism, taught generically in 10.2, has one especially complete, concrete instance in the platform this section is about. This topic is that instance: a three-level namespace, four kinds of securable, tag-driven policy, and an open protocol for sharing a table with someone who has never heard of your Databricks account.",
+    handoff:
+      "Databricks is one lakehouse platform among several a learner will actually have to choose between, on real criteria: who owns the storage, how open the format really is, and what the exit cost looks like — which closes this section.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
