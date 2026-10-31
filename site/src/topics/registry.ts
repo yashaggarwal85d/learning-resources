@@ -7249,6 +7249,26 @@ export const TOPICS: TopicMeta[] = [
       'The model says where memory lives. The next topic is the first thing that happens when it runs out: spill, the direct and usually first symptom of memory pressure.',
   },
   {
+    id: 'de.spill-shuffle-memory-pressure',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/spill-shuffle-memory-pressure',
+    title: 'Spill and shuffle memory pressure',
+    syllabusTitle: 'Spill and shuffle memory pressure',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-spill-mechanics'],
+    uses: ['spark-unified-memory-manager', 'spark-skew-diagnosis'],
+    declared: ['dsa-external-merge-sort'],
+    bridge:
+      "The memory model names the regions. Spill is what execution memory does the instant it's exceeded: the same external-merge-sort idea Algorithms Chapter 6 already taught, now triggered by a Spark task instead of a single process.",
+    handoff:
+      'Spill is memory pressure the engine handles automatically, if slowly. The next topic is memory pressure deliberately chosen on purpose — caching — and when that choice helps or hurts.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -8942,5 +8962,25 @@ export const TOPICS: TopicMeta[] = [
       "An atomic pointer move only works if exactly one writer wins it when two race for the same move. This topic is that race itself, reproduced with two real concurrent writers: one commits, one is validated, retried, and either succeeds or correctly fails.",
     handoff:
       "Every commit so far appended or overwrote whole files. The next question is what a commit does when it only needs to change some rows inside a file — copy-on-write or merge-on-read.",
+  },
+  {
+    id: 'de.copy-on-write-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/copy-on-write-vs',
+    title: 'Copy-on-write vs merge-on-read',
+    syllabusTitle: 'Copy-on-write vs merge-on-read',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['cow-vs-mor'],
+    uses: ['optimistic-commit-protocol', 'table-snapshot-model'],
+    declared: [],
+    bridge:
+      "Every commit so far appended or overwrote whole files. This topic is what a commit does when it only needs to change some rows inside a file: copy-on-write's full rewrite versus merge-on-read's delete/log file, both measured on the identical 1%-update workload.",
+    handoff:
+      "Merge-on-read's own delete files are themselves a mechanism worth a topic on their own: how a deletion is actually recorded without rewriting the file it touches.",
   },
 ];

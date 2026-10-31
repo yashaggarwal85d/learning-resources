@@ -1,0 +1,73 @@
+{
+  "topic": "de.copy-on-write-vs",
+  "steps": [
+    {
+      "lines": [
+        "Every commit you've watched so far touched a whole file — adding one, or swapping one out entirely for a newer version.",
+        "But what happens when a change only needs to touch a handful of rows buried inside a file that's otherwise still correct? That's today's real question."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the setup. A tiny slice of a table's rows needs updating, and those rows happen to be scattered across nearly every file the table owns.",
+        "What's actually the cheapest way to get that change committed?"
+      ],
+      "answer": [
+        "There isn't a single right answer here — there are two entirely different, both legitimate, strategies in real use.",
+        "Neither one is simply better. Each one just moves the expense to a different place in the pipeline."
+      ]
+    },
+    {
+      "lines": [
+        "Take the first strategy. Any file that holds even a single changed row gets an entirely new version written for it, full stop.",
+        "Nothing partial ever gets touched, and nothing like a little patch note gets left behind — no separate log file exists anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "This wasn't just asserted — it was actually run. A change touching about one in every hundred rows was applied for real, scattered across a dozen files.",
+        "Every single file holding a changed row got rewritten in full, and the real wall-clock cost of doing that was measured directly."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's a fair question worth sitting with. All that expensive rewriting at write time — does it actually earn something back later, when someone reads the table?",
+        "Or is reading just as costly either way, no matter how recently those files were rewritten?"
+      ],
+      "answer": [
+        "It absolutely earns something back. Because every file is already guaranteed current, a read never has anything extra to reconcile.",
+        "There's no second source to double check, no patch to apply on the way past — a read just opens the files and trusts them completely."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the opposite philosophy entirely. Instead of rewriting anything, the change gets written to its own small separate file, off to the side.",
+        "That original file stays frozen, untouched, exactly as it already was — the new information only gets reconciled with it later, whenever someone actually reads."
+      ]
+    },
+    {
+      "lines": [
+        "The exact same one-in-a-hundred change, run for real under this opposite approach, told a very different story.",
+        "Writing it cost almost nothing by comparison. But reading afterward got measurably, repeatedly more expensive with every additional round of changes left sitting unreconciled."
+      ]
+    },
+    {
+      "lines": [
+        "So what clears that growing debt away? A deliberate housekeeping pass that finally folds every one of those little side files back into the originals, for good.",
+        "Run for real here too — after five rounds of deferred changes got folded in at once, that reading cost collapsed right back down to almost nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what's worth noticing: every major table format independently arrived at this identical fork in the road, just dressed up in its own vocabulary.",
+        "One vendor calls its side-file approach a deletion vector. Another just names the two whole strategies outright. Underneath the naming, it's the same exact trade, every time."
+      ]
+    },
+    {
+      "lines": [
+        "So the whole decision boils down to one simple question: pay the cost now, while writing, or hand that bill to whoever reads next?",
+        "How often rows change, how scattered those changes are across your files, and how fresh a reader actually needs their data to be — that's genuinely the entire decision."
+      ]
+    }
+  ]
+}
