@@ -5563,6 +5563,26 @@ export const TOPICS: TopicMeta[] = [
       "Every mechanism in this chapter answered a question with an exact result. The next section's closes the chapter with the opposite idea entirely: structures that trade a small, bounded error for a massive reduction in memory, starting with the simplest — Bloom, cuckoo and xor filters.",
   },
   {
+    id: 'de.bloom-cuckoo-xor-filters',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/bloom-cuckoo-xor-filters',
+    title: 'Bloom, cuckoo and xor filters',
+    syllabusTitle: 'Bloom, cuckoo and xor filters',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.6' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['probabilistic-membership-filters'],
+    uses: ['lsm-write-read-path'],
+    declared: [],
+    bridge:
+      "Every mechanism in this chapter answered a question with an exact result. This topic closes the chapter's last section by opening the opposite idea: a structure that trades a small, bounded error for a massive reduction in memory — the Bloom filter family, and the real system (topic 8's own LSM reads) that already used one without this topic naming it yet.",
+    handoff:
+      "Membership ('is it in there') is one question a tiny structure can answer approximately. The next topic is a completely different question answered the same way: how many distinct values are there, without storing any of them.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -8882,5 +8902,25 @@ export const TOPICS: TopicMeta[] = [
       "Fixing 'no atomic multi-partition commit' means replacing file listing with an explicit, versioned table state. This topic is that state: the snapshot, an immutable list of files plus schema, committed by one atomic pointer move.",
     handoff:
       "An atomic pointer move only works if exactly one writer wins it when two race for the same move. That's the optimistic-commit protocol itself.",
+  },
+  {
+    id: 'de.optimistic-commits-conflict-resolution',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/optimistic-commits-conflict-resolution',
+    title: 'Optimistic commits and conflict resolution',
+    syllabusTitle: 'Optimistic commits and conflict resolution',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['optimistic-commit-protocol'],
+    uses: ['table-snapshot-model'],
+    declared: [],
+    bridge:
+      "An atomic pointer move only works if exactly one writer wins it when two race for the same move. This topic is that race itself, reproduced with two real concurrent writers: one commits, one is validated, retried, and either succeeds or correctly fails.",
+    handoff:
+      "Every commit so far appended or overwrote whole files. The next question is what a commit does when it only needs to change some rows inside a file — copy-on-write or merge-on-read.",
   },
 ];

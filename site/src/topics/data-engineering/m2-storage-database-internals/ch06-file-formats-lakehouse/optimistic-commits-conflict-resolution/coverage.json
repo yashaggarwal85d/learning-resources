@@ -1,0 +1,50 @@
+{
+  "topic": "de.optimistic-commits-conflict-resolution",
+  "syllabus": [
+    { "clause": "writers stage files then race to commit", "at": [{ "step": "Reveal: writers stage first, validate only at commit" }] },
+    { "clause": "validation of what changed since the base snapshot (appends vs overwrites vs row-level deletes touching the same files)", "at": [{ "step": "Reveal: the retry rule depends on the operation" }] },
+    { "clause": "retry and re-validation", "at": [{ "step": "Reveal: reproduced for real — append vs append, retry succeeds" }, { "step": "Reveal: reproduced for real — delete vs delete, retry fails for good" }] },
+    { "clause": "serializable vs snapshot vs write-serializable isolation choices in Iceberg and Delta", "at": [{ "step": "Reveal: isolation is a choice, not a given" }] },
+    { "clause": "commit storms from many concurrent writers and compaction–writer conflicts", "at": [{ "deep": "Production" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg table specification, Commit Conflict Resolution and Retry",
+      "items": [
+        { "item": "when two commits race on the same version, only one succeeds; updates verify the conditions under which they can be applied to a new version and retry if those conditions are met", "at": [{ "step": "Predict: when a writer loses the race, what should it do next?" }] },
+        { "item": "append operations have no requirements and can always be applied", "at": [{ "step": "Reveal: the retry rule depends on the operation" }, { "step": "Reveal: reproduced for real — append vs append, retry succeeds" }] },
+        { "item": "replace and delete operations must verify that the specific files they touch are still in the table", "at": [{ "step": "Reveal: the retry rule depends on the operation" }, { "step": "Reveal: reproduced for real — delete vs delete, retry fails for good" }] },
+        { "item": "the conditions required by a write to successfully commit determine the isolation level; writers can select what to validate", "at": [{ "step": "Reveal: isolation is a choice, not a given" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Concurrency control (docs.delta.io)",
+      "items": [
+        { "item": "writes operate in three stages: read, write (stage files), validate and commit; conflicts are caught only at validate-and-commit", "at": [{ "step": "Reveal: writers stage first, validate only at commit" }] },
+        { "item": "named conflict exceptions: ConcurrentAppendException, ConcurrentDeleteReadException, ConcurrentDeleteDeleteException, MetadataChangedException", "at": [{ "step": "Reveal: Delta names the identical distinction as typed exceptions" }] },
+        { "item": "partitioning the table by the same columns used in operation conditions can make two writers' file sets disjoint and avoid conflicts entirely", "at": [{ "deep": "Production" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "CHAPTER.md's originally planned source line named 'WriteSerializable vs Serializable isolation levels' as a Delta protocol concept, but that specific naming is Databricks-proprietary (docs.databricks.com), not present in the open-source PROTOCOL.md or docs.delta.io — this topic sources Delta's open concurrency-control page instead (three-stage protocol, named exceptions) and uses Iceberg's own 'writers can select what to validate' quote for the isolation-is-a-choice idea, documented in FACT-CHECK.md's red-team #1.", "at": [{ "step": "Reveal: isolation is a choice, not a given" }] },
+      { "item": "The local-disk demo models a 'delete' as a file removed from the snapshot's file list, not Iceberg's actual position/equality delete-file format — the claim is narrower: the validate-before-retry shape transfers, not the on-disk delete-file machinery, which this topic never claims to reproduce.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The two-writer race in examples.py is a scripted sequence in one process, not genuinely concurrent OS processes, same disclosed limitation as topic 12's compare-and-swap demo — what's verified is the retry logic's correctness given a real atomic CAS primitive, not a concurrency stress test.", "at": [{ "step": "Reveal: reproduced for real — append vs append, retry succeeds" }] },
+      { "item": "Partitioning as a conflict-avoidance technique (named in docs.delta.io's write-conflicts table) is named in post-notes.md's Production section but not built in examples.py — explicitly out of scope for this topic's 20-minute budget.", "at": [{ "deep": "Production" }] },
+      { "item": "This topic does not cover row-level deletes or copy-on-write vs merge-on-read — that is explicitly the next topic's subject, and this topic's own handoff names that boundary.", "at": [{ "step": "Recap" }] },
+      { "item": "The prerequisites panel lists topic 12 (table-snapshot-model) as the direct dependency and Chapter 5 §5.2's optimistic/pessimistic vocabulary as declared background, matching CHAPTER.md's own stated Uses/Declared split for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "Demo 1 (append vs append) and demo 2 (delete vs delete) both reuse topic 12's os.open(O_CREAT | O_EXCL) compare-and-swap primitive for the commit slot itself — this topic's new contribution is what happens after the swap, not a new atomicity primitive.", "at": [{ "step": "Reveal: writers stage first, validate only at commit" }] },
+      { "item": "Iceberg's spec names compactions explicitly as an example of a replace operation that must validate its files are still present, which is why post-notes.md's Production section calls out compaction-vs-writer conflicts as a named commit-storm contributor rather than inventing that connection.", "at": [{ "deep": "Production" }] },
+      { "item": "The step-8 reveal names three of Delta's five documented conflict exceptions (ConcurrentAppendException, ConcurrentDeleteReadException, ConcurrentDeleteDeleteException); MetadataChangedException and ConcurrentTransactionException/ProtocolChangedException are quoted in SOURCES.md and covered in coverage.json's source items but not individually dramatized on screen, since the reel's 10-step budget maps each exception family to the append/delete split it already built rather than enumerating all five.", "at": [{ "step": "Reveal: Delta names the identical distinction as typed exceptions" }] },
+      { "item": "This topic's isolation-level claim (step 9) is deliberately narrower than CHAPTER.md's original planned framing — it says isolation is a validation choice a writer makes, sourced from Iceberg's own spec, rather than naming Delta's Databricks-specific 'WriteSerializable' level, which the open-source sources used here never document.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
