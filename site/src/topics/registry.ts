@@ -5845,6 +5845,26 @@ export const TOPICS: TopicMeta[] = [
       "Running this diff on every single pull request, against every model in a large project, is more compute than most teams can afford. Running it selectively, only where a change could actually reach, is the next topic.",
   },
   {
+    id: 'de.slim-ci-state-aware-builds',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/slim-ci-state-aware-builds',
+    title: 'Slim CI and state-aware builds',
+    syllabusTitle: 'Slim CI and state-aware builds',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['slim-ci-state-modified-defer', 'column-level-breaking-change-detection'],
+    uses: ['data-diff-join-vs-bisection', 'expand-migrate-contract-rollout', 'data-slis-slos-error'],
+    declared: [],
+    bridge:
+      "Diffing old against new output proves a change is correct, but running that proof on every model in a large project, on every pull request, is more compute than most teams can afford. This topic is the system that runs exactly the tests a given change needs, nothing more.",
+    handoff:
+      "Slim CI proves a change is safe before it merges. The next topic is proving it stays safe at the moment it actually reaches production -- a different kind of safety, checked at deploy time rather than PR time.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
