@@ -1,0 +1,110 @@
+{
+  "topic": "de.workload-identity-least-privilege",
+  "syllabus": [
+    {
+      "clause": "roles over users",
+      "at": [
+        { "step": "A key that never expires, a credential that already has" },
+        { "step": "What made the difference?" }
+      ]
+    },
+    {
+      "clause": "short-lived federated credentials (EKS Pod Identity/IRSA, GKE Workload Identity Federation, Entra workload identity) instead of static keys",
+      "at": [
+        { "step": "Three clouds, the same broker pattern" }
+      ]
+    },
+    {
+      "clause": "trust policies, permission boundaries and org-level guardrails (SCPs)",
+      "at": [
+        { "step": "A trust policy answers one question; a permission policy answers another" },
+        { "step": "A boundary and an org guardrail are the same idea, drawn at different sizes" }
+      ]
+    },
+    {
+      "clause": "PassRole-style escalation paths",
+      "at": [
+        { "step": "The escalation, reproduced — and closed" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "separating raw vs curated access by role",
+      "at": [
+        { "step": "Raw and curated are never the same role" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS: IAM roles for service accounts (IRSA)",
+      "items": [
+        { "item": "An IAM role is associated with a Kubernetes service account instead of distributing static credentials to containers", "at": [{ "step": "Three clouds, the same broker pattern" }] },
+        { "item": "The OIDC signing key rotates every 7 days", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: EKS Pod Identity",
+      "items": [
+        { "item": "EKS Pod Identity is OIDC-free, a simpler method than IRSA", "at": [{ "step": "Three clouds, the same broker pattern" }] },
+        { "item": "Uses a single reusable IAM principal (pods.eks.amazonaws.com) instead of a per-cluster OIDC provider", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Workload Identity Federation for GKE",
+      "items": [
+        { "item": "Creates a fixed per-project workload identity pool (PROJECT_ID.svc.id.goog)", "at": [{ "step": "Three clouds, the same broker pattern" }] },
+        { "item": "Enabling the feature alone grants no additional IAM permissions", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Entra: Workload identity federation",
+      "items": [
+        { "item": "Kubernetes clusters including AWS EKS and GCP GKE are a named supported scenario, not Azure-only", "at": [{ "step": "Three clouds, the same broker pattern" }, { "deep": "Internals" }] },
+        { "item": "The token-exchange workflow is the same across every supported scenario", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: Permissions boundaries for IAM entities",
+      "items": [
+        { "item": "A permissions boundary limits but never grants permissions", "at": [{ "step": "A boundary and an org guardrail are the same idea, drawn at different sizes" }] },
+        { "item": "Effective permissions are the intersection of an identity-based policy and the boundary (the Shirley example)", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: Grant a user permissions to pass a role to an AWS service (iam:PassRole)",
+      "items": [
+        { "item": "A principal with unscoped PassRole plus the ability to create a resource gains a passed role's permissions by proxy (the Alice example)", "at": [{ "step": "The escalation, reproduced — and closed" }] },
+        { "item": "Scoping the Resources element of the PassRole statement is AWS's own named fix", "at": [{ "step": "The escalation, reproduced — and closed" }, { "step": "Prove it" }] }
+      ]
+    },
+    {
+      "source": "AWS: Service control policies (SCPs)",
+      "items": [
+        { "item": "An SCP never grants permissions, only caps the maximum available ones", "at": [{ "step": "A boundary and an org guardrail are the same idea, drawn at different sizes" }] },
+        { "item": "An SCP restricts even a member account's root user but never reaches the management account", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's two breaches are identical in every respect except the credential's own lifetime and scope — isolating that as the one variable that explains the different outcomes, rather than endpoint hardening", "at": [{ "step": "What made the difference?" }] },
+      { "item": "A trust policy and a permission policy fail independently: a role with a correct trust policy but an empty permission policy can be assumed but can do nothing, and the reverse can never be assumed at all", "at": [{ "step": "A trust policy answers one question; a permission policy answers another" }] },
+      { "item": "A permission boundary and an SCP are structurally the same operation (intersection with an allow-set) applied at two different scopes, not two unrelated security features", "at": [{ "step": "A boundary and an org guardrail are the same idea, drawn at different sizes" }] },
+      { "item": "The PassRole escalation requires two separate permissions working together on one principal — the ability to create/launch a resource, and the ability to pass a role to it — neither alone is sufficient", "at": [{ "step": "The escalation, reproduced — and closed" }] },
+      { "item": "Scoping PassRole's Resource element closes the specific gap demonstrated, but does not retroactively protect against a role created later that happens to match the same approved naming pattern — which is exactly what the prove-it question tests", "at": [{ "step": "Prove it" }] },
+      { "item": "Raw/curated role separation only works if the two roles' permission sets have zero overlap by construction, not merely 'mostly different' — a single shared wildcard permission reopens the blast radius", "at": [{ "step": "Raw and curated are never the same role" }] },
+      { "item": "EKS Pod Identity and IRSA are not a replacement/deprecation relationship; AWS documents both as current, with Pod Identity as the simpler newer option for new setups", "at": [{ "deep": "Internals" }] },
+      { "item": "'Least privilege' as a design goal and 'short-lived' as a credential property are two separate axes — a long-lived credential can still be narrowly scoped, and this topic's hook isolates the lifetime axis specifically, not scope in general", "at": [{ "step": "A key that never expires, a credential that already has" }] },
+      { "item": "The broker-pattern diagram generalizes across all three clouds because each implements the same OIDC-token-for-cloud-credential exchange, even though AWS, GCP and Azure each use different vendor-specific terms for the broker and the trust object", "at": [{ "step": "Three clouds, the same broker pattern" }] },
+      { "item": "A federated credential never touches disk as a human-managed secret at any point in its lifecycle, which is the property that makes 'stolen from a notebook' structurally impossible for it, not merely less likely", "at": [{ "step": "A key that never expires, a credential that already has" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

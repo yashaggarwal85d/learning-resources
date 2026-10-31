@@ -4967,6 +4967,26 @@ export const TOPICS: TopicMeta[] = [
       'Everything so far has been about data at rest. The next two topics are about who is allowed to touch it at all — starting with identity, because the alternative to a scoped role is a static key sitting in a notebook.',
   },
   {
+    id: 'de.workload-identity-least-privilege',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/workload-identity-least-privilege',
+    title: 'Workload identity and least privilege',
+    syllabusTitle: 'Workload identity and least privilege',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['short-lived-federated-credential', 'role-trust-vs-permission', 'passrole-escalation-boundary'],
+    uses: ['failure-domain-blast-radius'],
+    declared: [],
+    bridge:
+      'Everything so far has been about data sitting still. This topic and the next are about who is allowed to touch it: starting with identity, because the alternative to a role assumed for minutes is a key that sits in a notebook forever.',
+    handoff:
+      "A role answers who may act. It says nothing about the other kind of secret a pipeline needs — a database password, a third-party API key — which has to live somewhere between deployments, and that somewhere is its own discipline.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
