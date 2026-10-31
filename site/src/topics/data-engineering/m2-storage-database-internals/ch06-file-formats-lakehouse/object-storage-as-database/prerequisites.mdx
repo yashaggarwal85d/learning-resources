@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Parquet file anatomy" domain="data-engineering" host="de.parquet-file-anatomy" by="This chapter's first topic" />
+  <Resource kind="reel" title="Columnar encodings: dictionary, RLE, delta, byte-stream-split" domain="data-engineering" host="de.columnar-encodings-dictionary-rle" by="This chapter's fifth topic" />
+  <Resource kind="reel" title="Nested data: repetition and definition levels" domain="data-engineering" host="de.nested-data-repetition-definition" by="This chapter's sixth topic" />
+  <Resource kind="reel" title="Data skipping: statistics, page indexes, bloom filters" domain="data-engineering" host="de.data-skipping-statistics-page" by="This chapter's seventh topic" />
+  <Resource kind="reel" title="Variant type and shredding" domain="data-engineering" host="de.variant-type-shredding" by="This chapter's eighth topic" />
+  <Resource kind="reel" title="ORC versus Parquet" domain="data-engineering" host="de.orc-versus-parquet" by="This chapter's ninth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Amazon S3 now delivers strong read-after-write consistency automatically for all applications" href="https://aws.amazon.com/about-aws/whats-new/2020/12/amazon-s3-now-delivers-strong-read-after-write-consistency-automatically-for-all-applications/" by="AWS">The December 2020 strong-consistency change this topic opens with.</Resource>
+  <Resource kind="reading" title="Amazon S3 now supports conditional writes" href="https://aws.amazon.com/about-aws/whats-new/2024/08/amazon-s3-conditional-writes/" by="AWS">The August 2024 If-None-Match launch this topic's conditional-create demo reproduces.</Resource>
+  <Resource kind="reading" title="PutObject" href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html" by="AWS">The exact If-Match/If-None-Match semantics and 412 behavior this topic's demo matches.</Resource>
+  <Resource kind="reading" title="Cloud Storage consistency" href="https://cloud.google.com/storage/docs/consistency" by="Google Cloud">GCS's own strong-consistency guarantees.</Resource>
+  <Resource kind="reading" title="Specifying conditional headers for Blob service operations" href="https://learn.microsoft.com/en-us/rest/api/storageservices/specifying-conditional-headers-for-blob-service-operations" by="Microsoft Learn">ADLS/Azure Blob's own conditional-header support.</Resource>
+</ul>
+
+</section>

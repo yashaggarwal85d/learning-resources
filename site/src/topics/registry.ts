@@ -8084,4 +8084,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A single immutable file, Parquet or ORC, still can't answer the next question on its own: what does 'a table,' with atomic commits across many files, mean once the storage underneath is an object store with no file you can edit in place? That's where this chapter turns next.",
   },
+  {
+    id: 'de.object-storage-as-database',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/object-storage-as-database',
+    title: 'Object storage as a database substrate',
+    syllabusTitle: 'Object storage as a database substrate',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['object-storage-guarantees'],
+    uses: [],
+    declared: [],
+    bridge:
+      "A single immutable file, Parquet or ORC, still can't answer what 'a table' means once the storage underneath is an object store with no file you can edit in place. This topic opens exactly that substrate: what S3/GCS/ADLS actually guarantee today, and the 2024 conditional-write primitive every later topic in this section depends on.",
+    handoff:
+      "Object storage's own limits (no atomic rename, listing cost) are exactly what broke the table format everyone used before Iceberg and Delta existed: the plain directory-as-partition Hive table.",
+  },
 ];
