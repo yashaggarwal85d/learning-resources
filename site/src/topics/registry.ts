@@ -5626,4 +5626,44 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Three priced tiers on a cost curve are a negotiation finished, not a decision made — someone outside engineering still has to actually pick one, and the next topic is how that choice gets explained to them in the terms they use to decide, not the terms that built the curve.",
   },
+  {
+    id: 'de.production-execution-entities-genealogy',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/production-execution-entities-genealogy',
+    title: 'Production execution entities and genealogy',
+    syllabusTitle: 'Production execution entities and genealogy',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['work-order-run-batch-lot-model', 'isa88-procedural-physical-models', 'lot-genealogy-forward-backward', 'genealogy-as-reachability-dag'],
+    uses: ['equipment-hierarchy-dimension', 'hierarchy-as-of-versioning', 'recursive-cte-fixpoint', 'bom-explosion', 'graph-reachability-sql', 'cte-cycle-detection', 'directed-acyclic-graph', 'graph-traversal', 'connected-components', 'fact-table-types-transaction-snapshot-accumulating-factless'],
+    declared: [],
+    bridge:
+      "The hierarchy says where a machine sits and which system owns which data. It says nothing yet about what the machines make. This topic is the objects that move through that hierarchy: work orders, runs, batches, recipes and the lots whose parentage a recall depends on.",
+    handoff:
+      "A lot has a parentage. It also has a measurement history: the thickness it was inspected at, the limits it had to meet. The next topic is that quality data, and the statistical rules that read it.",
+  },
+  {
+    id: 'de.quality-data-spc',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/quality-data-spc',
+    title: 'Quality data and SPC',
+    syllabusTitle: 'Quality data and SPC',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['control-limits-vs-spec-limits', 'weco-nelson-run-rules', 'process-capability-cp-cpk', 'quality-fact-process-context', 'nonconformance-capa-records'],
+    uses: ['work-order-run-batch-lot-model', 'lot-genealogy-forward-backward', 'equipment-hierarchy-dimension', 'hierarchy-as-of-versioning', 'fact-grain', 'percentile-cont-disc'],
+    declared: ['mean', 'standard-deviation', 'normal-distribution'],
+    bridge:
+      "A lot has a parentage. It also has a measurement history: the thickness it was inspected at, the limits it had to meet. This topic is that quality data, the chart that tells you whether a process is stable, the index that tells you whether it is capable, and why a number without its process context cannot be analysed.",
+    handoff:
+      "Quality asks whether the parts were good. The plant also asks how much of its time it was making good parts at all. The next topic is OEE: availability, performance and quality, computed from the machine-state events the sensors emit.",
+  },
 ];
