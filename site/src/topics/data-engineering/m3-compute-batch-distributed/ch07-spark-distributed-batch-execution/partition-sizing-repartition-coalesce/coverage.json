@@ -1,0 +1,102 @@
+{
+  "topic": "de.partition-sizing-repartition-coalesce",
+  "syllabus": [
+    {
+      "clause": "input splits (spark.sql.files.maxPartitionBytes, open-cost padding), shuffle partition counts, per-task overhead vs spill risk (target ~100–200 MB per task)",
+      "at": [
+        { "step": "Reveal: one config sets the count directly" },
+        { "deep": "Input splits and target task size, the sourced-only half" }
+      ]
+    },
+    {
+      "clause": "repartition (full shuffle, even sizes) vs coalesce (narrow merge, no shuffle) and the trap where coalesce(1) collapses the parallelism of the whole upstream stage",
+      "at": [
+        { "step": "Predict: does repartition shuffle?" },
+        { "step": "Reveal: a real shuffle, confirmed in the plan" },
+        { "step": "Predict: does coalesce shuffle the same way?" },
+        { "step": "Reveal: no shuffle, and no growing either" },
+        { "step": "Predict: the coalesce(1) trap" },
+        { "step": "Reveal: the whole upstream read collapses too" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark SQL Performance Tuning docs — Tuning Partitions (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "maxPartitionBytes caps the bytes packed into a single partition when reading files",
+          "at": [{ "deep": "Input splits and target task size, the sourced-only half" }]
+        },
+        {
+          "item": "openCostInBytes is the estimated cost of opening a file, padded in so small files don't over-crowd one partition",
+          "at": [{ "deep": "Input splits and target task size, the sourced-only half" }]
+        },
+        {
+          "item": "spark.sql.shuffle.partitions configures the number of partitions used when shuffling for joins or aggregations",
+          "at": [{ "step": "Reveal: one config sets the count directly" }]
+        }
+      ]
+    },
+    {
+      "source": "FilePartition.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "the partition-splitting function takes maxSplitBytes and openCostInBytes together as the two inputs to one packing decision",
+          "at": [{ "deep": "Input splits and target task size, the sourced-only half" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The 100-200 MB per-task target size named in the syllabus clause is a guideline the Performance Tuning docs state in prose, not a config value this topic independently measures a task actually hitting — this topic measures partition count behaviour directly (shuffle.partitions, repartition, coalesce), disclosing the target-size guideline as sourced-only.",
+        "at": [{ "out": "the ~100-200 MB per-task target size named as a sourced guideline; not independently measured against a real task's own bytes" }]
+      },
+      {
+        "item": "spark.sql.files.minPartitionNum and spark.sql.files.maxPartitionNum (both named in the same Performance Tuning docs table this topic quotes from) are two further input-split levers beyond maxPartitionBytes and openCostInBytes — named only, not independently measured, since this topic's own examples.py measures shuffle partitioning and repartition/coalesce, not file-read splitting specifically.",
+        "at": [{ "out": "minPartitionNum/maxPartitionNum named only; not independently measured" }]
+      },
+      {
+        "item": "repartition can also take column expressions (e.g. repartition(col)) to hash-partition by a key rather than an explicit count, producing an uneven-but-key-grouped result rather than the evenly-sized result this topic's own count-based measurement shows — a different call shape from the one this topic measures.",
+        "at": [{ "out": "column-based repartition named only; this topic measures the count-based form" }]
+      },
+      {
+        "item": "AQE's own coalescePartitions feature (spark.sql.adaptive.coalescePartitions.enabled, on by default when AQE is on) automatically merges small shuffle partitions at runtime using a target size — a separate, automatic mechanism from the explicit .coalesce() call this topic measures, disabled throughout this topic's own examples.py (AQE off) specifically so the manual partition counts measured are Catalyst's own up-front numbers, not a runtime-adjusted count.",
+        "at": [{ "out": "AQE's automatic coalescePartitions named only; disabled throughout this topic's own measurement" }]
+      },
+      {
+        "item": "A coalesce call that reduces the partition count but not all the way to one still narrows upstream parallelism, proportionally — collapsing 8 partitions to 3 means roughly 3 tasks now cover the work 8 tasks did, a smaller version of the same mechanism this topic's own coalesce(1) measurement demonstrates at its most extreme.",
+        "at": [{ "step": "Reveal: no shuffle, and no growing either" }]
+      },
+      {
+        "item": "repartitionByRange (distinct from the hash-based column form) partitions by sorted range boundaries rather than a hash of the key, intended for range-based downstream scans rather than even load — named only, not independently measured, a third repartition shape alongside the count-based and hash-based ones.",
+        "at": [{ "out": "repartitionByRange named only; a third repartition shape not independently measured" }]
+      },
+      {
+        "item": "Calling coalesce immediately after a wide shuffle operation (rather than directly on a narrow read, as this topic's own examples.py does) still avoids adding a second shuffle, but the task count it collapses to is the shuffle's own existing output partition count, not an upstream read's partition count — the same narrow-merge mechanism, applied one stage later in the plan.",
+        "at": [{ "out": "coalesce-after-shuffle named only; this topic's own measurement applies coalesce directly to a narrow read" }]
+      },
+      {
+        "item": "This topic's own repartition/coalesce measurements use spark.range's own numPartitions argument to fix a clean, Exchange-free 8-partition starting point deliberately, specifically so any Exchange node found afterward can only have come from the repartition or coalesce call itself, not from upstream lineage.",
+        "at": [{ "out": "the methodology choice of an Exchange-free base, disclosed to isolate each call's own plan contribution" }]
+      },
+      {
+        "item": "spark.sql.files.minPartitionNum defaults to spark.sql.leafNodeDefaultParallelism when unset, meaning the actual minimum partition count for a small file-based read depends on cluster size even when maxPartitionBytes alone would suggest fewer, larger partitions.",
+        "at": [{ "out": "spark.sql.files.minPartitionNum's own default resolution named only; not independently measured" }]
+      },
+      {
+        "item": "CoalescedRDD (the RDD-level implementation coalesce compiles down to) groups parent partitions using a locality-aware algorithm by default, preferring to merge partitions that already sit on the same executor — a scheduling detail beyond the partition-count behaviour this topic's own examples.py measures directly.",
+        "at": [{ "out": "CoalescedRDD's own locality-aware grouping named only; this topic measures resulting partition count and plan shape, not scheduling locality" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

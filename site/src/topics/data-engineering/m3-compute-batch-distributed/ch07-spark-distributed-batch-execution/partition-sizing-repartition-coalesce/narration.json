@@ -1,0 +1,83 @@
+{
+  "topic": "de.partition-sizing-repartition-coalesce",
+  "steps": [
+    {
+      "lines": [
+        "The shuffle is the single biggest cost in everything measured in this chapter so far.",
+        "Its own biggest lever sounds almost too simple. How many separate pieces does the work actually get cut into, before any of it runs?",
+        "Let's find out exactly what decides that number, rather than assume it's automatic."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the exact same group-by twice, changing nothing except one setting in between.",
+        "The first run produces exactly four output partitions. The second run, same data, same query, produces exactly seventeen.",
+        "That number isn't estimated from the data at all. It's a direct setting, read straight off a config."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "Asking for a specific, even partition count sounds like it could be a cheap relabeling. Does actually reaching it require moving every row across the cluster, or not?",
+        "Think about what guaranteeing an even size across every piece actually demands."
+      ],
+      "answer": [
+        "It's tempting to assume this is just bookkeeping, since nothing about the data itself changes.",
+        "But even sizes are the entire point here, and the only way to guarantee that is to redistribute every single row by hand.",
+        "That redistribution is exactly what a real shuffle is. There's no cheaper way to guarantee even pieces."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the prediction holds exactly.",
+        "This call's own plan carries a genuine exchange node, the same kind of shuffle boundary measured back in this chapter's very first topics.",
+        "And the three resulting partitions do come out close to even, not just close to the number three."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, and this one has a real twist.",
+        "A different call asks for that exact same lower count. Does reaching it cost the same shuffle the last call just paid for, or is there a cheaper way to get fewer pieces?",
+        "Resist assuming every path to fewer pieces costs the same."
+      ],
+      "answer": [
+        "It's easy to assume fewer pieces is fewer pieces, so the cost should be identical either way.",
+        "But this call only ever shrinks. It never has to even out the sizes, so it doesn't need every row moved. It just glues neighbouring pieces together wherever they already happen to sit.",
+        "Guaranteeing evenness is expensive. Simply merging what's already there isn't."
+      ]
+    },
+    {
+      "lines": [
+        "Measured: this one reaches the identical count with zero shuffle boundaries anywhere in its plan.",
+        "And asking it to grow past where it started does nothing at all. Eight pieces asked to become twenty stays at eight.",
+        "It only ever merges downward. It can't manufacture pieces that weren't already there."
+      ]
+    },
+    {
+      "lines": [
+        "Last commitment, and it's the sharpest one here.",
+        "Merge everything all the way down to one single final piece. Does that only shrink the very last output, or does it reach backward and touch something that ran before it too?",
+        "Think about whether a merge like this adds a new boundary, or simply folds into what's already running."
+      ],
+      "answer": [
+        "It's reasonable to assume the earlier work still runs in parallel exactly as it did before.",
+        "But a merge like this adds no new boundary of its own. It folds directly into whatever fed it, so that earlier work loses its own parallelism right along with the final piece.",
+        "One number, placed carelessly, can quietly collapse far more than just the output you asked to shrink."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly that reach-backward collapse.",
+        "An eight-piece read, merged down to one, ends up with every single row of a two-million-row dataset sitting inside that one piece.",
+        "The read itself, which started on eight separate pieces, actually ran as a single task the whole time."
+      ]
+    },
+    {
+      "lines": [
+        "So here's everything this topic actually showed you, named precisely.",
+        "A shuffle's own partition count is a direct setting, not a number derived from the data. Guaranteeing even sizes costs a real shuffle every time. Merging costs nothing, but only shrinks, never grows.",
+        "And merging all the way down to one piece doesn't just shrink an output. It can quietly take everything upstream of it along for the ride."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+- **Delta**: the difference between two successive values. *Where you meet it:* the delta between timestamps, before this topic takes one more delta of that.
+- **XOR**: the bitwise exclusive-or of two values' bit patterns; zero wherever the bits agree. *Where you meet it:* how Gorilla compares one float's bit pattern against the previous one.
+- **Leading zeros**: the run of zero bits at the start of a value's bit pattern. *Where you meet it:* what both Gorilla's and Chimp's value encoders spend bits describing.
+- **Lossless**: a codec that can reconstruct the original value exactly, bit for bit. *Where you meet it:* every codec this topic builds measures lossless compression; a lossy option is named only as a pointer.
+- **Dictionary encoding**: replacing each repeated distinct value with a short code, keeping one copy of each distinct value in a lookup table. *Where you meet it:* how the repeated equipment and signal-name tags shrink.
+- **Run-length encoding**: replacing a run of identical consecutive values with the value and how many times it repeats. *Where you meet it:* the other half of why tag columns compress to almost nothing.
+- **Bits per point**: the actual, measured unit this topic uses to compare codecs, instead of a single headline ratio. *Where you meet it:* every regime's measured result, for every codec.

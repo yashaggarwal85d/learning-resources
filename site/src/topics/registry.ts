@@ -6105,6 +6105,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything so far assumed one job running once. The next section turns to the same shuffle and the same operators under a harder constraint: a partition that isn't evenly sized, which is where most real jobs actually get slow.",
   },
   {
+    id: 'de.partition-sizing-repartition-coalesce',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/partition-sizing-repartition-coalesce',
+    title: 'Partition sizing, repartition and coalesce',
+    syllabusTitle: 'Partition sizing, repartition and coalesce',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-partition-sizing', 'spark-repartition-vs-coalesce'],
+    uses: ['spark-shuffle-partitions-config', 'spark-shuffle-mechanics'],
+    declared: [],
+    bridge:
+      "Section 7.1 ended on the one path that escapes Spark's own execution machinery. This section returns to that machinery's biggest single cost, the shuffle, starting at its lowest lever: how many pieces the work is cut into in the first place.",
+    handoff:
+      "Sizing says how many partitions and how big. It says nothing about which partitioner decided which row lands in which one — the next topic's own question.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -6683,6 +6703,46 @@ export const TOPICS: TopicMeta[] = [
       "Resampling puts one series on a grid. The question that matters more often is across series: what was the temperature at the moment the pressure spiked, when the two were never sampled together? This topic is the as-of join on telemetry, with the tolerance that stops it matching something stale.",
     handoff:
       "Joining raw series is fine for a spike; it is too slow and too large for a quarter. The next topic is how to aggregate over time so the answer stays correct when it is rolled up again, and how to keep recent data in detail and old data in summary.",
+  },
+  {
+    id: 'de.downsampling-rollups-retention-tiers',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/downsampling-rollups-retention-tiers',
+    title: 'Downsampling, rollups and retention tiers',
+    syllabusTitle: 'Downsampling, rollups and retention tiers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['mergeable-rollup-never-store-average', 'rollup-with-mergeable-sketch', 'continuous-aggregate-late-data-invalidation', 'retention-tiers-query-routing', 'rollup-hides-spike-max-companion'],
+    uses: ['measure-additivity-classes', 'incremental-view-maintenance', 'staleness-bound-target-lag', 'bounded-reprocessing-window', 'partial-aggregation', 'aggregate-by-signal-type', 'filled-value-is-a-claim', 'device-gateway-ingest-timestamps', 'tiering-retention-designed-up-front'],
+    declared: [],
+    bridge:
+      "Joining raw series is fine for a spike; it is too slow and too large for a quarter. This topic is how to aggregate over time so that the answer stays correct when it is rolled up again, how a late reading changes a bucket that was already computed, and how to keep recent data in detail and old data in summary.",
+    handoff:
+      "Rollups keep fewer points. Compression keeps the same points in fewer bits. The next topic is how that works for timestamps and floating-point values, where regularity buys a large reduction in one published system and almost nothing in another.",
+  },
+  {
+    id: 'de.time-series-compression',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/time-series-compression',
+    title: 'Time-series compression',
+    syllabusTitle: 'Time-series compression',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 18,
+    verified: '2026-10-31',
+    introduces: ['delta-of-delta-timestamps', 'xor-float-encoding-gorilla', 'chimp-trailing-zero-refinement', 'alp-decimal-aware-encoding', 'compression-ratio-is-data-property'],
+    uses: ['event-stream-compression', 'columnar-layout', 'ieee-754', 'float-non-associativity', 'decimal-precision-scale', 'latency-numbers', 'memory-hierarchy', 'regular-vs-irregular-series', 'signal-type-tag-metadata', 'mergeable-rollup-never-store-average'],
+    declared: ['columnar-layout'],
+    bridge:
+      "Rollups keep fewer points. Compression keeps the same points in fewer bits. This topic is how that works for timestamps and floats: the Facebook system built around it, the encoders that came after, and the measurement that shows which of them your data actually benefits from.",
+    handoff:
+      "A codec shrinks a series; the next problem is finding it. Every distinct combination of labels is its own series, and the index that maps labels to series is the first thing to run out. The next topic is series cardinality and the label index.",
   },
   {
     id: 'de.communicating-tradeoffs-decision-makers',
