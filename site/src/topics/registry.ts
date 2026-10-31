@@ -5945,6 +5945,26 @@ export const TOPICS: TopicMeta[] = [
       "A partition's data is one thing; who is allowed to read it, together, as a group, and what happens when that group's membership changes, is the next topic.",
   },
   {
+    id: 'de.consumer-groups-rebalance-protocols',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/consumer-groups-rebalance-protocols',
+    title: 'Consumer groups and rebalance protocols',
+    syllabusTitle: 'Consumer groups and rebalance protocols',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['consumer-group-offsets', 'rebalance-protocol-comparison'],
+    uses: ['partition-segment-index', 'kraft-controller-quorum'],
+    declared: [],
+    bridge:
+      "A partition's data is replicated the way topics 3-4 described. Reading it, as a group of consumers that divide the work among themselves, is a different coordination problem — and the division itself has a real, measurable pause. This topic is that division and how Kafka made the pause mostly disappear.",
+    handoff:
+      'A log keeps every record forever unless something decides otherwise. What a log throws away, and what it keeps forever by a different rule, is the next topic: retention and compaction.',
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',

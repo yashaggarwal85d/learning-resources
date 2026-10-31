@@ -1,0 +1,151 @@
+{
+  "topic": "de.consumer-groups-rebalance-protocols",
+  "syllabus": [
+    {
+      "clause": "offset commits in __consumer_offsets; classic protocol (client-side assignment, eager vs cooperative-sticky, stop-the-world rebalances, static membership)",
+      "at": [
+        { "step": "Setup: offsets as a log, partitions divided up" },
+        { "step": "Predict: does every member pause, or just the ones that moved?" },
+        { "step": "Reveal: a real reassignment, most members untouched" },
+        { "step": "Reveal: eager pauses everyone, cooperative pauses few" },
+        { "step": "Predict: does a persistent identity still force a rebalance?" },
+        { "step": "Reveal: static membership, measured" }
+      ]
+    },
+    {
+      "clause": "vs the KIP-848 consumer protocol (GA in 4.0: broker-side assignment, incremental per-member reconciliation, no global barrier)",
+      "at": [
+        { "step": "Reveal: eager pauses everyone, cooperative pauses few" },
+        { "step": "Reveal: assignment moves to the broker, Streams included" }
+      ]
+    },
+    {
+      "clause": "the Streams rebalance protocol (KIP-1071, GA with a limited feature set in 4.2)",
+      "at": [
+        { "step": "Reveal: assignment moves to the broker, Streams included" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "classic being phased out",
+      "at": [
+        { "step": "Reveal: assignment moves to the broker, Streams included" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Kafka, KIP-848",
+      "items": [
+        {
+          "item": "the classic protocol relies on a group-wide synchronization barrier, requiring a rebalance of the whole group on any join, leave or failure",
+          "at": [{ "step": "Predict: does every member pause, or just the ones that moved?" }]
+        },
+        {
+          "item": "eager mode revokes every member's partitions before rejoining; cooperative mode only revokes the partitions it no longer owns",
+          "at": [
+            { "step": "Reveal: a real reassignment, most members untouched" },
+            { "step": "Reveal: eager pauses everyone, cooperative pauses few" }
+          ]
+        },
+        {
+          "item": "committed offsets are persisted as records in the compacted __consumer_offsets topic",
+          "at": [{ "step": "Setup: offsets as a log, partitions divided up" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 operations documentation, Consumer Rebalance Protocol",
+      "items": [
+        {
+          "item": "KIP-848 is GA since Kafka 4.0, removing the global synchronization barrier via a fully incremental design",
+          "at": [{ "step": "Reveal: eager pauses everyone, cooperative pauses few" }]
+        },
+        {
+          "item": "the assignment strategy is controlled by the server, not the client",
+          "at": [{ "step": "Reveal: assignment moves to the broker, Streams included" }]
+        },
+        {
+          "item": "classic group management is on a stated phase-out trajectory (KIP-1274): 5.0 changes the default, 6.0 drops client support entirely",
+          "at": [{ "step": "Reveal: assignment moves to the broker, Streams included" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 design documentation (Static Membership)",
+      "items": [
+        {
+          "item": "a persistent configured entity id means group membership remains unchanged on rejoin, so no rebalance is triggered",
+          "at": [
+            { "step": "Predict: does a persistent identity still force a rebalance?" },
+            { "step": "Reveal: static membership, measured" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 Streams developer guide, Streams Rebalance Protocol",
+      "items": [
+        {
+          "item": "the Streams rebalance protocol is enabled by default on new clusters since Kafka 4.2",
+          "at": [{ "step": "Reveal: assignment moves to the broker, Streams included" }]
+        },
+        {
+          "item": "the current release has a stated limited feature set: no in-place topology updates, no built-in rack-aware assignment, no regex subscriptions, no online classic migration",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A consumer group's committed offsets are stored the same way any other compacted Kafka topic stores state, not in a separate system.",
+        "at": [{ "step": "Setup: offsets as a log, partitions divided up" }]
+      },
+      {
+        "item": "Eager rebalancing pauses the entire group regardless of how many partitions actually moved, by design, not as a side effect.",
+        "at": [{ "step": "Reveal: eager pauses everyone, cooperative pauses few" }]
+      },
+      {
+        "item": "A reassignment after a membership change does not have to touch every member's partitions.",
+        "at": [{ "step": "Reveal: a real reassignment, most members untouched" }]
+      },
+      {
+        "item": "Static membership's benefit is scoped to restarts within the configured session timeout, not restarts in general.",
+        "at": [{ "step": "Reveal: static membership, measured" }]
+      },
+      {
+        "item": "KIP-848 moves who computes an assignment, not just how a rebalance is announced, from client to broker.",
+        "at": [{ "step": "Reveal: assignment moves to the broker, Streams included" }]
+      },
+      {
+        "item": "The Streams rebalance protocol is a distinct protocol from KIP-848, not KIP-848 reused unmodified for Kafka Streams.",
+        "at": [{ "step": "Reveal: assignment moves to the broker, Streams included" }]
+      },
+      {
+        "item": "Kafka's own release plan phases classic group management out gradually across major versions rather than removing it in one step.",
+        "at": [{ "step": "Reveal: assignment moves to the broker, Streams included" }]
+      },
+      {
+        "item": "This topic treats compaction, which keeps __consumer_offsets small, by name only; compaction's own mechanics are the next topic's job.",
+        "at": [{ "step": "Setup: offsets as a log, partitions divided up" }]
+      },
+      {
+        "item": "A changed Kafka Streams topology currently requires creating a new streams group rather than updating the existing one in place.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "What a consumer does with its assigned partitions once stable is out of this topic's scope; this topic covers only how the assignment itself is reached.",
+        "at": [{ "step": "Hook: nine members, one stalled group" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
