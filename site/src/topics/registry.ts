@@ -5905,6 +5905,26 @@ export const TOPICS: TopicMeta[] = [
       "Locality and parallelism are about placing and sizing the tasks the planner already decided to run. The next two topics go one level up, into the planner itself: how Catalyst decided what to run in the first place.",
   },
   {
+    id: 'de.catalyst-unresolved-physical-plan',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/catalyst-unresolved-physical-plan',
+    title: 'Catalyst: from unresolved to physical plan',
+    syllabusTitle: 'Catalyst: from unresolved to physical plan',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-catalyst-pipeline', 'spark-explain-formatted'],
+    uses: ['sql-query-optimizer-plans', 'spark-stage-boundary'],
+    declared: [],
+    bridge:
+      "Every topic so far watched the plan Catalyst already produced run. This topic opens Catalyst itself, the planner Chapter 2's query-optimiser topic already introduced in the single-node case, now choosing join and aggregate strategies across a cluster.",
+    handoff:
+      "Catalyst decides the physical plan's shape. Tungsten, next, decides how fast the chosen shape actually runs — a different layer, planning versus execution.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',

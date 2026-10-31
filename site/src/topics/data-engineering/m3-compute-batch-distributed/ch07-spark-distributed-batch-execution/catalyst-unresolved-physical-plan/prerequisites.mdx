@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: §7.1's own task-scheduling topic, and Chapter 2's optimizer
+
+<ul class="resources">
+  <Resource kind="reel" title="Task scheduling, locality and parallelism" domain="data-engineering" host="de.task-scheduling-locality-parallelism" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="SQL Reference — EXPLAIN" href="https://spark.apache.org/docs/latest/sql-ref-syntax-qry-explain.html" by="Apache Spark documentation">The four plan stages (parsed, analyzed, optimized, physical) and EXPLAIN FORMATTED's own output shape.</Resource>
+  <Resource kind="reading" title="Performance Tuning — spark.sql.autoBroadcastJoinThreshold" href="https://spark.apache.org/docs/latest/sql-performance-tuning.html" by="Apache Spark documentation">The size threshold behind broadcast-vs-shuffle join strategy selection, measured directly.</Resource>
+  <Resource kind="reading" title="SQL Reference — ANALYZE TABLE" href="https://spark.apache.org/docs/latest/sql-ref-syntax-aux-analyze-table.html" by="Apache Spark documentation">Cost-based reordering's own statistics requirement, named and quoted.</Resource>
+</ul>
+
+</section>
