@@ -1,0 +1,83 @@
+{
+  "topic": "de.choosing-dag-asset-durable",
+  "steps": [
+    {
+      "lines": [
+        "Picture a vendor approval that can take as long as five days to come back.",
+        "Modeled as a sensor in a batch orchestrator, it survives those five days mostly by luck.",
+        "Then one ordinary code deploy restarts the scheduler while it's still waiting, and the approval state is simply gone.",
+        "Someone has to notice, and redo the wait by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Three ways of shaping a running pipeline have each already earned their place earlier in this chapter.",
+        "A batch task graph, built for work measured in minutes or hours.",
+        "An asset graph, built around a data product rather than a sequence of actions.",
+        "And durable execution, built for work that can run for days or months. This topic is only about choosing among the three."
+      ]
+    },
+    {
+      "lines": [
+        "Worth pausing before naming the answer.",
+        "Not every long wait actually needs a different model from the one already in use.",
+        "What property of a piece of work really pushes it away from a batch task graph and toward durable execution instead?",
+        "Think about what's actually different about the vendor-approval example, not just that it takes a while."
+      ],
+      "answer": "It isn't how many steps the pipeline has. It's how long the work runs, and whether a person, not a machine, is the one being waited on."
+    },
+    {
+      "lines": [
+        "Here's the rule, stated plainly rather than left as a feeling.",
+        "First, how long the work actually runs: minutes or hours, versus days or months.",
+        "Second, whether a human being is genuinely part of that wait.",
+        "Third, whether the work reads better as a data product than a sequence of actions, and fourth, whether it needs a multi-system saga with its own undo steps."
+      ],
+      "takeaway": "Three models, one explicit rule -- not a vibe about which tool feels modern."
+    },
+    {
+      "lines": [
+        "One more thing worth questioning before it's shown.",
+        "Most real pipelines are mostly short, ordinary batch tasks, with just one long, human-paced step buried somewhere inside them.",
+        "Does a pipeline like that have to move its entire self over to a durable-execution engine?",
+        "Or is there a lighter way to handle just that one step?"
+      ],
+      "answer": "No, it doesn't have to move entirely. Only that one long, human-paced step needs the different engine -- everything short around it keeps running exactly where it already runs well."
+    },
+    {
+      "lines": [
+        "Here's that lighter pattern, named directly.",
+        "A batch task graph, or an asset graph, runs its ordinary short work as usual.",
+        "The moment it reaches the step that's genuinely long and human-paced, it hands that one step off to a durable workflow, and simply waits or polls for it to finish.",
+        "It never tries to model that long wait inside itself."
+      ],
+      "takeaway": "A hybrid design is not a compromise. It puts each shape of work on the model that fits it."
+    },
+    {
+      "lines": [
+        "So why does the durable side actually survive a restart, where the batch sensor didn't? This comes straight from that platform's own documentation, not a guess.",
+        "If the worker running a durable workflow crashes, it doesn't try to recover from anything held in that worker's own memory.",
+        "Instead, it replays a complete, ordered, durably stored history of everything that already happened in that workflow, and rebuilds its exact state from that history alone.",
+        "The state was never something a single process was trusted to remember."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it together now.",
+        "Three models: a batch task graph, an asset graph, and durable execution.",
+        "One explicit rule decides among them: how long the work runs, whether a human is genuinely part of the wait, whether it's a data product, whether it needs a saga.",
+        "And for the common case, a pipeline doesn't have to choose only one model -- it can hand off just its one long, human-paced step."
+      ],
+      "takeaway": "The hook's failure wasn't the batch orchestrator being bad at waiting. It was the wrong model for a wait that long."
+    },
+    {
+      "lines": [
+        "One real test to close on, from this session's own sandbox.",
+        "Two sensors, running in the exact same reschedule mode, in the exact same batch orchestrator installation.",
+        "One of them checks a fact that's held durably, outside any single process. The other checks a fact held only inside one process's own memory.",
+        "Once a real restart happens partway through, does either of them actually survive it?"
+      ],
+      "answer": "Only the one checking the durable fact survives. Both ran in the identical reschedule mode, but the sensor relying on in-process memory lost its state completely, exactly as the hook described from the start."
+    }
+  ]
+}
