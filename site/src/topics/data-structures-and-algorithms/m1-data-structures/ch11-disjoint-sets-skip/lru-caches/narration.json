@@ -1,0 +1,104 @@
+{
+  "topic": "dsa.lru-caches",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Picture a small cache, every slot already holding something.",
+        { "beat": 0.4 },
+        "A fresh request arrives for something not yet inside, and the cache has to let one entry go before it can take the new one.",
+        { "beat": 0.4 },
+        "Stamp every entry with the moment it was last touched and finding the stalest one means checking every stamp — exactly the work a cache exists to avoid."
+      ]
+    },
+    {
+      "lines": [
+        "Split the job in two. One structure answers where is this, instantly; the other answers which one is oldest, instantly.",
+        { "beat": 0.4 },
+        "Neither does the other's job well on its own — a lookup table has no sense of order, and an ordered chain can't be searched quickly by key.",
+        { "beat": 0.4 },
+        "Put them together and a single lookup hands back not just a value, but a direct handle into the ordered chain, ready to move without searching for it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trap. Reading a value out of the cache feels like it should leave everything else untouched.",
+        { "beat": 0.4 },
+        "But if the cache only remembers order from writes, a value that gets read constantly and never rewritten would look exactly as old as one nobody has touched in ages."
+      ],
+      "answer": [
+        "It has to move — a plain lookup quietly becomes an update to the ordering structure.",
+        "That is the uncomfortable part: the busiest operation in the whole system is also the one doing bookkeeping work on every single call."
+      ]
+    },
+    {
+      "lines": [
+        "Run that bookkeeping on a cache with a hundred slots, then again on one with tens of thousands, and count exactly how many internal links get rewritten each time.",
+        { "beat": 0.4 },
+        "The count doesn't move. Whatever the cache's size, touching one entry only ever touches its two immediate neighbours.",
+        { "beat": 0.4 },
+        "That's the entire payoff of pairing the two structures: a handle straight to the right spot means nothing downstream of it has to shift."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch a short sequence of requests land on a cache that can only hold a few things at once.",
+        { "beat": 0.4 },
+        "Some keys repeat. Follow one of them closely: does it survive long enough to still be sitting there the second time it's asked for, or has something already pushed it out?"
+      ]
+    },
+    {
+      "lines": [
+        "Suppose every thread touching this cache has to grab the same lock just to slide one entry to the front.",
+        { "beat": 0.4 },
+        "At that point the ordering structure, not the actual lookup, becomes the bottleneck.",
+        { "beat": 0.4 },
+        "What if the cache gave up remembering the exact order altogether, and settled for something rougher but far cheaper to update?"
+      ],
+      "answer": [
+        "Approximate the order instead of keeping it exact.",
+        "Give up knowing precisely which of several recently touched entries came last, and in exchange make the per-touch cost almost disappear."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the rougher version: one flag per entry, flipped on whenever it's touched, and a single pointer that sweeps around all the entries in a fixed circle.",
+        { "beat": 0.4 },
+        "A touch costs nothing more than flipping that one flag. Choosing a victim means the sweeping pointer walking forward, turning off any flag it finds lit, until it lands on one already dark.",
+        { "beat": 0.4 },
+        "Run it on the very same request sequence as the exact version, and the two throw out almost the same entries — the rough version loses almost nothing here, for a touch that costs far less."
+      ]
+    },
+    {
+      "lines": [
+        "Now imagine something unusual passes through: a one-time job that reads a huge run of entries, each exactly once, far more than the cache could ever hold.",
+        { "beat": 0.4 },
+        "From the cache's point of view, every one of those reads looks identical to a normal, meaningful touch.",
+        { "beat": 0.4 },
+        "So does the stuff that was genuinely popular before that job started survive it, or does the job itself count as the most recent activity everywhere?"
+      ],
+      "answer": [
+        "It gets pushed out — a rule built only on recency has no way to tell 'used once by something huge' apart from 'used constantly.'",
+        "Both look like the newest touch at the moment they happen, and that's all a purely recency-based rule can see."
+      ]
+    },
+    {
+      "lines": [
+        "Measure the hit rate right after that huge one-time job finishes, and compare it to the same short window with no such job beforehand.",
+        { "beat": 0.4 },
+        "Under the exact ordering version and under the rough, flag-based version alike, that rate drops hard, right after the intrusion — the popular stuff really is gone.",
+        { "beat": 0.4 },
+        "A third approach gives up tracking order at all, just a timestamp and a few random guesses at eviction time, and it does a little worse still on ordinary traffic — the price of carrying almost no structure whatsoever."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the three apart: pairing a lookup table with an ordered chain gives an exact answer, at the cost of touching that chain on every single read.",
+        { "beat": 0.4 },
+        "Swapping in a flag and a sweeping pointer keeps nearly the same accuracy while making that per-read cost almost disappear.",
+        { "beat": 0.4 },
+        "But notice what none of them solved: a single oversized, one-time pass still wrecks either approach, because both are built entirely out of recency and nothing else."
+      ]
+    }
+  ]
+}

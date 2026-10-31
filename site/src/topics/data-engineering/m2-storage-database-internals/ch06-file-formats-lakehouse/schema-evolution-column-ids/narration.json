@@ -1,0 +1,73 @@
+{
+  "topic": "de.schema-evolution-column-ids",
+  "steps": [
+    {
+      "lines": [
+        "A row surviving inside its own file is one thing. A whole column surviving across an entire table, through a rename or a reorder, is a much bigger ask.",
+        "That's an old problem resurfacing at a new altitude, and today it finally gets a real fix, built and checked directly."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a schema change that does two things at once: an existing column gets a new name, and a brand new column gets slotted in right before it.",
+        "If whatever reads that table afterward still trusts each column's position in the file to tell it what's what, does the data come back correctly, or not?"
+      ],
+      "answer": [
+        "Not even close. The moment that new column gets inserted anywhere but the very end, position stops meaning anything reliable.",
+        "Every column sitting after the insertion point quietly starts holding some other column's real value instead of its own."
+      ]
+    },
+    {
+      "lines": [
+        "And this was checked directly, not just asserted. A real table on disk, renamed and reordered the exact same way, read back by trusting position alone.",
+        "Exactly as feared — the newly inserted column silently inherited the next column's actual value, and every column after that slid one slot out of place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real fix, straight from the format's own rules. Every column gets a permanent identity assigned to it once, the moment it's created, and that identity never changes again.",
+        "A rename is free to change what a column is called. It is never allowed to touch that permanent identity underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Checked again, on that very same file, this time trusting that permanent identity instead of position.",
+        "The renamed column resolved correctly, with its real original data intact. And the genuinely new column, exactly as it should, came back reporting nothing there yet."
+      ]
+    },
+    {
+      "lines": [
+        "Now flip to a format whose files carry ordinary column names instead of that permanent identity scheme. How could a rename possibly avoid rewriting such a file?",
+        "Does it just always pay the cost of a full rewrite every time, or is there some other trick available?"
+      ],
+      "answer": [
+        "There's another trick, and it's the more interesting answer. A separate, stable internal name gets tracked in the table's own metadata, apart from whatever name a person actually sees and uses.",
+        "A rename only has to update that metadata record. The underlying file itself never has to move or change at all."
+      ]
+    },
+    {
+      "lines": [
+        "But first, the honest baseline, also checked for real. Without that separate stable internal name in place, the file's own column name really is the only name there is.",
+        "So renaming a column under that setup genuinely does force a real rewrite of the file — confirmed directly, not assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Now with that separate stable name actually turned on, checked the same way. The documentation promises renaming shouldn't require touching the underlying file at all.",
+        "And it held up byte for byte — the file that came out the other side was completely, provably identical to the one that went in."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what makes this worth remembering. That same permanent-identity trick isn't just about surviving a rename.",
+        "It's exactly what also lets a table safely grow a brand new column, widen a type without breaking old readers, or let a nested structure evolve underneath everyone's feet."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole idea in one line. A permanent identity, not a name and not a position, is what actually lets a column survive change.",
+        "Every trick in this topic — surviving a rename, a reorder, a new type, a nested structure — ultimately traces back to that one same guarantee."
+      ]
+    }
+  ]
+}
