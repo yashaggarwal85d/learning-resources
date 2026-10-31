@@ -1,0 +1,65 @@
+{
+  "topic": "de.dynamic-task-mapping-fan",
+  "syllabus": [
+    {
+      "clause": "runtime-determined parallelism (expand/partial, map over files or partitions)",
+      "at": [
+        { "step": "Reveal: expand and partial, run for real" }
+      ]
+    },
+    {
+      "clause": "mapped-task limits",
+      "at": [
+        { "step": "Predict: truncate or fail outright?" },
+        { "step": "Reveal: the exact boundary, measured" },
+        { "step": "Predict: zero files today" }
+      ]
+    },
+    {
+      "clause": "the 10,000-task-DAG anti-pattern vs pushing parallelism into the compute engine",
+      "at": [
+        { "step": "Reveal: scheduling overhead, measured at four scales" },
+        { "step": "Reveal: the same work, pushed into the engine" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dynamic Task Mapping (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "dynamic task mapping defers task creation until runtime, determining the exact count from upstream output", "at": [{ "step": "Reveal: expand and partial, run for real" }] },
+        { "item": "expand() maps per-instance arguments; partial() fixes arguments shared across every instance", "at": [{ "step": "Reveal: expand and partial, run for real" }] },
+        { "item": "core.max_map_length defaults to 1024", "at": [{ "step": "Reveal: the exact boundary, measured" }] },
+        { "item": "a source task returning a list longer than max_map_length fails outright", "at": [{ "step": "Reveal: the exact boundary, measured" }] },
+        { "item": "a zero-length expand() input creates no task instances; the mapped task is marked SKIPPED", "at": [{ "step": "Predict: zero files today" }] }
+      ]
+    },
+    {
+      "source": "RDD Programming Guide (Apache Spark 4.3.0 documentation)",
+      "items": [
+        { "item": "Spark runs one task per partition, splitting work internally within a single job rather than one orchestrator task instance per unit of work", "at": [{ "step": "Reveal: the same work, pushed into the engine" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The gap between expand() deciding fan-out at run time and a Python for-loop deciding it at parse time isn't cosmetic — a for-loop's task count is baked into the Dag's serialized structure before any run starts, so it can never adapt to what a given run actually discovers, which is exactly the capability a partner's variable file count needs.", "at": [{ "step": "Reveal: expand and partial, run for real" }] },
+      { "item": "The max_map_length rejection happens at the XCom-push boundary, on the upstream task that produced the too-long list — not on the mapped downstream task itself, which never gets created at all. A reader expecting partial failure (some mapped instances succeeding before the limit kicks in) would be wrong on both counts: nothing downstream runs, and the failure is reported against the task that tried to hand off too much.", "at": [{ "step": "Reveal: the exact boundary, measured" }] },
+      { "item": "This topic's own measured overhead curve (eight point four five, sixteen point three eight, forty six point nine seven, eighty eight point one six seconds at ten, a hundred, five hundred and a thousand twenty four files) is not perfectly linear because a fixed per-run cost — Dag parsing, database setup — dominates at small file counts and is amortized away at large ones; the per-task overhead figure derived from it is deliberately taken from the two largest points, where that fixed cost matters least.", "at": [{ "deep": "Lab" }] },
+      { "item": "Pushing parallelism into the compute engine isn't free of orchestration — Airflow still schedules the one task that launches the Spark job. What changes is which layer absorbs the per-unit-of-work scheduling cost: the orchestrator's metadata database and scheduler loop, or the engine's own internal task-scheduling, which this topic's sources show is designed for exactly that job.", "at": [{ "step": "Reveal: the same work, pushed into the engine" }] },
+      { "item": "A reader who only remembers 'there's a limit of one thousand twenty four' may assume raising max_map_length is the fix for a partner sending more files than that — it isn't; the production rule this topic argues for is to push that parallelism into the engine instead, not to raise the ceiling and keep paying per-task orchestrator overhead at a larger scale.", "at": [{ "deep": "Production" }] },
+      { "item": "The zero-length-input behaviour (SKIPPED, not FAILED, not run with an empty list) matters operationally: a downstream task depending on the mapped task's success needs to know that 'nothing to do today' and 'something broke' produce genuinely different states in the metadata database, not the same failure.", "at": [{ "step": "Predict: zero files today" }] },
+      { "item": "This topic's hook (eleven thousand files from one partner) and its measured boundary (one thousand twenty four) aren't the same number by coincidence of scale — the hook is specifically chosen to land past the documented limit, so the Dag wouldn't just run slowly, it would fail outright the moment the file count crossed that line.", "at": [{ "step": "Hook" }] },
+      { "item": "max_active_tis_per_dag, mentioned in the Frontier section, is a different knob from max_map_length entirely — one bounds how many task instances expand() is allowed to create in total, the other bounds how many copies of one mapped task can be running concurrently at once. Conflating the two leads to debugging the wrong setting when a fan-out either fails to create or fails to run fast enough.", "at": [{ "deep": "Frontier" }] },
+      { "item": "partial() arguments aren't merely 'the ones that don't change' in an incidental sense — they're explicitly disallowed from being expand()'d at all for certain BaseOperator arguments like task_id, queue and pool, which must go through partial() specifically because mapping them per-instance wouldn't make structural sense (a mapped task instance doesn't get its own task_id).", "at": [{ "step": "Reveal: expand and partial, run for real" }] },
+      { "item": "The Spark-side overhead number used in this topic's final comparison is explicitly an estimate sourced from Chapter 7's own established measurements, not a fresh side-by-side benchmark run in this session — stating that distinction precisely (measured vs. estimated) is itself part of what this topic is teaching about honest cost comparisons between systems.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

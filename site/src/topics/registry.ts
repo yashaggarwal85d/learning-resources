@@ -4747,6 +4747,26 @@ export const TOPICS: TopicMeta[] = [
       "A backfill re-runs a fixed number of tasks over a fixed range. Many pipelines need the number of tasks itself to depend on the data — one task per file, one per partition, decided at run time. That is the next mechanism.",
   },
   {
+    id: 'de.dynamic-task-mapping-fan',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/dynamic-task-mapping-fan',
+    title: 'Dynamic task mapping and fan-out',
+    syllabusTitle: 'Dynamic task mapping and fan-out',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['dynamic-task-mapping', 'fan-out-vs-engine-parallelism'],
+    uses: ['de.orchestrator-architecture-scheduler', 'ch8.file-ingestion-landing-zones', 'ch7.engine-internal-parallelism'],
+    declared: [],
+    bridge:
+      "A backfill re-runs a fixed set of tasks many times. This topic is the other way a Dag multiplies: the same run deciding, at execution time, exactly how many tasks it needs, one per file or per partition it discovers.",
+    handoff:
+      "Fan-out can make thousands of task instances want to run at once. Something has to decide how many actually do, and in what order, without starving anything else sharing the cluster. That is the next topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
