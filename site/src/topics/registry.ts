@@ -6005,6 +6005,26 @@ export const TOPICS: TopicMeta[] = [
       "A log that keeps everything forever costs money, and most of that cost is disk the broker itself has to hold. Letting old data live on cheaper storage, without changing what a consumer sees, is the next topic.",
   },
   {
+    id: 'de.kafka-tiered-storage',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/kafka-tiered-storage',
+    title: 'Kafka tiered storage',
+    syllabusTitle: 'Kafka tiered storage',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['tiered-storage-remote-log'],
+    uses: ['partition-segment-index', 'retention-vs-compaction'],
+    declared: [],
+    bridge:
+      "Every byte on a Kafka broker's local disk costs the same expensive, fast storage, whether it was written a minute ago or a year ago. This topic is the fix: closed segments move to cheap object storage, transparently, once they're no longer hot.",
+    handoff:
+      "The log itself, and everything it stores, replicates and tiers, is only half the story. The other half is making sure what you read out of it is correct even when producers retry, consumers crash, and sinks fail partway through a write. That's the next section.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
