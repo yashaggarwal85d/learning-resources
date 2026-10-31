@@ -1,0 +1,122 @@
+{
+  "topic": "de.oee-downtime-event-modeling",
+  "syllabus": [
+    {
+      "clause": "OEE = availability × performance × quality from state/event streams",
+      "at": [
+        { "step": "Reveal: OEE as availability times performance times quality" },
+        { "step": "Reveal: a machine-state interval table, not stored directly" }
+      ]
+    },
+    {
+      "clause": "downtime reason-code hierarchies, micro-stops, planned vs unplanned time",
+      "at": [
+        { "step": "Reveal: reason codes roll up; micro-stops hide in Performance" },
+        { "step": "Reveal: the same downtime, two policies, two different Availability numbers" }
+      ]
+    },
+    {
+      "clause": "maintenance events, MTBF/MTTR",
+      "at": [{ "step": "Reveal: MTBF and MTTR, with one censored interval" }]
+    },
+    {
+      "clause": "the classic double-counting and shift-boundary bugs.",
+      "at": [
+        { "step": "Reveal: the shift-boundary split, computed for real" },
+        { "step": "Reveal: the double-count, and the fix" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OEE Calculation: Definitions, Formulas, and Examples (oee.com)",
+      "items": [
+        {
+          "item": "Availability, Performance and Quality each defined, and OEE as their product",
+          "at": [{ "step": "Reveal: OEE as availability times performance times quality" }]
+        },
+        {
+          "item": "the full worked numeric example, reconciled exactly",
+          "at": [{ "step": "Reveal: OEE as availability times performance times quality" }]
+        }
+      ]
+    },
+    {
+      "source": "Mean time between failures (Wikipedia)",
+      "items": [
+        {
+          "item": "MTBF for repairable systems vs. MTTF for non-repairable ones, and MDT vs. MTTR",
+          "at": [{ "step": "Reveal: MTBF and MTTR, with one censored interval" }]
+        }
+      ]
+    },
+    {
+      "source": "ISO 22400-2 and ISA-95 Part 3 (not used; disclosed)",
+      "items": [
+        {
+          "item": "neither standard's own text was fetchable as quotable primary source; named as a gap",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "OEE's own formula is an identity, not an independent measurement — the factored (A×P×Q) and simple (good count × ideal cycle time / planned time) routes must agree exactly on the same data, and checking that agreement is a cheap, powerful sanity check on any OEE pipeline.",
+        "at": [{ "step": "Reveal: OEE as availability times performance times quality" }]
+      },
+      {
+        "item": "A machine-state interval table is a derived view, not a stored fact — storing only the raw state-change events and deriving intervals on read keeps the model honest about what was actually observed versus what was computed from it.",
+        "at": [{ "step": "Reveal: a machine-state interval table, not stored directly" }]
+      },
+      {
+        "item": "A shift boundary is exactly the same kind of problem as a time-zone or billing-period boundary elsewhere in this course: any interval-valued fact that can span one needs an explicit split rule, not an implicit 'assign to the shift it started in' default.",
+        "at": [{ "step": "Reveal: the shift-boundary split, computed for real" }]
+      },
+      {
+        "item": "A gateway replay duplicating one interval is a structurally different bug from a shift-boundary misassignment, even though both inflate or distort a reported number — one needs idempotent ingestion or deduplication, the other needs an explicit split rule; conflating the two fixes leads to a patch that doesn't address the actual failure mode.",
+        "at": [{ "step": "Reveal: the double-count, and the fix" }]
+      },
+      {
+        "item": "Merging overlapping intervals before summing is the general fix for double-counting from any source (replay, late-arriving duplicate, multi-sensor overlap), not a one-off patch for this specific gateway's bug.",
+        "at": [{ "step": "Reveal: the double-count, and the fix" }]
+      },
+      {
+        "item": "A reason-code hierarchy's value is almost entirely in the rollup: a flat list of reason codes forces every report to either drown in detail or hand-pick categories ad hoc, while a hierarchy makes 'how much time did Mechanical causes cost us this month' a single group-by.",
+        "at": [{ "step": "Reveal: reason codes roll up; micro-stops hide in Performance" }]
+      },
+      {
+        "item": "A micro-stop too short to log a reason for doesn't disappear from the model — OEE's own definition folds it into Performance rather than Availability, so a plant that only tracks 'logged downtime' is silently missing exactly the losses too small to log.",
+        "at": [{ "step": "Reveal: reason codes roll up; micro-stops hide in Performance" }]
+      },
+      {
+        "item": "Excluding a censored interval isn't conservative bookkeeping, it's the only way the MTBF estimate stays an estimate of the same thing each time — including a partial, unclosed interval would make the reported MTBF depend on where the reporting window happened to end, not on the machine's actual reliability.",
+        "at": [{ "step": "Reveal: MTBF and MTTR, with one censored interval" }]
+      },
+      {
+        "item": "MTTR, computed as a mean of logged repair durations, says nothing about delays before a repair starts (waiting for a part, waiting for a technician) — that's exactly the gap MDT exists to cover, and conflating the two overstates how 'fixable' a failure mode actually is.",
+        "at": [{ "step": "Reveal: MTBF and MTTR, with one censored interval" }]
+      },
+      {
+        "item": "A planned/unplanned policy is a modelling decision, not a measurement — the same physical minutes of stopped production can legitimately produce two different, equally 'correct' Availability numbers, which is why the policy itself has to be stated alongside any reported figure, not assumed.",
+        "at": [{ "step": "Reveal: the same downtime, two policies, two different Availability numbers" }]
+      },
+      {
+        "item": "Every bug this topic reproduces (boundary split, double-count, policy ambiguity) shares one shape: a number that looks like a single measured fact is actually the output of an unstated modelling choice, and the fix in each case is making that choice explicit rather than discovering it by comparing two plants' reports.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Reclassifying a changeover's policy after the fact is a common, tempting way to 'improve' a reported number without improving anything real — recognizing that move for what it is (a reporting change, not a production change) is the actual skill this topic's Prove-it step is testing.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "topic": "de.oee-downtime-event-modeling",
+  "steps": [
+    {
+      "lines": [
+        "Picture one shift, one set of machines, and two plants that somehow come back with two different scores for it.",
+        "A changeover straddles the moment one shift hands off to the next, and a message that already arrived once gets resent and counted again on top of that.",
+        "Neither plant is lying. Something in how each one assembled the number is different."
+      ]
+    },
+    {
+      "lines": [
+        "Before chasing the gap, it's worth pinning down what this score is even built from.",
+        "Three separate factors multiplied together, each one answering a different question: was the line running, was it running at full speed, and did what it made actually pass.",
+        "Run a real, published example through both the long version and the shortcut version, and they land on the same answer. That agreement is the whole point, not a footnote."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a detail that's easy to miss: no machine ever hands you a tidy block of twelve minutes of downtime.",
+        "What it actually hands you is a change. Running, then not running, then running again.",
+        "The block of twelve minutes gets built afterward, by pairing those changes up. It's a view on the data, not the data itself."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "A changeover starts a few minutes before the shift actually turns over, and keeps going a while after.",
+        "If you just hand the whole thing to whichever shift it started in, does that ever actually move a number anyone reports?"
+      ],
+      "answer": [
+        "It does, and here's exactly where.",
+        "The full day's total downtime doesn't budge either way you slice it.",
+        "But each shift's own number, the one someone actually reads on its own, comes out different depending on where that line gets drawn."
+      ]
+    },
+    {
+      "lines": [
+        "Take that exact crossing interval and actually run it through a real splitting rule.",
+        "It doesn't come back as one lump assigned to a guess. It comes back as two separate, exact pieces, one on each side of the cutover.",
+        "Add those two pieces together and you get back the original, whole interval, with nothing lost and nothing invented."
+      ]
+    },
+    {
+      "lines": [
+        "Now the other half of the mismatch.",
+        "A message meant to arrive once gets resent, and it lands right on top of a downtime window that already happened.",
+        "Add up every recorded interval without checking for that overlap, and the total comes out inflated.",
+        "Merge the overlapping pieces into one before adding anything, and the real total comes back out."
+      ]
+    },
+    {
+      "lines": [
+        "A small ladder of codes, category down to the specific reason, lets someone roll a pile of individual stops up into one readable total.",
+        "But what about a stop so brief nobody had time to tag a reason to it?",
+        "It doesn't just get dropped. It shows up somewhere else entirely, inside the speed factor rather than the uptime one."
+      ]
+    },
+    {
+      "lines": [
+        "Follow one machine's failures and repairs across a window of time.",
+        "Every stretch of running time that sits between two observed failures counts cleanly toward how often this thing tends to break.",
+        "But the stretch right after the very last failure, running all the way to the end of the window, never gets closed by a second failure.",
+        "Count that stretch anyway, and you'd be crediting the machine with reliability nobody actually confirmed yet."
+      ]
+    },
+    {
+      "lines": [
+        "Take the identical raw minutes of a changeover plus a breakdown, and run them through two different bookkeeping choices.",
+        "Count the changeover as planned downtime, and you get one uptime percentage.",
+        "Count it as unplanned instead, and the exact same physical minutes produce a different one.",
+        "Nothing about the machine moved between those two numbers."
+      ]
+    },
+    {
+      "lines": [
+        "A score that checks out against a published example from two directions at once.",
+        "A table of intervals that's built, never stored outright.",
+        "A boundary handled properly, a duplicate caught and merged away.",
+        "Reasons rolled up, with the smallest stops still accounted for.",
+        "A reliability figure that refuses to count time nobody actually confirmed, and a bookkeeping choice that can shift the final number without touching a single machine."
+      ]
+    },
+    {
+      "lines": [
+        "A manager looks over this month's results and decides, starting tomorrow, that changeovers count as planned time instead of unplanned.",
+        "Does a single machine on that floor run any differently because of that decision?"
+      ],
+      "answer": [
+        "Not one. And that's exactly the point worth sitting with.",
+        "The parts get made at the same pace, by the same machines, in the same amount of time.",
+        "Only the paperwork describing all of that just changed."
+      ]
+    }
+  ]
+}
