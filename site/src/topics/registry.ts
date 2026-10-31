@@ -7306,6 +7306,25 @@ export const TOPICS: TopicMeta[] = [
       "Caching and checkpointing are both about surviving across jobs. The next topic is about surviving within one: the JVM's own garbage collector, and the pauses it causes under the same memory pressure.",
   },
   {
+    id: 'de.jvm-garbage-collection-symptoms',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/jvm-garbage-collection-symptoms',
+    title: 'JVM garbage-collection symptoms',
+    syllabusTitle: 'JVM garbage-collection symptoms',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-gc-symptoms'],
+    uses: ['spark-unified-memory-manager', 'spark-tungsten-unsaferow'],
+    bridge:
+      "Caching and spill are about Spark's own accounting of memory. This topic is what the JVM underneath it does when that memory fills with live objects: garbage collection, and the pauses it causes, which Tungsten's binary rows exist partly to avoid.",
+    handoff:
+      'GC pauses can make an executor miss its heartbeat and get declared dead. The next topic is exactly that: what Spark does when a task or an executor actually fails, GC-induced or otherwise.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
