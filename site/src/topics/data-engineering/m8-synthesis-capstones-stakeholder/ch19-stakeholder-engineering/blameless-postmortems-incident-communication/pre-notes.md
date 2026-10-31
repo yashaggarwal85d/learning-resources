@@ -1,0 +1,6 @@
+- **Blameless post-mortem**: an incident write-up that identifies contributing causes without naming any individual or team as the one to blame.
+- **Contributing factor**: a condition that let an incident happen, named instead of the person who triggered it.
+- **Action item**: a specific, owned fix tied to one contributing factor, not a vague promise.
+- **Incident communication cadence**: what gets told to a stakeholder while an incident is still live, distinct from the post-mortem written after.
+- **Error budget**: the quarterly allowance an incident like this one spends against, introduced two topics ago.
+- **ADR**: the dated decision record this topic's post-mortem continues the paper trail of, introduced in the previous topic.

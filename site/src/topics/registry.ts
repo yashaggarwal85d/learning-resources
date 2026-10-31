@@ -5365,6 +5365,26 @@ export const TOPICS: TopicMeta[] = [
       "Fan-out can make thousands of task instances want to run at once. Something has to decide how many actually do, and in what order, without starving anything else sharing the cluster. That is the next topic.",
   },
   {
+    id: 'de.concurrency-controls-pools-queues',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/concurrency-controls-pools-queues',
+    title: 'Concurrency controls: pools, queues, priorities',
+    syllabusTitle: 'Concurrency controls: pools, queues, priorities',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['pool-slot-concurrency-control', 'priority-weight-scheduling', 'starvation-fairness-tradeoff'],
+    uses: ['de.dynamic-task-mapping-fan', 'ch8.database-extraction-without-hurting', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "Fan-out can produce thousands of task instances that all want to run at once. This topic is what decides how many actually do, in what order, and how a fragile source is protected from being overrun by exactly the kind of fan-out the last topic showed.",
+    handoff:
+      "A task waiting in a pool for a slot still occupies a worker process while it waits. Some tasks wait for hours, not seconds — for an external job, or a sensor polling an API. Holding a worker that whole time is wasteful, and there is a mechanism built specifically to avoid it.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -6345,6 +6365,26 @@ export const TOPICS: TopicMeta[] = [
       "Quality asks whether the parts were good. The plant also asks how much of its time it was making good parts at all. The next topic is OEE: availability, performance and quality, computed from the machine-state events the sensors emit.",
   },
   {
+    id: 'de.oee-downtime-event-modeling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/oee-downtime-event-modeling',
+    title: 'OEE and downtime event modeling',
+    syllabusTitle: 'OEE and downtime event modeling',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['oee-availability-performance-quality', 'machine-state-interval-model', 'shift-boundary-interval-splitting', 'downtime-reason-hierarchy-micro-stops', 'mtbf-mttr'],
+    uses: ['equipment-hierarchy-dimension', 'hierarchy-as-of-versioning', 'quality-fact-process-context', 'lag-lead-change-detection', 'row-number-difference-islands', 'running-sum-session-id', 'event-stream-compression', 'fact-table-types-transaction-snapshot-accumulating-factless', 'bounded-reprocessing-window'],
+    declared: [],
+    bridge:
+      "Quality asks whether the parts were good. The plant also asks how much of its time it was making good parts at all. This topic is OEE, computed from the state and count events the machines emit, and the bugs that make two plants report different numbers for the same shift.",
+    handoff:
+      "OEE is built from events: a machine changes state and a part is counted. Some plant data is not an event at all but a running total that only ever goes up. The next topic is the energy and utility meter, whose raw reading is a counter, and what it takes to turn a counter into consumption.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
@@ -6385,6 +6425,26 @@ export const TOPICS: TopicMeta[] = [
       "Every format so far has been one file, self-contained. The next section is the one format that won the lakehouse: Parquet, starting from its own file anatomy.",
   },
   {
+    id: 'de.design-docs-rfcs-adrs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/design-docs-rfcs-adrs',
+    title: 'Design docs, RFCs and ADRs',
+    syllabusTitle: 'Design docs, RFCs and ADRs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['design-doc-structure', 'cross-team-rfc-review', 'adr-context-decision-consequences', 'superseded-decision-marking'],
+    uses: ['slo-tiering', 'cost-per-freshness-tier', 'dominant-cost-lever'],
+    declared: [],
+    bridge:
+      "A tier gets chosen, and the one-page summary that got it chosen is read once and then forgotten the moment the meeting ends. The decision itself — which tier, why, and what would change the team's mind later — still has to survive the person who made it leaving the room, which is this topic's own subject.",
+    handoff:
+      "A decision written down and dated is still only tested the day it breaks. The last topic in this chapter, and this course, is what happens next: naming the impact in the terms topic 2 taught, writing it down the way this topic taught, without naming a person to blame for it.",
+  },
+  {
     id: 'de.parquet-file-anatomy',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/parquet-file-anatomy',
@@ -6403,5 +6463,25 @@ export const TOPICS: TopicMeta[] = [
       "Every format so far has been one file, self-contained, and this topic opens the one that won the lakehouse: Parquet's own file anatomy, read directly from a file this sandbox writes and inspects byte by byte.",
     handoff:
       "A row group is just column chunks, and a column chunk is just pages of values — but those values are rarely stored as plain, unencoded bytes. The next topic is exactly how they're encoded.",
+  },
+  {
+    id: 'de.blameless-postmortems-incident-communication',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/blameless-postmortems-incident-communication',
+    title: 'Blameless post-mortems and incident communication',
+    syllabusTitle: 'Blameless post-mortems and incident communication',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['blameless-postmortem-structure', 'impact-in-data-terms', 'contributing-factor-vs-blame', 'incident-communication-cadence'],
+    uses: ['data-contract', 'error-budget-ownership', 'slo-tiering'],
+    declared: [],
+    bridge:
+      "A decision written down and dated is still only tested the day it breaks. This topic is what happens next: naming the impact in the terms the chapter already taught, writing it down the way the chapter already taught, without naming a person to blame for it.",
+    handoff:
+      "This closes the course's own technical arc: a schema, a query, a model, a pipeline, a benchmark, and now the contract, the trade-off, the decision and the incident that together decide whether any of it actually worked for the person who asked for it. What's left (Appendix A and B) is the assessment bank and career guidance — not reel topics, but the standing exercises this whole course now has the vocabulary to actually answer.",
   },
 ];
