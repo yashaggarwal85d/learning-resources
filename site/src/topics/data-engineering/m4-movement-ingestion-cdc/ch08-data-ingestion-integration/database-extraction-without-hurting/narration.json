@@ -1,0 +1,82 @@
+{
+  "topic": "de.database-extraction-without-hurting",
+  "steps": [
+    {
+      "lines": [
+        "Somebody configures a nightly extract with sixteen partitions, satisfied that sixteen is a reasonable number.",
+        "Fifteen of those partitions finish in minutes. One is still running at hour three.",
+        "And while it runs, the production database's own disk is quietly filling with rows nobody asked it to keep."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you why.",
+        "This table's own ids are skewed: most of the rows sit in one narrow, recent range, not spread evenly across the whole id space.",
+        "Split that range into sixteen equal-width partitions. Does each one get roughly its fair share of the rows, or does almost everything end up in just one of them?"
+      ],
+      "answer": [
+        "It's tempting to think sixteen partitions means sixteen roughly equal shares, because that's what partitioning usually buys you.",
+        "But the bounds that define each partition only set the width of its slice across the key's range. They never filter a single row out.",
+        "So a key clustered into one narrow range sends nearly everything into whichever slice happens to cover that range, no matter how many slices you cut."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the id range cut into sixteen equal-width slices, side by side.",
+        "Now lay the table's own real distribution of ids over those slices.",
+        "Almost the entire shape of that distribution sits under the very last slice. The other fifteen are nearly empty."
+      ]
+    },
+    {
+      "lines": [
+        "I ran this for real, not as an illustration.",
+        "The first partition picked up two thousand rows. Fourteen partitions in the middle picked up zero, every single one.",
+        "And the last partition picked up forty-eight thousand rows, on its own."
+      ]
+    },
+    {
+      "lines": [
+        "A different problem now: reading several tables at once and having them agree on one single moment in time.",
+        "One connection exports its own snapshot. A second, completely separate connection imports that exact same snapshot.",
+        "In between the two, a third connection commits a brand new row. Neither of the first two connections ever sees it — only a later connection, with no snapshot at all, does."
+      ]
+    },
+    {
+      "lines": [
+        "Now the plainest possible comparison: the same fifty thousand rows, read two different ways.",
+        "Once, fetched back one row at a time. Once, pulled out with a bulk copy instead.",
+        "Every single trial I ran this session, the row-by-row read measured slower than the bulk copy over the identical rows."
+      ]
+    },
+    {
+      "lines": [
+        "Offloading a long read onto a replica sounds like it removes a cost. It doesn't. It moves one.",
+        "Without a particular setting, a long query on the replica risks being cancelled outright.",
+        "Turn that setting on and the cancellation stops, but now cleanup on the primary itself gets held back instead, for as long as that replica's query needs it to be."
+      ]
+    },
+    {
+      "lines": [
+        "I measured that exact same trade-off directly, on the primary, with no replica involved at all.",
+        "A long-running extract holds its own snapshot open while ten thousand rows get updated elsewhere in the table.",
+        "A real cleanup pass, run while that snapshot is still open, reclaims not one of those ten thousand dead rows. Only once the extract finally commits does the very next cleanup pass bring that count back down to zero."
+      ]
+    },
+    {
+      "lines": [
+        "Four separate choices, and the thing they all share: none of them is free, they just spend different currencies.",
+        "A parallel read spends partitions on a stride across the key, which is why you have to look at the key's own shape before trusting a partition count.",
+        "A shared snapshot spends one transaction's lifetime to buy every worker the same view. A bulk path spends nothing extra to be faster. And a long extract spends the primary's own cleanup budget for exactly as long as it stays open."
+      ]
+    },
+    {
+      "lines": [
+        "One more run, same skewed key, now split into sixty-four partitions instead of sixteen. Does quadrupling the partition count finally fix the imbalance?"
+      ],
+      "answer": [
+        "It helps, but nowhere near proportionally: measured for real, the single busiest partition out of those sixty-four still holds more than sixteen thousand of the forty-eight thousand clustered rows.",
+        "The skew was never about how many pieces you cut the range into. It lives in where the data actually sits, and no partition count alone fixes that."
+      ]
+    }
+  ]
+}
