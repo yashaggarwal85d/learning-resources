@@ -6191,6 +6191,26 @@ export const TOPICS: TopicMeta[] = [
       "Every topic in this section so far assumed a stream of individual events with no particular relationship to real-world time. The next cluster of topics is about exactly that relationship: when an event happened, versus when it was processed, and what a stream processor can honestly claim about how complete its view is at any moment.",
   },
   {
+    id: 'de.event-time-watermarks-completeness',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/event-time-watermarks-completeness',
+    title: 'Event time, watermarks and completeness',
+    syllabusTitle: 'Event time, watermarks and completeness',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['event-vs-processing-time', 'watermark-heuristic', 'idle-source-watermark'],
+    uses: ['delivery-semantics-vocabulary'],
+    declared: [],
+    bridge:
+      "A schema registry protects what a record's fields mean. This cluster of topics is about something just as basic and just as easy to get wrong: when a record happened, as opposed to when your system noticed it — and how honest a stream processor can be about how complete its picture is at any given moment.",
+    handoff:
+      "A watermark is the signal that a window of time is probably complete enough to act on. What 'a window' actually is — its shape, its boundaries, its cost in memory — is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
