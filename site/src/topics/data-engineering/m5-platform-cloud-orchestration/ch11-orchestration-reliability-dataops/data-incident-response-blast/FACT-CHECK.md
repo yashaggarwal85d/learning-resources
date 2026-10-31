@@ -1,0 +1,21 @@
+# Fact-check
+
+1. **Google's incident management system is based on the Incident Command System.** Sourced, Google SRE Book: "Google's incident management system is based on the Incident Command System," verified against the fetched page text.
+
+2. **The incident commander holds the high-level state about the incident and assigns responsibilities.** Sourced and reproduced directly: `examples.py` asserts "The incident commander holds the high-level state about the incident. They structure the incident response task force, assigning responsibilities according to need and priority," verified word for word against the fetched page text.
+
+3. **The Ops team should be the only group modifying the system during an incident.** Sourced and reproduced directly: `examples.py` asserts "The Ops lead works with the incident commander to respond to the incident by applying operational tools to the task at hand. The operations team should be the only group modifying the system during an incident."
+
+4. **The Communication role is the public face of the incident response task force.** Sourced and reproduced directly: `examples.py` asserts "This person is the public face of the incident response task force. Their duties most definitely include issuing periodic updates to the incident response team and stakeholders (usually via email)."
+
+5. **A blameless postmortem identifies contributing causes without indicting any individual or team.** Sourced and reproduced directly: `examples.py` asserts the Google SRE Book states "For a postmortem to be truly blameless, it must focus on identifying the contributing causes of the incident without indicting any individual or team for bad or inappropriate behavior," verified against the fetched page text.
+
+6. **OpenLineage is an open, vendor-neutral specification for data lineage collection and analysis.** Sourced and reproduced directly: `examples.py` asserts OpenLineage's own docs state "OpenLineage is an open framework for data lineage collection and analysis. At its core is an extensible specification that systems can use to interoperate with lineage metadata."
+
+7. **Of forty downstream dashboards in a real asset graph, only a small, exact subset genuinely depends on the incident's affected table.** Run and reproduced directly, this topic's own real Dagster 1.13.28 experiment: `examples.py` builds a real asset graph with forty downstream "dashboard" assets (only every seventh one declared as depending on the affected `fct_orders`), walks the graph's own real `get_children` edges to compute the transitive descendants of the incident's own table (`stg_orders`), and asserts the computed set matches the deliberately-planted six exactly. This is the project's own experiment, not a third-party claim.
+
+8. **A targeted backfill of only the quarantined partitions corrects the real row counts without touching any other partition.** Run and reproduced directly: `examples.py` builds a real set of thirty day-partitions, three of which are seeded with a duplicate-row incident, computes the quarantined set, and verifies that repairing only those three partitions brings the total row count back to the correct value while every other partition's count is untouched.
+
+9. **"Contain" means quarantining a partition, not deleting it, per CHAPTER.md's own scope for this topic.** Not independently sourced from the SRE Book itself (which discusses incident roles and process, not data-partition mechanics specifically) — this is the topic's own synthesis, consistent with CHAPTER.md's syllabus clause naming "quarantine partitions" as the contain mechanism, demonstrated directly in `examples.py`'s real row-count experiment rather than left as an abstract claim.
+
+10. **The five-stage loop (detect, triage, contain, repair, postmortem) and asset-level ownership/on-call routing are this topic's own framing of CHAPTER.md's stated scope, not a single externally-sourced named sequence.** The detect stage reuses topic 11's burn-rate alert (used, not re-taught); the repair stage reuses topic 3's resumable-backfill idea (used, not re-taught); only the incident-command roles and blameless-postmortem culture are independently sourced from the Google SRE Book, per facts 1-5 above.

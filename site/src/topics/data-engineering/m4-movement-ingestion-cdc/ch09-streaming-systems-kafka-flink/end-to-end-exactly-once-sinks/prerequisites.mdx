@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Kafka transactions, and atomic offset-output commits
+
+This topic builds on Kafka's own transaction mechanism and the atomic offset-with-output
+pattern it established, extending both to a sink outside Kafka. If Kafka transactions are
+unfamiliar, start with
+[Kafka transactions and read-committed](../kafka-transactions-read-committed/) first. The
+companion idempotent-extraction concept from Chapter 8 (`checkpoint-output-atomicity`,
+`exactly-once-effect-recipe`) is used by name, not retaught here.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="TwoPhaseCommitSinkFunction (Flink 1.20 API)" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/api/java/org/apache/flink/streaming/api/functions/sink/TwoPhaseCommitSinkFunction.html" by="Apache Flink docs">The pre-commit/commit split and recovery contract.</Resource>
+  <Resource kind="reading" title="Fault Tolerance Guarantees" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/connectors/datastream/guarantees/" by="Apache Flink docs">End-to-end exactly-once requirements, and the idempotent-update path (Cassandra).</Resource>
+  <Resource kind="reading" title="Kafka Connector" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/connectors/datastream/kafka/" by="Apache Flink docs">The checkpoint-coupled Kafka sink, and the transaction-timeout failure mode.</Resource>
+</ul>
+
+</section>

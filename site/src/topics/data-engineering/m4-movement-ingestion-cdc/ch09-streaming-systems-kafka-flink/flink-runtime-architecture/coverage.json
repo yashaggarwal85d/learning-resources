@@ -1,0 +1,136 @@
+{
+  "topic": "de.flink-runtime-architecture",
+  "syllabus": [
+    {
+      "clause": "JobManager/TaskManagers, slots",
+      "at": [
+        { "step": "Predict: can a job's parallelism simply exceed its slots?" },
+        { "step": "Reveal: a coordinator, a set of workers, and a hard ceiling" }
+      ]
+    },
+    {
+      "clause": "operator chaining",
+      "at": [{ "step": "Reveal: fusing operators together removes a hop entirely" }]
+    },
+    {
+      "clause": "pipelined network exchange with credit-based flow control and backpressure",
+      "at": [{ "step": "Reveal: backpressure with no explicit signal, by design" }]
+    },
+    {
+      "clause": "application mode (per-job mode removed in 2.0)",
+      "at": [
+        { "step": "Predict: when per-job mode was finally removed, what replaced it?" },
+        { "step": "Reveal: application mode is what Flink standardized on" }
+      ]
+    },
+    {
+      "clause": "unified batch/stream execution with adaptive batch scheduling",
+      "at": [{ "step": "Reveal: the same runtime, two different kinds of job" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Flink Architecture (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "the JobManager coordinates distributed execution: scheduling tasks, reacting to failures, coordinating checkpoints and recovery",
+          "at": [{ "step": "Reveal: a coordinator, a set of workers, and a hard ceiling" }]
+        },
+        {
+          "item": "TaskManagers execute a dataflow's tasks and buffer and exchange the data streams, with the task slot as the smallest unit of resource scheduling",
+          "at": [{ "step": "Reveal: a coordinator, a set of workers, and a hard ceiling" }]
+        },
+        {
+          "item": "Flink chains operator subtasks together into tasks, reducing thread-to-thread handover and buffering overhead",
+          "at": [{ "step": "Reveal: fusing operators together removes a hop entirely" }]
+        },
+        {
+          "item": "a Flink Application Cluster runs the job's main method on the cluster itself, dedicated to one application",
+          "at": [{ "step": "Reveal: application mode is what Flink standardized on" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink 2.0 release notes",
+      "items": [
+        {
+          "item": "the Per-job deployment mode has been removed; use Application mode instead",
+          "at": [{ "step": "Reveal: application mode is what Flink standardized on" }]
+        }
+      ]
+    },
+    {
+      "source": "A Deep-Dive into Flink's Network Stack (Apache Flink blog, 2019)",
+      "items": [
+        {
+          "item": "credit-based flow control ensures whatever is on the wire has capacity at the receiver to handle",
+          "at": [{ "step": "Reveal: backpressure with no explicit signal, by design" }]
+        },
+        {
+          "item": "a receiver's credits hitting zero stops the sender, producing backpressure on that logical channel only",
+          "at": [{ "step": "Reveal: backpressure with no explicit signal, by design" }]
+        }
+      ]
+    },
+    {
+      "source": "Elastic Scaling (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "the Adaptive Batch Scheduler automatically decides operator parallelism for batch jobs from the size of consumed datasets",
+          "at": [{ "step": "Reveal: the same runtime, two different kinds of job" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A slot-bounded parallelism ceiling isn't an arbitrary cluster-sizing inconvenience — it's the same resource-isolation idea the chapter's earlier windowing topics apply to memory, applied here to scheduling: a fixed, countable resource with no soft overflow.",
+        "at": [{ "step": "Reveal: a coordinator, a set of workers, and a hard ceiling" }]
+      },
+      {
+        "item": "Operator chaining being configurable rather than automatic in every case matters because a shuffle or an incompatible parallelism setting silently un-chains two operators that look adjacent in the code, which is exactly the kind of invisible cost this topic's measurement makes visible.",
+        "at": [{ "step": "Reveal: fusing operators together removes a hop entirely" }]
+      },
+      {
+        "item": "Backpressure needing no explicit signal isn't a design limitation to work around — it's the entire point of credit-based flow control: the slowdown is a structural consequence of credits running out, not a message that could fail to be sent.",
+        "at": [{ "step": "Reveal: backpressure with no explicit signal, by design" }]
+      },
+      {
+        "item": "Stating the per-job-mode removal as a currency fact (removed, not merely discouraged) matters because the 1.20 docs branch this topic otherwise cites still describes per-job mode as only deprecated, not gone — the 2.0 release notes are the source that actually confirms removal.",
+        "at": [{ "step": "Reveal: application mode is what Flink standardized on" }]
+      },
+      {
+        "item": "A single runtime executing both batch and stream jobs isn't a convenience feature bolted onto a streaming engine — it reflects the same unified-model thinking the Dataflow Model paper argued for at the API level, now realized at the execution-engine level.",
+        "at": [{ "step": "Reveal: the same runtime, two different kinds of job" }]
+      },
+      {
+        "item": "This topic's hook (a throughput collapse with no log signal) and its backpressure reveal are the same cause and effect the Flink network-stack blog post itself motivates, demonstrated here on a toy credit-counter model instead of a real cluster trace.",
+        "at": [{ "step": "Hook: throughput collapses, and nothing in the logs says why" }]
+      },
+      {
+        "item": "The toy slot, chaining, credit, and adaptive-scheduling models are deliberately simplified standalone demonstrations, not ports of Flink's actual scheduler or network-stack internals, and every figure shown is this run's own measured output, not a cited benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic introduces no concept it borrows from earlier in the chapter, by design — CHAPTER.md marks it as the first topic of a new sub-cluster built on general distributed-systems vocabulary, which is why its prerequisites panel points back only loosely, not to a specific dependency.",
+        "at": [{ "step": "Setup: a job needs a machine that runs it, continuously, at scale" }]
+      },
+      {
+        "item": "Calling this topic 'the mechanical skeleton only' in the recap is a deliberate scope boundary, not a simplification — checkpointing (next topic) and what the snapshotted state actually is (the topic after) are each big enough to need their own full treatment.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "This topic sets up, but does not itself host, the state/checkpoint/rescale legs of the 9.3 chapter lab — those are measured properly once the mechanisms this topic names (checkpointing, state, rescaling) are actually built in the next three topics.",
+        "at": [{ "deep": "Lab" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

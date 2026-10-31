@@ -1,0 +1,122 @@
+{
+  "topic": "de.process-historians-swinging-door",
+  "syllabus": [
+    {
+      "clause": "historians (e.g. AVEVA PI System) store tags with exception (deadband) filtering then swinging-door trending compression that keeps only points needed to reconstruct within an error band;",
+      "at": [
+        { "step": "Reveal: exception filtering drops points before the archive sees them" },
+        { "step": "Reveal: swinging-door compression keeps only the knees" },
+        { "step": "Reveal: the error band holds, measured against the original signal" }
+      ]
+    },
+    {
+      "clause": "interpolated vs recorded value retrieval;",
+      "at": [
+        { "step": "Reveal: a flat hold and a short excursion compress very differently" },
+        { "step": "Reveal: a time-weighted average gets it right" },
+        { "step": "Reveal: a step series needs step interpolation, not a line" }
+      ]
+    },
+    {
+      "clause": "extracting historian data into a lakehouse without losing compression semantics.",
+      "at": [{ "step": "Prove it" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AVEVA 2023 conference deck",
+      "items": [
+        {
+          "item": "exception is a simple deadband to filter noise, performed by PI Interfaces, reducing events sent to the Data Archive Snapshot and conserving network bandwidth",
+          "at": [{ "step": "Reveal: exception filtering drops points before the archive sees them" }]
+        },
+        {
+          "item": "swinging-door compression eliminates data that can safely be recreated with interpolation, aiming to filter noise while still recording significant process changes; out-of-order data bypasses compression",
+          "at": [{ "step": "Reveal: swinging-door compression keeps only the knees" }]
+        }
+      ]
+    },
+    {
+      "source": "Bristol, US Patent 4,669,097",
+      "items": [
+        {
+          "item": "two swinging doors pivot on offset points as data arrives; an end point (knee) is recorded when the doors would open wider than parallel",
+          "at": [{ "step": "Reveal: swinging-door compression keeps only the knees" }]
+        }
+      ]
+    },
+    {
+      "source": "AVEVA \"PI DataLink: Basics\" workbook",
+      "items": [
+        {
+          "item": "Compressed Data returns the actual archived data at uneven intervals; Sampled Data retrieves evenly spaced interpolated values instead",
+          "at": [{ "step": "Reveal: a time-weighted average gets it right" }]
+        }
+      ]
+    },
+    {
+      "source": "AVEVA \"Calculations and Asset Analytics\" workbook",
+      "items": [
+        {
+          "item": "PI's own By Time Range summaries include Average (time-weighted) as a distinct aggregation",
+          "at": [{ "step": "Reveal: a time-weighted average gets it right" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A historian being several degrees off isn't a bug report — it's the compression setting someone chose years ago, still quietly shaping every average computed on top of it today.",
+        "at": [{ "step": "Hook: a historian's own mean comes out degrees off the plant's" }]
+      },
+      {
+        "item": "The honest prediction isn't a bigger sample of the same stored rows — it's that the calculation itself has to change, from counting rows to weighting time, and the extraction has to carry forward what each row actually is.",
+        "at": [{ "step": "Predict: what would have given the right mean?" }]
+      },
+      {
+        "item": "A deadband applied before anything reaches the archive isn't a storage optimization bolted on afterward — it's a decision about which moments ever got the chance to be recorded at all.",
+        "at": [{ "step": "Reveal: exception filtering drops points before the archive sees them" }]
+      },
+      {
+        "item": "A door that can no longer stay parallel to its twin isn't a geometric curiosity — it's the exact instant the straight line stopped being an honest description of what happened.",
+        "at": [{ "step": "Reveal: swinging-door compression keeps only the knees" }]
+      },
+      {
+        "item": "An error band that holds under measurement, not just under description, is the difference between a compression scheme and a compression claim.",
+        "at": [{ "step": "Reveal: the error band holds, measured against the original signal" }]
+      },
+      {
+        "item": "Two periods of equal clock time ending up with wildly different point counts is not a flaw in the compression — it's the compression doing its one job, which has nothing to do with being a fair sample.",
+        "at": [{ "step": "Reveal: a flat hold and a short excursion compress very differently" }]
+      },
+      {
+        "item": "Calling two different calculations by the same word, 'average,' is exactly how a correct-looking query quietly returns the wrong number.",
+        "at": [{ "step": "Reveal: a time-weighted average gets it right" }]
+      },
+      {
+        "item": "A step and a ramp are not the same claim about what happened between two stored points, and treating them the same is a choice, not a default.",
+        "at": [{ "step": "Reveal: a step series needs step interpolation, not a line" }]
+      },
+      {
+        "item": "Every piece of this topic reduces to the same move: a compressed archive is a true record of what it decided to keep, and every later calculation has to be built around that decision, not around what it would have liked to have.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A value with no flag telling you how it was produced is not neutral data — it is a claim about reality with its own origin quietly deleted.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Choosing CompDev and ExcDev isn't a tuning knob tucked away in an admin panel — it's an analytic decision, made once by whoever configured the tag, binding every number anyone ever extracts from it afterward.",
+        "at": [{ "step": "Hook: a historian's own mean comes out degrees off the plant's" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

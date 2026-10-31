@@ -1,0 +1,87 @@
+{
+  "topic": "de.asset-centric-orchestration-dagster",
+  "syllabus": [
+    {
+      "clause": "software-defined assets vs tasks: the graph is the data products",
+      "at": [
+        { "step": "Reveal: the same pipeline, two shapes, measured" },
+        { "step": "Recap" }
+      ]
+    },
+    {
+      "clause": "materialisations, asset checks, partitions and partition mappings",
+      "at": [
+        { "step": "Predict: does a failing check stop the pipeline?" },
+        { "step": "Reveal: an asset check, run live" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "lineage as a by-product",
+      "at": [
+        { "step": "Predict: does Dagster need separate lineage tooling?" },
+        { "step": "Reveal: lineage, asked for rather than hand-maintained" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "Components and the dg CLI (GA in 1.12)",
+      "at": [
+        { "step": "Reveal: Components, the dg CLI, and where this fits poorly" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "where asset-centric fits poorly (imperative side effects, operational workflows)",
+      "at": [
+        { "step": "Reveal: Components, the dg CLI, and where this fits poorly" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Defining assets (Dagster Docs)",
+      "items": [
+        { "item": "an asset definition is an AssetKey, a set of declared upstream asset keys, and a Python function that computes it", "at": [{ "step": "Reveal: the same pipeline, two shapes, measured" }] },
+        { "item": "Dagster has four types of asset decorators: @asset, @multi_asset, @graph_asset, @graph_multi_asset", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Testing assets with asset checks (Dagster Docs)",
+      "items": [
+        { "item": "asset checks are typically defined with @asset_check or @multi_asset_check and run within or separate from the asset", "at": [{ "step": "Reveal: an asset check, run live" }] },
+        { "item": "asset checks must be added to Definitions for Dagster to recognize them", "at": [{ "deep": "Internals" }] },
+        { "item": "by default, all jobs targeting an asset will also run associated checks", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Changelog (Dagster Docs)",
+      "items": [
+        { "item": "the Components framework and the dg CLI are marked GA in 1.12, previously Release Candidate, and are the recommended defaults for new Dagster projects", "at": [{ "step": "Reveal: Components, the dg CLI, and where this fits poorly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The 3-vs-4 dependency-wiring line count is deliberately a small, isolated measurement -- it says nothing about which system runs faster or scales better operationally, only that declaring 'what feeds what' costs fewer explicit lines when the declaration lives on the data product itself rather than being wired as a separate task edge.", "at": [{ "step": "Reveal: the same pipeline, two shapes, measured" }] },
+      { "item": "A reader might assume a failing asset check behaves like a failing assertion in ordinary code, halting execution. It doesn't, by this framework's own default design: the check is evaluated and reported, but the asset it targets (and anything downstream of it, in a larger pipeline) can still materialize in the same run. Stricter gating is possible but is not what the plain default does.", "at": [{ "step": "Predict: does a failing check stop the pipeline?" }] },
+      { "item": "The bad-row scenario intentionally plants exactly one bad row rather than several, so the check's own metadata (bad_rows=1) can be read back and verified precisely, rather than merely confirming the check fired at all.", "at": [{ "step": "Reveal: an asset check, run live" }] },
+      { "item": "'Lineage as a by-product' doesn't mean Dagster tracks something extra behind the scenes -- the ancestor-keys lookup used here (get_ancestor_asset_keys) is querying the exact same deps=[...] declarations already written to make the pipeline runnable, not a separate index built for lineage specifically.", "at": [{ "step": "Reveal: lineage, asked for rather than hand-maintained" }] },
+      { "item": "A reader carrying forward the previous topic's Airflow-asset vocabulary might expect Dagster's 'asset' and Airflow's 'asset' to behave identically since they share a name. They share the data-aware intent, but Airflow's asset is still a trigger a task-shaped DAG reacts to, while Dagster's asset is the unit the graph is built from in the first place -- the task/DAG layer doesn't exist as a separate thing to react through.", "at": [{ "step": "Recap" }] },
+      { "item": "Components reaching GA doesn't mean every Dagster project should adopt it immediately -- GA signals API stability and long-term support, not that hand-written assets become the wrong default; the changelog itself frames it as 'the recommended default for new projects,' which is a narrower claim than 'the only supported way.'", "at": [{ "step": "Reveal: Components, the dg CLI, and where this fits poorly" }] },
+      { "item": "Calling an imperative side effect 'a poor fit' for the asset model is a design observation, not a limitation to work around secretly -- Dagster's own ops/jobs layer exists precisely so that this kind of work has a first-class home that isn't forced into pretending to be a data product.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 'prove it' step's fourth asset is deliberately appended rather than inserted in the middle of the existing chain, so the claim under test stays isolated to whether lineage derivation scales with graph size, without also testing a different claim about re-deriving lineage for assets whose own declared dependencies didn't change.", "at": [{ "step": "Prove it" }] },
+      { "item": "The hook's spreadsheet framing is a real, common failure mode rather than an exaggerated strawman: a hand-maintained lineage document only stays correct if every change to every pipeline is also reflected in it, and nothing enforces that link -- the asset graph's version is correct by construction because the same declaration both runs the pipeline and answers the lineage question.", "at": [{ "step": "Hook" }] },
+      { "item": "The dependency-wiring count intentionally excludes lines unrelated to wiring (imports, logging, the function bodies that do the actual computation) in both files, so the comparison isolates the one cost under test -- declaring what feeds what -- rather than comparing total line count, which would conflate wiring cost with unrelated verbosity differences between the two frameworks.", "at": [{ "step": "Reveal: the same pipeline, two shapes, measured" }] },
+      { "item": "Passing a check function directly inside materialize()'s assets list, rather than through a separate asset_checks keyword, isn't just an API quirk worth memorizing -- it reflects the same underlying point this topic makes everywhere else: a check is treated as part of what gets resolved into the graph, not as a parallel, separately-tracked mechanism.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

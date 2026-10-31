@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: placement, failure and the cost of distance
+
+<ul class="resources">
+  <Resource kind="reel" title="Storage, layout and lifecycle decisions" domain="data-engineering" host="de.multi-region-analytical-platform">The system-of-record and tiering-and-retention decisions this topic now applies per region.</Resource>
+  <Resource kind="reel" title="Failure-mode analysis and recovery" domain="data-engineering" host="de.multi-region-analytical-platform">The RPO/RTO method this topic applies per data class across regions.</Resource>
+  <Resource kind="reel" title="E-commerce warehouse with incremental loads" domain="data-engineering" host="de.multi-region-analytical-platform">The system-of-record choice this topic's placement decision is made from.</Resource>
+  <Resource kind="reel" title="Envelope encryption, KMS and key rotation" domain="data-engineering" host="de.multi-region-analytical-platform">The key hierarchy this topic places per region alongside the data it protects.</Resource>
+  <Resource kind="reel" title="Bandwidth, latency and data locality" domain="data-engineering" host="de.multi-region-analytical-platform">The transfer-pricing material this topic's egress estimate is built on.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Art. 5 GDPR" href="https://gdpr-info.eu/art-5-gdpr/" by="Regulation (EU) 2016/679">Storage limitation and accountability — the principles behind this topic's per-region retention and its own "what this doesn't claim" framing.</Resource>
+  <Resource kind="reading" title="Art. 25 GDPR" href="https://gdpr-info.eu/art-25-gdpr/" by="Regulation (EU) 2016/679">Data protection by design and by default — the text behind "residency designed in, not retrofitted."</Resource>
+  <Resource kind="reading" title="Art. 44 GDPR" href="https://gdpr-info.eu/art-44-gdpr/" by="Regulation (EU) 2016/679">The transfer-restriction rule that makes the placement gate a real, binding constraint.</Resource>
+  <Resource kind="reading" title="Meeting compliance requirements with S3 Replication Time Control" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-time-control.html" by="AWS documentation">The bounded, paid replication guarantee behind this topic's aggregates-only compromise.</Resource>
+  <Resource kind="reading" title="Amazon S3 pricing" href="https://aws.amazon.com/s3/pricing/" by="AWS documentation">The dated per-GB egress rate this topic's replicate-versus-federate estimate multiplies against.</Resource>
+</ul>
+
+</section>

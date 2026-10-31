@@ -1,0 +1,83 @@
+{
+  "topic": "de.kafka-ordering-guarantees",
+  "steps": [
+    {
+      "lines": [
+        "Picture a consumer that watches one order go by twice: it sees the cancellation land before the creation.",
+        "Nothing about the consumer itself is broken.",
+        "Something about where those two records landed changed, and that's the whole mystery this reel untangles."
+      ]
+    },
+    {
+      "lines": [
+        "Think of each lane here as its own private queue, walled off from its neighbors.",
+        "A queue keeps its own line perfectly straight.",
+        "What it never does on its own is tell another queue anything at all about who went first."
+      ]
+    },
+    {
+      "lines": [
+        "Worth sitting with before the reveal settles it.",
+        "These two records never share a lane.",
+        "Does sharing a producer, or just living in the same topic, buy them any relationship once they're written?"
+      ],
+      "answer": [
+        "No relationship at all, however the two records were sent.",
+        "Order is strictly a property of one lane by itself.",
+        "Sharing a producer, or a topic, or anything else, creates nothing between two different lanes' own orderings."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually draws the boundary here: it isn't the topic, and it isn't the producer.",
+        "It's the lane itself.",
+        "Step outside one lane and the ordering promise simply stops existing, the same way a page number means nothing once you've picked up a different book."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trickier case: a line can fail and get resent, while a line right behind it sails through untouched on the first try.",
+        "Before watching the numbers, ask what a system that owes you nothing but per-lane order is actually allowed to do with that gap."
+      ],
+      "answer": [
+        "It's allowed to let the faster line land first, slipping ahead of the one still being retried.",
+        "Unless one setting changes that, a resend can be accepted after a batch that never even needed a second try."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the gap close, measured rather than assumed.",
+        "Left alone, the resend really does slot in after its faster neighbor, out of turn.",
+        "Flip one setting, and the broker itself starts refusing a duplicate acceptance, pinning the resend right back to where it belongs."
+      ]
+    },
+    {
+      "lines": [
+        "That protection isn't unconditional, and the ceiling is worth remembering precisely.",
+        "It holds only up to five outstanding requests at once.",
+        "That's as many unacknowledged attempts the broker is willing to track per sender before the bookkeeping itself would have to be trusted blindly."
+      ]
+    },
+    {
+      "lines": [
+        "This is the quieter failure mode, and it has nothing to do with retries at all.",
+        "Grow the lane count, and the formula deciding which lane a label belongs to shifts for everyone.",
+        "One label can keep its old spot by pure coincidence. Most won't, and nothing physically carries their history over for them."
+      ]
+    },
+    {
+      "lines": [
+        "None of those numbers were asserted for effect.",
+        "They came out of a script that actually ran the comparison and the hash check moments before this frame even existed.",
+        "That's the only reason they're trustworthy enough to build an intuition on."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and the whole shape is one idea with two edges.",
+        "A hard guarantee inside a lane, and total silence between lanes.",
+        "Plus a mapping from label to lane that the lane count itself can quietly redraw whenever it changes."
+      ]
+    }
+  ]
+}

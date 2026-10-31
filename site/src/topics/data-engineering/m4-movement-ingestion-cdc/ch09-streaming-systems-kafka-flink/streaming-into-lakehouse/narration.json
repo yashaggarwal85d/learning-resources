@@ -1,0 +1,99 @@
+{
+  "topic": "de.streaming-into-lakehouse",
+  "steps": [
+    {
+      "lines": [
+        "Take a writer sealing one new file every so often, on a stream that never stops arriving.",
+        "Make it seal a new file twice as often, on that exact same total amount of data.",
+        "Roughly twice as many files come out the other end, for the identical data."
+      ]
+    },
+    {
+      "lines": [
+        "Every approach covered up to this point eventually had to produce an actual result.",
+        "Somewhere, a person or another system needs to be able to ask a real question of it.",
+        "This part of the picture is the first of the two places that result actually lands."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Seal a new file twice as often as before, over that same stretch of time.",
+        "On that same total amount of incoming data, what happens to how many files come out?"
+      ],
+      "answer": [
+        "It roughly doubles, and here's exactly why.",
+        "Each sealed batch now only covers about half as much data as it used to.",
+        "Covering that same total amount of data again just takes about twice as many of them."
+      ]
+    },
+    {
+      "lines": [
+        "Seal a batch twice as often, and each one only covers about half the data it used to.",
+        "Covering that same total amount of data again takes about twice as many sealed batches.",
+        "How soon a given write becomes visible also shrinks by about that same half."
+      ]
+    },
+    {
+      "lines": [
+        "One path turns the raw flow into a table completely automatically, nothing built by hand at all.",
+        "A separate path reaches that exact same kind of table by running a hand-written job instead.",
+        "Both end up putting the same result in the same place, built two very different ways."
+      ]
+    },
+    {
+      "lines": [
+        "A job like that only ever makes a write durable at its own periodic checkpoint.",
+        "Sealing a batch into the table turns out to ride on that very same checkpoint.",
+        "So shortening one of those two settings is really just shortening the other, not a separate choice."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "Sealing more often always costs more of these small files, on the writing side alone.",
+        "What could soak up all those small, frequent files without slowing that sealing down at all?"
+      ],
+      "answer": [
+        "Something sitting underneath that quietly merges them back together, and here's how.",
+        "A storage layer that buffers whatever lands on it, then merges it on its own schedule.",
+        "The sealing itself never has to slow down for that merging to happen."
+      ]
+    },
+    {
+      "lines": [
+        "Keep that exact same frequent sealing rhythm from before, completely unchanged.",
+        "Run everything it produces through a layer that buffers and then merges it back together.",
+        "What lands on disk at the end shrinks down to a small fraction of the unmerged version."
+      ]
+    },
+    {
+      "lines": [
+        "One kind of storage keeps its own internal structure built specifically for frequent small updates.",
+        "A separate, newer kind of storage sits directly in front of the stream processor itself.",
+        "Both of those answer the exact same underlying question, just from the storage side instead of the writer's."
+      ]
+    },
+    {
+      "lines": [
+        "An automatic path, a hand-built path, and a storage-side path were all just covered in turn.",
+        "Every single one of them still has to put that same cost down somewhere.",
+        "None of the three ever actually makes that underlying cost disappear outright."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The sealing frequency that really did double the files and really did halve how long a write stays stale.",
+        "That same exact sealing rhythm, merged afterward, that really did land only a small fraction of those files."
+      ]
+    },
+    {
+      "lines": [
+        "So: sealing more often always buys freshness and always costs more small files, together, every time.",
+        "An automatic path, a hand-built path, or a storage-side path can each carry that one cost.",
+        "Not one of them removes it. One destination was covered here; a very different one comes next."
+      ]
+    }
+  ]
+}

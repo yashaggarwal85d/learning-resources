@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the automation pyramid, IT/OT ownership, telemetry clocks, and sensor quality
+
+<ul class="resources">
+  <Resource kind="reel" title="ISA-95 hierarchy and the automation pyramid" domain="data-engineering" host="de.isa-95-hierarchy-automation" by="this chapter, for the equipment hierarchy a browsed address space maps onto" />
+  <Resource kind="reel" title="IT/OT boundary and data ownership" domain="data-engineering" host="de.it-ot-boundary-data" by="this chapter, for the read-only extraction budget and change-management path this topic's subscription model respects" />
+  <Resource kind="reel" title="Timestamps, clocks and time zones in telemetry" domain="data-engineering" host="de.timestamps-clocks-time-zones" by="this chapter, for the device/server timestamp distinction a DataValue carries" />
+  <Resource kind="reel" title="Sensor data quality" domain="data-engineering" host="de.sensor-data-quality" by="this chapter, for the quality-flag-and-quarantine convention OPC UA's own StatusCode maps onto" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="References" href="https://reference.opcfoundation.org/Core/Part3/v105/docs/4.4" by="OPC UA Part 3: Address Space Model">The typed SourceNode/TargetNode model this topic's address space is built from.</Resource>
+  <Resource kind="reading" title="MessageSecurityMode" href="https://reference.opcfoundation.org/Core/Part4/v105/docs/7.20" by="OPC UA Part 4: Services">The security-mode enumeration this topic's finding check is built on.</Resource>
+  <Resource kind="reading" title="MonitoringFilter parameters" href="https://reference.opcfoundation.org/Core/Part4/v105/docs/7.22" by="OPC UA Part 4: Services">The AbsoluteDeadband rule this topic's subscription simulation runs exactly.</Resource>
+  <Resource kind="reading" title="PubSub (General)" href="https://reference.opcfoundation.org/Core/Part14/v105/docs/5.1" by="OPC UA Part 14: PubSub">The publisher/subscriber decoupling this topic's fan-out comparison is built on.</Resource>
+  <Resource kind="reading" title="OPC UA for Machine Tools, Part 1" href="https://reference.opcfoundation.org/MachineTool/v200/docs/" by="OPC Foundation">The companion specification named in the hook's example, with its own version and date.</Resource>
+</ul>
+
+</section>

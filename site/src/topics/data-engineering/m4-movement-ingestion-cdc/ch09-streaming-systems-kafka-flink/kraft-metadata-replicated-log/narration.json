@@ -1,0 +1,85 @@
+{
+  "topic": "de.kraft-metadata-replicated-log",
+  "steps": [
+    {
+      "lines": [
+        "A broker can lose contact with the one system that actually decides what's true about the cluster, while staying perfectly reachable to everyone else.",
+        "It keeps answering requests the whole time, confident in a view of the world that stopped updating the moment that contact broke.",
+        "Nothing about being reachable tells a broker whether its own picture of the cluster is still current."
+      ]
+    },
+    {
+      "lines": [
+        "Running a second system just to track who leads what meant operating two different replication stories at once.",
+        "Folding that tracking into the same shape already built for ordinary data collapses that down to one.",
+        "One replication story to reason about, one failure mode to understand, instead of two."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Two very different designs could keep every broker's view current, and only one of them is what actually ships.",
+        "Does the controller push each change out to every broker as it happens, or does each broker go fetch updates on its own?"
+      ],
+      "answer": [
+        "Each broker fetches on its own.",
+        "Nothing is pushed out proactively — a broker tracks its own position in the metadata log and pulls forward from there, the exact shape this chapter already used for fetching an ordinary partition.",
+        "That choice holds regardless of how large the cluster gets."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that same fetch, applied to the cluster's own metadata log instead of an ordinary partition.",
+        "A broker tracks exactly where it left off, and asks for everything past that point.",
+        "Nothing new had to be invented for this — it's the same pull this chapter already built."
+      ]
+    },
+    {
+      "lines": [
+        "That periodic fetch is doing double duty: it's also how a broker proves it's still alive.",
+        "One broker comfortably inside the allowed gap since its last fetch, left alone.",
+        "Another sitting well past that same gap, cut off from being trusted, even while technically still reachable."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "A candidate that could never actually win an election keeps reconnecting and sending a vote request anyway.",
+        "Every single time, something about that request disrupts the current leader. What is it about sending a vote request that causes that?"
+      ],
+      "answer": [
+        "Sending the vote request itself bumps the cluster's epoch, before anyone has checked whether the candidate could actually win.",
+        "That epoch bump alone is what forces a disruption — nothing makes the leader step down automatically, and nothing about the candidate's actual chances gets checked first.",
+        "The problem isn't eligibility. It's that the damage happens before the outcome is even known."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that same flaky candidate reconnecting across a dozen rounds, run two different ways.",
+        "Sending a real vote request every time: the epoch bumps and the leader gets disrupted, every single round.",
+        "Checking first whether it would actually win before sending anything real: the epoch never moves, and the leader is never disrupted, not once."
+      ]
+    },
+    {
+      "lines": [
+        "A controller quorum can also grow or shrink without a full restart — an operator adds or removes a member on the fly.",
+        "But only one membership change is ever allowed to be in progress at a time.",
+        "A second request that arrives while the first one is still pending gets turned away outright."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel so far came from one real run of this topic's own toy controller-quorum model, happening just now.",
+        "The fencing gap, measured directly, under and then well past the allowed threshold.",
+        "The vote comparison across a dozen rounds, and the membership-change outcome when a second request arrives too early."
+      ]
+    },
+    {
+      "lines": [
+        "So: two separate systems collapsed into the one kind of log this chapter keeps reusing.",
+        "A fetch that pulls metadata forward and doubles as proof a broker is still alive.",
+        "A vote that checks first before it disrupts anyone, and a quorum that can change, one member at a time."
+      ]
+    }
+  ]
+}

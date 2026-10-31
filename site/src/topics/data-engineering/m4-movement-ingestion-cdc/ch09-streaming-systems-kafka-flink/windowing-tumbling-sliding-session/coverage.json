@@ -1,0 +1,118 @@
+{
+  "topic": "de.windowing-tumbling-sliding-session",
+  "syllabus": [
+    {
+      "clause": "window assignment and state cost of each",
+      "at": [
+        { "step": "Predict: does a sliding window cost the same as a tumbling one?" },
+        { "step": "Reveal: tumbling is one copy per element; sliding multiplies it" }
+      ]
+    },
+    {
+      "clause": "session windows that merge as gaps close",
+      "at": [{ "step": "Reveal: a session window has no fixed shape, and can merge" }]
+    },
+    {
+      "clause": "global windows with custom triggers",
+      "at": [
+        { "step": "Predict: does a global window ever emit anything on its own?" },
+        { "step": "Reveal: a global window is inert without a custom trigger" }
+      ]
+    },
+    {
+      "clause": "pane-per-key state and its cleanup",
+      "at": [{ "step": "Reveal: every pane eventually has to die" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "The Dataflow Model (Akidau et al., 2015, VLDB)",
+      "items": [
+        {
+          "item": "window assignment and window merging are intimately related per windowing strategy, with sliding requiring sliding merging and sessions requiring session merging",
+          "at": [{ "step": "Reveal: tumbling is one copy per element; sliding multiplies it" }]
+        },
+        {
+          "item": "elements are initially assigned to a default global window covering all of event time",
+          "at": [{ "step": "Setup: a window is where a watermark's chunk of time actually lives" }]
+        },
+        {
+          "item": "using the global window with an unbounded input source under the default trigger guarantees no output will ever be produced",
+          "at": [{ "step": "Reveal: a global window is inert without a custom trigger" }]
+        }
+      ]
+    },
+    {
+      "source": "Windows (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "tumbling windows have a fixed size and do not overlap, while sliding windows can overlap and assign an element to multiple windows",
+          "at": [{ "step": "Reveal: tumbling is one copy per element; sliding multiplies it" }]
+        },
+        {
+          "item": "session windows group elements by sessions of activity, closing on a gap of inactivity, and require a merging trigger and function to be mergeable",
+          "at": [{ "step": "Reveal: a session window has no fixed shape, and can merge" }]
+        },
+        {
+          "item": "a global windows assigner is only useful with a custom trigger, since the global window has no natural end to process at",
+          "at": [{ "step": "Predict: does a global window ever emit anything on its own?" }]
+        },
+        {
+          "item": "a window is removed once time passes its end timestamp plus allowed lateness, a removal guarantee Flink does not extend to global windows",
+          "at": [{ "step": "Reveal: every pane eventually has to die" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A sliding window's state-cost multiplier isn't a constant penalty for using sliding windows at all — it scales directly and predictably with how much overlap is configured, which is why the same mechanism can be cheap or expensive depending on one parameter.",
+        "at": [{ "step": "Reveal: tumbling is one copy per element; sliding multiplies it" }]
+      },
+      {
+        "item": "A session window merging on a late record isn't a special correction path bolted onto the model — it's the direct, structural consequence of a session's boundaries being data-driven rather than fixed, so a new record can always redraw them.",
+        "at": [{ "step": "Reveal: a session window has no fixed shape, and can merge" }]
+      },
+      {
+        "item": "Decoupling a global window from its trigger isn't an oversight the other window types avoid — it's the one deliberate design choice this chapter highlights, since tumbling, sliding, and session windows all bundle their own notion of an end into the window itself.",
+        "at": [{ "step": "Reveal: a global window is inert without a custom trigger" }]
+      },
+      {
+        "item": "Pane cleanup bounded by the watermark isn't a garbage-collection detail — it's the only thing standing between a windowed job and memory growing without bound, which is exactly why the watermark from the prior topic matters here too.",
+        "at": [{ "step": "Reveal: every pane eventually has to die" }]
+      },
+      {
+        "item": "This topic's hook (switching window types alone changing memory use, with the input stream unchanged) and its first reveal are the same cause and effect Flink's own documentation describes, demonstrated here on a toy model rather than a real Flink cluster.",
+        "at": [{ "step": "Hook: the same stream, four very different shapes" }]
+      },
+      {
+        "item": "The toy windowing aggregator, session-merge model, global-window trigger model, and pane-tracking model are deliberately simplified standalone demonstrations, not ports of Flink's actual internals, and every figure shown is this run's own measured output, not a cited constant.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Calling these four window types 'four real shapes' rather than four configuration flags matters because each one changes what question a downstream aggregate is even answering, not just how fast or cheap the answer arrives.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A tumbling window isn't simply 'the default, boring choice' — it's the one shape whose state cost is a fixed, predictable baseline, which is exactly why every other shape's cost gets measured as a multiple of it.",
+        "at": [{ "step": "Reveal: tumbling is one copy per element; sliding multiplies it" }]
+      },
+      {
+        "item": "The pane-per-key cleanup this topic measures depends entirely on the watermark mechanism from the prior topic — a window with no watermark bounding it has no principled moment at which its state is safe to drop.",
+        "at": [{ "deep": "Lab" }]
+      },
+      {
+        "item": "The specific stream this topic's examples.py builds for its own demonstrations is intentionally separate from the chapter's shared 9.2 lab stream (reused verbatim from the prior topic for the lab section itself), since the state-cost and merge demonstrations need their own controlled timing rather than the lab's late-and-duplicate shape.",
+        "at": [{ "step": "Hook: the same stream, four very different shapes" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

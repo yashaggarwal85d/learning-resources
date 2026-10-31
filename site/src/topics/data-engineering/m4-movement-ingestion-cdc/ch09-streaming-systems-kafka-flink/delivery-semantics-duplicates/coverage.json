@@ -1,0 +1,135 @@
+{
+  "topic": "de.delivery-semantics-duplicates",
+  "syllabus": [
+    {
+      "clause": "at-most/at-least/exactly-once as statements about effects",
+      "at": [
+        { "step": "Setup: a promise about the effect, not the attempt" },
+        { "step": "Reveal: the same crash, three different counts" }
+      ]
+    },
+    {
+      "clause": "the crash windows that create loss or duplication",
+      "at": [
+        { "step": "Predict: ack lost, what happens on the producer side?" },
+        { "step": "Predict: crash before commit, what happens on restart?" }
+      ]
+    },
+    {
+      "clause": "producer retry after a lost ack",
+      "at": [
+        { "step": "Reveal: a retry, blind to what already happened" }
+      ]
+    },
+    {
+      "clause": "consumer crash between processing and offset commit",
+      "at": [
+        { "step": "Reveal: the same record, twice" }
+      ]
+    },
+    {
+      "clause": "exactly-once as an end-to-end property",
+      "at": [
+        { "step": "Reveal: the broker's claim stops at the sink's door" },
+        { "step": "Recap" }
+      ]
+    },
+    {
+      "clause": "theory in Ch.14",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Kafka 4.4 design documentation",
+      "items": [
+        {
+          "item": "at-most-once: messages may be lost but are never redelivered",
+          "at": [{ "step": "Setup: a promise about the effect, not the attempt" }]
+        },
+        {
+          "item": "at-least-once: messages are never lost but may be redelivered",
+          "at": [{ "step": "Setup: a promise about the effect, not the attempt" }]
+        },
+        {
+          "item": "exactly-once: each message is processed once and only once",
+          "at": [{ "step": "Setup: a promise about the effect, not the attempt" }]
+        },
+        {
+          "item": "a lost ack leaves the producer unable to tell whether the write already committed",
+          "at": [{ "step": "Predict: ack lost, what happens on the producer side?" }]
+        },
+        {
+          "item": "prior to idempotent producers, a retry after a lost ack can duplicate an already-committed write",
+          "at": [{ "step": "Reveal: a retry, blind to what already happened" }]
+        },
+        {
+          "item": "processing a message before saving the consumer's position reproduces the message after a crash",
+          "at": [{ "step": "Reveal: the same record, twice" }]
+        }
+      ]
+    },
+    {
+      "source": "Confluent engineering blog: exactly-once semantics in Apache Kafka",
+      "items": [
+        {
+          "item": "exactly-once is guaranteed only within the scope of the stream processor's own internal processing, not arbitrary side effects like an RPC call",
+          "at": [{ "step": "Reveal: the broker's claim stops at the sink's door" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Both crash windows share the same underlying shape: a gap between doing a piece of work and durably recording that it was done, with the crash landing inside that gap.",
+        "at": [{ "step": "Reveal: the same record, twice" }]
+      },
+      {
+        "item": "An idempotent effect downstream (e.g. an upsert keyed by a stable id) silently absorbs the consumer-side duplicate without needing any change to the delivery semantics itself.",
+        "at": [{ "step": "Reveal: the same record, twice" }]
+      },
+      {
+        "item": "At-most-once is not simply 'worse' than at-least-once — it's a different, deliberate trade: a dropped record is accepted in exchange for a duplicate never happening.",
+        "at": [{ "step": "Reveal: the same crash, three different counts" }]
+      },
+      {
+        "item": "The scope line's phrase 'statements about effects' is doing real work: the number of network attempts and the number of effect applications are two different counters that these semantics deliberately conflate in casual speech.",
+        "at": [{ "step": "Setup: a promise about the effect, not the attempt" }]
+      },
+      {
+        "item": "This topic names the two crash windows precisely so that topics 10-13 can each be understood as closing exactly one of them, rather than as unrelated features.",
+        "at": [{ "step": "Hook: two engineers, one argument, two unnamed crash windows" }]
+      },
+      {
+        "item": "A sink being 'idempotent' and a pipeline being 'exactly-once' are not the same claim — idempotence alone handles duplicates but says nothing about a dropped record under at-most-once.",
+        "at": [{ "step": "Reveal: the broker's claim stops at the sink's door" }]
+      },
+      {
+        "item": "This topic deliberately withholds the specific fixes (idempotent producer, transactions, dedup keys) that close each window, since naming them before showing the windows they close would reverse the chapter's own teaching order.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Both toy crash models are symmetric in structure (an action, then a durability write, then a possible crash between them) even though one lives on the producer and one on the consumer.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The retention and tiering mechanics from the previous two topics are completely orthogonal to this topic's claims — a duplicate or a loss happens regardless of where in the log's lifecycle the record sits.",
+        "at": [{ "step": "Setup: a promise about the effect, not the attempt" }]
+      },
+      {
+        "item": "Stating 'exactly-once' as an end-to-end property is what makes the claim falsifiable at all — an unfalsifiable version of the claim ('Kafka is exactly-once') can't be tested against a concrete pipeline.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

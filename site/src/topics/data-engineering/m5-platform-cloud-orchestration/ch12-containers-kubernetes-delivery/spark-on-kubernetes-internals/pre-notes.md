@@ -1,0 +1,8 @@
+- **Driver**: the Spark process that creates and coordinates executors. *Where you meet it:* every step.
+- **Executor**: a Spark process that runs tasks and holds data in memory or on disk. *Where you meet it:* every step.
+- **Shuffle**: the data movement a stage boundary requires, redistributing data by key across the cluster. *Where you meet it:* the shuffle-tracking and migration steps.
+- **Stage**: a unit of work the scheduler cuts at a shuffle boundary. *Where you meet it:* the predict and abrupt-kill/decommission steps.
+- **Dynamic allocation**: Spark growing or shrinking its own executor count while a job runs. *Where you meet it:* the shuffle-tracking steps.
+- **Spot instance**: cloud compute that can be reclaimed on short notice, at a lower price. *Where you meet it:* the hook and both predicts.
+- **Custom resource**: a Kubernetes API type an operator defines and reconciles. *Where you meet it:* the operators step.
+- **Lock-in**: how hard it is to leave a vendor's specific implementation once you depend on it. *Where you meet it:* the managed-vs-self-run step.

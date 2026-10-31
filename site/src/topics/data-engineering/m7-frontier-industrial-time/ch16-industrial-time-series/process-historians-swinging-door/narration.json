@@ -1,0 +1,83 @@
+{
+  "topic": "de.process-historians-swinging-door",
+  "steps": [
+    {
+      "lines": [
+        "A historian has quietly stored a full year of readings from one temperature tag out on the plant floor.",
+        "A data scientist pulls that whole year out, computes a simple average, and ends up several degrees off from the plant's own officially reported average for that same tag.",
+        "Nothing in the historian is actually malfunctioning here, and nothing was ever lost along the way."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "This historian only ever kept the handful of points it actually needed to reconstruct the original curve, each one staying within some stated error band it promised to honor.",
+        "Given that, what calculation would actually have produced the right mean here, and what exactly should that extraction have recorded alongside each value?"
+      ],
+      "answer": [
+        "A mean that weights by time, plus a flag.",
+        "The right number comes from a time-weighted average, one that weighs by how long a value actually held rather than by how many rows happen to represent it, and the extraction itself needed to carry forward both the compression setting and a flag marking which points were truly recorded."
+      ]
+    },
+    {
+      "lines": [
+        "Before any of this data even reaches the archive, a simple deadband filter sits right at the interface and quietly screens it.",
+        "A given value only actually gets passed along once it has moved far enough past a stated threshold compared to whatever was last sent through.",
+        "During any long, genuinely flat stretch, that means almost none of the individual readings ever even make it as far as the archive in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Picture two doors, an upper one and a lower one, both pivoting on the very last point that actually got stored.",
+        "As fresh values keep arriving, both of those doors keep swinging open wider, bounding how steep a straight line from that anchor point could possibly be.",
+        "The exact moment those two doors can no longer stay parallel to each other, a brand new point, a knee, gets permanently recorded."
+      ]
+    },
+    {
+      "lines": [
+        "Running this whole scheme against a real signal and then checking the result directly against the original data confirms something important.",
+        "Every single knee that actually got stored stays well within its own stated compression deviation, measured against the straight line it's standing in for.",
+        "And despite that tight guarantee holding throughout, the overall point count still ends up falling by more than eighty percent."
+      ]
+    },
+    {
+      "lines": [
+        "Take one long, genuinely quiet period sitting right next to one short, genuinely volatile burst of activity.",
+        "That quiet period collapses down to almost no stored knees at all, while that short burst, despite lasting far less time, ends up forcing many separate knees into existence.",
+        "A plain average computed straight across every single one of those stored knees treats each one as equally representative, which simply isn't true."
+      ]
+    },
+    {
+      "lines": [
+        "There's a cleaner way to actually get this right.",
+        "Weighting a calculation by how much time actually passed, rather than by how many rows happen to exist, tracks the true underlying average far more closely than that naive knee-by-knee approach ever could.",
+        "Computing an interpolated value at every single one of the original timestamps and averaging across those gets you to essentially the same honest answer."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a series that's genuinely step-shaped by its very nature, something like a valve that's simply either fully open or fully closed.",
+        "Drawing an ordinary straight line between two stored knees that happen to straddle a real step like that badly misreads whatever the true value actually was right up until the moment it flipped.",
+        "Instead, simply holding onto the last value that was actually recorded, rather than interpolating a line at all, reads that exact same moment with perfect accuracy."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole picture together now.",
+        "Exception filtering runs first, swinging-door compression keeps only the knees it actually needs while still honoring its own stated error band, and a plain average computed straight over those knees quietly misleads anyone who trusts it.",
+        "The fix is weighting correctly by time, and, for a genuinely step-shaped series, choosing the right interpolation mode in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "Picture an extraction out of this historian that carries forward nothing but the bare values themselves, no flag anywhere marking how each one came to exist and no record of the compression setting that was actually used.",
+        "Working only from that bare extraction, could a later analyst still somehow tell which of those values were genuinely recorded and which ones were merely computed by interpolating between two real points?"
+      ],
+      "answer": [
+        "No, and that loss is now completely permanent.",
+        "The moment that flag and that compression setting both get dropped, every single value in that row looks exactly the same as every other one, because those two missing pieces were the only thing that had ever actually distinguished a real measurement from a computed guess."
+      ]
+    }
+  ]
+}
