@@ -6504,4 +6504,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Everything encoded so far has been a flat column. The next topic is what happens the moment a column is optional, repeated or nested — Dremel's own shredding model.",
   },
+  {
+    id: 'de.nested-data-repetition-definition',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/nested-data-repetition-definition',
+    title: 'Nested data: repetition and definition levels',
+    syllabusTitle: 'Nested data: repetition and definition levels',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['dremel-shredding-levels'],
+    uses: ['parquet-file-anatomy', 'parquet-column-encodings'],
+    declared: [],
+    bridge:
+      "Everything encoded so far has been a flat column. This topic is what happens the moment a column is optional, repeated or nested: Dremel's own record-shredding model, traced by hand from a real nested record to flat columns and back.",
+    handoff:
+      "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and which rows it can skip entirely. That's data skipping.",
+  },
 ];
