@@ -6331,6 +6331,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything about Flink so far has been at the level of operators and state. A whole other way to use Flink treats the stream as a changing SQL table instead — and that layer is built directly on top of the runtime and state model just covered.",
   },
   {
+    id: 'de.flink-sql-dynamic-tables',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/flink-sql-dynamic-tables',
+    title: 'Flink SQL and dynamic tables',
+    syllabusTitle: 'Flink SQL and dynamic tables',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['dynamic-table-changelog-modes', 'streaming-join-state-cost'],
+    uses: ['retention-vs-compaction', 'accumulation-modes-retraction', 'state-backend-comparison'],
+    declared: ['basic SQL (Chapter 2)'],
+    bridge:
+      "Everything about Flink so far has been operators and state, underneath any particular API. This topic is the layer most people actually write: SQL over streams, formalized as changelogs of dynamic tables, with a join's cost measured entirely by how much state it has to keep.",
+    handoff:
+      "Kafka Streams takes almost the same changelog-and-table idea and implements it as a library inside your own application, with no separate cluster at all. Seeing the same idea built the other way sharpens both. That's next.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
