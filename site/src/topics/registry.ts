@@ -7151,6 +7151,26 @@ export const TOPICS: TopicMeta[] = [
       'Section 7.2 is done: the shuffle, the joins and the files are all explained. The next section turns from \'how much work and where\' to \'what happens when the machine running it runs out of room\' — Spark\'s own memory model.',
   },
   {
+    id: 'de.executor-memory-model',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/executor-memory-model',
+    title: 'Executor memory model',
+    syllabusTitle: 'Executor memory model',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-unified-memory-manager', 'spark-oom-vs-oomkill'],
+    uses: ['spark-task-hierarchy'],
+    declared: [],
+    bridge:
+      'Section 7.2 was entirely about the shuffle and the files around it. This section turns to the resource every one of those operations actually spends: the executor\'s own memory, and the single model — storage and execution borrowing from each other — that governs all of it.',
+    handoff:
+      'The model says where memory lives. The next topic is the first thing that happens when it runs out: spill, the direct and usually first symptom of memory pressure.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
