@@ -1,0 +1,66 @@
+{
+  "topic": "de.real-time-quality-anomaly",
+  "syllabus": [
+    {
+      "clause": "near-real-time line-quality dashboard plus streaming anomaly detection",
+      "at": [{ "step": "Reveal: a dashboard and a detector, two different consumers" }]
+    },
+    {
+      "clause": "streaming baselines (EWMA, seasonal decomposition, SPC rules)",
+      "at": [{ "step": "Reveal: three baseline families, three failure modes" }]
+    },
+    {
+      "clause": "per-series state at high cardinality",
+      "at": [{ "step": "Reveal: sizing state at high cardinality" }]
+    },
+    {
+      "clause": "alert deduplication and suppression",
+      "at": [{ "step": "Reveal: deduplication, grouping and suppression" }]
+    },
+    {
+      "clause": "backtesting on history (Ch.16)",
+      "at": [{ "step": "Reveal: backtesting on history, with a time-split" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "NIST Engineering Statistics Handbook, \"EWMA Control Charts\"",
+      "items": [
+        { "item": "The EWMA is a statistic for monitoring a process that averages the data, giving less and less weight to data as it is further removed in time.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] },
+        { "item": "A Shewhart chart's decision depends solely on the most recent measurement from the process.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] },
+        { "item": "An EWMA's decision depends on an exponentially weighted average of all prior data, including the most recent measurement.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] },
+        { "item": "The EWMA control procedure can be made sensitive to a small or gradual drift, whereas a Shewhart procedure can only react when the last point is outside a control limit.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] }
+      ]
+    },
+    {
+      "source": "NIST Engineering Statistics Handbook, \"What are Control Charts?\"",
+      "items": [
+        { "item": "Control charts are used to routinely monitor quality.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] },
+        { "item": "Control limits are chosen so that almost all data points fall within them as long as the process remains in control.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] },
+        { "item": "A data point outside the control limits means the process is probably out of control.", "at": [{ "step": "Hook: a false alarm ignored, a real fault missed" }] },
+        { "item": "Statistical methods to detect sequences or nonrandom patterns can be applied to the interpretation of control charts.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A false alarm that fires on a normal ramp and a real fault that adapts into silence are opposite mistakes, not the same one.", "at": [{ "step": "Hook: a false alarm ignored, a real fault missed" }] },
+      { "item": "Each baseline family is cheap to update per event, and each fails exactly where its own assumption breaks.", "at": [{ "step": "Reveal: three baseline families, three failure modes" }] },
+      { "item": "A series with no history can't be trusted to alarm; a cold-start policy keeps it quiet until it earns one.", "at": [{ "step": "Reveal: sizing state at high cardinality" }] },
+      { "item": "Grouping by shared cause turns a flood of per-series alerts into one alert an operator can actually act on.", "at": [{ "step": "Reveal: deduplication, grouping and suppression" }] },
+      { "item": "A detector nobody trusts anymore is worse than no detector at all, since it still costs attention while returning nothing useful.", "at": [{ "step": "Reveal: alert precision as the detector's own metric" }] },
+      { "item": "A backtest with a clean time-split shows a detector's own failure before go-live, not after a week of ignored alarms.", "at": [{ "step": "Reveal: backtesting on history, with a time-split" }] },
+      { "item": "At ten times the series count, the next bottleneck is the per-series state's own memory footprint and churn-driven cold-start rate, not baseline accuracy.", "at": [{ "step": "Prove it: ten times the series" }] },
+      { "item": "This topic leaves out statistical process control's own mechanics, OEE and downtime events, sensor-data quality, and the industrial data model as later-chapter forward pointers.", "at": [{ "deep": "Internals" }] },
+      { "item": "EWMA, seasonal decomposition, SPC rules, alert deduplication and grouping, and backtesting with a time-split are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This closes the chapter's own method; the next chapter is the industrial domain these designs borrowed words from without teaching it.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
