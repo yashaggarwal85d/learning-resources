@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: data-flow shape, backfills, Lambda vs Kappa, and the fraud pipeline
+
+<ul class="resources">
+  <Resource kind="reel" title="Choosing the data-flow shape" domain="data-engineering" host="de.feature-platform-point-time">The batch-versus-streaming decision this topic applies per feature instead of per pipeline.</Resource>
+  <Resource kind="reel" title="Resumable multi-TB historical backfill" domain="data-engineering" host="de.feature-platform-point-time">The backfill design this topic's own new-feature history reconstruction is built on.</Resource>
+  <Resource kind="reel" title="Lambda vs Kappa for one pipeline" domain="data-engineering" host="de.feature-platform-point-time">The same-logic-on-both-paths problem this topic's batch and streaming feature computations must avoid.</Resource>
+  <Resource kind="reel" title="Sub-100 ms fraud-scoring pipeline" domain="data-engineering" host="de.feature-platform-point-time">The score-time feature logging whose features this platform must agree with, down to the timestamp.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Point-in-time joins" href="https://docs.feast.dev/getting-started/concepts/point-in-time-joins" by="Feast documentation">The as-of-join mechanism this topic's training-set build is built on.</Resource>
+  <Resource kind="reading" title="Online store" href="https://docs.feast.dev/getting-started/components/online-store" by="Feast documentation">The low-latency store this topic's parity check compares against.</Resource>
+</ul>
+
+</section>
