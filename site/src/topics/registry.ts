@@ -5505,6 +5505,26 @@ export const TOPICS: TopicMeta[] = [
       "A cache in front of a database is one read-side pattern. The next topic is a different one this chapter hasn't yet connected to Chapter 3's own warehouse material: pre-aggregated, analytical serving layers.",
   },
   {
+    id: 'de.analytical-serving-layers',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/analytical-serving-layers',
+    title: 'Analytical serving layers',
+    syllabusTitle: 'Analytical serving layers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['analytical-serving-layers'],
+    uses: ['cache-patterns-eviction', 'partitioning-schemes'],
+    declared: [],
+    bridge:
+      "A cache in front of a database is one read-side pattern. This topic is a different one this chapter hasn't yet connected to Chapter 3's own warehouse material: pre-aggregation and materialized serving layers, and precisely when a real-time OLAP store earns its own cost over plain warehouse queries.",
+    handoff:
+      "Every read-side pattern so far assumed a reader pulling from a store. The next topic is the opposite direction entirely — a consumer reading what a producer wrote, through a queue or a log.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -5823,6 +5843,26 @@ export const TOPICS: TopicMeta[] = [
       "A unit test says a transformation behaves correctly on a small fixture. This topic is the check that a real change, on real data, actually changed the output the way intended and nothing else -- compared two full ways, and at a cost that has to be managed past a certain scale.",
     handoff:
       "Running this diff on every single pull request, against every model in a large project, is more compute than most teams can afford. Running it selectively, only where a change could actually reach, is the next topic.",
+  },
+  {
+    id: 'de.slim-ci-state-aware-builds',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/slim-ci-state-aware-builds',
+    title: 'Slim CI and state-aware builds',
+    syllabusTitle: 'Slim CI and state-aware builds',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['slim-ci-state-modified-defer', 'column-level-breaking-change-detection'],
+    uses: ['data-diff-join-vs-bisection', 'expand-migrate-contract-rollout', 'data-slis-slos-error'],
+    declared: [],
+    bridge:
+      "Diffing old against new output proves a change is correct, but running that proof on every model in a large project, on every pull request, is more compute than most teams can afford. This topic is the system that runs exactly the tests a given change needs, nothing more.",
+    handoff:
+      "Slim CI proves a change is safe before it merges. The next topic is proving it stays safe at the moment it actually reaches production -- a different kind of safety, checked at deploy time rather than PR time.",
   },
   {
     id: 'de.driver-executors-task-hierarchy',
@@ -7849,6 +7889,26 @@ export const TOPICS: TopicMeta[] = [
       "A broker carries the current value; a historian keeps the past. This topic is the process historian: the system that has stored plant data for decades, the exception filter and swinging-door compression it applies before a point is kept, and what that does to every number you later extract from it.",
     handoff:
       "A historian and a broker both assume the plant can reach them. A WAN does not stay up. The next topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, and corrects its clock when the link returns.",
+  },
+  {
+    id: 'de.edge-buffering-store-forward',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/edge-buffering-store-forward',
+    title: 'Edge buffering and store-and-forward',
+    syllabusTitle: 'Edge buffering and store-and-forward',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['store-and-forward-durable-buffer', 'replay-in-order-idempotent-sequence', 'catch-up-time-littles-law', 'buffer-full-drop-policy-by-priority', 'clock-correction-on-reconnect', 'plant-local-autonomy-slo'],
+    uses: ['degraded-mode-design', 'rpo-rto-per-data-class', 'chunk-idempotent-checkpoint', 'throttle-backoff-signal', 'at-least-once-plus-idempotence', 'wal-lsn-fsync', 'littles-law', 'bandwidth-delay-product', 'idempotent-merge-load', 'mqtt-qos-retained-will', 'sparkplug-birth-death-seq-rebirth', 'gateway-replay-dedup-backfill', 'device-gateway-ingest-timestamps', 'exception-deadband-filtering', 'swinging-door-compression-error-band', 'mergeable-rollup-never-store-average', 'read-only-extraction-load-budget'],
+    declared: [],
+    bridge:
+      "A historian and a broker both assume the plant can reach them. A WAN does not stay up. This topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, drops by policy when the buffer fills, and corrects its clock when the link returns.",
+    handoff:
+      "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. The last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell, its standardised submodels, and the role it plays in EU data spaces and the digital product passport.",
   },
   {
     id: 'de.communicating-tradeoffs-decision-makers',
