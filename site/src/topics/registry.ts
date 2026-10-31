@@ -5405,6 +5405,26 @@ export const TOPICS: TopicMeta[] = [
       "A task waiting in a pool for a slot still occupies a worker process while it waits. Some tasks wait for hours, not seconds — for an external job, or a sensor polling an API. Holding a worker that whole time is wasteful, and there is a mechanism built specifically to avoid it.",
   },
   {
+    id: 'de.deferrable-tasks-triggerer',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/deferrable-tasks-triggerer',
+    title: 'Deferrable tasks and the triggerer',
+    syllabusTitle: 'Deferrable tasks and the triggerer',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['deferrable-task-triggerer-model', 'trigger-serialisation-failure'],
+    uses: ['de.concurrency-controls-pools-queues', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "A pool bounds how many tasks run at once, but a task waiting in poke mode for an external job still occupies a worker the whole time it waits. This topic is the mechanism built to avoid exactly that: a deferred task that gives its worker slot back and lets a separate, lightweight process do the waiting.",
+    handoff:
+      "A deferred task still waits for something specific it already knows to watch for. Some pipelines need the opposite: a run triggered not by a clock or a known wait, but by data itself becoming available somewhere else.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
