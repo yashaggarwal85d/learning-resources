@@ -1,0 +1,118 @@
+{
+  "topic": "de.databricks-compute-model-photon",
+  "syllabus": [
+    {
+      "clause": "classic (all-purpose vs job clusters, policies, pools, spot)",
+      "at": [
+        { "step": "Four compute types, four different start-and-billing shapes" },
+        { "step": "Idle time an all-purpose cluster quietly bills for" },
+        { "step": "A pool holds idle instances so the next cluster starts faster" },
+        { "step": "One knob an admin sets, every user inherits" }
+      ]
+    },
+    {
+      "clause": "serverless (vendor-managed fleet: fast start, different network/egress boundary)",
+      "at": [
+        { "step": "Four compute types, four different start-and-billing shapes" }
+      ]
+    },
+    {
+      "clause": "Photon's vectorised C++ execution (the Ch.1.3/§6.1 lesson behind Tungsten)",
+      "at": [
+        { "step": "Same query, same cluster size, one runs noticeably faster" },
+        { "step": "What's actually different about the faster run?" },
+        { "step": "Photon is Spark's own lesson, written in C++" }
+      ]
+    },
+    {
+      "clause": "SQL warehouses as the BI-serving boundary (§17.7)",
+      "at": [
+        { "step": "Four compute types, four different start-and-billing shapes" }
+      ]
+    },
+    {
+      "clause": "DBU accounting by SKU and when serverless is cheaper",
+      "at": [
+        { "step": "The DBU isn't one number — it's a price list" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "table maintenance (OPTIMIZE, liquid clustering, VACUUM, deletion vectors) is taught once in §6.3",
+      "at": [
+        { "topic": "Snapshot lifecycle: time travel to garbage collection", "domain": "data-engineering", "quote": "expiring snapshots, removing orphan files and VACUUM" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Databricks: Manage classic compute",
+      "items": [
+        { "item": "A new job compute terminates and is unavailable for restarting once its job completes; an existing all-purpose compute autostarts if scheduled again after terminating", "at": [{ "step": "Four compute types, four different start-and-billing shapes" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Compute configuration reference",
+      "items": [
+        { "item": "On a spot cluster, the first (driver) instance is always on-demand; subsequent worker instances are spot", "at": [{ "step": "One knob an admin sets, every user inherits" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Create and manage compute policies",
+      "items": [
+        { "item": "A compute policy is an admin tool limiting compute creation permissions, including per-cluster cost caps", "at": [{ "step": "One knob an admin sets, every user inherits" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Connect to pools",
+      "items": [
+        { "item": "A pool's idle, ready instances cut cluster start/autoscaling time; Databricks doesn't charge a DBU for an instance idling in the pool", "at": [{ "step": "A pool holds idle instances so the next cluster starts faster" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Connect to serverless compute",
+      "items": [
+        { "item": "Serverless compute runs in a Databricks-managed plane rather than the customer's own cloud account, speeding start/scaling and minimizing idle time", "at": [{ "step": "Four compute types, four different start-and-billing shapes" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Photon",
+      "items": [
+        { "item": "Photon is a native vectorized engine written in C++, delivering a documented 2x TPC-DS 1TB speedup over the latest Databricks Runtime, with 3x-8x customer-observed gains", "at": [{ "step": "Photon is Spark's own lesson, written in C++" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Connect to a SQL warehouse",
+      "items": [
+        { "item": "A SQL warehouse is its own compute type for querying; Databricks recommends serverless SQL warehouses when available", "at": [{ "step": "Four compute types, four different start-and-billing shapes" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Pricing",
+      "items": [
+        { "item": "The DBU is a normalized unit of processing power, and Databricks publishes a distinct price list per SKU and cloud rather than one flat rate", "at": [{ "step": "The DBU isn't one number — it's a price list" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook deliberately holds cluster size constant; a learner who attributes the speed difference to hardware rather than execution style has missed the entire point before Photon is even named", "at": [{ "step": "Same query, same cluster size, one runs noticeably faster" }] },
+      { "item": "The predict step's correct answer connects directly back to the course's own earlier vectorization lesson; a learner should name that connection, not just pick the right multiple-choice option", "at": [{ "step": "What's actually different about the faster run?" }] },
+      { "item": "The four compute types are deliberately not reduced to 'cheap vs expensive'; a learner who can't state each one's own start-time and idle-billing behaviour has memorized labels, not the mechanism", "at": [{ "step": "Four compute types, four different start-and-billing shapes" }] },
+      { "item": "The idle-minutes example is a lifecycle consequence, computed from the two documented rules in examples.py, not an arbitrary illustrative gap", "at": [{ "step": "Idle time an all-purpose cluster quietly bills for" }] },
+      { "item": "Photon's benchmark numbers are presented as Databricks' own disclosed claim, not independently re-verified in this sandbox; a learner should be able to state that distinction", "at": [{ "step": "Photon is Spark's own lesson, written in C++" }] },
+      { "item": "A pool's idle instances still cost the cloud provider's own rate; a learner who thinks a pool makes idle time free, not just DBU-free, has missed the distinction in the source quote", "at": [{ "step": "A pool holds idle instances so the next cluster starts faster" }] },
+      { "item": "The driver-always-on-demand rule on spot clusters is a reliability guarantee, not a cost detail; a learner should connect it to why the whole cluster doesn't vanish if spot capacity is reclaimed", "at": [{ "step": "One knob an admin sets, every user inherits" }] },
+      { "item": "'DBU accounting by SKU' means a real, documented multi-SKU price list exists, even though this sandbox can't fetch the live per-SKU dollar table from a JS-rendered calculator — the topic names that limitation rather than inventing numbers", "at": [{ "step": "The DBU isn't one number — it's a price list" }] },
+      { "item": "The recap's three lines are not independent trivia; a learner who can name all four compute types but can't say which lifecycle rule makes one of them bill for idle time has learned vocabulary, not the lesson", "at": [{ "step": "In one breath" }] },
+      { "item": "The prove-it scenario (a short, infrequent, unpredictably-timed job) is deliberately the shape that most favors job compute over all-purpose; a learner should be able to state why the unpredictable timing specifically rules out keeping all-purpose warm on a schedule", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

@@ -7351,6 +7351,26 @@ export const TOPICS: TopicMeta[] = [
       "This section mapped and priced the cloud's own data services in general. One specific platform, Databricks, is common enough and deep enough that the syllabus gives it a full section of its own, starting with its compute model and the vectorised engine underneath it.",
   },
   {
+    id: 'de.databricks-compute-model-photon',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/databricks-compute-model-photon',
+    title: 'Databricks compute model and Photon',
+    syllabusTitle: 'Databricks compute model and Photon',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['databricks-compute-sku-model', 'photon-vectorized-execution'],
+    uses: ['cross-cloud-service-rosetta', 'serverless-provisioned-breakeven', 'billing-granularity-comparison'],
+    declared: ['spark-cluster-model'],
+    bridge:
+      "This section mapped and priced the cloud's data services in general. One platform is common enough, and deep enough, to earn a section of its own — and it starts with what actually runs the code: classic clusters, serverless, and the vectorised engine that makes either one faster.",
+    handoff:
+      "Compute is only useful once data actually arrives on it. Databricks' own answer to 'a file landed in object storage, now what' is next.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
