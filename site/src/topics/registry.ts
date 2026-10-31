@@ -7379,6 +7379,25 @@ export const TOPICS: TopicMeta[] = [
       'GC pauses can make an executor miss its heartbeat and get declared dead. The next topic is exactly that: what Spark does when a task or an executor actually fails, GC-induced or otherwise.',
   },
   {
+    id: 'de.task-retry-fetch-failure-speculation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/task-retry-fetch-failure-speculation',
+    title: 'Task retry, fetch failure and speculation',
+    syllabusTitle: 'Task retry, fetch failure and speculation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-task-retry-fetch-failure', 'spark-speculative-execution'],
+    uses: ['spark-shuffle-mechanics', 'spark-task-hierarchy'],
+    bridge:
+      "GC can kill an executor. This topic is what Spark does about any executor or task death, GC-caused or not: retrying the task, and, when the death took shuffle files with it, resubmitting the whole stage that produced them.",
+    handoff:
+      "Section 7.3's last topic ties every symptom in this section together: the Spark UI itself, the one instrument that actually shows spill, GC, retries and skew as evidence rather than theory.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -7717,6 +7736,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything in this chapter so far assumed a pipeline was free to run anywhere and process anything the architecture allowed. For data about a person who lives in the EU, that assumption is false by law before it is false by architecture — and this topic is where the law becomes a pipeline design: purpose tags, enforced retention, and a record of processing a regulator can actually be shown.",
     handoff:
       "GDPR by design governs what a pipeline may do with data it holds. It says nothing yet about where that data is allowed to physically sit, or who outside the EU might be legally entitled to demand it — which is a harder, more architectural question, and the one this section ends on.",
+  },
+  {
+    id: 'de.residency-transfers-extraterritorial-access',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/residency-transfers-extraterritorial-access',
+    title: 'Residency, transfers and extraterritorial access',
+    syllabusTitle: 'Residency, transfers and extraterritorial access',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['residency-sovereignty-localisation', 'transfer-mechanism-impact-assessment'],
+    uses: ['purpose-limitation-tagging', 'art30-record-from-lineage', 'cross-cloud-service-rosetta'],
+    declared: [],
+    bridge:
+      "GDPR by design governs what a pipeline may do with data it holds. This topic is the harder question underneath it: where the bytes are even allowed to sit, and who outside that jurisdiction might be legally entitled to demand them regardless — residency, sovereignty and localisation, kept as three separate questions instead of one blurred worry.",
+    handoff:
+      "Everything in Chapters 1-10 so far has mostly assumed modern, cloud-native systems and modern regulation. A huge amount of the world's actual operational data instead lives behind a decades-old enterprise system with its own extraction rules, and a factory floor with its own physics — which the next section is about.",
   },
   {
     id: 'de.text-interchange-formats-their',
