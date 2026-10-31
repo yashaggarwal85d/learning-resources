@@ -4,29 +4,29 @@
     {
       "clause": "union by rank/size",
       "at": [
-        { "step": "Reveal: union by rank (or size) bounds the height at log₂ n." },
+        { "step": "Union by rank bounds the height" },
         { "deep": "Internals" }
       ]
     },
     {
       "clause": "plus path compression (or halving/splitting)",
       "at": [
-        { "step": "Reveal: path compression." },
+        { "step": "Path compression collapses it" },
         { "deep": "Internals" }
       ]
     },
     {
       "clause": "the O(α(n)) amortized bound (Tarjan 1975)",
       "at": [
-        { "step": "Predict: averaged over a million operations with rank and compression together, is the typical cost per operation closer to O(log n), O(1), or \"it depends on the input order.\"" },
-        { "step": "Reveal: the O(α(n)) amortized bound." },
+        { "step": "What does typical cost look like?" },
+        { "step": "The O(α(n)) amortized bound" },
         { "deep": "Frontier" }
       ]
     },
     {
       "clause": "and uses: Kruskal, connected components, entity-resolution clusters → Data Engineering §8.3",
       "at": [
-        { "step": "Reveal: three uses of the same structure." },
+        { "step": "Same structure, three uses" },
         { "deep": "Production" }
       ]
     }
@@ -37,23 +37,23 @@
       "items": [
         {
           "item": "The three operations (MakeSet, Find, Union) and the two named applications (Kruskal's spanning forest, incremental connected components)",
-          "at": [{ "step": "Reveal: the three operations on a parent-pointer forest." }]
+          "at": [{ "step": "Three operations, one forest" }]
         },
         {
           "item": "The naive parent-pointer forest, a Find proportional to depth, and a sequence of operations that builds a Theta(n) chain",
-          "at": [{ "step": "Hook." }, { "step": "Predict: after the adversarial merge order on 16 elements, how deep is the tree, and what does one Find on the deepest node cost." }]
+          "at": [{ "step": "Ten million matches, one chain" }, { "step": "How deep does the chain get?" }]
         },
         {
           "item": "Union by depth/rank and its induction proof that set size is at least 2^depth(leader), bounding max depth at lg n",
-          "at": [{ "step": "Reveal: union by rank (or size) bounds the height at log₂ n." }]
+          "at": [{ "step": "Union by rank bounds the height" }]
         },
         {
           "item": "Path compression layered on top of rank, and the O(alpha(n)) amortized bound via Seidel and Sharir's analysis",
-          "at": [{ "step": "Reveal: path compression." }, { "step": "Reveal: the O(α(n)) amortized bound." }]
+          "at": [{ "step": "Path compression collapses it" }, { "step": "The O(α(n)) amortized bound" }]
         },
         {
           "item": "The Ackermann hierarchy, alpha(n) as its slow-growing inverse, and the footnoted Omega(alpha(m,n)) lower bound",
-          "at": [{ "step": "Reveal: the O(α(n)) amortized bound." }, { "deep": "Frontier" }]
+          "at": [{ "step": "The O(α(n)) amortized bound" }, { "deep": "Frontier" }]
         }
       ]
     },
@@ -62,7 +62,7 @@
       "items": [
         {
           "item": "Weighted quick-union with path compression's amortized cost is bounded by the inverse Ackermann function, less than 5 for any conceivable n in practice",
-          "at": [{ "step": "Reveal: the O(α(n)) amortized bound." }]
+          "at": [{ "step": "The O(α(n)) amortized bound" }]
         },
         {
           "item": "Plain path compression on unweighted quick-union already gives a logarithmic amortized cost by itself",
@@ -77,23 +77,23 @@
     "items": [
       {
         "item": "What problem the structure solves: maintaining a partition of elements under Union and Find, not a general graph-connectivity oracle (no edge deletion)",
-        "at": [{ "step": "Hook." }, { "step": "Reveal: the three operations on a parent-pointer forest." }]
+        "at": [{ "step": "Ten million matches, one chain" }, { "step": "Three operations, one forest" }]
       },
       {
         "item": "Why the naive version has no bound at all: the caller picks the merge order",
-        "at": [{ "step": "Predict: after the adversarial merge order on 16 elements, how deep is the tree, and what does one Find on the deepest node cost." }]
+        "at": [{ "step": "How deep does the chain get?" }]
       },
       {
         "item": "The exact shape of the rank/size height-bound proof (doubling, not just 'it works')",
-        "at": [{ "step": "Reveal: union by rank (or size) bounds the height at log₂ n." }]
+        "at": [{ "step": "Union by rank bounds the height" }]
       },
       {
         "item": "That path compression is additive to rank, not a competing rule",
-        "at": [{ "step": "Reveal: path compression." }]
+        "at": [{ "step": "Path compression collapses it" }]
       },
       {
         "item": "The amortized-vs-worst-case distinction for a single call under O(α(n))",
-        "at": [{ "step": "Reveal: the O(α(n)) amortized bound." }]
+        "at": [{ "step": "The O(α(n)) amortized bound" }]
       },
       {
         "item": "That a matching lower bound exists for any pointer-based structure, so no cleverer pointer structure beats O(α(m,n)) amortized",
@@ -101,7 +101,7 @@
       },
       {
         "item": "Union-find's one structural limit: no Split, so a wrong merge cannot be undone",
-        "at": [{ "step": "Reveal: three uses of the same structure." }, { "step": "Prove it." }]
+        "at": [{ "step": "Same structure, three uses" }, { "step": "Prove it" }]
       },
       {
         "item": "Path halving and splitting as one-pass alternatives to two-pass compression (out of scope for an exact shared-bound citation; named from their standard definition only, per FACT-CHECK.md)",
@@ -109,10 +109,10 @@
       },
       {
         "item": "Union-find's three real uses require the structure to already have the right inputs (a sorted edge order for Kruskal, an edge stream for components, a match decision already made for entity resolution) — it is the cheapest common building block, not the whole algorithm",
-        "at": [{ "step": "Reveal: three uses of the same structure." }]
+        "at": [{ "step": "Same structure, three uses" }]
       },
       {
-        "item": "The 10^7-operation timing lab (naive vs. rank vs. rank+compression) as the way this bound becomes a felt difference rather than an asymptotic abstraction",
+        "item": "The timing lab (naive vs. rank vs. rank+compression) as the way this bound becomes a felt difference rather than an asymptotic abstraction",
         "at": [{ "deep": "Lab" }]
       }
     ]
