@@ -1,0 +1,81 @@
+{
+  "topic": "de.data-quality-monitoring-platform",
+  "steps": [
+    {
+      "lines": [
+        "Thousands of checks run through here every single day, and in their very first week they send out an absolute flood of alerts.",
+        "The data team mutes that channel by midweek, no surprise there.",
+        "Days later a real failure — a stale source table feeding straight into the finance close — sits in that exact muted channel, completely unseen, for a full day."
+      ]
+    },
+    {
+      "lines": [
+        "The checks themselves were right every single time here.",
+        "So what did the platform's own design actually fail to treat as its own requirement, and what measurable thing about those alerts would have told the team, way back in week one, that it was failing?"
+      ],
+      "answer": [
+        "Running fewer checks just trades away detection, and it still gives nobody a number distinguishing one precise alert from a genuinely noisy one.",
+        "The platform's real missing requirement here is a measured precision — the actual share of alerts that corresponded to something real."
+      ]
+    },
+    {
+      "lines": [
+        "A declarative rule layer checks exactly what it's told to, as cheap as whatever query it compiles down to.",
+        "A statistical layer compares against a learned baseline instead.",
+        "Each individual check gets priced and placed, either as a pipeline gate or as a post-hoc scan."
+      ]
+    },
+    {
+      "lines": [
+        "One single root-cause table goes stale.",
+        "Forty separate downstream tables inherit that exact staleness, straight along the lineage graph.",
+        "Routing by lineage collapses every one of those forty into just one alert, sent to the root table's own owner — never paged out to everyone it happened to reach.",
+        "A failure's blast radius is genuinely who it reaches downstream, and the alert itself belongs to the table that actually caused it."
+      ]
+    },
+    {
+      "lines": [
+        "Notice that none of these three rules is a blanket mute.",
+        "Each one targets one specific, expected source of noise, so turning it on never costs you a real alert from somewhere else.",
+        "A window you already know is coming, a quiet overnight stretch, one person's own inbox — each gets its own named exception instead of silence for everybody."
+      ]
+    },
+    {
+      "lines": [
+        "An operator marks one single alert \"this was noise,\" and that exact check's threshold widens entirely on its own from then on.",
+        "A check that caught a real failure too late instead spawns a brand new, earlier check, rather than just staying exactly as it was.",
+        "A mute button only fights alert fatigue for about a week; a feedback loop that genuinely tunes the check survives later failures too."
+      ]
+    },
+    {
+      "lines": [
+        "An alert becomes an incident here: detected, triaged, contained, repaired, reviewed.",
+        "Every single stage carries its own owner and its own timestamp.",
+        "That review stage writes a recorded cause straight back into the check layer itself."
+      ]
+    },
+    {
+      "lines": [
+        "A precision gauge — the actual share of alerts that corresponded to a real, acted-on failure — sits right beside the usual data SLOs.",
+        "It carries its own error budget and its own burn-rate alert, same as any of them.",
+        "Alert precision is genuinely the platform's own SLO, and a monitor with no number for its own usefulness is, quite simply, flying blind."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually turned a flood of noise into something a team could trust: pricing every check by what it actually costs, collapsing a failure's blast radius down to one owner, naming suppression instead of just muting everything, and measuring the platform's own precision rather than assuming it."
+      ]
+    },
+    {
+      "lines": [
+        "A brand new domain gets onboarded overnight, and the table count grows a full tenfold.",
+        "That same root-cause failure now reaches many, many more downstream tables than it ever did before.",
+        "So what's actually the next bottleneck here?"
+      ],
+      "answer": [
+        "Paging every single downstream owner is exactly the ungrouped flood the lineage-based routing was built to prevent in the first place, just now at a much larger scale.",
+        "The routing itself already collapses that alert down to one; the real next question is whether computing blast radius over a much bigger lineage graph still runs fast enough to actually matter."
+      ]
+    }
+  ]
+}
