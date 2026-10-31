@@ -1,0 +1,19 @@
+# FACT-CHECK: Production execution entities and genealogy (self-review)
+
+| # | Claim | Status | Evidence |
+|---|---|---|---|
+| 1 | ISA-88's part structure (models/terminology, data structures, recipe models, production records) and that Part 1 is a technology-agnostic model standard | Confirmed | `sources/isa88-page.txt`. |
+| 2 | The physical model's six levels (enterprise→site→area→process cell→unit→equipment module→control module), Unit never excluded | Confirmed, secondary source | `sources/wikipedia-isa88.txt`. ISA's own public page names the standard's parts but does not itself publish the model hierarchy; this is the exact gap CHAPTER.md's own sourcing note anticipated ("Wikipedia/standards descriptions... to be confirmed against ISA's own text"). Flagged honestly in `references.md` and `SOURCES.md` as a secondary source, not upgraded to "primary" status. |
+| 3 | The procedural model's four levels (recipe procedure→unit procedure→operation→phase) | Confirmed, secondary source | Same Wikipedia page. |
+| 4 | A recursive query's general evaluation shape and that an unprotected recursive term can loop indefinitely | Confirmed verbatim | PostgreSQL 18 docs, `queries-with.html`. |
+| 5 | The built-in `CYCLE` clause's syntax (columns to track, `is_cycle` column, path column) | Confirmed verbatim | Same source. |
+| 6 | The genealogy totals (true exposure, degraded exposure, the two missing lots, the 503-row capped naive query) | Confirmed by execution | `examples.py`, run directly against this sandbox's PostgreSQL 16 cluster; every number asserted. |
+
+## Red team
+
+- **Predict step 4** ("does an unprotected recursive query over a rework loop ever finish on its own?"): the tempting wrong answer is "yes, eventually it has to run out of new lots to find" — tempting because that's true for a DAG *without* a cycle. The rework loop (`REJ1 → INT1`, feeding back into a lot already visited) is exactly the counter-example: the query re-derives the same lots forever because nothing in an unprotected recursive term remembers what it has already visited. Verified directly: the uncapped form was killed after exceeding its PID's runtime with no sign of converging; the capped form produced exactly 503 rows, filling its cap rather than stopping short of it, which is the executed proof that it would have kept going.
+- **Counter-example tried against the missing-edge claim**: could `FIN2`/`INT2` go missing in the degraded run for a reason *other* than the dropped edge (e.g. a join bug)? No — `degraded_edges` is `all_edges` with exactly one tuple filtered out by equality, and the only two lots reachable exclusively through that one edge are `INT2` and, transitively, `FIN2` (nothing else in the graph reaches either of them). The missing set is forced by construction, not incidental to this one run.
+- **Checked against topic 1 and topic 3's syllabus lines**: no overlap. Topic 1 never mentions work orders, lots or recipes; topic 3 (quality/SPC) references lots and runs only as foreign keys, not their genealogy.
+- **ISA-88/ISA-95 correspondence**: CHAPTER.md asks that "the correspondence is stated only as far as the standard supports it." Neither ISA's own page nor the Wikipedia page fetched here states a formal mapping between the two standards' hierarchies (that mapping lives in ISA-TR88.00.02 and similar cross-standard technical reports, not fetched). The reel therefore states only that the two models are named separately by two related but distinct ISA standards, and does not assert a specific level-to-level correspondence beyond "ISA-88's physical model and topic 1's ISA-95 hierarchy both describe equipment nesting, from different standards, for different purposes" — a weaker, defensible claim.
+
+No corrections required to `OUTLINE.md` beyond the scope note already reflected above (item 2/3's secondary-source flag, and the loosened ISA-88/ISA-95 correspondence claim).
