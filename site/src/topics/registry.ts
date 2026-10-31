@@ -5545,6 +5545,26 @@ export const TOPICS: TopicMeta[] = [
       "A burn-rate alert tells you a budget is draining. What to do in the minutes after it fires -- and after it's gone -- is incident response, the next topic.",
   },
   {
+    id: 'de.data-incident-response-blast',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-incident-response-blast',
+    title: 'Data incident response and blast radius',
+    syllabusTitle: 'Data incident response and blast radius',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['incident-response-five-stage-loop', 'lineage-derived-blast-radius', 'asset-ownership-alert-routing'],
+    uses: ['de.data-slis-slos-error', 'de.data-intervals-catchup-backfills', 'de.software-defined-asset-model'],
+    declared: [],
+    bridge:
+      "A burn-rate alert says a budget is draining. This topic is what happens in the minutes after it fires: detecting precisely what broke, containing it before it spreads, repairing only what's affected, and writing down what will stop it recurring.",
+    handoff:
+      "Containing and repairing one bad table assumes the rest of the platform is still there. The next topic is the scenario where it isn't: a whole region, bucket or cluster, and what plan existed before that moment, not after it.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
