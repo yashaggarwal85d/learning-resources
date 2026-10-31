@@ -1,0 +1,120 @@
+{
+  "topic": "de.replication-slot-wal-retention",
+  "syllabus": [
+    {
+      "clause": "a stalled or slow consumer pins WAL and fills the production disk",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: can a healthy connector still be the cause" },
+        { "step": "Reveal: a slot doesn't know or care if anyone's listening" },
+        { "step": "Reveal: stalled growth, measured" }
+      ]
+    },
+    {
+      "clause": "idle-captured-table and multi-database variants where the slot never advances",
+      "at": [{ "step": "Reveal: confirming, not merely running, moves the marker" }]
+    },
+    {
+      "clause": "heartbeats and heartbeat.action.query, max_slot_wal_keep_size as a safety valve (which invalidates the slot)",
+      "at": [
+        { "step": "Reveal: confirmation, measured" },
+        { "step": "Reveal: the safety valve trades disk for the stream" },
+        { "step": "Reveal: the lost slot, measured" },
+        { "step": "Recap" }
+      ]
+    },
+    {
+      "clause": "monitoring slot lag",
+      "at": [{ "step": "Prove it" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Logical Decoding Concepts (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "Replication slots persist across crashes and know nothing about the state of their consumer(s), which consumes storage because required WAL cannot be removed",
+          "at": [{ "step": "Reveal: stalled growth, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Replication configuration (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "max_slot_wal_keep_size specifies the maximum WAL a slot may retain before the server may remove WAL it still needed; the default of -1 retains without limit",
+          "at": [{ "step": "Reveal: the lost slot, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "pg_replication_slots (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "restart_lsn is the oldest WAL still required by the consumer of a slot",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for PostgreSQL (WAL disk space consumption)",
+      "items": [
+        {
+          "item": "A low-traffic captured table inside a busier database, and a quiet database sharing WAL with a busy one, are both named cases where a healthy connector's slot does not advance",
+          "at": [{ "step": "Reveal: confirming, not merely running, moves the marker" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The hook's own premise — a connector reporting healthy for the entire duration a disk fills up — is confirmed as a necessary consequence of slot semantics, not an exaggerated scenario: a slot's own position is independent of connector liveness, measured directly.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The contrast between connector status and slot progress is demonstrated as a controlled comparison in a single function: the same total write volume split identically, with only the confirmation behaviour differing between the two slots measured.",
+        "at": [{ "step": "Reveal: confirmation, measured" }]
+      },
+      {
+        "item": "The max_slot_wal_keep_size demonstration confirms the sandbox's own default (-1) before changing it, and resets it afterward and re-confirms the reset, so no other topic in this chapter inherits an altered cluster configuration.",
+        "at": [{ "step": "Reveal: the lost slot, measured" }]
+      },
+      {
+        "item": "The 'lost' status is not merely read from a column but proven consequential: a direct attempt to read from the invalidated slot afterward is shown to raise PostgreSQL's own real error, not a status flag with no enforced effect.",
+        "at": [{ "step": "Reveal: the lost slot, measured" }]
+      },
+      {
+        "item": "The idle-captured-table and multi-database variants are disclosed explicitly as sourced, not measured, because this sandbox has one database and no second instance to create the exact imbalance Debezium's own documentation describes.",
+        "at": [{ "out": "disclosed environment limit, per SOURCES.md" }]
+      },
+      {
+        "item": "The AWS RDS five-minute-invisibility case is named from Debezium's own documentation only, since no RDS instance is reachable from this sandbox, and is not conflated with the genuinely measured multi-database mechanism.",
+        "at": [{ "out": "disclosed environment limit, per SOURCES.md" }]
+      },
+      {
+        "item": "The wrong half of the first predict question — that healthy connector status implies a confirming consumer — is ruled out directly by the measured fact that a slot's own gap grows under a live, connected consumer that simply has nothing new to confirm.",
+        "at": [{ "step": "Predict: can a healthy connector still be the cause" }]
+      },
+      {
+        "item": "The wrong half of the final predict question — that connector status is the right alert signal — is ruled out by the hook's own premise directly: the incident the topic opens with is exactly a case where that signal stayed green.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "inactive_since, the PostgreSQL 17 column CHAPTER.md implicitly assumes for monitoring, is confirmed absent on this sandbox's PostgreSQL 16 server, so the lag-monitoring measurement uses only the columns actually available here (restart_lsn, confirmed_flush_lsn, active) rather than claiming one that doesn't exist.",
+        "at": [{ "out": "disclosed environment limit, per examples.py" }]
+      },
+      {
+        "item": "This topic hosts the stalled-consumer leg of the 8.2 lab directly, per CHAPTER.md's own instruction, while re-snapshotting after a lost slot is explicitly left to topics 13-14, not attempted here.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

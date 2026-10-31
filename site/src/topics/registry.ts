@@ -6555,6 +6555,26 @@ export const TOPICS: TopicMeta[] = [
       "PostgreSQL's slot is a convenience with a sharp edge: it never lets go of what its consumer has not confirmed. When a consumer stalls, that edge is the production disk.",
   },
   {
+    id: 'de.replication-slot-wal-retention',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/replication-slot-wal-retention',
+    title: 'Replication-slot WAL retention incidents',
+    syllabusTitle: 'Replication-slot WAL retention incidents',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['slot-wal-retention-incident', 'slot-safety-valves'],
+    uses: ['logical-decoding-slot', 'wal-lsn-fsync', 'vacuum-xid-wraparound'],
+    declared: [],
+    bridge:
+      "PostgreSQL's slot is a convenience with a sharp edge: it never lets go of what its consumer has not confirmed. This topic is that edge as a production incident: how a stalled or merely quiet consumer fills the disk, and the heartbeats and limits that stop it.",
+    handoff:
+      "A slot protects a position in the log. But a new consumer has no position yet and needs the table as it stands now, then every change after exactly that moment, with no gap and no overlap. How that handover works is the next topic.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
