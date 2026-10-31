@@ -1,0 +1,84 @@
+{
+  "topic": "de.tsdb-vs-warehouse-vs",
+  "steps": [
+    {
+      "lines": [
+        "A vendor walks through a demo where one single database handles every kind of question a customer could throw at it.",
+        "A real industrial plant's own traffic never looks like that demo.",
+        "It splits into several genuinely different shapes of question, and no one query shape covers all of them at once."
+      ]
+    },
+    {
+      "lines": [
+        "Lay out the real shapes side by side: asking for the single newest reading, asking for a stretch of one sensor's history, asking for an average across every sensor at once, and asking to match a reading against a business record like a work order.",
+        "All four of those get measured directly against the exact same slice of data.",
+        "That turns the comparison into something checked, not something argued about."
+      ]
+    },
+    {
+      "lines": [
+        "An engine built in the Prometheus style is exactly tuned for that first kind of workload, the operational-metrics one.",
+        "Its own documentation doesn't hide where that design stops working, either.",
+        "It says plainly that a single node like this isn't clustered, isn't replicated, and can't be counted on to survive a drive or a node going down."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "Right now, that join between a sensor reading and a business record only has to look across one short stretch of history.",
+        "As the plant keeps years of history around instead of just that short stretch, does running that same join get any cheaper, or does it get more expensive?"
+      ],
+      "answer": [
+        "Neither answer by itself is quite right.",
+        "It isn't that the join simply gets cheaper or simply gets pricier as history grows — it's that which engine is the right one to run it on changes underneath the question entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Three separate high-rate analytics engines each build their own answer to the exact same last-value problem.",
+        "One leans on a sparse index over its sorted blocks, another on a three-layer storage design, and a third on a cache that simply keeps the newest reading sitting in memory.",
+        "Three different vocabularies, but underneath, the same bet: make that one common lookup cheap no matter how it's asked."
+      ]
+    },
+    {
+      "lines": [
+        "Point that same join, between a sensor reading and a business record, at the full stretch of history instead of a short window.",
+        "It still runs successfully, on the same kind of engine a table format sitting over object storage would use underneath anyway.",
+        "That's the row of the matrix a lakehouse-style engine was actually built to win."
+      ]
+    },
+    {
+      "lines": [
+        "Multiply how many series there are, by how often each one is sampled, by how long it's kept, by how many bytes each reading costs, and price the result at one single documented rate per gigabyte.",
+        "Run that same arithmetic for a short, recent hot tier and for a long-lived historical tier.",
+        "Even priced at the exact same rate per gigabyte, those two tiers land on two very different monthly totals, because one of them is simply holding so much more."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture the pipeline that moves data from that hot tier out into the long-term tier, but only after some delay.",
+        "That delay leaves a window where the exact same reading sits in both tiers at once, fully duplicated.",
+        "And a reading that shows up late, after its own day's export has already run, never makes it out of the hot tier at all unless something goes back and re-sends it."
+      ]
+    },
+    {
+      "lines": [
+        "Put the whole picture together: a matrix measured on the same data, an operational-metrics engine owning its own row, three high-rate engines converging on one shared shortcut.",
+        "Add a lakehouse-style engine owning the join, a cost chain built from that same arithmetic, and a tiering boundary that quietly duplicates or quietly drops instead of failing loudly.",
+        "None of those engines is the single best time-series engine in general.",
+        "Each one is simply the best engine for one named kind of question, held for one named length of time."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "Say you're handed nothing but a kind of question and a length of time to keep the answer around for, no vendor name attached at all.",
+        "Working only from the matrix itself, can you say which tier that workload actually belongs on, without ever having to guess at any vendor's own marketing claim?"
+      ],
+      "answer": [
+        "You can.",
+        "The matrix's own rows are already organized by exactly those two things, the kind of question and how long the answer needs to be kept — naming just those two is enough, on its own, to read off the tier that question belongs on."
+      ]
+    }
+  ]
+}

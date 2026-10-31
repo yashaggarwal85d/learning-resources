@@ -6745,6 +6745,26 @@ export const TOPICS: TopicMeta[] = [
       "Four engines, four bets. The next topic is the decision: given a write rate, a query shape, a retention and a budget, when do you want a time-series database, when a warehouse and when the lakehouse?",
   },
   {
+    id: 'de.tsdb-vs-warehouse-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/tsdb-vs-warehouse-vs',
+    title: 'TSDB vs warehouse vs lakehouse',
+    syllabusTitle: 'TSDB vs warehouse vs lakehouse',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['tsdb-vs-warehouse-vs-lakehouse-decision', 'access-path-matrix-last-range-cross-join', 'hot-cold-tiering-with-routing', 'tier-boundary-failure-modes'],
+    uses: ['serving-store-by-query-shape', 'capacity-estimate-chain', 'tiering-retention-designed-up-front', 'three-alternatives-with-costs', 'prometheus-head-wal-block-compaction', 'influxdb3-wal-parquet-flow', 'hypertable-chunks-columnstore', 'scaled-out-tsdb-object-store-pattern', 'retention-tiers-query-routing', 'mergeable-rollup-never-store-average', 'series-is-metric-plus-label-set', 'scan-based-columnar-tsdb-tradeoff', 'compression-ratio-is-data-property', 'warehouse-lake-lakehouse-history'],
+    declared: [],
+    bridge:
+      "Four engines, four bets. This topic is the decision: given a write rate, a query shape, a retention and a budget, when do you want a time-series database, when a warehouse and when the lakehouse, and how do you tier between them so that nobody has to know?",
+    handoff:
+      "Every store in that decision assumes the points going in are worth keeping. The next topic is about the ones that are not: a sensor frozen at one value, a spike no process could produce, a scale that changed after a firmware update, and the check that quarantines instead of deleting.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
