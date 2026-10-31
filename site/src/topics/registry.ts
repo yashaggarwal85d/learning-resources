@@ -5626,4 +5626,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Three priced tiers on a cost curve are a negotiation finished, not a decision made — someone outside engineering still has to actually pick one, and the next topic is how that choice gets explained to them in the terms they use to decide, not the terms that built the curve.",
   },
+  {
+    id: 'de.communicating-tradeoffs-decision-makers',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
+    title: 'Communicating trade-offs to decision-makers',
+    syllabusTitle: 'Communicating trade-offs to decision-makers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['cost-per-freshness-tier', 'dominant-cost-lever', 'executive-summary-vs-deep-dive'],
+    uses: ['slo-tiering', 'data-contract'],
+    declared: [],
+    bridge:
+      "Three priced tiers on a cost curve are a negotiation finished, not a decision made — someone outside engineering still has to actually pick one, and this topic is how that choice gets explained to them in the terms they use to decide, not the terms that built the curve.",
+    handoff:
+      "A tier gets chosen, and the one-page summary that got it chosen is read once and then forgotten the moment the meeting ends. The decision itself — which tier, why, and what would change the team's mind later — still has to survive the person who made it leaving the room, which is the next topic's own subject.",
+  },
 ];
