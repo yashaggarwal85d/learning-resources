@@ -1,0 +1,111 @@
+{
+  "topic": "de.task-retry-fetch-failure-speculation",
+  "syllabus": [
+    {
+      "clause": "task retry up to spark.task.maxFailures; fetch failures that resubmit the parent shuffle-map stage; executor loss taking shuffle files with it (external shuffle service, graceful decommissioning with block migration on Kubernetes); speculative execution and its hazard with non-idempotent sinks.",
+      "at": [
+        { "step": "Reveal: the baseline -- given enough tries, the job finishes" },
+        { "step": "Reveal: it gives up -- the job aborts this time" },
+        { "step": "Elaborate: why -- a retry limit is a fixed number of chances" },
+        { "step": "Reveal: far more -- the entire earlier stage reruns" },
+        { "step": "Elaborate: why -- there's no partial fix available" },
+        { "deep": "Speculative execution and non-idempotent sinks" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "TaskSetManager.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "if any particular task fails maxTaskFailures times, the entire task set is aborted",
+          "at": [
+            { "step": "Reveal: the baseline -- given enough tries, the job finishes" },
+            { "step": "Reveal: it gives up -- the job aborts this time" }
+          ]
+        },
+        {
+          "item": "the scheduler's own literal log line names the exact failure count that triggered the abort",
+          "at": [{ "step": "Reveal: it gives up -- the job aborts this time" }]
+        },
+        {
+          "item": "a fetch failure (FetchFailed) is its own distinct case in task-result handling, separate from an ordinary task exception",
+          "at": [{ "step": "Reveal: far more -- the entire earlier stage reruns" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark \"Configuration\" docs",
+      "items": [
+        {
+          "item": "speculative execution re-launches a slow task as a second, independent attempt alongside the original",
+          "at": [{ "deep": "Speculative execution and non-idempotent sinks" }]
+        },
+        {
+          "item": "graceful decommissioning migrates both RDD blocks and shuffle blocks to a remote executor before the executor shuts down",
+          "at": [{ "deep": "Speculative execution and non-idempotent sinks" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark \"Running Spark on Kubernetes\" docs",
+      "items": [
+        {
+          "item": "Kubernetes has its own decommissioning script hook, and an external shuffle service is not yet available on Kubernetes at this Spark version",
+          "at": [{ "deep": "Speculative execution and non-idempotent sinks" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A non-idempotent sink (an append, an external counter increment, a non-transactional write) is genuinely unsafe under speculation specifically because both the original and the speculative copy of a task can perform that side effect independently -- unlike an idempotent sink (an overwrite, a deduplicated upsert), where either copy winning the race produces the same final result.",
+        "at": [{ "out": "the non-idempotent-vs-idempotent sink distinction named only; this topic's own examples.py measures task retry and fetch-failure stage resubmission, not a live speculative double-write" }]
+      },
+      {
+        "item": "spark.speculation.quantile (default 0.9) and spark.speculation.multiplier (default 3) together gate when speculation actually triggers -- most tasks in a stage must already be done, and a straggler must be several times slower than the already-finished median, before Spark considers launching a speculative copy at all, which is why a small or evenly-paced job may never speculate even with speculation enabled.",
+        "at": [{ "out": "the quantile/multiplier gating thresholds named only; this topic's own examples.py does not reproduce a live speculative relaunch, since this sandbox's own scheduler did not reliably trigger one across repeated attempts" }]
+      },
+      {
+        "item": "spark.excludeOnFailure (the health tracker referenced directly in TaskSetManager's own fetch-failure handling) can exclude the executor or node that produced a fetch failure from receiving further tasks, a separate mitigation from the stage resubmission this topic's own examples.py measures -- excluding a bad node and resubmitting the stage are two different responses to the same fetch failure.",
+        "at": [{ "out": "the health tracker's own executor/node exclusion on fetch failure named only; this topic's own examples.py measures the stage resubmission itself, not the exclusion mechanism" }]
+      },
+      {
+        "item": "The external shuffle service, where available (YARN, standalone with the service enabled), lets a reduce task keep reading an executor's shuffle output even after that executor process has exited -- the specific mechanism this topic's own sourced Kubernetes page admits isn't yet available there, which is exactly why graceful decommissioning's own block migration matters more on Kubernetes than on a cluster manager that does offer the service.",
+        "at": [{ "out": "the external shuffle service's own role on YARN/standalone named only, contrasting with Kubernetes's own lack of it (sourced directly); this topic's own examples.py reproduces a fetch failure via direct file deletion in local mode, which has neither mechanism" }]
+      },
+      {
+        "item": "spark.executor.decommission.killInterval and spark.executor.decommission.forceKillTimeout bound how long Spark waits for block migration to finish before forcibly killing a decommissioning executor anyway -- naming the real time pressure graceful decommissioning operates under, distinct from this topic's own measured claims about ordinary task retry and fetch failure.",
+        "at": [{ "out": "the decommission timeout configs named only; this topic's own examples.py does not exercise decommissioning directly" }]
+      },
+      {
+        "item": "spark.speculation.task.duration.threshold exists specifically because the ordinary quantile/multiplier gating fails on a stage with very few tasks (too few for a meaningful median) -- a special-case speculation trigger based on an absolute duration rather than a relative one, which is also likely why this topic's own small-scale speculation probes (8-32 tasks) never triggered a relaunch under the ordinary gating alone.",
+        "at": [{ "out": "the duration-threshold special case for small stages named only, as the likely reason this topic's own probes could not reliably reproduce a live speculative relaunch; this topic's own examples.py does not set this config" }]
+      },
+      {
+        "item": "A task retry (within maxTaskFailures) and a stage resubmission (from a fetch failure) show up differently in an event log: a retry is a new task attempt within the same stage attempt, while a fetch-failure resubmission is an entirely new stage attempt containing new attempts of every task in that stage -- the exact distinction this topic's own outcome (tracing an event log) is built around.",
+        "at": [{ "out": "the event-log-level distinction between a task retry and a stage resubmission named explicitly, directly matching this topic's own stated learning outcome; this topic's own examples.py confirms the distinction via the REST API's stage-attempt structure rather than parsing a raw event log file" }]
+      },
+      {
+        "item": "spark.speculation.efficiency.enabled and its related configs (processRateMultiplier, longRunTaskFactor), added in Spark 3.4, refine naive speculation by checking whether a slow task's low *data processing rate* (not just its wall-clock duration) justifies a speculative copy -- avoiding wasted speculative relaunches of tasks that are merely handling more data, not actually stuck.",
+        "at": [{ "out": "speculation efficiency's own data-rate-aware refinement named only; this topic's own examples.py does not exercise this refinement" }]
+      },
+      {
+        "item": "dynamic allocation on Kubernetes requires spark.dynamicAllocation.shuffleTracking.enabled specifically because Kubernetes doesn't support an external shuffle service, the same gap this topic's own sourced Kubernetes page names directly -- without shuffle tracking, Spark could remove an executor that's still holding shuffle data other tasks need.",
+        "at": [{ "out": "shuffle tracking as Kubernetes's own workaround for lacking an external shuffle service named only, cross-referencing this topic's own sourced admission; this topic's own examples.py does not exercise dynamic allocation" }]
+      },
+      {
+        "item": "spark.kubernetes.executor.missingPodDetectDelta is a distinct failure-detection path from a fetch failure or a GC-induced heartbeat timeout: it's the delay Kubernetes-specific pod-polling uses before concluding an executor's own pod is simply gone from the cluster, rather than merely slow or unresponsive -- a third way an executor's loss gets detected, beyond the heartbeat-timeout path the previous topic named.",
+        "at": [{ "out": "pod-polling-based executor-loss detection on Kubernetes named only, as a third detection path distinct from the previous topic's own heartbeat-timeout path; this topic's own examples.py does not run on Kubernetes" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
