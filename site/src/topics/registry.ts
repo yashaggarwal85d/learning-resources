@@ -7567,6 +7567,26 @@ export const TOPICS: TopicMeta[] = [
       "Choosing a platform and its services is a decision made once, or rarely. Keeping that choice reproducible and affordable over hundreds of later changes is a discipline in its own right — infrastructure as code and FinOps, which open the next section.",
   },
   {
+    id: 'de.iac-state-plan-drift',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/iac-state-plan-drift',
+    title: 'IaC state, plan and drift',
+    syllabusTitle: 'IaC state, plan and drift',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['iac-state-plan-apply-drift', 'module-boundary-platform-unit', 'policy-as-code-gate'],
+    uses: ['short-lived-federated-credential', 'passrole-escalation-boundary', 'catalog-credential-vending'],
+    declared: ['basic familiarity with version control and declarative configuration'],
+    bridge:
+      "Choosing a platform is a decision made once. Keeping that choice reproducible, reviewable and safe to change hundreds of times after is infrastructure as code — the discipline this topic teaches from its single most important fact: the tool diffs against its own state file, not the live cloud, and that file can be corrupted or lied to.",
+    handoff:
+      "A reproducible platform is the precondition for answering what it actually costs and attributing that cost fairly — which is where this section, and the chapter's own cost thread from 10.1, converge.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
