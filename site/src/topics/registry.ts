@@ -7311,6 +7311,26 @@ export const TOPICS: TopicMeta[] = [
       "Every one of these services runs on compute somewhere, billed either by the second it's reserved or by the request it serves — and that split, serverless against provisioned, is the section's last and most consequential cost question.",
   },
   {
+    id: 'de.serverless-vs-provisioned-compute',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/serverless-vs-provisioned-compute',
+    title: 'Serverless vs provisioned compute economics',
+    syllabusTitle: 'Serverless vs provisioned compute economics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['serverless-provisioned-breakeven', 'billing-granularity-comparison'],
+    uses: ['cloud-cost-four-dimensions', 'cross-cloud-service-rosetta', 'catalog-credential-vending'],
+    declared: [],
+    bridge:
+      "Every managed table service in the last topic runs on compute billed one of two ways: reserved by the second, or consumed by the request. This topic makes that choice with real numbers instead of a guess — break-even utilisation, not vibes.",
+    handoff:
+      "This section mapped and priced the cloud's own data services in general. One specific platform, Databricks, is common enough and deep enough that the syllabus gives it a full section of its own, starting with its compute model and the vectorised engine underneath it.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
