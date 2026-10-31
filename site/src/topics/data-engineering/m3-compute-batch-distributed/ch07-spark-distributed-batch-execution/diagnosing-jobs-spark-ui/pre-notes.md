@@ -1,0 +1,10 @@
+- **Stage** -- a set of tasks that run the same computation across all partitions without a shuffle in between; a job is a tree of stages.
+- **Task** -- the unit of work that runs one stage's computation on one partition.
+- **Skew** -- a data distribution where one partition holds far more rows (or far more expensive rows) than the others, so one task in a stage runs much longer than its peers.
+- **Shuffle spill** -- shuffle data that didn't fit in the memory budgeted for it, so some of it was written out to disk and read back.
+- **GC (garbage collection)** -- the JVM reclaiming memory no longer referenced by live objects; it pauses the thread doing it while it runs.
+- **Scheduler delay** -- the time a task spends waiting to be scheduled and to have its result sent back, separate from the time it actually spends computing.
+- **Driver** -- the single process that plans a Spark application and coordinates its executors; code that runs there (not inside a stage) doesn't show up in any stage's own metrics.
+- **Event log / History Server** -- a persisted record of everything the Spark UI shows, replayable after the application has already finished.
+- **REST API** -- the same stage/task/executor data the Spark UI renders, available as JSON at `/api/v1/applications/<id>/...` on the driver's UI port.
+- **Small files problem** -- too many tiny input partitions, where the fixed cost of scheduling and running each task dwarfs the real work it does.

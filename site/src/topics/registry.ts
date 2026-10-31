@@ -7380,6 +7380,25 @@ export const TOPICS: TopicMeta[] = [
       "Section 7.3's last topic ties every symptom in this section together: the Spark UI itself, the one instrument that actually shows spill, GC, retries and skew as evidence rather than theory.",
   },
   {
+    id: 'de.diagnosing-jobs-spark-ui',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/diagnosing-jobs-spark-ui',
+    title: 'Diagnosing jobs from the Spark UI',
+    syllabusTitle: 'Diagnosing jobs from the Spark UI',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-ui-diagnosis-method'],
+    uses: ['spark-skew-diagnosis', 'spark-spill-mechanics', 'spark-gc-symptoms', 'spark-task-retry-fetch-failure'],
+    bridge:
+      'Every failure mode in this section — spill, the cost of caching, GC, retries and resubmissions — leaves a trace in exactly one place. This closing topic is that place, the Spark UI, taught as a fixed triage order rather than five separate tools.',
+    handoff:
+      "Section 7.3 closes the chapter's batch-execution half: how a job runs, shuffles, spends memory and fails. The next section is the same engine asked to do something structurally different: compute incrementally, forever, over data that never finishes arriving.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
