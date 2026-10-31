@@ -6045,6 +6045,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything so far assumed one job running once. The next section turns to the same shuffle and the same operators under a harder constraint: a partition that isn't evenly sized, which is where most real jobs actually get slow.",
   },
   {
+    id: 'de.partition-sizing-repartition-coalesce',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/partition-sizing-repartition-coalesce',
+    title: 'Partition sizing, repartition and coalesce',
+    syllabusTitle: 'Partition sizing, repartition and coalesce',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-partition-sizing', 'spark-repartition-vs-coalesce'],
+    uses: ['spark-shuffle-partitions-config', 'spark-shuffle-mechanics'],
+    declared: [],
+    bridge:
+      "Section 7.1 ended on the one path that escapes Spark's own execution machinery. This section returns to that machinery's biggest single cost, the shuffle, starting at its lowest lever: how many pieces the work is cut into in the first place.",
+    handoff:
+      "Sizing says how many partitions and how big. It says nothing about which partitioner decided which row lands in which one — the next topic's own question.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
