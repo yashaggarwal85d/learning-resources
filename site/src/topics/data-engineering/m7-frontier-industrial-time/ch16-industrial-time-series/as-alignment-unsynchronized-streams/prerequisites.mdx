@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the join and signal material this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" title="Resampling and gap filling" domain="data-engineering" host="de.resampling-gap-filling" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Timestamps, clocks and time zones in telemetry" domain="data-engineering" host="de.timestamps-clocks-time-zones" by="this chapter, for the clock-offset uncertainty this topic's tolerance bound depends on" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="pandas.merge_asof" href="https://pandas.pydata.org/docs/reference/api/pandas.merge_asof.html" by="pandas documentation">The backward-match, tolerance, and by-column semantics this topic runs directly.</Resource>
+  <Resource kind="reading" title="AsOf Join" href="https://duckdb.org/docs/2.0/guides/sql_features/asof_join.html" by="DuckDB documentation">The ASOF JOIN syntax and the left-side-shrinks, never-grows guarantee this topic runs directly.</Resource>
+  <Resource kind="reading" title="JOIN Clause (ASOF)" href="https://clickhouse.com/docs/en/sql-reference/statements/select/join" by="ClickHouse documentation">Named and quoted for its own closest-match semantics (sourced-only, not run).</Resource>
+</ul>
+
+</section>

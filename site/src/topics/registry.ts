@@ -6625,6 +6625,26 @@ export const TOPICS: TopicMeta[] = [
       "Resampling puts one series on a grid. The question that matters more often is across series: what was the temperature at the moment the pressure spiked, when the two were never sampled together? The next topic is the as-of join.",
   },
   {
+    id: 'de.as-alignment-unsynchronized-streams',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/as-alignment-unsynchronized-streams',
+    title: 'As-of alignment of unsynchronized streams',
+    syllabusTitle: 'As-of alignment of unsynchronized streams',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['telemetry-asof-join', 'asof-tolerance-staleness-bound', 'asof-interpolation-lookahead', 'asof-partition-key'],
+    uses: ['as-of-join', 'point-in-time-join-plans', 'temporal-leakage', 'device-gateway-ingest-timestamps', 'event-time-source-decision', 'aggregate-by-signal-type', 'gap-fill-locf-interpolate-max-gap', 'regular-vs-irregular-series', 'equipment-hierarchy-dimension'],
+    declared: [],
+    bridge:
+      "Resampling puts one series on a grid. The question that matters more often is across series: what was the temperature at the moment the pressure spiked, when the two were never sampled together? This topic is the as-of join on telemetry, with the tolerance that stops it matching something stale.",
+    handoff:
+      "Joining raw series is fine for a spike; it is too slow and too large for a quarter. The next topic is how to aggregate over time so the answer stays correct when it is rolled up again, and how to keep recent data in detail and old data in summary.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
