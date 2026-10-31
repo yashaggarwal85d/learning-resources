@@ -1,15 +1,17 @@
-## ISA-88: The Framework for Smarter Batch Process Control
+## ISA-88: The Framework for Smarter Batch Process Control (named, not quoted)
 
 URL: https://www.isa.org/standards-and-publications/isa-standards/isa-88-standards
-Version: ISA.org standard-series page, retrieved 2026-10-31
+Version: ISA.org standard-series page — fetched once during this chapter's research, then deleted; not quoted.
 
-The standard's own description of what Part 1 establishes and what the recipe parts build on.
-
-> This foundational standard establishes a consistent set of models and terminology used in batch control systems. It supports communication and understanding across cross-functional teams, including process engineers, control engineers and IT personnel. The standard is technology-agnostic and applies to a wide range of industries using batch processing.
-
-> This standard expands on the recipe structure introduced in earlier parts by defining general and site-level recipe models. This document provides a standardized approach for creating and managing recipes that can be used across multiple locations or facilities, ensuring batch production consistency, repeatability and scalability.
-
-Contents: the ISA-88 part structure (Part 1 models and terminology, Part 2 data structures, Part 3 general/site recipe models, Part 4 batch production records, technical reports on machine/unit states and recipe presentation formats); no internal model detail (physical/procedural hierarchy) beyond naming that Part 1 defines it.
+**Correction, 2026-10-31:** this SOURCES.md originally quoted ISA's own standard-series page
+verbatim (Part 1's own description, and the recipe-structure sentence from the later parts). ISA's
+standards pages carry a site-wide notice prohibiting the entry of their content into any AI tool,
+discovered while researching this chapter's topic 6 and confirmed on this exact page. Those
+quotes are removed. This topic now **names ISA-88 bibliographically only** (the part structure:
+Part 1 models and terminology, Part 2 data structures, Part 3 general/site recipe models, Part 4
+batch production records), and keeps the underlying point (a consistent batch-control vocabulary
+across cross-functional teams, and a standardized, reusable recipe structure across facilities)
+as this topic's own stated summary of what the standard does, not a quoted sentence.
 
 ## ISA-88 (Wikipedia)
 
