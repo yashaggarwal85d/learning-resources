@@ -6311,6 +6311,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything about state so far assumed it mostly lives on local disk or in memory, on the same machine that processes it. Flink 2.x changes that assumption architecturally, and what it buys and costs is the next topic.",
   },
   {
+    id: 'de.disaggregated-state-flink',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/disaggregated-state-flink',
+    title: 'Disaggregated state in Flink 2.x',
+    syllabusTitle: 'Disaggregated state in Flink 2.x',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['forst-disaggregated-state', 'async-state-api-ordering'],
+    uses: ['state-backend-comparison', 'key-group-rescaling-unit', 'checkpoint-barrier-chandy-lamport'],
+    declared: [],
+    bridge:
+      "Every state backend so far kept its authoritative copy close to the machine doing the processing. ForSt inverts that on purpose, and this topic is what that inversion buys — and what a latency-sensitive job loses by taking it.",
+    handoff:
+      "Everything about Flink so far has been at the level of operators and state. A whole other way to use Flink treats the stream as a changing SQL table instead — and that layer is built directly on top of the runtime and state model just covered.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
