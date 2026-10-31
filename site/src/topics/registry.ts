@@ -5285,6 +5285,26 @@ export const TOPICS: TopicMeta[] = [
       "Every mechanism in this chapter so far protected a write. The next section turns to the read side most of that protection exists for in the first place: caching, starting with the patterns and eviction policies every cache is built from.",
   },
   {
+    id: 'de.cache-patterns-eviction-policies',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/cache-patterns-eviction-policies',
+    title: 'Cache patterns and eviction policies',
+    syllabusTitle: 'Cache patterns and eviction policies',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cache-patterns-eviction'],
+    uses: ['buffer-pool-pin-unpin'],
+    declared: [],
+    bridge:
+      "Every mechanism in this chapter so far protected a write. This section turns to the read side most of that protection exists for in the first place: caching, starting with the real patterns (cache-aside, read-through, write-through, write-behind) and eviction policies every cache is built from — the same eviction problem §5.1's buffer pool already solved once, now solved again at the application layer.",
+    handoff:
+      "An eviction policy alone says nothing about whether a cached value is still correct. The next topic is the harder problem: cache consistency and invalidation.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -5383,6 +5403,26 @@ export const TOPICS: TopicMeta[] = [
       "Fan-out can produce thousands of task instances that all want to run at once. This topic is what decides how many actually do, in what order, and how a fragile source is protected from being overrun by exactly the kind of fan-out the last topic showed.",
     handoff:
       "A task waiting in a pool for a slot still occupies a worker process while it waits. Some tasks wait for hours, not seconds — for an external job, or a sensor polling an API. Holding a worker that whole time is wasteful, and there is a mechanism built specifically to avoid it.",
+  },
+  {
+    id: 'de.deferrable-tasks-triggerer',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/deferrable-tasks-triggerer',
+    title: 'Deferrable tasks and the triggerer',
+    syllabusTitle: 'Deferrable tasks and the triggerer',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['deferrable-task-triggerer-model', 'trigger-serialisation-failure'],
+    uses: ['de.concurrency-controls-pools-queues', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "A pool bounds how many tasks run at once, but a task waiting in poke mode for an external job still occupies a worker the whole time it waits. This topic is the mechanism built to avoid exactly that: a deferred task that gives its worker slot back and lets a separate, lightweight process do the waiting.",
+    handoff:
+      "A deferred task still waits for something specific it already knows to watch for. Some pipelines need the opposite: a run triggered not by a clock or a known wait, but by data itself becoming available somewhere else.",
   },
   {
     id: 'de.driver-executors-task-hierarchy',
@@ -6405,6 +6445,26 @@ export const TOPICS: TopicMeta[] = [
       "OEE is built from events: a machine changes state and a part is counted. Some plant data is not an event at all but a running total that only ever goes up. The next topic is the energy and utility meter, whose raw reading is a counter, and what it takes to turn a counter into consumption.",
   },
   {
+    id: 'de.energy-utility-metering',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/energy-utility-metering',
+    title: 'Energy and utility metering',
+    syllabusTitle: 'Energy and utility metering',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cumulative-counter-to-interval-consumption', 'counter-reset-rollover-meter-swap', 'power-vs-energy-integration', 'shared-utility-allocation-rule', 'energy-per-unit-kpi'],
+    uses: ['equipment-hierarchy-dimension', 'hierarchy-as-of-versioning', 'oee-availability-performance-quality', 'integer-overflow', 'timestamp-resolution', 'measure-additivity-classes', 'bounded-reprocessing-window'],
+    declared: [],
+    bridge:
+      "OEE is built from events: a machine changes state and a part is counted. Some plant data is not an event at all but a running total that only ever goes up. This topic is the energy and utility meter, whose raw reading is a counter, and what it takes to turn a counter into consumption you can add up.",
+    handoff:
+      "The meter, the PLC and the MES each hold a piece of the plant's data, and each sits in a network that must never be disturbed by a data platform. The next topic is the boundary between the plant floor and the rest of the company: where the networks are segmented, who owns each copy of the data, and how to read without touching control.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
@@ -6523,5 +6583,25 @@ export const TOPICS: TopicMeta[] = [
       "A row group is just column chunks, and a column chunk is just pages of values rarely stored as plain, unencoded bytes. This topic is exactly how they're encoded: dictionary, RLE/bit-packing, delta and byte-stream-split, each measured directly on a real column.",
     handoff:
       "Everything encoded so far has been a flat column. The next topic is what happens the moment a column is optional, repeated or nested — Dremel's own shredding model.",
+  },
+  {
+    id: 'de.nested-data-repetition-definition',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/nested-data-repetition-definition',
+    title: 'Nested data: repetition and definition levels',
+    syllabusTitle: 'Nested data: repetition and definition levels',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['dremel-shredding-levels'],
+    uses: ['parquet-file-anatomy', 'parquet-column-encodings'],
+    declared: [],
+    bridge:
+      "Everything encoded so far has been a flat column. This topic is what happens the moment a column is optional, repeated or nested: Dremel's own record-shredding model, traced by hand from a real nested record to flat columns and back.",
+    handoff:
+      "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and which rows it can skip entirely. That's data skipping.",
   },
 ];
