@@ -1,0 +1,92 @@
+{
+  "topic": "de.flink-runtime-architecture",
+  "steps": [
+    {
+      "lines": [
+        "One step downstream quietly slows down, nothing else about the pipeline changes at all.",
+        "No error pops up anywhere. No alert fires. The logs stay completely silent about it.",
+        "And yet throughput for the whole thing just collapses, right then, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Getting one step right is one problem, already solved, several times over by now.",
+        "Running that step, continuously, for real, at real scale, is a completely different one.",
+        "So: what's actually doing the running, underneath all of this?"
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Somebody asks for more parallel work than the cluster actually has room for right now.",
+        "Does it run anyway, just a little slower than hoped, or does something simply refuse?"
+      ],
+      "answer": [
+        "It refuses, flat out, no partial version offered.",
+        "What's available to run on is a fixed, countable thing, not a flexible, elastic one.",
+        "Ask for more than that count, and there's nowhere left to actually put the extra work."
+      ]
+    },
+    {
+      "lines": [
+        "One piece plans the whole thing out and keeps track of where every part stands.",
+        "A separate set of workers actually does the work, each one offering a fixed amount of room.",
+        "Add up every worker's room, and that's the hard ceiling on how much can run at once."
+      ]
+    },
+    {
+      "lines": [
+        "Picture several small steps standing right next to each other, each handing off to the next.",
+        "Fuse those neighbors into one single piece, and that handoff in between just disappears.",
+        "Leave them separate instead, and every single record pays for that same handoff, over and over."
+      ]
+    },
+    {
+      "lines": [
+        "Whoever's receiving hands out a small, limited number of permission slips to whoever's sending.",
+        "Run out of slips to hand out, and the sender simply has to stop, with no message exchanged at all.",
+        "Stop at one spot, and whoever feeds that spot runs out of room too. It just spreads backward."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "An older way of running one job on its very own, temporary setup got taken away for good.",
+        "What's actually standing in for that now, running a single job's own code on the cluster?"
+      ],
+      "answer": [
+        "One dedicated setup, but a different shape than before.",
+        "A job's own code now runs directly on the cluster itself, not off on the side somewhere.",
+        "One cluster, one job, nothing shared with anybody else's work."
+      ]
+    },
+    {
+      "lines": [
+        "That's the one shape this whole thing settled on, once the older option disappeared for good.",
+        "A single job's own code runs right there on the cluster, with nothing shared between jobs.",
+        "The older, separate-setup way is gone outright. This replaced it, stated plainly, not softened."
+      ]
+    },
+    {
+      "lines": [
+        "The very same engine underneath runs two genuinely different kinds of work.",
+        "One kind never ends. The other kind has a clear beginning and a clear end.",
+        "For that second kind, how much to run in parallel can be decided from how much data actually showed up."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The hard ceiling that really held. The handoff that really disappeared, and the cost that really dropped.",
+        "The stall that really spread backward, one step behind the last, and the sizing that really adjusted itself."
+      ]
+    },
+    {
+      "lines": [
+        "So: a planner, a fixed set of workers, and a ceiling nobody can simply ask their way past.",
+        "Fuse neighbors together, and a real cost just disappears, with nothing else having to change.",
+        "A slowdown that needs no message to spread, one clear shape for a job, one engine for both kinds of work."
+      ]
+    }
+  ]
+}
