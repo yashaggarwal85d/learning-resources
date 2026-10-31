@@ -6145,6 +6145,26 @@ export const TOPICS: TopicMeta[] = [
       "These two strategies are what AQE, next, is allowed to rewrite at runtime once real shuffle statistics exist — the planner's static choice meeting the evidence a static plan can't have.",
   },
   {
+    id: 'de.adaptive-query-execution-aqe',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/adaptive-query-execution-aqe',
+    title: 'Adaptive Query Execution (AQE)',
+    syllabusTitle: 'Adaptive Query Execution (AQE)',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-aqe'],
+    uses: ['spark-sort-merge-join', 'spark-shuffled-hash-join', 'spark-shuffle-partitions-config'],
+    declared: [],
+    bridge:
+      'The previous two topics were the planner\'s static choices. This topic is Spark revisiting those choices mid-job, once the first shuffle\'s real statistics exist to revisit them with.',
+    handoff:
+      "AQE fixes some skew after the fact. The next topic is skew itself — how to recognise it as the cause in the first place, and the remedies in the order they're worth trying, AQE being only the first.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
