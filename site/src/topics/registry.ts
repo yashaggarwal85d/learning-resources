@@ -5583,6 +5583,26 @@ export const TOPICS: TopicMeta[] = [
       "Membership ('is it in there') is one question a tiny structure can answer approximately. The next topic is a completely different question answered the same way: how many distinct values are there, without storing any of them.",
   },
   {
+    id: 'de.hyperloglog-distinct-counting',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/hyperloglog-distinct-counting',
+    title: 'HyperLogLog and distinct counting',
+    syllabusTitle: 'HyperLogLog and distinct counting',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.6' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['hyperloglog-distinct-counting'],
+    uses: ['probabilistic-membership-filters'],
+    declared: [],
+    bridge:
+      "Membership is one question a tiny structure can answer approximately. This topic is a completely different question answered the same way: how many distinct values are there, built and measured for real against an exact count on a Zipf-skewed stream.",
+    handoff:
+      "Counting distinct values is one single number a sketch can approximate. The next, closing topic is a sketch for an entire distribution at once: a quantile.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
