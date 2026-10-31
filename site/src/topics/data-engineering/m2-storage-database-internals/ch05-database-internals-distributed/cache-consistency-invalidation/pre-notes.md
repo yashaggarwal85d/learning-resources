@@ -1,0 +1,5 @@
+- **Cache-aside, from the last topic**: the application owns the miss path, checking the cache first and writing a loaded value back on a miss. *Where you meet it:* the hook and the race reproduced for real, both run against this course's own cache-aside layer.
+- **Idempotent operation**: one whose effect is the same whether it runs once or is repeated. *Where you meet it:* the delete-vs-update reveal, the reason delete is chosen.
+- **CDC (change data capture), from an earlier topic**: reading a database's own commit or replication log to react to changes, rather than having application code announce them. *Where you meet it:* the CDC-driven-invalidation reveal, applied here to cache invalidation specifically.
+- **Eventual consistency**: a system that guarantees every copy converges given enough time, without promising any copy is current right now. *Where you meet it:* the per-field staleness reveal, the default this topic contrasts against a "critical" read.
+- **Race condition**: a result that depends on the order two operations happen to interleave in, rather than on either operation alone. *Where you meet it:* this whole topic's own hook and its fix.

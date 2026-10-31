@@ -5305,6 +5305,26 @@ export const TOPICS: TopicMeta[] = [
       "An eviction policy alone says nothing about whether a cached value is still correct. The next topic is the harder problem: cache consistency and invalidation.",
   },
   {
+    id: 'de.cache-consistency-invalidation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/cache-consistency-invalidation',
+    title: 'Cache consistency and invalidation',
+    syllabusTitle: 'Cache consistency and invalidation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cache-consistency-invalidation'],
+    uses: ['cache-patterns-eviction', 'physical-vs-logical-replication'],
+    declared: [],
+    bridge:
+      "An eviction policy alone says nothing about whether a cached value is still correct. This topic is the harder problem: the delete-after-write race reproduced directly, and the real fixes (versioned keys, leases, CDC-driven invalidation) production systems actually use.",
+    handoff:
+      "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. The next topic is one real engine's actual internals: Redis and Valkey.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
