@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the design this topic has to survive failure
+
+<ul class="resources">
+  <Resource kind="reel" title="Storage, layout and lifecycle decisions" domain="data-engineering" host="de.failure-mode-analysis-recovery">What system of record, store and layout this topic's failure table and recovery plan have to hold up for.</Resource>
+  <Resource kind="reel" title="Correctness under replay and late data" domain="data-engineering" host="de.failure-mode-analysis-recovery">A pipeline correct under replay and late data can still simply be down — this topic enumerates those failures.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Addressing Cascading Failures" href="https://sre.google/sre-book/addressing-cascading-failures/" by="Google, Site Reliability Engineering, Chapter 22">Cascading failure mechanics, server overload, queue management and retry/backoff this topic's failure-table example draws on.</Resource>
+  <Resource kind="reading" title="Exponential Backoff and Jitter" href="https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/" by="Marc Brooker, AWS Architecture Blog, 2015">Why retry behavior alone, without a separate recovery path, doesn't resolve a crash loop.</Resource>
+</ul>
+
+</section>

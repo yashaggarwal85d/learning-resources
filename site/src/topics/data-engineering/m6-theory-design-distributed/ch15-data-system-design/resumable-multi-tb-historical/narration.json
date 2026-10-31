@@ -1,0 +1,82 @@
+{
+  "topic": "de.resumable-multi-tb-historical",
+  "steps": [
+    {
+      "lines": [
+        "A revenue-logic bug needs a genuinely long stretch of this shop's own history reprocessed.",
+        "The first attempt is one single job, and it runs for most of a day, taking the shared warehouse's own concurrency down for the finance team along the way.",
+        "That same job dies right near the end, with absolutely nothing checkpointed anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "That one single job actually failed in three genuinely distinct ways, all at once.",
+        "What four decisions, made before the very first chunk ever ran, would have turned this into a completely unremarkable week instead?"
+      ],
+      "answer": [
+        "Simply reaching for a bigger machine and a longer timeout changes nothing fundamental: that bigger job is still one single unit of work, still dying all at once with nothing saved, and still fighting production for resources, just for a longer stretch now.",
+        "Chunking, idempotence, a checkpoint, a throttle, and a shadow table each answer one specific failure this exact job actually hit."
+      ]
+    },
+    {
+      "lines": [
+        "A genuinely long stretch of history gets cut into a grid of chunks, each one covering a day or a partition.",
+        "Each one of those chunks is kept fully independent of its own neighbors.",
+        "The backfill then advances steadily across that whole grid, one chunk at a time, rather than running as one single undifferentiated job."
+      ]
+    },
+    {
+      "lines": [
+        "A crash stops the backfill cold, somewhere in the middle of its run.",
+        "The checkpoint has been quietly tracking every chunk that's already completed, so resuming picks up at the very first incomplete one.",
+        "Each chunk overwrites its own output slot in a fully deterministic way, so simply rerunning one never produces a duplicate anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "A concurrency cap and a rate limit on the source reads both exist specifically to leave real headroom for production.",
+        "The actual design question here isn't how many workers the budget happens to allow.",
+        "It's genuinely what signal should tell this backfill to slow itself down in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Production's own latency line starts rising, and the concurrency gauge drops in direct, automatic response to it.",
+        "Once that latency line falls back down again, the gauge recovers right along with it, completely on its own.",
+        "Nobody has to sit there watching it happen."
+      ]
+    },
+    {
+      "lines": [
+        "The backfill's own output fills up a shadow table, sitting quietly beside the live one.",
+        "Anyone reading the live table sees absolutely nothing change until one single atomic operation promotes that shadow all at once.",
+        "A failed run just gets discarded outright. It's never repaired in place."
+      ]
+    },
+    {
+      "lines": [
+        "Before that swap ever happens, the shadow gets compared against the live table across their overlap.",
+        "It also gets checked against an entirely independent recomputation, run on a sample.",
+        "That comparison panel has to show only the one change this backfill was actually meant to make, nothing more."
+      ]
+    },
+    {
+      "lines": [
+        "History gets cut into chunks that are genuinely independent of each other.",
+        "A checkpoint lets any crash resume safely past the first incomplete one.",
+        "A throttle reacts directly to production's own live latency. And a shadow table gets promoted by one atomic swap, gated the whole time by a diff that shows only what was actually meant to change."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a second backfill is already underway, and its own throttle has been switched off by an engineer, specifically to make it finish faster.",
+        "Production latency is already climbing, right now, as this happens.",
+        "What's genuinely the right move here?"
+      ],
+      "answer": [
+        "Letting it keep running at full speed treats the throttle as if it were some one-time gate, checked only before the run ever started.",
+        "The throttle's entire job is to react continuously to production's own live latency, so re-enabling it immediately lets that same signal govern concurrency again, starting right now."
+      ]
+    }
+  ]
+}

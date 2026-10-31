@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Row vs columnar vs hybrid layouts" domain="data-engineering" host="de.row-vs-columnar-vs" by="This chapter's second topic" />
+  <Resource kind="reel" title="Schema evolution rules across formats" domain="data-engineering" host="de.schema-evolution-rules-across" by="This chapter's third topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache Parquet Format: README" href="https://github.com/apache/parquet-format/blob/master/README.md" by="Apache Parquet">The file's own hierarchy — row group, column chunk, page — and the footer-at-the-end design.</Resource>
+  <Resource kind="reading" title="Apache Parquet Format: parquet.thrift" href="https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift" by="Apache Parquet">The Thrift struct definitions this topic's own writer and reader implement by hand.</Resource>
+  <Resource kind="reading" title="Apache Parquet Format: LogicalTypes.md" href="https://github.com/apache/parquet-format/blob/master/LogicalTypes.md" by="Apache Parquet">The TIMESTAMP logical type's isAdjustedToUTC semantics.</Resource>
+</ul>
+
+</section>

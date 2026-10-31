@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the replication and merge concepts this design runs on
+
+<ul class="resources">
+  <Resource kind="reel" title="Physical vs logical replication" domain="data-engineering" host="de.cdc-from-oltp-into">The distinction this topic's connector depends on: reading the log logically, row by row, not the raw bytes.</Resource>
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.cdc-from-oltp-into">The log and its LSNs this topic's slot tracks a position in.</Resource>
+  <Resource kind="reel" title="MERGE, upsert and concurrent writers" domain="data-engineering" host="de.cdc-from-oltp-into">The statement this topic's CDC merge runs, ordered by log position.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="19.6. Replication (Server Configuration)" href="https://www.postgresql.org/docs/current/runtime-config-replication.html" by="PostgreSQL documentation">The max_slot_wal_keep_size setting this design's cap is built on.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium documentation">The slot's WAL-retention guarantee and the heartbeat fix for a quiet table.</Resource>
+</ul>
+
+</section>
