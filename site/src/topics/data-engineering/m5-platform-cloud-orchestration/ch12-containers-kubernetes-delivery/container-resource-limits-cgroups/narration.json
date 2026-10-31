@@ -1,0 +1,87 @@
+{
+  "topic": "de.container-resource-limits-cgroups",
+  "steps": [
+    {
+      "lines": [
+        "An executor pod keeps getting killed, and its own heap metric looks almost calm: about half of what it was allowed.",
+        "The engineer's instinct is to give it more memory. Watch what that actually does to how often it gets killed.",
+        { "beat": 0.4 },
+        "It gets killed more often, not less. Something the heap metric never showed is driving this."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what the container's own limit actually counts. It isn't watching the heap specifically, it's watching everything the process touches.",
+        "So something took up the other half, and it never shows up on a heap dashboard at all.",
+        { "beat": 0.4 },
+        "Put a name on it."
+      ],
+      "answer": [
+        "The JVM's own non-heap memory: metaspace, thread stacks, native buffers, none of them tracked by a heap metric.",
+        "A heap ceiling only bounds one part of a process. A container's limit bounds all of it, heap and everything the runtime needs besides."
+      ]
+    },
+    {
+      "lines": [
+        "Follow the limit itself down to where it actually lives: a single file the kernel reads and enforces.",
+        "Cross it, and the kernel's own killer steps in. It never asks which kind of memory pushed the process over the line."
+      ]
+    },
+    {
+      "lines": [
+        "That same crossing can end a process three completely different ways, and each one leaves its own signature.",
+        "The kernel's own kill ends the whole process outright, no exception thrown, just gone.",
+        "A JVM running out of heap raises an error the program can catch and keep running past.",
+        "A Python process holding more and more in memory raises nothing at all. It just keeps growing until something else intervenes.",
+        { "beat": 0.3 },
+        "Three deaths, three logs. Guessing which one happened from the symptom alone is how postmortems go wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that trips people up about sizing a JVM inside a container: it does read the container's own limit.",
+        "But by default, it only reserves a quarter of that limit for the heap itself.",
+        "The rest is exactly what the earlier scene was missing: metaspace, thread stacks, native memory, all living outside the heap's own count."
+      ]
+    },
+    {
+      "lines": [
+        "A data engine adds its own overhead on top of whatever memory an executor is given.",
+        "For a job running the engine's native runtime, that overhead is a small slice. For a job running another language's runtime underneath it, the slice is four times as large.",
+        "Either way, there's a floor beneath it, and heap plus overhead both have to fit inside the one limit the container was actually given."
+      ]
+    },
+    {
+      "lines": [
+        "Now follow the other resource the kernel rations: not memory, but time on the processor.",
+        "A quota and a repeating window. Spend the whole quota early in the window, and the kernel holds the process back for whatever's left of it.",
+        "That holding-back shows up as its own counted event, visible to anyone who goes looking."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a pod with a processor limit, sitting on a node that otherwise has nothing else running on it.",
+        { "beat": 0.4 },
+        "Is it still throttled, even with the whole node free?"
+      ],
+      "answer": [
+        "Yes. The limit is measured against the pod's own quota, never against what anyone else on the node is doing.",
+        "An idle node changes nothing about a process that asks for more than its own window allows."
+      ]
+    },
+    {
+      "lines": [
+        "Three separate checks watch the same container, and each one answers a different question on failure.",
+        "One decides whether to restart it. One decides whether to pull it out of service without touching it. One simply holds the other two back until the slow part finishes.",
+        { "beat": 0.3 },
+        "Skip that last one on a process with a genuinely slow start, and the restart check can trigger before the process ever finishes waking up, restarting something that was never actually stuck."
+      ]
+    },
+    {
+      "lines": [
+        "A limit is a kernel file, not a runtime setting layered on top of it.",
+        "Reading it right, and reading the right probe for a slow start, is what the next topic's eviction order and scheduling priority both build on."
+      ]
+    }
+  ]
+}

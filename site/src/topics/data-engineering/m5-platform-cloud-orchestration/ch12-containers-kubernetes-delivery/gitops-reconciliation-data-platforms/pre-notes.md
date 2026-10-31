@@ -1,0 +1,8 @@
+- **Declarative**: describing the desired end state, not the steps to reach it. *Where you meet it:* every step.
+- **Reconcile**: a controller's repeated act of comparing live state to desired state and acting on the difference. *Where you meet it:* every step.
+- **Drift**: a live cluster's state diverging from what Git says it should be. *Where you meet it:* the hook, both predicts, and drift correction.
+- **Helm chart**: a packaged, parameterized bundle of Kubernetes manifests. *Where you meet it:* the Helm/Kustomize step.
+- **Kustomize overlay**: a per-environment patch layered on a shared base of manifests. *Where you meet it:* the Helm/Kustomize and promotion steps.
+- **Secret store**: an external system (cloud KMS, a vault) holding a secret's actual value outside the cluster. *Where you meet it:* the secrets step.
+- **KMS**: a cloud provider's managed service for creating and using encryption keys. *Where you meet it:* the secrets step.
+- **Canary**: shifting a small slice of traffic to a new version before shifting the rest. *Where you meet it:* the progressive-delivery step.
