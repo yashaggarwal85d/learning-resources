@@ -86,7 +86,6 @@ const reel: Reel = {
       ),
       duration: 4.8,
       fig: 'aligned checkpoints wait for the barrier on every input before snapshotting',
-      takeaway: "Aligned checkpointing's stall under backpressure isn't a bug — it's the cost of waiting for every input to catch up.",
       Visual: S.RevealAligned,
     },
     {
@@ -100,6 +99,7 @@ const reel: Reel = {
       ),
       duration: 4.8,
       fig: 'unaligned checkpoints snapshot on first sight, absorbing the backlog instead',
+      takeaway: "Aligned checkpointing's stall under backpressure isn't a bug — it's the cost of waiting for every input to catch up.",
       Visual: S.RevealUnaligned,
     },
     {
