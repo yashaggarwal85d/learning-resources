@@ -5525,6 +5525,26 @@ export const TOPICS: TopicMeta[] = [
       "Every read-side pattern so far assumed a reader pulling from a store. The next topic is the opposite direction entirely — a consumer reading what a producer wrote, through a queue or a log.",
   },
   {
+    id: 'de.message-queues-vs-event',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/message-queues-vs-event',
+    title: 'Message queues vs event logs',
+    syllabusTitle: 'Message queues vs event logs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['queues-vs-logs'],
+    uses: ['wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "Every read-side pattern so far assumed a reader pulling from a store. This topic is the opposite direction entirely: a consumer reading what a producer wrote, through either a per-message queue that forgets what it delivered, or a replayable log that doesn't — the same append-only, offset-addressed idea §5.1's own WAL already introduced, one layer up.",
+    handoff:
+      "Every mechanism in this chapter answered a question with an exact result. The next section's closes the chapter with the opposite idea entirely: structures that trade a small, bounded error for a massive reduction in memory, starting with the simplest — Bloom, cuckoo and xor filters.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -8764,5 +8784,25 @@ export const TOPICS: TopicMeta[] = [
       "Object storage's own limits are exactly what broke the table format everyone used before modern formats existed. This topic is that breakage, reproduced directly: a reader catching a partial multi-file write, and a measured listing-cost curve as file count grows.",
     handoff:
       "Fixing 'no atomic multi-partition commit' means replacing file listing with an explicit, versioned table state. That's the snapshot.",
+  },
+  {
+    id: 'de.snapshot-based-table-metadata',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/snapshot-based-table-metadata',
+    title: 'Snapshot-based table metadata',
+    syllabusTitle: 'Snapshot-based table metadata',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['table-snapshot-model'],
+    uses: ['hive-table-breakage', 'object-storage-guarantees'],
+    declared: [],
+    bridge:
+      "Fixing 'no atomic multi-partition commit' means replacing file listing with an explicit, versioned table state. This topic is that state: the snapshot, an immutable list of files plus schema, committed by one atomic pointer move.",
+    handoff:
+      "An atomic pointer move only works if exactly one writer wins it when two race for the same move. That's the optimistic-commit protocol itself.",
   },
 ];
