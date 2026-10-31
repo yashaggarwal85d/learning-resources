@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: JVM garbage-collection symptoms
+
+<ul class="resources">
+  <Resource kind="reel" title="JVM garbage-collection symptoms" domain="data-engineering" host="de.jvm-garbage-collection-symptoms" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="TaskSetManager.scala" href="https://raw.githubusercontent.com/apache/spark/v4.0.0/core/src/main/scala/org/apache/spark/scheduler/TaskSetManager.scala" by="Apache Spark source, GitHub">The task-failure counter that aborts a task set at maxTaskFailures, and fetch failure's own distinct handling path.</Resource>
+  <Resource kind="reading" title="Configuration" href="https://spark.apache.org/docs/4.0.0/configuration.html" by="Apache Spark documentation">Speculative execution's own definition, and graceful decommissioning's block migration of RDD and shuffle blocks.</Resource>
+  <Resource kind="reading" title="Running Spark on Kubernetes" href="https://spark.apache.org/docs/4.0.0/running-on-kubernetes.html" by="Apache Spark documentation">The decommissioning script hook, and the admission that an external shuffle service isn't yet available on Kubernetes.</Resource>
+</ul>
+
+</section>

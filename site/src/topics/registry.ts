@@ -7361,6 +7361,25 @@ export const TOPICS: TopicMeta[] = [
       'GC pauses can make an executor miss its heartbeat and get declared dead. The next topic is exactly that: what Spark does when a task or an executor actually fails, GC-induced or otherwise.',
   },
   {
+    id: 'de.task-retry-fetch-failure-speculation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/task-retry-fetch-failure-speculation',
+    title: 'Task retry, fetch failure and speculation',
+    syllabusTitle: 'Task retry, fetch failure and speculation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-task-retry-fetch-failure', 'spark-speculative-execution'],
+    uses: ['spark-shuffle-mechanics', 'spark-task-hierarchy'],
+    bridge:
+      "GC can kill an executor. This topic is what Spark does about any executor or task death, GC-caused or not: retrying the task, and, when the death took shuffle files with it, resubmitting the whole stage that produced them.",
+    handoff:
+      "Section 7.3's last topic ties every symptom in this section together: the Spark UI itself, the one instrument that actually shows spill, GC, retries and skew as evidence rather than theory.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
