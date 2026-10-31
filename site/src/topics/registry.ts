@@ -6231,6 +6231,26 @@ export const TOPICS: TopicMeta[] = [
       "A window still has to decide, concretely, when to actually emit — on time, early, or more than once as late data trickles in — and what to do about the data a watermark swore wouldn't show up but did anyway. That's the next topic.",
   },
   {
+    id: 'de.triggers-lateness-retractions',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/triggers-lateness-retractions',
+    title: 'Triggers, allowed lateness and retractions',
+    syllabusTitle: 'Triggers, allowed lateness and retractions',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['trigger-firing-timing', 'allowed-lateness-boundary', 'accumulation-modes-retraction'],
+    uses: ['window-types-state-cost', 'pane-per-key-cleanup', 'watermark-heuristic'],
+    declared: [],
+    bridge:
+      "A window has a shape and a state cost. This topic is when it actually tells you anything — early, on time, or as a correction — and the three fundamentally different ways a correction can be represented downstream, one of which a careless consumer will silently get wrong.",
+    handoff:
+      "Everything in this section has been about correctness inside a single stream-processing step. The engines that actually run these steps continuously, at scale, recovering from failure without losing or duplicating state, are the subject of the rest of this chapter — starting with how such an engine is even structured.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: windowing and pane state
+
+A window's pane is what a trigger fires against, and this topic's allowed-lateness reveal leans
+directly on the pane-cleanup mechanics from the prior topic — a late record can only be applied
+if the pane it belongs to hasn't closed yet. If that's unfamiliar, start with
+[Windowing: tumbling, sliding, session, global](../windowing-tumbling-sliding-session/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="The Dataflow Model" href="https://www.vldb.org/pvldb/vol8/p1792-Akidau.pdf" by="Akidau, Chernyak &amp; Lax, 2015, VLDB">The discarding, accumulating, and accumulating-and-retracting definitions this topic cites.</Resource>
+  <Resource kind="reading" title="Windows" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/dev/datastream/operators/windows/" by="Apache Flink, 1.20 docs">Allowed lateness and late-firing mechanics, the concrete current implementation.</Resource>
+  <Resource kind="reading" title="Beam Programming Guide — Triggers" href="https://beam.apache.org/documentation/programming-guide/#triggers" by="Apache Beam docs">Early and late firing terminology, a second independent primary source for the same vocabulary.</Resource>
+</ul>
+
+</section>
