@@ -1,0 +1,122 @@
+{
+  "topic": "dsa.scan-resistant-policies-lfu",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Last time, a measurement came back worse than expected: a single oversized pass through the cache wiped out everything that had been genuinely popular right before it.",
+        { "beat": 0.4 },
+        "The reason was structural, not a tuning mistake. Both policies only ever asked one question: how long ago was this touched?",
+        { "beat": 0.4 },
+        "So the obvious next move is to give the cache a second question to ask."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the simplest second question: not when was this touched, but how many times.",
+        { "beat": 0.4 },
+        "Under that rule, a handful of entries touched once during a big one-time pass simply cannot outscore something that gets touched constantly. The popular stuff just wins on points."
+      ]
+    },
+    {
+      "lines": [
+        "But notice what this new rule never does on its own: it never subtracts.",
+        { "beat": 0.4 },
+        "A tally only goes up when something gets used, and nothing here ever brings an old tally back down by itself.",
+        { "beat": 0.4 },
+        "So picture something that was genuinely in heavy rotation a while back, and hasn't been touched since. What happens to its standing?"
+      ],
+      "answer": [
+        "It keeps winning, forever, on the strength of activity that stopped a long time ago.",
+        "A tally with no way to fade out just locks in whatever was popular first, rather than reflecting what's actually popular now."
+      ]
+    },
+    {
+      "lines": [
+        "The fix is almost embarrassingly simple: every so often, shrink every tally a little. Let old activity fade instead of staying locked in forever.",
+        { "beat": 0.4 },
+        "One real system does this cheaply: instead of an exact tally, it keeps a tiny counter that climbs more and more slowly for each key the higher it already is, and lets that counter fade on its own clock.",
+        { "beat": 0.4 },
+        "That's the whole fix: survive the big one-time pass by counting, and survive the passage of time by letting the count fade."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a completely different second question: instead of counting anything, just remember who was recently turned away.",
+        { "beat": 0.4 },
+        "Give a brand new arrival a short, cheap holding spot rather than a real seat. If nothing ever asks for it again, it quietly falls out of even that.",
+        { "beat": 0.4 },
+        "But as it falls out, jot down its name on a separate, even smaller list. Ask for it again while that name is still written down, and only then does it earn a real seat."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what that separate list actually has to hold onto for each name on it.",
+        { "beat": 0.4 },
+        "Does writing someone's name down cost anywhere near as much as giving them a seat?"
+      ],
+      "answer": [
+        "Nowhere close — a name is a tiny fraction of the cost of an actual seat.",
+        "Answering 'was this here recently' never required keeping the thing itself around, only a label for it."
+      ]
+    },
+    {
+      "lines": [
+        "Now send that huge one-time pass through this new setup. Every one of its items is, by definition, brand new to the cache.",
+        { "beat": 0.4 },
+        "So each one lands in the cheap holding spot, gets touched exactly once, and falls straight out into the name-only list without ever threatening a real seat.",
+        { "beat": 0.4 },
+        "Measure the genuinely popular stuff's standing right after that pass finishes, and compare it to a run where no such pass happened at all — the two numbers barely differ."
+      ]
+    },
+    {
+      "lines": [
+        "Now suppose one of those written-down names gets asked for again while it's still on the list.",
+        { "beat": 0.4 },
+        "That's not just a lucky coincidence. It's information about the system's own setup.",
+        { "beat": 0.4 },
+        "What does a hit on a name that was already written down actually tell you?"
+      ],
+      "answer": [
+        "It says the list that name just left was sized too small to have kept it around.",
+        "If that list had been given a little more room, this would have been a real hit instead of a write-down-and-recall."
+      ]
+    },
+    {
+      "lines": [
+        "Follow one short sequence closely. An entry gets bumped out of its usual spot, and its name lands on that spot's own write-down list.",
+        { "beat": 0.4 },
+        "The very next time someone asks for it, two things happen at once: it gets a real seat again, and the target size for its old spot grows, just slightly, all on its own.",
+        { "beat": 0.4 },
+        "Nobody set that number by hand, and nothing anywhere in this scheme is counting how many times anything has been touched."
+      ]
+    },
+    {
+      "lines": [
+        "Try a completely different measure of locality: not how long ago something was touched, but how many other distinct things were touched in between its last two uses.",
+        { "beat": 0.4 },
+        "Picture a loop: the same handful of entries, visited over and over, just slightly too many to all fit at once.",
+        { "beat": 0.4 },
+        "Every entry inside that loop has a small, fixed gap between its uses, no matter how slowly or quickly the loop itself runs. A rule built only on elapsed time would see something very different, and score every single one of them as stale."
+      ]
+    },
+    {
+      "lines": [
+        "Line all six approaches up side by side, measured right after the exact same oversized pass.",
+        { "beat": 0.4 },
+        "The two that only ever asked how long ago lose a real, noticeable chunk of their standing.",
+        { "beat": 0.4 },
+        "Every approach that added a second question — a tally, a name on a list, an adapting split, a distance — barely moves at all."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and look at what each one actually bought itself, and what it spent to get there.",
+        { "beat": 0.4 },
+        "A tally and a fading clock. A name on a list. A split that tunes its own size. A measure of distance instead of time.",
+        { "beat": 0.4 },
+        "None of it is free, and the cheapest of all of them turned out to be a list that remembers nothing but a name."
+      ]
+    }
+  ]
+}

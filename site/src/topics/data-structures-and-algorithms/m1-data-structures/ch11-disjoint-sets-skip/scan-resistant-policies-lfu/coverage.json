@@ -1,0 +1,204 @@
+{
+  "topic": "dsa.scan-resistant-policies-lfu",
+  "syllabus": [
+    {
+      "clause": "why plain LRU is flushed by one large scan",
+      "at": [
+        { "step": "Can a cache remember something besides recency?" },
+        { "topic": "LRU caches", "quote": "Redis's sampled approximate LRU" }
+      ]
+    },
+    {
+      "clause": "frequency counting and decay",
+      "at": [
+        { "step": "Evict the least frequently used" },
+        { "step": "Decay, and Redis's real counter" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "ghost lists and adaptive partitioning in ARC (Megiddo & Modha, FAST 2003)",
+      "at": [
+        { "step": "The ghost list idea" },
+        { "step": "ARC adapts, by hand" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "reuse distance in LIRS.",
+      "at": [
+        { "step": "Reuse distance" },
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Johnson and Shasha, \"2Q: A Low Overhead High Performance Buffer Management Replacement Algorithm\"",
+      "items": [
+        {
+          "item": "The three-queue structure (Am, A1in capped at Kin, A1out capped at Kout) and the recommended sizing of twenty-five and fifty percent",
+          "at": [
+            { "step": "The ghost list idea" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "A ghost entry costs only an identifier, a few bytes, never the page's data",
+          "at": [
+            { "step": "What does a ghost entry cost?" }
+          ]
+        },
+        {
+          "item": "2Q's own measured scan-resistance result (retains about seventy percent of its no-scan hit rate, vs. about sixty percent for LRU)",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Megiddo and Modha, \"ARC: A Self-Tuning, Low Overhead Replacement Cache\"",
+      "items": [
+        {
+          "item": "ARC needs no offline-selected tuning parameters and keeps no frequency counts",
+          "at": [
+            { "step": "ARC adapts, by hand" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "ARC's directory remembers twice as many pages as fit in the cache",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Redis documentation: Key eviction, and `redis.conf`",
+      "items": [
+        {
+          "item": "Redis's LFU counter: a probabilistic, logarithmic eight-bit counter, with tunable log factor and decay time, defaults of ten and one minute",
+          "at": [
+            { "step": "Decay, and Redis's real counter" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL release notes 8.0.2 and 8.1",
+      "items": [
+        {
+          "item": "PostgreSQL replaced ARC with 2Q in 8.0.2 to avoid a pending US patent on ARC, then moved to clock sweep in 8.1",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia: \"LIRS caching algorithm\" (secondary source; primary paper unreachable)",
+      "items": [
+        {
+          "item": "Reuse distance (distinct pages touched since a page's own last use) as LIRS's locality metric, and the resident LIR/HIR partition",
+          "at": [
+            { "step": "Reuse distance" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "LIRS's real deployment, including MySQL since version 5.1",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Zhang et al., \"SIEVE is Simpler than LRU\" (NSDI 2024)",
+      "items": [
+        {
+          "item": "SIEVE's own abstract: under twenty lines of code change on average across five production cache libraries, up to sixty-three point two percent lower miss ratio than ARC on 1559 traces",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Why a pure frequency count is the wrong fix on its own: it survives a scan but never forgets, so a page that was hot once stays privileged forever even after it stops being touched",
+        "at": [
+          { "step": "A rule that never forgets" }
+        ]
+      },
+      {
+        "item": "Why a ghost list is the cheapest possible form of 'memory' a cache can keep: an identifier costs a few bytes, versus the full page a resident entry would cost",
+        "at": [
+          { "step": "What does a ghost entry cost?" }
+        ]
+      },
+      {
+        "item": "Why a scan's pages pass through 2Q's first-time queue into the ghost list without ever reaching the protected LRU list: a single touch is never enough to earn promotion, only a second touch while still remembered as a ghost is",
+        "at": [
+          { "step": "2Q, measured against the same scan" }
+        ]
+      },
+      {
+        "item": "That a ghost hit is itself the signal ARC adapts on: a hit in B1 means the recency list was too small, a hit in B2 means the frequency list was too small, and the adjustment is proportional to the two ghost lists' relative sizes",
+        "at": [
+          { "step": "What does a ghost hit say?" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why ARC, with zero reuse ever, degrades to exactly plain LRU with no ghost-list overhead at all — ghosts only start forming once at least one key has been promoted out of the recency list, which is what the hand trace in examples.py had to arrange for",
+        "at": [
+          { "deep": "Lab" }
+        ]
+      },
+      {
+        "item": "The distinction between recency (how long ago, counting every intervening access) and reuse distance (how many distinct keys, ignoring repeats) — LIRS's whole mechanism rests on using the second instead of the first",
+        "at": [
+          { "step": "Reuse distance" }
+        ]
+      },
+      {
+        "item": "Why LIRS survives a loop slightly larger than the cache where LRU gets zero hits: the loop's own reuse distance is finite and bounded by the loop's length, so a low-reuse-distance set sized to the loop stays resident across every pass",
+        "at": [
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That each of the four policies costs something extra per entry or per access for the thing it remembers beyond recency: a counter and a decay tick for LFU, a ghost identifier for 2Q and ARC, a distinction between two resident sets for LIRS — none of this is free",
+        "at": [
+          { "step": "Recap" },
+          { "deep": "Production failures this topic warns about" }
+        ]
+      },
+      {
+        "item": "The explicit caveat that LIRS's claims here trace to a secondary description, not the original paper, because the paper is unreachable from this research session — a fact a careless reader could otherwise miss",
+        "at": [
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That PostgreSQL's own production history (shipped ARC, replaced it for a patent concern, then moved to a third, different policy) shows that even a theoretically strong policy can lose to a licensing constraint in practice, independent of its measured performance",
+        "at": [
+          { "deep": "Frontier" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
