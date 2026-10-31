@@ -1,0 +1,14 @@
+# Outline — de.optimistic-commits-conflict-resolution
+
+DE §6.3 · 10 steps
+
+1. **Hook** — bridge from topic 12: "An atomic pointer move only works if exactly one writer wins it when two race for the same move. This topic is that race itself, reproduced with two real concurrent writers: one commits, one is validated, retried, and either succeeds or correctly fails."
+2. **Predict** — when a writer loses the race for a commit slot, what should it do next? (A) Always retry against the new base. (B) It depends on what the operation touched. Correct: B.
+3. **Reveal: writers stage first, validate at commit** — Delta's three-stage model: read the latest version, stage new files, then validate and commit. The validation step is what decides winner vs loser, not the staging.
+4. **Reveal: the loser's retry condition depends on the operation** (takeaway) — Iceberg: "Append operations have no requirements and can always be applied." A delete/replace "must verify that specific files to delete are still in the table."
+5. **Predict: can a losing append always retry successfully?** — two writers append disjoint new files from the same base. (A) No — the second one fails since the base changed. (B) Yes — appends have no requirements, so it just restages against the new base. Correct: B.
+6. **Reveal: reproduced for real — append vs append, retry succeeds** — real two-writer race on local disk (demo 1): writer A wins version 1; writer B loses, revalidates (nothing to check for an append), retries as version 2, succeeds. Final table has both writers' files.
+7. **Reveal: reproduced for real — delete vs delete, retry fails permanently** (takeaway) — real two-writer race (demo 2): both writers try to remove the same file from the same base. Writer A wins; writer B revalidates and finds the file already gone from the new base — its delete cannot be safely retried, so it fails permanently rather than being blindly reapplied.
+8. **Reveal: Delta's own conflict taxonomy is the same shape** — docs.delta.io names this exact distinction as typed exceptions: `ConcurrentAppendException` (a concurrent write added files you read), `ConcurrentDeleteReadException` / `ConcurrentDeleteDeleteException` (a concurrent write deleted files you read or also deleted) — different exception types for exactly the different validation conditions Iceberg's spec describes in prose.
+9. **Reveal: isolation is a choice, not a given** (takeaway) — Iceberg: "The conditions required by a write to successfully commit determines the isolation level. Writers can select what to validate." A writer that validates only "my own files still exist" accepts more concurrency; a writer that validates "nothing in the table changed" accepts less.
+10. **Recap** — a writer stages first and validates at commit; what retries safely vs fails permanently depends on the operation (append vs delete/replace), not on luck; that choice of what to validate is the isolation level itself.

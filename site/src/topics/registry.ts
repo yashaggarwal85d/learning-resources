@@ -8863,4 +8863,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "An atomic pointer move only works if exactly one writer wins it when two race for the same move. That's the optimistic-commit protocol itself.",
   },
+  {
+    id: 'de.optimistic-commits-conflict-resolution',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/optimistic-commits-conflict-resolution',
+    title: 'Optimistic commits and conflict resolution',
+    syllabusTitle: 'Optimistic commits and conflict resolution',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['optimistic-commit-protocol'],
+    uses: ['table-snapshot-model'],
+    declared: [],
+    bridge:
+      "An atomic pointer move only works if exactly one writer wins it when two race for the same move. This topic is that race itself, reproduced with two real concurrent writers: one commits, one is validated, retried, and either succeeds or correctly fails.",
+    handoff:
+      "Every commit so far appended or overwrote whole files. The next question is what a commit does when it only needs to change some rows inside a file — copy-on-write or merge-on-read.",
+  },
 ];
