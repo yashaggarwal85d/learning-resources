@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the hierarchy, OT ownership, OPC UA and the historian
+
+<ul class="resources">
+  <Resource kind="reel" title="ISA-95 hierarchy and the automation pyramid" domain="data-engineering" host="de.isa-95-hierarchy-automation" by="this chapter, for the equipment hierarchy an AAS instance shell is placed into" />
+  <Resource kind="reel" title="Energy and utility metering" domain="data-engineering" host="de.energy-utility-metering" by="this chapter, for the energy-per-unit KPI this topic's carbon-footprint submodel draws on" />
+  <Resource kind="reel" title="IT/OT boundary and data ownership" domain="data-engineering" host="de.it-ot-boundary-data" by="this chapter, for operational-vs-analytical copy ownership, the basis for landing a supplier's AAS submodels in the lakehouse" />
+  <Resource kind="reel" title="OPC UA information model and transport" domain="data-engineering" host="de.opc-ua-information-model" by="this chapter, for the other standardised asset model (OPC UA's own typed address space) this topic contrasts the AAS against" />
+  <Resource kind="reel" title="Process historians and swinging-door compression" domain="data-engineering" host="de.process-historians-swinging-door" by="this chapter, for the historian-to-lakehouse extraction semantics the AAS points to rather than replaces" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="IEC 63278-1:2023" href="https://webstore.iec.ch/en/publication/65628" by="IEC webstore">The standard's own definition of the Asset Administration Shell.</Resource>
+  <Resource kind="reading" title="Specification of the AAS — Part 1: Metamodel" href="https://industrialdigitaltwin.org/en/wp-content/uploads/sites/2/2023/04/IDTA-01001-3-0_SpecificationAssetAdministrationShell_Part1_Metamodel.pdf" by="Industrial Digital Twin Association">Type-vs-instance (assetKind) and the semantic-ID mechanism this topic's `examples.py` implements.</Resource>
+  <Resource kind="reading" title="Specification of the AAS — Part 2: APIs" href="https://industrialdigitaltwin.org/en/wp-content/uploads/sites/2/2023/06/IDTA-01002-3-0_SpecificationAssetAdministrationShell_Part2_API_.pdf" by="Industrial Digital Twin Association">The REST API's own scope statement, modelled as a mock read endpoint.</Resource>
+  <Resource kind="reading" title="Specification of the AAS — Part 5: AASX Package Format" href="https://industrialdigitaltwin.org/en/wp-content/uploads/sites/2/2023/04/IDTA-01005-3-0_SpecificationAssetAdministrationShell_Part5_AASXPackageFileFormat.pdf" by="Industrial Digital Twin Association">The AASX package's own stated purpose, modelled as a mock file-exchange alternative to the API.</Resource>
+  <Resource kind="reading" title="IDTA submodel catalogue" href="https://industrialdigitaltwin.org/en/content-hub/submodels" by="Industrial Digital Twin Association">The real, current Digital Nameplate and Digital Battery Passport submodel templates this topic names.</Resource>
+  <Resource kind="reading" title="Catena-X" href="https://catena-x.net/en/" by="Catena-X's own site">The data-space use cases (PCF tracking, Digital Product Passports, Quality Management) and the battery-passport deadline this topic quotes.</Resource>
+  <Resource kind="reading" title="The Digital Product Passport (DPP)" href="https://gs1belu.org/en/digital-product-passport" by="GS1 Belgium & Luxembourg">The digital product passport's own description and its tie to the ESPR, used in place of ISO's own unreachable page.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,7 @@
+- **Digital twin**: a standardised digital representation of a physical asset, described rather than measured. *Where you meet it:* the whole topic's subject, the Asset Administration Shell.
+- **Asset**: the physical thing an AAS represents — a machine, a battery, a component. *Where you meet it:* `AssetAdministrationShell`'s own `global_asset_id` in `examples.py`.
+- **Submodel**: a coherent set of properties about one aspect of an asset (nameplate, technical data, carbon footprint). *Where you meet it:* the `Submodel` objects attached to each shell.
+- **Semantic identifier**: a reference to a dictionary entry that fixes a property's meaning independent of its local name. *Where you meet it:* the `semantic_id` field that lets two suppliers' differently-named properties resolve to one meaning.
+- **Data space**: a framework for exchanging data between companies under shared rules, such as Catena-X for automotive. *Where you meet it:* the role the AAS plays once data crosses a company boundary.
+- **Product passport**: a regulated digital record tied to a physical product, often reached through a QR code. *Where you meet it:* the digital product passport and the EU's Ecodesign for Sustainable Products Regulation.
+- **REST API**: an interface for reading and writing data over HTTP. *Where you meet it:* the mock endpoint that reads a submodel live, contrasted with the AASX file in the same topic.

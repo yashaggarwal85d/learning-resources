@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: where the raw side and the cache side come from
+
+<ul class="resources">
+  <Resource kind="reel" title="Partitioning schemes: range, hash, consistent hashing" domain="data-engineering" host="de.partitioning-schemes-range-hash" by="how a cube's own precomputed combinations are stored and found across nodes" />
+  <Resource kind="reel" title="Redis and Valkey internals" domain="data-engineering" host="de.redis-valkey-internals" by="the real engine this topic's own materialized-table speedup is contrasted against" />
+  <Resource kind="reel" title="Grain-first dimensional design" domain="data-engineering" host="de.grain-first-dimensional-design" by="the warehouse material this topic connects to a real-time OLAP store" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Materialized views" href="https://clickhouse.com/docs/materialized-view" by="ClickHouse documentation">Pre-aggregation's cost-shift definition and a refreshable view's own named freshness gap.</Resource>
+  <Resource kind="reading" title="Data rollup" href="https://druid.apache.org/docs/latest/ingestion/rollup/" by="Apache Druid documentation">Ingestion-time pre-aggregation and its own named cost.</Resource>
+</ul>
+
+</section>
