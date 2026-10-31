@@ -6025,6 +6025,26 @@ export const TOPICS: TopicMeta[] = [
       "The log itself, and everything it stores, replicates and tiers, is only half the story. The other half is making sure what you read out of it is correct even when producers retry, consumers crash, and sinks fail partway through a write. That's the next section.",
   },
   {
+    id: 'de.delivery-semantics-duplicates',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/delivery-semantics-duplicates',
+    title: 'Delivery semantics and where duplicates arise',
+    syllabusTitle: 'Delivery semantics and where duplicates arise',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['delivery-semantics-vocabulary', 'crash-window-duplication'],
+    uses: ['acks-durability-tradeoff', 'consumer-group-offsets'],
+    declared: [],
+    bridge:
+      "The log itself, and everything it stores, replicates and tiers, is one half of this chapter. This topic opens the other half: what it actually means for a record to be processed exactly once, stated precisely enough to stop using the phrase carelessly.",
+    handoff:
+      "The first crash window — a lost ack causing a producer retry to duplicate a write — has a direct fix inside the producer itself. That's next.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
