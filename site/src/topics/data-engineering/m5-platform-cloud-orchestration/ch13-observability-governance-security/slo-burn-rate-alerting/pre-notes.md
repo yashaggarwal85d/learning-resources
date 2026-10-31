@@ -1,0 +1,7 @@
+- **SLI**: a service-level indicator, the measured thing (e.g. freshness age). *Where you meet it:* this topic treats the SLI as already defined; it builds the alerting rule on top of it.
+- **SLO**: a service-level objective, the target for an SLI (e.g. 99% within 30 days). *Where you meet it:* every burn-rate figure in this topic is relative to a stated SLO.
+- **Error budget**: the amount of allowed failure an SLO leaves room for. *Where you meet it:* "Reveal: burn rate," spent at a rate measured against this budget.
+- **Availability**: the fraction of time or requests a system meets its target. *Where you meet it:* "Reveal: the recommended thresholds," where a low availability target changes whether a threshold can fire at all.
+- **Rolling window**: a time span that always covers "the last N days/hours," sliding forward continuously. *Where you meet it:* the long and short windows this topic's multi-window rule compares.
+- **Page vs ticket**: a page interrupts someone now; a ticket waits for normal working hours. *Where you meet it:* "Reveal: the actionable-page test," which decides which one an alert deserves.
+- **On-call**: the rotation of who is reachable to respond to a page. *Where you meet it:* named only in passing, as who a page actually reaches; not this topic's own subject.

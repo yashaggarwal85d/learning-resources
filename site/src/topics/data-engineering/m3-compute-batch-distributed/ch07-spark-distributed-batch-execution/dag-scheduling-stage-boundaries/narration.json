@@ -1,0 +1,71 @@
+{
+  "topic": "de.dag-scheduling-stage-boundaries",
+  "steps": [
+    {
+      "lines": [
+        "Filter, then select, then filter again. Three separate operations, chained one after another.",
+        "Here's the question I actually want you sitting with. Does the scheduler run that as three stages, one per operation, or something else entirely?",
+        "Let's find out by actually running it, rather than guessing from the code alone."
+      ]
+    },
+    {
+      "lines": [
+        "I ran exactly that chain against a real Spark session, four partitions, and checked its plan directly.",
+        "All three operations, filter, select, filter again, ran as one single stage.",
+        "And I searched that plan for any sign of a shuffle. There wasn't one. Nothing in this chain ever needed to move data between partitions."
+      ]
+    },
+    {
+      "lines": [
+        "Now commit to an answer before I give you mine.",
+        "Same source, same four partitions. Instead of filtering row by row, I group every row by a key I derive from it.",
+        "Does that still collapse into one stage the way filtering did, or does something fundamentally different happen the moment you group?"
+      ],
+      "answer": [
+        "It's tempting to say still one stage, because grouping feels like just another operation sitting in the same chain.",
+        "But a filter can answer instantly using only the one partition sitting in front of it. A group genuinely cannot.",
+        "Any row, from any one of the four partitions, might belong to the exact bucket it's trying to build. It has no choice but to wait for all of them, and that wait is precisely where a new stage gets cut."
+      ]
+    },
+    {
+      "lines": [
+        "I measured it, and the change is immediate.",
+        "The identical data, grouped instead of filtered, doubles the stage count. One stage becomes two.",
+        "And this time, when I searched the plan, there it was. A real shuffle, right there in black and white."
+      ]
+    },
+    {
+      "lines": [
+        "It's worth being precise about exactly why that cut happens where it does.",
+        "A filter decides row by row. It only ever needs the one partition already sitting in front of it, so there's nothing to wait for.",
+        "A group can decide nothing until every single partition has had its rows redistributed by key. That redistribution is the shuffle, and the shuffle is the boundary."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment before the next reveal.",
+        "Take that grouped result, and group it again, this time by a completely different derived key.",
+        "Does the stage count hold steady at two, since it's really the same kind of operation run twice, or does it climb again?"
+      ],
+      "answer": [
+        "The reasoning that tempts you here is that it's the same operation as before, just repeated, so surely it's free the second time.",
+        "But nothing about the first shuffle's output makes the second group any easier.",
+        "It is its own completely independent wide dependency, needing every partition of the first result before it can answer. A new wait, and a new boundary, exactly like the first one."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly what that reasoning predicts.",
+        "Grouping the already-grouped result by a new key adds precisely one more stage on top of what you already had.",
+        "So each shuffle you chain earns its own separate cut. Nothing about running the second one lets it ride along on the first's."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the rule, stated precisely instead of guessed at.",
+        "Narrow dependencies, a filter, a select, a plain map, pipeline together inside one stage, completely free.",
+        "A wide dependency, a group, a join, a repartition, cuts a brand new stage every single time, because that cut isn't arbitrary. It is the shuffle itself, made real."
+      ]
+    }
+  ]
+}

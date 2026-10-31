@@ -1,0 +1,79 @@
+{
+  "topic": "de.cap-pacelc-practice",
+  "syllabus": [
+    {
+      "clause": "CAP as a statement about behaviour during a partition (PA vs PC)",
+      "at": [
+        { "step": "Reveal: CAP, stated precisely" },
+        { "step": "Reveal: PA vs PC, the actual choice" }
+      ]
+    },
+    {
+      "clause": "PACELC adding the normal-case latency-vs-consistency trade (EL vs EC), with systems classified (Dynamo/Cassandra PA/EL, Spanner PC/EC)",
+      "at": [
+        { "step": "Reveal: PACELC's addition" },
+        { "step": "Reveal: Dynamo and Spanner, classified" }
+      ]
+    },
+    {
+      "clause": "failure domains (process, host, rack, AZ, region) as what \"partition\" means physically",
+      "at": [
+        { "step": "Reveal: failure domains, physically" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "CAP Twelve Years Later: How the Rules Have Changed (Eric Brewer)",
+      "items": [
+        { "item": "the CAP theorem states that any networked shared-data system can have at most two of three desirable properties: consistency, availability, tolerance to partitions", "at": [{ "step": "Reveal: CAP, stated precisely" }] },
+        { "item": "allowing at least one node to update state during a partition forfeits consistency; preserving consistency means one side must act as if unavailable", "at": [{ "step": "Reveal: PA vs PC, the actual choice" }] },
+        { "item": "because partitions are rare, there is little reason to forfeit consistency or availability when the system is not partitioned", "at": [{ "deep": "Internals" }] },
+        { "item": "in Google, the primary partition usually resides within one datacenter, with Paxos used on the wide area for global consensus", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Problems with CAP, and Yahoo's little known NoSQL system (Daniel Abadi)",
+      "items": [
+        { "item": "PACELC: if there is a partition, trade availability against consistency; else, trade latency against consistency", "at": [{ "step": "Reveal: PACELC's addition" }] },
+        { "item": "Dynamo-family systems are PA/EL: they give up consistency for availability under partition, and for lower latency under normal operation", "at": [{ "step": "Reveal: Dynamo and Spanner, classified" }] },
+        { "item": "fully ACID systems are PC/EC: they pay the availability and latency costs to keep consistency", "at": [{ "step": "Reveal: Dynamo and Spanner, classified" }] },
+        { "item": "PNUTS is PC/EL: normal operation trades consistency for latency, but under partition it gives up availability instead", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Dynamo: Amazon's Highly Available Key-value Store (DeCandia et al., SOSP 2007)",
+      "items": [
+        { "item": "Dynamo sacrifices consistency under certain failure scenarios to achieve a highly available, always-on experience", "at": [{ "step": "Reveal: Dynamo and Spanner, classified" }] },
+        { "item": "Dynamo provides eventual consistency, allowing updates to propagate to all replicas asynchronously", "at": [{ "step": "Predict: does a partition-time choice carry over to normal operation?" }] }
+      ]
+    },
+    {
+      "source": "Spanner: Google's Globally-Distributed Database (Corbett et al., OSDI 2012)",
+      "items": [
+        { "item": "Spanner is a globally-distributed, synchronously-replicated database, the first to support externally-consistent distributed transactions at global scale", "at": [{ "step": "Reveal: Dynamo and Spanner, classified" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The CAP theorem is often misquoted as a permanent 'pick two' choice; Brewer's own retrospective is explicit that it only forbids perfect consistency and availability during the rare moments a partition actually exists — outside one, nothing stops a system from being fully consistent and available at once.", "at": [{ "step": "Hook" }] },
+      { "item": "A system doesn't have to make one CAP choice for its whole lifetime, or even for a whole request — Brewer notes the choice can be made per-operation, at very fine granularity, which is why 'this system is CP' is often a simplification of what the system actually does under real partitions.", "at": [{ "step": "Reveal: CAP, stated precisely" }] },
+      { "item": "PACELC's real contribution isn't adding a fourth letter for its own sake — it's naming that a system's partition-time choice and its normal-case choice usually come from the same underlying design decision, which is why Dynamo's PA and EL aren't a coincidence.", "at": [{ "step": "Reveal: PACELC's addition" }] },
+      { "item": "Spanner's own TrueTime API is what lets it be PC/EC at global scale without unacceptable latency — bounded clock uncertainty lets it know when a transaction's timestamp is safely in the past, rather than needing a round trip to find out.", "at": [{ "step": "Reveal: Dynamo and Spanner, classified" }] },
+      { "item": "Classifying a system's PACELC quadrant from its own documentation, rather than from how it behaves in a specific deployment, is itself a methodological choice this topic makes deliberately — a misconfigured or unusually deployed system can behave outside its own documented quadrant, which this topic's own claims don't cover.", "at": [{ "deep": "Internals" }] },
+      { "item": "PNUTS is the system that breaks the intuition that PACELC's two halves always move together — its own PC/EL classification shows normal-case and partition-time choices can be decoupled on purpose, not just as a byproduct of a system nobody designed carefully.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A failure domain's containment is asymmetric by design: knowing a process crashed tells you nothing about its host, rack, zone or region, but knowing a region failed tells you everything inside it also failed — the two directions of inference are not mirror images of each other.", "at": [{ "step": "Reveal: failure domains, physically" }] },
+      { "item": "Google's own 'primary partition usually resides within one datacenter' design is itself a CAP-aware engineering choice, not an accident — by keeping consensus traffic inside domains where true partitions are rare, Google can afford to design as if CA holds most of the time.", "at": [{ "deep": "Internals" }] },
+      { "item": "'Effectively CA' is a statement about the observed probability of partitions in a specific, controlled network, not an exception to the theorem — the same system deployed across an uncontrolled wide-area network would face CAP's choice far more often.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own 'Prove it' answer generalizes beyond a single host crash: the same reasoning (only the contained domains are affected, the containing domains are untouched) applies identically whether the failure is a process, a rack, or an entire availability zone.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,5 @@
+- **Managed CDC**: change data capture a vendor operates for you, instead of a team's own pipeline code.
+- **Incremental export**: a source database's own mechanism for exposing just what changed since the last pull.
+- **Point-in-time recovery**: a continuous-backup feature some managed integrations require as a prerequisite before they'll start.
+- **Mirroring**: Microsoft Fabric's own name for continuously replicating a database into OneLake with no pipeline to configure.
+- **Freshness window**: the documented range within which replicated data is guaranteed to catch up, not a single fixed number.

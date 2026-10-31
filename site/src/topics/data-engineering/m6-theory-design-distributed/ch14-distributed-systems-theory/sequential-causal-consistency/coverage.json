@@ -1,0 +1,95 @@
+{
+  "topic": "de.sequential-causal-consistency",
+  "syllabus": [
+    {
+      "clause": "sequential consistency (a single total order, no real-time constraint)",
+      "at": [{ "step": "Reveal: sequential consistency keeps one order, drops real time" }]
+    },
+    {
+      "clause": "vs causal consistency (only causally related operations ordered; the strongest model available under partition)",
+      "at": [
+        { "step": "Reveal: causal consistency orders only cause and effect" },
+        { "step": "Reveal: causal is the ceiling for a store that never refuses" }
+      ]
+    },
+    {
+      "clause": "session guarantees (read-your-writes, monotonic reads/writes, writes-follow-reads) as the client-centric slice",
+      "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }]
+    },
+    {
+      "clause": "§5.3 gives the practitioner view",
+      "at": [{ "deep": "Production: where Chapter 5 already used three of these four" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Jepsen: Sequential Consistency",
+      "items": [
+        { "item": "the single-total-order, program-order-consistent, no-real-time definition", "at": [{ "step": "Reveal: sequential consistency keeps one order, drops real time" }] },
+        { "item": "Lamport's own 1979 wording for the model", "at": [{ "deep": "Internals: what sequential consistency keeps, and what it throws away" }] }
+      ]
+    },
+    {
+      "source": "Jepsen: Causal Consistency",
+      "items": [
+        { "item": "the chat example, with the question causally preceding both answers and the two answers free to swap", "at": [{ "step": "Reveal: causal consistency orders only cause and effect" }] },
+        { "item": "the Real-Time Causal bound and its two conditions, always-available and one-way convergent", "at": [{ "step": "Reveal: causal is the ceiling for a store that never refuses" }] }
+      ]
+    },
+    {
+      "source": "Jepsen: Monotonic Reads",
+      "items": [
+        { "item": "the precise definition: a later read by the same process never regresses behind an earlier one", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] }
+      ]
+    },
+    {
+      "source": "Jepsen: Monotonic Writes",
+      "items": [
+        { "item": "the precise definition: a process's own writes are observed everywhere in the order it issued them", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] }
+      ]
+    },
+    {
+      "source": "Jepsen: Read Your Writes",
+      "items": [
+        { "item": "the precise definition: a process's own subsequent read observes its own prior write", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] }
+      ]
+    },
+    {
+      "source": "Jepsen: Writes Follow Reads",
+      "items": [
+        { "item": "the precise definition: a write issued after a read is visible everywhere after the write that read observed", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] }
+      ]
+    },
+    {
+      "source": "de.linearizability (internal cross-reference)",
+      "items": [
+        { "item": "the real-time rule sequential consistency drops is exactly the gap linearizability closed, and the Attiya-Welch bound prices that gap", "at": [{ "deep": "Internals: what sequential consistency keeps, and what it throws away" }] }
+      ]
+    },
+    {
+      "source": "de.lamport-clocks-happens-before (internal cross-reference)",
+      "items": [
+        { "item": "causal ordering here is exactly topic 3's happens-before relation, restricted to this topic's read-depends-on-write edges", "at": [{ "deep": "Lab: the chat example as a causal-order checker, and the four guarantees broken one at a time" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Sequential consistency requires one total order consistent with each process's own program order, but makes no real-time promise at all.", "at": [{ "step": "Reveal: sequential consistency keeps one order, drops real time" }] },
+      { "item": "A read that starts after a write completes may still legally return the old value under sequential consistency, something linearizability forbids outright.", "at": [{ "step": "Reveal: sequential consistency keeps one order, drops real time" }] },
+      { "item": "Causal consistency requires only that causally related operations, by happens-before, appear in the same order everywhere; concurrent operations may be seen in different orders by different processes.", "at": [{ "step": "Reveal: causal consistency orders only cause and effect" }] },
+      { "item": "In the chat example, every participant observes the question before either answer, since answering causally depends on reading it, while the two concurrent answers may be observed in either order.", "at": [{ "step": "Reveal: causal consistency orders only cause and effect" }] },
+      { "item": "Real-Time Causal consistency is proven to be the strongest consistency model obtainable in a system that is both always-available and one-way convergent; dropping either condition can make a stronger model reachable again.", "at": [{ "step": "Reveal: causal is the ceiling for a store that never refuses" }] },
+      { "item": "Read-your-writes requires that a process's own subsequent read observe the effects of its own prior write, and says nothing about what other processes observe.", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] },
+      { "item": "Monotonic reads requires that a later read by the same process never observe a state older than an earlier read by that same process.", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] },
+      { "item": "Monotonic writes requires that if the same process performs write w1 then w2, every process that observes w2 has already observed w1.", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] },
+      { "item": "Writes-follow-reads requires that a write issued after a read that observed some prior write becomes visible everywhere only after that prior write.", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] },
+      { "item": "None of the four session guarantees is stronger than any other; each can fail independently while the other three continue to hold.", "at": [{ "step": "Reveal: four session guarantees, each one breakable alone" }] },
+      { "item": "This topic does not assert that the four session guarantees together amount to causal consistency; that equivalence needs reading Terry et al. and the later literature on how the four combine, which was not independently verified here.", "at": [{ "step": "Reveal: what this doesn't claim" }] },
+      { "item": "Sequential consistency and linearizability both require giving up availability during a partition, which is why neither is reachable for a store that promises to always answer, leaving causal consistency as the strongest remaining option.", "at": [{ "step": "Predict: which weakest model forbids all three?" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

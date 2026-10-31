@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the architecture a retry runs on
+
+<ul class="resources">
+  <Resource kind="reel" title="Orchestrator architecture: scheduler, executor, metadata DB" domain="data-engineering" host="de.orchestrator-architecture-scheduler" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Tasks" href="https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/tasks.html" by="Apache Airflow 3.3.2 documentation">Task-instance states, retry policies, timeouts and the heartbeat-timeout ("zombie task") mechanism.</Resource>
+  <Resource kind="reading" title="Dags" href="https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/dags.html" by="Apache Airflow 3.3.2 documentation">Trigger rules, including the `all_success` default and `one_failed`, run for real in this topic's own demo.</Resource>
+</ul>
+
+</section>

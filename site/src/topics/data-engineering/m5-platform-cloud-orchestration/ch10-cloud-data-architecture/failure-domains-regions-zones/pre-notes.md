@@ -1,0 +1,5 @@
+- **Region**: a geographic area where a cloud provider clusters multiple, independent data centers. *Where you meet it:* "us-east-1" or "europe-west1" as the place you pick when you launch a resource.
+- **Availability Zone (AZ)**: one or more discrete data centers inside a Region, with its own power, cooling and networking. *Where you meet it:* a database console asking which "zone" or "AZ" to place a replica in.
+- **Zonal resource**: a resource that lives in exactly one AZ and goes down if that AZ does. *Where you meet it:* a block storage volume that can only attach to a server in its own zone.
+- **Blast radius**: how much of a system a single failure can reach. *Where you meet it:* "how many customers does losing this one thing actually affect?"
+- **Managed service**: a cloud product the provider operates for you (patches, scaling, failover), as opposed to software you install and run yourself. *Where you meet it:* a managed database versus one you run on your own virtual machine.

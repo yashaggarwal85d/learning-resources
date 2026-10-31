@@ -1,0 +1,79 @@
+{
+  "topic": "de.idempotent-tasks-failure-semantics",
+  "steps": [
+    {
+      "lines": [
+        "A worker is killed in the middle of a task.",
+        "The scheduler does exactly what it's supposed to do and retries it.",
+        "And by the time the data lands, twice as many rows come out as went in.",
+        "Nothing in the logs even says this happened."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trap. Retried does not mean it ran once, cleanly, and then ran again.",
+        "The first attempt may already have written its output, in full, before the scheduler ever lost track of it.",
+        "So a retry isn't a correctness mechanism on its own. It's only safe if running the exact same work twice does no harm."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that idea measured directly, not just described.",
+        "The same three rows, written twice, two different ways.",
+        "One way writes to a file named for its own interval, and overwrites it each time. After two runs, it still holds three rows.",
+        "The other way appends instead. After the exact same two runs, it holds six.",
+        "Same task, same retry, same two runs. Only the write mode decided whether the retry was harmless or not."
+      ]
+    },
+    {
+      "lines": [
+        "Quick question first.",
+        "One task times out. A separate task hits a row that's simply malformed.",
+        "Does the executor retry both of those the same way?",
+        "Think it through before I answer."
+      ],
+      "answer": "No. A timeout is often transient and worth retrying. A malformed row is a data problem no retry fixes, so retrying it anyway just burns through attempts a real transient failure might have actually needed."
+    },
+    {
+      "lines": [
+        "Now a real three task workflow, run for real, not simulated.",
+        "The first task fails on purpose.",
+        "A second task, left on the default rule, never runs at all. Its real recorded state afterward is upstream failed.",
+        "A third task, told explicitly to run when something upstream fails, runs anyway, and succeeds.",
+        "Every one of those three states came straight out of a real metadata database after a real run."
+      ]
+    },
+    {
+      "lines": [
+        "Now the mechanism behind the scariest version of this: a worker that dies without telling anyone at all.",
+        "Airflow's own documented answer is a heartbeat. Every running task instance is expected to check in periodically.",
+        "When that heartbeat goes quiet for too long, the scheduler assumes the worker is gone, and marks the task failed, or retries it if it still can.",
+        "Notice the word assumes. The scheduler cannot actually know the task didn't just finish quietly a moment before it lost contact."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece: a timeout caps how long any one task is allowed to run.",
+        "That's useful. But retrying something that was never going to succeed, over and over, doesn't make it more likely to succeed.",
+        "It just spends a limited budget of attempts on nothing, and delays the moment someone actually notices the real problem."
+      ]
+    },
+    {
+      "lines": [
+        "So: every task runs at least once, never exactly once.",
+        "An overwrite keyed to its own interval survives a retry untouched. An append does not.",
+        "Trigger rules decide who runs, who's skipped, and who becomes upstream failed, and we watched that happen for real.",
+        "And retries are a budget worth protecting, not a blanket fix for every kind of failure."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario.",
+        "Picture a task instance stuck on running for six hours straight. Nothing in its log complains. Nothing shows progress either.",
+        "What's actually worth checking first?",
+        "Take a second."
+      ],
+      "answer": "Its heartbeat. Nothing about looking like it's still running rules out a worker that already died silently — the heartbeat is the one honest signal, and it's exactly what the scheduler itself is watching."
+    }
+  ]
+}

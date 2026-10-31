@@ -1,0 +1,8 @@
+- **Term**: an increasing integer that every server tracks; the paper's own logical clock. *Where you meet it:* every server, every vote, every rejected stale request.
+- **Replicated log**: an ordered list of entries each server keeps, meant to end up identical across the cluster. *Where you meet it:* the structure every safety property in this topic is a statement about.
+- **Majority**: more than half the servers in the current configuration. *Where you meet it:* the threshold for both winning an election and committing an entry.
+- **Quorum**: another name for a majority set, used when overlap between two different majorities matters. *Where you meet it:* the Figure-free version of the proof — any two majorities out of the same cluster must share at least one server.
+- **Election**: the process by which a candidate becomes leader by collecting votes from a majority. *Where you meet it:* the hook's second election, won by a server missing the first leader's entry.
+- **Heartbeat**: an empty `AppendEntries` call a leader sends to keep followers from starting a new election. *Where you meet it:* named, not detailed — this topic's scope stops at the safety argument.
+- **State machine**: the application logic that applies committed log entries, in order, on every server. *Where you meet it:* the thing State Machine Safety protects, named once and not re-derived.
+- **Snapshot**: a compacted copy of a state machine's current state, letting a server discard the log entries that produced it. *Where you meet it:* named in this topic, detailed nowhere in this course.

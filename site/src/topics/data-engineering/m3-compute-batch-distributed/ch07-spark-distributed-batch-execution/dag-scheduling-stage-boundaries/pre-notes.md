@@ -1,0 +1,4 @@
+- **Lineage graph**: the chain of transformations Spark records for a DataFrame, describing how to recompute it from its sources, without running any of it yet. *Where you meet it:* the whole chain this reel builds (filter, select, filter) before any action triggers it.
+- **Shuffle**: data moving between partitions across the network so that related rows end up together. *Where you meet it:* this reel measures exactly which operation causes one and which doesn't.
+- **Pipelining**: running a chain of operators one row at a time, inside a single task, with no intermediate materialisation. *Where you meet it:* why the narrow chain in this reel costs nothing extra to extend.
+- **Query plan**: Spark's own internal description of how a DataFrame computation will run, inspectable via `EXPLAIN` or `queryExecution`. *Where you meet it:* this reel searches it directly for the word "Exchange."

@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: ordering without a trusted clock
+
+<ul class="resources">
+  <Resource kind="reel" title="Lamport clocks and happens-before" domain="data-engineering" host="de.lamport-clocks-happens-before" by="Chapter 14, topic 3" />
+  <Resource kind="reel" title="Vector clocks and version vectors" domain="data-engineering" host="de.vector-clocks-version-vectors" by="Chapter 14, topic 4" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Linearizability: A Correctness Condition for Concurrent Objects" href="https://cs.brown.edu/people/mph/HerlihyW90/p463-herlihy.pdf" by="Herlihy & Wing, TOPLAS 1990">The definition, locality and nonblocking properties, in the paper's own words.</Resource>
+  <Resource kind="reading" title="Sequential Consistency versus Linearizability" href="https://courses.csail.mit.edu/6.852/01/papers/p91-attiya.pdf" by="Attiya & Welch, ACM TOCS 1994">The cost result, and the model's own definitions of d and u.</Resource>
+  <Resource kind="reading" title="Raft: In Search of an Understandable Consensus Algorithm" href="https://raft.github.io/raft.pdf" by="Ongaro & Ousterhout">The stale-leader-read hazard, in the paper's own words.</Resource>
+  <Resource kind="reading" title="etcd API guarantees" href="https://etcd.io/docs/v3.5/learning/api_guarantees/" by="etcd documentation">A real store's own worked stale-read example.</Resource>
+  <Resource kind="reading" title="Linearizability" href="https://jepsen.io/consistency/models/linearizable" by="Jepsen consistency models">A plain-language restatement of the real-time rule.</Resource>
+</ul>
+
+</section>

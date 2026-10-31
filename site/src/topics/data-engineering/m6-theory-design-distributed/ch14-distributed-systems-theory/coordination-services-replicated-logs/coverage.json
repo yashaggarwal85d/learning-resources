@@ -1,0 +1,112 @@
+{
+  "topic": "de.coordination-services-replicated-logs",
+  "syllabus": [
+    {
+      "clause": "ZooKeeper (Zab, sessions, ephemeral nodes, watches)",
+      "at": [{ "step": "Reveal: ZooKeeper's two guarantees, and a read that can lag behind them" }]
+    },
+    {
+      "clause": "etcd (Raft)",
+      "at": [{ "step": "Reveal: etcd, strictly serializable by default, with an opt-in stale read" }]
+    },
+    {
+      "clause": "Kafka's KRaft controller quorum (Kafka 4.0 removed ZooKeeper entirely)",
+      "at": [{ "step": "Reveal: Kafka's own words — the first major release without ZooKeeper" }]
+    },
+    {
+      "clause": "Kafka's ISR replication as a non-majority quorum (f+1 replicas tolerate f failures because membership is decided by a separate consensus-backed controller)",
+      "at": [
+        { "step": "Reveal: the in-sync set is a quorum, but not a majority one" },
+        { "step": "Reveal: the trade a dropped setting makes, and the gap it still leaves" }
+      ]
+    },
+    {
+      "clause": "table-format commits as compare-and-swap on a catalog pointer (§6.3)",
+      "at": [{ "step": "Reveal: a table commit is one compare-and-swap on a single pointer" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Hunt et al.: ZooKeeper: Wait-free coordination for Internet-scale systems",
+      "items": [
+        { "item": "linearizable writes plus FIFO client order, and the A-linearizability distinction", "at": [{ "step": "Reveal: ZooKeeper's two guarantees, and a read that can lag behind them" }] },
+        { "item": "ephemeral znodes deleted when their creating session terminates, and watches", "at": [{ "step": "Reveal: ZooKeeper's two guarantees, and a read that can lag behind them" }] },
+        { "item": "the sync-then-read slow-read primitive", "at": [{ "step": "Reveal: ZooKeeper's two guarantees, and a read that can lag behind them" }] }
+      ]
+    },
+    {
+      "source": "ZooKeeper Programmer's Guide",
+      "items": [
+        { "item": "the zxid as a total order stamp on every change", "at": [{ "step": "Reveal: ZooKeeper's two guarantees, and a read that can lag behind them" }] }
+      ]
+    },
+    {
+      "source": "etcd API guarantees",
+      "items": [
+        { "item": "strict serializability by default and the opt-in stale-but-faster serializable read", "at": [{ "step": "Reveal: etcd, strictly serializable by default, with an opt-in stale read" }] }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.0.0 Release Announcement",
+      "items": [
+        { "item": "the first major release to operate entirely without Apache ZooKeeper, and Pre-Vote", "at": [{ "step": "Reveal: Kafka's own words — the first major release without ZooKeeper" }] }
+      ]
+    },
+    {
+      "source": "Kafka design documentation: Replication",
+      "items": [
+        { "item": "the in-sync replica set replacing majority vote, and its exact replica-count trade-off", "at": [{ "step": "Reveal: the in-sync set is a quorum, but not a majority one" }] },
+        { "item": "unclean leader election's two behaviors and the availability-versus-consistency trade", "at": [{ "step": "Reveal: the trade a dropped setting makes, and the gap it still leaves" }] }
+      ]
+    },
+    {
+      "source": "KIP-966: Eligible Leader Replicas",
+      "items": [
+        { "item": "the last-replica-standing data-loss case this proposal closes", "at": [{ "step": "Reveal: the trade a dropped setting makes, and the gap it still leaves" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg Table Spec",
+      "items": [
+        { "item": "the atomic metadata-file swap and the serializable isolation it provides", "at": [{ "step": "Reveal: a table commit is one compare-and-swap on a single pointer" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes: Cluster Architecture",
+      "items": [
+        { "item": "etcd named as Kubernetes' backing store for all cluster data", "at": [{ "deep": "Internals: the hook's four combinations are two independent switches, not four special cases" }] }
+      ]
+    },
+    {
+      "source": "de.raft-at-conceptual-level (internal cross-reference)",
+      "items": [
+        { "item": "the Raft mechanism etcd and KRaft both replicate through, referenced not re-taught", "at": [{ "step": "Reveal: Kafka's own words — the first major release without ZooKeeper" }] }
+      ]
+    },
+    {
+      "source": "de.leases-fencing-tokens-split (internal cross-reference)",
+      "items": [
+        { "item": "ZooKeeper's zxid and etcd's revision as two more fencing-token tokens", "at": [{ "deep": "Production: three stores, three different answers to \"how fresh is a read?\"" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "ZooKeeper guarantees linearizable writes and FIFO client order, implemented by the Zab atomic broadcast protocol; only writes are linearizable, so ordinary reads are served locally and can be stale.", "at": [{ "step": "Reveal: ZooKeeper's two guarantees, and a read that can lag behind them" }] },
+      { "item": "An ephemeral znode is deleted automatically when the session that created it terminates, which is the building block leader-election recipes on ZooKeeper reuse, paired with a watch that notifies a client of the change.", "at": [{ "step": "Reveal: ZooKeeper's two guarantees, and a read that can lag behind them" }] },
+      { "item": "etcd's KV API calls are strictly serializable by default; an opt-in serializable read may access stale data with respect to quorum but skips the live-consensus round trip.", "at": [{ "step": "Reveal: etcd, strictly serializable by default, with an opt-in stale read" }] },
+      { "item": "Apache Kafka 4.0 is described in its own release announcement as the first major release to operate entirely without Apache ZooKeeper, replacing it with a Raft-replicated controller quorum that writes cluster metadata to a dedicated log.", "at": [{ "step": "Reveal: Kafka's own words — the first major release without ZooKeeper" }] },
+      { "item": "Instead of majority vote, Kafka dynamically maintains a set of in-sync replicas and commits a write only once every member of that set has received it; to tolerate a given number of failures this needs one fewer replica than majority vote, at the cost of a commit waiting on the slowest in-sync member rather than the fastest.", "at": [{ "step": "Reveal: the in-sync set is a quorum, but not a majority one" }] },
+      { "item": "With unclean leader election disabled, Kafka waits for a replica that was actually in the in-sync set to return as leader, favoring consistency; with it enabled, the first replica to return becomes leader even if it was never in sync, favoring availability over the acknowledged write.", "at": [{ "step": "Reveal: the trade a dropped setting makes, and the gap it still leaves" }] },
+      { "item": "A last-replica-standing unclean shutdown can still turn a local data-loss event into a global one even with unclean leader election disabled, which KIP-966's Eligible Leader Replicas proposal addresses.", "at": [{ "step": "Reveal: the trade a dropped setting makes, and the gap it still leaves" }] },
+      { "item": "An Iceberg table commit builds a new metadata file and replaces the old one with an atomic swap of a single catalog pointer, which is what gives table changes serializable isolation; a writer whose swap loses the race rebuilds against the new pointer and retries rather than failing outright.", "at": [{ "step": "Reveal: a table commit is one compare-and-swap on a single pointer" }] },
+      { "item": "etcd is documented by Kubernetes as the consistent, highly-available key-value store used as its backing store for all cluster data, which is why etcd's own guarantees matter to anything built on Kubernetes' reconciliation loop.", "at": [{ "deep": "Internals: the hook's four combinations are two independent switches, not four special cases" }] },
+      { "item": "Whether the hook's acknowledged write survives depends only on the unclean-leader-election setting once the leader and its in-sync follower both fail; min.insync.replicas changes how weak the starting acknowledgment was, not which setting decides survival after that specific failure.", "at": [{ "step": "Predict: which settings decide whether the acknowledged write survives?" }] },
+      { "item": "Requiring read and write quorums each larger than half the replicas guarantees they intersect on at least one replica, but that intersection alone does not make a store linearizable; a protocol still needs a rule, such as versioning, for a read to pick out the overlapping replica's value over every other answer it receives.", "at": [{ "step": "Prove it: reads needing more than half the replicas and writes needing more than half — does that alone give a linearizable store?" }] },
+      { "item": "The Raft algorithm itself, Zab's internals beyond naming, Kafka's KRaft snapshot and dynamic-quorum mechanics, and table-format internals are left to other topics or chapters, not re-derived here.", "at": [{ "out": "named in CHAPTER.md's Leaves out; topics 9 and Chapters 6 and 9" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

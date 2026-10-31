@@ -1,0 +1,83 @@
+{
+  "topic": "de.bi-tools-as-warehouse",
+  "syllabus": [
+    {
+      "clause": "Looker/LookML, Power BI, Tableau, Superset, Metabase",
+      "at": [
+        { "step": "Reveal: the tools, by category" }
+      ]
+    },
+    {
+      "clause": "import/extract vs live-query vs Power BI Direct Lake (reading Delta tables in OneLake directly) and the load each puts on the warehouse",
+      "at": [
+        { "step": "Reveal: import/extract" },
+        { "step": "Reveal: live-query" },
+        { "step": "Reveal: Direct Lake's transcoding" }
+      ]
+    },
+    {
+      "clause": "headless BI serving one metrics layer to many tools",
+      "at": [
+        { "step": "Reveal: headless BI" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google Cloud — Introduction to LookML",
+      "items": [
+        { "item": "LookML is the Looker Modeling Language, used to create semantic data models that describe dimensions, aggregates, calculations and data relationships", "at": [{ "step": "Reveal: the tools, by category" }] },
+        { "item": "LookML is a dependency language, independent of particular SQL dialects", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Fabric — Direct Lake overview",
+      "items": [
+        { "item": "Direct Lake loads data from OneLake's Delta tables directly into memory for high-performance interactive analysis, for large data volumes", "at": [{ "step": "Reveal: Direct Lake's transcoding" }] },
+        { "item": "a Direct Lake refresh copies only metadata (\"framing\"), unlike an Import refresh which copies the whole data volume", "at": [{ "step": "Reveal: Direct Lake's transcoding" }] },
+        { "item": "Direct Lake on SQL analytics endpoints falls back to DirectQuery mode when it can't load data directly from a Delta table", "at": [{ "step": "Reveal: Direct Lake's transcoding" }] },
+        { "item": "column loading is named \"transcoding\" in Microsoft's own documentation, subject to documented Fabric capacity guardrails by SKU", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Apache Superset — Welcome",
+      "items": [
+        { "item": "an open-source modern data exploration and visualization platform connecting to any SQL-based database, including cloud-native databases at petabyte scale", "at": [{ "step": "Reveal: the tools, by category" }] }
+      ]
+    },
+    {
+      "source": "Metabase Learn — A tour of Metabase",
+      "items": [
+        { "item": "an open-source business intelligence tool connecting to many popular databases, letting users ask questions and see answers as charts or tables", "at": [{ "step": "Reveal: the tools, by category" }] }
+      ]
+    },
+    {
+      "source": "Tableau Help — Tutorial: Get Started with Tableau Desktop (tableau.com unreachable, documentation subdomain substituted)",
+      "items": [
+        { "item": "Tableau Desktop builds views, maps, dashboards and stories from data, shared via Tableau Server, Tableau Cloud or Tableau Public", "at": [{ "step": "Reveal: the tools, by category" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's 'cost triples overnight with no change to the dashboard' is the load-bearing detail: it isolates the query mode as the only variable that changed, which is exactly what the predict step and the reveal are teaching the learner to notice first in a real incident.", "at": [{ "step": "Hook" }] },
+      { "item": "Naming Looker/LookML as the 'commercial ancestor' of Chapter 3's generic semantic-layer idea matters because it tells the learner the concept predates this course's own vocabulary for it, not the reverse — LookML did not borrow the idea from a semantic layer, the semantic-layer idea is this course's generic name for what LookML and tools like it already did.", "at": [{ "step": "Reveal: the tools, by category" }] },
+      { "item": "Import/extract and live-query are opposite trade-offs on the same axis (freshness versus warehouse load), not two unrelated features — a learner who can place Direct Lake's transcoding as a third point on that same axis (near-import speed, near-live freshness, at the cost of Fabric-specific constraints) has understood the mechanism, not just memorized three names.", "at": [{ "step": "Reveal: Direct Lake's transcoding" }] },
+      { "item": "Headless BI is not a feature any of the five named tools implements — it is what becomes possible once topic 8's compiled metric exists, independent of which tool reads it; this topic's own phrase for the idea deliberately does not appear in any of the five vendors' own documentation.", "at": [{ "step": "Reveal: headless BI" }] },
+      { "item": "This refresher's own 'Leaves out' line (no tool's modeling-language syntax, no acceleration engines, no renegotiation of the metric-ownership process) is evidence the refresher is doing its one job — naming the tool-side half of topic 8's contract — rather than drifting into a feature tour or re-teaching topic 8 or topic 10's material.", "at": [{ "step": "Recap" }] },
+      { "item": "The Prove It step's cross-tool metric drift scenario generalizes beyond Looker/Metabase specifically: any two tools reading from the same warehouse but not the same compiled metric can drift apart in exactly this way, regardless of which two tools they are.", "at": [{ "step": "Prove it" }] },
+      { "item": "Because tableau.com's marketing site is unreachable in this sandbox, this topic's Tableau categorization traces to Tableau's own documentation subdomain (help.tableau.com) rather than its marketing copy — this topic's FACT-CHECK states that substitution plainly rather than implying the marketing page was read.", "at": [{ "deep": "Internals" }] },
+      { "item": "The commercial/open-source split named in this topic (Looker, Power BI, Tableau commercial; Superset, Metabase open-source) is a licensing distinction, not a capability ranking — nothing in any of the five vendors' own quoted documentation claims one category is more capable than the other, only that they're operated differently.", "at": [{ "step": "Reveal: the tools, by category" }] },
+      { "item": "A reader who only remembers 'live mode is slower' from this topic has missed the actual lesson: live-query is not slower in general, it simply moves the cost from a scheduled refresh to every single interaction, which is a cost-timing trade-off, not a universal speed penalty.", "at": [{ "step": "Reveal: live-query" }] },
+      { "item": "Direct Lake's own documented fallback to DirectQuery (claim 5) is itself evidence that 'zero import, always fast' is not an unconditional promise even within Microsoft's own stack — the overview page names specific conditions (a SQL view, SQL-based granular access control) under which the fast path isn't available, which is the same kind of documented limit this chapter's other topics take seriously rather than treating a vendor's headline feature as absolute.", "at": [{ "step": "Reveal: Direct Lake's transcoding" }] },
+      { "item": "This topic's own outcomes line ('classify a given BI setup... and predict which puts load on the warehouse and when') is testable against the hook itself: a learner who has internalized the three modes can explain the tripled cost without this topic ever stating the mechanism a second time after the reveal steps.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

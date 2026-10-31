@@ -1,0 +1,82 @@
+{
+  "topic": "de.representative-data-workload-skew",
+  "syllabus": [
+    {
+      "clause": "uniform toy data hides hot keys, skewed joins and spills",
+      "at": [
+        { "step": "Reveal: the uniform baseline, confirmed flat" }
+      ]
+    },
+    {
+      "clause": "Zipfian key distributions (the YCSB default)",
+      "at": [
+        { "step": "Reveal: Zipfian key generation, reproduced" }
+      ]
+    },
+    {
+      "clause": "realistic cardinalities and cross-column correlations (what breaks cardinality estimators)",
+      "at": [
+        { "step": "Reveal: correlated columns breaking a cardinality estimator" }
+      ]
+    },
+    {
+      "clause": "scale factors",
+      "at": [
+        { "step": "Reveal: an explicit scale factor" }
+      ]
+    },
+    {
+      "clause": "the seeded data generator as a committed artifact of the benchmark",
+      "at": [
+        { "step": "Reveal: the seeded generator as a committed artifact" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL docs — 14.2.2 Extended Statistics",
+      "items": [
+        { "item": "the planner normally assumes multiple conditions are independent of each other, an assumption that does not hold when column values are correlated; regular per-column statistics cannot capture cross-column correlation", "at": [{ "step": "Reveal: correlated columns breaking a cardinality estimator" }] }
+      ]
+    },
+    {
+      "source": "YCSB — workloads/workloada",
+      "items": [
+        { "item": "YCSB's own Workload A (\"update heavy\") ships with its request distribution configured as Zipfian", "at": [{ "step": "Reveal: Zipfian key generation, reproduced" }] }
+      ]
+    },
+    {
+      "source": "YCSB — ZipfianGenerator.java",
+      "items": [
+        { "item": "a Zipfian generator produces a sequence of items such that some items are more popular than others according to a Zipfian distribution", "at": [{ "step": "Reveal: Zipfian key generation, reproduced" }] }
+      ]
+    },
+    {
+      "source": "TPC-H — Standard Specification, Revision 3.0.1",
+      "items": [
+        { "item": "a table's cardinality is factored by SF, the Scale Factor, to obtain the chosen database size; scale factor 1 is defined as approximately one gigabyte", "at": [{ "step": "Reveal: an explicit scale factor" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately contrasts the previous topic's own clean, flat benchmark result against the same shop's real production traffic shape, so the gap this topic resolves is visible before any mechanism is named, rather than opening with an abstract claim about Zipfian distributions.", "at": [{ "step": "Hook" }] },
+      { "item": "The uniform baseline is run first, on the identical query and load shape used for the Zipfian demonstration, so the contrast between steps 3 and 4 isolates the one variable that actually changed (the key-generation distribution), not a confound from a different query or table.", "at": [{ "step": "Reveal: the uniform baseline, confirmed flat" }] },
+      { "item": "The Zipfian generator used in examples.py is explicitly labeled, in its own docstring, as a simplified approximation of YCSB's documented shape rather than a reimplementation of YCSB's own zeta-based algorithm, so the claim this topic makes is scoped to the qualitative hot-key effect, not to numerically matching a specific library.", "at": [{ "deep": "Internals" }] },
+      { "item": "The correlated-vs-independent cardinality comparison holds every variable constant except the one under test (row count, column types, and queried condition shape are identical across both tables; only whether currency is a deterministic function of country differs), so the measured gap in estimator error is attributable to the correlation alone.", "at": [{ "step": "Reveal: correlated columns breaking a cardinality estimator" }] },
+      { "item": "The topic is explicit, in both the citation and the narration, that its own declared scale factor of one describes this topic's own base dataset, not a claim of matching TPC-H's own scale-factor-1 database size; the lesson taken from TPC-H is the convention of stating size as an explicit number, not reproducing TPC-H's own benchmark at TPC-H's own scale.", "at": [{ "step": "Reveal: an explicit scale factor" }] },
+      { "item": "The seeded-generator reproducibility check hashes the full generated dataset from two independent calls with the same seed and asserts byte-identical digests, rather than merely eyeballing a few printed rows, so the claim that the generator is a committed, reusable artifact is verified mechanically.", "at": [{ "step": "Reveal: the seeded generator as a committed artifact" }] },
+      { "item": "This topic cites YCSB's own Workload A configuration file for the Zipfian claim rather than the syllabus's loose 'YCSB default' phrasing, after directly grepping YCSB's own CoreWorkload source and finding its code-level fallback distribution is actually uniform, not zipfian, avoiding an overclaim that would not have survived a careful reader checking the source.", "at": [{ "deep": "Internals" }] },
+      { "item": "The chapter's running example stays on the same shop schema and the same order-lookup query used in topics 1 and 2, so this topic's own uses list (closed-loop-vs-constant-rate-generator, fanout-tail-amplification, steady-state-detection) names concepts the viewer already saw demonstrated, not concepts introduced here for the first time under a new name.", "at": [{ "step": "Recap" }] },
+      { "item": "The Prove It step is designed so the plausible-sounding wrong answer (trusting a clean synthetic-data benchmark result for a production decision) fails for the same reason this topic's own lab just demonstrated twice (uniform data hides a hot key; independent columns hide a correlation), testing whether the viewer generalized the lesson rather than only watched the lab run once.", "at": [{ "step": "Prove it" }] },
+      { "item": "Every absolute number this topic prints (latency milliseconds, planner row estimates) varies run to run against this sandbox's real, shared Postgres instance, while the qualitative relationships actually taught (uniform flat vs. Zipfian skewed; correlated error far exceeding independent error; identical seed reproducing identical bytes) were confirmed stable across three separate runs, which is the property that was actually verified.", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,6 @@
+- **Conformed mart**: a dimensionally modeled table built to the same shared definitions every consumer agrees on.
+- **Grain**: what one single row of a table actually represents.
+- **Freshness SLA**: a written promise for how stale data is allowed to get before it's a problem.
+- **Analytics engineer**: the role that typically owns a metric's business definition, distinct from the data engineer who builds the table underneath it.
+- **Metric definition**: the one agreed-on formula for computing a named business number.
+- **Negotiation**: the ongoing process deciding who may change a shared metric and how conflicts get resolved.

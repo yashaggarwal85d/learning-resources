@@ -1,0 +1,82 @@
+{
+  "topic": "de.exactly-once-as-end",
+  "steps": [
+    {
+      "lines": [
+        "Notice that nothing here actually malfunctioned.",
+        "The first request worked. The acknowledgement that should have confirmed that simply never made it back. Everything after that point is a reasonable response to incomplete information.",
+        "The customer paid for a system behaving correctly, twice."
+      ]
+    },
+    {
+      "lines": [
+        "Before choosing, separate what the pipeline's own guarantee could possibly reach from what it can't.",
+        "Whatever happens inside the pipeline's walls is one question. What happens the moment a request leaves to talk to someone else's system is a completely different one."
+      ],
+      "answer": [
+        "The fix is a value sent with the retry, not a stronger broker.",
+        "An idempotency key lets the processor recognize the second attempt as the same request, not a new charge.",
+        "No internal guarantee, however strong, can reach past the pipeline's own boundary to fix this on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what this argument actually rules out, because it's narrower than it sounds.",
+        "It doesn't say a lower layer's reliability feature is useless. It says that feature alone can never be the whole answer, because only the application actually knows what correctness means here.",
+        "A reliable-sounding broker is, at best, a head start, not a finish line."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention to what's actually being chosen here, not just named.",
+        "Retry, and you might deliver twice. Don't retry, and you might lose the message outright. Every system on a lossy link is choosing one of exactly these two risks.",
+        "There's no quiet third option hiding anywhere in here."
+      ]
+    },
+    {
+      "lines": [
+        "Notice that the two runs differ in exactly one thing.",
+        "Same timeout, same retry, same lost acknowledgement. The only thing that changes is whether the processor has a key to check the second attempt against.",
+        "That single difference is the entire gap between a double charge and a safe no-op."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward what actually changed here, because it isn't the delivery.",
+        "The message still arrives twice, exactly as before. What's different is that twice now costs the same as once.",
+        "That's the whole trick behind the phrase. It was never about making delivery stronger."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what each of these two systems is actually protecting against.",
+        "Kafka ties a producer's output to the consumer's offset so neither can exist without the other. Flink ties an external write to its own checkpoint the same way.",
+        "Different products, same refusal to let one half of a pair survive without the other."
+      ]
+    },
+    {
+      "lines": [
+        "Separate what just got fixed from what never could be.",
+        "Everything inside this topic's three mechanisms now has an atomic answer. The moment a side effect crosses out to a system this pipeline doesn't control, none of those three mechanisms are even in the room anymore."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the whole answer, not three separate fixes.",
+        "Delivery alone was never going to be exactly-once. It took an idempotent write to make a duplicate harmless, and an atomic commit to close the one crash window left inside the pipeline.",
+        "Outside that boundary, none of it reaches."
+      ]
+    },
+    {
+      "lines": [
+        "Before answering, ask what an idempotency key is actually checked against, and by whom.",
+        "It only does anything where something on the other end is actually looking at it and comparing."
+      ],
+      "answer": [
+        "Not quite everywhere, no.",
+        "The key protects exactly the write that checks for it. A confirmation email the retry also triggers, with nothing on the email side watching for repeats, goes out again regardless.",
+        "The key fixed one effect. It never touched the other one."
+      ]
+    }
+  ]
+}

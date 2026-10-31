@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: what the model promises about timing
+
+<ul class="resources">
+  <Resource kind="reel" title="Timing and failure models" domain="data-engineering" host="de.timing-failure-models" by="Chapter 14, topic 1" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spanner: Google's Globally-Distributed Database" href="https://www.cs.princeton.edu/courses/archive/fall15/cos518/papers/spanner.pdf" by="Corbett et al., OSDI 2012">TrueTime's bounded-error interval, in the paper's own words.</Resource>
+  <Resource kind="reading" title="RFC 5905: Network Time Protocol Version 4" href="https://www.rfc-editor.org/rfc/rfc5905.txt" by="Mills, Martin, Burbank, Kasch, IETF 2010">The on-wire offset and round-trip delay formulas.</Resource>
+  <Resource kind="reading" title="Leap Smear" href="https://developers.google.com/time/smear" by="Google for Developers">The 24-hour linear smear, in Google's own words.</Resource>
+  <Resource kind="reading" title="AWS ClockBound" href="https://raw.githubusercontent.com/aws/clock-bound/main/README.md" by="aws/clock-bound, GitHub">A production, open-source bounded-error clock.</Resource>
+</ul>
+
+</section>

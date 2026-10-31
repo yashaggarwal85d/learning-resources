@@ -1,0 +1,90 @@
+{
+  "topic": "de.inference-logging-log-wait",
+  "steps": [
+    {
+      "lines": [
+        "A fraud model's offline test and the vectors it actually scored in production disagree on roughly one feature out of twenty.",
+        "Nobody can point to a line of code that explains it. Both pipelines look correct on their own terms.",
+        "So the usual move, reading the code harder, has already failed here. Something else has to break the tie."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual choice in front of you.",
+        "Keep rereading both implementations hoping to spot the subtle error, or start recording the exact number each one actually produced.",
+        "Which approach turns a disagreement nobody can explain into something you can simply measure?"
+      ],
+      "answer": [
+        "Rereading the code again rarely finds what careful code review already missed the first time.",
+        "Recording the served value changes the whole shape of the problem. Instead of auditing two competing implementations, you're just comparing two numbers that either match or don't."
+      ]
+    },
+    {
+      "lines": [
+        "So here's exactly where that recording has to happen.",
+        "Not at the raw input, before any feature logic runs on it, but right after the transformation finishes, the moment the model's actual input exists.",
+        "Capture that finished vector, the exact version of the model that used it, a request id, and when it happened."
+      ]
+    },
+    {
+      "lines": [
+        "Weeks can pass before the true outcome of a request is even known.",
+        "When that label finally shows up, don't recompute the feature from scratch. Reach back into the log and match it to the exact vector by its request id.",
+        "There's no second calculation happening anywhere in that join, which is exactly why it can't quietly drift from what was served."
+      ]
+    },
+    {
+      "lines": [
+        "Two more lanes run alongside the normal one, and they log in exactly the same way.",
+        "One of them, a candidate model watching live traffic, never gets to act on what it predicts. The other gets a real slice of traffic and its predictions genuinely go out the door.",
+        "Same logging, same mechanism end to end. The only thing that changes is which one is allowed to make a decision."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a service handling about a million requests a day, and each one logs a feature vector a couple kilobytes wide.",
+        "Before you do any math, what's your gut sense of what a full year of that actually costs to store?",
+        "Try to picture the number before the next step just tells you."
+      ],
+      "answer": [
+        "A single vector is tiny, so it's easy to assume the whole thing stays tiny too.",
+        "Multiply a small number by a million requests a day, every day, for a year, and tiny stops being the right word."
+      ]
+    },
+    {
+      "lines": [
+        "There's no trick to this number. It's just request rate, times vector size, times how long you keep it around.",
+        "Run those three numbers together honestly, and the total lands solidly in the range of a full terabyte over a year.",
+        "Whatever budget you set for this pipeline, that's the real shape of the bill."
+      ]
+    },
+    {
+      "lines": [
+        "Somebody already removed the customer's id from this logged vector before it ever gets written down.",
+        "Does that alone make the rest of the record safe to keep around indefinitely?",
+        "Look again at what's still sitting in the remaining fields.",
+        "Measure it directly instead of guessing, and the fields that are left, order counts, account age, an average spend, still line up to point at one specific person almost every single time.",
+        "Removing the one field that looked obviously sensitive did almost nothing to the record's ability to identify somebody.",
+        "A name tag is only ever one way a record gives a person away."
+      ]
+    },
+    {
+      "lines": [
+        "Put the whole shape back together.",
+        "Record the exact vector a model actually used, not an approximation of it. Reach back and join that record to a label once the label finally exists. And treat what you've recorded as something with a real price and a real exposure, not as a free side effect.",
+        "None of those three pieces replaces either of the other two."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a team that decided to log absolutely everything, at full volume, forever, with no limit on how long any of it sticks around.",
+        "Does that sound like the cautious, maximally useful choice, or does it sound like a problem quietly getting bigger every single day?",
+        "Weigh what you'd actually be accumulating, not just what you'd be able to train on."
+      ],
+      "answer": [
+        "More data sounds safe right up until you remember what kind of data this actually is.",
+        "Keeping a possibly identifying record forever, with no policy governing it, isn't caution. It's a liability that just keeps compounding the longer nobody looks at it."
+      ]
+    }
+  ]
+}
