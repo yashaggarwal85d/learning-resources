@@ -7587,6 +7587,26 @@ export const TOPICS: TopicMeta[] = [
       "A reproducible platform is the precondition for answering what it actually costs and attributing that cost fairly — which is where this section, and the chapter's own cost thread from 10.1, converge.",
   },
   {
+    id: 'de.compute-cost-controls-commitments',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/compute-cost-controls-commitments',
+    title: 'Compute cost controls and commitments',
+    syllabusTitle: 'Compute cost controls and commitments',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['compute-commitment-breakeven', 'cost-regression-as-ci-gate'],
+    uses: ['cloud-cost-four-dimensions', 'serverless-provisioned-breakeven', 'iac-state-plan-apply-drift', 'policy-as-code-gate'],
+    declared: [],
+    bridge:
+      "A reproducible platform is the precondition for answering what it costs fairly. This topic is that answer in practice: the guardrails that actually stop a cost overrun rather than just alert on it after the bill arrives, and the commitment-vs-flexibility trade-off behind every multi-year discount.",
+    handoff:
+      "Everything in this chapter so far assumed the pipeline was free to run anywhere the cloud allows. For data about a person who lives in the EU, that assumption is false by law before it is false by architecture — which the next section makes exact.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
