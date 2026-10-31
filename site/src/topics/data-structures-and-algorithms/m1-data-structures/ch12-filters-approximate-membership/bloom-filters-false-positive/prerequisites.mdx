@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM-tree write and read paths">Where this structure was already in use — a per-run filter that makes a read for an absent key nearly free.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Practical hash functions and HashDoS">What a good hash function gives this structure to work with.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linear probing and open addressing">The same probe-sequence arithmetic this topic's two-hash trick reuses, for a different purpose.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">The counting-style argument this topic's space lower bound applies to a new structure.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The papers
+
+<ul class="resources">
+  <Resource kind="reading" title="Network applications of Bloom filters: a survey" href="https://www.eecs.harvard.edu/~michaelm/postscripts/im2005b.pdf" by="Broder and Mitzenmacher, Internet Mathematics 2004">The derivation, the optimum, the space lower bound and the factor this topic names, word for word.</Resource>
+  <Resource kind="reading" title="Less hashing, same performance: building a better Bloom filter" href="https://www.eecs.harvard.edu/~michaelm/postscripts/rsa2008.pdf" by="Kirsch and Mitzenmacher, Random Structures and Algorithms 2008">The two-hash probe trick this topic measures against independent hashes.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,126 @@
+{
+  "topic": "dsa.bloom-filters-false-positive",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "A system that keeps its data sorted on disk, in separate pieces, faces an awkward question every time someone asks for a key that simply isn't there: which of those pieces should it even bother opening?",
+        { "beat": 0.4 },
+        "One earlier design answered that almost for free, by keeping a small, cheap structure that can say 'definitely not here' most of the time, at a cost of only a handful of bits for every key it was built from.",
+        { "beat": 0.4 },
+        "That structure is occasionally wrong on purpose. The question for today is exactly how wrong it's allowed to be, and what it costs to make it far less wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the whole mechanism. Take a row of empty slots, and a handful of independent ways to pick a slot from any given key.",
+        { "beat": 0.4 },
+        "Storing a key means flipping on every one of the slots its own ways point to.",
+        { "beat": 0.4 },
+        "Asking about a key means checking those same slots. If even one of them is still off, the answer is a flat, certain no. If every one of them is on, the answer is only a maybe.",
+        { "beat": 0.4 },
+        "And notice what never happens here: a slot that's been switched on never gets switched back off by this structure on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose two completely different keys happen to point at the very same slot, and that slot is already switched on from the first one.",
+        { "beat": 0.4 },
+        "The second key comes along and tries to switch that same slot on too.",
+        { "beat": 0.4 },
+        "What actually happens to that slot?"
+      ],
+      "answer": [
+        "Nothing happens to it — it was already on, and it stays on.",
+        "This structure never tracks who flipped a slot or how many keys share it, only whether it's on or off, and that's precisely why a maybe can never be undone into a certain yes."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the derivation, and it only takes one line of reasoning. Every time a key is stored, each of its slots gets a chance to be switched on.",
+        { "beat": 0.3 },
+        "After a great many keys have been stored, the odds that one particular slot is still off settle into a clean, shrinking curve.",
+        { "beat": 0.4 },
+        "A wrong maybe needs every single one of a key's slots to already be on from something else — so the odds of that happening are that same shrinking curve, multiplied by itself once for every slot a key checks.",
+        { "beat": 0.4 },
+        "Build a real version of this and measure it at several different amounts of memory per key, and the actual wrong-answer rate lands right where that reasoning says it should, every time."
+      ]
+    },
+    {
+      "lines": [
+        "Given a fixed amount of memory per key, there turns out to be a best number of slots to check for each one.",
+        { "beat": 0.4 },
+        "Too few slots, and the same handful get reused too often. Too many, and each additional slot stops buying much improvement.",
+        { "beat": 0.4 },
+        "Right at that best number, something clean falls out: exactly half of every slot in the whole structure ends up switched on.",
+        { "beat": 0.4 },
+        "And the curve around that best number is remarkably flat — a slot more or fewer barely changes anything, which is exactly why real implementations feel free to round that number however's convenient."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a number worth sitting with. Going from one wrong answer in a hundred down to one wrong answer in a million means getting it right ten thousand times more often.",
+        { "beat": 0.4 },
+        "Does reaching that requires something like ten thousand times the memory for every key stored?"
+      ],
+      "answer": [
+        "No — it takes only a small, fixed number of additional bits for every key, nowhere close to ten thousand times the memory.",
+        "Each additional bit per key multiplies the wrong-answer rate down by roughly the same constant factor every time, so reaching a much rarer rate costs addition in memory, never multiplication."
+      ]
+    },
+    {
+      "lines": [
+        "Step back from this one structure entirely and ask a harder question: could any structure at all, built to never give a false no, do meaningfully better than this one does?",
+        { "beat": 0.4 },
+        "There's a clean counting argument that says no. Any such structure, representing a set this size at a wrong-answer rate this rare, needs at least a certain fixed number of bits per key — full stop, regardless of how it's built inside.",
+        { "beat": 0.4 },
+        "And the structure built from slots and independent probes doesn't fall far short of that floor. It sits within one fixed, unchanging multiple of the best anything could possibly do — and that multiple never grows, no matter how rare the target rate gets."
+      ]
+    },
+    {
+      "lines": [
+        "If checking several slots per key calls for several ways to pick a slot, here's the question worth asking before building anything.",
+        { "beat": 0.4 },
+        "Does each of those slot-picking rules need to be built and computed completely independently of the others, or could far fewer actually do the job?"
+      ],
+      "answer": [
+        "Far fewer — as few as two, combined arithmetically, can stand in for however many are needed.",
+        "Take two values computed independently and combine them with a small varying step, and the results land across just as many distinct slots as a whole collection of separately built rules would."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trick made concrete. Compute two values from a key, then generate every slot a key needs by adding one of those values to a small, varying multiple of the other.",
+        { "beat": 0.4 },
+        "Build that version and a version using a whole collection of genuinely independent slot-picking rules, run both at the same amount of memory per key, and measure the wrong-answer rate each one actually produces.",
+        { "beat": 0.4 },
+        "They land on essentially the same number. Two combined values do the work that an entire collection of independent ones would have done, with no real loss."
+      ]
+    },
+    {
+      "lines": [
+        "Now for the one thing this structure flatly cannot do: take something back out.",
+        { "beat": 0.4 },
+        "Switching off one key's slots to 'remove' it switches off slots that other keys may depend on just as much — and suddenly a key that's still genuinely there gets a certain, wrong no. That's precisely the kind of mistake this structure promised could never happen.",
+        { "beat": 0.4 },
+        "This isn't a hand-picked worst case either — searching through a small version of the structure finds a real instance of exactly this failure without much effort at all.",
+        { "beat": 0.4 },
+        "An unchanging collection of keys, built once and never edited afterward, simply never runs into this, because nothing ever needs to be taken back out of it."
+      ]
+    },
+    {
+      "lines": [
+        "Recall the number from an earlier lesson: about ten bits of memory for every key, checked against a widely cited table, coming out to roughly one wrong answer in a hundred, using seven slots per key.",
+        { "beat": 0.4 },
+        "That number was never a separate fact to memorize. Plug that same amount of memory per key into today's one line of reasoning, and the exact same number falls straight out."
+      ]
+    },
+    {
+      "lines": [
+        "So here's where this one structure lands. It spends a little more than the fewest bits any structure possibly could, just to answer one yes-or-no question about one key.",
+        { "beat": 0.4 },
+        "And it pays for that savings in two ways: every yes is only ever a maybe, never a certainty, and the structure can neither take a key back out nor list what it's holding at all."
+      ]
+    }
+  ]
+}
