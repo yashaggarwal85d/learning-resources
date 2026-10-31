@@ -1,0 +1,79 @@
+{
+  "topic": "de.redis-valkey-internals",
+  "steps": [
+    {
+      "lines": [
+        "Picture one real, running system that answers absolutely everything through a single worker, with no second worker ever touching the actual work at the same time.",
+        "By every intuition about getting more done, that should be slow.",
+        "And yet this particular one, watched directly, handles an enormous stream of requests a second without breaking a sweat."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the explanation lands.",
+        "Is that speed happening in spite of having only one worker, the way something manages to be fast despite an obvious handicap?",
+        "Or is the single worker itself the actual source of the speed, not a limitation it's working around at all?"
+      ],
+      "answer": [
+        "It's the second one — the single worker is the reason, not the obstacle.",
+        "Splitting work across many workers always costs something: time spent coordinating who touches what, and waiting for others to get out of the way.",
+        "A single worker never pays either of those costs, and that saved cost turns out to be larger than whatever parallel work was given up to get it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly where that one worker's job ends and starts.",
+        "Every actual piece of work always lands on that same single worker, with no exceptions.",
+        "A handful of extra helpers do exist, but only to move bytes to and from the network — never to do the work itself — and they're switched off unless someone deliberately turns them on."
+      ]
+    },
+    {
+      "lines": [
+        "Now, how this system avoids losing everything the moment power is cut.",
+        "One approach takes a full copy of everything at set intervals, which means anything that happened since the last copy is gone if the system stops uncleanly.",
+        "A second approach instead writes down every single change as it happens, so replaying that record rebuilds exactly what was there, with nothing missing in between."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a risk that sounds abstract until it's measured directly.",
+        "A second, standing copy of this system doesn't apply every change the instant the first one does — it's told about changes after the fact, on its own schedule.",
+        "Watched for real right after a burst of changes: the original already calls those changes done, and the standing copy is measurably still behind — so if the original died at that exact instant, work already called done would simply be gone."
+      ]
+    },
+    {
+      "lines": [
+        "One specific way of spreading this system across many machines, worth naming on its own.",
+        "Every possible piece of data it could ever hold is mapped into one fixed set of buckets, decided once and never changing size.",
+        "Each of those buckets belongs to exactly one machine at a time, which is what makes it possible to know, for any piece of data, exactly which machine is responsible for it."
+      ]
+    },
+    {
+      "lines": [
+        "One last piece, and it has nothing to do with how any of this works technically.",
+        "This system started out under one of the most permissive kinds of open licensing there is, until its maker switched to terms that restrict how competitors can resell it.",
+        "That switch is exactly why a close, independently governed copy of the old version exists today under the original permissive terms — and why the maker later added yet another licensing option on top of its new ones."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "A single worker is the actual source of the speed, not a cost paid for it.",
+        "Writing down every change avoids the gap a periodic full copy leaves open. A standing copy told about changes after the fact can genuinely be caught behind, measured directly.",
+        "Spreading data across fixed, owned buckets is how this system scales past one machine at all. And which of these systems to even run is now, in part, a licensing decision."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A team needs a setup where nothing already called done can ever be lost, not even if the machine crashes outright.",
+        "Of this topic's own default choices, which one would they have to change, and to what?"
+      ],
+      "answer": [
+        "Not the periodic-full-copy approach — that one accepts losing a little by design, no matter how it's tuned.",
+        "They'd switch to the write-down-every-change approach, and set it to force each change to durable storage aggressively rather than on a relaxed schedule.",
+        "That's strictly slower than trusting the periodic copy alone, which is exactly the trade a team makes once losing anything at all stops being acceptable."
+      ]
+    }
+  ]
+}

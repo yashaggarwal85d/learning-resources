@@ -1,0 +1,66 @@
+{
+  "topic": "de.gdpr-erasure-across-lakehouse",
+  "syllabus": [
+    {
+      "clause": "locate a subject's data via lineage and indexes",
+      "at": [{ "step": "Reveal: finding the data first" }, { "step": "Reveal: the blind spots a register must name" }]
+    },
+    {
+      "clause": "row-level deletes in table formats",
+      "at": [{ "step": "Reveal: delete, expire, rewrite" }]
+    },
+    {
+      "clause": "snapshot expiry and rewrite",
+      "at": [{ "step": "Reveal: delete, expire, rewrite" }]
+    },
+    {
+      "clause": "backups and downstream copies",
+      "at": [{ "step": "Hook: the delete was correct, the name wasn't gone" }, { "step": "Reveal: the blind spots a register must name" }]
+    },
+    {
+      "clause": "crypto-shredding as the scalable alternative",
+      "at": [{ "step": "Reveal: crypto shredding as the scalable alternative" }, { "step": "Reveal: the crossover, computed" }]
+    },
+    {
+      "clause": "proof of deletion",
+      "at": [{ "step": "Reveal: proof of deletion" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "GDPR (Regulation (EU) 2016/679), Article 17",
+      "items": [
+        { "item": "The data subject shall have the right to obtain from the controller the erasure of personal data.", "at": [{ "step": "Hook: the delete was correct, the name wasn't gone" }] },
+        { "item": "Erasure must happen without undue delay once a listed ground applies.", "at": [{ "step": "Reveal: delete, expire, rewrite" }] },
+        { "item": "Article 17(3)(e) carves out processing necessary for the establishment, exercise or defence of legal claims.", "at": [{ "step": "Predict: which parts of the design were missing?" }] }
+      ]
+    },
+    {
+      "source": "NIST Special Publication 800-88 Revision 2",
+      "items": [
+        { "item": "Cryptographic erase sanitizes the keys used to encrypt data, or the keys needed to access it, rather than the data itself.", "at": [{ "step": "Reveal: crypto shredding as the scalable alternative" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A correct delete in one place isn't an erasure process; blind spots lineage can't see still need a named owner.", "at": [{ "step": "Reveal: the blind spots a register must name" }] },
+      { "item": "Crypto shredding trades a per-subject key and a decryption lookup for every copy, including backups, going unreadable at once.", "at": [{ "step": "Reveal: crypto shredding as the scalable alternative" }] },
+      { "item": "Proof of deletion is itself a deliverable this pipeline emits, not an auditor's job to dig up afterward.", "at": [{ "step": "Reveal: proof of deletion" }] },
+      { "item": "The expiry schedule is itself the design decision, built to satisfy the legal deadline against the audit-retention window, not an afterthought to the delete operation.", "at": [{ "step": "Reveal: delete, expire, rewrite" }] },
+      { "item": "A legal-claims carve-out is a lawyer's call the design makes visible and does not make itself.", "at": [{ "step": "Predict: which parts of the design were missing?" }] },
+      { "item": "A replica placed in a region the erasure pipeline doesn't know about is exactly the kind of blind spot the register exists to catch.", "at": [{ "step": "Prove it: a replica in a second region" }] },
+      { "item": "A subject index exists so a deletion can jump straight to the right files and partitions instead of scanning the whole lake.", "at": [{ "step": "Reveal: finding the data first" }] },
+      { "item": "This topic leaves out the erasure mechanisms themselves, lineage collection and impact analysis, the legal analysis of what must be erased and when, and tenant-level erasure.", "at": [{ "deep": "Internals" }] },
+      { "item": "Composing table-format deletes, snapshot expiry, and crypto-shredding into one erasure process is each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop a complete erasure process; the next design is the platform that watches the quality of the tags and lineage it depends on.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the patterns one real engine implements
+
+<ul class="resources">
+  <Resource kind="reel" title="Cache patterns and eviction policies" domain="data-engineering" host="de.cache-patterns-eviction-policies" by="the eviction policies this topic's own real engine actually implements" />
+  <Resource kind="reel" title="Cache consistency and invalidation" domain="data-engineering" host="de.cache-consistency-invalidation" by="the consistency fixes this topic's own real engine's commands can build" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Redis persistence" href="https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/" by="Redis documentation">RDB and AOF's own definitions and RDB's own named durability trade-off.</Resource>
+  <Resource kind="reading" title="Redis replication" href="https://redis.io/docs/latest/operate/oss_and_stack/management/replication/" by="Redis documentation">Async replication as the default, and the engine's own admission that an acknowledged write can still be lost on failover.</Resource>
+  <Resource kind="reading" title="Redis cluster specification" href="https://redis.io/docs/latest/operate/oss_and_stack/reference/cluster-spec/" by="Redis documentation">The fixed hash-slot key space.</Resource>
+</ul>
+
+</section>

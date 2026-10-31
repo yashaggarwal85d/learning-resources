@@ -1,0 +1,19 @@
+# Fact-check
+
+1. **A same-database diff uses an outer-join to diff the rows as efficiently and accurately as possible.** Sourced and reproduced directly: `examples.py` asserts datafold/data-diff's own technical-explanation docs state this, verified word for word against the fetched source text, and `full_join_diff` implements the same join-and-compare shape.
+
+2. **A cross-database diff employs a divide-and-conquer algorithm based on hashing, optimized for few changes: it splits the table into segments, checksums each segment on both sides, and recurses into any segment whose checksums disagree until it reaches the differing rows.** Sourced and reproduced directly: `examples.py` asserts the same documentation states this, verified word for word, and `checksum_bisection_diff` implements the same segment-checksum-recurse shape.
+
+3. **A full join-diff and a checksum-bisection diff, run against the same old/new `fct_orders` with a single planted column regression, find exactly the same mismatches while the full join-diff scans every row.** Run and reproduced directly, this topic's own experiment: `examples.py`'s `run_join_vs_bisection_comparison` asserts both strategies agree on the changed row set and that bisection scans fewer rows.
+
+4. **Comparing two floating-point values for equality might not always work as expected, because `real` and `double precision` are inexact, variable-precision numeric types.** Sourced and reproduced directly: `examples.py` asserts PostgreSQL's own "Numeric Types" documentation states this, verified word for word against the fetched page text.
+
+5. **A harmless float-summation-order difference and a genuine planted regression, diffed with an exact comparison, are both flagged; with a tolerance band, only the real regression is still caught.** Run and reproduced directly: `examples.py`'s `run_tolerance_demo` uses a real triple of floats (`[42.38, 38.14, 21.61]`) that genuinely sums to different values forward versus reversed via a manual accumulator, confirms an exact comparison flags that harmless difference, and confirms a `math.isclose` tolerance both ignores it and still catches a separately planted real regression.
+
+6. **A column-level change summary, built from a single planted column regression, names exactly the one changed column, how many rows it touched, and the size of the move.** Run and reproduced directly: `examples.py`'s `run_column_summary_demo` asserts the summary's changed-column set is exactly `{"amount"}` and that it reports a real row count and mean delta.
+
+7. **Holding the number of real changes fixed while growing the table shows the full join-diff's cost scaling exactly with table size, while checksum bisection's cost, as a fraction of the join-diff's cost, shrinks as the table grows.** Run and reproduced directly: `examples.py`'s `run_cost_curve` measures both strategies at three synthetic table sizes with a fixed count of planted changes and asserts the join-diff's scanned-row count scales exactly linearly with table size while bisection's fraction of that cost at the largest scale is lower than at the smallest.
+
+8. **TIMESTAMP precision in PostgreSQL accepts an optional value `p` from 0 to 6, specifying the number of fractional digits retained in the seconds field.** Sourced directly: PostgreSQL's own "Date/Time Types" documentation states "the allowed range of p is from 0 to 6," verified word for word against the fetched page text; used here only as the concrete shape a timestamp tolerance would be set against, not independently demonstrated live in `examples.py`.
+
+9. **This topic's technique runs on a plain schema copy rather than a true zero-copy clone/branch, and what schedules this diff selectively is a later topic's subject.** This topic's own framing of CHAPTER.md's stated scope (the zero-copy mechanism is this chapter's one deliberately skipped syllabus entry), not independently sourced and demonstrated live here.
