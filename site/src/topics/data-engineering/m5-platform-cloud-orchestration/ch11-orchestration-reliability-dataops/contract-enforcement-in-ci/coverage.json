@@ -1,0 +1,93 @@
+{
+  "topic": "de.contract-enforcement-in-ci",
+  "syllabus": [
+    {
+      "clause": "the single home for data contracts",
+      "at": [{ "step": "Reveal: a contract as code" }]
+    },
+    {
+      "clause": "contract-as-code (Open Data Contract Standard v3.1 under Bitol/LF AI & Data — schema, quality rules, SLAs, ownership)",
+      "at": [{ "step": "Reveal: a contract as code" }]
+    },
+    {
+      "clause": "breaking-change classification",
+      "at": [
+        { "step": "Reveal: breaking-change classification as the CI gate" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "producer-side CI gates plus runtime enforcement",
+      "at": [
+        { "step": "Reveal: breaking-change classification as the CI gate" },
+        { "step": "Reveal: runtime enforcement catches the out-of-band write" }
+      ]
+    },
+    {
+      "clause": "automated notification of downstream owners via lineage",
+      "at": [{ "step": "Reveal: automated owner notification via lineage" }]
+    },
+    {
+      "clause": "(modelling view in §3.4, ownership in §13.4)",
+      "at": [
+        { "topic": "Data contracts as a modeling artifact", "domain": "data-engineering", "quote": "what a contract specifies (schema, semantics, quality rules, SLAs, ownership)" },
+        { "topic": "Federated governance operating model", "domain": "data-engineering", "quote": "domain teams own data products" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Definition: Open Data Contract Standard (ODCS) and Schema, Data Quality, Service-Level Agreement, Team (Open Data Contract Standard v3.1 documentation)",
+      "items": [
+        { "item": "ODCS defines the keys and values expected in a YAML data contract, per the standard", "at": [{ "step": "Reveal: a contract as code" }] },
+        { "item": "ODCS's schema section supports both a business representation of the data and a physical implementation", "at": [{ "step": "Reveal: a contract as code" }] },
+        { "item": "ODCS's data quality rules are tightly linked to the contract's own schema section", "at": [{ "step": "Reveal: a contract as code" }] },
+        { "item": "ODCS has a dedicated service-level-agreement section", "at": [{ "step": "Reveal: a contract as code" }] },
+        { "item": "ODCS's team section records ownership and the history of who owns the contract", "at": [{ "step": "Reveal: a contract as code" }] }
+      ]
+    },
+    {
+      "source": "Template for Data Contract (PayPal's own open-sourced repository, ODCS's direct predecessor)",
+      "items": [
+        { "item": "a data contract defines the agreement between a data producer and consumer", "at": [{ "step": "Reveal: a contract as code" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Data contracts (Andrew Jones, the GoCardless engineer who introduced the pattern, on his own site)",
+      "items": [
+        { "item": "breaking changes and data migrations happen without knowledge of how data has been used downstream, breaking key reports and data-driven products", "at": [{ "step": "Hook" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real contract and CI-gate experiments",
+      "items": [
+        { "item": "a straight column rename with no migration path is classified breaking with no path and blocked by the producer's own CI gate", "at": [{ "step": "Reveal: breaking-change classification as the CI gate" }, { "step": "Prove it" }] },
+        { "item": "the identical rename, proposed once a replacement column names what it deprecates, is classified breaking with a migration path and let through", "at": [{ "step": "Reveal: breaking-change classification as the CI gate" }, { "step": "Prove it" }] },
+        { "item": "a purely additive schema change is classified non-breaking", "at": [{ "step": "Reveal: breaking-change classification as the CI gate" }] },
+        { "item": "a real out-of-band write that never goes through a pull request is still caught by a runtime check against the same contract, flagging both a missing required field and a negative amount", "at": [{ "step": "Reveal: runtime enforcement catches the out-of-band write" }] },
+        { "item": "an approved change to the shop's fct_orders is traced through a real lineage graph to exactly three downstream tables, owned by three different teams, all notified automatically", "at": [{ "step": "Reveal: automated owner notification via lineage" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's real lesson is that a producer's own green CI was never evidence of safety for anyone except the producer -- 'all tests pass' only ever meant 'nothing I wrote checks for breaks,' and a consumer reading the table was never one of the things being checked.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume the CI gate and the runtime check are redundant, two copies of the same safety net -- they protect against different failure modes: the CI gate only ever sees a change that goes through a pull request, while the runtime check is the only thing that can catch a write that bypasses the pipeline's own process entirely.", "at": [{ "step": "Reveal: runtime enforcement catches the out-of-band write" }] },
+      { "item": "The breaking-change classifier's real safety property is conservative by construction -- it only calls a removed field 'migrated' when some new field explicitly names what it deprecates, so a rename that merely happens to look similar, without that explicit link, is correctly treated as a silent disappearance rather than a documented migration.", "at": [{ "deep": "Internals" }] },
+      { "item": "Automated lineage-driven notification doesn't make a breaking change safe to ship -- it only ever runs on a change the CI gate has already approved as non-breaking or as carrying a real migration path; it closes the 'nobody remembered to tell them' gap, not the 'this change breaks them' gap, which the gate already closed earlier.", "at": [{ "step": "Reveal: automated owner notification via lineage" }] },
+      { "item": "This topic's contract reuses, rather than reinvents, vocabulary from three earlier topics: the expand/migrate/contract rollout discipline (topic 14), the SLI/SLO/error-budget vocabulary inside the contract's own SLA section (topic 11), and the lineage mechanism driving notification (topic 8's asset model) -- the new thing here is only that a single contract file now makes all three automatically enforceable together.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A reader might assume ODCS's four sections (schema, quality, SLA, team) are independent of each other -- ODCS's own documentation says schema 'is the support for' data quality, meaning the quality rules are only meaningful once the schema they check against is itself declared; the sections are layered, not parallel.", "at": [{ "deep": "Internals" }] },
+      { "item": "The contract's own quality rules and the breaking-change classifier check two different things that are easy to conflate: quality rules check whether the data currently satisfies promises already made, while breaking-change classification checks whether a proposed schema change would silently revoke a promise an existing consumer is relying on.", "at": [{ "step": "Reveal: a contract as code" }] },
+      { "item": "GoCardless's own account of the problem (the hook's real-world basis) predates ODCS specifically as a standard -- the pattern this topic demonstrates (contract-as-code, enforced in CI, with lineage-driven notification) is a later, more structured answer to exactly the informal pain GoCardless first wrote about.", "at": [{ "step": "Hook" }, { "deep": "Frontier" }] },
+      { "item": "This topic deliberately leaves out building a real catalog-backed lineage system -- the lineage graph driving notification is topic 8's and Chapter 13's mechanism, used here as a small synthetic stand-in rather than independently built or re-taught.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The contract's SLA section and topic 11's error-budget vocabulary describe the same kind of commitment at two different layers -- an SLO is a target a platform team sets and tracks operationally, while an SLA entry in the contract is that same target written down as a promise to a specific named consumer, which is what makes it something CI or runtime enforcement can actually check.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

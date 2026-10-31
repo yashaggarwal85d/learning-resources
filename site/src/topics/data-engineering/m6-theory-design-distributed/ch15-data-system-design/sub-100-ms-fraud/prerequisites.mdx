@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: streaming state, serving stores, and resilient clients
+
+<ul class="resources">
+  <Resource kind="reel" title="Data-quality monitoring platform" domain="data-engineering" host="de.sub-100-ms-fraud">The alert-routing and suppression design this pipeline's own on-call path leans on when a check fires.</Resource>
+  <Resource kind="reel" title="Keyed state, key groups and rescaling" domain="data-engineering" host="de.sub-100-ms-fraud">The stream job's own incremental feature state, kept keyed and mirrored to the online store this topic reads from.</Resource>
+  <Resource kind="reel" title="Processing and serving choices" domain="data-engineering" host="de.sub-100-ms-fraud">The low-latency key-value store the request path reads features from at scoring time.</Resource>
+  <Resource kind="reel" title="Resilient clients: timeouts, retries, idempotency" domain="data-engineering" host="de.sub-100-ms-fraud">The deadline-and-timeout discipline this topic's own fallback decision is built on.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="State Backends" href="https://nightlies.apache.org/flink/flink-docs-release-2.3/docs/ops/state/state_backends/" by="Apache Flink documentation">The keyed-state backend this topic's streaming-feature state sizing argues from.</Resource>
+  <Resource kind="reading" title="Diagnosing latency issues" href="https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/latency/" by="Redis documentation">The single-threaded request-serving model this topic's online-store latency claims argue from.</Resource>
+</ul>
+
+</section>
