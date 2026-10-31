@@ -6825,6 +6825,26 @@ export const TOPICS: TopicMeta[] = [
       "That closes the section: a series has a time, a grid, a rollup, a codec, an index, an engine and a quality flag. Everything so far assumed the readings arrive from somewhere. The next section follows them upstream to the machine, and the first protocol on the way: OPC UA, whose address space gives raw tags the meaning they lack.",
   },
   {
+    id: 'de.opc-ua-information-model',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/opc-ua-information-model',
+    title: 'OPC UA information model and transport',
+    syllabusTitle: 'OPC UA information model and transport',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['opc-ua-address-space-nodes-references', 'opc-ua-companion-specification', 'opc-ua-subscription-monitored-item-deadband', 'opc-ua-pubsub-vs-client-server', 'opc-ua-security-modes-certificates'],
+    uses: ['equipment-hierarchy-dimension', 'isa95-levels-data-ownership', 'read-only-extraction-load-budget', 'ot-change-management-tag-contract', 'device-gateway-ingest-timestamps', 'event-time-source-decision', 'quality-flag-and-quarantine-not-delete', 'aggregate-by-signal-type', 'signal-type-tag-metadata'],
+    declared: [],
+    bridge:
+      "That closes the section: a series has a time, a grid, a rollup, a codec, an index, an engine and a quality flag. Everything so far assumed the readings arrive from somewhere. This section follows them upstream to the machine, and the first protocol on the way is OPC UA, whose address space gives raw tags the meaning they lack.",
+    handoff:
+      "OPC UA gives a machine a model and a way to subscribe. A plant has thousands of machines and many consumers, and a model per connection does not scale to a message layer. The next topic is the lightweight publish-subscribe layer that most plants put above it: MQTT, the Sparkplug convention on top of it, and the Unified Namespace.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
