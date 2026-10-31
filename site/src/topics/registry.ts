@@ -5605,6 +5605,26 @@ export const TOPICS: TopicMeta[] = [
       "A rollout done carefully by hand is still something a human has to remember to do carefully every time. The chapter's last section is about building that discipline into the testing and deployment pipeline itself, so it happens whether or not anyone remembers.",
   },
   {
+    id: 'de.testing-pyramid-transformations',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/testing-pyramid-transformations',
+    title: 'Testing pyramid for transformations',
+    syllabusTitle: 'Testing pyramid for transformations',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['testing-pyramid-transformations', 'test-flakiness-causes'],
+    uses: ['property-based-testing', 'float-sum-non-associativity', 'in-pipeline-expectation-tests'],
+    declared: [],
+    bridge:
+      "A schema rollout done carefully by hand still relies on a human remembering to do it carefully every time. This section is about building reliability into the pipeline, starting at its foundation: the layered set of tests every change runs through before it ships.",
+    handoff:
+      "A unit test catches a known kind of bug on a small fixture. It says nothing about whether a real change to a real table, at full scale, actually changed the output the way intended. That comparison is the next topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
