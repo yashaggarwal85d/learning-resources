@@ -6865,6 +6865,26 @@ export const TOPICS: TopicMeta[] = [
       "OPC UA gives a machine a model and a way to subscribe. A plant has thousands of machines and many consumers, and a model per connection does not scale to a message layer. The next topic is the lightweight publish-subscribe layer that most plants put above it: MQTT, the Sparkplug convention on top of it, and the Unified Namespace.",
   },
   {
+    id: 'de.mqtt-sparkplug-unified-namespace',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/mqtt-sparkplug-unified-namespace',
+    title: 'MQTT, Sparkplug and the Unified Namespace',
+    syllabusTitle: 'MQTT, Sparkplug and the Unified Namespace',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 18,
+    verified: '2026-10-31',
+    introduces: ['mqtt-qos-retained-will', 'mqtt-qos-is-hop-not-end-to-end', 'sparkplug-topic-namespace-protobuf', 'sparkplug-birth-death-seq-rebirth', 'unified-namespace-pattern-and-limits'],
+    uses: ['opc-ua-pubsub-vs-client-server', 'opc-ua-address-space-nodes-references', 'equipment-hierarchy-dimension', 'isa95-levels-data-ownership', 'end-to-end-argument', 'at-least-once-plus-idempotence', 'gateway-replay-dedup-backfill', 'event-time-source-decision'],
+    declared: [],
+    bridge:
+      "OPC UA gives a machine a model and a way to subscribe. A plant has thousands of machines and many consumers, and a connection per pair does not scale. This topic is the lightweight publish-subscribe layer most plants put above it: MQTT with its three delivery levels, Sparkplug with its birth and death certificates, and the Unified Namespace that organises it all.",
+    handoff:
+      "A broker carries the current value; a historian keeps the past. The next topic is the process historian, the system that has stored plant data for decades, and the compression it applies before it stores a single point: exception filtering, then swinging-door.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
