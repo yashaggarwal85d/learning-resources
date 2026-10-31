@@ -7851,6 +7851,26 @@ export const TOPICS: TopicMeta[] = [
       "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. The last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell, its standardised submodels, and the role it plays in EU data spaces and the digital product passport.",
   },
   {
+    id: 'de.asset-administration-shell-digital',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/asset-administration-shell-digital',
+    title: 'Asset Administration Shell digital twins',
+    syllabusTitle: 'Asset Administration Shell digital twins',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['aas-structure-submodels-semantic-ids', 'aas-type-vs-instance-shell', 'aas-rest-api-aasx-package', 'aas-in-data-spaces-and-product-passports'],
+    uses: ['equipment-hierarchy-dimension', 'isa95-levels-data-ownership', 'opc-ua-companion-specification', 'opc-ua-address-space-nodes-references', 'energy-per-unit-kpi', 'operational-vs-analytical-copy-ownership', 'historian-to-lakehouse-extraction-semantics', 'data-contract-specification', 'open-data-contract-standard', 'data-as-a-product', 'runtime-schema-validation', 'sensitivity-tier-and-category'],
+    declared: [],
+    bridge:
+      "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. This last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell and its standard submodels, and the part it plays when data crosses company boundaries in a data space or a digital product passport.",
+    handoff:
+      "That closes the chapter, from a plant's hierarchy through the time series its machines produce to the shell that describes them. One idea from it travels straight into the next: the as-of join that attaches the right temperature to a pressure spike is the same join that attaches the right feature to a label, and getting it wrong leaks the future into a model. The next chapter is the data layer of machine learning and of language models, and it opens there: point-in-time correct training data.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',

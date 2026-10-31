@@ -1,0 +1,79 @@
+{
+  "topic": "de.asset-administration-shell-digital",
+  "steps": [
+    {
+      "lines": [
+        "A battery supplier now has to hand every single pack over to the carmaker with a nameplate, technical data, a carbon footprint, and handover documents attached.",
+        "That data shows up looking completely different depending on which supplier sent it: some of it as plain PDFs, some as spreadsheets, and the rest spread across several incompatible shapes of JSON.",
+        "The carmaker's own systems have no way to read any of that automatically without building a brand new custom integration for every single supplier."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "Imagine every one of those suppliers instead agreed to describe their data using one shared structure, with a fixed meaning attached to every single property in it.",
+        "What would actually adopting a shared structure like that buy the carmaker's own pipeline, and what would it still leave completely unresolved about any individual value inside it?"
+      ],
+      "answer": [
+        "A validated structure and a fixed meaning, nothing about whether a value is true.",
+        "Agreeing on a shared structure buys a validated, machine readable shape with a fixed meaning attached to every property, but it says absolutely nothing about whether any individual value sitting inside that structure actually happens to be correct."
+      ]
+    },
+    {
+      "lines": [
+        "Think about one single machine model that a manufacturer sells, versus every individual unit of that model sitting out on different factory floors.",
+        "That machine model's own shared specification only ever needs to be written down once, in what's called a type shell.",
+        "Each individual serial number out in the field then gets its own separate instance shell, distinguished from the type by one single attribute, and each one explicitly references back to the type it was derived from."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture two completely different suppliers, each describing the exact same physical property of their own product.",
+        "One of them happens to call that property by one name, while the other calls the very same property by a completely different name of their own choosing.",
+        "As long as both of them attach the same semantic identifier to it, a query that matches by that shared meaning finds both of their properties without ever caring what either supplier actually called it."
+      ]
+    },
+    {
+      "lines": [
+        "There are two genuinely different ways a system downstream could actually go get that same submodel.",
+        "It could reach out live over an ordinary web API and simply read the submodel directly, on demand, whenever it happens to need it.",
+        "Or it could instead receive that exact same submodel bundled up inside an exchanged file, meant to be unpacked and read later, completely offline.",
+        "Read the same submodel either way, and the content that comes back out the other end turns out to be identical. Only the transport underneath it actually changed."
+      ]
+    },
+    {
+      "lines": [
+        "Not every submodel that shows up is actually going to be well formed, so something has to stand guard before data moves any further downstream.",
+        "A property that was never given any semantic identifier at all simply cannot be matched to anything meaningful, so a validation gate rejects it outright.",
+        "A submodel that's missing some property its own template explicitly requires fails that exact same gate, for exactly the same underlying reason.",
+        "Neither one of those two broken cases is ever allowed to reach the lakehouse."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that genuinely surprises people the first time they actually see it happen.",
+        "Take a submodel that still carries a flatly wrong serial number inside it, but is otherwise completely complete, with every single property correctly tagged by its own semantic identifier.",
+        "Run that submodel through the identical validation gate from a moment ago, and it sails straight through without any complaint whatsoever.",
+        "The gate was only ever checking the shape of what arrived. It was never designed to check whether any of the actual values inside that shape happened to be true."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole picture together now.",
+        "One type shell holds a machine model's own shared data, while its instances each reference that type and carry only what's genuinely specific to themselves.",
+        "A semantic identifier lets a property's meaning survive no matter what any individual supplier happened to call it, a REST read and a packaged file agree on that same content exactly, and a validation gate stays strict about structure while staying completely silent about truth."
+      ]
+    },
+    {
+      "lines": [
+        "One last case worth reasoning through before this chapter actually closes.",
+        "A supplier hands over a carbon footprint submodel that's genuinely complete, with every property correctly tagged, and it sails cleanly through validation without a single complaint.",
+        "Given that it passed so cleanly, does that actually mean the carbon footprint figure sitting inside that submodel is itself correct?"
+      ],
+      "answer": [
+        "No, validation was only ever checking structure and meaning, never the number itself.",
+        "Validation only ever checks a submodel's structure and the meaning attached to each property inside it. A submodel can pass every one of those checks perfectly while still carrying a number that nobody has actually verified against reality."
+      ]
+    }
+  ]
+}
