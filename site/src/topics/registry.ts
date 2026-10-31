@@ -5626,4 +5626,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Three priced tiers on a cost curve are a negotiation finished, not a decision made — someone outside engineering still has to actually pick one, and the next topic is how that choice gets explained to them in the terms they use to decide, not the terms that built the curve.",
   },
+  {
+    id: 'de.schema-evolution-rules-across',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/schema-evolution-rules-across',
+    title: 'Schema evolution rules across formats',
+    syllabusTitle: 'Schema evolution rules across formats',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['schema-evolution-column-matching'],
+    uses: ['text-format-traps', 'row-vs-columnar-layout'],
+    declared: [],
+    bridge:
+      "Every layout from the last topic still has to survive a reader using a different version of the schema than the writer did. This topic is schema evolution itself, compared directly across Avro, Protobuf and Parquet, with a real rename that breaks one matching strategy and survives another.",
+    handoff:
+      "Every format so far has been one file, self-contained. The next section is the one format that won the lakehouse: Parquet, starting from its own file anatomy.",
+  },
 ];
