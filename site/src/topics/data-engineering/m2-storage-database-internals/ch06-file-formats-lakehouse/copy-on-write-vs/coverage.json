@@ -1,0 +1,58 @@
+{
+  "topic": "de.copy-on-write-vs",
+  "syllabus": [
+    { "clause": "COW rewrites every touched file (read-fast, write-amplified)", "at": [{ "step": "Reveal: copy-on-write rewrites every touched file, whole" }, { "step": "Reveal: reproduced for real — copy-on-write's real write cost" }] },
+    { "clause": "MOR writes delete/log files merged at read time (write-fast, read-amplified)", "at": [{ "step": "Reveal: merge-on-read defers the change to a small log file" }, { "step": "Reveal: reproduced for real — a near-free write, and a read cost that grows" }] },
+    { "clause": "choosing per table and per operation by update rate, update spread and read SLA", "at": [{ "step": "Recap" }] },
+    { "clause": "compaction converting MOR debt back into COW-like read cost", "at": [{ "step": "Reveal: reproduced for real — compaction resets the cost" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg table specification, Delete Formats and Deletion Vectors",
+      "items": [
+        { "item": "deletion vectors identify deleted rows within a single referenced data file by position in a bitmap", "at": [{ "step": "Reveal: the same choice, under every name" }] },
+        { "item": "position delete files identify deleted rows by file location and row position", "at": [{ "step": "Reveal: the same choice, under every name" }] },
+        { "item": "deletion vectors are more efficient at execution time than position delete files", "at": [{ "step": "Reveal: the same choice, under every name" }] }
+      ]
+    },
+    {
+      "source": "Apache Hudi, Table and Query Types (table_types docs)",
+      "items": [
+        { "item": "copy-on-write: record updates or deletes trigger creation of new base files, no log files written", "at": [{ "step": "Reveal: copy-on-write rewrites every touched file, whole" }] },
+        { "item": "merge-on-read: updates and deletes are written to log files, merged dynamically with base files during query execution", "at": [{ "step": "Reveal: merge-on-read defers the change to a small log file" }] },
+        { "item": "periodic compaction reconciles the delta log into a new version of the base file", "at": [{ "step": "Reveal: reproduced for real — compaction resets the cost" }] },
+        { "item": "COW/MOR use-case guidance (write-heavy vs read-heavy, update spread, read freshness)", "at": [{ "step": "Recap" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Deletion vectors (docs.delta.io)",
+      "items": [
+        { "item": "by default, deleting rows requires rewriting the entire Parquet file", "at": [{ "step": "Reveal: reproduced for real — copy-on-write's real write cost" }] },
+        { "item": "deletion vectors mark rows removed without rewriting the Parquet file", "at": [{ "step": "Reveal: merge-on-read defers the change to a small log file" }] },
+        { "item": "reads resolve current state by applying deletion-vector deletions at read time", "at": [{ "step": "Reveal: reproduced for real — a near-free write, and a read cost that grows" }] },
+        { "item": "OPTIMIZE and REORG TABLE ... APPLY (PURGE) rewrite data files with deletion-vector modifications applied, clearing the debt", "at": [{ "step": "Reveal: reproduced for real — compaction resets the cost" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "Data files in examples.py are plain CSV text, not Parquet — disclosed in the script's own docstring and FACT-CHECK.md red-team #1. The measured cost shapes (full-file rewrite expensive to write, read cost growing with unmerged log count, compaction resetting it) are the general mechanism every row-log-over-base design shares, not a claim of reproducing Parquet's binary layout.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 'merge' in scan_base_with_overlay is a Python dict lookup per row, not Iceberg's real position/equality delete matching or a RoaringBitmap scan — the measured cost grows with the number of unmerged log files opened and parsed, which is the dominant, representative cost in a real system too.", "at": [{ "deep": "Frontier" }] },
+      { "item": "examples.py's first version measured total MOR read time (base scan + merge) directly and asserted growth across rounds; this was flaky (roughly 1 in 3 runs) because the large base-scan's I/O noise swamped the real merge-overhead signal. Fixed by isolating build_overlay_from_logs (21-repeat median) from the shared scan_base_with_overlay, so the asserted signal is the isolated merge-prep cost, not total wall-clock read time.", "at": [{ "step": "Reveal: reproduced for real — a near-free write, and a read cost that grows" }] },
+      { "item": "Hudi's own topics are explicitly skipped elsewhere in this syllabus (per CHAPTER.md's own note); Hudi is named here only as the third real system facing the identical COW/MOR choice, not as a topic this chapter otherwise covers in depth.", "at": [{ "step": "Reveal: the same choice, under every name" }] },
+      { "item": "The 'update rate, update spread, read SLA' decision rule in the Recap synthesizes Hudi's own stated use-case guidance (its 'good use-cases for CoW' and 'MoR tables are a great fit for' lists) rather than quoting one sentence directly; each factor traces to specific sentences in Hudi's own comparison prose.", "at": [{ "step": "Recap" }] },
+      { "item": "Delta's deletion-vectors feature is documented as 'in experimental support mode' as of Delta Lake 2.3.0+, and MERGE support for deletion vectors was only added in 3.1.0 — this topic treats deletion vectors as Delta's real, documented MOR-equivalent mechanism today, not a claim it has always been Delta's default or stable-forever behavior.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic does not cover how a deletion vector is actually recorded on disk (the bitmap/Puffin-blob mechanism) — that is explicitly the next topic's subject, and this topic's own handoff names that boundary.", "at": [{ "step": "Recap" }] },
+      { "item": "The prerequisites panel lists topics 10-13 as declared background (object storage guarantees, Hive breakage, the snapshot model, optimistic commits), matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "Both demos reuse the same 48,000-row/12-file base table and the same 1%-update workload for COW and MOR, so the write-cost and read-cost comparisons are apples-to-apples rather than two differently-sized experiments.", "at": [{ "step": "Reveal: reproduced for real — copy-on-write's real write cost" }] },
+      { "item": "The on-screen digit provenance for '1%' traces to examples.py's literal UPDATE_FRACTION = 0.01 constant, verified against topic-checks.ts's percent-suffix matching rule.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

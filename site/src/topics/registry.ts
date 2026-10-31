@@ -8923,4 +8923,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every commit so far appended or overwrote whole files. The next question is what a commit does when it only needs to change some rows inside a file — copy-on-write or merge-on-read.",
   },
+  {
+    id: 'de.copy-on-write-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/copy-on-write-vs',
+    title: 'Copy-on-write vs merge-on-read',
+    syllabusTitle: 'Copy-on-write vs merge-on-read',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['cow-vs-mor'],
+    uses: ['optimistic-commit-protocol', 'table-snapshot-model'],
+    declared: [],
+    bridge:
+      "Every commit so far appended or overwrote whole files. This topic is what a commit does when it only needs to change some rows inside a file: copy-on-write's full rewrite versus merge-on-read's delete/log file, both measured on the identical 1%-update workload.",
+    handoff:
+      "Merge-on-read's own delete files are themselves a mechanism worth a topic on their own: how a deletion is actually recorded without rewriting the file it touches.",
+  },
 ];
