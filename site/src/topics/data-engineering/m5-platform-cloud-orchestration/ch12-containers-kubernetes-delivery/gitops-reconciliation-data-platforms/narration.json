@@ -1,0 +1,95 @@
+{
+  "topic": "de.gitops-reconciliation-data-platforms",
+  "steps": [
+    {
+      "lines": [
+        "Someone fixes a problem on a running system by reaching in and changing it directly, by hand, late at night.",
+        "They never write that change down anywhere, and nobody else finds out it happened. Weeks pass, and then something completely unrelated gets deployed."
+      ]
+    },
+    {
+      "lines": [
+        "Reacting automatically to a hand-made change like that is a setting of its own, and here it's switched off. The thing being deployed doesn't even touch whatever was changed by hand.",
+        { "beat": 0.4 },
+        "So does that hand-made change get undone right away, does it quietly survive, or does something else happen entirely?"
+      ],
+      "answer": [
+        "It survives, for now. Nothing is actively watching for it and correcting it, since that reactive setting is off.",
+        "But every deployment still pushes out the entire intended description, not just whatever changed.",
+        "The moment some later, unrelated deployment happens to touch the exact same part of the description, the hand-made change disappears anyway — not because anyone caught it, but because nothing was protecting it in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Something has to keep watching a running system and comparing it against a written description of how that system should look, correcting any difference it finds.",
+        "That's the same idea from earlier in this chapter. What changes here is where the description itself lives: not on the resource, but in a separate, version-controlled repository."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate, real tools both do this. One of them has recently taken the idea even further.",
+        "Instead of only reading a written description out of version control, it can now read the exact same kind of description straight out of an image registry instead — the registry itself becomes the thing being watched, not a repository of text files at all."
+      ]
+    },
+    {
+      "lines": [
+        "A packaging tool and a templating tool can each turn a small set of inputs into a full, final description of what should exist.",
+        "Neither of them actually changes anything by itself. Whatever comes out the other end of that rendering step is the only thing that matters from here on."
+      ]
+    },
+    {
+      "lines": [
+        "Moving a change from an earlier environment to a later one doesn't need a special process at all — it's just one more change to the written description, made the same way every other change to it gets made and reviewed.",
+        "Undoing it later is just as ordinary: reverse that one change, the same way you'd reverse any other."
+      ]
+    },
+    {
+      "lines": [
+        "Turning that reactive setting on is what actually goes looking for a hand-made change and pulls the system back to match the written description.",
+        "A separate decision controls something else entirely: whether anything the description no longer mentions gets removed outright. And even that comes with its own safety net, which the next moment gets put to the test."
+      ]
+    },
+    {
+      "lines": [
+        "By accident, the entire written description for one running system gets wiped out at once — every single thing it used to list is suddenly gone from it.",
+        { "beat": 0.4 },
+        "Removing unlisted things is switched on. Does the system now get emptied out completely to match?"
+      ],
+      "answer": [
+        "No — by default, it refuses. Emptying something out entirely is treated as too dangerous to do automatically, on the theory that it's far more likely to be exactly the mistake just described than an intended change.",
+        "A separate, explicit allowance has to be given before anything will actually let that happen."
+      ]
+    },
+    {
+      "lines": [
+        "Something else, running on its own, keeps adjusting one particular number on a running piece of the system — on purpose, continuously, in response to real load.",
+        "Telling the watcher to simply leave that one number alone stops an endless tug of war: the watcher stops trying to force it back to whatever the written description says, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "A sensitive value written into that same version-controlled description, in the open, has already leaked the moment it's committed — removing it later doesn't erase the history.",
+        "One fix fetches the real value from somewhere else entirely, so it's never written down there at all.",
+        "Another keeps the value in that description, but scrambled, decipherable only with a separate key — which keeps the description itself safe, though the real value still sits out in the open once it's actually applied to the running system."
+      ]
+    },
+    {
+      "lines": [
+        "Shifting a small slice of real traffic onto a new version, and watching it, costs almost nothing to undo if it goes wrong.",
+        "A long-running job holding its own accumulated state is a different animal: redeployed the naive way, it doesn't shift anything gradually — it just starts over with nothing. That isn't a gradual rollout wearing a different name; that's losing real, accumulated work."
+      ]
+    },
+    {
+      "lines": [
+        "Everything needed before any running system can even exist — the account, the network, the storage, the cluster itself — sits on one side of a line.",
+        "Everything running inside that already-existing cluster sits on the other. The line between them is exactly whatever that cluster has to be handed from outside itself to begin with: an identity, and somewhere to get its secrets."
+      ]
+    },
+    {
+      "lines": [
+        "The whole system is now delivered, and something keeps actively pulling it back toward matching its own written description.",
+        "None of that says a single thing about whether the system itself is actually healthy."
+      ]
+    }
+  ]
+}

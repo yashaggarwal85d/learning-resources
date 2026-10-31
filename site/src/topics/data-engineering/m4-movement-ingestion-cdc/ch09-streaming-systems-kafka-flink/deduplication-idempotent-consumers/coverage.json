@@ -1,0 +1,123 @@
+{
+  "topic": "de.deduplication-idempotent-consumers",
+  "syllabus": [
+    {
+      "clause": "event ids assigned at the source",
+      "at": [{ "step": "Setup: the same idea, one level up" }]
+    },
+    {
+      "clause": "dedup state bounded by TTL or watermark",
+      "at": [
+        { "step": "Predict: a very late redelivery" },
+        { "step": "Reveal: forgotten on purpose" },
+        { "step": "Reveal: two ways to set the bound" }
+      ]
+    },
+    {
+      "clause": "approximate dedup with Bloom filters",
+      "at": [
+        { "step": "Predict: which way can a filter be wrong?" },
+        { "step": "Reveal: one-directional, and measured" }
+      ]
+    },
+    {
+      "clause": "§5.6",
+      "at": [{ "deep": "Frontier" }]
+    },
+    {
+      "clause": "deterministic ids for derived events",
+      "at": [{ "step": "Reveal: idempotence, propagated one hop further" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Idempotent Receiver (Enterprise Integration Patterns)",
+      "items": [
+        {
+          "item": "even when a sender application only sends a message once, the receiver application may receive the message more than once",
+          "at": [{ "step": "Setup: the same idea, one level up" }]
+        },
+        {
+          "item": "idempotency can be achieved through explicit de-duping or defining message semantics to support idempotency",
+          "at": [{ "step": "Setup: the same idea, one level up" }]
+        }
+      ]
+    },
+    {
+      "source": "Exactly-once delivery (Google Cloud Pub/Sub docs)",
+      "items": [
+        {
+          "item": "Pub/Sub supports exactly-once delivery based on a Pub/Sub-defined unique message ID, and a redelivered message retains the same message ID between redelivery attempts",
+          "at": [{ "step": "Setup: the same idea, one level up" }]
+        }
+      ]
+    },
+    {
+      "source": "Idempotent requests (Stripe API reference)",
+      "items": [
+        {
+          "item": "a client generates an idempotency key, a unique key the server uses to recognize subsequent retries of the same request",
+          "at": [{ "step": "Setup: the same idea, one level up" }]
+        },
+        {
+          "item": "keys can be removed from the system automatically after they're at least 24 hours old, and a new request is generated if a key is reused after pruning",
+          "at": [
+            { "step": "Reveal: forgotten on purpose" },
+            { "step": "Reveal: two ways to set the bound" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A bounded dedup window is not a weaker version of unbounded dedup — it is a different, explicit guarantee ('duplicates within this bound are caught') that a system can actually afford to provide, unlike the unbounded version.",
+        "at": [{ "step": "Reveal: forgotten on purpose" }]
+      },
+      {
+        "item": "A wall-clock TTL and a watermark bound solve the same memory problem but fail differently under skew: a TTL can evict an id too early if a producer is delayed, while a watermark bound tracks the stream's own actual progress instead.",
+        "at": [{ "step": "Reveal: two ways to set the bound" }]
+      },
+      {
+        "item": "A Bloom filter's error is asymmetric by construction, not by tuning — bits can only be set, never cleared, so a false negative is structurally impossible regardless of how the filter is sized.",
+        "at": [{ "step": "Reveal: one-directional, and measured" }]
+      },
+      {
+        "item": "The false-positive rate is a dial, not a fixed cost — a larger bit array or more hash functions measurably lowers it, at the price of more memory per filter, the same space-versus-accuracy trade this topic's hook already set up.",
+        "at": [{ "step": "Reveal: one-directional, and measured" }]
+      },
+      {
+        "item": "A deterministic id only works when the derivation is actually deterministic — any non-deterministic input folded into it (a timestamp, a random value) breaks the exact same way non-deterministic processing breaks idempotent-upsert in the previous topic.",
+        "at": [{ "step": "Reveal: idempotence, propagated one hop further" }]
+      },
+      {
+        "item": "This topic's mechanism is strictly an application-level fallback — it exists because not every pipeline has a Kafka transaction or a two-phase-commit sink available, not because those mechanisms are insufficient where they do exist.",
+        "at": [{ "step": "Setup: the same idea, one level up" }]
+      },
+      {
+        "item": "The toy TTLDedupStore, TinyBloomFilter, and deterministic_id are deliberately simplified standalone models, not ports of any production dedup system, and the Bloom filter's measured false-positive rate is this run's own number, not a cited constant.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Remembering an event id and remembering a derived event's deterministic id are the exact same mechanism applied twice in a row — the second application doesn't need any new machinery, only a new, equally deterministic id to feed it.",
+        "at": [{ "step": "Reveal: idempotence, propagated one hop further" }]
+      },
+      {
+        "item": "A dedup window's stated bound is itself part of the system's correctness contract — an operator who doesn't know the bound can't reason about when a duplicate might slip through, which is why naming it explicitly matters as much as choosing it.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Choosing between a TTL and a watermark bound is itself a smaller instance of a pattern that recurs throughout this chapter: trading a wall-clock guarantee for a stream-relative one whenever the stream's own progress is the more meaningful measure.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

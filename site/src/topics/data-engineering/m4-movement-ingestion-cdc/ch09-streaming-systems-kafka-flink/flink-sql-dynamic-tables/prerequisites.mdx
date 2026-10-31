@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: disaggregated state in Flink 2.x
+
+This topic builds on the runtime and state model covered across topics 20-23 — operators, state
+backends, checkpoints, and ForSt's disaggregated architecture are all used here, not retaught, as
+the layer the SQL dynamic-table model sits directly on top of. See
+[Disaggregated state in Flink 2.x](../disaggregated-state-flink/) first if any of that isn't
+familiar.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Dynamic Tables" href="https://nightlies.apache.org/flink/flink-docs-release-2.3/docs/concepts/sql-table-concepts/dynamic_tables/" by="Apache Flink, 2.3 docs">The changelog and append/upsert/retract stream definitions.</Resource>
+  <Resource kind="reading" title="Joins" href="https://nightlies.apache.org/flink/flink-docs-release-2.3/docs/sql/reference/queries/joins/" by="Apache Flink, 2.3 docs">Regular, interval, temporal, and lookup join semantics.</Resource>
+  <Resource kind="reading" title="Materialized Table Overview" href="https://nightlies.apache.org/flink/flink-docs-release-2.3/docs/sql/materialized-table/overview/" by="Apache Flink, 2.3 docs">Freshness and the CONTINUOUS/FULL refresh modes.</Resource>
+  <Resource kind="reading" title="Process Table Functions" href="https://nightlies.apache.org/flink/flink-docs-release-2.3/docs/dev/table/functions/ptfs/" by="Apache Flink, 2.3 docs">What a PTF has access to and can do.</Resource>
+</ul>
+
+</section>

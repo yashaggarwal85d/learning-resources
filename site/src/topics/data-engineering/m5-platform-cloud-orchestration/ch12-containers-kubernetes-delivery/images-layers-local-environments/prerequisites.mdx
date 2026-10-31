@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Software delivery workflow" domain="data-engineering" host="de.software-delivery-workflow" by="the CI-pipelines refresher this topic's examples assume" />
+  <Resource kind="reel" title="Linux shell and process toolkit" domain="data-engineering" host="de.linux-shell-process-toolkit" by="the process model a container is built on" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="resources">
+
+### <span class="n">02</span> Container basics
+
+<ul class="resources">
+  <Resource kind="reading" title="What is Docker?" href="https://docs.docker.com/get-started/docker-overview/" by="Docker documentation" length="10 min">Images, containers and registries, from Docker's own overview.</Resource>
+  <Resource kind="reading" title="Docker build cache" href="https://docs.docker.com/build/guide/layers/" by="Docker documentation" length="10 min">How the build cache works, the source for this refresher's cache-invalidation claims.</Resource>
+  <Resource kind="reading" title="Overlay Filesystem" href="https://docs.kernel.org/filesystems/overlayfs.html" by="The Linux kernel documentation" length="15 min">The copy_up mechanism this refresher's whiteout step draws on.</Resource>
+</ul>
+
+</section>

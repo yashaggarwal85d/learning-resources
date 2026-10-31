@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: event time, watermarks and completeness
+
+A window is the chunk of time a watermark's completeness claim gets applied to, and this topic's
+pane-cleanup reveal leans directly on the watermark (plus allowed lateness) as the bound that
+decides when a pane's state can be dropped. If that's unfamiliar, start with
+[Event time, watermarks and completeness](../event-time-watermarks-completeness/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="The Dataflow Model" href="https://www.vldb.org/pvldb/vol8/p1792-Akidau.pdf" by="Akidau, Chernyak &amp; Lax, 2015, VLDB">Window assignment and merging, and why a global window needs an explicit trigger.</Resource>
+  <Resource kind="reading" title="Windows" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/dev/datastream/operators/windows/" by="Apache Flink, 1.20 docs">Tumbling, sliding, session, and global window assigners, and a pane's lifecycle.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,83 @@
+{
+  "topic": "de.delivery-semantics-duplicates",
+  "steps": [
+    {
+      "lines": [
+        "Two engineers are arguing over whether their pipeline really deserves that one precise, overused label.",
+        "Neither one can actually say which of two specific moments their system protects against.",
+        "A live run settles it on the spot, producing a real duplicate from each one in turn."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the right way to state each of these three promises.",
+        "Not how many times the system tries to deliver something.",
+        "How many times the actual effect of that delivery ends up landing, once everything settles."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A batch goes out, the broker writes it successfully, and then the confirmation back never arrives.",
+        "With nothing else turned on, what does the sender actually do next?"
+      ],
+      "answer": [
+        "It tries again, because it has no way to know the first attempt actually landed.",
+        "And without one extra safeguard turned on, that second attempt writes a second, duplicate copy."
+      ]
+    },
+    {
+      "lines": [
+        "Seeing no confirmation, the sender does exactly what it would do after a real failure.",
+        "It sends again.",
+        "Nothing on the receiving end recognizes this as a repeat, so a second copy lands right next to the first."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "A reader processes one record, writes its effect somewhere, and crashes before saving how far it got.",
+        "When a fresh process picks up right after that, what does it actually see?"
+      ],
+      "answer": [
+        "It resumes from the last position it actually managed to save.",
+        "That's still the old one, so the record it already handled gets handled all over again."
+      ]
+    },
+    {
+      "lines": [
+        "On restart, the reader starts exactly where its last saved position says to start.",
+        "The record it already finished gets picked up again, from scratch.",
+        "Whatever effect that record caused downstream now happens a second time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the phrase worth being suspicious of: claiming the hard part is solved without ever saying where.",
+        "Saying the middle of the pipeline behaves perfectly names no actual boundary.",
+        "The moment the final destination isn't built to shrug off a repeat, that same duplicate effect slips right back in, no matter how well everything before it behaved."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same exact crash and run it through each of the three promises in turn.",
+        "One of them can let the effect vanish entirely.",
+        "Another can let it double. Only the third one holds it at exactly once, every single time, through the very same crash."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel so far came from one real run of this topic's own toy delivery model, happening just now.",
+        "Both of the moments it walked through, confirmed directly rather than just described.",
+        "And that same three-way comparison, measured instead of assumed."
+      ]
+    },
+    {
+      "lines": [
+        "So: three promises, each one really a statement about how many times an effect lands, not how many times something was attempted.",
+        "Two moments where things go wrong, a sender side and a reader side, sharing the exact same shape underneath.",
+        "And that one overused label only ever means something once you've named the specific boundary it's supposed to hold at."
+      ]
+    }
+  ]
+}
