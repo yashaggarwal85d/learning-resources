@@ -1,0 +1,5 @@
+- **Cache miss**: a request for a key the cache doesn't currently hold, forcing a trip to whatever backs the cache. *Where you meet it:* every reveal in this topic, named for each pattern's own way of handling it.
+- **Backing store**: the durable system of record a cache sits in front of — a database, in every example here. *Where you meet it:* the hook and every write pattern reveal.
+- **Pin/unpin, from the buffer pool**: the bookkeeping that decides what can even be considered for eviction, introduced two topics ago at the engine's own storage layer. *Where you meet it:* the admission-filter reveal, the same role one layer up.
+- **Eviction policy**: the rule a fixed-size cache uses to decide what to remove when it's full. *Where you meet it:* the LRU-vs-admission reveal and the closing scenario.
+- **Skewed access pattern**: a request stream where a small number of keys are asked for far more often than the rest, the realistic shape this topic's own measurement is built on. *Where you meet it:* the real, measured hit-rate comparison.

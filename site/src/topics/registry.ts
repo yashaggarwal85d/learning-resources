@@ -5285,6 +5285,26 @@ export const TOPICS: TopicMeta[] = [
       "Every mechanism in this chapter so far protected a write. The next section turns to the read side most of that protection exists for in the first place: caching, starting with the patterns and eviction policies every cache is built from.",
   },
   {
+    id: 'de.cache-patterns-eviction-policies',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/cache-patterns-eviction-policies',
+    title: 'Cache patterns and eviction policies',
+    syllabusTitle: 'Cache patterns and eviction policies',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cache-patterns-eviction'],
+    uses: ['buffer-pool-pin-unpin'],
+    declared: [],
+    bridge:
+      "Every mechanism in this chapter so far protected a write. This section turns to the read side most of that protection exists for in the first place: caching, starting with the real patterns (cache-aside, read-through, write-through, write-behind) and eviction policies every cache is built from — the same eviction problem §5.1's buffer pool already solved once, now solved again at the application layer.",
+    handoff:
+      "An eviction policy alone says nothing about whether a cached value is still correct. The next topic is the harder problem: cache consistency and invalidation.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',

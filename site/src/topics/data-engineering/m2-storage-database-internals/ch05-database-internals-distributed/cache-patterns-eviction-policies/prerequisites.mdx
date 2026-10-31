@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the engine's own cache, one layer down
+
+<ul class="resources">
+  <Resource kind="reel" title="Buffer pool and page replacement" domain="data-engineering" host="de.buffer-pool-page-replacement" by="the direct structural parallel: a buffer pool is itself a cache with its own eviction policy" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Caching strategies for Memcached" href="https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html" by="Amazon Web Services">Cache-aside's own name and mechanics, and its own stated staleness risk.</Resource>
+  <Resource kind="reading" title="Caching Data Sources" href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206/develop-applications/caching-data-sources.html" by="Oracle, Coherence Documentation">Read-through, write-through and write-behind, defined by a real cache product.</Resource>
+  <Resource kind="reading" title="Efficiency" href="https://raw.githubusercontent.com/wiki/ben-manes/caffeine/Efficiency.md" by="Caffeine project wiki">W-TinyLFU as a combined admission-plus-eviction policy.</Resource>
+</ul>
+
+</section>
