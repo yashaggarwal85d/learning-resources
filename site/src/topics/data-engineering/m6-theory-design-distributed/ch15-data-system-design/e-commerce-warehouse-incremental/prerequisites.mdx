@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the modelling and merge concepts this topic runs on orders
+
+<ul class="resources">
+  <Resource kind="reel" title="Grain-first dimensional design" domain="data-engineering" host="de.e-commerce-warehouse-incremental">The grain decision this topic makes before any column is drawn.</Resource>
+  <Resource kind="reel" title="MERGE, upsert and concurrent writers" domain="data-engineering" host="de.e-commerce-warehouse-incremental">The statement this topic's incremental load runs by a unique key.</Resource>
+  <Resource kind="reel" title="Back-of-envelope capacity estimation" domain="data-engineering" host="de.e-commerce-warehouse-incremental">The constants this topic's crossover formula is computed from.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Configure incremental models" href="https://docs.getdbt.com/docs/build/incremental-models" by="dbt Developer Hub">The unique_key mechanism behind merging a changed row instead of duplicating it.</Resource>
+  <Resource kind="reading" title="MERGE" href="https://www.postgresql.org/docs/current/sql-merge.html" by="PostgreSQL documentation">The WHEN NOT MATCHED BY SOURCE clause the deleted-source-row guard is built on.</Resource>
+</ul>
+
+</section>

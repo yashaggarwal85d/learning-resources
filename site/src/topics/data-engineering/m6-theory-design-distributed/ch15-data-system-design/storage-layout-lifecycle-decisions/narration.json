@@ -1,0 +1,94 @@
+{
+  "topic": "de.storage-layout-lifecycle-decisions",
+  "steps": [
+    {
+      "lines": [
+        "A table gets split up by customer, because that sounds like the fast way to look someone up.",
+        "A year later, the job that totals up each night's revenue is crawling, and a request to erase one customer turns into rewriting nearly everything.",
+        "Two completely different-looking problems. Do they actually share one single cause?"
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A bigger machine could probably push through the slow nightly job eventually. And the erasure request looks, on its face, like an entirely separate kind of problem.",
+        "Or is there one earlier decision that actually explains both of these at once?"
+      ],
+      "answer": [
+        "Not two problems. One decision, showing up twice.",
+        "More machine never fixes a layout that forces scanning nearly everything, no matter how fast that machine is.",
+        "And the split that was chosen wasn't picked by asking which question gets asked of this data the most. It was picked because it merely sounded fast."
+      ]
+    },
+    {
+      "lines": [
+        "Before touching layout at all, one earlier question: which copy of this data is the real one?",
+        "Some data is the one and only authoritative record. Other data is simply computed from that record, and could be thrown away and rebuilt at any time.",
+        "Knowing which is which decides what actually needs careful backing up, and what doesn't."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual fix: find the one question this data gets asked most often, and split the data to match that question.",
+        "The nightly job asks for one day at a time. So the data should be split up by day, not by who it belongs to.",
+        "The split should follow the question being asked, not whatever sounded intuitive at the time."
+      ]
+    },
+    {
+      "lines": [
+        "One format choice sits above all of this, and it isn't reinvented fresh for every single dataset either.",
+        "Several formats can all represent the same data. What actually tells them apart is how well each one plays with other tools, and the catalog each one needs.",
+        "That's the one cost that actually decides between them — and once a format is picked, the physical layout simply follows from it."
+      ]
+    },
+    {
+      "lines": [
+        "Draw that same nightly question as a beam crossing straight through both ways of splitting the data.",
+        "Split by owner, the beam clips nearly every single piece. Split by day, the beam only needs a handful of pieces, and almost everything else gets skipped entirely, untouched."
+      ]
+    },
+    {
+      "lines": [
+        "Not all data deserves the same shelf. Recent data sits somewhere fast and costly. Older data moves somewhere cheaper. The oldest gets tucked away in deep storage.",
+        "Each shelf carries its own clock. A shelf isn't just a price tag — it's a promise about exactly how long that data is allowed to sit there."
+      ]
+    },
+    {
+      "lines": [
+        "That clock isn't just good engineering practice, either.",
+        "Privacy law itself says personal information can't be kept around, in a form that identifies someone, for any longer than its actual purpose requires.",
+        "The clock on every shelf is answering a real requirement, not just following a tidy convention."
+      ]
+    },
+    {
+      "lines": [
+        "One more to reason through: someone asks to be erased. Under the day-based split, do all of their records sit together in one place?",
+        "Or could their history be scattered across every single day they ever showed up on?"
+      ],
+      "answer": [
+        "Scattered. Splitting by day groups records by day, never by who they belong to.",
+        "So one person's whole history ends up spread across however many days they were ever active.",
+        "Plan for erasure from the very start, and it costs picking the right grouping up front. Bolt it on afterward, and it costs rewriting every shelf that history ever touched."
+      ]
+    },
+    {
+      "lines": [
+        "Settle which copy is the real one before anything else gets decided.",
+        "Let the question actually being asked choose how the data gets split — never instinct.",
+        "Give every shelf its own clock, backed by an actual requirement, not a guess.",
+        "And plan for erasure from day one, or pay for skipping that later, in a full rewrite."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a second dataset, of session records, mostly gets asked one different question — find one specific session, instantly, by its own id.",
+        "What does that change about how this one should be split up, and does the same erasure headache still show up?"
+      ],
+      "answer": [
+        "Split this one by session id instead, since that's the question actually being asked of it.",
+        "And yes, the same risk can still show up — if one person's many sessions end up scattered across many separate groupings rather than kept together.",
+        "A quick lookup helps find one row fast, but it never decides whether a split keeps one person's data together or scatters it. That's still a separate question, worth asking every time."
+      ]
+    }
+  ]
+}

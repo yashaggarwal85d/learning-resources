@@ -1,0 +1,65 @@
+{
+  "topic": "de.cost-model-dominant-cost",
+  "syllabus": [
+    {
+      "clause": "compute, storage, egress, request and license cost per unit of business volume",
+      "at": [
+        { "step": "Hook: a month of tuning against one query's real share" },
+        { "step": "Reveal: five cost classes, priced per unit of business" }
+      ]
+    },
+    {
+      "clause": "identify the one lever that dominates (often scan volume, cross-AZ traffic or idle compute)",
+      "at": [
+        { "step": "Predict: which cost class does the waterfall actually show dominating?" },
+        { "step": "Reveal: the waterfall finds the one term that dominates" },
+        { "step": "Reveal: three recurring dominators" }
+      ]
+    },
+    {
+      "clause": "and the design change that moves it",
+      "at": [
+        { "step": "Reveal: a lever, and its measured ratio" },
+        { "step": "Reveal: cross-AZ and idle-compute levers" },
+        { "step": "Reveal: every lever has a second-order cost" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google Cloud — BigQuery Pricing",
+      "items": [
+        { "item": "On-demand pricing charges by the number of bytes processed by each query, not by cluster size or time running.", "at": [{ "step": "Predict: which cost class does the waterfall actually show dominating?" }] },
+        { "item": "A clustered table's column-filtered query prunes the blocks actually scanned, reducing the billed bytes.", "at": [{ "step": "Reveal: a lever, and its measured ratio" }] }
+      ]
+    },
+    {
+      "source": "Amazon Web Services — Amazon S3 Pricing",
+      "items": [
+        { "item": "S3's cost is split across six distinct components: storage, request/retrieval, transfer, data-management, replication, and transform/query.", "at": [{ "step": "Reveal: five cost classes, priced per unit of business" }] },
+        { "item": "Storage itself is priced by the combination of object size, duration stored, and storage class.", "at": [{ "step": "Reveal: five cost classes, priced per unit of business" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A bill is usually dominated by one term, and optimizing the others first is wasted effort.", "at": [{ "step": "Reveal: the waterfall finds the one term that dominates" }] },
+      { "item": "Scan volume, cross-AZ traffic, and idle compute are the three shapes a dominating bar usually takes, and naming the shape is the real diagnostic step.", "at": [{ "step": "Reveal: three recurring dominators" }] },
+      { "item": "A lever's saving is a measured ratio against the actual bill, not a guess.", "at": [{ "step": "Reveal: a lever, and its measured ratio" }] },
+      { "item": "The lever that fixes one dominator does nothing for a different one — it's specific to the dominator, not a generic optimization.", "at": [{ "step": "Reveal: cross-AZ and idle-compute levers" }] },
+      { "item": "Every lever that lowers one cost has a second-order cost of its own, which must be priced alongside the saving.", "at": [{ "step": "Reveal: every lever has a second-order cost" }] },
+      { "item": "A steep enough price change to one cost class can shift which class dominates, so the waterfall is re-run on fresh prices, not assumed to hold.", "at": [{ "step": "Prove it: a new price sheet, the same waterfall" }] },
+      { "item": "This topic leaves out FinOps practice, cloud pricing models, infrastructure as code, layout/pruning mechanics, and autoscaling mechanics deliberately — it teaches the design response, not the provider billing mechanics.", "at": [{ "deep": "Internals" }] },
+      { "item": "Cost-per-unit pricing and waterfall analysis are established FinOps practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop a priced design with one dominating lever identified, which the next topic (trade-off articulation and decision records) assumes already exists before putting it in front of someone to defend.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "Effort spent tuning a cost class is not evidence that class is the one dominating the bill — the two are checked separately, by running the waterfall rather than by where the team's time went.", "at": [{ "step": "Hook: a month of tuning against one query's real share" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "topic": "de.clickstream-ad-click-analytics",
+  "steps": [
+    {
+      "lines": [
+        "An advertising partner gets paid, quite literally, per click.",
+        "This particular streaming dashboard reports one count for yesterday's total clicks. Finance's own reconciled batch run reports a noticeably larger count, and the invoice that actually goes out uses that larger number.",
+        "Neither one of these two pipelines, carefully examined, actually contains a bug."
+      ]
+    },
+    {
+      "lines": [
+        "Late events, outright duplicates, and bot filtering are all genuinely real failure modes this design already has to handle somewhere.",
+        "Only one of those three actually points toward a streaming count that comes out smaller than the reconciled batch recount sitting right next to it. Which one does?"
+      ],
+      "answer": [
+        "A duplicate would push that streaming count upward, never downward, so a duplicate genuinely can't explain a count that ends up smaller.",
+        "A late event, though, behaves completely differently: it lands safely in the log, but it never actually reaches a window that has already fired its result. That is exactly the direction this particular gap runs in."
+      ]
+    },
+    {
+      "lines": [
+        "A client sdk out in the field batches its own events, retries the ones that fail, and tags every single one with its own id.",
+        "A stateless collector, scaled according to Little's law, hands each event off cleanly to one durable, shared log sitting behind it.",
+        "A lake landing zone and a full warehouse sit just behind that log, with dashboards layered directly on top. Every single hop in this chain carries its own decision card."
+      ]
+    },
+    {
+      "lines": [
+        "A session closes the moment activity genuinely stops for some stated gap, never at some fixed clock boundary chosen in advance.",
+        "Bot traffic gets flagged by a classifier that carries a real, unavoidable false-positive cost running in either direction: wrongly calling an actual person a bot, or wrongly letting a real bot straight through."
+      ]
+    },
+    {
+      "lines": [
+        "The correctness boundary in this design sits immediately after the log, and nowhere else.",
+        "A late event does land there, safely, in that very same log.",
+        "But if that same event arrives only after the stream's own window has already fired its result, it gets dropped from that particular result by default, unless this design explicitly chose to allow for exactly this kind of lateness."
+      ]
+    },
+    {
+      "lines": [
+        "The streaming path runs idempotent upserts, each one keyed by its own deterministic id, producing a fast count that's only approximately right.",
+        "A scheduled batch job then recomputes that exact same count directly from the immutable log, and its number overrides the streaming figure completely, for anything that actually gets billed."
+      ]
+    },
+    {
+      "lines": [
+        "That one transformation now genuinely exists twice: once inside the stream engine, and once inside the batch engine sitting beside it.",
+        "The instant only one of those two copies actually gets updated, a real drift gap opens up directly between them.",
+        "That gap is a real, ongoing cost that has to be budgeted for, never some bug waiting around to eventually be fixed away for good."
+      ]
+    },
+    {
+      "lines": [
+        "The estimate sheet runs peak rate, daily bytes, and fully replicated storage straight through this shop's own stated constants.",
+        "The single dominant cost lever here is almost certainly either the lake's own scan volume, or the log's cross-region replication traffic.",
+        "The failure table names, plainly, what actually breaks, and precisely how far each failure's own blast radius genuinely reaches."
+      ]
+    },
+    {
+      "lines": [
+        "Six hops total, three real alternatives sitting at each one of them.",
+        "A session is defined by a gap, never by a clock; bot filtering carries a real cost no matter which way it's wrong.",
+        "A late event simply misses a window that has already fired. The stream exists for speed; the batch is the actual number of record.",
+        "And running two separate logic paths costs real drift, something budgeted for carefully, never fully eliminated."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a completely different ad partner's count disagrees once again, in this new scenario.",
+        "This time, though, a client-side retry storm produced one genuine duplicate burst instead.",
+        "The stream's own idempotent keying absorbed that burst entirely cleanly. A batch recount run before its own dedup window actually closed briefly double-counted it instead. Same exact symptom, yet a genuinely different cause underneath it."
+      ],
+      "answer": [
+        "A count that simply disagrees is only ever a symptom on its own, never a diagnosis by itself.",
+        "Last time, the actual cause was a late-event sliver missing a window. This time, it's a timing collision between a retry storm and the batch recount's own dedup window closing late.",
+        "Simply assuming last time's cause would have pointed any fix at entirely the wrong hop in this pipeline."
+      ]
+    }
+  ]
+}
