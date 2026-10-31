@@ -1,0 +1,48 @@
+{
+  "topic": "de.snapshot-based-table-metadata",
+  "syllabus": [
+    { "clause": "a table version as an explicit, immutable list of data files plus schema and statistics", "at": [{ "step": "Reveal: a snapshot is the whole file list, not a diff" }] },
+    { "clause": "the commit as one atomic pointer move (catalog compare-and-swap, or put-if-absent of the next log entry)", "at": [{ "step": "Reveal: the commit is one atomic pointer swap" }, { "step": "Reveal: reproduced for real — exactly one writer wins" }] },
+    { "clause": "readers pinned to a snapshot never see partial writes", "at": [{ "step": "Reveal: reproduced for real — the pinned reader never moves" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg table specification, Overview and Optimistic Concurrency",
+      "items": [
+        { "item": "table state is maintained in metadata files; all changes create a new metadata file and replace the old one with an atomic swap", "at": [{ "step": "Reveal: the commit is one atomic pointer swap" }] },
+        { "item": "an atomic swap of metadata files is the basis for serializable isolation; readers use the snapshot current when they loaded the table", "at": [{ "step": "Reveal: reproduced for real — the pinned reader never moves" }] },
+        { "item": "writers create metadata files optimistically and commit by swapping the pointer from base to new version", "at": [{ "step": "Reveal: the protocol is optimistic by design" }] },
+        { "item": "the atomic swap mechanism isn't standardized — it can be filesystem atomic rename or a metastore check-and-put", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake protocol specification (PROTOCOL.md)",
+      "items": [
+        { "item": "a table has a single serial history of atomic versions, named using contiguous monotonically-increasing integers", "at": [{ "step": "Reveal: Delta's own protocol is the identical shape" }] },
+        { "item": "readers use the transaction log to selectively choose which data files to process, not a listing", "at": [{ "step": "Reveal: Delta's own protocol is the identical shape" }] },
+        { "item": "a catalog-managed commit can rely on a real PUT-if-absent primitive to ratify and publish a version atomically", "at": [{ "deep": "One primitive, two formats" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "This topic's compare-and-swap demo uses os.open with O_EXCL on real local disk, not a real catalog's check-and-put or a real object store's conditional write (topic 10 already demonstrated the real HTTP-level 412 contract) — the claim is narrower: POSIX guarantees O_EXCL is atomic within one filesystem, the same atomicity shape a metastore or object store's conditional write provides, not a claim that local disk IS a catalog.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The two-writer race is a deliberately scripted sequence (writer A's open call runs before writer B's in the script), not a genuine simultaneous OS-level race — it verifies that O_EXCL makes the second attempt fail deterministically regardless of timing, which is the real guarantee being claimed, not a simulation of exact concurrent timing.", "at": [{ "step": "Reveal: reproduced for real — exactly one writer wins" }] },
+      { "item": "Iceberg's own spec explicitly declines to standardize the atomic-swap mechanism, naming both HDFS atomic rename and a metastore check-and-put as real examples — this topic names both rather than picking one and implying it is the only way.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic does not cover conflict validation (what counts as a genuinely conflicting change versus a safely retryable one) — that is explicitly the next topic's job (optimistic commits and conflict resolution), and this topic's own handoff names that boundary.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "Delta's quoted PUT-if-absent sentence describes one specific commit-coordinator design among several Delta supports (staged, inline, ratified-then-published commits) — cited as one real example of the same underlying pattern, not Delta's only commit mechanism.", "at": [{ "deep": "One primitive, two formats" }] },
+      { "item": "The pinned-reader demonstration proves the reader's own already-opened path is unaffected by a later commit; it does not demonstrate what happens if a snapshot is garbage-collected while a reader still holds its id — that retention/expiry concern is out of scope for this topic.", "at": [{ "step": "Reveal: reproduced for real — the pinned reader never moves" }] },
+      { "item": "This topic's own handoff names the specific next question: what exactly counts as a safe retry versus a genuine conflict, which is the next topic's entire subject.", "at": [{ "step": "Recap" }] },
+      { "item": "The Iceberg spec's own 'Snapshots' field table (a literal schema table) was not directly quotable; this topic cites the prose Overview and Optimistic Concurrency sections instead, which describe the identical mechanism in genuine sentences.", "at": [{ "step": "Reveal: a snapshot is the whole file list, not a diff" }] },
+      { "item": "Topic 10's real conditional-write demo (If-None-Match/If-Match against a real local S3-compatible server) and this topic's real O_EXCL compare-and-swap demo are two different sandboxed approximations of the same underlying primitive — this topic's prerequisites panel names topic 10 explicitly so readers see the connection.", "at": [{ "step": "Hook" }] },
+      { "item": "The prerequisites panel lists topic 11 as the direct dependency (hive-table-breakage) since this topic's own bridge text answers topic 11's handoff directly; topic 10 (object-storage-guarantees) is a transitive dependency covered via topic 11, not re-derived here.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

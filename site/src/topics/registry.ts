@@ -8765,4 +8765,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Fixing 'no atomic multi-partition commit' means replacing file listing with an explicit, versioned table state. That's the snapshot.",
   },
+  {
+    id: 'de.snapshot-based-table-metadata',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/snapshot-based-table-metadata',
+    title: 'Snapshot-based table metadata',
+    syllabusTitle: 'Snapshot-based table metadata',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['table-snapshot-model'],
+    uses: ['hive-table-breakage', 'object-storage-guarantees'],
+    declared: [],
+    bridge:
+      "Fixing 'no atomic multi-partition commit' means replacing file listing with an explicit, versioned table state. This topic is that state: the snapshot, an immutable list of files plus schema, committed by one atomic pointer move.",
+    handoff:
+      "An atomic pointer move only works if exactly one writer wins it when two race for the same move. That's the optimistic-commit protocol itself.",
+  },
 ];
