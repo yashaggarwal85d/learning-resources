@@ -5285,6 +5285,26 @@ export const TOPICS: TopicMeta[] = [
       "Every mechanism in this chapter so far protected a write. The next section turns to the read side most of that protection exists for in the first place: caching, starting with the patterns and eviction policies every cache is built from.",
   },
   {
+    id: 'de.cache-patterns-eviction-policies',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/cache-patterns-eviction-policies',
+    title: 'Cache patterns and eviction policies',
+    syllabusTitle: 'Cache patterns and eviction policies',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cache-patterns-eviction'],
+    uses: ['buffer-pool-pin-unpin'],
+    declared: [],
+    bridge:
+      "Every mechanism in this chapter so far protected a write. This section turns to the read side most of that protection exists for in the first place: caching, starting with the real patterns (cache-aside, read-through, write-through, write-behind) and eviction policies every cache is built from — the same eviction problem §5.1's buffer pool already solved once, now solved again at the application layer.",
+    handoff:
+      "An eviction policy alone says nothing about whether a cached value is still correct. The next topic is the harder problem: cache consistency and invalidation.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -5383,6 +5403,26 @@ export const TOPICS: TopicMeta[] = [
       "Fan-out can produce thousands of task instances that all want to run at once. This topic is what decides how many actually do, in what order, and how a fragile source is protected from being overrun by exactly the kind of fan-out the last topic showed.",
     handoff:
       "A task waiting in a pool for a slot still occupies a worker process while it waits. Some tasks wait for hours, not seconds — for an external job, or a sensor polling an API. Holding a worker that whole time is wasteful, and there is a mechanism built specifically to avoid it.",
+  },
+  {
+    id: 'de.deferrable-tasks-triggerer',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/deferrable-tasks-triggerer',
+    title: 'Deferrable tasks and the triggerer',
+    syllabusTitle: 'Deferrable tasks and the triggerer',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['deferrable-task-triggerer-model', 'trigger-serialisation-failure'],
+    uses: ['de.concurrency-controls-pools-queues', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "A pool bounds how many tasks run at once, but a task waiting in poke mode for an external job still occupies a worker the whole time it waits. This topic is the mechanism built to avoid exactly that: a deferred task that gives its worker slot back and lets a separate, lightweight process do the waiting.",
+    handoff:
+      "A deferred task still waits for something specific it already knows to watch for. Some pipelines need the opposite: a run triggered not by a clock or a known wait, but by data itself becoming available somewhere else.",
   },
   {
     id: 'de.driver-executors-task-hierarchy',
@@ -5903,6 +5943,26 @@ export const TOPICS: TopicMeta[] = [
       "The shuffle produces blocks sitting on specific executors. This topic is about the scheduler's own choice of which executor runs the next task, given where its input actually lives.",
     handoff:
       "Locality and parallelism are about placing and sizing the tasks the planner already decided to run. The next two topics go one level up, into the planner itself: how Catalyst decided what to run in the first place.",
+  },
+  {
+    id: 'de.catalyst-unresolved-physical-plan',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/catalyst-unresolved-physical-plan',
+    title: 'Catalyst: from unresolved to physical plan',
+    syllabusTitle: 'Catalyst: from unresolved to physical plan',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-catalyst-pipeline', 'spark-explain-formatted'],
+    uses: ['sql-query-optimizer-plans', 'spark-stage-boundary'],
+    declared: [],
+    bridge:
+      "Every topic so far watched the plan Catalyst already produced run. This topic opens Catalyst itself, the planner Chapter 2's query-optimiser topic already introduced in the single-node case, now choosing join and aggregate strategies across a cluster.",
+    handoff:
+      "Catalyst decides the physical plan's shape. Tungsten, next, decides how fast the chosen shape actually runs — a different layer, planning versus execution.",
   },
   {
     id: 'de.failure-domains-regions-zones',
@@ -6563,5 +6623,25 @@ export const TOPICS: TopicMeta[] = [
       "Everything encoded so far has been a flat column. This topic is what happens the moment a column is optional, repeated or nested: Dremel's own record-shredding model, traced by hand from a real nested record to flat columns and back.",
     handoff:
       "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and which rows it can skip entirely. That's data skipping.",
+  },
+  {
+    id: 'de.data-skipping-statistics-page',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/data-skipping-statistics-page',
+    title: 'Data skipping: statistics, page indexes, bloom filters',
+    syllabusTitle: 'Data skipping: statistics, page indexes, bloom filters',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['parquet-data-skipping'],
+    uses: ['parquet-file-anatomy', 'dremel-shredding-levels'],
+    declared: [],
+    bridge:
+      "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and rows it can skip entirely. This topic is exactly that: row-group statistics, the page index, bloom filters, and why none of it prunes anything if the data isn't sorted first.",
+    handoff:
+      "Every skipping trick so far lived inside one Parquet file's own footer. The next section asks what happens once there isn't one file anymore, but a whole table of them sitting in object storage with no file you can safely edit in place.",
   },
 ];

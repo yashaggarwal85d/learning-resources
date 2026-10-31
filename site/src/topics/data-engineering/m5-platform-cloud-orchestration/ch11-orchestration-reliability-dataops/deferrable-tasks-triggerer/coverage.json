@@ -1,0 +1,84 @@
+{
+  "topic": "de.deferrable-tasks-triggerer",
+  "syllabus": [
+    {
+      "clause": "asyncio triggers release worker slots while waiting on sensors or external jobs",
+      "at": [
+        { "step": "Reveal: worker occupancy, measured" },
+        { "step": "Predict: who still holds a worker mid-wait?" }
+      ]
+    },
+    {
+      "clause": "vs poke and reschedule modes",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "the triggerer as a separate scaling unit",
+      "at": [
+        { "step": "Reveal: the triggerer, scaled on its own" }
+      ]
+    },
+    {
+      "clause": "failure modes (trigger serialisation, triggerer saturation)",
+      "at": [
+        { "step": "Predict: what if a trigger holds something that can't survive?" },
+        { "step": "Reveal: trigger serialization, corrupted not crashed" },
+        { "step": "Reveal: triggerer saturation, sourced" }
+      ]
+    },
+    {
+      "clause": "the same deferral mechanism underlies Airflow 3.1 human-in-the-loop operators and deadline alerts",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Deferrable Operators & Triggers (Apache Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "standard operators and sensors occupy a full worker slot for their entire runtime, even while idle", "at": [{ "step": "Hook" }] },
+        { "item": "deferring hands execution to the triggerer, which frees the worker for the deferred phase of execution", "at": [{ "step": "Reveal: worker occupancy, measured" }] },
+        { "item": "triggers should avoid persistent state so they can be serialized and moved around freely between triggerer hosts", "at": [{ "step": "Reveal: trigger serialization, corrupted not crashed" }] },
+        { "item": "a triggerer defaults to a capacity of a thousand triggers at once; past that, some are delayed until others complete", "at": [{ "step": "Reveal: triggerer saturation, sourced" }] }
+      ]
+    },
+    {
+      "source": "Sensors (Apache Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "poke mode takes up a worker slot for a sensor's entire runtime; reschedule only while actively checking", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Release Notes (Apache Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "Airflow 3.1 introduced Human-in-the-Loop functionality, pausing tasks in a deferred state to wait for human input", "at": [{ "deep": "Frontier" }] },
+        { "item": "a later changelog entry confirms the awaiting_input task state for Human-in-the-Loop runs off the triggerer", "at": [{ "deep": "Frontier" }] },
+        { "item": "Airflow 3.1 also introduced Deadline Alerts, firing a callback when a DAG run exceeds a time threshold", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The worker-occupancy measurement in this topic isolates a variable most worker-slot-hours arguments leave implicit: the same operator, same wait, same cap, run twice. That controls out every confound (different sensors have different overhead) and leaves only the one real difference — whether the wait itself happens inside a worker process or outside one.", "at": [{ "step": "Reveal: worker occupancy, measured" }] },
+      { "item": "A reader who assumes deferral is strictly better than poke mode is missing the real trade this topic measured: the deferred run took over three times longer in wall-clock time for the identical wait, because handing a task back to the scheduler and routing it through the triggerer costs real round-trip latency that polling in place does not.", "at": [{ "step": "Predict: who still holds a worker mid-wait?" }] },
+      { "item": "The trigger serialization finding here is stronger than 'serialization can fail' — Airflow's BaseSerialization doesn't fail at all on an unserializable kwarg; it falls back to a string representation. That means a broken trigger passes every check available at defer time and only reveals itself later, which is a materially worse failure mode for an author to debug than an upfront crash.", "at": [{ "step": "Reveal: trigger serialization, corrupted not crashed" }] },
+      { "item": "Deferring and mode='reschedule' are frequently conflated because both 'release the worker between checks,' but reschedule still occupies a worker during every check and re-polls on a fixed timer, while deferring hands the entire wait to a different process and resumes only when the trigger itself observes the condition — there is no polling interval for the task to re-enter on.", "at": [{ "deep": "Internals" }] },
+      { "item": "The triggerer's default capacity of a thousand per process, and max_trigger_to_select_per_loop defaulting to fifty, are two different knobs solving two different problems: capacity bounds how much one triggerer host will attempt; the per-loop limit exists specifically to keep multiple HA triggerer hosts from starving each other when load is unevenly distributed.", "at": [{ "step": "Reveal: triggerer saturation, sourced" }] },
+      { "item": "By default, a deferred task does not occupy a pool slot either, per Airflow's own docs — meaning a pool sized for a fragile source (the previous topic) is not consumed by tasks that are merely deferred and waiting, only by tasks actually executing against that source. A reader carrying topic five's pool model forward might assume otherwise.", "at": [{ "step": "Reveal: worker occupancy, measured" }] },
+      { "item": "HITL and Deadline Alerts shipping in the same Airflow 3.1 release, both built on deferral, is not a coincidence of timing — it reflects the same underlying realization: 'pause and wait for something external, without burning a worker' is a general-purpose primitive, not a sensor-specific one, and both features are consumers of that primitive rather than reimplementations of it.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The hook's hundred-sensor scenario and the lab's twelve-task measurement are deliberately different scales for the same reason topic five's hook and lab differed: a hundred sensors establishes a scenario large enough to matter operationally, while twelve tasks is sized to let every defer/resume timestamp be read cleanly from real logs within the session's own time budget.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume the ninety-five-percent worker-time reduction measured here is specific to a fifteen-second wait and would shrink for longer waits. The opposite is true: the fixed cost (a brief worker claim to start the defer, a brief one to resume) stays roughly constant regardless of wait length, so the percentage reduction only grows as the wait gets longer.", "at": [{ "step": "Prove it" }] },
+      { "item": "Trigger serialization encrypts sensitive kwargs since Airflow 2.9.0 (per the sourced docs), which is a separate concern from this topic's own finding: encryption protects a serializable secret from being read in plaintext in the database, but does nothing for an argument that isn't serializable in the first place — the two problems are easy to conflate but orthogonal.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
