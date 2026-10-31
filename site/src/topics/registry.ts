@@ -6684,4 +6684,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every skipping trick so far lived inside one Parquet file's own footer. The next section asks what happens once there isn't one file anymore, but a whole table of them sitting in object storage with no file you can safely edit in place.",
   },
+  {
+    id: 'de.variant-type-shredding',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/variant-type-shredding',
+    title: 'Variant type and shredding',
+    syllabusTitle: 'Variant type and shredding',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['variant-type-shredding'],
+    uses: ['dremel-shredding-levels', 'parquet-data-skipping'],
+    declared: [],
+    bridge:
+      "Every skipping trick so far lived inside flat, already-typed columns. This topic is the format's answer to data that isn't typed at all yet — the Variant type, and the shredding that recovers this chapter's statistics for the fields that matter most.",
+    handoff:
+      "A single Parquet file, however well encoded, typed and skippable, is still one immutable file. ORC is the one real rival that made different choices at every one of these same decisions — worth seeing once, directly, before this chapter leaves the single-file world for good.",
+  },
 ];
