@@ -7489,6 +7489,26 @@ export const TOPICS: TopicMeta[] = [
       "Databricks is one lakehouse platform among several a learner will actually have to choose between, on real criteria: who owns the storage, how open the format really is, and what the exit cost looks like — which closes this section.",
   },
   {
+    id: 'de.lakehouse-platform-choice-storage',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/lakehouse-platform-choice-storage',
+    title: 'Lakehouse platform choice: storage, format, pricing',
+    syllabusTitle: 'Lakehouse platform choice: storage, format, pricing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['lakehouse-platform-tradeoff-matrix'],
+    uses: ['cross-cloud-service-rosetta', 'databricks-compute-sku-model', 'unity-catalog-namespace-securables', 'delta-sharing-protocol', 'serverless-provisioned-breakeven', 'cloud-cost-four-dimensions'],
+    declared: [],
+    bridge:
+      "Databricks is one lakehouse platform, taught here in real depth. This topic is the comparison a learner actually has to make in a real job: who owns the storage, how open the format really is underneath the marketing, what each pricing model actually charges for, and what it costs to leave each one.",
+    handoff:
+      "Choosing a platform and its services is a decision made once, or rarely. Keeping that choice reproducible and affordable over hundreds of later changes is a discipline in its own right — infrastructure as code and FinOps, which open the next section.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',

@@ -1,0 +1,126 @@
+{
+  "topic": "de.lakehouse-platform-choice-storage",
+  "syllabus": [
+    {
+      "clause": "mechanism-level comparison of Databricks, Snowflake, Microsoft Fabric and BigQuery",
+      "at": [
+        { "step": "Who actually owns the storage" }
+      ]
+    },
+    {
+      "clause": "who owns the storage (your bucket vs vendor-managed vs OneLake)",
+      "at": [
+        { "step": "Who actually owns the storage" },
+        { "step": "Before the comparison: which ownership model is hardest to leave?" }
+      ]
+    },
+    {
+      "clause": "open-format posture (Delta/Iceberg/UniForm, managed Iceberg)",
+      "at": [
+        { "step": "Open format, or a vendor's compatibility layer?" }
+      ]
+    },
+    {
+      "clause": "zero-copy access (OneLake shortcuts vs mirroring copies, Delta Sharing, Snowflake data sharing)",
+      "at": [
+        { "step": "Zero-copy, four different ways" }
+      ]
+    },
+    {
+      "clause": "pricing model (DBUs vs credits vs Fabric capacity units with smoothing vs slots)",
+      "at": [
+        { "step": "Four billing units, one worked comparison" }
+      ]
+    },
+    {
+      "clause": "and the exit cost of each.",
+      "at": [
+        { "step": "What leaving actually costs" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Databricks: Create a Unity Catalog metastore",
+      "items": [
+        { "item": "Managed table/volume data lives in an S3 bucket the customer creates in their own AWS account", "at": [{ "step": "Who actually owns the storage" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Read Delta Lake tables with Iceberg clients",
+      "items": [
+        { "item": "UniForm generates Iceberg metadata asynchronously from the same Parquet files Delta already wrote, so one copy of the data serves both Delta and Iceberg clients", "at": [{ "step": "Open format, or a vendor's compatibility layer?" }] }
+      ]
+    },
+    {
+      "source": "Snowflake: Snowflake key concepts and architecture",
+      "items": [
+        { "item": "Snowflake manages all aspects of how a native table's storage is organized; an Iceberg table instead uses external cloud storage the customer manages, which Snowflake states isn't part of Snowflake", "at": [{ "step": "Who actually owns the storage" }, { "step": "Open format, or a vendor's compatibility layer?" }] }
+      ]
+    },
+    {
+      "source": "Snowflake: Understanding overall cost",
+      "items": [
+        { "item": "Compute cost is consumed credits multiplied by the price of a credit", "at": [{ "step": "Four billing units, one worked comparison" }] }
+      ]
+    },
+    {
+      "source": "Snowflake: About Secure Data Sharing",
+      "items": [
+        { "item": "Secure Data Sharing copies no data between accounts; shared objects are read-only and consume no storage in the consumer's account", "at": [{ "step": "Zero-copy, four different ways" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Fabric: Unify data sources with OneLake shortcuts",
+      "items": [
+        { "item": "A shortcut is a pointer to another storage location, behaving like a symbolic link, independent of its target", "at": [{ "step": "Zero-copy, four different ways" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Fabric: Mirroring overview",
+      "items": [
+        { "item": "Database mirroring continuously replicates an entire source database into OneLake as a real copy; metadata mirroring instead uses shortcuts and moves no data", "at": [{ "step": "Zero-copy, four different ways" }] }
+      ]
+    },
+    {
+      "source": "Microsoft: Save costs with Microsoft Fabric Capacity reservations",
+      "items": [
+        { "item": "Smoothing spreads a usage spike (the documented worked example: a 2-CU reservation spiking to 4 CU for an hour) across a 24-hour window for background work, billing the average rather than the peak", "at": [{ "step": "Four billing units, one worked comparison" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Apache Iceberg managed tables",
+      "items": [
+        { "item": "A BigQuery Iceberg managed table stores data in a Cloud Storage bucket the customer owns and must configure before the table exists", "at": [{ "step": "Who actually owns the storage" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Understand BigQuery editions",
+      "items": [
+        { "item": "BigQuery offers a reserved-slots (editions) model and a per-TiB-processed on-demand model on a per-project basis; slots are a property of compute, not storage", "at": [{ "step": "Four billing units, one worked comparison" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook and the predict step's correct answer are calibrated to 'costly, not impossible' — a learner should not come away thinking a proprietary format is technically unexportable, only that it carries a real, volume-scaled cost the open-format case doesn't", "at": [{ "step": "The onboarding question nobody priced out" }, { "step": "Before the comparison: which ownership model is hardest to leave?" }] },
+      { "item": "Storage ownership is taught as the one fact the other four axes derive from, not as one of five independent, equally-weighted bullet points — a learner who can't say why ownership comes first has missed the topic's own organizing claim", "at": [{ "step": "Who actually owns the storage" }] },
+      { "item": "The open-format step deliberately keeps 'can read' (UniForm reading Iceberg) distinct from 'writes by default' (a plain Snowflake table); a learner who conflates the two has missed the step's own point", "at": [{ "step": "Open format, or a vendor's compatibility layer?" }] },
+      { "item": "The four zero-copy mechanisms are shown as four different things, not four names for one feature; a learner should be able to say which ones move no bytes at all (shortcuts, Delta Sharing, Snowflake sharing) and which one does (mirroring)", "at": [{ "step": "Zero-copy, four different ways" }] },
+      { "item": "The billing-unit comparison's point is which lever moves the bill, not which platform is cheapest; the specific dollar figures in examples.py are disclosed as illustrative, not quoted current prices, and an expert reviewer should not read them as a claim about which platform costs less today", "at": [{ "step": "Four billing units, one worked comparison" }] },
+      { "item": "The exit-cost step's worked numbers are a direct, disclosed simulation (open format in your own bucket vs a proprietary format needing a bulk unload), not a real account's bill; an expert reviewer should expect examples.py's local reproduction, not a live platform's invoice", "at": [{ "step": "What leaving actually costs" }] },
+      { "item": "The final predict step's correct answer names storage ownership and open-format posture together, deliberately excluding pricing model and zero-copy sharing, because those two don't change what it costs to leave — a learner who picks either of those has conflated 'cheap to run' or 'easy to share' with 'cheap to exit'", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot provision real Databricks, Snowflake, Fabric or BigQuery accounts in this sandbox; an expert reviewer should expect every cost figure to be a disclosed illustrative reproduction of each platform's documented billing mechanism, not a live invoice", "at": [{ "deep": "Internals" }] },
+      { "item": "Fabric's OneLake is correctly kept out of the 'proprietary format' category even though Microsoft owns the storage — mirrored and shortcut data is documented as landing in open Delta format, so storage ownership and format openness are shown as two separate axes that happen to both favor the customer for Databricks and BigQuery but diverge for Fabric", "at": [{ "deep": "Internals" }] },
+      { "item": "The production pitfall names a specific, plausible failure (a cost-cutting migration evaluation surfacing exit cost years later) rather than a generic 'vendor lock-in is bad' warning, and should be checked against the fact-check's own red-team note that Snowflake's UNLOAD path is real, just costly", "at": [{ "deep": "Production" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}
