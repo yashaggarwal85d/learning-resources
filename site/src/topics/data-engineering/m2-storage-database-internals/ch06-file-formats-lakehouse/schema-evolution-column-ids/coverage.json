@@ -1,0 +1,48 @@
+{
+  "topic": "de.schema-evolution-column-ids",
+  "syllabus": [
+    { "clause": "why name- or position-based column matching corrupts data on rename/reorder", "at": [{ "step": "Reveal: reproduced for real — position-based matching corrupts the table" }] },
+    { "clause": "how Iceberg field IDs and Delta column mapping (name/id mode) make add/drop/rename/reorder safe", "at": [{ "step": "Reveal: Iceberg's real fix — columns are selected by field ID" }, { "step": "Reveal: reproduced for real — field-ID projection survives the identical rename and insert" }, { "step": "Reveal: reproduced for real — column mapping renames without touching the data file" }] },
+    { "clause": "type widening, default values, and evolving nested structs", "at": [{ "step": "Reveal: the same stable-ID idea also makes three more moves safe" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg table specification, Schema Evolution and Column Projection",
+      "items": [
+        { "item": "columns in Iceberg data files are selected by field id; the schema's column names and order may change after a data file is written", "at": [{ "step": "Reveal: Iceberg's real fix — columns are selected by field ID" }] },
+        { "item": "renaming an existing field must change the name but not the field ID; adding a new field assigns a new ID", "at": [{ "step": "Reveal: Iceberg's real fix — columns are selected by field ID" }] },
+        { "item": "the spec's own worked rename-plus-reorder projection example", "at": [{ "step": "Reveal: reproduced for real — field-ID projection survives the identical rename and insert" }] },
+        { "item": "the initial-default must be set when a field is added and cannot change; the write-default may change", "at": [{ "step": "Reveal: the same stable-ID idea also makes three more moves safe" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Delta column mapping",
+      "items": [
+        { "item": "column mapping lets Delta table columns and the underlying Parquet file columns use different names, enabling RENAME COLUMN and DROP COLUMNS without rewriting the underlying Parquet files", "at": [{ "step": "Reveal: reproduced for real — column mapping renames without touching the data file" }] },
+        { "item": "column mapping is enabled by setting delta.columnMapping.mode to name", "at": [{ "deep": "Frontier" }] },
+        { "item": "the protocol specifies two modes, by name and by id; Delta Lake 2.1 and below do not support id mode", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The table in examples.py is plain CSV text, not Parquet/Iceberg/Delta's real binary formats — disclosed in the script's own module docstring and FACT-CHECK.md red-team #1 and #2. What transfers is the real mechanism (field-ID projection, logical-to-physical name mapping), not either format's actual on-disk layout.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Part 2's 'without column mapping' demo assumes the physical column name always equals the logical name, which is Delta's real behavior before column mapping is enabled — a sourced distinction (the mapping doc's own text implies this), not an invented contrast, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: without column mapping, a rename really does rewrite the file" }] },
+      { "item": "This topic does not demonstrate type widening or nested-struct evolution with real code, only rename/reorder/add — type widening and defaults are covered via Iceberg's own sourced default-value rules rather than a fabricated demo for every sub-claim, consistent with this chapter's established pattern within a 10-step/15-minute budget.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Enabling Delta column mapping is an irreversible, protocol-upgrading operation per the docs' own warning — this topic's demo builds two separately constructed tables (with and without mapping) rather than demonstrating a live migration, which is out of scope for this topic's budget.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The rename-plus-insert schema change reproduced here (cust_id -> customer_id renamed, region inserted before amount_cents) is the identical change topic 3's own examples.py used for plain Parquet, now reproduced at the table level on a real on-disk file, directly answering topic 3's own corruption with the table-format fix, as CHAPTER.md's own visual idea for this topic specifies.", "at": [{ "step": "Reveal: reproduced for real — position-based matching corrupts the table" }] },
+      { "item": "Delta's column mapping feature is documented as 'currently experimental with known limitations' as of Delta Lake 1.2.0+ — this topic treats it as Delta's real, current mechanism, not a claim it is stable-forever or default-on.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic does not cover snapshot lifecycle, time travel, or garbage collection — that is explicitly the next topic's subject, and this topic's own handoff names that boundary.", "at": [{ "step": "Recap" }] },
+      { "item": "The prerequisites panel lists topic 3 and topics 10-15 as declared background, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "Both the Iceberg-style and Delta-style demos in examples.py are pure in-memory logic plus small deterministic local file I/O with no timing assertions, verified identical across 3 consecutive runs — no flaky-timing risk of the kind topics 14 and 15 had to specifically design around.", "at": [{ "step": "Reveal: reproduced for real — column mapping renames without touching the data file" }] },
+      { "item": "Delta's rename-without-rewrite demo verifies the claim by comparing the data file's raw bytes before and after the rename, not just checking the final schema — a stronger, more literal verification of 'without the need to rewrite the underlying Parquet files' than inspecting metadata alone.", "at": [{ "step": "Reveal: reproduced for real — column mapping renames without touching the data file" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

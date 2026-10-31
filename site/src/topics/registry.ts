@@ -9098,4 +9098,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A deletion vector works because a row's identity survives a rename just fine inside one data file. The next topic is what happens when the whole column, not just a row, needs to survive a rename: schema evolution with column IDs.",
   },
+  {
+    id: 'de.schema-evolution-column-ids',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/schema-evolution-column-ids',
+    title: 'Schema evolution with column IDs',
+    syllabusTitle: 'Schema evolution with column IDs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['table-column-ids'],
+    uses: ['schema-evolution-column-matching', 'table-snapshot-model'],
+    declared: [],
+    bridge:
+      "A deletion vector works because a row's identity survives fine inside one data file. This topic is what happens when a whole column needs to survive a rename or reorder at the table level — exactly the problem topic 3 raised for Parquet alone, now solved by Iceberg's field IDs and Delta's column mapping.",
+    handoff:
+      "A table's schema and its file list are both things a snapshot captures. The next question is how far back in time a table lets you go to see an old one, and how it eventually forgets.",
+  },
 ];
