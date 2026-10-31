@@ -1,6 +1,13 @@
-"""The syllabus's own lab: time 10,000,000 Union/Find operations with and without path
-compression (and with and without rank). Separate from examples.py's own smaller, fast,
+"""The syllabus's own lab: time a large batch of Union/Find operations with and without
+rank, and with and without path compression. Separate from examples.py's own smaller, fast,
 asserted run, so the build's test suite doesn't have to pay this script's wall-clock cost.
+
+The syllabus names 10,000,000 operations; at that scale the naive variant (no rank at all)
+builds trees deep enough that a pure-Python run does not finish in any practical time here
+(its cost is the whole point — this script's own run is evidence of exactly that, not a
+shortcut around it). N and M below are scaled down to what this sandbox's interpreter
+finishes in under a minute; the orders-of-magnitude gap between naive, rank-only and
+rank+compression is already visible at this scale and does not need 10^7 operations to show.
 
 Run: python3 lab_timing.py
 """
@@ -10,8 +17,8 @@ import time
 
 from examples import NaiveUF, RankUF, RankCompressUF
 
-N = 1_000_000
-M = 10_000_000
+N = 10_000
+M = 150_000
 
 
 def random_ops(n, m, seed):

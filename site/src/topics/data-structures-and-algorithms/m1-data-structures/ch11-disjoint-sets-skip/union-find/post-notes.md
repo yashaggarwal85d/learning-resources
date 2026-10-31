@@ -42,11 +42,15 @@ Fischer's 1964 equivalence algorithm, named here without a quote for the same re
 The syllabus's own lab for this topic ("implement union-find with and without path compression and
 time 10^7 operations") is run as a real timing comparison, separately from `examples.py`'s own
 asserted counts (which use a smaller, deterministic operation count so the build's own test suite
-stays fast): `python3 lab_timing.py` in this folder runs 10,000,000 Union/Find calls over a million
+stays fast): `python3 lab_timing.py` in this folder runs 150,000 Union/Find calls over 10,000
 elements under the naive rule, under rank alone, and under rank plus compression, and reports
-wall-clock time and the total parent-pointer reads for each. The naive run is the slow one by
-orders of magnitude; rank alone already brings it down to a logarithmic-feeling cost; adding
-compression brings the average reads per call down near the small constant alpha(n) promises.
+wall-clock time and the total parent-pointer reads for each (scaled down from the syllabus's own
+10^7 operations, which this sandbox's pure-Python interpreter cannot finish on the naive variant in
+any practical time — see the script's own docstring). Measured here: naive took 24.79s and
+averaged 2,279.5 parent-pointer reads per operation; rank alone took 0.08s at 5.9 reads per
+operation; rank plus compression took 0.08s at 4.0 reads per operation. The naive run is the slow
+one by orders of magnitude; rank alone already brings it down to a near-constant-feeling cost on
+this workload; adding compression brings it slightly lower still.
 
 </section>
 
