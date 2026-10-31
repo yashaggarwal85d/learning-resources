@@ -1,0 +1,9 @@
+- **SLI (service level indicator)**: a carefully defined, quantitative measurement of some aspect of a service — latency, an error rate, a freshness lag. *Where you meet it:* every step; the reel derives one for the shop's dashboard.
+- **SLO (service level objective)**: a target value or range for an SLI, over a stated window — the thing a design is actually built to meet. *Where you meet it:* the five-questions reveal, which resolves "real-time" into one.
+- **SLA (service level agreement)**: a contract with a stated consequence (often financial) for missing an SLO. *Where you meet it:* named once, to distinguish it from an SLO — this topic builds SLOs, not SLAs.
+- **Percentile**: the value below which a given fraction of measurements fall (p99 means 99% of measurements are at or below it). *Where you meet it:* the "which percentile" question in the five-questions reveal.
+- **Freshness**: how old the newest data a consumer can read is allowed to be. *Where you meet it:* the six-dimension checklist, and the resolved fifteen-minute SLO.
+- **Completeness**: the fraction of expected data present by a stated cutoff. *Where you meet it:* the six-dimension checklist — the dimension the hook's own ask leaves silent.
+- **Correctness**: agreement with a defined true value, within a stated tolerance. *Where you meet it:* the six-dimension checklist, and the four-definitions reveal.
+- **Retention**: how long data must, and may, be kept. *Where you meet it:* the six-dimension checklist (marked "not needed" for this particular ask).
+- **Idempotent write**: a write that has the same effect no matter how many times it's retried. *Where you meet it:* named as the cost of the "exactly-once effect" definition of correct.

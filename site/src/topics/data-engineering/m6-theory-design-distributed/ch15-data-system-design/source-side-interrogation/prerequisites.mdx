@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the design method this topic now interviews for
+
+<ul class="resources">
+  <Resource kind="reel" title="Requirements into SLOs" domain="data-engineering" host="de.source-side-interrogation">Turns this topic's measured answers into SLOs.</Resource>
+  <Resource kind="reel" title="Back-of-envelope capacity estimation" domain="data-engineering" host="de.source-side-interrogation">Takes this topic's rate, peak, and growth answers as its inputs.</Resource>
+  <Resource kind="reel" title="Choosing the data-flow shape" domain="data-engineering" host="de.source-side-interrogation">Reads this topic's push-or-pull answer directly.</Resource>
+  <Resource kind="reel" title="Correctness under replay and late data" domain="data-engineering" host="de.source-side-interrogation">Plans for the late, duplicate, and lost answers this topic collects.</Resource>
+  <Resource kind="reel" title="Data contracts as a modeling artifact" domain="data-engineering" host="de.source-side-interrogation">The contract format this topic's schema-ownership questions assume.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Definition: Open Data Contract Standard (ODCS)" href="https://bitol-io.github.io/open-data-contract-standard/latest/" by="Bitol / Linux Foundation">A contract's keys and values stated as a structured document.</Resource>
+  <Resource kind="reading" title="Fundamentals" href="https://bitol-io.github.io/open-data-contract-standard/latest/fundamentals/" by="Bitol / Linux Foundation">A contract's own status and version fields.</Resource>
+  <Resource kind="reading" title="Receive Stripe events in your webhook endpoint" href="https://docs.stripe.com/webhooks" by="Stripe">Event ordering, duplicate delivery, and the retry window of a real source.</Resource>
+</ul>
+
+</section>
