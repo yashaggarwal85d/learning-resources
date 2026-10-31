@@ -6764,4 +6764,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A single Parquet file, however well encoded, typed and skippable, is still one immutable file. ORC is the one real rival that made different choices at every one of these same decisions — worth seeing once, directly, before this chapter leaves the single-file world for good.",
   },
+  {
+    id: 'de.orc-versus-parquet',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/orc-versus-parquet',
+    title: 'ORC versus Parquet',
+    syllabusTitle: 'ORC versus Parquet',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['orc-vs-parquet'],
+    uses: ['parquet-file-anatomy', 'parquet-data-skipping'],
+    declared: [],
+    bridge:
+      "A single Parquet file, however well encoded, typed and skippable, is still one immutable file. This topic closes the single-file section by putting Parquet next to the one real rival that made different choices at nearly every decision: ORC.",
+    handoff:
+      "A single immutable file, Parquet or ORC, still can't answer the next question on its own: what does 'a table,' with atomic commits across many files, mean once the storage underneath is an object store with no file you can edit in place? That's where this chapter turns next.",
+  },
 ];
