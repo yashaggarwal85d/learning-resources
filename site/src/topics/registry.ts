@@ -7701,6 +7701,26 @@ export const TOPICS: TopicMeta[] = [
       "GDPR by design governs what a pipeline may do with data it holds. It says nothing yet about where that data is allowed to physically sit, or who outside the EU might be legally entitled to demand it — which is a harder, more architectural question, and the one this section ends on.",
   },
   {
+    id: 'de.residency-transfers-extraterritorial-access',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/residency-transfers-extraterritorial-access',
+    title: 'Residency, transfers and extraterritorial access',
+    syllabusTitle: 'Residency, transfers and extraterritorial access',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['residency-sovereignty-localisation', 'transfer-mechanism-impact-assessment'],
+    uses: ['purpose-limitation-tagging', 'art30-record-from-lineage', 'cross-cloud-service-rosetta'],
+    declared: [],
+    bridge:
+      "GDPR by design governs what a pipeline may do with data it holds. This topic is the harder question underneath it: where the bytes are even allowed to sit, and who outside that jurisdiction might be legally entitled to demand them regardless — residency, sovereignty and localisation, kept as three separate questions instead of one blurred worry.",
+    handoff:
+      "Everything in Chapters 1-10 so far has mostly assumed modern, cloud-native systems and modern regulation. A huge amount of the world's actual operational data instead lives behind a decades-old enterprise system with its own extraction rules, and a factory floor with its own physics — which the next section is about.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
