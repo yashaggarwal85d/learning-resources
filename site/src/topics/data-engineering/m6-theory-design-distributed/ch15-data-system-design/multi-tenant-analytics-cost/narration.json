@@ -1,0 +1,78 @@
+{
+  "topic": "de.multi-tenant-analytics-cost",
+  "steps": [
+    {
+      "lines": [
+        "Thousands of sellers all share one single warehouse here.",
+        "One seller's own nightly report scans the entire fact table, and every other seller's dashboard genuinely slows to a crawl because of it.",
+        "At month end, finance asks what each individual seller actually costs, and the honest answer turns out to be: the warehouse is mostly idle, and there's simply no per-seller number at all."
+      ]
+    },
+    {
+      "lines": [
+        "Which two controls, if they'd been designed in right from the start, would have actually stopped that slowdown and produced the number finance was asking for?"
+      ],
+      "answer": [
+        "A bigger warehouse still lets one single tenant consume the entire thing, and it still produces absolutely no per-tenant number on its own.",
+        "What genuinely helps is a per-tenant limit on heavy queries, paired with a metering view that attributes cost back to each individual query."
+      ]
+    },
+    {
+      "lines": [
+        "Shared tables with row-level security sit at the cheap end: weakest blast-radius containment, but far and away the cheapest option.",
+        "A schema or catalog per tenant sits in the middle.",
+        "An account or project per tenant is the strongest option, and also by far the most expensive, each one priced here for both a small and a genuinely large tenant count."
+      ]
+    },
+    {
+      "lines": [
+        "A regulated tenant and a separately noisy tenant each get pushed up by exactly one rung from that cheap default.",
+        "Each push happens because of one specific, named constraint, never as some blanket upgrade applied to every single tenant at once."
+      ]
+    },
+    {
+      "lines": [
+        "One single tenant's own lane spikes up to many times its normal load.",
+        "With no control at all in place, every neighbour's own latency climbs right along with it.",
+        "With a real quota and a fairness rule actually in place, those same neighbours stay completely flat instead."
+      ]
+    },
+    {
+      "lines": [
+        "That exact same spike, now split three entirely different ways.",
+        "An equal share ends up starving a large, perfectly legitimate tenant. A weighted share instead favors whoever happens to pay more. And burst-with-credit lets a short spike through just fine, while still capping anything sustained."
+      ]
+    },
+    {
+      "lines": [
+        "A tenant stored under its own schema, or its own key, erases genuinely cheaply: one single drop, one key deleted, done.",
+        "That exact same tenant sitting in a shared table instead needs a full scan and rewrite — and this erasure cost was actually already decided, way back at the isolation choice itself."
+      ]
+    },
+    {
+      "lines": [
+        "A single bill splits apart into per-tenant slices, straight from the engine's own metering view.",
+        "Plus one grey \"idle and shared\" remainder that none of those slices actually cover.",
+        "Three separate policy cards decide what happens to it next: charge it proportionally, charge it as a flat fee, or simply absorb it entirely."
+      ]
+    },
+    {
+      "lines": [
+        "A priced isolation ladder. A fairness rule that genuinely decides who ends up getting starved.",
+        "An erasure cost that was already paid for, back at the isolation choice.",
+        "And one metered bill that stays honest about its own leftover remainder."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to really use this for real: the marketplace grows all the way out to ten times its current tenant count.",
+        "The cheapest rung's own per-tenant cost barely moves at all.",
+        "But the metering view's own overhead genuinely starts showing up as a real line on the bill. What's actually the next bottleneck here?"
+      ],
+      "answer": [
+        "The rung choice itself was driven by one named constraint, never by tenant count alone, so moving every single tenant up multiplies cost for tenants that triggered no constraint whatsoever.",
+        "A metering view carries a perfectly real cost of its own, and that cost scales directly with query count, so it can genuinely become the next thing this design has to watch closely."
+      ]
+    }
+  ]
+}

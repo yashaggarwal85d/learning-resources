@@ -46,6 +46,10 @@ export function affected(base = 'origin/main') {
       for (const [slug, e] of now) if (before.get(slug)?.text !== e.text) hit.add(slug);
       continue;
     }
+    // A bookkeeping file that sits directly under site/src/topics/ (renarration.json, narration-backlog.json,
+    // briefing-legacy.json) doesn't change how any reel renders, and dirname(p) there is site/src/topics itself —
+    // every topic's dir starts with that prefix, so without this check it would wrongly match the whole registry.
+    if (p.startsWith('site/src/topics/') && dirname(p) === 'site/src/topics') continue;
     if (p.startsWith('site/src/topics/')) {
       const owner = topics.find((t) => p.startsWith(t.dir));
       if (owner) hit.add(owner.slug);

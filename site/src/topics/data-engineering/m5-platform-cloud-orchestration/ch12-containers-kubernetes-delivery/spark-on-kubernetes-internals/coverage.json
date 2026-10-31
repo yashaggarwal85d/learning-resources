@@ -1,0 +1,141 @@
+{
+  "topic": "de.spark-on-kubernetes-internals",
+  "syllabus": [
+    {
+      "clause": "the driver creates executor pods through the API server",
+      "at": [
+        { "step": "No cluster manager, pre-built" },
+        { "step": "The driver outlives its executors" },
+        { "step": "The tie that cleans up executors" }
+      ]
+    },
+    {
+      "clause": "dynamic allocation with shuffle tracking",
+      "at": [
+        { "step": "Dynamic allocation's missing piece" },
+        { "step": "An infinite default" }
+      ]
+    },
+    {
+      "clause": "graceful executor decommissioning with shuffle/block migration (spot nodes)",
+      "at": [
+        { "step": "A two-minute warning" },
+        { "step": "How much gets redone?" },
+        { "step": "Migrate the blocks first" },
+        { "step": "Does the window fit?" }
+      ]
+    },
+    {
+      "clause": "remote shuffle services (Apache Celeborn)",
+      "at": [
+        { "step": "Moving the data off the executors" }
+      ]
+    },
+    {
+      "clause": "pod templates",
+      "at": [
+        { "step": "The escape hatch, and who wins" }
+      ]
+    },
+    {
+      "clause": "operators (Kubeflow Spark Operator; the Apache Spark Kubernetes Operator subproject with SparkApp/SparkCluster CRDs)",
+      "at": [
+        { "step": "Someone else's loop" }
+      ]
+    },
+    {
+      "clause": "vs EMR on EKS / Dataproc on GKE",
+      "at": [
+        { "step": "Someone else's cluster" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Spark documentation, Running Spark on Kubernetes",
+      "items": [
+        { "item": "the submission mechanism: Spark creates a driver pod, which creates and connects to executor pods", "at": [{ "step": "No cluster manager, pre-built" }] },
+        { "item": "a completed driver pod persists logs and uses no computational or memory resources", "at": [{ "step": "The driver outlives its executors" }] },
+        { "item": "setting the driver pod name makes Spark deploy executors with an OwnerReference that removes them when the driver is deleted", "at": [{ "step": "The tie that cleans up executors" }] },
+        { "item": "the caution against setting the OwnerReference to the wrong pod, which would leave executors orphaned", "at": [{ "step": "The tie that cleans up executors" }] },
+        { "item": "pod templates carry configuration Spark's own properties don't support", "at": [{ "step": "The escape hatch, and who wins" }] },
+        { "item": "Spark is opinionated about certain pod configurations, which always overwrite the template's values", "at": [{ "step": "The escape hatch, and who wins" }] },
+        { "item": "the client-mode section's full worked example of setting spark.kubernetes.driver.pod.name", "at": [{ "out": "a hands-on exercise this build machine can't run (no local cluster); the OwnerReference mechanism itself, not the client-mode walkthrough, is the outcome this topic needs" }] }
+      ]
+    },
+    {
+      "source": "Apache Spark documentation, Configuration",
+      "items": [
+        { "item": "shuffleTracking.enabled keeps alive executors holding shuffle data for active jobs, without an external shuffle service", "at": [{ "step": "Dynamic allocation's missing piece" }] },
+        { "item": "shuffleTracking.timeout defaults to infinity", "at": [{ "step": "An infinite default" }] },
+        { "item": "decommission.enabled tries to shut an executor down gracefully, migrating RDD and shuffle blocks to a remote executor", "at": [{ "step": "Migrate the blocks first" }] },
+        { "item": "storage.decommission.shuffleBlocks.enabled requires a migratable shuffle resolver (sort-based shuffle)", "at": [{ "deep": "A little deeper" }] }
+      ]
+    },
+    {
+      "source": "Apache Spark K8s Operator, README",
+      "items": [
+        { "item": "it is a subproject of Apache Spark extending Kubernetes via the Operator Pattern", "at": [{ "step": "Someone else's loop" }] },
+        { "item": "its worked example manages both SparkApp and SparkCluster resources via kubectl", "at": [{ "deep": "Two operators, two APIs, same idea" }] }
+      ]
+    },
+    {
+      "source": "Kubeflow Spark Operator, README",
+      "items": [
+        { "item": "a separate project using Kubernetes custom resources to make running Spark applications idiomatic on Kubernetes", "at": [{ "step": "Someone else's loop" }] }
+      ]
+    },
+    {
+      "source": "Apache Celeborn, project home page",
+      "items": [
+        { "item": "an intermediate data service for shuffle and spilled data, decoupled from the compute engine's own executors", "at": [{ "step": "Moving the data off the executors" }] }
+      ]
+    },
+    {
+      "source": "AWS documentation, What is Amazon EMR on EKS?",
+      "items": [
+        { "item": "EMR on EKS runs EMR-managed open-source big data frameworks on an existing EKS cluster", "at": [{ "step": "Someone else's cluster" }] }
+      ]
+    },
+    {
+      "source": "AWS documentation, Spot Instance interruption notices",
+      "items": [
+        { "item": "a two-minute warning before EC2 stops or terminates a Spot Instance, except hibernation", "at": [{ "step": "A two-minute warning" }, { "step": "Does the window fit?" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud documentation, Managed Service for Apache Spark on GKE overview",
+      "items": [
+        { "item": "the product's current name, replacing Dataproc on Compute Engine and Google Cloud Serverless for Apache Spark", "at": [{ "deep": "A little deeper" }] },
+        { "item": "Spark on GKE creates node pools inside an existing GKE cluster instead of separate master/worker VMs", "at": [{ "step": "Someone else's cluster" }] }
+      ]
+    },
+    {
+      "source": "Kueue documentation, Overview",
+      "items": [
+        { "item": "Kueue manages quotas and decides when a job is admitted, waits, or is preempted", "at": [{ "deep": "Try it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "on Kubernetes the driver is the cluster manager for the lifetime of one application — there is no standing cluster manager that pre-exists the submission the way YARN or a Spark standalone master does, which is why the OwnerReference is the only cleanup mechanism and not a convenience", "at": [{ "deep": "The driver is the cluster manager, briefly" }] },
+      { "item": "client mode (driver outside a pod, or in a pod without its name set correctly) does not get automatic executor cleanup via OwnerReference at all — the docs' own warning about setting it to the wrong pod is a narrower case of the same gap", "at": [{ "step": "The tie that cleans up executors" }] },
+      { "item": "shuffleTracking's infinite default timeout is a deliberate design choice stated in the docs themselves (reliance on shuffle garbage collection, not a timer), not an oversight — lowering it trades resource usage against the risk of recomputing data that turns out still to be needed", "at": [{ "deep": "Garbage collection as a cleanup mechanism, on purpose" }] },
+      { "item": "decommission's block migration only helps if it finishes before the node is actually reclaimed — a migration interrupted partway through still loses whatever wasn't migrated yet, so decommissioning is a race against the interruption warning, not an unconditional guarantee", "at": [{ "step": "Does the window fit?" }] },
+      { "item": "the Apache Spark Kubernetes Operator and the Kubeflow Spark Operator are both active, separately maintained projects with different custom-resource APIs (spark.apache.org vs. sparkoperator.k8s.io) — neither supersedes the other, and a team choosing between them is choosing a dependency, not a successor", "at": [{ "step": "Someone else's loop" }] },
+      { "item": "Google's GKE Spark offering has been renamed at least twice (Dataproc on Compute Engine / Google Cloud Serverless for Apache Spark to Managed Service for Apache Spark), so older documentation and tutorials referencing 'Dataproc on GKE' describe the same current product under its old name", "at": [{ "out": "a naming-history detail below this topic's scope; named for a learner who finds older material" }] },
+      { "item": "pod templates are unmarshalled by Spark without validation — the Kubernetes API server is what actually rejects an invalid template, which can surface as a cryptic scheduling failure rather than an upfront Spark error", "at": [{ "out": "an operational debugging detail below this topic's scope" }] },
+      { "item": "EMR on EKS's naming convention ('emr-containers' as the API/CLI prefix) is a historical artifact of how the service was introduced, separate from the EMR-on-EC2 product line's own naming", "at": [{ "out": "an AWS-specific naming detail below this topic's scope" }] },
+      { "item": "Kueue's partial-admission and dynamic-reclaim mechanisms let a job run with reduced parallelism under tight quota and release capacity incrementally as pods complete, which is the specific feature that resolves the two-jobs gang-scheduling deadlock this chapter's skipped syllabus topic names", "at": [{ "deep": "Try it" }] },
+      { "item": "block migration during decommissioning specifically requires a migratable shuffle resolver (sort-based shuffle, the Spark default) — a custom or legacy hash-based shuffle implementation would not support the same graceful migration path", "at": [{ "deep": "A little deeper" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

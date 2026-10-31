@@ -1,0 +1,115 @@
+{
+  "topic": "de.images-layers-local-environments",
+  "syllabus": [
+    {
+      "clause": "layers and copy-on-write filesystems",
+      "at": [
+        { "step": "Images, layers and local environments" },
+        { "step": "The wave rebuilds up, never down" },
+        { "step": "A rm doesn't shrink the image" },
+        { "deep": "Layers and the build cache" },
+        { "deep": "Whiteouts and copy-on-write" }
+      ]
+    },
+    {
+      "clause": "build-cache ordering",
+      "at": [
+        { "step": "Which layers does a change touch?" },
+        { "step": "Order by how often it changes" },
+        { "deep": "Layers and the build cache" }
+      ]
+    },
+    {
+      "clause": "multi-stage builds",
+      "at": [
+        { "step": "Multi-stage: ship the runtime stage alone" },
+        { "deep": "Multi-stage builds" }
+      ]
+    },
+    {
+      "clause": "volumes and networks",
+      "at": [
+        { "step": "Volumes, bind mounts and bridge networks" }
+      ]
+    },
+    {
+      "clause": "Compose for local multi-service stacks (Kafka + Postgres + object store)",
+      "at": [
+        { "step": "Start order by health, not by luck" }
+      ]
+    },
+    {
+      "clause": "configuration via environment and mounted files",
+      "at": [
+        { "step": "Environment or mounted file?" },
+        { "deep": "In code review" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Docker build cache guide",
+      "items": [
+        { "item": "how the build cache works (layers as a stack)", "at": [{ "step": "Images, layers and local environments" }] },
+        { "item": "cache invalidation: a changed layer forces every layer after it to rebuild", "at": [{ "step": "The wave rebuilds up, never down" }] },
+        { "item": "cache storage backends (registry, local, GitHub Actions, S3, Azure Blob, inline)", "at": [{ "out": "operating build-cache backends is a CI-operations concern, not this refresher's scope; the Software delivery workflow refresher's ci-pipelines concept is this topic's declared prerequisite" }] },
+        { "item": "optimizing cache usage in builds", "at": [{ "step": "Order by how often it changes" }] }
+      ]
+    },
+    {
+      "source": "OCI image-spec, Layer",
+      "items": [
+        { "item": "changesets as tar archives (additions, modifications, removals)", "at": [{ "deep": "Whiteouts and copy-on-write" }] },
+        { "item": "whiteout file naming and semantics", "at": [{ "step": "A rm doesn't shrink the image" }] },
+        { "item": "opaque whiteouts (removing a whole directory's lower-layer children at once)", "at": [{ "deep": "Whiteouts and copy-on-write" }] },
+        { "item": "applying changesets on extraction", "at": [{ "out": "an implementation-of-the-runtime detail below what this refresher needs; the whiteout's effect, not the extraction algorithm, is what the learner must predict" }] }
+      ]
+    },
+    {
+      "source": "Linux kernel OverlayFS documentation",
+      "items": [
+        { "item": "the upper/lower directory model and the merged view", "at": [{ "deep": "Whiteouts and copy-on-write" }] },
+        { "item": "copy_up: a write to a lower-layer file copies the whole file up by default; metacopy copies metadata only, as an optional feature", "at": [{ "deep": "Whiteouts and copy-on-write" }] },
+        { "item": "directory vs non-directory rename restrictions after copy_up", "at": [{ "out": "a kernel-internals detail about renames, not a data-workload concern this refresher's outcomes need" }] }
+      ]
+    },
+    {
+      "source": "Docker Compose startup-order docs",
+      "items": [
+        { "item": "plain depends_on only orders container start, not readiness", "at": [{ "step": "Start order by health, not by luck" }] },
+        { "item": "condition: service_healthy waits for the dependency's own healthcheck", "at": [{ "step": "Start order by health, not by luck" }] },
+        { "item": "service_completed_successfully for one-off init/migration containers", "at": [{ "deep": "In code review" }] },
+        { "item": "depends_on only resolves dependencies declared in the same compose file", "at": [{ "out": "a limitation of multi-file Compose projects; this refresher's one running example is a single compose.yaml" }] }
+      ]
+    },
+    {
+      "source": "GoogleContainerTools/distroless README",
+      "items": [
+        { "item": "what distroless removes (package manager, shell, other OS tooling)", "at": [{ "step": "Multi-stage: ship the runtime stage alone" }] },
+        { "item": "published size comparison (static-debian13 vs alpine vs debian)", "at": [{ "step": "Multi-stage: ship the runtime stage alone" }] },
+        { "item": "no default shell; ENTRYPOINT must be vector form; :debug variants add a busybox shell", "at": [{ "deep": "Where this goes next" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "an image's layers are immutable and read-only; only the container's own top layer is writable", "at": [{ "step": "Volumes, bind mounts and bridge networks" }] },
+      { "item": "cache invalidation is directional: changed layer and upward rebuild, nothing below is touched", "at": [{ "step": "The wave rebuilds up, never down" }] },
+      { "item": "a .dockerignore keeps irrelevant files (a .git directory, local build artefacts) out of the build context so they can't needlessly invalidate a COPY layer", "at": [{ "deep": "Layers and the build cache" }] },
+      { "item": "a multi-stage build's named stages can be built and cached independently (buildx bake, parallel stages)", "at": [{ "out": "a build-orchestration optimisation beyond this refresher's five-minute scope; named here only in passing via the Docker build-cache guide's own 'For more information' pointers" }] },
+      { "item": "a tag is a mutable pointer; a digest is the image content's fixed hash, which is what a production pipeline should pin to", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "a container's writable layer and any bind-mounted or volume-mounted paths are excluded from an image's own layer byte count", "at": [{ "step": "Volumes, bind mounts and bridge networks" }] },
+      { "item": "Compose's healthcheck itself (interval, retries, start_period) is configured on the dependency service, not the dependent one", "at": [{ "step": "Start order by health, not by luck" }] },
+      { "item": "an environment variable set at image build time (ENV) differs from one set at container run time (-e / environment:); both are equally visible to inspection", "at": [{ "deep": "In code review" }] },
+      { "item": "a distroless or scratch-based image with no shell makes exec-based debugging (docker exec sh) impossible, which is why the project ships :debug variants", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "whiteouts apply only to a path from a lower layer; a file created and deleted within the same layer's own changeset is simply absent from that changeset, no whiteout needed", "at": [{ "deep": "Whiteouts and copy-on-write" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "topic": "de.multi-region-analytical-platform",
+  "steps": [
+    {
+      "lines": [
+        "The US team takes the shop's entire events lake and replicates all of it over to the EU, purely for performance, over one single weekend.",
+        "Come Monday morning, the privacy officer asks a genuinely uncomfortable question: which EU customers' data is now sitting in the United States?",
+        "Separately, and completely unrelated, the EU region's own catalog database fails outright, and the replicated buckets turn out to hold no usable table metadata at all."
+      ]
+    },
+    {
+      "lines": [
+        "Two decisions, each made back at design time, would have prevented both of these problems.",
+        "Which two, and roughly what does each one actually cost to put in place?"
+      ],
+      "answer": [
+        "The privacy problem was never really about speed at all; it was about which rows were allowed to cross that border in the first place, so a faster replication tool fixes absolutely nothing.",
+        "What actually would have helped is a per-dataset residency rule for the first problem, and a catalog backup-and-restore plan folded into failover for the second."
+      ]
+    },
+    {
+      "lines": [
+        "Every single dataset gets tagged by its own classification first.",
+        "EU personal data simply stops dead at the border, like a closed gate it can't pass through.",
+        "A de-identified aggregate, by contrast, crosses that same border completely freely, and global reference data just starts out present on both sides at once."
+      ]
+    },
+    {
+      "lines": [
+        "Replicating a dataset costs its own size, multiplied by the egress rate, every single day it keeps running.",
+        "Federating a query instead costs nothing standing still, but every individual query still has to cross that border on its own.",
+        "Priced out against this shop's own real volumes, which path actually turns out cheaper depends entirely on the query itself."
+      ]
+    },
+    {
+      "lines": [
+        "So replicate the de-identified aggregate only, and never the underlying rows themselves.",
+        "A paid, SLA-backed replication service bounds that lag down to minutes, which is a real, known cost traded for a real, known promise, not some unbounded best-effort copy."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture an entire region going down.",
+        "The bucket itself survives just fine, since it was already being replicated.",
+        "The catalog database, the encryption keys, and every pipeline's own checkpoints do not survive, because bucket replication never touched a single one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Orders, events, and aggregates each get their own named recovery point and their own recovery time, stated plainly up front.",
+        "That's baked into the design from the start, never something bolted on only after the failover plan already got built."
+      ]
+    },
+    {
+      "lines": [
+        "Regional partials for something like \"global revenue\" all combine together into one single figure.",
+        "That combined figure is only ever as fresh as its single slowest region's most recent update, and this design states that plainly instead of hiding it behind one clean-looking number."
+      ]
+    },
+    {
+      "lines": [
+        "A placement gate, organized by dataset tag. A priced decision between replicating and federating.",
+        "A failover plan that genuinely covers the catalog and the keys, not merely the bucket on its own.",
+        "And one single global number that stays honest about exactly which region it's still waiting on."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to really use this for real: the shop opens up a brand-new third region.",
+        "A query now needs \"global revenue including the new region\" at the exact same minute that new region's own pipeline is still backfilling its very first week of history.",
+        "What should that number actually say in the meantime?"
+      ],
+      "answer": [
+        "Blending that region's partial, still-catching-up numbers straight in, left completely unmarked, breaks the whole stalest-region promise by hiding exactly which part of the figure hasn't caught up yet.",
+        "Excluding that new region from the figure for now, and simply saying so plainly, keeps the number honest about what it does and doesn't yet cover."
+      ]
+    }
+  ]
+}
