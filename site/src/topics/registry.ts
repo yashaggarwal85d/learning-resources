@@ -6971,6 +6971,26 @@ export const TOPICS: TopicMeta[] = [
       "AQE fixes some skew after the fact. The next topic is skew itself — how to recognise it as the cause in the first place, and the remedies in the order they're worth trying, AQE being only the first.",
   },
   {
+    id: 'de.data-skew-diagnosis-remedies',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/data-skew-diagnosis-remedies',
+    title: 'Data skew: diagnosis and remedies',
+    syllabusTitle: 'Data skew: diagnosis and remedies',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-skew-diagnosis', 'spark-salting-remedy'],
+    uses: ['spark-aqe', 'spark-broadcast-hash-join'],
+    declared: [],
+    bridge:
+      "AQE fixes skew for the one case (joins) it was built for. This topic generalises: how you actually know it's skew rather than something else, and the full remedy ladder, including the cases — aggregations, outer joins, windows — AQE cannot touch at all.",
+    handoff:
+      'Skew is a shuffle problem solved by rearranging work across the network. Dynamic partition pruning, next, is the opposite kind of lever: removing work before the shuffle by never reading it.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
