@@ -6271,6 +6271,26 @@ export const TOPICS: TopicMeta[] = [
       "A TaskManager that crashes mid-job must not simply lose everything it was computing. How Flink makes that recoverable, with a precise correctness guarantee, is the next topic: checkpointing.",
   },
   {
+    id: 'de.async-barrier-snapshots',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/async-barrier-snapshots',
+    title: 'Asynchronous barrier snapshots',
+    syllabusTitle: 'Asynchronous barrier snapshots',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['checkpoint-barrier-chandy-lamport', 'aligned-vs-unaligned-checkpoint', 'savepoint-vs-checkpoint'],
+    uses: ['credit-based-backpressure', 'flink-jobmanager-taskmanager-slots'],
+    declared: [],
+    bridge:
+      "A TaskManager can fail mid-job, and the job must recover without silently losing or duplicating state. This topic is exactly how: a barrier that sweeps through the job graph the way a wave of coordinated snapshots would, and the real cost that coordination has when the graph is under load.",
+    handoff:
+      "A checkpoint or savepoint is a snapshot of state. What that state actually is, how much of it belongs to a given key, and what has to move when the job's parallelism changes, is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
