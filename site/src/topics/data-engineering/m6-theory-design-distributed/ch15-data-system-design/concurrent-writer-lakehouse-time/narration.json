@@ -1,0 +1,81 @@
+{
+  "topic": "de.concurrent-writer-lakehouse-time",
+  "steps": [
+    {
+      "lines": [
+        "This shop's compaction job and its own CDC merge keep rewriting the exact same partitions, and every few nights the two of them collide with a straightforward commit conflict.",
+        "Completely separately, an auditor asks for this table exactly as it stood many months back.",
+        "That particular snapshot had already been expired, on schedule, specifically to satisfy an erasure policy."
+      ]
+    },
+    {
+      "lines": [
+        "One of these problems is purely about two writers touching the exact same files. The other is about one snapshot surviving a routine expiry sweep.",
+        "Is there genuinely one single decision, made just once, that would have prevented both of these from ever happening?"
+      ],
+      "answer": [
+        "Giving every writer a faster retry loop doesn't actually change which files any of them touch — it just repeats that identical collision over and over until one side finally gives up.",
+        "Laying writers out on disjoint partitions removes the collision at its actual root, and giving the audited snapshot its own retention class and its own tag removes just that one snapshot from the sweep, without touching anything else around it."
+      ]
+    },
+    {
+      "lines": [
+        "The CDC merge, a backfill job, and compaction each eventually try to swap one single shared metadata pointer.",
+        "That swap either lands cleanly, in full, or it simply doesn't happen at all.",
+        "There's no such thing as a partial commit here, and no corrupted middle state for any other writer to accidentally stumble into."
+      ]
+    },
+    {
+      "lines": [
+        "The CDC merge and compaction both touch the same partitions, so naturally they collide.",
+        "Moving compaction over onto a genuinely disjoint set of partitions removes that collision completely.",
+        "Not because anything retries any faster, but because the two writers simply never fight over the same files anymore."
+      ]
+    },
+    {
+      "lines": [
+        "A new column gets added, but only under one stated review gate that every writer has to pass through first.",
+        "Every writer still running the old schema keeps right on absorbing that change, instead of breaking the moment whichever commit happens to land next.",
+        "Who's even allowed to change the schema, and exactly how, gets written down in advance. It's never simply a default every writer quietly assumes."
+      ]
+    },
+    {
+      "lines": [
+        "An expiry line sweeps steadily across the whole snapshot chain, clearing out old history to satisfy this shop's own erasure policy.",
+        "One legal-hold tag pins a single snapshot ahead of that sweep, well before it ever arrives.",
+        "That one tagged snapshot survives completely intact, while every other snapshot around it gets cleared right on its usual schedule."
+      ]
+    },
+    {
+      "lines": [
+        "Compaction, snapshot expiry, and orphan-file removal each attempt that exact same pointer swap the ingest writers are also trying to make.",
+        "Treat any one of those as mere background housekeeping, safely outside the picture, and it can quietly starve the very ingest it was supposed to be keeping tidy for."
+      ]
+    },
+    {
+      "lines": [
+        "A maintenance window gets sized, and timed, directly against how fast this shop's own ingest stream is actually growing.",
+        "That way a compaction run never once overlaps the writers it would otherwise end up starving.",
+        "The schedule itself is the real design decision here, never simply a job left to fire whenever it happens to fire."
+      ]
+    },
+    {
+      "lines": [
+        "Every single commit, across every writer, comes down to one atomic swap.",
+        "Writers get laid out on disjoint partitions specifically so conflicts between them stay genuinely rare.",
+        "A schema-evolution policy gets written down ahead of time. A retention policy and a legal-hold tag sit side by side without ever touching each other. And maintenance finally gets a schedule timed clear of the ingest it would otherwise starve."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a second CDC connector starts up, backfilling an entirely different region's orders.",
+        "It lands on the exact same partitions the existing compaction job is already using.",
+        "What's genuinely the right first move here?"
+      ],
+      "answer": [
+        "Simply letting it run and waiting to see whether conflicts actually show up treats this topic's own established method as something optional, rather than something to actually follow.",
+        "The same disjoint-partitioning check that already fixed the compaction-versus-merge collision applies just as directly here, run before this new writer ever makes its first commit, not after."
+      ]
+    }
+  ]
+}

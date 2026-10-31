@@ -1,0 +1,85 @@
+{
+  "topic": "de.replication-lag-session-guarantees",
+  "syllabus": [
+    {
+      "clause": "read-your-writes, monotonic reads and consistent-prefix reads",
+      "at": [
+        { "step": "Reveal: read-your-writes, defined" },
+        { "step": "Reveal: broken, measured" },
+        { "step": "Reveal: the other two guarantees" }
+      ]
+    },
+    {
+      "clause": "implementing them with LSN/GTID tokens, sticky routing or primary fallback",
+      "at": [
+        { "step": "Reveal: the LSN token, built" },
+        { "step": "Reveal: fixed, measured" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "what lag does to dashboards and downstream pipelines",
+      "at": [
+        { "step": "Reveal: lag under load, measured" },
+        { "deep": "Production failures this topic warns about" }
+      ]
+    },
+    {
+      "clause": "formal consistency models live in Ch.14",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Read Your Writes (Jepsen)",
+      "items": [
+        { "item": "read your writes requires that if a process performs a write, and that same process performs a subsequent read, the read must observe the write's effects", "at": [{ "step": "Reveal: read-your-writes, defined" }] },
+        { "item": "read your writes does not apply to operations performed by different processes", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Monotonic Reads (Jepsen)",
+      "items": [
+        { "item": "monotonic reads ensures that if a process performs read r1, then r2, r2 cannot observe a state prior to the writes reflected in r1 — reads cannot go backwards", "at": [{ "step": "Reveal: the other two guarantees" }] },
+        { "item": "monotonic reads does not apply to operations performed by different processes, only reads by the same process", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "26.2. Log-Shipping Standby Servers (PostgreSQL documentation)",
+      "items": [
+        { "item": "the primary and standby operate loosely coupled: the primary archives continuously while the standby recovers continuously, reading WAL from the primary", "at": [{ "step": "Reveal: the LSN token, built" }] },
+        { "item": "a server enters standby mode if a standby.signal file exists in the data directory at startup", "at": [{ "deep": "Internals" }] },
+        { "item": "a large difference between pg_last_wal_replay_lsn and pg_stat_wal_receiver's flushed_lsn indicates WAL is being received faster than it can be replayed", "at": [{ "step": "Reveal: lag under load, measured" }] }
+      ]
+    },
+    {
+      "source": "27.2.4. pg_stat_replication (PostgreSQL documentation)",
+      "items": [
+        { "item": "pg_stat_replication holds one row per WAL sender process, with statistics about replication to that sender's connected standby", "at": [{ "step": "Reveal: lag under load, measured" }] },
+        { "item": "the lag times in pg_stat_replication measure the time taken for recent WAL to be written, flushed and replayed, and for the sender to know about it", "at": [{ "step": "Reveal: lag under load, measured" }] },
+        { "item": "reported lag times are not predictions of catch-up time; a fully caught-up standby shows the time to write/flush/replay the most recent WAL location, not zero", "at": [{ "deep": "Production failures this topic warns about" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Read-your-writes isn't broken by replication being slow — it's broken by the read happening to land on a node whose own replay position hasn't reached the write yet; a standby that is fast but still one commit behind breaks it just as surely as a slow one.", "at": [{ "step": "Hook" }] },
+      { "item": "The LSN token this topic builds doesn't make the standby catch up faster — it only makes the read wait until the standby has already caught up to the one position that matters, which is why it is a correctness fix, not a performance one.", "at": [{ "step": "Reveal: the LSN token, built" }] },
+      { "item": "Monotonic reads and consistent-prefix reads both hold trivially on a single replica for the same structural reason: one WAL stream replayed in commit order can only ever move a replica's visible state forward, so neither anomaly has a mechanism to occur through.", "at": [{ "step": "Reveal: the other two guarantees" }] },
+      { "item": "A real monotonic-reads violation needs a session bounced between two replicas whose lag varies independently — if the second replica happens to be more caught up than the first at the moment of the second read, nothing is violated even though two different nodes answered.", "at": [{ "deep": "Internals" }] },
+      { "item": "pg_stat_replication's lag columns answer 'how long would a synchronous commit have waited', not 'how far behind is the standby right now' — which is why a fully caught-up idle standby still briefly shows its last real lag rather than zero.", "at": [{ "step": "Reveal: lag under load, measured" }] },
+      { "item": "Sticky routing fixes read-your-writes for free as long as a session never changes which node it talks to — the moment load balancing or a failover reroutes the session, the guarantee it was relying on silently disappears with it.", "at": [{ "deep": "Internals" }] },
+      { "item": "Primary fallback is the simplest fix precisely because it sidesteps the lag question entirely — it costs real primary capacity on every read that needs the guarantee, which is why it only scales for the minority of reads that actually need it.", "at": [{ "deep": "Internals" }] },
+      { "item": "Applying an LSN-token wait to a read that never needed read-your-writes doesn't make that read more correct — there was no guarantee being violated — it only makes it as slow as the primary, for a consistency property nobody was asking for.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's own measured lag numbers (sub-millisecond, under 2,000 synchronous inserts) are themselves a result worth noticing: real replication lag under realistic load is often far smaller than the worst-case scenarios session guarantees are designed to survive.", "at": [{ "deep": "Production failures this topic warns about" }] },
+      { "item": "Formal consistency models (linearizability, sequential consistency) describe what the whole system guarantees across every client; session guarantees describe what one client's own session can rely on — the two questions are related but answer different things, which is why this topic stops short of Chapter 14's own formal territory.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

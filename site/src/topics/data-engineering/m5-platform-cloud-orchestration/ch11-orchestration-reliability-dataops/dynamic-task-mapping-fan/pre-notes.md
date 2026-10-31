@@ -1,0 +1,6 @@
+- **Dynamic task mapping**: creating task instances at run time rather than write time, one per element of a runtime value. *Where you meet it:* mapping over a directory listing nobody could know in advance.
+- **`expand()`**: the function that maps an argument — one task instance per value in the list or dict passed to it. *Where you meet it:* `process_file.expand(file=discovered_files)`.
+- **`partial()`**: the function that fixes arguments shared across every mapped instance, left unmapped. *Where you meet it:* paired with `expand()` to tell Airflow which arguments vary and which don't.
+- **Mapped-task limit**: the ceiling on how many task instances one `expand()` can create. *Where you meet it:* the default is one thousand twenty-four; past it, the whole run fails.
+- **Fan-out**: the pattern of turning one upstream result into many downstream task instances. *Where you meet it:* the gap between "map over one file" and "map over everything a partner happened to send."
+- **Engine-internal parallelism**: a compute engine (like Spark) splitting one job's own work across partitions, inside a single orchestrator task instance. *Where you meet it:* the alternative to one task instance per file.

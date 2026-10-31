@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Parquet file anatomy" domain="data-engineering" host="de.parquet-file-anatomy" by="This chapter's fourth topic" />
+  <Resource kind="reel" title="Columnar encodings: dictionary, RLE, delta, byte-stream-split" domain="data-engineering" host="de.columnar-encodings-dictionary-rle" by="This chapter's fifth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Dremel: Interactive Analysis of Web-Scale Datasets" href="https://storage.googleapis.com/gweb-research2023-media/pubtools/pdf/36632.pdf" by="Melnik, Hammerbacher, et al., VLDB 2010">The original repetition and definition level definitions, and the worked example this topic's own schema is a shallower version of.</Resource>
+  <Resource kind="reading" title="Apache Parquet Format: README" href="https://github.com/apache/parquet-format/blob/master/README.md" by="Apache Parquet">Confirms Parquet implements Dremel's encoding directly for nested columns.</Resource>
+  <Resource kind="reading" title="Apache Arrow: Columnar Format specification" href="https://github.com/apache/arrow/blob/main/docs/source/format/Columnar.rst" by="Apache Arrow">The List and Struct layouts this topic contrasts against Dremel's levels.</Resource>
+  <Resource kind="reading" title="Apache ORC v1 File Format Specification" href="https://github.com/apache/orc/blob/main/site/specification/ORCv1.md" by="Apache ORC">The present/length stream layout for ORC's own List and Struct columns.</Resource>
+</ul>
+
+</section>

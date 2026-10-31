@@ -1,0 +1,118 @@
+{
+  "topic": "de.retention-log-compaction",
+  "syllabus": [
+    {
+      "clause": "time/size retention by deleting whole segments vs compaction keeping the latest value per key (cleaner, dirty ratio, min/max.compaction.lag.ms, tombstone retention)",
+      "at": [
+        { "step": "Setup: the same strip, two different rules for keeping it" },
+        { "step": "Predict: one record deleted, or a whole segment?" },
+        { "step": "Reveal: whole segments, measured" },
+        { "step": "Predict: does compaction run continuously, or wait for something?" },
+        { "step": "Reveal: the dirty-ratio gauge, measured" },
+        { "step": "Reveal: a floor and a ceiling on how long a record waits" },
+        { "step": "Reveal: a tombstone's own expiration" }
+      ]
+    },
+    {
+      "clause": "compacted topics as changelogs and table snapshots",
+      "at": [
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Kafka 4.4 topic configuration reference",
+      "items": [
+        {
+          "item": "the default delete policy discards whole old segments by retention time or size, never single records",
+          "at": [{ "step": "Predict: one record deleted, or a whole segment?" }]
+        },
+        {
+          "item": "the compact policy retains the latest value for each key",
+          "at": [{ "step": "Setup: the same strip, two different rules for keeping it" }]
+        },
+        {
+          "item": "the cleaner avoids cleaning a log where more than the configured dirty-ratio threshold (default 50%) has not yet been compacted",
+          "at": [{ "step": "Reveal: the dirty-ratio gauge, measured" }]
+        },
+        {
+          "item": "min.compaction.lag.ms and max.compaction.lag.ms set a floor and a ceiling on how long a record waits before becoming compaction-eligible",
+          "at": [{ "step": "Reveal: a floor and a ceiling on how long a record waits" }]
+        },
+        {
+          "item": "delete.retention.ms controls how long a tombstone marker is kept before being collected",
+          "at": [{ "step": "Reveal: a tombstone's own expiration" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 design documentation (Log Compaction)",
+      "items": [
+        {
+          "item": "compaction guarantees at least the last known value for each key is retained",
+          "at": [{ "step": "Hook: a day later, the old value's still there" }]
+        },
+        {
+          "item": "a consumer that lags by more than delete.retention.ms can miss a delete marker entirely",
+          "at": [{ "step": "Reveal: a tombstone's own expiration" }]
+        },
+        {
+          "item": "the log cleaner recopies segments and never re-orders messages, only removes some",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A single old record can outlive retention.ms on disk if it shares a segment with newer records.",
+        "at": [{ "step": "Reveal: whole segments, measured" }]
+      },
+      {
+        "item": "The dirty ratio exists specifically to bound how often the cleaner re-copies a log, not to decide which records survive.",
+        "at": [{ "step": "Reveal: the dirty-ratio gauge, measured" }]
+      },
+      {
+        "item": "A record past the maximum compaction lag is forced eligible even if the dirty ratio hasn't crossed its threshold.",
+        "at": [{ "step": "Reveal: a floor and a ceiling on how long a record waits" }]
+      },
+      {
+        "item": "Tombstone visibility is a race between how fast a consumer catches up and the tombstone's own retention window, not a guarantee independent of consumer speed.",
+        "at": [{ "step": "Reveal: a tombstone's own expiration" }]
+      },
+      {
+        "item": "Compaction never reorders records; it only removes superseded ones, so relative order among survivors is preserved.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Ordering within a partition, and what compaction does or doesn't disturb about it, is this topic's own successor topic's job, not retaught here.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A compacted topic's own offset topic (from the previous topic) is itself an example of the compaction mechanics this topic teaches.",
+        "at": [{ "step": "Setup: the same strip, two different rules for keeping it" }]
+      },
+      {
+        "item": "Retention and compaction can both be enabled on the same topic via a comma-separated cleanup.policy list.",
+        "at": [{ "step": "Setup: the same strip, two different rules for keeping it" }]
+      },
+      {
+        "item": "The log cleaner's in-memory summary of the log head is a fixed-size-per-key structure, which is why one cleaning pass can process a large volume of log head efficiently.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "A compacted topic read start to finish is precisely a table snapshot in log form, not merely an informal analogy.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

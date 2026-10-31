@@ -1,0 +1,114 @@
+{
+  "topic": "de.it-ot-boundary-data",
+  "syllabus": [
+    {
+      "clause": "OT networks segmented by the Purdue model, DMZs and unidirectional gateways",
+      "at": [{ "step": "Reveal: the plant floor is segmented on purpose" }]
+    },
+    {
+      "clause": "who owns operational vs analytical copies",
+      "at": [{ "step": "Reveal: ownership is assigned, not inferred" }]
+    },
+    {
+      "clause": "read-only extraction that must never disturb control systems",
+      "at": [
+        { "step": "Predict: can a read-only script still disturb control?" },
+        { "step": "Reveal: the load budget, computed" },
+        { "step": "Reveal: a subscription is better, and still not enough" },
+        { "step": "Reveal: read from the thing built to absorb it" },
+        { "step": "Reveal: a slow consumer can't block the producer" }
+      ]
+    },
+    {
+      "clause": "change management with plant engineering.",
+      "at": [{ "step": "Reveal: a rename breaks the naive reader, not the contract reader" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "NIST SP 800-82 Rev. 3: Guide to Operational Technology (OT) Security",
+      "items": [
+        {
+          "item": "restricting logical access may include unidirectional gateways and a DMZ with firewalls preventing traffic passing directly between corporate and OT networks",
+          "at": [{ "step": "Reveal: the plant floor is segmented on purpose" }]
+        },
+        {
+          "item": "a DMZ can be incorporated as an enforcement boundary between network segments",
+          "at": [{ "step": "Reveal: the plant floor is segmented on purpose" }]
+        },
+        {
+          "item": "a unidirectional gateway permits authorized communication in only one direction and can protect lower levels from a cybersecurity event at higher ones",
+          "at": [{ "step": "Reveal: the plant floor is segmented on purpose" }]
+        },
+        {
+          "item": "organizations may use an industry-recognized model for OT segmentation, naming the Purdue model, ISA-95 levels and the three-tier IIoT architecture together",
+          "at": [{ "step": "Reveal: the plant floor is segmented on purpose" }]
+        },
+        {
+          "item": "firewall rules should prevent higher-level devices from directly communicating with lower-level ones, in both Purdue and ISA/IEC 62443 architectures",
+          "at": [{ "step": "Reveal: the plant floor is segmented on purpose" }]
+        }
+      ]
+    },
+    {
+      "source": "ISA/IEC 62443 series (named, not quoted)",
+      "items": [
+        {
+          "item": "ISA's own standards pages prohibit AI-tool ingestion of their content; the series is named bibliographically only and not fetched or quoted",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A network-segmentation model and a data-ownership model answer different questions that look like the same question: segmentation says which wire a packet may cross, ownership says which team's word is final about what a byte on either side of that wire means.",
+        "at": [{ "step": "Reveal: the plant floor is segmented on purpose" }]
+      },
+      {
+        "item": "A read that never writes can still be destructive, because the scarce resource a controller protects isn't just its memory, it's its own scan loop's time budget — the same budget its control logic depends on to run at all.",
+        "at": [{ "step": "Predict: can a read-only script still disturb control?" }]
+      },
+      {
+        "item": "A load budget computed before deployment is the cheapest form of this check there is: multiplying a tag count by a poll rate takes a sentence, and it would have caught the hook's conveyor fault before a single request left the laptop.",
+        "at": [{ "step": "Reveal: the load budget, computed" }]
+      },
+      {
+        "item": "Subscribing instead of polling is the textbook fix taught in isolation from any actual budget, and the moment you attach a real number to it, it stops being obviously sufficient — a half-fix that still breaches the budget is a worse trap than an obviously-wrong naive poll, because it looks solved.",
+        "at": [{ "step": "Reveal: a subscription is better, and still not enough" }]
+      },
+      {
+        "item": "The right fix isn't a smaller ask of the same system, it's asking a different system that was already built to carry that kind of load as part of its own job — a historian already absorbs the change-of-value firehose for its own archival purpose, so a reader against it adds nothing new to the PLC's side of the boundary.",
+        "at": [{ "step": "Reveal: read from the thing built to absorb it" }]
+      },
+      {
+        "item": "A buffer that drops its own oldest item under pressure is choosing which side of the boundary pays the cost of a stall — and the one rule that can never be violated is that the producer, which sits closer to the controller, must never be the one asked to wait.",
+        "at": [{ "step": "Reveal: a slow consumer can't block the producer" }]
+      },
+      {
+        "item": "Ownership of a definition and ownership of the bytes that store it are two separate facts that happen to usually travel together — the moment a definition's bytes move to a system owned by a different team, that pairing breaks, and a pipeline that assumes it still holds will silently redefine something it never had the authority to redefine.",
+        "at": [{ "step": "Reveal: ownership is assigned, not inferred" }]
+      },
+      {
+        "item": "An alias contract is cheap exactly because it does nothing clever — it just keeps a dictionary of every name a thing has ever had, which turns a rename from an event a downstream reader has to survive into an event it never notices.",
+        "at": [{ "step": "Reveal: a rename breaks the naive reader, not the contract reader" }]
+      },
+      {
+        "item": "A subscription against a PLC's own OPC UA server is not automatically exempt from the budget question just because it is passive on the wire — the PLC still does the work of deciding what counts as a change, so the same arithmetic that broke the naive poll applies to it, only with a different multiplier.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Naming a cross-chapter concept id without checking it exists in registry.ts yet is its own failure mode, distinct from any technical bug: a plan that says a topic 'builds on Ch.N' is only as reliable as the check that Ch.N's topic actually shipped before this one did — this topic's own Chapter 10/11 gap is an example of exactly that check being run and failing honestly, rather than skipped.",
+        "at": [{ "deep": "Frontier" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

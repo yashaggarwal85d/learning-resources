@@ -1,0 +1,7 @@
+- **UTC**: Coordinated Universal Time, the single reference clock every stored instant should trace back to. *Where you meet it:* the UTC-storage section.
+- **Time zone**: a fixed or seasonally-shifting offset from UTC used to present a local wall-clock time. *Where you meet it:* local rendering and the shift calendar.
+- **Daylight saving time**: a seasonal shift of a zone's offset, creating a missing hour and a repeated hour on its two transition days. *Where you meet it:* the shift-calendar section.
+- **NTP**: Network Time Protocol, the mechanism that corrects a drifting device clock against a time source. *Where you meet it:* the backwards-step example.
+- **Clock drift**: a free-running clock's own gradual departure from true time, from this course's Chapter 14. *Where you meet it:* the reason a device clock needs correcting at all.
+- **Event time**: the timestamp a system treats as "when the thing actually happened," as opposed to when it was recorded or stored. *Where you meet it:* this topic's own subject, the event-time decision.
+- **Offset**: the signed difference between two clocks, or between local time and UTC. *Where you meet it:* the device-to-gateway offset and the UTC local offset.

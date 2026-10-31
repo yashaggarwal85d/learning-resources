@@ -1,0 +1,83 @@
+{
+  "topic": "de.sensor-data-quality",
+  "steps": [
+    {
+      "lines": [
+        "A furnace's temperature sensor reports the exact same reading, hour after hour.",
+        "The controller watching it, the dashboard showing it, and the statistical process control chart tracking it all agree that everything here looks perfectly stable.",
+        "Not one of them has any reason yet to think otherwise."
+      ]
+    },
+    {
+      "lines": [
+        "A rule built to catch a sudden jump has nothing to catch here, because nothing ever jumps.",
+        "A rule built to catch an impossible value has nothing to catch either, because the number itself is completely plausible for this furnace.",
+        "The only thing actually wrong is that the reading has stopped moving at all, and only a check on how much a value varies over a window of time ever notices that."
+      ]
+    },
+    {
+      "lines": [
+        "On that same fleet of sensors, a different one briefly reports a value that's not just unusual, it's physically impossible for anything to actually be.",
+        "A third sensor throws a handful of isolated extreme spikes.",
+        "A detector built around the typical value nearby, deliberately excluding the spike itself from that calculation, catches each one without ever being thrown off by the very thing it's hunting for."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "Imagine a rule flags that frozen furnace reading as bad, and the system has to decide what happens to it next: delete it completely, or set it aside in a separate holding table with a label explaining why.",
+        "Does that choice actually matter to whoever investigates this furnace later?"
+      ],
+      "answer": [
+        "It does matter, quite a lot.",
+        "A rule can always turn out to be wrong, and the exact point a rule calls bad might be the one real event that explains what actually happened — deleting it outright destroys the only record anyone would ever have of it."
+      ]
+    },
+    {
+      "lines": [
+        "A firmware update on one sensor quietly re-scales everything it reports from that moment forward.",
+        "Every single reading after the update still looks completely plausible on its own, nothing about any individual point seems wrong.",
+        "But the overall typical level of the signal visibly shifts, and that shift is exactly what a check built to look for a change in level, rather than a single data point, is designed to catch."
+      ]
+    },
+    {
+      "lines": [
+        "After an outage, a gateway resends a whole chunk of readings it had buffered up.",
+        "A key built from the series, the device's own timestamp, and the gateway's sequence number collapses that exact resend straight back down to a single copy of each reading.",
+        "Comparing the device's timestamp against the gateway's own receiving timestamp is what separates a reading that's simply arriving late from one whose clock has actually gone wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing in this whole pipeline ever actually gets deleted.",
+        "Every single point a rule flags keeps its exact place in the original series, completely untouched, exactly as it was recorded.",
+        "That same point also gets a separate entry in a quarantine table, carrying which specific rule fired and how severe the system judged it to be."
+      ]
+    },
+    {
+      "lines": [
+        "Run every one of these checks across the whole fleet of sensors at once.",
+        "They catch nearly every single fault that was deliberately planted into the data, while raising only a small number of false alarms along the way.",
+        "And running every one of those checks on every single reading costs only a small fraction of the time that each individual reading actually represents."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole picture together: a windowed variance check, a range check, a spike detector built to resist the spike itself, and a check built specifically for a shift in level.",
+        "Add a key that collapses a replayed batch, a quarantine table that never once deletes anything, and a measured cost that comfortably keeps pace with the plant.",
+        "Not one of those four detection rules could have stood in for any of the others — each one was built to ask a genuinely different question of the exact same data."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "Go back to the hook's furnace, knowing only this one fact about it: its reading never moves at all.",
+        "Working from that fact alone, which of the three named rules actually ends up catching it: the spike rule, the range rule, or the windowed variance check?"
+      ],
+      "answer": [
+        "The windowed variance check is the one that actually fires.",
+        "The furnace's value is completely plausible and it never jumps, so neither the range rule nor the spike rule has anything at all to flag — only a rule built to watch how a value moves over time ever catches this one."
+      ]
+    }
+  ]
+}

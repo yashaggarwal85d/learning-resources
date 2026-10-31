@@ -1,0 +1,4 @@
+- **Bill of materials**: the list of components and quantities that go into making one unit of a product. *Where you meet it:* the lot consume/produce relationship is this topic's data-engineering version of it.
+- **Directed acyclic graph (DAG)**: a graph whose edges point one way and contain no cycles, from Chapter 1. *Where you meet it:* a real lot genealogy graph, which this topic shows is not always acyclic in practice (a rework loop).
+- **Recursive CTE**: a `WITH RECURSIVE` query that builds its result by repeatedly joining its own prior output, from Chapter 2. *Where you meet it:* the forward and backward genealogy queries this topic runs for real.
+- **Reachability**: whether one node in a graph can be reached from another by following edges. *Where you meet it:* a recall question ("which lots does this contamination reach") is exactly a reachability query.

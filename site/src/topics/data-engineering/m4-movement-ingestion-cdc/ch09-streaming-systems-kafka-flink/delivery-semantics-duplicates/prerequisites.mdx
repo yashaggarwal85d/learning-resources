@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: acks, offsets, and the log underneath both
+
+This topic builds on the producer's acks/retry vocabulary, the consumer's own offset-commit
+mechanics, and the storage layer both sit on top of, without re-teaching any of them. If
+producer acks, consumer offsets, or the storage layer are unfamiliar, start with
+[Producer batching, compression and acks](../producer-batching-compression-acks/),
+[Consumer groups and rebalance protocols](../consumer-groups-rebalance-protocols/), and
+[Kafka tiered storage](../kafka-tiered-storage/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache Kafka 4.4 design documentation" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka docs">The "Message Delivery Semantics" section: the three semantics' own definitions and both canonical crash windows this topic's predict/reveal pairs cite.</Resource>
+  <Resource kind="reading" title="Exactly-once Semantics is Possible: Here's How Apache Kafka Does it" href="https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/" by="Confluent engineering blog">Secondary framing for exactly-once as bounded by scope, this topic's "incomplete claim" reveal cites.</Resource>
+</ul>
+
+</section>

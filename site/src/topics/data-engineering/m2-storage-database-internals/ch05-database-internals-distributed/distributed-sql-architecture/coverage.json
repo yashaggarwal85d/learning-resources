@@ -1,0 +1,81 @@
+{
+  "topic": "de.distributed-sql-architecture",
+  "syllabus": [
+    {
+      "clause": "the Spanner pattern made mainstream: range-sharded keyspace, consensus group per range, MVCC with timestamps (TrueTime, hybrid logical clocks), and 2PC across ranges",
+      "at": [
+        { "step": "Reveal: the composition, measured" },
+        { "step": "Reveal: a clock that never goes backward" },
+        { "step": "Reveal: commit wait, measured" }
+      ]
+    },
+    {
+      "clause": "CockroachDB, TiDB, YugabyteDB, and Aurora DSQL's alternative (optimistic concurrency with conflict checks only at commit, GA May 2025)",
+      "at": [
+        { "step": "Predict: when does an optimistic scheme actually check for a conflict?" },
+        { "step": "Reveal: optimistic concurrency, measured" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "the latency price and when \"shard a boring Postgres\" wins instead (M6 case study)",
+      "at": [
+        { "step": "Reveal: the real latency price" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spanner: Google's Globally-Distributed Database (Corbett et al., OSDI 2012)",
+      "items": [
+        { "item": "the set of replicas is collectively a Paxos group", "at": [{ "step": "Reveal: the composition, measured" }] },
+        { "item": "the key enabler of Spanner's properties is a new TrueTime API and its implementation", "at": [{ "step": "Reveal: commit wait, measured" }] },
+        { "item": "Spanner is the first system to provide external-consistency guarantees at global scale", "at": [{ "step": "Reveal: commit wait, measured" }] },
+        { "item": "running two-phase commit over Paxos mitigates the availability problems general two-phase commit otherwise brings", "at": [{ "step": "Reveal: the composition, measured" }] }
+      ]
+    },
+    {
+      "source": "Architecture Overview (CockroachDB documentation)",
+      "items": [
+        { "item": "CockroachDB stores all user data in a sorted map of key-value pairs, divided into contiguous ranges", "at": [{ "step": "Hook" }] },
+        { "item": "CockroachDB uses the Raft consensus protocol; a quorum of nodes containing replicas of a range acknowledge each write", "at": [{ "step": "Reveal: the composition, measured" }] }
+      ]
+    },
+    {
+      "source": "Transaction Layer (CockroachDB documentation)",
+      "items": [
+        { "item": "CockroachDB implements hybrid-logical clocks, composed of a physical and a logical component, to optimize read performance", "at": [{ "step": "Reveal: a clock that never goes backward" }] },
+        { "item": "the gateway node picks a transaction's timestamp using HLC time", "at": [{ "step": "Reveal: a clock that never goes backward" }] }
+      ]
+    },
+    {
+      "source": "Concurrency control in Aurora DSQL (AWS documentation)",
+      "items": [
+        { "item": "Aurora DSQL uses optimistic concurrency control, evaluating conflicts at commit time instead of using locks", "at": [{ "step": "Reveal: optimistic concurrency, measured" }] },
+        { "item": "under Aurora DSQL's OCC, the transaction with the earliest commit time succeeds and the conflicting transaction receives an OC000 response", "at": [{ "step": "Reveal: optimistic concurrency, measured" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The Spanner pattern's own novelty wasn't inventing a new mechanism — it was proving that range-sharding, per-range consensus, and two-phase commit could compose into one system at global scale without one mechanism breaking another's own guarantees.", "at": [{ "step": "Hook" }] },
+      { "item": "A hybrid logical clock's logical component only ever advances; it never resets, because resetting it the moment the physical clock catches up would let two causally-ordered events tie or invert, which is exactly the property the logical component exists to prevent.", "at": [{ "step": "Reveal: a clock that never goes backward" }] },
+      { "item": "Commit wait's cost is paid once per commit, not once per read — a read-only transaction in Spanner's own design can avoid the wait entirely by reading at a safe, already-passed timestamp, which this topic's own reveal doesn't build out but names as the reason read-heavy workloads pay this cost far less than write-heavy ones.", "at": [{ "deep": "Internals" }] },
+      { "item": "Optimistic concurrency control isn't free of coordination — it moves the coordination from before the work (a lock) to after it (a commit-time check); the real trade is whether wasted work from a late-discovered conflict is cheaper than blocking every transaction upfront, which depends entirely on how often transactions actually collide.", "at": [{ "step": "Reveal: optimistic concurrency, measured" }] },
+      { "item": "TiDB and YugabyteDB are named alongside CockroachDB because both document the identical range-sharded-keyspace-plus-per-range-consensus architecture Spanner popularized, not because they're interchangeable in every other respect — this topic names the shared pattern, not every implementation difference between the three.", "at": [{ "deep": "Internals" }] },
+      { "item": "Aurora DSQL's May 2025 GA matters to this topic's own scope specifically because it's documented as a genuinely different trade (optimistic, commit-time-only checks) rather than a reimplementation of the Spanner pattern under a new name — the syllabus's own framing ('Aurora DSQL's alternative') is accurate, not marketing.", "at": [{ "step": "Reveal: optimistic concurrency, measured" }] },
+      { "item": "The round-trip cost this topic measures for a cross-range commit is a floor, not a ceiling — real systems add retries, network variance, and (for Spanner specifically) the commit-wait window on top of the bare consensus-plus-2PC round trips counted here.", "at": [{ "step": "Reveal: the real latency price" }] },
+      { "item": "Choosing 'shard a boring Postgres' over a distributed SQL system isn't a admission of lesser engineering — every one of this topic's own measured costs exists to solve a problem (data spread across machines) that a dataset fitting on one machine simply doesn't have.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's own executable claims model commit wait and HLC timestamps as unitless integers rather than real wall-clock milliseconds, specifically to keep the ordering claim (strictly increasing, respects real-time causality) checkable and deterministic without depending on this sandbox's own clock behavior.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own 'Prove it' answer generalizes a theme running through this entire chapter's tail (topics 19 through 24): every coordination mechanism measured here pays a real, non-zero cost, and the right engineering call is whichever side of that cost a given workload's actual needs land on, not a default toward 'more distributed is better.'", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

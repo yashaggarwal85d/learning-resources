@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the signal material this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" title="Timestamps, clocks and time zones in telemetry" domain="data-engineering" host="de.timestamps-clocks-time-zones" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Energy and utility metering" domain="data-engineering" host="de.energy-utility-metering" by="this chapter, for the cumulative counter this topic's counter signal reuses" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="pandas.DataFrame.resample" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.resample.html" by="pandas documentation">The frequency-conversion method every aggregate in this topic is built on.</Resource>
+  <Resource kind="reading" title="time_bucket_gapfill()" href="https://docs.tigerdata.com/api/latest/hyperfunctions/gapfilling/time_bucket_gapfill/" by="TigerData (TimescaleDB) documentation">Named and quoted for its NULL-by-default behavior and its nesting order (sourced-only, not run).</Resource>
+  <Resource kind="reading" title="Gapfill plugin" href="https://docs.influxdata.com/influxdb3/core/plugins/library/official/gapfill/" by="InfluxDB 3 Core documentation">Named and quoted for its own max-gap bounded-imputation rule (sourced-only, not run).</Resource>
+</ul>
+
+</section>

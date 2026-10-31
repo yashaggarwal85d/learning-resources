@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: partition sizing, repartition and coalesce
+
+<ul class="resources">
+  <Resource kind="reel" title="Partition sizing, repartition and coalesce" domain="data-engineering" host="de.partition-sizing-repartition-coalesce" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="partitioning.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/plans/physical/partitioning.scala" by="Apache Spark source, GitHub">HashPartitioning's hash-based grouping and RangePartitioning's total-ordering mechanism, directly from their own scaladoc.</Resource>
+  <Resource kind="reading" title="Parquet Files — Partition Discovery" href="https://spark.apache.org/docs/latest/sql-data-sources-parquet.html" by="Apache Spark documentation">The Hive-style directory layout this topic's own static pruning measurement depends on.</Resource>
+  <Resource kind="reading" title="SupportsPushDownFilters.java" href="https://github.com/apache/spark/blob/v4.0.0/sql/catalyst/src/main/java/org/apache/spark/sql/connector/read/SupportsPushDownFilters.java" by="Apache Spark source, GitHub">The DSv2 interface behind partition-stats filtering, named as the sourced-only sibling to directory-based pruning.</Resource>
+</ul>
+
+</section>

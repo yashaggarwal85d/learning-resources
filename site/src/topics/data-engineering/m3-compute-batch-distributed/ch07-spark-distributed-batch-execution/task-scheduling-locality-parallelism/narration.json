@@ -1,0 +1,84 @@
+{
+  "topic": "de.task-scheduling-locality-parallelism",
+  "steps": [
+    {
+      "lines": [
+        "Picture a real cluster. A task is about to run, and its data already sits on one specific machine.",
+        "Does the scheduler run it right there immediately, or does it sometimes wait a moment, hoping for an even better slot?",
+        "Let's see what a real session actually does, rather than guess."
+      ]
+    },
+    {
+      "lines": [
+        "I checked the locality of every single task in this session, and here's the honest answer.",
+        "Every one of them reports process local. Not node local, not rack local, process local, every time.",
+        "And the reason is almost embarrassingly simple. This session has exactly one JVM, playing both driver and the only executor there is. There's no worse slot anywhere to wait for."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real question, and I want your answer before mine.",
+        "I create an RDD with absolutely no hints. No explicit partition count, no parent RDD to inherit anything from. How many partitions does it actually end up with?",
+        "Think about what Spark could possibly base that number on, with nothing else given."
+      ],
+      "answer": [
+        "It's tempting to guess some fixed small number, since nothing was specified.",
+        "But Spark falls back to a specific setting, default parallelism, and in local mode that setting has one precise definition.",
+        "It's exactly the number of cores this session was given. Nothing fixed about it at all."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly that number.",
+        "This session is local with four cores, and the bare RDD gets exactly four partitions.",
+        "Change the core count on a future run, and that number would move right along with it. Nothing else is deciding it."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, and this one has a real trap in it.",
+        "Take that same four-partition data, and run a group by shuffle on it, no override specified at all. Does the output land on the same four partitions, or does something completely different take over?",
+        "Resist the pull of the last answer. This is a genuinely different operation."
+      ],
+      "answer": [
+        "It's easy to assume the shuffle just redistributes what's already there, so surely it keeps the same four.",
+        "But spark dot sql dot shuffle dot partitions is its own separate setting, living entirely in the SQL layer, with its own default of two hundred.",
+        "It has no idea how many cores this session has. And the core count has no say over it either."
+      ]
+    },
+    {
+      "lines": [
+        "Measured: two hundred, not four.",
+        "The group by writes out exactly two hundred partitions. That's the shuffle setting's own default, sitting right next to the four cores the bare RDD just confirmed a moment ago.",
+        "Two completely different numbers, from two completely different places."
+      ]
+    },
+    {
+      "lines": [
+        "Last commitment, and it's the sharpest test of all.",
+        "I set the shuffle partitions setting to eight by hand, then immediately create a brand new bare RDD. Does that fresh RDD's partition count move to eight as well, or does it hold steady at four?",
+        "If these two settings secretly share one dial underneath, this is where it would show."
+      ],
+      "answer": [
+        "The natural guess is that they move together, since they both govern some notion of parallelism.",
+        "But nothing about the shuffle partitions setting reaches into how a bare parallelize call decides anything.",
+        "That path only ever asks one question: how many cores are there. The SQL shuffle setting could be anything at all, and it wouldn't matter."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, confirmed in both directions at once.",
+        "After that change, the group by's output moved to eight, exactly as set.",
+        "But the fresh bare RDD, created in the very same session right afterward, still came back with exactly four. Neither setting ever reaches over and touches the other."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the full picture, stated precisely.",
+        "Default parallelism comes from the core count, full stop. Shuffle partitions come from their own separate SQL setting, full stop. Two knobs, two different jobs, never touching.",
+        "Everything downstream of that is its own story: where a task actually gets placed, and how several jobs share those slots once they're running.",
+        "Locality waits trade fairness for a better slot. FIFO or FAIR scheduling decides how jobs split the queue. Neither shows up on a single JVM, but both are exactly as real on a cluster with more than one."
+      ]
+    }
+  ]
+}

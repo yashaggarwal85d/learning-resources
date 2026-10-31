@@ -1,0 +1,109 @@
+{
+  "topic": "de.idempotent-producer",
+  "syllabus": [
+    {
+      "clause": "producer id + epoch + per-partition sequence numbers let the broker reject duplicates and out-of-order batches",
+      "at": [
+        { "step": "Setup: a stamp on the way out, a table on the way in" },
+        { "step": "Predict: can the broker spot an exact resend?" },
+        { "step": "Reveal: anything but the very next number bounces off" }
+      ]
+    },
+    {
+      "clause": "scope (one producer session, one partition) and what it does not cover",
+      "at": [
+        { "step": "Predict: does the same rule cross partitions?" },
+        { "step": "Reveal: every partition's counter starts its own story" },
+        { "step": "Reveal: a restart fences out whatever got left behind" },
+        { "step": "Reveal: exactly this wide, and no wider" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "KIP-98: Exactly Once Delivery and Transactional Messaging (Apache Kafka wiki)",
+      "items": [
+        {
+          "item": "every new producer is assigned a unique PID during initialization, transparent to users",
+          "at": [{ "step": "Setup: a stamp on the way out, a table on the way in" }]
+        },
+        {
+          "item": "sequence numbers start from zero and increase monotonically, one counter per topic partition produced to",
+          "at": [{ "step": "Reveal: every partition's counter starts its own story" }]
+        },
+        {
+          "item": "the broker rejects a produce request whose sequence number isn't exactly one greater than the last committed one for that PID/partition pair; a lower number is a duplicate error",
+          "at": [{ "step": "Reveal: anything but the very next number bounces off" }]
+        },
+        {
+          "item": "a producer epoch ensures only one legitimate active instance per TransactionalId, maintaining guarantees across failures",
+          "at": [{ "step": "Reveal: a restart fences out whatever got left behind" }]
+        },
+        {
+          "item": "bumping the epoch fences off any previous zombie instance of the producer",
+          "at": [{ "step": "Reveal: a restart fences out whatever got left behind" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 producer configuration reference",
+      "items": [
+        {
+          "item": "idempotence requires max.in.flight.requests.per.connection at most five, retries greater than zero, acks set to all, and is enabled by default when nothing conflicts",
+          "at": [{ "step": "Hook: the same retry, with a rejection now in the way" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A duplicate-rejected error and an out-of-sequence error look similar on the surface but mean opposite things: the first is safe and expected, the second signals real data loss.",
+        "at": [{ "step": "Reveal: anything but the very next number bounces off" }]
+      },
+      {
+        "item": "The per-partition scoping of the sequence counter is what lets a single idempotent producer write to many partitions in parallel without any of them blocking on another's counter.",
+        "at": [{ "step": "Reveal: every partition's counter starts its own story" }]
+      },
+      {
+        "item": "A zombie producer isn't necessarily malicious or buggy — it's often just a previous, still-finishing instance of the exact same honest producer after a routine restart.",
+        "at": [{ "step": "Reveal: a restart fences out whatever got left behind" }]
+      },
+      {
+        "item": "This topic's epoch mechanism is a smaller-scope cousin of the leader-epoch fencing from the replication topic — both use a bumped counter to invalidate a stale actor's stale state.",
+        "at": [{ "step": "Reveal: a restart fences out whatever got left behind" }]
+      },
+      {
+        "item": "Idempotence closes exactly the first of the two crash windows named in the previous topic; the second (a consumer crash between processing and offset commit) is untouched by anything this topic does.",
+        "at": [{ "step": "Hook: the same retry, with a rejection now in the way" }]
+      },
+      {
+        "item": "Two producers both writing a logically identical record each get their own producer id, so idempotence provides zero protection against that specific duplication source.",
+        "at": [{ "step": "Reveal: exactly this wide, and no wider" }]
+      },
+      {
+        "item": "An application that needs duplicate protection across a producer restart must supply its own stable identity (an event id, a business key) rather than relying on the broker-assigned producer id, which changes on every restart.",
+        "at": [{ "step": "Reveal: exactly this wide, and no wider" }]
+      },
+      {
+        "item": "The toy model's three checks are independent of each other by construction: duplicate rejection, cross-partition independence, and epoch fencing each test a different axis of the same mechanism.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Multi-partition atomicity — making several of these per-partition writes succeed or fail together as one unit — needs a mechanism this topic deliberately doesn't build, since it's the next topic's entire subject.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "The precision of this topic's scope statement (one producer, one session, one partition) is itself the main lesson — a vaguer claim like 'idempotent producers prevent duplicates' would be actively misleading.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

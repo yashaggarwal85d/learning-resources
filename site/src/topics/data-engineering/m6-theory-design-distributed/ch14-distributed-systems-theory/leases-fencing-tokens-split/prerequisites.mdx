@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: clocks, reads and the consensus underneath the lock
+
+<ul class="resources">
+  <Resource kind="reel" title="Physical clocks and why they lie" domain="data-engineering" host="de.physical-clocks-why-they-lie" by="Chapter 14, topic 2" />
+  <Resource kind="reel" title="Linearizability" domain="data-engineering" host="de.linearizability" by="Chapter 14, topic 5" />
+  <Resource kind="reel" title="Raft at the conceptual level" domain="data-engineering" host="de.raft-at-conceptual-level" by="Chapter 14, topic 9" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes directly
+
+<ul class="resources">
+  <Resource kind="reading" title="How to do distributed locking" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html" by="Martin Kleppmann, 2016">The pause scenario, fencing tokens, and the check-before-write point, in the article's own diagram and words.</Resource>
+  <Resource kind="reading" title="The Chubby Lock Service for Loosely-Coupled Distributed Systems" href="https://static.googleusercontent.com/media/research.google.com/en//archive/chubby-osdi06.pdf" by="Mike Burrows, OSDI 2006">Master leases, sequencers, and lock-delay, in the paper's own words.</Resource>
+  <Resource kind="reading" title="KafkaProducer" href="https://kafka.apache.org/39/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html" by="Apache Kafka 3.9 Javadoc">The producer epoch and `ProducerFencedException`.</Resource>
+  <Resource kind="reading" title="ZooKeeper Programmer's Guide" href="https://zookeeper.apache.org/doc/current/zookeeperProgrammers.html" by="Apache ZooKeeper">The zxid as a total order stamp on every change.</Resource>
+</ul>
+
+</section>

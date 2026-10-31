@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the automation pyramid, sensor quality, and OPC UA's model
+
+<ul class="resources">
+  <Resource kind="reel" title="ISA-95 hierarchy and the automation pyramid" domain="data-engineering" host="de.isa-95-hierarchy-automation" by="this chapter, for the equipment hierarchy the Unified Namespace topic tree mirrors" />
+  <Resource kind="reel" title="Sensor data quality" domain="data-engineering" host="de.sensor-data-quality" by="this chapter, for the gateway-side quality handling this topic's edge node sits upstream of" />
+  <Resource kind="reel" title="OPC UA information model and transport" domain="data-engineering" host="de.opc-ua-information-model" by="this chapter, as the upstream protocol this topic's MQTT/Sparkplug layer sits above" />
+  <Resource kind="reel" title="Exactly-once as an end-to-end property" domain="data-engineering" host="de.exactly-once-as-end" by="Chapter 14, for the end-to-end argument that QoS 2 is exactly-once delivery between two MQTT peers, not exactly-once effect in the pipeline" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="MQTT Version 5.0" href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html" by="OASIS Standard">The QoS levels, retained messages and Will/Will Delay Interval rules this topic measures against a real broker.</Resource>
+  <Resource kind="reading" title="Sparkplug Specification, Version 3.0.0" href="https://sparkplug.eclipse.org/specification/version/3.0/documents/sparkplug-specification-3.0.0.pdf" by="Eclipse Sparkplug">The NBIRTH/NDATA/bdSeq/sequence/rebirth rules and the Primary Host's STATE mechanism, quoted directly.</Resource>
+  <Resource kind="reading" title="sparkplug_b.proto" href="https://raw.githubusercontent.com/eclipse/tahu/master/sparkplug_b/sparkplug_b.proto" by="Eclipse Tahu (reference implementation, EPL-2.0)">The real Protobuf schema compiled and used to build this topic's NBIRTH and NDATA payloads.</Resource>
+  <Resource kind="reading" title="Architecting a Unified Namespace for IIoT: The Foundations" href="https://www.hivemq.com/blog/foundations-of-unified-namespace-architecture-iiot/" by="HiveMQ (secondary, vendor write-up)">The UNS pattern's own description, labelled secondary since it has no single normative source.</Resource>
+</ul>
+
+</section>

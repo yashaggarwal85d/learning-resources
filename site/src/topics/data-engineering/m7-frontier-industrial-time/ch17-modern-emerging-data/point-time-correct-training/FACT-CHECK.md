@@ -1,0 +1,35 @@
+# Fact-check — de.point-time-correct-training
+
+Role: adversarial fact-checker, not the author. Every claim re-derived from the fetched source
+text in `sources/`, not from memory of writing `OUTLINE.md`.
+
+## Claims
+
+| # | Claim | Status | Evidence |
+|---|---|---|---|
+| 1 | Feast's point-in-time join reproduces the state of features at a specific point in the past, scanning backward from each entity row's own timestamp. | Confirmed | Feast documentation, quoted verbatim. |
+| 2 | A feature's TTL is relative to each entity timestamp, never to the time the query itself runs. | Confirmed | Feast documentation, quoted verbatim ("Please note that the TTL time is relative to each timestamp within the entity dataframe. TTL is not relative to the current point in time"). |
+| 3 | A label row older than the earliest feature data, or further from the nearest feature row than the TTL allows, joins to nothing (no feature value), not to the nearest available one. | Confirmed | Feast documentation, quoted verbatim (the worked example's first and last rows). |
+| 4 | Joining to a table whose data changes between training and serving time can make a model's prediction differ between the two; snapshotting the table periodically is a partial, not complete, mitigation. | Confirmed | Google, Rules of ML, Rule #31, quoted verbatim. |
+| 5 | Reusing code between the training and serving pipelines removes a source of training-serving skew. | Confirmed | Google, Rules of ML, Rule #32, quoted verbatim. |
+| 6 | A post-outcome field — one only knowable or only populated after the outcome occurred — is a distinct leakage mechanism from a timing bug a join can fix. | Confirmed | Hex, "Feature leakage in ML," quoted verbatim ("only knowable after the outcome has occurred... Refunds happen because the customer already churned"). |
+| 7 | The as-of join mechanism and `temporal-leakage` concept are already taught, live, in this course's own Chapter 2. | Confirmed | `site/src/topics/registry.ts`, `de.point-in-time-as-of-joins` entry: `introduces: ['as-of-join', 'point-in-time-join-plans', 'temporal-leakage', 'bitemporal-boundary']`, `status: 'live'`. |
+| 8 | A naive join to a feature's current value, versus a correct as-of join, produces a measurably higher offline AUC on the naive side when the dataset contains engineered temporal leakage. | Confirmed, to be executed | `examples.py` (built in section 7), run against this sandbox's own Postgres cluster on a synthetic dataset with deliberately engineered leakage; the direction of the gap (naive higher) is the testable prediction this topic makes, and the build step asserts it numerically rather than assuming it. |
+
+## Currency check
+
+- Feast's documentation is read from the `v0.59-branch` of `docs.feast.dev`, the branch GitBook's own search surfaced as the live/current concept page at research time (2026-10-30); the mechanism described (scan backward from the entity timestamp, TTL relative to that timestamp) is Feast's core point-in-time join design and has been stable across the versions the initial search also surfaced (v0.46 through v0.59), so no currency risk from using this specific branch.
+- Google's Rules of ML page is read from its live, canonical URL (`developers.google.com/machine-learning/guides/rules-of-ml`); the rule numbers and text quoted (29, 31, 32) are long-standing, widely-cited content unlikely to have shifted meaning even if renumbered in a future revision — re-verified directly against the live page at research time, not from a secondary summary.
+- Hex's "Feature leakage in ML" blog post is a vendor blog, not a standards document; it is used here only for its definition of post-outcome leakage and its causal test, both standard, uncontroversial ML concepts independently describable from the Google source's own framing of "a change in the data between when you train and when you serve" — the Hex post adds the sharper "only knowable after the outcome" phrasing and the refund/churn example, not a claim that needs a harder primary source.
+
+## Red team
+
+1. **"Is the Hook's '0.94 AUC offline, barely a coin flip live' number itself a claim that needs sourcing, or is it a constructed scenario?"** It is a constructed, illustrative scenario (this course's own fictional shop and churn model), not a cited industry statistic — stated as such in the narration and never presented as a measured fact about a real company. The topic's *own* measured numbers, which do need to be real, come from `examples.py`'s synthetic dataset, built in section 7, and asserted there, not claimed here.
+2. **"Does a post-outcome field actually never get fixed by any join timing, or could an as-of join coincidentally help?"** No — re-derived from the Hex source's own test ("would this feature's value be known at the exact moment of prediction"): a cancellation-reason field is unpopulated for every customer until the outcome happens, at *any* timestamp an as-of join might pick before the label, so there is no earlier "as of" moment at which the field held a real value to join to. The field's problem is not staleness, it's non-existence before the event — the OUTLINE's own distinction (step 5) holds.
+3. **"Is 'synthetic churn dataset' doing real work, or is it a label for 'whatever numbers make the story come out right'?"** The dataset's generation must be specified with a fixed, stated random seed and explicit engineered-leakage parameters (how much of the "current value" feature's extra signal is literally derived from post-label activity) in `examples.py`, so that the naive-vs-as-of AUC gap is a true, reproducible consequence of the join difference and not a cherry-picked run — tracked as a build-step requirement for section 7, not yet satisfied by this fact-check pass alone.
+4. **"Is quoting Rule #31's 'snapshot the table hourly or daily' as a weaker version of a feature TTL an accurate reading, or an overreach?"** Rule #31's own text states snapshotting only gets you "reasonably close data" and explicitly notes "this still doesn't completely resolve the issue" — it is offered by Google as a partial mitigation, not equated with a TTL; OUTLINE's framing ("this topic's own feature-TTL idea in weaker form," in CHAPTER.md) is accurate as a *comparison of mechanism* (both bound how stale a joined value may be) and does not claim Google called it a TTL.
+5. **"Does naming Chapter 2's `as-of-join` and `temporal-leakage` as already taught risk building on a topic that isn't actually live?"** Checked directly against `registry.ts` (claim 7): `de.point-in-time-as-of-joins` has `status: 'live'`, confirmed at fact-check time, not assumed from the chapter plan's own claim alone.
+
+## Problem Solving
+
+None yet: no blocked source fetch or tooling denial encountered for this topic. (`dev.mysql.com`-style 403s and the `wal_level` restart denial that affected a sibling ch5 topic do not apply here — none of this topic's sources needed a blocked host, and its lab needs no server-setting change, only a synthetic dataset and a classifier run on the existing Postgres cluster.)
