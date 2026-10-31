@@ -7171,6 +7171,26 @@ export const TOPICS: TopicMeta[] = [
       "Those four dimensions are universal, but every cloud sells the services that generate them under a different name. The next section is a map: the same mechanism under three vendors' three different product names.",
   },
   {
+    id: 'de.cross-cloud-data-service-mapping',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/cross-cloud-data-service-mapping',
+    title: 'Cross-cloud data-service mapping',
+    syllabusTitle: 'Cross-cloud data-service mapping',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.2' },
+    minutes: 5,
+    verified: '2026-10-31',
+    introduces: ['cross-cloud-service-rosetta'],
+    uses: [],
+    declared: [],
+    bridge:
+      "Section 10.1 was true everywhere, under generic names. From here the chapter has to say which vendor's product actually does each job — this topic is the one table that makes every later cross-cloud reference make sense.",
+    handoff:
+      "Four of this table's cells — catalog, storage, Spark, identity — all converge on one mechanism that every governed lakehouse now uses, under four different product names. That mechanism is next.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
