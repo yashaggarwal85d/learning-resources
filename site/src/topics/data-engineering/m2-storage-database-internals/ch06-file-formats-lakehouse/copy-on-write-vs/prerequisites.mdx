@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Optimistic commits and conflict resolution" domain="data-engineering" host="de.optimistic-commits-conflict-resolution" by="This chapter's thirteenth topic" />
+  <Resource kind="reel" title="Snapshot-based table metadata" domain="data-engineering" host="de.snapshot-based-table-metadata" by="This chapter's twelfth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The deletion-vector and position-delete-file sections this topic quotes.</Resource>
+  <Resource kind="reading" title="Table and Query Types" href="https://hudi.apache.org/docs/table_types/" by="Apache Hudi">The copy-on-write and merge-on-read table types, named and compared directly.</Resource>
+  <Resource kind="reading" title="Deletion vectors" href="https://docs.delta.io/delta-deletion-vectors/" by="Delta Lake">Delta's default rewrite-the-file behavior, its deletion-vector alternative, and its compaction commands.</Resource>
+</ul>
+
+</section>
