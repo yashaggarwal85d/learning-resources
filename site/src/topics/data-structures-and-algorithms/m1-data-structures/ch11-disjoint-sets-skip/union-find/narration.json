@@ -1,0 +1,109 @@
+{
+  "topic": "dsa.union-find",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code and math are spelled the way they are said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Relabelling is the obvious fix here, and it is also the trap: touch every record in a cluster, and a big merge costs you the whole cluster's size.",
+        "Searching the graph again on every pair is no better. It is the same cost wearing a different name.",
+        {
+          "beat": 0.4
+        },
+        "What we actually need is a question answered cheaply, over and over: are these two already one entity. Watch what happens when every record just points at the one before it."
+      ]
+    },
+    {
+      "lines": [
+        "Three names, nothing more yet. Make a singleton, find a set's leader, union two sets into one.",
+        "Notice what is missing on purpose: no pointer down to a child, anywhere. A root only ever points at itself.",
+        {
+          "beat": 0.4
+        },
+        "That one choice is what makes find cheap to define. It says nothing yet about how far up that walk has to go, and that is exactly the question the next step asks."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the deal. You pick the order the merges happen in. I only get to pick the rule the structure follows.",
+        "With no rule at all, what is the worst you can do to me."
+      ],
+      "answer": [
+        "Depth fifteen, and a find on that bottom record walks every one of the fifteen records above it.",
+        "A structure usually looking balanced is not the same claim as a structure that is guaranteed to be. Nothing here stops you from choosing the order that ruins it."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the one sentence that fixes everything: a tree only gets taller by being joined to one at least as tall as itself.",
+        "Follow that sentence forward. To reach rank r, a tree first had to swallow a tree of rank r minus one, which first had to swallow one of rank r minus two, and so on, doubling at every step.",
+        {
+          "beat": 0.4
+        },
+        "There are only so many records to go around, so the doubling runs out fast. That is the whole proof, not a hand wave."
+      ]
+    },
+    {
+      "lines": [
+        "Rank already stopped the record you picked a moment ago from being a true worst case. But a real find can still walk a real path of that length, every single time it is called on that branch.",
+        "Compression changes what happens after the walk, not the walk itself: everyone it just visited gets relinked straight to the root it found.",
+        {
+          "beat": 0.4
+        },
+        "The next person asking about any of those same records pays almost nothing. The first walk earns its keep for every walk that follows it."
+      ]
+    },
+    {
+      "lines": [
+        "Here is where people usually guess wrong in one of two directions.",
+        "One guess says it must be exactly constant now, because we fixed the problem. The other says it still depends on the order, because nothing is ever really free.",
+        {
+          "beat": 0.4
+        },
+        "Both guesses are tempting, and both miss the same thing: averaged over many calls is not the same claim as true of every single call."
+      ],
+      "answer": [
+        "Bounded by a number under five, no matter how large your n ever gets, and no matter what order the caller chooses.",
+        "Exactly constant overreaches: one lone call through a long-untouched branch can still cost something like log n.",
+        "Depends on the order was true before rank existed. It stopped being true the moment rank bounded the height."
+      ]
+    },
+    {
+      "lines": [
+        "Alpha of n has a frightening name, inverse Ackermann, attached to a very unfrightening fact: on screen, for any n you could ever actually hold in a machine, that curve never gets past five.",
+        "Say the whole thing out loud so it stops sounding mysterious: big O of alpha of n, amortized, with rank and compression both doing their part.",
+        {
+          "beat": 0.4
+        },
+        "And it has a partner fact worth knowing even without its proof: nobody is going to find a cleverer pointer structure that beats this by more than a constant factor. This is not a temporary record."
+      ]
+    },
+    {
+      "lines": [
+        "Sort the same ten edges by weight, and ask one question before accepting each one: are its two ends already in the same set.",
+        "Read that exact same question a second way, and it tells you which component a vertex belongs to as the graph grows.",
+        "Read it a third way, on a match decision instead of an edge, and it clusters entities.",
+        {
+          "beat": 0.4
+        },
+        "All three readings call the same two functions. None of them can later call a fourth function named split, because it was never written. That absence is the one thing this structure asks you to respect."
+      ]
+    },
+    {
+      "lines": [
+        "Three names. One sentence that bounds how tall any tree gets. One trick that makes the next visit to the same branch nearly free.",
+        "One number, under five forever, that turns the word amortized from a guess into something you can point at.",
+        "And one door that only ever swings one way."
+      ]
+    },
+    {
+      "lines": [
+        "The pipeline just told you two records it clustered together were never the same entity after all. Can you take that merge back."
+      ],
+      "answer": [
+        "No. A parent pointer only ever points toward a root, never away from one, and nothing in this structure was written to reverse that.",
+        "The real fix is not a function call, it is a rebuild: a fresh structure, built from the corrected pairs, from scratch.",
+        "That is the limit named two steps ago, showing up exactly where it was warned it would."
+      ]
+    }
+  ]
+}

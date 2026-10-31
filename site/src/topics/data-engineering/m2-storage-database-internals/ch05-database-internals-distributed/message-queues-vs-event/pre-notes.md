@@ -1,0 +1,6 @@
+- **WAL / offset, from this chapter's own §5.1**: an append-only, offset-addressed record of writes, where a position is a single, stable number. *Where you meet it:* the log's own offset reveal, as the same structural idea one layer up.
+- **Acknowledgement (ack)**: a consumer's explicit signal to a broker that a delivery was received and processed. *Where you meet it:* the queue's own delete-on-ack reveal.
+- **Redelivery**: a broker resending a message because it was never acknowledged, not because a reader asked to see it again. *Where you meet it:* the queue reveal, contrasted directly with a log's own voluntary replay.
+- **Consumer group, from earlier chapter material**: a set of consumers that split a topic's partitions between them, each partition owned by exactly one member at a time. *Where you meet it:* named by contrast in the share-groups reveal, which relaxes this exact rule.
+- **Partition**: a topic's own ordered, independently consumable subdivision. *Where you meet it:* the ordering-and-fan-out reveal.
+- **Fan-out**: many independent consumers each receiving or reading the same data. *Where you meet it:* the ordering-and-fan-out reveal and the "Prove it" step.

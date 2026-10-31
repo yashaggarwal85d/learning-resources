@@ -1,0 +1,78 @@
+{
+  "topic": "de.message-queues-vs-event",
+  "steps": [
+    {
+      "lines": [
+        "The exact same piece of information, sent through two genuinely different kinds of system.",
+        "One of them hears back that it was received, and that's the end of its own story — it's gone for good.",
+        "The other quietly moves a marker forward past it instead, while leaving the thing itself sitting exactly where it already was."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before settling on an answer.",
+        "Someone already confirmed they received that message, through the first kind of system.",
+        "If a second, different reader also needs that same message, can they still get a copy of it back from that same system?"
+      ],
+      "answer": [
+        "Not from that first kind of system — confirming receipt is exactly what told it to throw the thing away.",
+        "Once it's thrown away, there's genuinely nothing left for a second reader to ask for.",
+        "The second kind of system never threw its own copy away in the first place, so it's still sitting there, ready to be handed out again to anyone who asks."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly what triggers that throwing-away, and what doesn't.",
+        "Confirming receipt, in the real system's own words, is the actual signal that marks something for deletion.",
+        "Refusing it instead does something different entirely — it gets thrown away for good, set aside separately, or handed to someone else to try — but never both outcomes happen to the same one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what the other kind of system tracks instead of throwing anything away.",
+        "A reader's own place in line is just one small number that only ever needs to go up.",
+        "The thing's own position never budges once it's written — and that's the entire reason someone can deliberately step backward and look at it again."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real difference this makes, once something actually goes wrong.",
+        "Someone who finds a flaw in how they were handling things can fix that flaw and simply look at everything they already saw once more, from the beginning.",
+        "Whoever relied on the first kind of system instead has nothing left to look at by the time that same flaw is found — it was already thrown away."
+      ]
+    },
+    {
+      "lines": [
+        "Two more real differences tilt this choice even further.",
+        "The second kind of system can give many completely independent readers their own full, ordered view of everything, each moving through it at their own pace.",
+        "The first kind of system was built to hand each thing to exactly one destination once — not to let many separate readers each see the whole picture independently."
+      ]
+    },
+    {
+      "lines": [
+        "One real, named feature softens this whole distinction, worth naming on its own.",
+        "It's ready for real production use right now, in the current version of one major real system built on the second approach.",
+        "It adds the first approach's own one-at-a-time confirmation directly on top, without ever handing one reader their own entire dedicated slice to own alone."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "One kind of system throws something away the moment it's confirmed received. The other tracks a number that only moves forward, and never touches the thing itself.",
+        "Being able to look at the past again, and letting many independent readers each see everything, both favor that second approach. And one real, named feature now blurs the line by adding the first approach's own style directly onto it."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "Many completely separate teams each need to work through every single thing that happens, each at their own pace — and one of those teams needs to look back at everything from last week, after finding and fixing a mistake in how they were handling it.",
+        "Which kind of system actually fits here, and specifically why would the other one fail?"
+      ],
+      "answer": [
+        "The kind that tracks a number instead of throwing anything away.",
+        "By the time that team found their own mistake, the other kind of system would have already thrown away everything they now need back.",
+        "And the other kind of system was never built to let many separate teams each see the whole picture independently in the first place — only this one was."
+      ]
+    }
+  ]
+}
