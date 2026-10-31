@@ -6145,6 +6145,32 @@ export const TOPICS: TopicMeta[] = [
       "A dead-lettered record, once fixed, needs to be put back into the flow — and so does an entire pipeline that was simply wrong for a while. Doing that safely, for a single record or for a whole time range, is the next topic.",
   },
   {
+    id: 'de.replay-and-backfill',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/replay-and-backfill',
+    title: 'Replay and backfill',
+    syllabusTitle: 'Replay and backfill',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['offset-reset-replay', 'safe-replay-design'],
+    uses: [
+      'tiered-storage-remote-log',
+      'two-phase-commit-sink',
+      'idempotent-upsert-deterministic-id',
+      'event-id-deduplication',
+      'raw-layer-replay-metadata',
+    ],
+    declared: [],
+    bridge:
+      "A dead-lettered record needs putting back into the flow once fixed. Sometimes the whole pipeline was wrong for a while, and the fix is to replay a time range, not one record. This topic is how to do that without the replay itself becoming a second incident.",
+    handoff:
+      "Every topic so far assumed producers and consumers agree on what a record's fields mean. The moment a producer changes its schema without warning, that agreement breaks — and a schema registry is the contract that's supposed to stop it. That's next.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
