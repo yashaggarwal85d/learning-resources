@@ -7778,6 +7778,26 @@ export const TOPICS: TopicMeta[] = [
       "SAP extraction is still, in the end, reading from a database or an API. A factory floor's PLCs and historians are not databases at all, and the one rule that matters most there has no SAP equivalent: a slow analytics consumer must never be able to push back on a production line.",
   },
   {
+    id: 'de.it-ot-integration-without-blocking',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/it-ot-integration-without-blocking',
+    title: 'IT/OT integration without blocking production',
+    syllabusTitle: 'IT/OT integration without blocking production',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.6' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['isa95-purdue-segmentation', 'ot-edge-buffer-backpressure-isolation', 'unified-namespace-pattern'],
+    uses: ['sap-extraction-mechanism-choice', 'cloud-cost-four-dimensions'],
+    declared: [],
+    bridge:
+      "SAP extraction is still reading from a database or an API, in the end. A factory floor is not a database at all, and this topic's one non-negotiable rule has no equivalent in anything else this chapter has taught: whatever an analytics consumer does downstream, it must be physically or architecturally impossible for that to ever push back on a production line.",
+    handoff:
+      "SAP and the plant floor are two real-world systems with their own extraction rules. The platform all of this ultimately has to run on — fully in the cloud, fully on-prem, or split between the two — is the chapter's own closing question.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
