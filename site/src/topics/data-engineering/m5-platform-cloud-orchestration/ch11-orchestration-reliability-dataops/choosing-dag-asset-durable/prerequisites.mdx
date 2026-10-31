@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the models this topic chooses among
+
+<ul class="resources">
+  <Resource kind="reel" title="Orchestrator landscape and selection" domain="data-engineering" host="de.orchestrator-landscape-selection" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Temporal Workflow" href="https://docs.temporal.io/workflows" by="Temporal Documentation">Why a Temporal Workflow can run for years and how resuming one actually works.</Resource>
+  <Resource kind="reading" title="Event History" href="https://docs.temporal.io/encyclopedia/event-history" by="Temporal Documentation">The durable log a crashed Worker replays to recover state.</Resource>
+  <Resource kind="reading" title="What is a Temporal Worker?" href="https://docs.temporal.io/workers" by="Temporal Documentation">The process that polls for and executes Workflow and Activity code.</Resource>
+  <Resource kind="reading" title="Worker Versioning" href="https://docs.temporal.io/production-deployment/worker-deployments/worker-versioning" by="Temporal Documentation">Deploying code changes without breaking Workflows already in flight.</Resource>
+  <Resource kind="reading" title="Announcing GA for Worker Versioning and Public Preview for Upgrade on Continue-as-New" href="https://temporal.io/blog/ga-worker-versioning-public-preview-upgrade-on-continue-as-new" by="Temporal Blog">Worker Versioning's own General Availability announcement.</Resource>
+  <Resource kind="reading" title="Saga Pattern" href="https://docs.temporal.io/design-patterns/saga-pattern" by="Temporal Documentation">Compensations run in reverse order, the decision rule's saga question.</Resource>
+  <Resource kind="reading" title="Introduction" href="https://docs.prefect.io/v3/get-started/index" by="Prefect Docs">Prefect's dynamic, Python-native flow model, reused from topic nine's own fetch.</Resource>
+</ul>
+
+</section>

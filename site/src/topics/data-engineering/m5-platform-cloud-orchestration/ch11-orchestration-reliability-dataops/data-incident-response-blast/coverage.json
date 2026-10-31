@@ -1,0 +1,84 @@
+{
+  "topic": "de.data-incident-response-blast",
+  "syllabus": [
+    {
+      "clause": "detect → triage → contain (circuit breakers that halt downstream publication, quarantine partitions) → repair (targeted backfill) → postmortem",
+      "at": [
+        { "step": "Reveal: the five-stage loop, named" },
+        { "step": "Reveal: quarantine, then a targeted repair" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "incident-command roles",
+      "at": [
+        { "step": "Reveal: incident-command roles, sourced" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "lineage-derived blast radius",
+      "at": [
+        { "step": "Predict: how should \"affected\" actually be answered?" },
+        { "step": "Reveal: lineage-derived blast radius" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "runbooks, asset-level ownership and on-call design, routing alerts to owners",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Managing Incidents (Google SRE Book, Chapter 14)",
+      "items": [
+        { "item": "the incident commander holds the high-level state and assigns responsibilities", "at": [{ "step": "Reveal: incident-command roles, sourced" }] },
+        { "item": "the Ops lead is the only group that should modify the system during an incident", "at": [{ "step": "Reveal: incident-command roles, sourced" }] },
+        { "item": "the Communication role is the public face of the task force, issuing periodic updates", "at": [{ "step": "Reveal: incident-command roles, sourced" }] }
+      ]
+    },
+    {
+      "source": "Postmortem Culture: Learning from Failure (Google SRE Book, Chapter 15)",
+      "items": [
+        { "item": "a blameless postmortem identifies contributing causes without indicting any individual or team", "at": [{ "step": "Recap" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "About OpenLineage",
+      "items": [
+        { "item": "OpenLineage is an open, vendor-neutral specification for data lineage collection and analysis", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real Dagster 1.13.28 asset graph",
+      "items": [
+        { "item": "of forty downstream dashboards, only a small exact subset actually depends on the incident's affected table, computed by walking the real asset graph's declared edges", "at": [{ "step": "Prove it" }] },
+        { "item": "a targeted backfill of only the quarantined partitions corrects the real row counts without touching any other partition", "at": [{ "step": "Reveal: quarantine, then a targeted repair" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's two-hour delay isn't really about the lineage query being slow to run -- the real cost is that nobody had ever run it before, so the tooling and the habit of running it didn't exist yet. Lineage-derived blast radius only pays off if someone actually reaches for it under pressure, which this topic frames as a practice, not just a capability.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume the five-stage loop is strictly sequential with no overlap, but in practice triage and contain often run concurrently -- the Ops lead starts containing the known-bad part while triage is still determining the full scope, which is exactly why the roles need to be distinct people rather than one person doing everything in order.", "at": [{ "step": "Reveal: the five-stage loop, named" }] },
+      { "item": "Lineage-derived blast radius is only as correct as the declared dependencies themselves -- an asset graph with an undeclared or stale dependency edge will silently under-compute the blast radius, which is a real failure mode distinct from (and arguably worse than) the guessing this topic replaces, because it looks authoritative while still being wrong.", "at": [{ "step": "Reveal: lineage-derived blast radius" }] },
+      { "item": "Quarantining a partition rather than deleting it has a real storage and query cost while the incident is open -- readers who don't know to filter it out could still read the bad rows unless the quarantine is enforced at the query layer (a view, a row-level flag), not just a note in an incident document.", "at": [{ "step": "Reveal: quarantine, then a targeted repair" }] },
+      { "item": "The three named roles (commander, Ops, Communication) aren't a complete org chart for every incident -- Google's own account also names a Planning role for longer-running logistics; this topic names the three most load-bearing roles for a data-specific incident rather than the full Incident Command System roster.", "at": [{ "step": "Reveal: incident-command roles, sourced" }] },
+      { "item": "Blameless doesn't mean consequence-free for the system -- the Google SRE Book's own framing is that a blameless postmortem can and should still call out exactly where a service needs to improve; the blame is withheld from the person, not from the broken process or missing safeguard.", "at": [{ "deep": "Internals" }] },
+      { "item": "A reader coming from topic 3's backfill mechanics might assume 'targeted backfill' here is identical to a scheduled catchup backfill -- the mechanism is the same (resumable, interval-scoped), but the trigger is different: an incident's targeted backfill is manually scoped to exactly the quarantined partitions, not to a contiguous missed range.", "at": [{ "step": "Reveal: quarantine, then a targeted repair" }] },
+      { "item": "OpenLineage's own value proposition in this topic is specifically cross-tool lineage (Airflow, Spark, dbt, Flink all emitting to one standard), which is a different scope than the single-orchestrator asset-graph lineage this topic's own lab demonstrates -- naming it in Frontier rather than claiming the lab itself used it avoids overstating what was actually run.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The real lab's forty-dashboard asset graph deliberately uses a simple modular pattern (every seventh dashboard genuinely depends on the affected table) rather than a organic-looking random graph, so the exact affected count is independently verifiable by a reader rather than only trusted from the code's own assertion.", "at": [{ "step": "Prove it" }] },
+      { "item": "Asset-level ownership (naming who owns each asset so an alert routes to them directly) is named in CHAPTER.md's own scope but has no independent primary source quoted here -- it's this topic's own synthesis of the incident-command roles applied at the level of a single table rather than a whole incident, consistent with the chapter's pattern of recapping and recombining rather than sourcing every operational idea externally.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
