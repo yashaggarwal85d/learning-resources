@@ -1,0 +1,121 @@
+{
+  "topic": "de.resampling-gap-filling",
+  "syllabus": [
+    {
+      "clause": "regular vs irregular series,",
+      "at": [{ "step": "Reveal: a signal needs a declared type before it has an aggregate" }]
+    },
+    {
+      "clause": "resampling to a grid with the right aggregate per signal type (mean, last, max, integral),",
+      "at": [
+        { "step": "Predict: averaging two machine states" },
+        { "step": "Reveal: the wrong aggregate" },
+        { "step": "Reveal: the right aggregate for each type" }
+      ]
+    },
+    {
+      "clause": "gap filling by LOCF or interpolation and when filling lies,",
+      "at": [{ "step": "Reveal: two fills, one hidden excursion" }]
+    },
+    {
+      "clause": "step vs continuous signals.",
+      "at": [
+        { "step": "Reveal: a signal needs a declared type before it has an aggregate" },
+        { "step": "Reveal: the right aggregate for each type" }
+      ]
+    },
+    {
+      "clause": "Windowing semantics: §9.2",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pandas: DataFrame.resample",
+      "items": [
+        {
+          "item": "resample is pandas' convenience method for frequency conversion and resampling of a time series, returning a Resampler to which an aggregate is applied",
+          "at": [{ "step": "Reveal: the right aggregate for each type" }]
+        }
+      ]
+    },
+    {
+      "source": "pandas: merge_asof",
+      "items": [
+        {
+          "item": "merge_asof's default 'backward' search selects the last right-side row at or before the left's key",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "TigerData (TimescaleDB) docs: time_bucket_gapfill()",
+      "items": [
+        {
+          "item": "without a gapfilling algorithm (locf or interpolate), a bucket with no data is left NULL, not silently filled",
+          "at": [{ "step": "Reveal: two fills, one hidden excursion" }]
+        }
+      ]
+    },
+    {
+      "source": "InfluxDB 3 Core docs: Gapfill plugin",
+      "items": [
+        {
+          "item": "bounded imputation: gaps longer than max_fill_gap are never invented, only reported",
+          "at": [{ "step": "Reveal: the max-gap rule and the fill flag" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A mean is only a legitimate aggregate over values that live on an interval scale — a machine-state code is nominal, and averaging nominal codes produces a number with no referent at all, not merely an imprecise one.",
+        "at": [{ "step": "Reveal: the wrong aggregate" }]
+      },
+      {
+        "item": "LOCF and linear interpolation fail in the same direction for exactly the opposite reason: LOCF assumes nothing changed, interpolation assumes a smooth path — both assumptions are falsified by the same real excursion, which is why neither method is 'safer' in general, only safer for a particular signal's typical behavior.",
+        "at": [{ "step": "Reveal: two fills, one hidden excursion" }]
+      },
+      {
+        "item": "A fill flag turns an invisible assumption (this value is real) into a visible one (this value was produced by a rule), which is the same move this chapter already made for event time (topic 7) — writing down which decision was made, rather than leaving it to be inferred from which column happens to be populated.",
+        "at": [{ "step": "Reveal: the max-gap rule and the fill flag" }]
+      },
+      {
+        "item": "The max-gap threshold is a policy, not a law of the signal — it should be set from the signal's own expected report period (a sensor that reports every 10 seconds has a very different 'suspiciously long gap' than one that reports every 10 minutes), so a single site-wide default is itself a kind of wrong-aggregate bug one level up.",
+        "at": [{ "step": "Reveal: the max-gap rule and the fill flag" }]
+      },
+      {
+        "item": "Declaring a signal's type as tag metadata, rather than inferring it from the data stream, matters because a step signal can look continuous over a short enough window (few transitions) and a slow continuous signal can look like a step signal if sampled too coarsely — inference from shape alone is not reliable at arbitrary window lengths.",
+        "at": [{ "step": "Reveal: a signal needs a declared type before it has an aggregate" }]
+      },
+      {
+        "item": "An honest aggregate that reports 'how many of each flag contributed' (not just a number) lets a downstream consumer decide for themselves whether a bucket that's 80% filled is still trustworthy for their purpose — collapsing that to a single number throws away exactly the information a careful reader would need.",
+        "at": [{ "step": "Reveal: the max-gap rule and the fill flag" }]
+      },
+      {
+        "item": "A counter's correct aggregate (the difference of end values) is structurally different from the other three types' aggregates (mean, last, max) in that it requires two points, not one, per bucket — which is why a counter resampled the same way as a continuous signal (a mean of raw counter readings) produces a number with no physical meaning at all, a different and worse failure than the state-mean bug.",
+        "at": [{ "step": "Reveal: the right aggregate for each type" }]
+      },
+      {
+        "item": "Both fills erasing the same excursion is not a coincidence of this specific dataset — any fill method that only looks at points outside a gap (as both LOCF and linear interpolation do) is mathematically incapable of reconstructing a feature that exists only inside the gap; this is a structural limit of gap-filling, not a tuning problem.",
+        "at": [{ "step": "Reveal: two fills, one hidden excursion" }]
+      },
+      {
+        "item": "The same four-hour-outage shape recurs across OT telemetry regardless of plant or vendor, which is why the fill-flag discipline belongs in the resampling layer itself rather than being left to each downstream dashboard to reinvent (and most don't).",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A dashboard that never shows a 'missing' region, only ever a continuous line, is not evidence that its sensor never has gaps — it is evidence that someone already chose to fill (and thereby hide) every gap it ever had.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
