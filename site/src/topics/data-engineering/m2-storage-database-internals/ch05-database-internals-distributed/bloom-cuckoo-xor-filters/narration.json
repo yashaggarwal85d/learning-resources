@@ -1,0 +1,82 @@
+{
+  "topic": "de.bloom-cuckoo-xor-filters",
+  "steps": [
+    {
+      "lines": [
+        "A tiny array of bits, nowhere near as large as the actual set it's standing in for.",
+        "It can still answer one real question about something it has never actually stored anywhere.",
+        "Could this possibly belong to the set at all."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before settling on an answer.",
+        "Something was genuinely added earlier, and now it's being checked against that same tiny array again.",
+        "Could that check ever come back saying it's absent, even though it was truly added before?"
+      ],
+      "answer": [
+        "No, never — a check like that always comes back saying the thing is present.",
+        "Whatever got flipped on when something was added stays flipped on forever afterward.",
+        "Checking that same thing again later always finds every one of those same spots still on, so a genuine member can never slip through as missing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly where that guarantee actually comes from.",
+        "Adding something flips on a handful of spots in the array, chosen by how that thing hashes.",
+        "Checking it later looks at those exact same spots — if they were turned on going in, they're still on coming back out."
+      ]
+    },
+    {
+      "lines": [
+        "How large that array needs to be isn't arbitrary at all.",
+        "Setting aside fewer spots per item leaves things more crowded, and crowding is exactly what causes a false alarm.",
+        "Choosing a target rate for those false alarms directly decides how much room, and how many spots per item, the whole structure actually needs."
+      ],
+      "takeaway": "Choosing a target false-alarm rate directly decides how much room a filter needs."
+    },
+    {
+      "lines": [
+        "Here's that sizing choice checked against something built and measured for real.",
+        "A real array, sized exactly that way, gets checked against a huge batch of things that were genuinely never added to it.",
+        "How often it actually gets fooled tracks what that sizing choice predicted, closely."
+      ],
+      "takeaway": "A real filter's measured false-alarm rate tracks its own sizing choice closely."
+    },
+    {
+      "lines": [
+        "Here's one real thing this tiny array can never do on its own.",
+        "Taking back just one single thing that was added would mean starting the entire array over from scratch, in the structure's own original description.",
+        "A close cousin structure adds a genuine way around that: it keeps an actual fingerprint for each item, which it can simply remove directly."
+      ],
+      "takeaway": "That close cousin adds a genuine way to remove one item, by keeping a removable fingerprint."
+    },
+    {
+      "lines": [
+        "Two further cousins trade something else entirely for an even smaller footprint.",
+        "Both need every single item known completely up front, and neither one can ever be changed again once it's finished being built.",
+        "What they get back for that is using noticeably less room per item than the structures before them — a real, widely used storage engine's own documentation names that exact trade for the one it actually ships."
+      ],
+      "takeaway": "Both cousins trade a one-time, costlier build for using noticeably less room per item."
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Something genuinely added can never come back looking absent. Choosing a target false-alarm rate decides how much room gets used, and a real build tracks that choice closely.",
+        "One cousin adds a genuine way to remove a single item. Two further cousins trade a costlier, one-time build for using noticeably less room per item."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A system already keeps one of these tiny arrays per stored file, skipping over any file that plainly can't hold what's being looked for, before ever touching the disk.",
+        "A teammate wants to swap that array for the cousin that can remove single items directly. What would that cousin actually add here, and does this system even need it?"
+      ],
+      "answer": [
+        "Nothing much, in this particular case — the system doesn't need that swap at all.",
+        "That cousin's real advantage is removing one single item directly, without starting over.",
+        "This system only ever drops one of these arrays by dropping the entire file it belongs to, so there's nothing here for that extra ability to actually buy."
+      ]
+    }
+  ]
+}
