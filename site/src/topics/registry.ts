@@ -5565,6 +5565,26 @@ export const TOPICS: TopicMeta[] = [
       "Containing and repairing one bad table assumes the rest of the platform is still there. The next topic is the scenario where it isn't: a whole region, bucket or cluster, and what plan existed before that moment, not after it.",
   },
   {
+    id: 'de.disaster-recovery-lakehouse-platforms',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/disaster-recovery-lakehouse-platforms',
+    title: 'Disaster recovery for lakehouse platforms',
+    syllabusTitle: 'Disaster recovery for lakehouse platforms',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['rpo-rto-per-tier', 'bucket-replication-dr-failure-modes', 'immutable-backup-ransomware-defense'],
+    uses: ['de.data-slis-slos-error', 'ch6.table-format-metadata-paths', 'ch9.kafka-replication-offsets'],
+    declared: [],
+    bridge:
+      "Containing and repairing a bad table assumes the rest of the platform survived. This topic is the plan for when it doesn't: per-tier recovery targets, the four specific reasons replicated bytes alone don't satisfy them, and the only way to know the plan actually works.",
+    handoff:
+      "Disaster recovery assumes nothing changed on purpose. The opposite risk -- a schema change made deliberately, rolled out badly -- is the chapter's last reliability topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
