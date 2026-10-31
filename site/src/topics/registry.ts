@@ -6323,6 +6323,26 @@ export const TOPICS: TopicMeta[] = [
       "Databases and APIs are both asked for data. A third kind of source simply drops files and walks away, onto an object store that has no atomic rename. How a pipeline picks them up safely is the next topic.",
   },
   {
+    id: 'de.file-ingestion-landing-zones',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/file-ingestion-landing-zones',
+    title: 'File ingestion and landing zones',
+    syllabusTitle: 'File ingestion and landing zones',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['landing-validation-promotion', 'object-store-commit-protocols'],
+    uses: ['object-storage', 'read-after-write-consistency', 'conditional-writes', 'idempotent-merge-load', 'ingestion-modes-ownership'],
+    declared: [],
+    bridge:
+      "Databases and APIs are asked for data. Files are different: a partner drops them and walks away, onto storage with no atomic rename. This topic is how a pipeline picks them up without ever reading half a batch.",
+    handoff:
+      "Every source so far needed its own trick to avoid losing or repeating rows. They share one underlying property, and it is worth stating on its own: a run that can be repeated, or resumed, without changing the answer.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',

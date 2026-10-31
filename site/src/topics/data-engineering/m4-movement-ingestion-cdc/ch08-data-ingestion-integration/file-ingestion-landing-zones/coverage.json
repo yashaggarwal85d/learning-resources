@@ -1,0 +1,131 @@
+{
+  "topic": "de.file-ingestion-landing-zones",
+  "syllabus": [
+    {
+      "clause": "landing → validation → promotion",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Reveal: quarantine, measured" }
+      ]
+    },
+    {
+      "clause": "commit protocols on object stores without atomic rename (temp-then-manifest, success markers, conditional writes)",
+      "at": [
+        { "step": "Predict: the manifest gate" },
+        { "step": "Reveal: why rename is not the fix" },
+        { "step": "Reveal: the manifest gate, measured" },
+        { "step": "Reveal: markers and conditional writes" },
+        { "step": "Reveal: the race, measured" }
+      ]
+    },
+    {
+      "clause": "poison-file quarantine",
+      "at": [
+        { "step": "Reveal: poison files" },
+        { "step": "Reveal: quarantine, measured" }
+      ]
+    },
+    {
+      "clause": "schema-on-read vs schema-on-write",
+      "at": [
+        { "step": "Reveal: schema timing" },
+        { "step": "Reveal: detection timing, measured" }
+      ]
+    },
+    {
+      "clause": "event-notification-driven discovery vs listing (Auto Loader in Ch.10.3)",
+      "at": [
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "hadoop-aws Committers (Apache Hadoop docs)",
+      "items": [
+        {
+          "item": "the rename problem exists: committing work by renaming directories is unsafe as well as horribly slow",
+          "at": [{ "step": "Reveal: why rename is not the fix" }]
+        }
+      ]
+    },
+    {
+      "source": "Conditional writes (AWS S3 docs)",
+      "items": [
+        {
+          "item": "the If-None-Match header prevents overwrites by validating that there's not an object with the same key name already in the bucket",
+          "at": [{ "step": "Reveal: the race, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Event notifications (AWS S3 docs)",
+      "items": [
+        {
+          "item": "S3 event notifications are designed to be delivered at least once, typically in seconds but sometimes a minute or longer",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "Generic File Source Options (Apache Spark docs)",
+      "items": [
+        {
+          "item": "ignoreCorruptFiles lets Spark jobs continue running when encountering corrupted files, returning only the contents that could be read",
+          "at": [{ "step": "Reveal: poison files" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A reader that simply lists a landing prefix cannot distinguish a complete batch from a crashed, partial one, measured directly: a producer crashing after thirty-one of forty files leaves a naive reader reporting a number measurably short of the truth, with no error raised anywhere.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "A manifest-gated reader checks only for the manifest's own existence, never the data files directly, so an incomplete batch with no manifest is trusted as zero files, not a plausible partial set — the opposite failure mode from a naive listing reader.",
+        "at": [{ "step": "Reveal: the manifest gate, measured" }]
+      },
+      {
+        "item": "An object store's only atomic operation is a single object's own write; there is no rename at all, which is why committing a batch by renaming a staging directory is not a slow version of something safe, it is not an operation available on this kind of storage.",
+        "at": [{ "step": "Reveal: why rename is not the fix" }]
+      },
+      {
+        "item": "A plain overwrite lets two producers racing for the same key resolve silently to whichever one runs last, with zero signal that the other's work was discarded; a conditional write using If-None-Match rejects the second producer outright and loudly, measured directly against the identical race.",
+        "at": [{ "step": "Reveal: the race, measured" }]
+      },
+      {
+        "item": "A poison file is quarantined with the specific reason it failed validation attached, measured directly: one of three landed files fails on its own amount field and is quarantined with that exact reason, while the other two land completely untouched.",
+        "at": [{ "step": "Reveal: quarantine, measured" }]
+      },
+      {
+        "item": "Schema-on-write and schema-on-read differ only in timing, not in whether a bug is eventually caught: the identical malformed file is caught at the instant it lands under schema-on-write and left completely unnoticed for dozens of runs under schema-on-read, until the one run that finally reads the broken column, both measured directly.",
+        "at": [{ "step": "Reveal: detection timing, measured" }]
+      },
+      {
+        "item": "Event-notification-driven discovery needs its own deduplication because delivery is documented as at-least-once, but its own cost never grows with how many objects already sit under a prefix; listing's own cost keeps climbing with the prefix's size regardless of how many objects are actually new, measured directly across three growing prefix sizes.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Chapter 1 topic 11's own object-storage contract (atomic writes per object, read-after-write consistency, conditional writes, no rename) is the constraint every protocol in this topic is built around, not re-derived independently; Chapter 3 topic 13's idempotent-merge-load pattern is the same deterministic-identity idea the manifest's own role reuses.",
+        "at": [{ "out": "composed from Chapter 1 topic 11 and Chapter 3 topic 13, not re-taught" }]
+      },
+      {
+        "item": "This topic hosts no lab of its own, per CHAPTER.md's own lab-hosting table — the producer-crash-with-manifest measurement is its own executable example, and the idempotent re-run that closes the shared 8.1 chapter lab belongs to topic 6.",
+        "at": [{ "out": "no lab of its own; feeds topic 6's closing lab leg, per CHAPTER.md" }]
+      },
+      {
+        "item": "Auto Loader's own version of event-notification-driven discovery versus listing, with its own checkpointed file set, is taught in full in Chapter 10 topic 12 and only named here as the productised version of the identical tradeoff this topic measures directly.",
+        "at": [{ "out": "named as pointing to Chapter 10 topic 12's own full treatment" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
