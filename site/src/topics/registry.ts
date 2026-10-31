@@ -6405,6 +6405,26 @@ export const TOPICS: TopicMeta[] = [
       "The meter, the PLC and the MES each hold a piece of the plant's data, and each sits in a network that must never be disturbed by a data platform. The next topic is the boundary between the plant floor and the rest of the company: where the networks are segmented, who owns each copy of the data, and how to read without touching control.",
   },
   {
+    id: 'de.it-ot-boundary-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/it-ot-boundary-data',
+    title: 'IT/OT boundary and data ownership',
+    syllabusTitle: 'IT/OT boundary and data ownership',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['operational-vs-analytical-copy-ownership', 'read-only-extraction-load-budget', 'ot-change-management-tag-contract'],
+    uses: ['isa95-levels-data-ownership', 'data-contract-specification', 'data-as-a-product'],
+    declared: [],
+    bridge:
+      "The meter, the PLC and the MES each hold a piece of the plant's data, and each sits in a network that must never be disturbed by a data platform. This topic is the boundary between the plant floor and the rest of the company: who owns each copy, how to read without touching control, and how a change on the floor reaches the data team before it breaks a pipeline.",
+    handoff:
+      "That closes the model of the plant: its hierarchy, what it makes, how well it makes it, what it consumes and who owns what. Everything so far assumed a reading arrives with its time attached. The next section is about that time. It starts with the first thing that goes wrong: three clocks, none of them right.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',

@@ -1,0 +1,8 @@
+- **OT**: operational technology, the systems that sense and control a physical process, from this topic's own subject. *Where you meet it:* every section of this topic.
+- **DMZ**: a demilitarized zone, a network segment that mediates traffic between two zones that must never talk directly. *Where you meet it:* the segmentation recap, as the enforcement boundary between corporate and OT networks.
+- **Purdue model**: a network-segmentation model organizing plant systems into numbered levels, from this chapter's topic 1. *Where you meet it:* the segmentation recap, alongside ISA-95's levels.
+- **Unidirectional gateway**: a device that permits communication in only one direction. *Where you meet it:* the segmentation recap, as an alternative to a firewall.
+- **Operational data**: data a control system produces and depends on to run, from this chapter's topics 1-5. *Where you meet it:* the ownership assignment this topic makes.
+- **Scan rate**: how often a PLC's control loop runs, and the budget a read request competes against. *Where you meet it:* the load-budget computation.
+- **Change window**: a scheduled period plant engineering sets aside for a change to its systems. *Where you meet it:* the tag-rename and change-management example.
+- **Tag**: a named sensor or controller value as a PLC or SCADA system exposes it, from this chapter's shared notation. *Where you meet it:* every example in this topic.
