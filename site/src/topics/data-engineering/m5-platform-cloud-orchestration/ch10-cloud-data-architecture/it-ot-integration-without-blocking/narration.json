@@ -1,0 +1,67 @@
+{
+  "topic": "de.it-ot-integration-without-blocking",
+  "steps": [
+    {
+      "lines": [
+        "Watch what's actually wired here. Not a broker, not a buffer — a dashboard, talking straight to the control system.",
+        "Nothing in that query is wrong. The danger is that there's nothing between it and a system that's running a production line."
+      ]
+    },
+    {
+      "lines": [
+        "Before the levels, notice what a faster query would actually buy you here. Not safety — just better odds.",
+        "The same risk is still sitting there, waiting for a busier day. What's the one change that removes it instead of just improving the odds?"
+      ],
+      "answer": [
+        "Put something between the source and the consumer, so the consumer's problems can't reach backward.",
+        "A faster or less frequent query only makes the near-miss less likely. A buffer in between makes it structurally impossible."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this ladder build from the bottom up, because everything else in this topic refers back to it.",
+        "The physical process at the bottom. Controllers above it. Supervisory systems above that. Then manufacturing operations, then the business layer, then the corporate layer on top."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this zone sits between two networks, belonging to neither — every exchange goes through it, nothing goes around it.",
+        "And watch what a diode actually is. Not a rule that says traffic only goes one way — a device that physically has no path for the other direction."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what each of these three can actually tell you, not just that they're all ways of getting data out.",
+        "One reads live, directly, with its own security built in. One announces who's online before you even ask. One only ever tells you what already happened."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the source on the left. Freeze the consumer, and the very next publish stalls right along with it.",
+        "Now watch the source on the right, with a buffer between them. Freeze that consumer the same way — the source keeps going like nothing happened."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what this replaces: not one connection, but every connection every pair of systems would otherwise need to agree on by hand.",
+        "One namespace, one place to publish, one place to subscribe. And it's not competing with a modeling standard — it's solving a completely different problem."
+      ]
+    },
+    {
+      "lines": [
+        "If you keep one thing from this whole topic, keep the direction of that arrow. Nothing downstream is ever allowed to point back upstream.",
+        "Five levels give you the vocabulary. A diode's guarantee is physical. Each mechanism answers a different question. And a namespace isn't a data model — it's how systems talk."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice what's normal here: a manufacturing system reading a controller directly is completely ordinary.",
+        "What's missing is the one thing standing between a stalled consumer and the system it's reading from. What failure mode does that actually match?"
+      ],
+      "answer": [
+        "A missing edge buffer let a stalled consumer reach back into the control system.",
+        "The direct read itself isn't the problem — it's that nothing absorbs a slow or stalled consumer on the other end of it. The same failure the hook opened with."
+      ]
+    }
+  ]
+}

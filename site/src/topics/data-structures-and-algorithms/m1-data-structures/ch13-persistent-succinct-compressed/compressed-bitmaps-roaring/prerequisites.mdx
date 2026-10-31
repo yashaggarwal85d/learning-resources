@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bloom filters and false-positive math">The approximate set this exact one is contrasted with — no false answers, at a different cost.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">Word-level parallelism — why one bitwise AND handles sixty-four values at once.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Dynamic arrays and growth policy">Contiguous storage, the shape both the array and bitmap containers use.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The papers
+
+<ul class="resources">
+  <Resource kind="reading" title="Better bitmap performance with Roaring bitmaps" href="https://arxiv.org/pdf/1402.6407" by="Chambi, Lemire, Kaser and Godin, Software: Practice and Experience 2016">The original array/bitmap format, the 4,096 threshold, and the galloping intersection, word for word.</Resource>
+  <Resource kind="reading" title="Consistently faster and smaller compressed bitmaps with Roaring" href="https://arxiv.org/pdf/1603.06549" by="Lemire, Ssi-Yan-Kai and Kaser, Software: Practice and Experience 2016">Adds the run container and runOptimize, the mechanism this topic's "six bytes, not sixty-five thousand" step walks through.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,110 @@
+{
+  "topic": "de.it-ot-integration-without-blocking",
+  "syllabus": [
+    {
+      "clause": "ISA-95 levels and Purdue-model segmentation",
+      "at": [
+        { "step": "Before the levels: what actually has to change here?" },
+        { "step": "Five levels, one vocabulary for everything that follows" }
+      ]
+    },
+    {
+      "clause": "OT DMZs and data diodes",
+      "at": [
+        { "step": "A zone of its own, and a guarantee that is physical, not configured" }
+      ]
+    },
+    {
+      "clause": "MES/SCADA/historian extraction via OPC UA, MQTT/Sparkplug B and historian APIs",
+      "at": [
+        { "step": "Three ways to read from the plant floor, each for something different" }
+      ]
+    },
+    {
+      "clause": "edge buffering so a slow consumer can never backpressure a PLC or MES",
+      "at": [
+        { "step": "A dashboard connects straight to SCADA, for simplicity" },
+        { "step": "Stall the consumer, then watch what the OT source actually feels" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "unified-namespace pattern",
+      "at": [
+        { "step": "One namespace every system publishes to, instead of wiring each pair by hand" }
+      ]
+    },
+    {
+      "clause": "the plant data model itself is §16.1",
+      "at": [
+        { "topic": "ISA-95 hierarchy and the automation pyramid", "domain": "data-engineering", "quote": "enterprise → site → area → line/cell → equipment → sensor" }
+      ]
+    },
+    {
+      "clause": "master-data consistency is §8.3",
+      "at": [
+        { "topic": "Master data management styles", "domain": "data-engineering", "quote": "customer/product/plant master consistency across ERP/CRM" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Process Control Guide: ISA-95 Explained",
+      "items": [
+        { "item": "The Purdue Reference Model is a five-level hierarchy from the physical process (Level 0) up through controllers, operator stations, plant operations, enterprise systems, and a corporate level added later", "at": [{ "step": "Five levels, one vocabulary for everything that follows" }] }
+      ]
+    },
+    {
+      "source": "Software Toolbox: Industrial DMZ (iDMZ)",
+      "items": [
+        { "item": "The iDMZ sits at Level 3.5, its own zone not part of OT or IT; no traffic crosses the boundary without terminating in the iDMZ first, and OT systems should never initiate connections toward the enterprise network", "at": [{ "step": "A zone of its own, and a guarantee that is physical, not configured" }] },
+        { "item": "An MQTT broker in the iDMZ receives Sparkplug B publications from the OT zone and exposes topic subscriptions to IT-side consumers, acting as the single controlled egress point", "at": [{ "step": "Stall the consumer, then watch what the OT source actually feels" }] }
+      ]
+    },
+    {
+      "source": "Network Critical: Data Diodes for IEC 62443",
+      "items": [
+        { "item": "A data diode uses separate physical transmit and receive paths to physically enforce one-way data flow; reverse traffic is not possible regardless of configuration, unlike a firewall's software rules", "at": [{ "step": "A zone of its own, and a guarantee that is physical, not configured" }] }
+      ]
+    },
+    {
+      "source": "OPC Foundation: OPC UA Part 1",
+      "items": [
+        { "item": "OPC UA is a platform-independent standard for secure, reliable communication between diverse industrial systems and devices, with its own security model covering authentication, encryption and integrity", "at": [{ "step": "Three ways to read from the plant floor, each for something different" }] }
+      ]
+    },
+    {
+      "source": "Eclipse Foundation / Software Toolbox: Sparkplug B",
+      "items": [
+        { "item": "Sparkplug defines an MQTT topic namespace, payload and session-state management for real-time SCADA/control HMI requirements; its birth and death certificates let a subscriber know what exists and whether it is connected without polling", "at": [{ "step": "Three ways to read from the plant floor, each for something different" }] }
+      ]
+    },
+    {
+      "source": "HiveMQ: Smart Manufacturing Using ISA95, MQTT Sparkplug and the UNS",
+      "items": [
+        { "item": "A unified namespace lets participants publish to a central repository instead of contacting each other directly; ISA-95 is a functional modeling standard, not a networking one, and is complementary to a unified namespace architecture", "at": [{ "step": "One namespace every system publishes to, instead of wiring each pair by hand" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that the direct connection itself is the architectural risk, not that the analytics query was poorly written; a learner who answers 'optimize the query' has missed the point the predict step exists to correct", "at": [{ "step": "A dashboard connects straight to SCADA, for simplicity" }] },
+      { "item": "The predict step's correct answer names the specific architectural fix (a buffer between source and consumer) rather than a performance fix (a faster or less frequent query); a learner who picks either performance option has only lowered the odds of the same failure, not removed it", "at": [{ "step": "Before the levels: what actually has to change here?" }] },
+      { "item": "The Purdue-levels step states the five-level hierarchy precisely as Process Control Guide's own definitions, including that Level 5 was added later rather than being original to the model; a learner should place a named system on its level, not just recite the list", "at": [{ "step": "Five levels, one vocabulary for everything that follows" }] },
+      { "item": "The diode step's point is that the one-way guarantee is physical (separate transmit/receive paths), not merely 'more secure' in a vague sense; a learner should be able to state why a diode survives a misconfiguration that would defeat a firewall rule", "at": [{ "step": "A zone of its own, and a guarantee that is physical, not configured" }] },
+      { "item": "The three-mechanisms step is careful to state what each mechanism answers that the others don't (direct read vs. existence/connectivity vs. historical record), not a ranking of which mechanism is simply 'best'", "at": [{ "step": "Three ways to read from the plant floor, each for something different" }] },
+      { "item": "The buffer-isolation step's proof is run both ways (unbuffered propagates the stall, buffered does not) in examples.py, not asserted only in prose; a learner should understand this as a provable property, not a design intention", "at": [{ "step": "Stall the consumer, then watch what the OT source actually feels" }] },
+      { "item": "The unified-namespace step is explicit that ISA-95 and a UNS solve different problems (how systems talk vs. what the data means) rather than presenting them as competing or interchangeable standards, sourced from HiveMQ's own framing", "at": [{ "step": "One namespace every system publishes to, instead of wiring each pair by hand" }] },
+      { "item": "The final predict step's correct answer identifies the missing edge buffer as the failure, not a Purdue-level violation or a missing diode; MES reading a PLC directly is architecturally normal, so a learner who flags the levels or recommends a diode has missed that the actual gap is the lack of any buffer at all", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot connect to a real PLC, SCADA system or MQTT broker in this sandbox; examples.py reproduces Purdue-level classification and the backpressure-isolation proof as a disclosed structural simulation against synthetic events, not a live deployment", "at": [{ "deep": "Internals" }] },
+      { "item": "The dropped syllabus trailing clause ('the plant data model itself is §16.1, master-data consistency is §8.3') is handled as two forward-references to real, confirmed syllabus topics, consistent with CHAPTER.md's own 'Leaves out' disclosure for this topic", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}
