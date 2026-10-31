@@ -6381,6 +6381,26 @@ export const TOPICS: TopicMeta[] = [
       "Every source so far needed its own trick to avoid losing or repeating rows. They share one underlying property, and it is worth stating on its own: a run that can be repeated, or resumed, without changing the answer.",
   },
   {
+    id: 'de.idempotent-resumable-extraction',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/idempotent-resumable-extraction',
+    title: 'Idempotent, resumable extraction',
+    syllabusTitle: 'Idempotent, resumable extraction',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['checkpoint-output-atomicity', 'deterministic-batch-id', 'exactly-once-effect-recipe'],
+    uses: ['high-watermark-cursor', 'lookback-idempotent-merge', 'landing-validation-promotion', 'object-store-commit-protocols', 'resilient-client-patterns'],
+    declared: [],
+    bridge:
+      "Every source so far needed its own trick to avoid losing or repeating rows. This topic states that shared property on its own: where a checkpoint sits relative to the write, a batch id that makes a re-run safe, and the recipe that turns a redelivery into a no-op.",
+    handoff:
+      "A pipeline that can be re-run safely needs something to re-run from. If the raw bytes are overwritten or transformed in place, there is nothing to replay. What the first layer must keep is the next topic.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
