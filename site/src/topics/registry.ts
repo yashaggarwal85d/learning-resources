@@ -5365,6 +5365,26 @@ export const TOPICS: TopicMeta[] = [
       "Fan-out can make thousands of task instances want to run at once. Something has to decide how many actually do, and in what order, without starving anything else sharing the cluster. That is the next topic.",
   },
   {
+    id: 'de.concurrency-controls-pools-queues',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/concurrency-controls-pools-queues',
+    title: 'Concurrency controls: pools, queues, priorities',
+    syllabusTitle: 'Concurrency controls: pools, queues, priorities',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['pool-slot-concurrency-control', 'priority-weight-scheduling', 'starvation-fairness-tradeoff'],
+    uses: ['de.dynamic-task-mapping-fan', 'ch8.database-extraction-without-hurting', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "Fan-out can produce thousands of task instances that all want to run at once. This topic is what decides how many actually do, in what order, and how a fragile source is protected from being overrun by exactly the kind of fan-out the last topic showed.",
+    handoff:
+      "A task waiting in a pool for a slot still occupies a worker process while it waits. Some tasks wait for hours, not seconds — for an external job, or a sensor polling an API. Holding a worker that whole time is wasteful, and there is a mechanism built specifically to avoid it.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',

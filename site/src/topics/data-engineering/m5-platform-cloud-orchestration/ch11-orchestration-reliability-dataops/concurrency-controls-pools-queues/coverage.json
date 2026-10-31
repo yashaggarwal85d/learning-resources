@@ -1,0 +1,93 @@
+{
+  "topic": "de.concurrency-controls-pools-queues",
+  "syllabus": [
+    {
+      "clause": "pools and slots",
+      "at": [
+        { "step": "Reveal: a pool, run for real" }
+      ]
+    },
+    {
+      "clause": "max_active_runs/max_active_tasks",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "priority weights, queue-to-worker routing",
+      "at": [
+        { "step": "Reveal: priority weight, measured" },
+        { "step": "Reveal: queue-to-worker routing, sourced" }
+      ]
+    },
+    {
+      "clause": "protecting fragile sources (rate-limiting a JDBC source)",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "starvation and fairness",
+      "at": [
+        { "step": "Predict: what if high priority never stops arriving?" },
+        { "step": "Reveal: starvation is the same mechanism, unbounded" }
+      ]
+    },
+    {
+      "clause": "multi-team deployments (experimental since Airflow 3.2)",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Pools (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "pools limit execution parallelism on arbitrary sets of tasks, independent of worker capacity", "at": [{ "step": "Reveal: a pool, run for real" }] },
+        { "item": "queued tasks start running, as slots free up, based on priority weight", "at": [{ "step": "Reveal: priority weight, measured" }] },
+        { "item": "tasks without a pool assignment default to default_pool, initialized with 128 slots", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Priority Weights (Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "priority_weight defaults to 1; larger numbers mean higher priority", "at": [{ "step": "Reveal: priority weight, measured" }] }
+      ]
+    },
+    {
+      "source": "Celery Executor (apache-airflow-providers-celery documentation)",
+      "items": [
+        { "item": "tasks can be sent to specific Celery queues, and workers only pick up tasks wired to the queues they listen to", "at": [{ "step": "Reveal: queue-to-worker routing, sourced" }] }
+      ]
+    },
+    {
+      "source": "Release Notes (Airflow 3.2.0, Multi-Team Deployments)",
+      "items": [
+        { "item": "Airflow 3.2 introduces multi-team support with per-team Dags, connections, variables, pools and executors, flagged as experimental", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A pool's slot count is enforced regardless of how many idle workers a deployment has — a hundred idle workers don't let a 2-slot pool run a third task assigned to it, which is exactly why pools, not worker count, are the right lever for protecting a source's own concurrency limit.", "at": [{ "step": "Reveal: a pool, run for real" }] },
+      { "item": "This topic's own measured run assigns priority_weight directly rather than relying on the default downstream weighting rule — with the absolute weighting rule implied by setting an explicit value, the effective weight is exactly the number given, which is what makes the ten-task demo's outcome predictable rather than dependent on how many downstream tasks each one has.", "at": [{ "step": "Reveal: priority weight, measured" }] },
+      { "item": "Queue-to-worker routing and pools solve different problems that are easy to conflate: a pool bounds how many tasks of a kind run concurrently regardless of which worker runs them; a queue decides which worker is even eligible to run a given task at all. A deployment can have queue routing with no pools, pools with no queue routing, or both at once.", "at": [{ "step": "Reveal: queue-to-worker routing, sourced" }] },
+      { "item": "Starvation in this context isn't a bug in the priority-weight mechanism — it's that mechanism working exactly as documented, with no additional policy layered on top to guarantee low-priority work eventually runs. The fix is never 'raise its priority,' which just moves the same problem onto whatever is now lowest.", "at": [{ "step": "Reveal: starvation is the same mechanism, unbounded" }] },
+      { "item": "max_active_runs and max_active_tasks are DAG-scoped concurrency controls that exist alongside pools, not instead of them — a DAG's own max_active_tasks can cap its total concurrent task instances even when every one of those tasks has plenty of free pool slots available.", "at": [{ "deep": "Internals" }] },
+      { "item": "Multi-team deployments being experimental in 3.2.0 matters operationally: the release notes explicitly warn the feature 'may change in future versions based on user feedback,' which is a real signal to delay building team-isolation automation on top of it until it stabilizes, not a formality to skim past.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The hook's forty simultaneous extraction tasks and the lab's ten-task pool demo are deliberately different scales — the hook establishes the failure mode at a size that would actually take down a production source, while the lab's ten-task run is sized to let every state transition be read cleanly from the metadata database within the session's own time budget.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader who assumes a bigger pool always helps is missing the point of 'fragile source' — sizing the pool to the source's own safe concurrency limit is the goal, not maximizing throughput; a pool sized too generously defeats the entire purpose of protecting a rate-limited system.", "at": [{ "step": "Prove it" }] },
+      { "item": "pool_slots (mentioned in Internals) lets a single heavy task consume more than one slot of a shared pool, which is the mechanism that would let this topic's own ten-task demo model tasks of genuinely different weight against the same fragile source, rather than treating every extraction as equally expensive.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own measured timestamps show the pool's two slots filled essentially simultaneously by both high-priority instances at trigger time, not one after the other — a detail that matters because it confirms the scheduler evaluated all ten competing instances' priority at once, rather than granting slots to whichever instance happened to be scheduled first in an arbitrary processing order.", "at": [{ "step": "Reveal: priority weight, measured" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
