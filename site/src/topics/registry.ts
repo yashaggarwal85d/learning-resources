@@ -5965,6 +5965,26 @@ export const TOPICS: TopicMeta[] = [
       'A log keeps every record forever unless something decides otherwise. What a log throws away, and what it keeps forever by a different rule, is the next topic: retention and compaction.',
   },
   {
+    id: 'de.retention-log-compaction',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/retention-log-compaction',
+    title: 'Retention and log compaction',
+    syllabusTitle: 'Retention and log compaction',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['retention-vs-compaction', 'tombstone-retention'],
+    uses: ['partition-segment-index', 'consumer-group-offsets'],
+    declared: [],
+    bridge:
+      "A consumer group divides the work of reading a log. What the log itself keeps, and for how long, under two completely different rules — delete by age, or keep only the latest per key — is this topic.",
+    handoff:
+      "Compaction rewrites a log by key, out of record order. What 'in order' actually guarantees in Kafka — and what it never promised — is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
