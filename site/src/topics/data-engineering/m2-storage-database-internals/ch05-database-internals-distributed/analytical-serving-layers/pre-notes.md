@@ -1,0 +1,6 @@
+- **Warehouse query, from Chapter 3's own material**: an ad-hoc aggregate query answered by scanning (and possibly joining) raw fact and dimension tables directly. *Where you meet it:* the hook and predict steps, as the "cold scan" side of this topic's own real comparison.
+- **Materialized view**: a stored table holding the precomputed result of a query, so reading it skips recomputing that query. *Where you meet it:* the cost-shift and materialized-speedup reveals.
+- **Cube (OLAP cube)**: a structure precomputing an aggregate across every combination of a fixed set of dimensions at once, not just one query's own grouping. *Where you meet it:* the cubes reveal, as the general case a single materialized table is one instance of.
+- **Rollup**: pre-aggregating data at the moment it's ingested, rather than later on a schedule or at read time. *Where you meet it:* the real-time-OLAP reveal, named directly from Druid's own documentation.
+- **Freshness**: how closely a stored answer reflects the very latest underlying data. *Where you meet it:* this topic's own real, measured freshness-gap leg.
+- **Cache-aside, from the last two topics**: the application owns the miss path, checking a fast store before falling back to a slower one. *Where you meet it:* named by contrast — a materialized table is refreshed on a schedule, not read through on a miss.
