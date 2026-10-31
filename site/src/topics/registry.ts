@@ -6105,6 +6105,26 @@ export const TOPICS: TopicMeta[] = [
       "A deterministic id is one specific way to make a retried write harmless. The general version of that idea — tracking which event ids have already been applied, at all — is its own topic, and it's needed even when no transaction or two-phase sink exists at all.",
   },
   {
+    id: 'de.deduplication-idempotent-consumers',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/deduplication-idempotent-consumers',
+    title: 'Deduplication keys and idempotent consumers',
+    syllabusTitle: 'Deduplication keys and idempotent consumers',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['event-id-deduplication', 'bounded-dedup-window'],
+    uses: ['delivery-semantics-vocabulary', 'two-phase-commit-sink', 'idempotent-upsert-deterministic-id'],
+    declared: [],
+    bridge:
+      "A deterministic id made one specific kind of write idempotent. This topic generalizes it to any consumer, with no transaction and no special sink: remember which event ids you've already applied, within a bound you can actually afford.",
+    handoff:
+      "Deduplication assumes the consumer can process a record, eventually. Some records can never be processed — a malformed payload, a reference to a deleted entity — and blocking a whole partition behind one of them is its own failure. That's the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
