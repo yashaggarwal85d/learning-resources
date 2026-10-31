@@ -6025,6 +6025,26 @@ export const TOPICS: TopicMeta[] = [
       "Codegen is the fast, common path. The very next topic is the one execution path it cannot touch at all — a pickled Python UDF — and exactly why that costs so much more.",
   },
   {
+    id: 'de.pyspark-execution-python-udf-cost',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/pyspark-execution-python-udf-cost',
+    title: 'PySpark execution path and Python UDF cost',
+    syllabusTitle: 'PySpark execution path and Python UDF cost',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-python-udf-boundary', 'spark-arrow-udf'],
+    uses: ['spark-whole-stage-codegen'],
+    declared: [],
+    bridge:
+      "Codegen fuses Spark's own operators into one native loop. This topic is the one case that loop cannot include: a user's own Python function, which has to leave the JVM, cross a process boundary, and come back.",
+    handoff:
+      "Everything so far assumed one job running once. The next section turns to the same shuffle and the same operators under a harder constraint: a partition that isn't evenly sized, which is where most real jobs actually get slow.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
