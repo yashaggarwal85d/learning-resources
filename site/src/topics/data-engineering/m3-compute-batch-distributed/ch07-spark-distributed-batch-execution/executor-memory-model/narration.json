@@ -1,0 +1,74 @@
+{
+  "topic": "de.executor-memory-model",
+  "steps": [
+    {
+      "lines": [
+        "Picture a worker holding onto some data it already cached, keeping it close for later.",
+        "Now a brand new piece of work shows up, and it genuinely needs room of its own to get anything done.",
+        "Both of them are reaching into the exact same pot."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the shape of that pot, before anything happens to it.",
+        "It isn't two separate containers sitting side by side. It's one shared space, carved out of the whole, with a single line drawn somewhere inside it to mark where one use gives way to the other.",
+        "That line is the entire story of how the two sides divide what they've got."
+      ]
+    },
+    {
+      "lines": [
+        "Let that cached data grow well past whatever minimum share it's supposed to be owed.",
+        "Then let a real piece of work show up needing its own room."
+      ],
+      "answer": "It doesn't hold its ground at all. Nothing about already being cached protects space that was only ever borrowed in the first place."
+    },
+    {
+      "lines": [
+        "Here's what actually happens when that moment arrives.",
+        "Every last piece of that cached data gets cleared out, completely, to make room.",
+        "And even with all of that space freed up, the work that needed it still ends up writing some of what it's doing out to disk anyway."
+      ]
+    },
+    {
+      "lines": [
+        "Now try the exact same thing again, except this time keep that cached data under its own guaranteed floor the whole time, instead of letting it grow past it.",
+        "Run the identical pressure against it.",
+        "Nothing moves. Not one piece of it gets touched, start to finish."
+      ]
+    },
+    {
+      "lines": [
+        "Now a completely different pair of failures. One is a plain error thrown from inside a running process. The other is a decision made from outside that process, that it's gone over some limit and has to be stopped.",
+        "From the point of view of the thing actually doing the work, do those two look the same?"
+      ],
+      "answer": "Not even close. One of them leaves behind a real, readable account of exactly what happened. The other leaves nothing behind at all."
+    },
+    {
+      "lines": [
+        "Here's the proof, side by side.",
+        "The plain error shows up as a genuine, catchable failure, with a complete trail showing precisely where it happened.",
+        "The outside decision leaves no trail anywhere. The process is simply gone, with nothing left behind to explain why."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the reason those two things need two completely different fixes.",
+        "The error that happens from inside only ever has visibility into its own house: the space it was explicitly given to work with.",
+        "The decision made from outside is watching a much bigger picture, one that the thing doing the work was never able to see in the first place, which is exactly why growing its own space alone doesn't fix a failure it never saw coming."
+      ]
+    },
+    {
+      "lines": [
+        "Put both of these failures next to each other, coming from the same underlying cause: simply running out of room.",
+        "One of them hands you an exact account of what went wrong and where.",
+        "The other hands you silence, and a process that's no longer there to ask."
+      ]
+    },
+    {
+      "lines": [
+        "So there's one shared pot, split by a single movable line rather than a fixed wall, with a floor that genuinely protects whichever side needs it.",
+        "And there are two separate ways to simply run out of room entirely, each one leaving behind a completely different kind of evidence, which is exactly why each one calls for its own, different kind of fix."
+      ]
+    }
+  ]
+}

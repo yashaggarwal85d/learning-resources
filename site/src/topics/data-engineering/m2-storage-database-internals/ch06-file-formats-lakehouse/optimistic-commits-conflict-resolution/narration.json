@@ -1,0 +1,76 @@
+{
+  "topic": "de.optimistic-commits-conflict-resolution",
+  "steps": [
+    {
+      "lines": [
+        "Last time, two writers raced for the same pointer swap, and exactly one of them won — a clean, atomic decision with no ambiguity about who got there first.",
+        "But winning the swap was never the whole story. Somebody lost that race too, and losing is where today's real question starts: what is that loser actually supposed to do next?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trap worth noticing. It's tempting to think the answer is always the same — just try again, right? But think about what the loser is actually holding.",
+        "It staged a change against a version of the table that's no longer current. Whether trying again is even safe depends entirely on what that change was trying to do."
+      ],
+      "answer": [
+        "It depends on the operation. The rulebook isn't one blanket policy — it's a specific condition attached to each kind of write.",
+        "What decides whether a commit can succeed is exactly what decides how much concurrency you get — that's the whole idea of an isolation level, hiding in plain sight."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the choreography underneath every one of these writes. First, a writer looks at whatever's current. Then it quietly builds its new files off on the side, touching nothing shared.",
+        "Only at the very last moment does it step up and ask to be the new current version — and that's the one instant where a conflict can even be noticed."
+      ]
+    },
+    {
+      "lines": [
+        "Now split writes into two families and watch how differently they behave when they lose that last step.",
+        "One family has genuinely nothing to double-check — it can just try again blindly. The other has to go back and ask a very specific question: are the exact files I touched still sitting there?",
+        "Adding something new never steps on anyone's toes, so there's no real risk in simply reattempting it.",
+        "Taking something away is different — you can't safely remove a thing that somebody else may have already removed out from under you."
+      ]
+    },
+    {
+      "lines": [
+        "Try this one yourself before the reveal. Two writers each want to add a different new piece to the table, both starting from the same place.",
+        "One of them loses the race for that first commit slot. Does the loser have any real chance of still succeeding?"
+      ],
+      "answer": [
+        "Yes, and it's not even close — there's nothing standing in the way. The loser just points its same proposed addition at wherever the table ended up, and tries once more.",
+        "Since adding something never conflicts with another addition, that second attempt isn't a hopeful guess — it's guaranteed to land."
+      ]
+    },
+    {
+      "lines": [
+        "No hand-waving here — this ran for real, twice, on disk. Writer A and writer B both prepare a brand new file, both starting from the same base version.",
+        "A gets there first and wins outright. B loses, checks what actually changed, realizes nothing it cares about moved, repoints its attempt, and lands cleanly on the very next try."
+      ]
+    },
+    {
+      "lines": [
+        "Now flip the scenario to the harder case and run it for real again. Two writers this time both try to remove the exact same piece of the table, from the exact same starting point.",
+        "One wins and the piece is gone. The other loses, goes to double-check its target — and finds it already missing. There is no safe way forward, so it simply stops, permanently, by design."
+      ]
+    },
+    {
+      "lines": [
+        "It turns out this split between the two families isn't some private insight of one project. Delta's own client code literally names them as separate error types you catch in your application.",
+        "One exception fires when somebody else slipped in a new file you were reading. A different, more specific exception fires when somebody else already removed the very thing you were about to touch."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and the deeper point is almost philosophical. There's no single universal answer to how strict a table's guarantees are — the format doesn't hand that to you.",
+        "A writer that only double-checks its own narrow slice of files gets to run alongside far more concurrent work. A writer that insists nothing anywhere in the table has moved gets stronger guarantees, but pays for them in how often it has to wait its turn."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape underneath everything you just watched. Stage freely, with zero coordination — that part was already true from last time.",
+        "What's new is the fork at commit time: an addition can always try again without a second thought, but a removal has to prove its target still exists, or walk away for good.",
+        "And whichever of those checks you choose to run is, quietly, the entire definition of your isolation level."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "topic": "de.snapshot-based-table-metadata",
+  "steps": [
+    {
+      "lines": [
+        "Last time, a directory listing turned out to be a terrible way to define a table — a reader could catch a write half done, with nothing to say it was wrong.",
+        "So replace it with something that can't lie like that: one file that never changes, plus a single pointer to whichever one is current."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the puzzle. If that file is never, ever edited once it's written, how does the table's content actually move forward?",
+        "Does something quietly patch a few bytes inside it, or does the whole picture work differently?"
+      ],
+      "answer": [
+        "Nothing ever gets patched. A brand new file gets written describing the new state, and a pointer swings over to point at it.",
+        "The old file just sits there afterward, completely untouched — nobody ever has a reason to go back and change it."
+      ]
+    },
+    {
+      "lines": [
+        "So what actually goes inside one of these files? Not a list of what changed since last time — the entire table.",
+        "Every single data file that belongs to the table, right now, all in one place, readable start to finish with nothing else to consult."
+      ]
+    },
+    {
+      "lines": [
+        "And committing a change is almost embarrassingly simple once you see it. Write the new version out completely, then flip exactly one pointer over to it, as one indivisible step.",
+        "Nobody ever adds a line to a list or deletes one from it — a table's version is a fact that gets written once and left alone."
+      ]
+    },
+    {
+      "lines": [
+        "Now suppose a reader grabs hold of one particular version and commits to reading only that one.",
+        "While it's still working through that data, a completely different writer finishes a brand new commit. Does the reader ever catch wind of that change?"
+      ],
+      "answer": [
+        "Never. What it pinned stays exactly what it reads, no matter what else happens to the table in the meantime.",
+        "It only sees something different if it deliberately goes back and asks for the current version again."
+      ]
+    },
+    {
+      "lines": [
+        "This was tested directly, not just asserted. A reader grabs a version and reads it. Somewhere else, for real, a second writer finishes a commit.",
+        "Go back and read that exact same pinned version again, and it comes back byte for byte identical to the very first read."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what writers get to do before any of this matters: stage their new files with absolutely no coordination, no lock, nothing blocking them.",
+        "The only moment any race even exists is the instant of the commit itself — and losing that race just means trying again."
+      ]
+    },
+    {
+      "lines": [
+        "So here's that exact race, run for real. Two separate writers both try to claim the very same commit slot, starting from the same base.",
+        "One of them genuinely succeeds. The other gets a real failure back immediately, and goes and tries again against whatever just became current."
+      ]
+    },
+    {
+      "lines": [
+        "It's worth knowing this isn't one project's clever trick. A completely separate table format — Delta — describes its own history the exact same way.",
+        "One single, ordered sequence of versions, and readers that follow a log instead of ever asking a storage system what files happen to be sitting around."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it together and the whole design is three ideas. A version, once written, is never touched again.",
+        "Advancing to a new version is one indivisible swap. And when two writers go for that same swap at once, precisely one of them gets to win."
+      ]
+    }
+  ]
+}

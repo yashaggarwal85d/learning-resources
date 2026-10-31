@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: controlling Spark output file layout
+
+<ul class="resources">
+  <Resource kind="reel" title="Controlling Spark output file layout" domain="data-engineering" host="de.spark-output-file-layout" by="the previous topic, closing the previous section" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="UnifiedMemoryManager.scala" href="https://github.com/apache/spark/blob/v4.0.0/core/src/main/scala/org/apache/spark/memory/UnifiedMemoryManager.scala" by="Apache Spark source, GitHub">The manager's own doc comment: a soft, movable boundary; storage's borrowed memory can be evicted, execution's never is; the pool's own size formula.</Resource>
+  <Resource kind="reading" title="Configuration" href="https://spark.apache.org/docs/4.0.0/configuration.html" by="Apache Spark documentation">memoryOverhead's own scope — off-heap memory, Python workers, native overhead — and why a container's real ceiling is memory plus overhead together.</Resource>
+</ul>
+
+</section>

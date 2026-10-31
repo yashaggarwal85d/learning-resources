@@ -1,0 +1,91 @@
+{
+  "topic": "de.executor-memory-model",
+  "syllabus": [
+    {
+      "clause": "unified memory manager: execution vs storage regions with borrowing and eviction (spark.memory.fraction, storageFraction), user memory, reserved memory, off-heap, and memoryOverhead for netty buffers, Python workers and native libraries; JVM OutOfMemoryError vs container OOM-kill (YARN/Kubernetes) and why they need different fixes.",
+      "at": [
+        { "step": "Reveal: the pool's own split" },
+        { "step": "Reveal: no — fully evicted, and still spills" },
+        { "step": "Elaborate: the protected minimum holds" },
+        { "step": "Reveal: one leaves a trace, one leaves nothing" },
+        { "step": "Elaborate: why they need different fixes" },
+        { "deep": "User memory, reserved memory, and off-heap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "UnifiedMemoryManager.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "a soft boundary lets either side borrow from the other; storage's borrowed memory gets evicted when execution reclaims it, but execution's borrowed memory is never evicted by storage",
+          "at": [{ "step": "Elaborate: the protected minimum holds" }]
+        },
+        {
+          "item": "the unified pool's size is (heap - 300MB reserved) * memory.fraction, with storageFraction further splitting it into execution and storage regions",
+          "at": [{ "step": "Reveal: the pool's own split" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark configuration docs",
+      "items": [
+        {
+          "item": "memoryOverhead covers VM overhead, interned strings, off-heap memory, and other co-located processes (a PySpark driver's own Python process) that the JVM heap never tracks; a container's real ceiling is memory + memoryOverhead together",
+          "at": [{ "step": "Elaborate: why they need different fixes" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "User memory (everything above the unified pool but below the reserved 300MB) holds user-defined data structures, Spark-internal metadata, and large records that don't go through either the execution or storage pool -- it's not a third borrowable region, it's simply unmanaged heap outside the unified manager's accounting entirely.",
+        "at": [{ "out": "user memory's own definition named only; this topic's own examples.py measures inside the unified pool, not the user-memory region above it" }]
+      },
+      {
+        "item": "The 300MB reserved-memory carve-out exists specifically so small heaps don't starve: a 1GB JVM still gets a usable (1024-300)*0.6=434MB pool rather than a vanishingly small one, per the source's own worked example -- this topic's own measured pool size for a 768MB heap follows the identical formula.",
+        "at": [{ "out": "the reserved-memory rationale named only beyond the formula itself; this topic's own examples.py verifies the formula's output, not why 300MB specifically was chosen" }]
+      },
+      {
+        "item": "spark.memory.offHeap.enabled moves the entire unified pool off the JVM heap into native (direct) memory, sized by spark.memory.offHeap.size instead of being derived from spark.executor.memory at all -- a configuration this topic's own examples.py never enables, measuring only the default on-heap pool.",
+        "at": [{ "out": "off-heap memory's own separate sizing mechanism named only; this topic's own examples.py measures only the on-heap unified pool" }]
+      },
+      {
+        "item": "memoryOverhead's own default (max(384MB, executorMemory * 0.1)) means a large executor gets a proportionally large overhead allowance automatically, while a small executor can still be starved by a fixed 384MB floor if its actual off-heap/native footprint exceeds that floor -- this topic's own measured container-kill case (disclosed in FACT-CHECK.md) used a cgroup limit set independently of this formula, not derived from it.",
+        "at": [{ "out": "the memoryOverhead default formula's own two-regime behavior named only; this topic's own measured container-kill case sets the cgroup limit directly rather than deriving it from this formula" }]
+      },
+      {
+        "item": "Python workers in PySpark run as entirely separate OS processes from the JVM executor, communicating over a socket -- their own memory footprint is counted toward memoryOverhead (or a dedicated spark.executor.pyspark.memory budget), never toward the JVM heap the unified manager governs, which is why a Python UDF that leaks memory produces a container-level symptom, not a JVM heap OOM.",
+        "at": [{ "out": "the Python-worker-memory distinction named only; this topic's own measured heap-OOM case uses a pure Scala/JVM-side collect, not a Python UDF" }]
+      },
+      {
+        "item": "Netty's own off-heap buffer pool (used for shuffle and RPC network transfers) is accounted toward memoryOverhead specifically because Netty allocates outside the JVM heap by design, for zero-copy transfers -- a third source of non-heap growth alongside off-heap storage memory and Python workers, named directly in the memoryOverhead syllabus clause.",
+        "at": [{ "out": "Netty's own off-heap allocation reason named only; this topic's own measured scenarios don't isolate network-buffer growth specifically" }]
+      },
+      {
+        "item": "On YARN and Kubernetes specifically, exceeding the memory+memoryOverhead ceiling produces a container-manager-level kill (YARN's NodeManager, or the kubelet via cgroups) rather than any Spark-internal code path -- Spark itself has no opportunity to log or react, which is exactly why this topic's own measured cgroup-kill case shows zero Spark-side exception text anywhere.",
+        "at": [{ "out": "which specific component (NodeManager vs kubelet) performs the kill on each platform, named only; this topic's own measured case uses a raw Linux cgroup directly, not a real YARN or Kubernetes cluster" }]
+      },
+      {
+        "item": "A fix for a JVM heap OOM (raise spark.executor.memory, lower per-task memory demand, or raise memory.fraction) can make a container OOM-kill worse rather than better if memoryOverhead isn't raised in step with it, since the container's own ceiling is the sum of both -- the two failure modes don't just need different fixes, the naive fix for one can actively cause the other.",
+        "at": [{ "out": "the fix-for-one-worsens-the-other interaction named only, as a practical consequence beyond the recap's own two-separate-fixes framing; this topic's own examples.py measures each failure mode's symptom, not the effect of a specific remediation" }]
+      },
+      {
+        "item": "Spilling (the next topic) is execution memory's own last-resort fallback once it can no longer borrow enough from storage -- this topic's own measured eviction case shows the two happening together (full eviction, then spill anyway), establishing that eviction alone is not always sufficient to satisfy an execution memory request.",
+        "at": [{ "out": "the composition with spill as the next escalation step, named only; the full mechanics of spill itself are this chapter's next topic, not re-taught here" }]
+      },
+      {
+        "item": "A cached dataset using Serialized vs Deserialized storage levels changes how much of the storage region a given row count actually occupies -- MEMORY_ONLY (deserialized by default for RDDs, but Datasets/DataFrames cache serialized by default) can use significantly less space than a naive per-row estimate would suggest, which is why this topic's own examples.py measures actual bytes reported by Spark's own storage API rather than estimating from row counts.",
+        "at": [{ "out": "the serialized-vs-deserialized storage-level sizing distinction named only; this topic's own examples.py reads the real reported byte counts directly rather than relying on an estimate" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
