@@ -1,0 +1,7 @@
+- **Store-and-forward**: an edge gateway's own pattern of buffering data while its uplink is down, then sending it once the link returns. *Where you meet it:* the whole topic's subject, named directly by Sparkplug's own spec.
+- **Durable buffer**: a buffer backed by disk, surviving a restart, not just a process's own memory. *Where you meet it:* the fsynced append-only file in `examples.py`.
+- **Sequence number**: a per-source counter attached to each point, used to detect a duplicate or a gap on replay. *Where you meet it:* the wider `(source, t_device, seq)` key this topic builds, in place of Sparkplug's own narrow one.
+- **Idempotent**: applying the same operation twice has the same effect as applying it once. *Where you meet it:* the replay that resolves a duplicate resend without double-counting it.
+- **Backpressure**: a slow consumer signaling upstream to slow down. *Where you meet it:* the rule this topic states and tests — a full buffer never backpressures its own source.
+- **Catch-up**: the period after reconnect when a gateway is still draining its buffered backlog alongside live traffic. *Where you meet it:* the Little's-law throttle that sizes it.
+- **Clock offset**: the gap between a device's own clock and the gateway's, estimated and corrected once the two can be compared again. *Where you meet it:* the drifted batch corrected on reconnect.

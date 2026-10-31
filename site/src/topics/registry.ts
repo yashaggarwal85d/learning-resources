@@ -7751,6 +7751,26 @@ export const TOPICS: TopicMeta[] = [
       "A historian and a broker both assume the plant can reach them. A WAN does not stay up. The next topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, and corrects its clock when the link returns.",
   },
   {
+    id: 'de.edge-buffering-store-forward',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/edge-buffering-store-forward',
+    title: 'Edge buffering and store-and-forward',
+    syllabusTitle: 'Edge buffering and store-and-forward',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['store-and-forward-durable-buffer', 'replay-in-order-idempotent-sequence', 'catch-up-time-littles-law', 'buffer-full-drop-policy-by-priority', 'clock-correction-on-reconnect', 'plant-local-autonomy-slo'],
+    uses: ['degraded-mode-design', 'rpo-rto-per-data-class', 'chunk-idempotent-checkpoint', 'throttle-backoff-signal', 'at-least-once-plus-idempotence', 'wal-lsn-fsync', 'littles-law', 'bandwidth-delay-product', 'idempotent-merge-load', 'mqtt-qos-retained-will', 'sparkplug-birth-death-seq-rebirth', 'gateway-replay-dedup-backfill', 'device-gateway-ingest-timestamps', 'exception-deadband-filtering', 'swinging-door-compression-error-band', 'mergeable-rollup-never-store-average', 'read-only-extraction-load-budget'],
+    declared: [],
+    bridge:
+      "A historian and a broker both assume the plant can reach them. A WAN does not stay up. This topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, drops by policy when the buffer fills, and corrects its clock when the link returns.",
+    handoff:
+      "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. The last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell, its standardised submodels, and the role it plays in EU data spaces and the digital product passport.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',

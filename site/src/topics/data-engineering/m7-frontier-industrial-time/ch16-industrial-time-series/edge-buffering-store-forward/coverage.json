@@ -1,0 +1,114 @@
+{
+  "topic": "de.edge-buffering-store-forward",
+  "syllabus": [
+    {
+      "clause": "gateways that buffer on WAN loss, replay in order with idempotent sequence numbers,",
+      "at": [
+        { "step": "Reveal: the buffer itself is durable and sized from the outage" },
+        { "step": "Reveal: a wider sequence key makes a duplicate resend idempotent" }
+      ]
+    },
+    {
+      "clause": "local aggregation and filtering, backpressure when the buffer fills,",
+      "at": [
+        { "step": "Reveal: a local rollup extends the outage a fixed buffer survives" },
+        { "step": "Reveal: a full buffer drops by priority, never by backpressure" }
+      ]
+    },
+    {
+      "clause": "and clock correction on reconnect; plant autonomy as a requirement.",
+      "at": [
+        { "step": "Reveal: the gateway's own clock offset is corrected on reconnect" },
+        { "step": "Prove it: does the plant keep reading during the outage?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS IoT Greengrass docs",
+      "items": [
+        {
+          "item": "stream manager works in environments with intermittent or limited connectivity, lets a user set priority and defines connected/disconnected handling",
+          "at": [{ "step": "Reveal: the buffer itself is durable and sized from the outage" }]
+        },
+        {
+          "item": "priorities control the order streams export to the cloud, handling critical data sooner than other data",
+          "at": [{ "step": "Reveal: a full buffer drops by priority, never by backpressure" }]
+        }
+      ]
+    },
+    {
+      "source": "MQTT Version 5.0 (OASIS)",
+      "items": [
+        {
+          "item": "Session Expiry Interval and Message Expiry Interval are both separate, transport-level retention controls distinct from a gateway's own buffer policy",
+          "at": [{ "step": "Reveal: a wider sequence key makes a duplicate resend idempotent" }]
+        }
+      ]
+    },
+    {
+      "source": "Sparkplug 3.0.0 Specification",
+      "items": [
+        {
+          "item": "an Edge Node may store data at the edge until its Primary Host comes back online, then flush it",
+          "at": [{ "step": "Reveal: the buffer itself is durable and sized from the outage" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A buffer that held every reading is not the same claim as a replay that delivers every reading exactly once, in order, at a rate the platform can absorb.",
+        "at": [{ "step": "Hook: a buffered outage replays wrong on the way back" }]
+      },
+      {
+        "item": "The honest prediction isn't a bigger buffer — it's that holding the data was never the hard part; replaying it safely and at a sane pace is.",
+        "at": [{ "step": "Predict: what was missing from the replay?" }]
+      },
+      {
+        "item": "A buffer that lives only in memory is a promise that breaks the moment the process restarts, which is exactly when a plant most needs it kept.",
+        "at": [{ "step": "Reveal: the buffer itself is durable and sized from the outage" }]
+      },
+      {
+        "item": "A sequence number borrowed from a wire protocol inherits that protocol's own limits; a gateway that needs more room has to build its own key, not stretch someone else's byte.",
+        "at": [{ "step": "Reveal: a wider sequence key makes a duplicate resend idempotent" }]
+      },
+      {
+        "item": "Catching up is not just 'go faster' — a replay that ignores the live stream it's running alongside turns a recovery into a second outage for everyone still online.",
+        "at": [{ "step": "Reveal: Little's law sizes the catch-up throttle" }]
+      },
+      {
+        "item": "A policy that looks fair because it treats every point the same is exactly how a safety alarm ends up discarded alongside routine noise.",
+        "at": [{ "step": "Reveal: a full buffer drops by priority, never by backpressure" }]
+      },
+      {
+        "item": "Trading detail for durability on purpose, before the buffer forces the trade on you by overflowing, is a design decision, not a fallback.",
+        "at": [{ "step": "Reveal: a local rollup extends the outage a fixed buffer survives" }]
+      },
+      {
+        "item": "A clock that drifted quietly for the whole outage doesn't announce itself; it just waits for the moment two clocks can finally be compared again.",
+        "at": [{ "step": "Reveal: the gateway's own clock offset is corrected on reconnect" }]
+      },
+      {
+        "item": "Every piece of this topic reduces to the same move: the gateway earns the plant's trust one property at a time, and losing any single one quietly breaks what it promised overall.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Plant autonomy isn't something the gateway grants during an outage — it's a property of the control loop that was never the gateway's to take away in the first place.",
+        "at": [{ "step": "Prove it: does the plant keep reading during the outage?" }]
+      },
+      {
+        "item": "A gateway that never backpressures its own source isn't being generous — refusing a write from a live PLC is the one failure mode a buffer exists specifically to prevent.",
+        "at": [{ "step": "Reveal: a full buffer drops by priority, never by backpressure" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
