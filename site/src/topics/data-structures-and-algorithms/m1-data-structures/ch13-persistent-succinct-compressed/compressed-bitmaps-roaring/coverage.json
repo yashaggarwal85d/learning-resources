@@ -1,0 +1,213 @@
+{
+  "topic": "dsa.compressed-bitmaps-roaring",
+  "syllabus": [
+    {
+      "clause": "2¹⁶-value chunks stored as array, bitmap or run containers chosen per chunk",
+      "at": [
+        { "step": "The two-level structure" },
+        { "step": "Three containers, one honest size" },
+        { "step": "The 4,096 threshold" },
+        { "step": "Run containers, and runOptimize" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "(Chambi, Lemire et al., 2016)",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "fast AND/OR",
+      "at": [
+        { "step": "Chunk-by-chunk AND, and galloping" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "used for bitmap indexes and posting lists in Lucene, Druid, Pinot and Spark",
+      "at": [
+        { "step": "Where Roaring is used" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Chambi, Lemire, Kaser and Godin, \"Better Bitmap Performance with Roaring Bitmaps\"",
+      "items": [
+        {
+          "item": "The two-level structure: 65,536 chunks by top 16 bits, each a sorted (key, container) pair, container holding the low 16 bits",
+          "at": [
+            { "step": "The two-level structure" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Array container ≤4,096 values at 2 bytes each; bitmap container above that, a fixed 8,192 bytes",
+          "at": [
+            { "step": "Three containers, one honest size" },
+            { "step": "The 4,096 threshold" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Array-array intersection: a simple merge when cardinalities are within 64x of each other, galloping once one dwarfs the other",
+          "at": [
+            { "step": "Chunk-by-chunk AND, and galloping" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "\"2x smaller\" and \"up to 900x faster for intersections,\" each the paper's own benchmark",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Lemire, Ssi-Yan-Kai and Kaser, \"Consistently Faster and Smaller Compressed Bitmaps with Roaring\"",
+      "items": [
+        {
+          "item": "Run container: 2 + 4r bytes for r runs; runOptimize scans existing containers and converts to run containers only when smaller, typically once before storing",
+          "at": [
+            { "step": "Run containers, and runOptimize" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "\"Up to two orders of magnitude\" faster, and the Lucene/Spark/Kylin/Druid adoption sentence",
+          "at": [
+            { "step": "Where Roaring is used" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "RoaringFormatSpec README",
+      "items": [
+        {
+          "item": "The two serialization cookies (12346, 12347) and the run-container serialized layout",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Lucene, RoaringDocIdSet.java and IndexedDISI.java",
+      "items": [
+        {
+          "item": "Two separate Roaring-inspired classes, each with its own 65,536-value-block, 4,096-threshold shape, read directly from their javadoc rather than from the Roaring papers' own adoption claim",
+          "at": [
+            { "step": "Where Roaring is used" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark MapStatus.scala; Apache Pinot BitmapInvertedIndexReader.java; Apache Druid \"Segments\"",
+      "items": [
+        {
+          "item": "Each system's own direct use of the RoaringBitmap library or its design, checked against the actual source/docs rather than assumed from the syllabus line",
+          "at": [
+            { "step": "Where Roaring is used" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Lemire, Kaser, Kurz et al. 2018 (citation only, not read)",
+      "items": [
+        {
+          "item": "The implementation paper's own title and venue, attributed by name only",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Why a chunk's own container is picked by measuring, not by a fixed rule tied to count alone — the same hundred values scattered versus bunched can favor different containers",
+        "at": [
+          { "step": "Does the same container win both?" }
+        ]
+      },
+      {
+        "item": "Why the 4,096 threshold falls straight out of two bytes per value against a fixed eight kilobytes, never a tuned constant",
+        "at": [
+          { "step": "The 4,096 threshold" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why a run container's cost tracks run count, almost never value count — a single run spanning a whole 65,536-value chunk still costs six bytes",
+        "at": [
+          { "step": "Six bytes, or sixty-five thousand?" },
+          { "step": "Run containers, and runOptimize" }
+        ]
+      },
+      {
+        "item": "Why a chunk key missing from one side of an intersection costs nothing at all — the two sorted key lists are merged like any two sorted lists, never computed and discarded",
+        "at": [
+          { "step": "What does a missing chunk cost?" }
+        ]
+      },
+      {
+        "item": "Why galloping wins decisively only once one side of an intersection dwarfs the other, and costs no more than a plain merge when the two are close in size",
+        "at": [
+          { "step": "Chunk-by-chunk AND, and galloping" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That the two Lucene classes are Roaring-inspired, independently-varied code, not the RoaringBitmap library itself — stated explicitly rather than left for the reader to assume",
+        "at": [
+          { "step": "Where Roaring is used" },
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "Why the array/bitmap crossover formula generalizes beyond the specific 65,536-value chunk size: the same two cost formulas set equal to each other would give a different crossover count for a differently sized chunk, so the number itself is a consequence of the chunk size chosen, not a fact about containers in general",
+        "at": [
+          { "step": "The 4,096 threshold" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why picking a container per chunk can never do worse than committing to one container for the whole set: the worst case for the per-chunk approach is that every chunk happens to prefer the same container, which is exactly the plain-structure case",
+        "at": [
+          { "step": "Three predicates, measured" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That the chapter's own dense/sparse/clustered predicates are shape stand-ins for the hook's literal log predicates, not real log semantics",
+        "at": [
+          { "step": "Three predicates, measured" }
+        ]
+      },
+      {
+        "item": "That Roaring is the chapter's exact counterpart to Bloom's approximate one — no false answers, in close to the honest minimum each chunk's own shape allows — and that this exactness is itself still compressible further, which is where integer compression picks up",
+        "at": [
+          { "step": "Recap" },
+          { "deep": "Where this goes next" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
