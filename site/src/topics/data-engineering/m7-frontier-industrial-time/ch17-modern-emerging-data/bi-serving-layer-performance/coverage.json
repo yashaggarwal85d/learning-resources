@@ -1,0 +1,71 @@
+{
+  "topic": "de.bi-serving-layer-performance",
+  "syllabus": [
+    {
+      "clause": "pre-aggregated rollup tables, materialized views",
+      "at": [
+        { "step": "Reveal: rollup tables and materialized views" }
+      ]
+    },
+    {
+      "clause": "result caching",
+      "at": [
+        { "step": "Reveal: result caching" }
+      ]
+    },
+    {
+      "clause": "acceleration engines (BigQuery BI Engine, Databricks SQL)",
+      "at": [
+        { "step": "Reveal: BigQuery BI Engine" },
+        { "step": "Reveal: Databricks SQL's disk cache" }
+      ]
+    },
+    {
+      "clause": "extract-refresh scheduling and concurrency limits",
+      "at": [
+        { "step": "Reveal: concurrency ceilings and queueing" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google Cloud — Introduction to BI Engine",
+      "items": [
+        { "item": "a fast, in-memory analysis service that accelerates many SQL queries in BigQuery by intelligently caching the data that you use most frequently", "at": [{ "step": "Reveal: BigQuery BI Engine" }] },
+        { "item": "preferred tables let acceleration be limited to a specified set of tables; queries to all other tables use regular BigQuery slots", "at": [{ "step": "Reveal: BigQuery BI Engine" }] },
+        { "item": "acceleration happens on leaf-level subqueries with INNER and LEFT OUTER joins, a large fact table joined with up to four smaller dimension tables", "at": [{ "step": "Reveal: BigQuery BI Engine" }] },
+        { "item": "unaccelerated stages fall back to standard execution slots without failing the query", "at": [{ "deep": "Internals" }] },
+        { "item": "named exclusions: JSON type columns, wildcard tables, external tables, row-level security, non-SQL user-defined functions", "at": [{ "step": "Reveal: BigQuery BI Engine" }] }
+      ]
+    },
+    {
+      "source": "Databricks — Optimize performance with caching on Databricks",
+      "items": [
+        { "item": "disk caching automatically stores a local copy of remote Parquet data on first read; later reads run locally and are significantly faster", "at": [{ "step": "Reveal: Databricks SQL's disk cache" }] },
+        { "item": "in SQL warehouses, the legacy CACHE SELECT command is ignored in favor of this automatic mechanism", "at": [{ "deep": "Internals" }] },
+        { "item": "the disk cache automatically detects created, deleted, modified, or overwritten data files and invalidates stale entries itself, with no need to explicitly invalidate cached data", "at": [{ "step": "Reveal: Databricks SQL's disk cache" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's 'thirty seconds every Monday morning, nothing about the query changed' is designed to isolate a concurrency ceiling from a slow query as two genuinely different failure modes — a learner who reaches for query optimization first has misdiagnosed the problem before even starting.", "at": [{ "step": "Hook" }] },
+      { "item": "Rollup tables, materialized views and result caching are presented as the same lever at three granularities rather than as three unrelated techniques, because treating them as unrelated would hide the actual decision axis this topic teaches: how often the data changes versus how often the query repeats.", "at": [{ "step": "Reveal: rollup tables and materialized views" }] },
+      { "item": "A cache's invalidation policy failing silently is worse than a cache miss, because a stale cache hit looks identical to a correct one until the number is checked against the source — which is exactly why this topic ties invalidation to a freshness SLA rather than to a fixed timer that happens to feel safe.", "at": [{ "step": "Reveal: result caching" }] },
+      { "item": "BI Engine's own documented fallback behavior (an unaccelerated query still runs, just on standard slots) is the detail that keeps this topic's 'what it does and doesn't accelerate' framing honest: a learner who assumes an unsupported query simply fails has misread the actual documented failure mode, which is graceful degradation, not an error.", "at": [{ "step": "Reveal: BigQuery BI Engine" }] },
+      { "item": "Databricks' disk cache automatically invalidating on any underlying file change is architecturally a different mechanism from a reserved, table-level, in-memory allocation like BI Engine's preferred tables, and this topic's own FACT-CHECK is explicit that the two are not assumed to work alike just because both accelerate a warehouse.", "at": [{ "deep": "Internals" }] },
+      { "item": "Sizing a concurrency ceiling against a stated usage pattern is this topic's one piece of applied arithmetic, and it generalizes past BigQuery and Databricks specifically: any system with a fixed reservation or capacity-unit count produces queueing once concurrent demand exceeds it, regardless of which vendor's name is on the mechanism.", "at": [{ "step": "Reveal: concurrency ceilings and queueing" }] },
+      { "item": "This topic's own 'Leaves out' line (which tool issues the query, the semantic layer's compilation, any engine's full pricing model) keeps its scope to exactly what sizing a ceiling and choosing among three caching levers requires, rather than drifting into a full cost-optimization guide for either named engine.", "at": [{ "step": "Recap" }] },
+      { "item": "The Prove It step's doubled-refresh-frequency scenario is deliberately constructed so that no individual query's own performance changes at all — the only variable that moves is how many queries arrive concurrently, which is the same distinction the hook opened with, now tested from the other direction.", "at": [{ "step": "Prove it" }] },
+      { "item": "Naming BI Engine's fallback as 'without failing the query' rather than simply 'slower' is the precise phrasing this topic needs, since a learner who expects an outright failure for an unsupported query (a wildcard table, a JSON column) would misdiagnose a working-but-unaccelerated query as broken.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic treats 'acceleration engine' as a category with two named members rather than a single product, which matters because a learner who only remembers BigQuery's BI Engine would wrongly assume the lesson is BigQuery-specific instead of a general warehouse-serving-layer pattern that recurs across vendors.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

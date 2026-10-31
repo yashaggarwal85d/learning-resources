@@ -1,0 +1,71 @@
+{
+  "topic": "de.bi-tools-as-warehouse",
+  "steps": [
+    {
+      "lines": [
+        "An administrator switches a dashboard from extract mode over to live mode, purely to get fresher numbers.",
+        "Overnight, the warehouse's query cost triples, even though nothing about the dashboard itself, or its underlying query, actually changed at all.",
+        "So what, exactly, changed."
+      ]
+    },
+    {
+      "lines": [
+        "The dashboard didn't change. The mode it queries the warehouse in did.",
+        "Used deliberately instead, which mode would have given fresher numbers without tripling that cost."
+      ],
+      "answer": [
+        "Live mode wasn't the only option here, and it isn't automatically the right default either.",
+        "Where it's available, an on demand, column by column load gives import like speed without an import's staleness. Otherwise, choosing a sensible refresh interval on extract is the actual lever, not switching every dashboard over to live."
+      ]
+    },
+    {
+      "lines": [
+        "Five tools show up again and again, and each one fits cleanly into one of two categories.",
+        "One tool is a modeling layer with its own language for defining metrics. Two are the dominant commercial dashboarding tools. The remaining two are the open source alternatives to those same two.",
+        "Which company sells a tool, and what that tool actually does underneath, are two separate questions."
+      ]
+    },
+    {
+      "lines": [
+        "In extract mode, a full copy of the data gets pulled into the tool itself.",
+        "Dashboards built this way are fast, because every click is answered from that local copy, and the underlying warehouse only gets touched again on the next scheduled refresh."
+      ]
+    },
+    {
+      "lines": [
+        "Live mode works the opposite way. No copy ever gets pulled in at all.",
+        "Every single interaction with the dashboard sends a fresh query straight to the warehouse, so the data shown is always perfectly current, but the warehouse now pays a cost on every click instead of on a schedule."
+      ]
+    },
+    {
+      "lines": [
+        "One platform's own approach sits in between those two extremes.",
+        "Instead of copying a whole table up front, or re querying it on every click, it loads each column directly from storage the very first time that column actually gets asked for.",
+        "That gives speed close to an upfront copy, without that copy's staleness, and it falls back to querying the source directly whenever it simply can't load a column this way."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where all of this actually connects back to the handoff this chapter already built.",
+        "Once one single, compiled metric definition exists, any of these five tools, in any of these three modes, can read that exact same definition instead of each one quietly recomputing its own version of the same idea."
+      ]
+    },
+    {
+      "lines": [
+        "Bringing the three modes together now.",
+        "Extract mode trades freshness for a cost that arrives on a schedule. Live mode trades that schedule for perfect freshness paid on every single click. And the column by column approach sits deliberately between the two.",
+        "Underneath any of them, one compiled metric definition can still be the single thing every tool actually reads."
+      ]
+    },
+    {
+      "lines": [
+        "A week goes by, and a number on one dashboard quietly starts drifting away from the exact same number on a different dashboard, built from the exact same warehouse.",
+        "Given everything just covered, what's the very first thing worth checking here."
+      ],
+      "answer": [
+        "Not a rendering bug, and not a reason to simply restart either tool.",
+        "The first thing worth checking is whether both dashboards are still reading from that one shared, compiled definition, or whether one of them has quietly started recomputing the same metric on its own instead."
+      ]
+    }
+  ]
+}

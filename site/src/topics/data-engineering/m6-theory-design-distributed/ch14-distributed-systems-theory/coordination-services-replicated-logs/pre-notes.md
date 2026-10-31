@@ -1,0 +1,8 @@
+- **Coordination service**: a small, strongly consistent store that other systems lean on for leader election, locking, and configuration. *Where you meet it:* ZooKeeper and etcd, both built this way.
+- **Session**: a client's ongoing relationship with a coordination service, bounded by a timeout. *Where you meet it:* what an ephemeral node's lifetime is tied to.
+- **Ephemeral node**: a record that exists only as long as the session that created it. *Where you meet it:* the building block every leader-election recipe on top of ZooKeeper reuses.
+- **Watch**: a one-time notification a client asks for, fired the next time something it's watching changes. *Where you meet it:* paired with an ephemeral node to detect a leader's failure.
+- **Controller**: the role in Kafka's KRaft mode that owns cluster metadata, replicated through a consensus log. *Where you meet it:* the replacement for ZooKeeper as of Kafka's major removal release.
+- **In-sync replica (ISR)**: a replica caught up closely enough with the leader to be trusted with a committed write. *Where you meet it:* the set this topic's whole quorum argument is about.
+- **Metadata log**: an append-only replicated record of a system's own configuration, rather than its data. *Where you meet it:* Kafka's `__cluster_metadata`, replicated the same way application data would be.
+- **Compare-and-swap**: an operation that only succeeds if a value still matches what the caller expected, atomically replacing it if so. *Where you meet it:* how a table-format commit changes which metadata file is current.

@@ -1,0 +1,86 @@
+{
+  "topic": "de.leases-fencing-tokens-split",
+  "syllabus": [
+    {
+      "clause": "leader leases for local linearizable reads (and their dependence on bounded clock drift)",
+      "at": [{ "step": "Reveal: a lease turns a quorum read into a local one" }]
+    },
+    {
+      "clause": "zombie leaders after GC pauses",
+      "at": [
+        { "step": "Hook: a worker checks its lease, then overwrites a job that moved on without it" },
+        { "step": "Reveal: why checking right before the write does not help" }
+      ]
+    },
+    {
+      "clause": "fencing tokens / epoch numbers checked by the storage layer (Chubby sequencers, Kafka producer epochs, ZooKeeper zxids)",
+      "at": [
+        { "step": "Reveal: a fencing token, checked by the resource itself" },
+        { "step": "Reveal: the same idea under four different names" }
+      ]
+    },
+    {
+      "clause": "why a distributed lock without fencing is not safe",
+      "at": [{ "step": "Reveal: a lock alone is a hint, not a guarantee" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Kleppmann: How to do distributed locking",
+      "items": [
+        { "item": "the GC-pause scenario and why a check right before the write doesn't help", "at": [{ "step": "Reveal: why checking right before the write does not help" }] },
+        { "item": "the fencing-token diagram: client 1's stale write rejected once a higher token has been seen", "at": [{ "step": "Reveal: a fencing token, checked by the resource itself" }] }
+      ]
+    },
+    {
+      "source": "Burrows: The Chubby Lock Service for Loosely-Coupled Distributed Systems",
+      "items": [
+        { "item": "the master lease and why a local read stays safe while it holds", "at": [{ "step": "Reveal: a lease turns a quorum read into a local one" }] },
+        { "item": "the sequencer, carrying the lock generation number", "at": [{ "step": "Reveal: the same idea under four different names" }] },
+        { "item": "the lock-delay as an imperfect fallback for resources that can't check a token", "at": [{ "step": "Reveal: a lock alone is a hint, not a guarantee" }] }
+      ]
+    },
+    {
+      "source": "Apache Kafka: KafkaProducer (Javadoc)",
+      "items": [
+        { "item": "the producer epoch and ProducerFencedException for a fenced-out producer", "at": [{ "step": "Reveal: the same idea under four different names" }] }
+      ]
+    },
+    {
+      "source": "ZooKeeper Programmer's Guide",
+      "items": [
+        { "item": "the zxid as a total order stamp on every change", "at": [{ "step": "Reveal: the same idea under four different names" }] }
+      ]
+    },
+    {
+      "source": "de.raft-at-conceptual-level (internal cross-reference)",
+      "items": [
+        { "item": "Raft's term as the fourth production name for the identical fencing idea", "at": [{ "step": "Reveal: the same idea under four different names" }] }
+      ]
+    },
+    {
+      "source": "de.linearizability (internal cross-reference)",
+      "items": [
+        { "item": "the quorum-read argument a lease turns into a local read", "at": [{ "step": "Reveal: a lease turns a quorum read into a local one" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A lease is a promise from a quorum not to elect another leader until a deadline; while it holds, the holder can answer reads locally and still be linearizable, because no other leader can exist.", "at": [{ "step": "Reveal: a lease turns a quorum read into a local one" }] },
+      { "item": "The lease argument's safety depends on the holder's clock and the granters' clocks drifting by less than a known bound, which is why the usable lease window is shortened by that bound.", "at": [{ "step": "Reveal: a lease turns a quorum read into a local one" }] },
+      { "item": "A process paused longer than its lease, between checking it and acting, can resume and act as if it still held it; checking the lease again just before acting does not prevent this, because the pause can fall between that check and the write.", "at": [{ "step": "Reveal: why checking right before the write does not help" }] },
+      { "item": "A fencing token is a number that increases every time a lock or lease is granted; sent with every write and checked by the resource being protected, it lets the resource reject any write carrying a token lower than one it has already seen.", "at": [{ "step": "Reveal: a fencing token, checked by the resource itself" }] },
+      { "item": "Chubby's sequencer, Kafka's producer epoch, ZooKeeper's zxid, and Raft's term are four production names for the identical fencing-token idea.", "at": [{ "step": "Reveal: the same idea under four different names" }] },
+      { "item": "A distributed lock alone is only a hint about who should be acting; mutual exclusion that depends on every participant's own timing is not safe, so safety must be enforced by the resource itself.", "at": [{ "step": "Reveal: a lock alone is a hint, not a guarantee" }] },
+      { "item": "Chubby's lock-delay withholds a freed lock from other clients for a period after an apparent failure, as an imperfect defense for resources that cannot check a fencing token at all.", "at": [{ "step": "Reveal: a lock alone is a hint, not a guarantee" }] },
+      { "item": "A unique but non-increasing token (such as a random string) lets a resource tell two writes apart but gives it no way to know which one came later, so it cannot reject a stale write the way a monotonic token can.", "at": [{ "step": "Prove it: a lock service hands out a unique random token every time — is that enough?" }] },
+      { "item": "The storage layer rejecting a stale write is the only fix that survives an arbitrarily long pause, because it runs at write time, after any pause has already ended; re-checking a lease or lengthening it only relocates or delays the identical failure.", "at": [{ "step": "Predict: re-check the lease, lengthen it, or make storage reject the old holder?" }] },
+      { "item": "The consensus algorithm underneath a lock service, coordination services as products, and clocks and drift themselves are left to other topics, not re-derived here.", "at": [{ "out": "named in CHAPTER.md's Leaves out; topics 2, 9, and 11" }] },
+      { "item": "Redlock and Redis locking as a product critique, and the Chubby / Paxos Made Live case study, are named only, not taken a side on beyond what the safety argument already shows.", "at": [{ "out": "named in CHAPTER.md's Leaves out" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

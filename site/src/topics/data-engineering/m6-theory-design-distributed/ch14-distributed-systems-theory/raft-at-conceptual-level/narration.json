@@ -1,0 +1,76 @@
+{
+  "topic": "de.raft-at-conceptual-level",
+  "steps": [
+    {
+      "lines": [
+        "Notice what's actually missing here: not a crash, but an announcement.",
+        "The write itself may have gone through fine on both servers. What never happened is the leader telling anyone it succeeded before it went down.",
+        "That gap, between doing something and announcing it, is where this entire topic lives."
+      ]
+    },
+    {
+      "lines": [
+        "Before deciding, ask what the rest of the cluster actually knows about this entry.",
+        "Most of the servers have never seen it at all. Whatever rule decides commitment has to work from what the majority holds, not from what one server intended."
+      ],
+      "answer": [
+        "Not committed, and the new leader is free to overwrite it.",
+        "Only two servers out of five ever held this entry, and commitment requires a majority.",
+        "Nothing was promised to a client yet, so nothing is being taken back."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention to what a term is actually doing here, not just what it's called.",
+        "It's a number that only ever goes up, and whoever hears a higher one immediately treats their own information as outdated.",
+        "A stale term isn't an error to recover from. It's simply rejected on sight."
+      ]
+    },
+    {
+      "lines": [
+        "Watch exactly what the voter is checking, because it's narrower than it sounds.",
+        "Not whether the candidate is trustworthy, not whether it's been leader before. Only whether its log is at least as current as the voter's own.",
+        "That one check, run by every voter, is the entire reason a newly elected leader can be trusted to already hold every committed entry."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this gets enforced constantly, not verified once and trusted afterward.",
+        "Every single append carries a check against the entry right before it. Any mismatch gets refused on the spot, and the leader backs up and repairs from there.",
+        "Agreement at one point in two logs isn't a coincidence; it's been forced the whole way back."
+      ]
+    },
+    {
+      "lines": [
+        "Go slowly through this part, because it's the one place intuition tends to point the wrong way.",
+        "An entry sitting on a majority looks committed. It isn't, if it came from an earlier term than the leader currently holding power.",
+        "Only once the current leader gets one of its own entries onto a majority does the whole earlier history become locked in behind it."
+      ]
+    },
+    {
+      "lines": [
+        "Consider what changing the cluster's membership actually threatens, if done carelessly.",
+        "Switch everyone over at once and you can't guarantee it happens everywhere at the same instant. Switch piecemeal without a plan, and two separate majorities might each think they're in charge.",
+        "The fix asks for agreement from both the old group and the new group at the same time, for as long as the transition lasts."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the whole argument, not five separate rules.",
+        "A clock that rejects the past. A vote that enforces completeness. A log check that forces agreement backward. A commit rule that only trusts the leader's own term. All of it aimed at one goal: every state machine ends up executing identical commands, in identical order.",
+        "That goal is the only thing any of these mechanisms were ever for."
+      ]
+    },
+    {
+      "lines": [
+        "Before answering, think about what actually has to be true for a vote to go a certain way.",
+        "If an entry is already sitting on a majority, every future candidate has to get a vote from someone in that majority to win at all."
+      ],
+      "answer": [
+        "No, it's committed, and no later leader can erase it.",
+        "Winning an election requires contacting a majority, and every server in that majority already holds this entry.",
+        "Any candidate missing it fails the up-to-date check against every one of them, so it simply can't win."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "topic": "de.cap-pacelc-practice",
+  "steps": [
+    {
+      "lines": [
+        "Picture two systems, both of them claiming to handle a network partition correctly.",
+        "One of them keeps answering requests on both sides, the whole time the network is split.",
+        "The other one goes completely silent on one side, and answers nothing until it's fixed. And somehow, both of them are right."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where I want you to commit to an answer.",
+        "A system tells you it's both consistent and available. Fully CA, no asterisks.",
+        "The moment a real network partition actually hits that system. What happens?"
+      ],
+      "answer": [
+        "It's tempting to think a well-engineered system could just stay both, through sheer good design.",
+        "But this trade isn't a matter of engineering skill. The instant a real partition happens, the system has to pick one.",
+        "Either it keeps answering and risks being wrong, or it refuses and stays correct. There's no third option once the network actually splits."
+      ]
+    },
+    {
+      "lines": [
+        "That word, permanent, is exactly the wrong way to think about this theorem.",
+        "The real trade only exists while an actual partition is happening.",
+        "Outside of one, there's nothing forcing you to give anything up at all."
+      ]
+    },
+    {
+      "lines": [
+        "So what does the trade actually look like, during a real partition?",
+        "One side can answer the request, and risk that the answer is now wrong.",
+        "Or it can refuse to answer at all, and guarantee it stays correct. That choice, repeated, is the entire theorem."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the piece the original theorem leaves out entirely.",
+        "Even with absolutely no partition happening, there's still a trade going on, every single request.",
+        "Wait a little longer and stay perfectly consistent, or answer faster and risk being slightly behind."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing to commit to.",
+        "A particular system gives up consistency during a partition, specifically to stay available.",
+        "Does that exact same system behave that way even when there's no partition at all?"
+      ],
+      "answer": [
+        "It's tempting to assume the partition-time choice and the everyday choice are totally separate decisions.",
+        "But they usually come from the identical underlying design. A system built to favor availability over consistency during a crisis is, more often than not, built that way on purpose, all the time.",
+        "So yes. The same system keeps making the same trade, consistency for speed, whether or not anything is actually broken."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this play out on two real systems, not a hypothetical.",
+        "One system, by its own documented design, gives up consistency both during a partition and under completely normal conditions.",
+        "A second system, documented just as clearly, refuses to give up consistency either way, and simply pays for it."
+      ]
+    },
+    {
+      "lines": [
+        "Now get specific about what the word partition even means, physically.",
+        "A single running process, inside a physical host, inside a rack, inside an availability zone, inside an entire region.",
+        "Every one of those is a genuinely real way for something to actually split off from everything else."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "A real partition forces a choice between staying available and staying consistent. PACELC adds the trade that's sitting there even when nothing is broken.",
+        "And both of those choices ultimately come down to real, physical failures you can point to and name."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. A single physical host crashes, somewhere inside one availability zone.",
+        "Given everything you just watched about how these domains actually nest inside each other.",
+        "Which failure domains does that crash genuinely partition, and which ones does it leave completely untouched?"
+      ],
+      "answer": [
+        "It's tempting to assume a host failure counts as losing the whole zone it sits in.",
+        "But a failure only ever takes down what it's actually contained inside of. That one host, and the process running on it.",
+        "The rack holding it, the zone around that rack, and the region the zone sits in: all three of those kept running the entire time, completely unaffected."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "topic": "de.analytical-benchmark-suites",
+  "syllabus": [
+    {
+      "clause": "what TPC-H (22 queries, 8-table schema) and TPC-DS (99 queries, skewed snowflake schemas) each stress",
+      "at": [
+        { "step": "Reveal: TPC-H and TPC-DS, what each stresses" }
+      ]
+    },
+    {
+      "clause": "ClickBench (ClickHouse, 2022: one wide web-analytics table, 43 queries, no joins) and its blind spots",
+      "at": [
+        { "step": "Reveal: ClickBench and its own stated blind spot" }
+      ]
+    },
+    {
+      "clause": "the Join Order Benchmark (Leis et al., PVLDB 2015) for cardinality estimation and join ordering",
+      "at": [
+        { "step": "Reveal: the Join Order Benchmark, for cardinality estimation and join ordering" }
+      ]
+    },
+    {
+      "clause": "TPC-DI as the only TPC ETL specification, now listed by TPC as obsolete",
+      "at": [
+        { "step": "Reveal: TPC-DI, the only TPC ETL specification, now obsolete" }
+      ]
+    },
+    {
+      "clause": "vendor \"benchmarketing\" and DeWitt-clause licence terms that restrict publishing results",
+      "at": [
+        { "step": "Reveal: benchmarketing and the DeWitt clause" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "TPC-H Standard Specification, Rev. 3.0.1",
+      "items": [
+        { "item": "the TPC-H database is defined to consist of eight separate and individual Base Tables", "at": [{ "step": "Reveal: TPC-H and TPC-DS, what each stresses" }] },
+        { "item": "TPC-H's own query clause describes the twenty-two decision support queries that must be executed as part of the benchmark", "at": [{ "step": "Reveal: TPC-H and TPC-DS, what each stresses" }] }
+      ]
+    },
+    {
+      "source": "TPC-DS Standard Specification, v3.2.0",
+      "items": [
+        { "item": "the TPC-DS schema is a snowflake schema consisting of multiple dimension and fact tables", "at": [{ "step": "Reveal: TPC-H and TPC-DS, what each stresses" }] },
+        { "item": "a TPC-DS query stream consists of the 99 queries defined in the specification", "at": [{ "step": "Reveal: TPC-H and TPC-DS, what each stresses" }] }
+      ]
+    },
+    {
+      "source": "ClickBench — README",
+      "items": [
+        { "item": "the workload consists of 43 queries testing full scan, filtered scan, index lookups and the main relational operations", "at": [{ "step": "Reveal: ClickBench and its own stated blind spot" }] },
+        { "item": "the dataset is a single flat table, different from the normalized star or snowflake model classical data warehouses use, which may give classical warehouses an unfair disadvantage in this specific benchmark", "at": [{ "step": "Reveal: ClickBench and its own stated blind spot" }] }
+      ]
+    },
+    {
+      "source": "Leis et al. — How Good Are Query Optimizers, Really? (PVLDB 2015)",
+      "items": [
+        { "item": "the paper introduces the Join Order Benchmark, based on the IMDB data set", "at": [{ "step": "Reveal: the Join Order Benchmark, for cardinality estimation and join ordering" }] },
+        { "item": "cardinality estimates are usually computed based on simplifying assumptions like uniformity and independence", "at": [{ "step": "Reveal: the Join Order Benchmark, for cardinality estimation and join ordering" }] }
+      ]
+    },
+    {
+      "source": "TPC — Current Specifications listing",
+      "items": [
+        { "item": "TPC-DI is listed under TPC's own Obsolete Workloads table, alongside TPC-A, TPC-APP, TPC-B, TPC-D and TPC-R", "at": [{ "step": "Reveal: TPC-DI, the only TPC ETL specification, now obsolete" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — David DeWitt (DeWitt Clause section)",
+      "items": [
+        { "item": "several commercial database vendors include a licence provision, the DeWitt Clause, prohibiting publication of unsanctioned benchmark results", "at": [{ "step": "Reveal: benchmarketing and the DeWitt clause" }] },
+        { "item": "the original DeWitt Clause was established by Oracle at the behest of Larry Ellison, after a 1982 benchmark study by David DeWitt showed Oracle's own system performing poorly", "at": [{ "step": "Reveal: benchmarketing and the DeWitt clause" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately stresses that every single number in the vendor's own published report is independently reproducible and true, making the predict step's correct answer (benchmarketing, not fabrication) the harder, more honest lesson than a simpler story about a vendor lying outright.", "at": [{ "step": "Hook" }] },
+      { "item": "TPC-H and TPC-DS are presented as a size-and-shape progression (eight tables and twenty-two queries, versus a larger snowflake schema and ninety-nine queries), tying directly back to topic 3's own uniform-versus-skewed and scale-factor material as the same idea at industry scale, rather than as two disconnected facts to memorize.", "at": [{ "step": "Reveal: TPC-H and TPC-DS, what each stresses" }] },
+      { "item": "ClickBench's own blind spot (no joins at all) is drawn directly from ClickBench's own README, which states plainly that this may give classical data warehouses an unfair disadvantage in its specific benchmark, so the topic treats ClickBench's own documented self-awareness as the source, rather than presenting the blind spot as an outside criticism ClickBench itself does not acknowledge.", "at": [{ "step": "Reveal: ClickBench and its own stated blind spot" }] },
+      { "item": "The Join Order Benchmark is connected explicitly, by name, to topic 3's own correlated-column demonstration earlier in this chapter, so a viewer sees the same uniformity-and-independence failure mode scale from one topic's own classroom demonstration to a named, peer-reviewed industry benchmark built for exactly that reason.", "at": [{ "step": "Reveal: the Join Order Benchmark, for cardinality estimation and join ordering" }] },
+      { "item": "TPC-DI's obsolete status is verified directly against TPC's own current specifications page at research time, rather than assumed from CHAPTER.md's own planning note, following the project's own never-guess-a-fact discipline, and the topic names what filled the resulting gap (ad hoc or unstandardized ETL benchmarking) without inventing a replacement standard that does not exist.", "at": [{ "deep": "Internals" }] },
+      { "item": "Benchmarketing and the DeWitt clause are presented as two distinct mechanisms working together, not one: benchmarketing is about which true number a vendor chooses to publish, while a DeWitt clause is about whether a competitor or customer is even legally free to publish a correction, and the topic is explicit that this chapter's own method (an independently reproducible harness) is valuable precisely because it sidesteps both.", "at": [{ "step": "Reveal: benchmarketing and the DeWitt clause" }] },
+      { "item": "The chapter-closing lab deliberately re-runs the other three topics' own committed examples.py scripts from this topic's own script, as a literal, mechanically-checked demonstration that the chapter's three artifacts (harness, generator, baseline) are genuinely one reproducible bundle rather than three independent scripts that happen to sit in the same chapter.", "at": [{ "deep": "Lab" }] },
+      { "item": "The join-order demonstration's own bad-order query is fenced with a MATERIALIZED CTE specifically because an earlier attempt using Postgres's own join_collapse_limit setting showed no measurable difference over small dimension tables (Postgres pushes a selective filter down to a small table's scan regardless of join-reordering settings) — documented in FACT-CHECK.md's Problem Solving section as a real design correction, not presented as if the first approach had simply worked.", "at": [{ "deep": "Lab" }] },
+      { "item": "The topic is explicit, in CHAPTER.md's own 'Leaves out' line and in this topic's own lab description, that its own join-order query is a disclosed, classroom-scale shape in the spirit of the Join Order Benchmark, never a claim to reproduce JOB's own IMDB dataset or queries, or evidence about any real database engine's production performance.", "at": [{ "step": "Prove it" }] },
+      { "item": "Every absolute millisecond number this topic prints varies run to run against this sandbox's real, shared Postgres instance, while the qualitative relationship actually taught (filtering before joining is reliably faster than joining before filtering, and the chapter's three scripts reliably re-run clean together) was confirmed stable across two separate runs, which is the property that was actually verified.", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
