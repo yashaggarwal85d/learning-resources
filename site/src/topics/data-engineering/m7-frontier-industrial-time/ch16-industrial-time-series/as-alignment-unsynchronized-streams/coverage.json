@@ -1,0 +1,118 @@
+{
+  "topic": "de.as-alignment-unsynchronized-streams",
+  "syllabus": [
+    {
+      "clause": "as-of (nearest-preceding) joins across sensors sampled at different rates,",
+      "at": [{ "step": "Reveal: the as-of join, applied to telemetry" }]
+    },
+    {
+      "clause": "tolerance windows,",
+      "at": [
+        { "step": "Predict: can a tolerance below the clock offset help?" },
+        { "step": "Reveal: below the offset, nothing helps" },
+        { "step": "Reveal: the null rate against tolerance" }
+      ]
+    },
+    {
+      "clause": "interpolation at join time;",
+      "at": [{ "step": "Reveal: a step vs. an interpolated value, and its cost" }]
+    },
+    {
+      "clause": "implementations in DuckDB/ClickHouse/kdb+-style ASOF JOIN and pandas merge_asof;",
+      "at": [{ "step": "Reveal: the null rate against tolerance" }]
+    },
+    {
+      "clause": "the same mechanism as point-in-time feature joins (§17.1).",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pandas: merge_asof",
+      "items": [
+        {
+          "item": "merge_asof's default direction is 'backward', and its tolerance parameter bounds how far a match can be from the left key",
+          "at": [{ "step": "Reveal: the as-of join, applied to telemetry" }]
+        }
+      ]
+    },
+    {
+      "source": "DuckDB: AsOf Join guide",
+      "items": [
+        {
+          "item": "an AsOf join produces at most one right-side match, so the left side can shrink but never grow",
+          "at": [{ "step": "Reveal: the as-of join, applied to telemetry" }]
+        }
+      ]
+    },
+    {
+      "source": "ClickHouse: JOIN clause documentation (ASOF)",
+      "items": [
+        {
+          "item": "ASOF JOIN joins sequences on a non-exact, closest-match condition, with NaN keys requiring a filter on both sides",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "kdb+/q: aj reference",
+      "items": [
+        {
+          "item": "aj matches on equality for all but the last column, taking the most recent time for the last, as a left join with nulls for unmatched rows",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "An as-of join's 'backward' default is not an arbitrary choice among equals — it's the only direction available in real time, since 'forward' and 'nearest' both require a sample that hasn't happened yet relative to the left row being processed as it arrives.",
+        "at": [{ "step": "Reveal: the as-of join, applied to telemetry" }]
+      },
+      {
+        "item": "A tolerance is not a precision knob that can be turned down indefinitely for a 'tighter' answer — past the signal's own report period, turning it down only converts correct matches into null ones, it can't manufacture data that was never sampled.",
+        "at": [{ "step": "Predict: can a tolerance below the clock offset help?" }]
+      },
+      {
+        "item": "Setting a tolerance below a known clock-offset uncertainty is strictly worse than setting it at the offset: every match the tighter tolerance excludes was already within the looser, correct tolerance, so nothing is gained and real matches are lost.",
+        "at": [{ "step": "Reveal: below the offset, nothing helps" }]
+      },
+      {
+        "item": "The null-rate-vs-tolerance curve is a diagnostic in its own right, independent of picking a final tolerance value — a curve with a sharp knee at the signal's known report period confirms the join is behaving as expected; a curve with no knee anywhere suggests the assumed report period is wrong.",
+        "at": [{ "step": "Reveal: the null rate against tolerance" }]
+      },
+      {
+        "item": "Interpolation's look-ahead requirement isn't a minor implementation detail — it's the exact same boundary that separates a valid backward-looking analysis from a leaking model feature (Chapter 17's training-set leakage), which is why this topic states the identity to the point-in-time feature join rather than treating them as unrelated.",
+        "at": [{ "step": "Reveal: a step vs. an interpolated value, and its cost" }]
+      },
+      {
+        "item": "A step approximation isn't 'wrong' in the way a bug is wrong — it's a documented, bounded kind of staleness (at most one report period old), whereas an unbounded or mis-partitioned match has no such bound and is a different class of error entirely.",
+        "at": [{ "step": "Reveal: a step vs. an interpolated value, and its cost" }]
+      },
+      {
+        "item": "A partition key for an as-of join is not an optimization — it's a correctness requirement whenever more than one entity shares a timeline; omitting it doesn't fail loudly, it silently returns a plausible-looking row borrowed from the wrong equipment.",
+        "at": [{ "step": "Reveal: the partition key, and what happens without it" }]
+      },
+      {
+        "item": "Running the same join in two different engines (DuckDB and pandas) and asserting row-for-row agreement is a stronger correctness check than testing either engine's output against hand-reasoning alone, because it catches a bug that happens to be consistent with one engine's own quirks but not the mechanism itself.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A badly stale match returned with no error is the general failure shape of any as-of join without a tolerance: the join's contract is 'nearest preceding, however far back that is,' and a caller who wants a recency guarantee has to state it explicitly.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Checking two independent engines against each other catches a different class of bug than checking one engine against hand-written expected values: the latter can be wrong in a way that happens to match a buggy implementation, while two unrelated implementations agreeing is evidence about the mechanism itself, not about either codebase.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
