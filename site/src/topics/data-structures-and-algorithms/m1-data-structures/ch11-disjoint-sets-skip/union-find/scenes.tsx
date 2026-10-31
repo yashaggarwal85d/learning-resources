@@ -176,12 +176,16 @@ export function Compression({ t }: StepCtx) {
         root
       </T>
       <g opacity={after}>
-        {Array.from({ length: 8 }, (_, i) => (
-          <g key={i}>
-            {node(90 + (i % 4) * 90, 170 + Math.floor(i / 4) * 60, i === 7 ? C.caramel : C.crema)}
-            {i < 7 && link(90 + (i % 4) * 90, 170 + Math.floor(i / 4) * 60, 90 + 7 * 90 - 7 * 90, 170 + 60, C.caramel, 0.4)}
-          </g>
-        ))}
+        {(() => {
+          const rootX = 90 + (7 % 4) * 90;
+          const rootY = 170 + Math.floor(7 / 4) * 60;
+          return Array.from({ length: 8 }, (_, i) => (
+            <g key={i}>
+              {node(90 + (i % 4) * 90, 170 + Math.floor(i / 4) * 60, i === 7 ? C.caramel : C.crema)}
+              {i < 7 && link(90 + (i % 4) * 90, 170 + Math.floor(i / 4) * 60, rootX, rootY, C.caramel, 0.4)}
+            </g>
+          ));
+        })()}
         <T x={30} y={310} s={13} f={C.caramel}>
           every node swings straight to the root, in one pass
         </T>
