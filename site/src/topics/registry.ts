@@ -5207,6 +5207,26 @@ export const TOPICS: TopicMeta[] = [
       "acks=all means waiting for every in-sync replica, not just the leader. What makes a replica count as in-sync, and what happens when one falls behind or a leader dies, is the next topic.",
   },
   {
+    id: 'de.replication-isr-high-watermark',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/replication-isr-high-watermark',
+    title: 'Replication, ISR and the high watermark',
+    syllabusTitle: 'Replication, ISR and the high watermark',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['isr-high-watermark', 'leader-epoch-fencing', 'unclean-election-vs-elr'],
+    uses: ['producer-batching-linger', 'acks-durability-tradeoff'],
+    declared: [],
+    bridge:
+      "acks=all means waiting for every in-sync replica. This topic is what makes a replica count as in-sync, what the high watermark actually commits, and what happens — precisely — when a leader dies.",
+    handoff:
+      "Kafka's own cluster metadata — which broker leads which partition, which replicas are in sync — used to live in ZooKeeper, replicated by a completely different system. Kafka 4.0 replaced it with the same kind of log this chapter has been building. That's next.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
