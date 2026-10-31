@@ -6439,6 +6439,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything in this section can be built by hand, and every part of it is maintenance. Whether to build it at all, or buy a connector that someone else maintains, is the last question of the section.",
   },
   {
+    id: 'de.managed-ingestion-tools-build',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/managed-ingestion-tools-build',
+    title: 'Managed ingestion tools and build-vs-buy',
+    syllabusTitle: 'Managed ingestion tools and build-vs-buy',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['ingestion-build-vs-buy'],
+    uses: ['high-watermark-cursor', 'keyset-pagination-consistency', 'rate-limit-backoff-ingestion', 'object-store-commit-protocols', 'exactly-once-effect-recipe', 'raw-layer-replay-metadata', 'data-contract-specification'],
+    declared: [],
+    bridge:
+      "Everything in this section can be built by hand, and every part of it is maintenance. This topic is the decision the whole section prepares: which parts to buy, what each tool really charges for, and when owning the connector is the cheaper choice.",
+    handoff:
+      "One failure the section kept returning to has no fix inside a cursor: the row that was deleted, or changed twice between runs. The source database already records every change, in order, for its own recovery. Reading that record instead is the next section.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
