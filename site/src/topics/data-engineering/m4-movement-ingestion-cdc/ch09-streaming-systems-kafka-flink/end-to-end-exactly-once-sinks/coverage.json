@@ -1,0 +1,142 @@
+{
+  "topic": "de.end-to-end-exactly-once-sinks",
+  "syllabus": [
+    {
+      "clause": "two-phase-commit sinks",
+      "at": [
+        { "step": "Setup: a guarantee that stops at an edge" },
+        { "step": "Predict: what happens to a write caught mid-crash?" }
+      ]
+    },
+    {
+      "clause": "pre-commit on checkpoint, commit on checkpoint-complete",
+      "at": [{ "step": "Reveal: durable first, visible only once confirmed" }]
+    },
+    {
+      "clause": "idempotent upsert sinks keyed by deterministic ids",
+      "at": [{ "step": "Reveal: the other path, no transaction at all" }]
+    },
+    {
+      "clause": "storing offsets atomically with the output",
+      "at": [{ "step": "Reveal: the offset rides inside the same unit" }]
+    },
+    {
+      "clause": "where it breaks",
+      "at": [{ "step": "Predict: name a way this guarantee quietly fails" }]
+    },
+    {
+      "clause": "non-deterministic processing",
+      "at": [{ "step": "Reveal: three different ways it breaks" }]
+    },
+    {
+      "clause": "external side effects",
+      "at": [{ "step": "Reveal: three different ways it breaks" }]
+    },
+    {
+      "clause": "transaction timeouts shorter than checkpoint intervals",
+      "at": [
+        { "step": "Hook: a timeout quietly shorter than the checkpoint" },
+        { "step": "Reveal: three different ways it breaks" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "TwoPhaseCommitSinkFunction (Flink 1.20 API)",
+      "items": [
+        {
+          "item": "this is a recommended base class for all of the SinkFunction that intend to implement exactly-once semantic, by implementing two phase commit algorithm on top of the CheckpointedFunction and CheckpointListener",
+          "at": [{ "step": "Setup: a guarantee that stops at an edge" }]
+        },
+        {
+          "item": "pre commit must make all of the necessary steps to prepare the transaction for a commit that might happen in the future, and after this point the transaction might still be aborted, but commit calls on already pre committed transactions will always succeed",
+          "at": [{ "step": "Reveal: durable first, visible only once confirmed" }]
+        },
+        {
+          "item": "if commit fails, Flink application will be restarted and recoverAndCommit will be called again for the same transaction",
+          "at": [{ "step": "Reveal: durable first, visible only once confirmed" }]
+        }
+      ]
+    },
+    {
+      "source": "Fault Tolerance Guarantees (Apache Flink connector docs)",
+      "items": [
+        {
+          "item": "to guarantee end-to-end exactly-once record delivery, the data sink needs to take part in the checkpointing mechanism",
+          "at": [{ "step": "Setup: a guarantee that stops at an edge" }]
+        },
+        {
+          "item": "the Cassandra sink reaches exactly once only for idempotent updates",
+          "at": [{ "step": "Reveal: the other path, no transaction at all" }]
+        }
+      ]
+    },
+    {
+      "source": "Kafka Connector (Apache Flink docs)",
+      "items": [
+        {
+          "item": "in exactly-once mode, the KafkaSink writes all messages in a Kafka transaction that is committed on a checkpoint",
+          "at": [{ "step": "Reveal: durable first, visible only once confirmed" }]
+        },
+        {
+          "item": "it is highly recommended to tweak Kafka transaction timeout to exceed maximum checkpoint duration plus maximum restart duration, or data loss may happen when Kafka expires an uncommitted transaction",
+          "at": [
+            { "step": "Hook: a timeout quietly shorter than the checkpoint" },
+            { "step": "Reveal: three different ways it breaks" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Pre-commit and commit are deliberately separate steps: pre-commit must be safe to call before any crash, and commit must be safe to retry after one, which is exactly what lets recovery finish an interrupted write without risking a duplicate.",
+        "at": [{ "step": "Reveal: durable first, visible only once confirmed" }]
+      },
+      {
+        "item": "Idempotent-upsert and two-phase commit are two independent solutions to the same problem, not a fallback pair — a sink picks one approach, not both, since combining them adds complexity without adding safety.",
+        "at": [{ "step": "Reveal: the other path, no transaction at all" }]
+      },
+      {
+        "item": "The offset-atomicity requirement generalizes past Kafka: any system where 'how far we've consumed' and 'what we wrote' can be recorded separately has the same crash window, whatever the two storage locations are.",
+        "at": [{ "step": "Reveal: the offset rides inside the same unit" }]
+      },
+      {
+        "item": "The three failure modes are independent on purpose: fixing one (say, making processing deterministic) does nothing to protect against either of the other two, so a production system has to address all three separately.",
+        "at": [{ "step": "Reveal: three different ways it breaks" }]
+      },
+      {
+        "item": "A transaction-timeout misconfiguration is uniquely dangerous among the three failure modes because it produces no error — the write simply never lands, and nothing in the pipeline signals that anything went wrong.",
+        "at": [{ "step": "Hook: a timeout quietly shorter than the checkpoint" }]
+      },
+      {
+        "item": "This topic's toy models are deliberately simplified standalone simulations, not a port of Flink's actual checkpointing or Kafka transaction implementation, since no real Flink job runs in this sandbox.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Saying an idempotent-upsert sink reaches 'exactly-once' is really describing the effect of at-least-once delivery plus a write that happens to be safe to repeat — the delivery guarantee underneath is unchanged.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "A deterministic id is the narrowest possible fix for duplication — it only works when the sink itself can recognize the overwrite, which is why the next topic generalizes the idea to any consumer, not just a sink.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Pre-commit's own durability doesn't require Flink's checkpoint barrier to have reached the sink yet — it only requires the sink's own staged write to be safely recoverable, which is a weaker, cheaper condition than full barrier alignment.",
+        "at": [{ "step": "Reveal: durable first, visible only once confirmed" }]
+      },
+      {
+        "item": "Both two-phase commit and idempotent upsert are stronger mechanisms than the delivery guarantee underneath them (at-least-once) — the exactly-once effect is built on top of at-least-once, not a replacement for it.",
+        "at": [{ "deep": "Frontier" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -6085,6 +6085,26 @@ export const TOPICS: TopicMeta[] = [
       "A transaction keeps everything inside Kafka consistent. The moment the far end of a pipeline is not Kafka — a database, a file, an API — a Kafka transaction alone can't make that write atomic with anything. That's the next topic.",
   },
   {
+    id: 'de.end-to-end-exactly-once-sinks',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/end-to-end-exactly-once-sinks',
+    title: 'End-to-end exactly-once with external sinks',
+    syllabusTitle: 'End-to-end exactly-once with external sinks',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['two-phase-commit-sink', 'idempotent-upsert-deterministic-id', 'exactly-once-failure-modes'],
+    uses: ['kafka-transaction-coordinator', 'consume-transform-produce-eos'],
+    declared: [],
+    bridge:
+      "A Kafka transaction keeps everything inside Kafka consistent. The moment the sink is a database, a file, or an API instead of Kafka, Kafka's own transaction mechanism can't reach it. This topic is how the same exactly-once effect is achieved anyway — and exactly where that achievement quietly stops being true.",
+    handoff:
+      "A deterministic id is one specific way to make a retried write harmless. The general version of that idea — tracking which event ids have already been applied, at all — is its own topic, and it's needed even when no transaction or two-phase sink exists at all.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
