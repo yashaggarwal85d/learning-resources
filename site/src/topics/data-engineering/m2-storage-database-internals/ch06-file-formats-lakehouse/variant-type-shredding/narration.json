@@ -1,0 +1,77 @@
+{
+  "topic": "de.variant-type-shredding",
+  "steps": [
+    {
+      "lines": [
+        "Here are six real events: a few clicks, one scroll, and one record where a field that's usually a number shows up as a string instead.",
+        "Four different shapes, one outright type conflict. This is what semi-structured data actually looks like once it leaves a toy example.",
+        "The question this topic answers is simple: what do you store this in, so that nothing gets lost and nothing gets slow?"
+      ]
+    },
+    {
+      "lines": [
+        "Suppose you pick one fixed struct: a string column for event type, an int thirty-two column for button ID. That's the shape most of these six records share.",
+        "Can that one struct hold every one of the six records, without quietly throwing anything away?"
+      ],
+      "answer": [
+        "No. A null can stand in for a field that's simply missing, but it can't stand in for a field the struct never had a column for, or a value whose type the column can't represent at all.",
+        "Watch what happens to the scroll event, and to the one record where button ID shows up as text."
+      ]
+    },
+    {
+      "lines": [
+        "Force all six records into that struct, and the scroll event's only real field, depth percent, has nowhere to go — there's no column for it.",
+        "Worse, the record where button ID is the string \"unknown\" doesn't even get left null. The struct's int thirty-two column simply can't hold it, so it's silently dropped.",
+        "Three of the six records lose real data. Nothing in the struct itself tells you that happened."
+      ]
+    },
+    {
+      "lines": [
+        "Now the alternative: the Variant binary encoding. A metadata dictionary holding every field name once, plus a per-record value that can be any shape at all.",
+        "This topic builds that encoder by hand, straight from the specification's own byte layout — the header byte, the dictionary offsets, the value's type tag.",
+        "Decode every one of the six records back, and every single one matches the original exactly. Nothing silently dropped, because nothing required a fixed schema in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Now a different question. Say you want every event where event type equals \"click\". Does answering that mean decoding the entire Variant binary value for all six records?"
+      ],
+      "answer": [
+        "Not necessarily. If event type is shredded into its own typed Parquet column, a reader can filter on that column directly, the exact same way it filters any ordinary column — no Variant decoding required.",
+        "The catch is that shredding only works field by field, and only when a field's actual type cooperates."
+      ]
+    },
+    {
+      "lines": [
+        "Shred event type and button ID into typed columns, field by field, following the specification's own rules for the value and its shredded counterpart.",
+        "Three records shred completely, with nothing left over. Two keep a real residual field — the scroll event's depth percent, and the one extra label field.",
+        "And one falls back entirely: button ID as the string \"unknown\" can't go in an int thirty-two column, so it stays in the residual value, exactly as the spec requires."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the payoff. Event type happens to be a string in every one of these six records, so it's shredded every single time, with nothing left over for that field.",
+        "Finding the five click events means reading the typed event type column alone — zero bytes of the residual Variant value get touched at all."
+      ]
+    },
+    {
+      "lines": [
+        "Measured in bytes: two hundred fifty as plain JSON strings, one hundred fifty-five as an unshredded Variant, one hundred twenty-six once event type and button ID are shredded.",
+        "Shredding wins on size here, but only modestly — a fairer comparison needs a bigger dataset to really separate these numbers."
+      ]
+    },
+    {
+      "lines": [
+        "That modest size gain isn't really the point. The point is the filter from two steps ago: zero residual bytes read for a typed column's own query.",
+        "Shredding earns its keep mostly through pushdown and statistics, the same tools row-group and page skipping use — not mainly through smaller files."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and the shape of the lesson is the same one this whole chapter keeps returning to: a fixed schema is fast but brittle, and it drops what it wasn't built for.",
+        "A Variant keeps everything, typed or not, at the cost of being opaque until decoded. Shredding is the compromise — typed speed for the fields that earn it, a residual for the rest.",
+        "The rule that makes it safe: shred what's genuinely typed, and never force a schema that quietly throws real data away."
+      ]
+    }
+  ]
+}

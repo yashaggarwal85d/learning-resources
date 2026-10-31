@@ -5305,6 +5305,26 @@ export const TOPICS: TopicMeta[] = [
       "An eviction policy alone says nothing about whether a cached value is still correct. The next topic is the harder problem: cache consistency and invalidation.",
   },
   {
+    id: 'de.cache-consistency-invalidation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/cache-consistency-invalidation',
+    title: 'Cache consistency and invalidation',
+    syllabusTitle: 'Cache consistency and invalidation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cache-consistency-invalidation'],
+    uses: ['cache-patterns-eviction', 'physical-vs-logical-replication'],
+    declared: [],
+    bridge:
+      "An eviction policy alone says nothing about whether a cached value is still correct. This topic is the harder problem: the delete-after-write race reproduced directly, and the real fixes (versioned keys, leases, CDC-driven invalidation) production systems actually use.",
+    handoff:
+      "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. The next topic is one real engine's actual internals: Redis and Valkey.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -5423,6 +5443,26 @@ export const TOPICS: TopicMeta[] = [
       "A pool bounds how many tasks run at once, but a task waiting in poke mode for an external job still occupies a worker the whole time it waits. This topic is the mechanism built to avoid exactly that: a deferred task that gives its worker slot back and lets a separate, lightweight process do the waiting.",
     handoff:
       "A deferred task still waits for something specific it already knows to watch for. Some pipelines need the opposite: a run triggered not by a clock or a known wait, but by data itself becoming available somewhere else.",
+  },
+  {
+    id: 'de.data-aware-event-driven-scheduling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-aware-event-driven-scheduling',
+    title: 'Data-aware and event-driven scheduling',
+    syllabusTitle: 'Data-aware and event-driven scheduling',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['data-aware-asset-scheduling', 'thundering-herd-event-trigger'],
+    uses: ['ch9.message-queue-delivery-semantics', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "A deferred task waits for one specific thing it already knows to watch. This topic is scheduling a whole run not by a clock or a known wait, but by an asset elsewhere becoming freshly available -- and the crowd-and-miss problems that triggering model brings with it.",
+    handoff:
+      "Everything in this section has treated the Dag, and its tasks, as the unit the orchestrator schedules. Dagster's model asks whether the Dag is even the right unit to think in, or whether the data products themselves -- the assets -- should be the thing the system is built around.",
   },
   {
     id: 'de.driver-executors-task-hierarchy',
@@ -6663,5 +6703,25 @@ export const TOPICS: TopicMeta[] = [
       "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and rows it can skip entirely. This topic is exactly that: row-group statistics, the page index, bloom filters, and why none of it prunes anything if the data isn't sorted first.",
     handoff:
       "Every skipping trick so far lived inside one Parquet file's own footer. The next section asks what happens once there isn't one file anymore, but a whole table of them sitting in object storage with no file you can safely edit in place.",
+  },
+  {
+    id: 'de.variant-type-shredding',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/variant-type-shredding',
+    title: 'Variant type and shredding',
+    syllabusTitle: 'Variant type and shredding',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['variant-type-shredding'],
+    uses: ['dremel-shredding-levels', 'parquet-data-skipping'],
+    declared: [],
+    bridge:
+      "Every skipping trick so far lived inside flat, already-typed columns. This topic is the format's answer to data that isn't typed at all yet — the Variant type, and the shredding that recovers this chapter's statistics for the fields that matter most.",
+    handoff:
+      "A single Parquet file, however well encoded, typed and skippable, is still one immutable file. ORC is the one real rival that made different choices at every one of these same decisions — worth seeing once, directly, before this chapter leaves the single-file world for good.",
   },
 ];

@@ -1,48 +1,34 @@
-## ISA-95 Standard: Enterprise-Control System Integration
+## ISA-95 Standard: Enterprise-Control System Integration (named, not quoted)
 
 URL: https://www.isa.org/standards-and-publications/isa-standards/isa-95-standard
-Version: ISA.org standard page, retrieved 2026-10-30
+Version: ISA.org standard page — fetched once during this chapter's research, then deleted; not quoted.
 
-The five levels, in ISA's own words.
+**Correction, 2026-10-31:** this SOURCES.md originally quoted ISA's standard page verbatim (its
+five-level descriptions, "Level 0: Physical production processes" through "Level 4: Business
+planning and logistics", and the level 3/4 interface sentence). ISA's own standards pages carry a
+site-wide notice prohibiting the entry of their content into any AI tool, discovered while
+researching this chapter's topic 6 and confirmed on this exact page. Those quotes are removed.
+This topic now **names ISA-95 bibliographically only** (Parts 1-3: models and terminology, the
+level 3/4 interface, MOM activity models) and states the five-level structure (levels 0-4,
+physical process through business planning, with PLCs/DCSs at level 2 and MES/SCADA at level 3)
+as the standard's well-established, widely-published structure rather than as a quoted sentence
+from ISA's own page. The specific sentence "The ISA-95 standard primarily deals with the
+interface between levels 3 and 4" is also no longer asserted as a verbatim ISA quote; it is
+dropped rather than restated from memory as if quoted.
 
-> Level 0: Physical production processes
-
-> Level 0 describes the physical processes of running a plant. It refers to machinery and other assets in the field or on the floor.
-
-> Level 1: Sensing and manipulating the production process
-
-> Level 1 describes the collection of data and the manipulation of physical processes. It refers to sensors, smart devices, valves and other devices that sense or affect production.
-
-> Level 2: Monitoring and supervising control
-
-> Level 2 describes the monitoring and supervising of physical processes in the manufacturing environment. It refers to programmable logic controllers (PLCs), distributed control systems (DCSs) and other control devices.
-
-> Level 3: Manufacturing operations management
-
-> Level 3 describes manufacturing execution systems (MES) and other systems such as supervisory control and data acquisition (SCADA) that manage manufacturing operations. The ISA-95 standard primarily deals with the interface between levels 3 and 4.
-
-> Level 4: Business planning and logistics
-
-> Level 4 describes all the activities related to running a business. It includes enterprise resource planning (ERP) systems.
-
-Contents: the five levels (0-4) with their systems of record; the part structure (Part 1 models and terminology, Part 2 the level 3/4 interface, Part 3 MOM activity models); the Purdue Reference Model as ISA-95's origin; the Industry 4.0 section on the pyramid versus distributed data flows.
-
-## Beyond the Pyramid: Using ISA95 for Industry 4.0 and Smart Manufacturing
+## Beyond the Pyramid: Using ISA95 for Industry 4.0 and Smart Manufacturing (named, not quoted)
 
 URL: https://www.isa.org/intech-home/2021/october-2021/features/beyond-the-pyramid-using-isa95-for-industry-4-0-an
-Version: ISA InTech, October 2021 (Brandl & Johnsson), republished Automation.com January 2022
+Version: ISA InTech, October 2021 (Brandl & Johnsson) — fetched once, then deleted; not quoted.
 
-The "time horizon" framing the levels actually rest on, and that the pyramid is one implementation choice, not the standard itself.
-
-> The ISA95 functional model (figure 2) divides the activities required by a manufacturing system into five levels depending on the time horizon of the functionalities—without consideration of the systems supporting the functionality. Some functions are time critical, such as real-time control with cycles in micro- or milliseconds, and others are less time critical with resolution in weeks or days.
-
-> Even though it is not imposed by the ISA95 standard, one traditional implementation of the ISA95 functional model into a physical architecture is a pyramidal network-and-system architectural structure.
-
-> The hierarchy indicates the relative time horizons for the activities but gives no indications of how they should be implemented nor what architectural structure should be used.
-
-> Traditionally, the activities have been implemented through a hierarchical pyramid architecture, but this could be changed for another architectural design, such a modern network-structured architecture, without losing compliance to ISA95.
-
-Contents: the functional model's five time-horizon bands; the pyramid as one traditional physical implementation, not a requirement; the argument for a network-structured architecture that stays ISA95-compliant.
+**Correction, 2026-10-31:** this SOURCES.md originally quoted this ISA InTech article verbatim
+(the "time horizon" framing, the pyramid-vs-network-architecture argument). This is also an
+isa.org page and carries the same AI-ingestion prohibition as the standard page above. Those
+quotes are removed. The underlying point this topic makes — that ISA-95's five levels separate
+activities by time horizon, not by which system implements them, and that a pyramidal network is
+one traditional implementation rather than a requirement of the standard — is kept as this
+topic's own stated argument, attributed to Brandl & Johnsson's article by title and date only,
+not quoted.
 
 ## NIST SP 800-82 Rev. 3: Guide to Operational Technology (OT) Security
 
