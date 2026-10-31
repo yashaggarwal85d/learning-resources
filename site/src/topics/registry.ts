@@ -6365,6 +6365,26 @@ export const TOPICS: TopicMeta[] = [
       "OEE is built from events: a machine changes state and a part is counted. Some plant data is not an event at all but a running total that only ever goes up. The next topic is the energy and utility meter, whose raw reading is a counter, and what it takes to turn a counter into consumption.",
   },
   {
+    id: 'de.energy-utility-metering',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/energy-utility-metering',
+    title: 'Energy and utility metering',
+    syllabusTitle: 'Energy and utility metering',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cumulative-counter-to-interval-consumption', 'counter-reset-rollover-meter-swap', 'power-vs-energy-integration', 'shared-utility-allocation-rule', 'energy-per-unit-kpi'],
+    uses: ['equipment-hierarchy-dimension', 'hierarchy-as-of-versioning', 'oee-availability-performance-quality', 'integer-overflow', 'timestamp-resolution', 'measure-additivity-classes', 'bounded-reprocessing-window'],
+    declared: [],
+    bridge:
+      "OEE is built from events: a machine changes state and a part is counted. Some plant data is not an event at all but a running total that only ever goes up. This topic is the energy and utility meter, whose raw reading is a counter, and what it takes to turn a counter into consumption you can add up.",
+    handoff:
+      "The meter, the PLC and the MES each hold a piece of the plant's data, and each sits in a network that must never be disturbed by a data platform. The next topic is the boundary between the plant floor and the rest of the company: where the networks are segmented, who owns each copy of the data, and how to read without touching control.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
