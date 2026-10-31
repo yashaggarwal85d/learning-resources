@@ -6477,6 +6477,26 @@ export const TOPICS: TopicMeta[] = [
       "One failure the section kept returning to has no fix inside a cursor: the row that was deleted, or changed twice between runs. The source database already records every change, in order, for its own recovery. Reading that record instead is the next section.",
   },
   {
+    id: 'de.query-based-vs-log',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/query-based-vs-log',
+    title: 'Query-based vs log-based CDC',
+    syllabusTitle: 'Query-based vs log-based CDC',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['query-vs-log-cdc'],
+    uses: ['cursor-miss-modes', 'high-watermark-cursor', 'wal-lsn-fsync', 'physical-vs-logical-replication'],
+    declared: [],
+    bridge:
+      "One failure kept returning in the last section: the row that was deleted, or changed twice between two runs, which no cursor can see. The database already records every change, in order, for its own recovery. This topic is the choice between asking the table what changed and reading that record.",
+    handoff:
+      "Reading the database's own log is complete and cheap, and it is a bargain with the source. What exactly the log contains, and how a consumer holds a place in it, depends on the engine. The first to open is PostgreSQL's.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
