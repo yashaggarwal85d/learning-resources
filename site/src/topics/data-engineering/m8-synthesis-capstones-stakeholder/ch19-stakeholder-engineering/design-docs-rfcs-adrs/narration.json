@@ -1,0 +1,74 @@
+{
+  "topic": "de.design-docs-rfcs-adrs",
+  "steps": [
+    {
+      "lines": [
+        "Half a year after the medium tier was actually chosen, a brand new engineer walks in and asks a perfectly reasonable question.",
+        "Why on earth didn't the team just pick the fast tier instead.",
+        "Nobody left in that room was actually there for the original decision. Only a written document can answer that question now, not anybody's own memory of the meeting."
+      ]
+    },
+    {
+      "lines": [
+        "So what would have genuinely survived everyone who made this decision eventually leaving the room.",
+        "What single thing was built specifically to outlast them."
+      ],
+      "answer": [
+        "Not a slide deck summarizing a single meeting for the people already sitting in it.",
+        "A design document written before the decision ever happened, paired with a dated record of the decision itself, built specifically to survive the very people who wrote it eventually leaving."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real, well documented structure for exactly this kind of document.",
+        "Context, goals and non goals, alternatives considered, estimates, and risks.",
+        "Every single one of those five sections gets genuinely filled in here, for the shop's own dashboard request."
+      ]
+    },
+    {
+      "lines": [
+        "Calling something like full compliance a non goal does not mean the system must never achieve it.",
+        "It simply means the team chose, quite deliberately, not to make it an actual goal this time around.",
+        "That leaves plenty of room to still get it anyway, almost by accident, so long as chasing it never costs the team one of its real goals."
+      ]
+    },
+    {
+      "lines": [
+        "A design document read carefully by just one single team can still miss a consequence a different team would have caught immediately.",
+        "An RFC adds something that one team's own review simply cannot provide on its own.",
+        "A time boxed, widely advertised review period, where every genuinely affected team has to actually sign off before the decision is treated as final."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the format this course borrows directly from its own original source.",
+        "Four parts, making up one architecture decision record. Context, decision, status, and consequences.",
+        "It gets written for the shop's own chosen tier, in exactly the style its own originator described. As a conversation with a future developer who simply wasn't in the room."
+      ]
+    },
+    {
+      "lines": [
+        "Now suppose a later decision ends up reversing an earlier one entirely.",
+        "The old record still stays exactly where it was, inside the very same repository.",
+        "Only its own status line actually changes, to superseded by the new one. It never simply gets deleted. That's the record of what the team genuinely believed, and why, back at the time."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling this together now.",
+        "A design document's own five sections, a non goal that's a genuinely deliberate choice, what an RFC's review period actually adds, a four part architecture decision record, and the superseded, never deleted, convention.",
+        "None of those five pieces is actually optional."
+      ]
+    },
+    {
+      "lines": [
+        "A team deletes an old architecture decision record right after a decision changes, reasoning that the now wrong decision shouldn't confuse anybody going forward.",
+        "So what's genuinely lost by deleting that record outright, instead of simply marking it superseded."
+      ],
+      "answer": [
+        "Not the wrong answer itself; that part really was worth losing.",
+        "What's lost is the actual record that the old decision was reasonable, given what the team knew at the time. Without it, the next person who hits this exact same trade off has no way to tell whether it was already tried and rejected, or never even considered at all."
+      ]
+    }
+  ]
+}

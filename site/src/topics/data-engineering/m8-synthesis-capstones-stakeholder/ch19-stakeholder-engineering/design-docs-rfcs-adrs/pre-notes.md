@@ -1,0 +1,6 @@
+- **Design doc**: a written document covering context, goals and non-goals, alternatives, estimates and risks, written before a decision is built.
+- **Non-goal**: something a design deliberately chooses not to promise, not something it is forbidden to deliver as a side effect.
+- **RFC (request for comments)**: a cross-team review process with a time-boxed, widely advertised comment period before a decision is final.
+- **ADR (architecture decision record)**: a short, dated record of one decision — context, decision, status, consequences.
+- **Superseded decision**: an old ADR whose status is changed to point at the ADR that replaced it, kept on record rather than deleted.
+- **SLO tier**: the priced freshness option this chapter's design doc and ADR decide between, introduced two topics ago.
