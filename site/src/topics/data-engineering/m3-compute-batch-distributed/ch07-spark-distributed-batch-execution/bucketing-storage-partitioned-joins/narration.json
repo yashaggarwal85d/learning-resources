@@ -1,0 +1,64 @@
+{
+  "topic": "de.bucketing-storage-partitioned-joins",
+  "steps": [
+    {
+      "lines": [
+        "A filter can skip whole directories it can already rule out. Here's a sharper trick: can two tables skip the join's own shuffle, too, just by agreeing on how they were split when they were written?",
+        "That's the real claim to test. Not whether a shuffle can be smaller, but whether it can be gone completely.",
+        "Let's see what a real plan says once both tables are actually set up that way."
+      ]
+    },
+    {
+      "lines": [
+        "I measured this directly, and the plan has nothing left to shuffle.",
+        "Both tables were written split by the join key, into the same number of pieces. The join's own plan carries no shuffle step at all.",
+        "Each side's own scan names itself as reading one of those pre-split pieces, not reassembling anything."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "Both tables are still split by the same key. But one of them was split into a different number of pieces than the other. Does the join still skip its shuffle?",
+        "Think about what the planner actually needs to trust before it can skip anything at all."
+      ],
+      "answer": [
+        "It's tempting to assume split is split, and the planner just lines the pieces up regardless of how many there are.",
+        "But the planner has to trust that every piece on one side corresponds to exactly one piece on the other. A different count breaks that correspondence completely.",
+        "The pieces no longer line up, so there's nothing left for the planner to reuse."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the correspondence really did break.",
+        "A real shuffle shows up in the plan now. And the table whose own split never changed loses its own shortcut too.",
+        "One mismatch is enough to withdraw the shortcut on both sides, not just the side that actually changed."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, moving from Spark's own split to a table format's own.",
+        "A table format can tell Spark directly how its own data is laid out, with nobody calling Spark's own splitting function at all. Is that the identical mechanism underneath, just hidden, or something else entirely?",
+        "Think about who's actually making the claim about how the data sits on disk."
+      ],
+      "answer": [
+        "It's easy to assume the table format quietly calls the same splitting function Spark itself would use.",
+        "But nothing here calls that function. The table's own catalog reports its layout, and Spark's planner simply takes that report at face value.",
+        "The claim about the layout comes from an entirely different place."
+      ]
+    },
+    {
+      "lines": [
+        "And that's confirmed directly in Spark's own documentation and source.",
+        "A storage-partitioned join reaches the identical result, no shuffle in the plan, but the table's own reported layout earns it, not a splitting call.",
+        "Same destination as the first reveal. A completely different road to get there."
+      ]
+    },
+    {
+      "lines": [
+        "So here's everything this topic actually showed you, named precisely.",
+        "Splitting both tables the same way at write time can erase a join's shuffle completely. But that agreement has to be exact, or it's withdrawn for both sides at once.",
+        "And a table format can earn the identical result its own way, by reporting its layout directly, with no splitting call needed at all."
+      ]
+    }
+  ]
+}

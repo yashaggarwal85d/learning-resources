@@ -6085,6 +6085,26 @@ export const TOPICS: TopicMeta[] = [
       "Pruning skips reading partitions that can't match. Bucketing, next, goes further: pre-arranging the partitions at write time so a later join skips the shuffle entirely, not just the read.",
   },
   {
+    id: 'de.bucketing-storage-partitioned-joins',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/bucketing-storage-partitioned-joins',
+    title: 'Bucketing and storage-partitioned joins',
+    syllabusTitle: 'Bucketing and storage-partitioned joins',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-bucketing', 'spark-storage-partitioned-join'],
+    uses: ['spark-hash-range-partitioner'],
+    declared: [],
+    bridge:
+      "Partition pruning skips reading data that can't match. This topic is the write-time version of the same idea applied to joins: if both tables are already partitioned the same way, the join's own shuffle never has to happen.",
+    handoff:
+      "Bucketing avoids a shuffle by agreement at write time. The next three topics are about the shuffle when it does happen — the actual join strategies and how Spark picks one.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
