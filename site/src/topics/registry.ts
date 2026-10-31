@@ -6505,6 +6505,26 @@ export const TOPICS: TopicMeta[] = [
       "That closes the model of the plant: its hierarchy, what it makes, how well it makes it, what it consumes and who owns what. Everything so far assumed a reading arrives with its time attached. The next section is about that time. It starts with the first thing that goes wrong: three clocks, none of them right.",
   },
   {
+    id: 'de.timestamps-clocks-time-zones',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/timestamps-clocks-time-zones',
+    title: 'Timestamps, clocks and time zones in telemetry',
+    syllabusTitle: 'Timestamps, clocks and time zones in telemetry',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['device-gateway-ingest-timestamps', 'event-time-source-decision', 'utc-storage-local-presentation', 'dst-gap-repeat-shift-calendar'],
+    uses: ['clock-drift-ntp-error', 'wall-vs-monotonic-clock', 'bounded-error-clock-interval', 'timestamp-resolution', 'shift-boundary-interval-splitting', 'equipment-hierarchy-dimension', 'bounded-reprocessing-window'],
+    declared: [],
+    bridge:
+      "That closes the model of the plant: its hierarchy, what it makes, how well it makes it, what it consumes and who owns what. Everything so far assumed a reading arrives with its time attached. This topic is about that time, and the first thing that goes wrong: three clocks, none of them right, and a time zone that skips an hour.",
+    handoff:
+      "Once a reading has a trustworthy time, the next problem is that the sensors do not sample on the same grid. One reports every millisecond, another every ten seconds, another only when it changes. The next topic is how to put such series onto a grid without inventing data.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',

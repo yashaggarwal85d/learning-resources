@@ -1,0 +1,89 @@
+{
+  "topic": "de.timestamps-clocks-time-zones",
+  "steps": [
+    {
+      "lines": [
+        "On one particular night, the night shift's own report says it ran at well above full output.",
+        "The schedule that night assumed the usual length, and the clocks had just gone forward.",
+        "Nothing sped up. The shift simply ran shorter than the schedule thought it did."
+      ]
+    },
+    {
+      "lines": [
+        "A single reading doesn't carry one timestamp. It carries three.",
+        "One comes from the sensor itself, closest to the real event but only as trustworthy as that device's own clock.",
+        "One comes from the gateway, which is the plant's own clock, catching up a little later.",
+        "One comes from wherever the reading finally gets stored, later still, and steady, but only telling you when the platform heard about it, never when it actually happened.",
+        "None of the three is simply the best one. Each answers a different question."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "A sensor's own clock gets quietly corrected backwards, in between two readings taken only moments apart.",
+        "Does the second reading's own timestamp still land after the first one's?"
+      ],
+      "answer": [
+        "It doesn't, and that's exactly the trap.",
+        "The sensor's own clock is the one of the three that can actually be stepped like that.",
+        "The other two clocks are never corrected in the middle of a stream, so they keep climbing in order no matter what the sensor's clock just did."
+      ]
+    },
+    {
+      "lines": [
+        "Put it to the test directly.",
+        "Two readings taken only a moment apart on the wall clock, with a correction landing in between them.",
+        "The second reading's own timestamp ends up earlier than the first one's, even while the other two clocks keep climbing exactly as expected."
+      ]
+    },
+    {
+      "lines": [
+        "Store the moment itself only once, in the one reference time everyone agrees on, and keep its origin as a separate fact alongside it.",
+        "From that single stored moment, the correct local time and the correct local offset can be produced on demand, for whichever place is asking.",
+        "Store it bare, in local time only, and that path only ever runs one way."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of writing down a fixed schedule by hand, generate it directly from the authoritative time zone data itself, for the exact place and the exact date in question.",
+        "An ordinary night comes back one length.",
+        "The two nights where the clocks actually change come back shorter on one side and longer on the other, because that's genuinely what happened to the clock that night."
+      ]
+    },
+    {
+      "lines": [
+        "Now divide the real output of that short night by the schedule's usual, fixed assumption instead of by what the night actually was.",
+        "The result comes back well above full output, on a night where nothing ran any faster at all.",
+        "That's the exact same shape of mistake seen earlier in this chapter, a boundary that got assumed instead of measured, just wearing a different costume this time."
+      ]
+    },
+    {
+      "lines": [
+        "Pick, for each signal, which of the clocks actually counts as when the thing happened.",
+        "Favor the sensor's own clock when it's been kept disciplined and stays close enough to the gateway's. Otherwise, fall back to the gateway's clock instead.",
+        "And write that choice down as its own fact, right next to the reading, instead of leaving some future reader to guess it from whichever field happens to be filled in."
+      ]
+    },
+    {
+      "lines": [
+        "Three clocks, each one answering a different question.",
+        "A clock that steps backwards can quietly break the one timestamp a pipeline was trusting the most.",
+        "Store the moment once in the one shared reference time, and render it local only afterward, never the other way around.",
+        "A schedule generated fresh from the real calendar catches exactly what a fixed one cannot.",
+        "And which clock counted as the real moment is a decision worth writing down, not leaving for someone else to guess."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "A different plant reports that its night shift ran exactly the same length every single night of an entire year, including both of the nights the clocks actually changed.",
+        "Does that consistency make their schedule something to trust?"
+      ],
+      "answer": [
+        "It doesn't. That exact consistency is the tell.",
+        "A night that genuinely spans a clock change cannot come out the same length as an ordinary night.",
+        "Reporting the identical number on both of those nights isn't evidence of a careful schedule. It's evidence of a fixed one that was never actually checking the calendar at all."
+      ]
+    }
+  ]
+}
