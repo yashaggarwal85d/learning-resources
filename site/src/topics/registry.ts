@@ -5965,6 +5965,26 @@ export const TOPICS: TopicMeta[] = [
       "Catalyst decides the physical plan's shape. Tungsten, next, decides how fast the chosen shape actually runs — a different layer, planning versus execution.",
   },
   {
+    id: 'de.tungsten-whole-stage-codegen',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/tungsten-whole-stage-codegen',
+    title: 'Tungsten and whole-stage code generation',
+    syllabusTitle: 'Tungsten and whole-stage code generation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-tungsten-unsaferow', 'spark-whole-stage-codegen'],
+    uses: ['spark-catalyst-pipeline'],
+    declared: [],
+    bridge:
+      "Catalyst chose the physical plan's operators. This topic is how Spark runs them fast: not one virtual-call interpreter loop per row, but one generated method per stage, with rows stored as raw bytes instead of JVM objects.",
+    handoff:
+      "Codegen is the fast, common path. The very next topic is the one execution path it cannot touch at all — a pickled Python UDF — and exactly why that costs so much more.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
