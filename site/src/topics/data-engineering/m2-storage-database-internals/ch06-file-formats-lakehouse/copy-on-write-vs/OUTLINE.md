@@ -1,0 +1,14 @@
+# Outline — de.copy-on-write-vs
+
+DE §6.3 · 10 steps
+
+1. **Hook** — bridge from topic 13: "Every commit so far appended or overwrote whole files. This topic is what a commit does when it only needs to change some rows inside a file: copy-on-write's full rewrite versus merge-on-read's delete/log file, both measured on the identical 1%-update workload."
+2. **Predict** — a 1% row update hits a table spread across many files. What's the cheapest way to commit it? (A) Rewrite every file that contains a touched row, in full. (B) Write a small separate record of just what changed. Correct: depends — that's exactly COW vs MOR, both real strategies.
+3. **Reveal: copy-on-write rewrites every touched file whole** — Hudi's own words: "the Copy-on-Write (CoW) table type... In this mode, record updates or deletes trigger the creation of new base files in a file group and there are no log files written."
+4. **Reveal: reproduced for real — a 1% update's real write cost under COW** (takeaway) — real measured write time on local disk: every one of 12 data files gets fully rewritten, at real millisecond cost, for touching just 1% of rows.
+5. **Predict: does COW's full rewrite buy anything back at read time?** — (A) No, reads cost the same either way. (B) Yes — reads never merge anything. Correct: B.
+6. **Reveal: merge-on-read defers the cost to a small log file, not the base** — Hudi: "Data updates and deletes are written to log files... and these changes in log files are then merged dynamically with base files during query execution." Delta's deletion vectors do the same thing by a different name: "mark existing rows as removed without rewriting the Parquet file."
+7. **Reveal: reproduced for real — MOR's write is near-free, but every read now pays a merge cost that grows** (takeaway) — real measured numbers: the log write costs a fraction of COW's rewrite; the real merge-prep cost (opening and parsing every accumulated log) grows round over round as log files pile up.
+8. **Reveal: reproduced for real — compaction converts that debt back down** — Delta's own words: "An OPTIMIZE command is run on the table" / "REORG TABLE ... APPLY (PURGE) rewrites all data files containing records with modifications recorded using deletion vectors." Real measured result: after folding all 5 logs into the base files, the merge-prep cost drops back to near zero.
+9. **Reveal: the same choice, by whatever name** (takeaway) — Iceberg's deletion vectors and position delete files, Delta's deletion vectors, Hudi's CoW/MoR table types are three names for the identical trade: pay at write time, or pay at read time until you compact.
+10. **Recap** — COW: expensive, predictable writes; cheap, constant reads. MOR: cheap writes; reads that get more expensive the longer you defer compaction. The choice is about update rate, update spread, and how fresh your reads need to be.

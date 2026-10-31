@@ -1,0 +1,6 @@
+- **Hash function, from Chapter 1's own basic behavior**: a function mapping a key to a fixed-size number. *Where you meet it:* the register reveal, choosing which register a key lands in and how long its own leading-zero run is.
+- **Register**: one small counter out of a fixed-size array, the whole structure's own storage. *Where you meet it:* every reveal, as the thing being updated and averaged.
+- **Harmonic mean**: the reciprocal of the average of reciprocals, far less sensitive to one large outlier than a plain average. *Where you meet it:* the harmonic-mean reveal, tames one unusually long run.
+- **Partition, from this chapter's own queue/log material**: an independently processed slice of a larger stream. *Where you meet it:* the predict step and merge measurement, sketches built per partition and merged.
+- **Probabilistic membership filter, from topic 30**: a different sketch family answering a yes-or-no question about one value. *Where you meet it:* the bridge, contrasted with this topic's own "how many" question.
+- **One-sided error, from this chapter's own skipped Count-Min Sketch entry**: an estimate that can only ever be wrong in one direction. *Where you meet it:* this topic's own lab, where a built Count-Min Sketch never undercounts a key's true frequency.

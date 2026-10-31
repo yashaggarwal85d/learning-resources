@@ -1,0 +1,81 @@
+{
+  "topic": "de.hyperloglog-distinct-counting",
+  "steps": [
+    {
+      "lines": [
+        "A small handful of tiny counters, nowhere near large enough to hold the actual set itself.",
+        "Even so, they can estimate how many genuinely distinct things passed through a stream.",
+        "And they do that without ever actually storing a single one of those things anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before settling on an answer.",
+        "Two separate partitions each built their own version of this tiny structure, completely independently.",
+        "If those two versions get combined together afterward, does the result match what building just one, over every bit of that same combined data from scratch, would have given back?"
+      ],
+      "answer": [
+        "Yes, exactly — combining them afterward gives back precisely that same result.",
+        "Combining two of these just keeps whichever value is larger, counter by matching counter, between the two.",
+        "That's the exact same thing a single pass over every bit of the combined data would have landed on for that same counter, not merely something close to it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly what each one of those tiny counters is actually keeping track of.",
+        "Something gets hashed, and that hash sends it to land in exactly one counter out of the whole handful.",
+        "That one counter then simply remembers the longest run of a certain repeating pattern it has ever seen among everything that has landed there."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one clever choice that keeps a single unlucky counter from ruining everything.",
+        "One counter that happens to see an unusually long run would badly distort a plain, ordinary average across all of them.",
+        "The way these counters actually get combined instead is far less sensitive to exactly that one kind of unlucky outlier."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that whole approach checked against something built and measured for real.",
+        "Built with only a handful of these tiny counters, a real version of this drifts noticeably away from an exact count taken over that exact same stream.",
+        "Built with a great many more of those same tiny counters, over that exact same stream, how far off it actually lands shrinks substantially."
+      ],
+      "takeaway": "Using many more of these tiny counters makes a real, measured estimate land much closer."
+    },
+    {
+      "lines": [
+        "Two further real refinements sharpen this whole approach even more.",
+        "One of them carefully measures exactly how far off the raw version tends to run whenever the true count is small, and corrects for that directly.",
+        "The other one simply skips keeping track of the great majority of counters that are still sitting completely empty, for as long as that stays cheaper than just keeping all of them."
+      ],
+      "takeaway": "A measured correction for small counts, and skipping empty counters, are both real refinements."
+    },
+    {
+      "lines": [
+        "One real, already-shipped system puts this entire idea to work on purpose.",
+        "A real warehouse's own documented function hands back a statistical estimate instead of an exact count, deliberately, because doing so performs far better at a truly enormous scale.",
+        "Asking a genuinely different kind of question instead, like what two whole groups actually share, or don't, calls for a different structure built specifically for that."
+      ],
+      "takeaway": "A genuinely different question about two whole groups needs a different structure entirely."
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Each tiny counter remembers the longest matching run it has ever seen, and the clever way they combine keeps one unlucky outlier from wrecking everything.",
+        "A real, measured version gets noticeably closer the more of these counters go into it, two further refinements sharpen small counts and skip empty ones, and a genuinely different question about two whole groups needs an entirely different structure."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A team already combines one of these tiny structures, built fresh each day, into one single running estimate of how many people showed up at all.",
+        "A teammate now also wants the exact number of people who showed up on the very first day and then never came back again. Does that same running estimate already answer this, or is something else genuinely needed?"
+      ],
+      "answer": [
+        "Something else is genuinely needed here — that same running estimate doesn't answer this on its own.",
+        "A structure shaped like this one only ever answers one single question: roughly how many. It was never built to answer which specific ones, or how many belong to one group but not another.",
+        "A structure built specifically to answer that second kind of question is what this teammate actually needs here instead."
+      ]
+    }
+  ]
+}
