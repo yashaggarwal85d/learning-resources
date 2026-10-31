@@ -1,0 +1,89 @@
+{
+  "topic": "de.raw-bronze-landing-layer",
+  "steps": [
+    {
+      "lines": [
+        "A bug in a currency conversion is found a full year after the fact.",
+        "The silver table it affected was overwritten in place months ago, and the raw files that could rebuild it correctly were already gone, deleted once a short retention window closed.",
+        "There's no way back to the right numbers. The rebuild arrow has nothing left to point at."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you why this topic's own raw layer avoids that exact trap.",
+        "Suppose the raw layer was never deleted at all. The transform that produced the wrong numbers gets fixed. Does replaying from that surviving raw layer alone get you back to the correct result, with no new extraction from the live source?",
+        "Or does fixing history actually require going back to the source itself?"
+      ],
+      "answer": [
+        "Going back to the source sounds like the only trustworthy option, since that's where the data originally came from — but the mistake here never touched what was captured in the first place.",
+        "The raw layer already holds everything the fixed transform needs. The bug lived entirely downstream of capture, so replaying with the corrected logic reaches the right answer on its own."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that exact correction directly, not as a thought experiment.",
+        "A correction to one order's amount arrives after the fact. It doesn't edit the original record. It lands as a brand-new record, stamped with a later position in the strip.",
+        "The three records that were already there come out byte for byte identical to how they looked before that correction ever showed up."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the rebuild itself twice, from the identical starting point.",
+        "Silver gets built once from the raw layer. Then, as if the table had been deleted entirely, it gets built again from that same raw layer, with the identical transform.",
+        "The two builds come out checksum for checksum identical. The raw layer alone is what decided silver's contents, not whatever happened to silver in between."
+      ]
+    },
+    {
+      "lines": [
+        "Three fields, stamped onto every single record the moment it lands, are what make that rebuild trustworthy at all.",
+        "When it arrived. Where in the source it came from. Which version of the schema was in effect at that moment.",
+        "Strip any one of those three out, and a replay stops being a rebuild. It becomes a guess about what probably happened."
+      ]
+    },
+    {
+      "lines": [
+        "Now the actual bug fix, run for real against that same raw layer.",
+        "Last year's transform quietly treated every amount as if it were already in the right currency. The fixed version actually applies the exchange rate.",
+        "Rebuilding both from the identical raw records, only the orders that were in a foreign currency come out different. The orders that were already in the right currency land exactly the same in both builds, because the bug and the fix happened to agree on those."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the cost nobody likes talking about.",
+        "Keeping every raw record forever is exactly what makes a rebuild like this possible. But a real legal duty says the opposite: personal data shouldn't be kept any longer than the purpose that justified collecting it in the first place.",
+        "Those two things are not reconcilable by picking harder. They genuinely pull against each other, on the exact same record."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one piece of design that resolves that pull, at least for one field.",
+        "Instead of a customer's actual email sitting inside every raw record that mentions them, a token sits there instead. A small, separate vault, kept apart from the raw layer entirely, is the only place that maps the token back to a real email.",
+        "That vault is deliberately the one mutable thing in an otherwise append-only design."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the identical erasure request against both versions of this design.",
+        "Against the plaintext version, satisfying it means finding and mutating every single historical record that ever named that person. Three of them, in this run, each one now permanently altered.",
+        "Against the tokenized version, satisfying the identical request means deleting exactly one row, from the vault alone. I checksummed the whole raw layer before and after. It didn't change at all."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and four separate ideas turn out to be one design.",
+        "An append-only strip that's never mutated, three fields that make a replay trustworthy, and a rebuild that reaches the same answer every time, or isolates a fix precisely.",
+        "And one small vault that absorbed the one part of the system that legally has to be allowed to change. Everything else stays untouched, on purpose."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, and the two options sound almost identical, so listen closely.",
+        "An erasure request comes in for a person whose records sit in this tokenized raw layer. What actually has to change, and what has to stay exactly as it was?"
+      ],
+      "answer": [
+        "Going through the raw layer and blanking out that person's token in every record feels thorough, but it's the plaintext design's own mistake, done by hand, to a layer that was never supposed to need it.",
+        "Only the vault's one mapping for that token gets deleted. Every raw record that still carries the token stays exactly as it is, because the token alone was never personal data once the mapping was gone."
+      ]
+    }
+  ]
+}

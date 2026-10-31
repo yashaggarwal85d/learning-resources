@@ -1,0 +1,110 @@
+{
+  "topic": "de.raw-bronze-landing-layer",
+  "syllabus": [
+    {
+      "clause": "immutable, append-only raw capture with source metadata (ingest time, source offset, schema version)",
+      "at": [
+        { "step": "Reveal: raw capture is append-only, measured" },
+        { "step": "Reveal: the three metadata fields" }
+      ]
+    },
+    {
+      "clause": "so any downstream table can be rebuilt by replay",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: fixing without re-extracting" },
+        { "step": "Reveal: rebuild by replay, measured" },
+        { "step": "Reveal: a bug fix isolated by replay, measured" }
+      ]
+    },
+    {
+      "clause": "retention and PII implications of keeping raw",
+      "at": [
+        { "step": "Reveal: what keeping raw forever costs" },
+        { "step": "Reveal: tokenizing the one field that matters" },
+        { "step": "Reveal: erasure against both designs, measured" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "What is a Medallion Architecture? (Databricks docs)",
+      "items": [
+        {
+          "item": "The Bronze layer is where we land all the data from external source systems",
+          "at": [{ "step": "Reveal: the three metadata fields" }]
+        }
+      ]
+    },
+    {
+      "source": "Art. 17 GDPR: Right to erasure (GDPR text)",
+      "items": [
+        {
+          "item": "the data subject shall have the right to obtain from the controller the erasure of personal data concerning him or her without undue delay",
+          "at": [{ "step": "Reveal: erasure against both designs, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Art. 5 GDPR: Principles relating to processing (GDPR text)",
+      "items": [
+        {
+          "item": "personal data must be kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed",
+          "at": [{ "step": "Reveal: what keeping raw forever costs" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A correction to a raw record arrives as a brand-new, later-offset record, never as an edit to the record it corrects, measured directly: the first three records in the raw layer stay byte-for-byte unmutated after a fourth, correcting record is appended.",
+        "at": [{ "step": "Reveal: raw capture is append-only, measured" }]
+      },
+      {
+        "item": "A raw record's three metadata fields (ingest time, source offset, schema version) are what make a replay trustworthy rather than a guess; stripping any one out removes the information a rebuild needs to know exactly what arrived, when, and under which assumptions.",
+        "at": [{ "step": "Reveal: the three metadata fields" }]
+      },
+      {
+        "item": "Two builds of a silver table from the identical raw layer and the identical transform land on byte-identical checksums, measured directly, proving the raw layer alone decides silver's contents regardless of what happened to any prior silver table.",
+        "at": [{ "step": "Reveal: rebuild by replay, measured" }]
+      },
+      {
+        "item": "Rebuilding with a fixed transform changes only the rows the original bug actually touched, measured directly: of four orders, only the two in a foreign currency differ between the buggy and fixed builds, while the two already in the right currency land identical in both.",
+        "at": [{ "step": "Reveal: a bug fix isolated by replay, measured" }]
+      },
+      {
+        "item": "Keeping raw data forever for replayability directly works against the storage-limitation duty to keep personal data no longer than necessary — this topic names the tension rather than claiming a universal resolution, and shows one concrete mitigation for the one field that actually identifies a person.",
+        "at": [{ "step": "Reveal: what keeping raw forever costs" }]
+      },
+      {
+        "item": "Tokenizing the one identifying field makes a small, separate vault the only mutable part of an otherwise append-only design, and satisfying an erasure request against it requires deleting exactly one vault row, measured directly against a plaintext raw layer's own requirement to mutate three historical records for the identical request.",
+        "at": [{ "step": "Reveal: erasure against both designs, measured" }]
+      },
+      {
+        "item": "The wrong half of the predict question — that fixing historical numbers requires a fresh extraction from the live source — is ruled out directly: the bug lived entirely in the transform, and the raw layer's own unprocessed records were never affected by it, so a replay with the fixed transform alone reaches the correct result.",
+        "at": [{ "step": "Predict: fixing without re-extracting" }]
+      },
+      {
+        "item": "The wrong half of the final predict question — blanking out a token in every raw record naming the erased person — reintroduces the plaintext design's own failure by hand; the whole purpose of tokenization is that the raw layer never needs to be touched for an erasure, only the vault's one mapping does.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic hosts no lab of its own, per CHAPTER.md's own table — the rebuild-by-replay check and the bug-fix-isolation check are this topic's own measured examples, not a shared lab leg.",
+        "at": [{ "out": "no lab of its own, per CHAPTER.md" }]
+      },
+      {
+        "item": "Chapter 3 topic 19's medallion architecture and its own failure modes are the layering structure this topic's raw layer sits inside, used and not re-derived; GDPR's erasure mechanics in full and Chapter 13's own treatment of them are named and left untaught here.",
+        "at": [{ "out": "composed from Chapter 3 topic 19; GDPR's full erasure mechanics left to Chapter 13" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

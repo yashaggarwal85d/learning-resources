@@ -6401,6 +6401,26 @@ export const TOPICS: TopicMeta[] = [
       "A pipeline that can be re-run safely needs something to re-run from. If the raw bytes are overwritten or transformed in place, there is nothing to replay. What the first layer must keep is the next topic.",
   },
   {
+    id: 'de.raw-bronze-landing-layer',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/raw-bronze-landing-layer',
+    title: 'Raw/bronze landing-layer design',
+    syllabusTitle: 'Raw/bronze landing-layer design',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['raw-layer-replay-metadata'],
+    uses: ['medallion-bronze-silver-gold', 'medallion-failure-modes', 'exactly-once-effect-recipe', 'deterministic-batch-id', 'object-store-commit-protocols'],
+    declared: [],
+    bridge:
+      "A pipeline that can be re-run safely needs something to re-run from. This topic is what the first layer must keep so that replay is possible at all: immutable raw records with their source offsets, and the price of keeping personal data forever.",
+    handoff:
+      "Everything in this section can be built by hand, and every part of it is maintenance. Whether to build it at all, or buy a connector that someone else maintains, is the last question of the section.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
