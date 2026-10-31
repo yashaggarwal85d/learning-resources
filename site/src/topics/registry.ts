@@ -5485,6 +5485,26 @@ export const TOPICS: TopicMeta[] = [
       "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. The next topic is one real engine's actual internals: Redis and Valkey.",
   },
   {
+    id: 'de.redis-valkey-internals',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/redis-valkey-internals',
+    title: 'Redis and Valkey internals',
+    syllabusTitle: 'Redis and Valkey internals',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['redis-valkey-internals'],
+    uses: ['cache-patterns-eviction'],
+    declared: [],
+    bridge:
+      "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. This topic is one real engine's actual internals: Redis/Valkey's own event loop, persistence model, replication, and the real licensing history that now decides which of the two you actually choose.",
+    handoff:
+      "A cache in front of a database is one read-side pattern. The next topic is a different one this chapter hasn't yet connected to Chapter 3's own warehouse material: pre-aggregated, analytical serving layers.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -7111,6 +7131,26 @@ export const TOPICS: TopicMeta[] = [
       'Identity and secrets answer who can act and with what. Neither answers what any of this actually costs — and a pipeline that is perfectly secure and perfectly correct can still be a budget incident, which is where this section ends.',
   },
   {
+    id: 'de.cloud-cost-anatomy-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/cloud-cost-anatomy-data',
+    title: 'Cloud cost anatomy for data workloads',
+    syllabusTitle: 'Cloud cost anatomy for data workloads',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cloud-cost-four-dimensions', 'small-file-request-storm'],
+    uses: ['failure-domain-blast-radius', 'object-store-consistency-guarantee', 'storage-tier-lifecycle-tradeoff', 'conditional-write-compare-swap', 'prefix-throttling-hot-key'],
+    declared: [],
+    bridge:
+      "Identity and secrets answer who can act and with what. Neither answers what any of it costs — and this topic is the bill's real shape: storage, requests, compute, network and the managed-service premium, each priced separately instead of waved at as 'expensive.'",
+    handoff:
+      "Those four dimensions are universal, but every cloud sells the services that generate them under a different name. The next section is a map: the same mechanism under three vendors' three different product names.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
@@ -7809,6 +7849,26 @@ export const TOPICS: TopicMeta[] = [
       "A broker carries the current value; a historian keeps the past. This topic is the process historian: the system that has stored plant data for decades, the exception filter and swinging-door compression it applies before a point is kept, and what that does to every number you later extract from it.",
     handoff:
       "A historian and a broker both assume the plant can reach them. A WAN does not stay up. The next topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, and corrects its clock when the link returns.",
+  },
+  {
+    id: 'de.edge-buffering-store-forward',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/edge-buffering-store-forward',
+    title: 'Edge buffering and store-and-forward',
+    syllabusTitle: 'Edge buffering and store-and-forward',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['store-and-forward-durable-buffer', 'replay-in-order-idempotent-sequence', 'catch-up-time-littles-law', 'buffer-full-drop-policy-by-priority', 'clock-correction-on-reconnect', 'plant-local-autonomy-slo'],
+    uses: ['degraded-mode-design', 'rpo-rto-per-data-class', 'chunk-idempotent-checkpoint', 'throttle-backoff-signal', 'at-least-once-plus-idempotence', 'wal-lsn-fsync', 'littles-law', 'bandwidth-delay-product', 'idempotent-merge-load', 'mqtt-qos-retained-will', 'sparkplug-birth-death-seq-rebirth', 'gateway-replay-dedup-backfill', 'device-gateway-ingest-timestamps', 'exception-deadband-filtering', 'swinging-door-compression-error-band', 'mergeable-rollup-never-store-average', 'read-only-extraction-load-budget'],
+    declared: [],
+    bridge:
+      "A historian and a broker both assume the plant can reach them. A WAN does not stay up. This topic is the edge gateway: how it buffers while the link is down, replays in order without duplicates, filters locally, drops by policy when the buffer fills, and corrects its clock when the link returns.",
+    handoff:
+      "A gateway can make a reading arrive intact, in order and late. It still arrives as a number with a tag. The last topic of the chapter is how a machine is described to the outside world: the Asset Administration Shell, its standardised submodels, and the role it plays in EU data spaces and the digital product passport.",
   },
   {
     id: 'de.communicating-tradeoffs-decision-makers',

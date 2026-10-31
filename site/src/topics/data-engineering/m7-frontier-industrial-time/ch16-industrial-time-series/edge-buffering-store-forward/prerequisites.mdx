@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: timestamps, rollups, historians, Sparkplug and exactly-once
+
+<ul class="resources">
+  <Resource kind="reel" title="Timestamps, clocks and time zones in telemetry" domain="data-engineering" host="de.timestamps-clocks-time-zones" by="this chapter, for device-vs-gateway timestamps, the basis for this topic's own clock-offset correction" />
+  <Resource kind="reel" title="Downsampling, rollups and retention tiers" domain="data-engineering" host="de.downsampling-rollups-retention-tiers" by="this chapter, for the mergeable rollup this topic reuses to stretch a fixed buffer's survivable outage" />
+  <Resource kind="reel" title="Process historians and swinging-door compression" domain="data-engineering" host="de.process-historians-swinging-door" by="this chapter, for the exception-deadband filtering this topic's own local reduction reuses" />
+  <Resource kind="reel" title="MQTT, Sparkplug and the Unified Namespace" domain="data-engineering" host="de.mqtt-sparkplug-unified-namespace" by="this chapter, for Sparkplug's own birth/death sequence number this topic's wider key is built to outlast" />
+  <Resource kind="reel" title="Exactly-once as an end-to-end property" domain="data-engineering" host="de.exactly-once-as-end" by="Chapter 14, for at-least-once-plus-idempotence, the property this topic's wider sequence key is built to provide" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Manage data streams on Greengrass core devices" href="https://docs.aws.amazon.com/greengrass/v2/developerguide/manage-data-streams.html" by="AWS IoT Greengrass V2 Developer Guide">The chosen real edge-gateway product: intermittent-connectivity handling, export priority, and local disk persistence.</Resource>
+  <Resource kind="reading" title="MQTT Version 5.0" href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html" by="OASIS Standard">Session Expiry Interval and Message Expiry Interval, the transport-level retention this topic's own buffer policy is distinct from.</Resource>
+  <Resource kind="reading" title="Sparkplug 3.0.0 Specification" href="https://sparkplug.eclipse.org/specification/version/3.0/documents/sparkplug-specification-3.0.0.pdf" by="Eclipse Sparkplug">The store-and-forward statement this topic's edge gateway implements directly.</Resource>
+</ul>
+
+</section>

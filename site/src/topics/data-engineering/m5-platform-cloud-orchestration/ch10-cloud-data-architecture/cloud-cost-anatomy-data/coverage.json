@@ -1,0 +1,105 @@
+{
+  "topic": "de.cloud-cost-anatomy-data",
+  "syllabus": [
+    {
+      "clause": "the bill's real dimensions",
+      "at": [
+        { "step": "A pipeline that looks free and turns out to be the biggest line item" }
+      ]
+    },
+    {
+      "clause": "storage GB-month plus per-request charges (small-file LIST/GET storms)",
+      "at": [
+        { "step": "A pipeline that looks free and turns out to be the biggest line item" },
+        { "step": "Storage is billed twice: by the byte, and by the operation" }
+      ]
+    },
+    {
+      "clause": "compute",
+      "at": [
+        { "step": "Compute: what you reserved, not what you used" }
+      ]
+    },
+    {
+      "clause": "network (internet egress, cross-region, cross-AZ, NAT processing)",
+      "at": [
+        { "step": "Network has a price for every boundary a byte crosses" }
+      ]
+    },
+    {
+      "clause": "managed-service premiums",
+      "at": [
+        { "step": "A managed service's premium is buying something, not nothing" }
+      ]
+    },
+    {
+      "clause": "a worked teardown of where one Spark job's money goes",
+      "at": [
+        { "step": "One Spark job, every dollar accounted for" }
+      ]
+    },
+    {
+      "clause": "cost governance is §10.4",
+      "at": [
+        { "topic": "Compute cost controls and commitments", "domain": "data-engineering", "quote": "cost controls and commitments" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS: S3 Pricing",
+      "items": [
+        { "item": "Six distinct cost components, not one storage line", "at": [{ "deep": "Internals" }] },
+        { "item": "LIST requests billed at the same rate as PUT/COPY/POST; DELETE and CANCEL are free", "at": [{ "step": "Storage is billed twice: by the byte, and by the operation" }] }
+      ]
+    },
+    {
+      "source": "AWS: Amazon EC2 On-Demand Pricing (Data Transfer)",
+      "items": [
+        { "item": "Cross-AZ transfer billed at $0.01/GB each direction; same-AZ is free for the named services", "at": [{ "step": "Network has a price for every boundary a byte crosses" }] },
+        { "item": "A global 100 GB/month free tier for internet egress, shared across every AWS service and region", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "AWS: Amazon VPC Pricing (NAT Gateway)",
+      "items": [
+        { "item": "An hourly gateway fee plus a per-GB data-processing fee, stacked on top of ordinary transfer charges for the same bytes", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Azure: Bandwidth Pricing",
+      "items": [
+        { "item": "Inter-region transfer priced by region pair, not a flat global rate ($0.02/GB North America vs $0.16/GB South America)", "at": [{ "deep": "Internals" }] },
+        { "item": "Internet egress tiered by monthly volume, falling from $0.087/GB to $0.05/GB past 10 TB", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Network pricing",
+      "items": [
+        { "item": "Cross-zone VM-to-VM rate ($0.01/GiB) matches AWS's cross-AZ rate under a different name", "at": [{ "deep": "Internals" }] },
+        { "item": "Cloud NAT's three-part pricing shape (hourly gateway, per-GiB processing, ordinary egress) mirrors AWS's NAT gateway exactly, down to the same $0.045/GiB processing number", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's trap is assuming storage-GB is the only line that scales with how data is laid out; a learner who checks only that line will conclude the small-file layout is free, missing the request line entirely", "at": [{ "step": "Which line is actually driving this bill?" }] },
+      { "item": "A LIST operation's cost is proportional to the number of pages paged through, not the number of objects matched per page — a million-key prefix needs many LIST calls to enumerate, each one billed", "at": [{ "step": "Storage is billed twice: by the byte, and by the operation" }] },
+      { "item": "Reserved-vs-consumed is a capacity-planning problem, not a pricing-table lookup; the same instance type can be either cheap or wasteful purely as a function of how well its reservation matches its actual load", "at": [{ "step": "Compute: what you reserved, not what you used" }] },
+      { "item": "Egress, cross-region and cross-AZ are three independently priced boundaries that a single request can cross in sequence, so a naive architecture can pay all three fees on one round trip", "at": [{ "step": "Network has a price for every boundary a byte crosses" }] },
+      { "item": "A NAT gateway's processing fee applies regardless of the traffic's source or destination — it is not waived for traffic that is itself free on the ordinary transfer meter, which is the exact surprise in AWS's own worked example", "at": [{ "deep": "Internals" }] },
+      { "item": "'Managed-service premium' is not synonymous with 'overpriced'; the correct comparison is against the fully-loaded cost of self-hosting, including the operational staff time a managed service displaces, not against zero", "at": [{ "step": "A managed service's premium is buying something, not nothing" }] },
+      { "item": "A worked teardown's value is in keeping the four dimensions separate through to the final number; collapsing them into one total before presenting it throws away the exact information a cost-reduction decision needs", "at": [{ "step": "One Spark job, every dollar accounted for" }] },
+      { "item": "Two cloud vendors arriving at the identical per-unit price for a conceptually similar boundary (GCP's Cloud NAT and AWS's NAT gateway, both $0.045 per unit processed) is not evidence of a shared cost basis between the vendors; it is a coincidence worth stating as such, not inferring a cause for", "at": [{ "deep": "Internals" }] },
+      { "item": "Measuring a correctness mechanism's request cost directly (rather than assuming 'safer costs more' or 'safer is free') is the only way to know whether a retry-based fix changed the bill, and this topic's own lab is built specifically to make that measurement real", "at": [{ "step": "Prove it" }] },
+      { "item": "The four-dimension framing is deliberately cloud-agnostic; the next topic's cross-cloud map depends on this topic never having tied a dimension's name to one vendor's product name", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}
