@@ -1,0 +1,71 @@
+{
+  "topic": "de.jvm-garbage-collection-symptoms",
+  "steps": [
+    {
+      "lines": [
+        "Picture the exact same aggregation, built two completely different ways under the hood.",
+        "Does the engine's own cleanup process notice any difference between them at all?"
+      ]
+    },
+    {
+      "lines": [
+        "Build that aggregation out of everyday, ordinary objects, the way you'd write it without thinking twice.",
+        "Run it, and the engine genuinely has to pay a real cost cleaning up afterward. Not nothing. A real, measurable cost."
+      ]
+    },
+    {
+      "lines": [
+        "Now build that exact same aggregation a different way, using the engine's own compact, purpose-built row format instead.",
+        "Does the engine still pay that same cleanup cost, or does something change?"
+      ],
+      "answer": "The cost drops to almost nothing."
+    },
+    {
+      "lines": [
+        "Here's exactly what happens.",
+        "The compact-row version of that identical aggregation pays no measurable cleanup cost at all.",
+        "Not a smaller number. Genuinely nothing worth measuring."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why that happens.",
+        "Cleanup cost tracks how many separate little pieces there are for the engine to sort through.",
+        "The compact row format was built specifically to need far fewer of those pieces in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of question. That first version really did make the engine pay a real cleanup cost.",
+        "Does that mean cleanup is actually the thing slowing that job down?"
+      ],
+      "answer": "No. It's real, but it's tiny next to how long the whole job took."
+    },
+    {
+      "lines": [
+        "Here's the measurement, laid out plainly.",
+        "That cleanup cost, while genuinely real, turns out to be a tiny sliver of the job's own total running time.",
+        "Nowhere close to being what's actually dragging that job down."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the reasoning behind that.",
+        "A real, nonzero cleanup cost doesn't automatically mean trouble on its own.",
+        "It only tells you something once you put it next to how much total time the whole job actually spent running."
+      ]
+    },
+    {
+      "lines": [
+        "Put both versions' own numbers side by side: the same work, the same data.",
+        "One version pays a real cleanup cost. The other pays nothing worth measuring at all."
+      ]
+    },
+    {
+      "lines": [
+        "So how a piece of work gets built underneath decides how much cleanup it actually costs the engine.",
+        "And a real, nonzero cleanup number only means something once you've measured it against the whole job's own time."
+      ]
+    }
+  ]
+}
