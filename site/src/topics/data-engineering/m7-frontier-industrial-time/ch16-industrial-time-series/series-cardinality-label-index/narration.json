@@ -1,0 +1,76 @@
+{
+  "topic": "de.series-cardinality-label-index",
+  "steps": [
+    {
+      "lines": [
+        "A team wants to filter their dashboard by production batch, so they add one new label to every sensor reading.",
+        "Within a day, the metrics server's memory climbs far past what it normally uses, and the process gets killed outright.",
+        "The change itself was a single line."
+      ]
+    },
+    {
+      "lines": [
+        "Two readings only count as the exact same series if every one of their labels matches, all at once.",
+        "Change the value of even a single label, or add a label that wasn't there a moment ago, and the result isn't the old series continuing.",
+        "It's a brand new series, starting from nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Multiply every label's distinct values together and the worst-case series count comes out large.",
+        "The plant's real series count comes from which sensors are genuinely fitted to which piece of equipment, which is far more constrained than that.",
+        "The real number lands well below the worst case, simply because the plant doesn't actually use every possible combination."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "A query names several labels at once, say one particular site and one particular kind of sensor.",
+        "Does answering that query mean checking every single series the system knows about, one at a time?"
+      ],
+      "answer": [
+        "It doesn't.",
+        "An index already holds exactly which series carry a given label, so the system can go straight to that short list instead of inspecting every series it has."
+      ]
+    },
+    {
+      "lines": [
+        "Take the sorted list of series matching one label and the sorted list matching another, and merge the two lists together.",
+        "Wherever both lists agree on a series, that series matches the whole query — and the rest of the system's series were never even touched.",
+        "A pattern-based matcher doesn't get this shortcut at all. With no ready-made list of its own, it has to check every series directly."
+      ]
+    },
+    {
+      "lines": [
+        "Give every single sensor series its own batch label, with no limit on how many different batches can exist.",
+        "The series count doesn't grow by some fixed amount — it multiplies by however many distinct batches actually show up.",
+        "A label with no bound on its possible values has no bound on how many series it can ultimately create."
+      ]
+    },
+    {
+      "lines": [
+        "Store every reading as an ordinary row in a column-oriented table instead of as its own tracked series.",
+        "In that model, the same batch label is just another column sitting next to the reading, nothing more special than that.",
+        "There's no per-series structure for it to blow up — only a scan across rows that simply takes a bit longer as the table grows."
+      ]
+    },
+    {
+      "lines": [
+        "A series is entirely defined by its full set of labels, nothing more and nothing less.",
+        "An index built around that identity helps an exact-match query enormously, and offers a pattern-matching query almost nothing.",
+        "An unbounded label multiplies series count directly, a column-oriented model trades that index away for a scan instead, and a batch ID belongs in a table of facts, not inside a series' own identity."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "The team that added the batch label wants to know exactly why their memory usage exploded, not just that it did.",
+        "Given the rule that a series is exactly its label set, can the new series count be stated precisely, with nothing left to guess?"
+      ],
+      "answer": [
+        "It can.",
+        "Because a series is nothing more than its labels, adding one new label with a known number of distinct values multiplies the prior series count by that exact number, with no estimation required."
+      ]
+    }
+  ]
+}

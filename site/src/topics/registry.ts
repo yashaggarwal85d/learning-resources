@@ -6145,6 +6145,26 @@ export const TOPICS: TopicMeta[] = [
       "Sizing says how many partitions and how big. It says nothing about which partitioner decided which row lands in which one — the next topic's own question.",
   },
   {
+    id: 'de.hash-range-partitioning-pruning',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/hash-range-partitioning-pruning',
+    title: 'Hash and range partitioning, partition pruning',
+    syllabusTitle: 'Hash and range partitioning, partition pruning',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-hash-range-partitioner', 'spark-partition-pruning'],
+    uses: ['spark-partition-sizing', 'spark-catalyst-pipeline'],
+    declared: [],
+    bridge:
+      "Sizing decided how many pieces. This topic decides which row goes in which piece, and shows the one case — exchange elimination — where Spark notices it doesn't need to re-decide at all.",
+    handoff:
+      "Pruning skips reading partitions that can't match. Bucketing, next, goes further: pre-arranging the partitions at write time so a later join skips the shuffle entirely, not just the read.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -6763,6 +6783,26 @@ export const TOPICS: TopicMeta[] = [
       "Rollups keep fewer points. Compression keeps the same points in fewer bits. This topic is how that works for timestamps and floats: the Facebook system built around it, the encoders that came after, and the measurement that shows which of them your data actually benefits from.",
     handoff:
       "A codec shrinks a series; the next problem is finding it. Every distinct combination of labels is its own series, and the index that maps labels to series is the first thing to run out. The next topic is series cardinality and the label index.",
+  },
+  {
+    id: 'de.series-cardinality-label-index',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/series-cardinality-label-index',
+    title: 'Series cardinality and the label index',
+    syllabusTitle: 'Series cardinality and the label index',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['series-is-metric-plus-label-set', 'postings-index-intersection', 'unbounded-label-cardinality-explosion', 'scan-based-columnar-tsdb-tradeoff'],
+    uses: ['pipeline-golden-signals', 'push-vs-pull-metrics', 'work-order-run-batch-lot-model', 'equipment-hierarchy-dimension', 'signal-type-tag-metadata', 'columnar-layout', 'block-range-summary-pruning'],
+    declared: [],
+    bridge:
+      "A codec shrinks a series; the next problem is finding it. Every distinct combination of labels is its own series, and the index that maps labels to series is the first thing to run out. This topic is series cardinality: what counts as a series, how the index is built, and the one label that takes a system down.",
+    handoff:
+      "A series count, a codec and an index are three of the pieces of a storage engine. The next topic puts them together: how Prometheus, TimescaleDB and InfluxDB 3 actually lay out a write, a block and a compaction, and where each of them puts the line between memory and disk.",
   },
   {
     id: 'de.communicating-tradeoffs-decision-makers',
