@@ -9021,4 +9021,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Merge-on-read's own delete files are themselves a mechanism worth a topic on their own: how a deletion is actually recorded without rewriting the file it touches.",
   },
+  {
+    id: 'de.deletion-vectors-across-formats',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/deletion-vectors-across-formats',
+    title: 'Deletion vectors across formats',
+    syllabusTitle: 'Deletion vectors across formats',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['deletion-vectors'],
+    uses: ['cow-vs-mor'],
+    declared: [],
+    bridge:
+      "Merge-on-read's own delete files are themselves a mechanism worth a topic on their own. This topic is exactly that: the deletion vector, a per-file RoaringBitmap, built directly in this sandbox and compared across Delta, Iceberg v3 and Hudi.",
+    handoff:
+      "A deletion vector works because a row's identity survives a rename just fine inside one data file. The next topic is what happens when the whole column, not just a row, needs to survive a rename: schema evolution with column IDs.",
+  },
 ];
