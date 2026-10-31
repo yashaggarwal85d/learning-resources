@@ -4747,6 +4747,26 @@ export const TOPICS: TopicMeta[] = [
       "A backfill re-runs a fixed number of tasks over a fixed range. Many pipelines need the number of tasks itself to depend on the data — one task per file, one per partition, decided at run time. That is the next mechanism.",
   },
   {
+    id: 'de.dynamic-task-mapping-fan',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/dynamic-task-mapping-fan',
+    title: 'Dynamic task mapping and fan-out',
+    syllabusTitle: 'Dynamic task mapping and fan-out',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['dynamic-task-mapping', 'fan-out-vs-engine-parallelism'],
+    uses: ['de.orchestrator-architecture-scheduler', 'ch8.file-ingestion-landing-zones', 'ch7.engine-internal-parallelism'],
+    declared: [],
+    bridge:
+      "A backfill re-runs a fixed set of tasks many times. This topic is the other way a Dag multiplies: the same run deciding, at execution time, exactly how many tasks it needs, one per file or per partition it discovers.",
+    handoff:
+      "Fan-out can make thousands of task instances want to run at once. Something has to decide how many actually do, and in what order, without starving anything else sharing the cluster. That is the next topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -5645,5 +5665,25 @@ export const TOPICS: TopicMeta[] = [
       "Three priced tiers on a cost curve are a negotiation finished, not a decision made — someone outside engineering still has to actually pick one, and this topic is how that choice gets explained to them in the terms they use to decide, not the terms that built the curve.",
     handoff:
       "A tier gets chosen, and the one-page summary that got it chosen is read once and then forgotten the moment the meeting ends. The decision itself — which tier, why, and what would change the team's mind later — still has to survive the person who made it leaving the room, which is the next topic's own subject.",
+  },
+  {
+    id: 'de.schema-evolution-rules-across',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/schema-evolution-rules-across',
+    title: 'Schema evolution rules across formats',
+    syllabusTitle: 'Schema evolution rules across formats',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.1' },
+    minutes: 15,
+    verified: '2026-10-30',
+    introduces: ['schema-evolution-column-matching'],
+    uses: ['text-format-traps', 'row-vs-columnar-layout'],
+    declared: [],
+    bridge:
+      "Every layout from the last topic still has to survive a reader using a different version of the schema than the writer did. This topic is schema evolution itself, compared directly across Avro, Protobuf and Parquet, with a real rename that breaks one matching strategy and survives another.",
+    handoff:
+      "Every format so far has been one file, self-contained. The next section is the one format that won the lakehouse: Parquet, starting from its own file anatomy.",
   },
 ];

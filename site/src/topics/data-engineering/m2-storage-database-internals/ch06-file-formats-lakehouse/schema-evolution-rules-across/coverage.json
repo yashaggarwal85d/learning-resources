@@ -1,0 +1,56 @@
+{
+  "topic": "de.schema-evolution-rules-across",
+  "syllabus": [
+    { "clause": "Avro writer/reader schema resolution (defaults, aliases, unions)", "at": [{ "step": "Hook" }, { "step": "Reveal: Avro's one strict rule" }, { "deep": "Three mechanisms, one shared requirement" }] },
+    { "clause": "Protobuf field-number rules (never reuse, reserved)", "at": [{ "step": "Reveal: Protobuf doesn't match by name" }, { "step": "Reveal: the surprising number" }] },
+    { "clause": "Parquet's by-name vs by-position vs by-field-ID column matching", "at": [{ "step": "Reveal: Parquet's three ways to match a column" }, { "step": "Reveal: by-position corrupts silently" }, { "step": "Reveal: by-field-ID survives both" }] },
+    { "clause": "type widening and nullability changes", "at": [{ "deep": "Three mechanisms, one shared requirement" }] },
+    { "clause": "how table formats add stable column IDs on top (§6.3)", "at": [{ "deep": "Frontier" }, { "step": "Recap" }] },
+    { "clause": "registry compatibility modes in §9.2", "at": [{ "deep": "Frontier" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Avro Specification, Schema Resolution",
+      "items": [
+        { "item": "a reader field with a default, missing from the writer, resolves to that default", "at": [{ "step": "Hook" }] },
+        { "item": "a reader field with no default, missing from the writer, is an error", "at": [{ "step": "Reveal: Avro's one strict rule" }] },
+        { "item": "a writer field not present in the reader's schema is ignored", "at": [{ "deep": "Three mechanisms, one shared requirement" }] },
+        { "item": "aliases let an implementation map the writer's name to the reader's", "at": [{ "deep": "Three mechanisms, one shared requirement" }] }
+      ]
+    },
+    {
+      "source": "Protocol Buffers Language Guide (proto 3)",
+      "items": [
+        { "item": "reusing a field number makes decoding ambiguous and can lead to data corruption, not necessarily a parse error", "at": [{ "step": "Reveal: the surprising number" }] },
+        { "item": "reserved is the mechanism that prevents a future reuse of a deleted field number", "at": [{ "step": "Reveal: the surprising number" }, { "deep": "Three mechanisms, one shared requirement" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet Format, parquet.thrift (SchemaElement)",
+      "items": [
+        { "item": "SchemaElement carries an optional field_id (Thrift field 9)", "at": [{ "step": "Reveal: by-field-ID survives both" }, { "deep": "Three mechanisms, one shared requirement" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Avro resolves fields by name; a reader field missing from the writer uses its default if present, or signals an error if not — this is the one load-bearing rule the chapter's own worked example depends on.", "at": [{ "step": "Hook" }, { "step": "Reveal: Avro's one strict rule" }] },
+      { "item": "A writer field with no counterpart in the reader's schema is simply ignored, so removing a reader's interest in a field is always safe in Avro, unlike Protobuf's field-number removal.", "at": [{ "deep": "Three mechanisms, one shared requirement" }] },
+      { "item": "Protobuf identifies fields by number on the wire, never by name; this is a completely different mechanism from Avro's name-based matching, not a variation on it.", "at": [{ "step": "Reveal: Protobuf doesn't match by name" }] },
+      { "item": "Reusing a deleted Protobuf field number for a field of a different type does not raise a parse error; it silently decodes the old bytes under the new type, producing a valid-looking but wrong value.", "at": [{ "step": "Reveal: the surprising number" }] },
+      { "item": "Protobuf's reserved keyword is a compile-time guard enforced by protoc, not a runtime check; skipping it is what allows the silent corruption this topic demonstrates.", "at": [{ "step": "Reveal: the surprising number" }, { "deep": "Three mechanisms, one shared requirement" }] },
+      { "item": "Parquet's SchemaElement carries an optional field_id; a reader that matches columns by this ID instead of name or position survives both a rename and a reordering insertion.", "at": [{ "step": "Reveal: by-field-ID survives both" }] },
+      { "item": "By-position matching fails dangerously (silently returns another column's real data) when a column is inserted anywhere but the end, while by-name matching fails safely (returns the renamed column as missing) on a rename — these are different failure modes, not degrees of the same one.", "at": [{ "step": "Reveal: by-position corrupts silently" }, { "deep": "Three mechanisms, one shared requirement" }] },
+      { "item": "Type widening (e.g. int to a wider numeric type) and adding a nullable column are the two evolution moves every one of these formats treats as broadly safe, in contrast to a rename or a field-number/position change, which each format handles differently.", "at": [{ "deep": "Three mechanisms, one shared requirement" }] },
+      { "item": "Table formats (Iceberg, Delta Lake) add their own stable column-ID bookkeeping on top of a file format exactly like Parquet's field_id, which is why this topic's by-field-ID result foreshadows §6.3 rather than belonging to it.", "at": [{ "deep": "Frontier" }, { "step": "Recap" }] },
+      { "item": "Schema-registry compatibility modes (forward, backward, full) govern how many producers and consumers agree on compatible changes over time; this topic covers only what one reader does with one schema change, which is a prerequisite to that later topic, not a substitute for it.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}
