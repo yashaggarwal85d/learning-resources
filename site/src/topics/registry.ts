@@ -6211,6 +6211,26 @@ export const TOPICS: TopicMeta[] = [
       "A watermark is the signal that a window of time is probably complete enough to act on. What 'a window' actually is — its shape, its boundaries, its cost in memory — is the next topic.",
   },
   {
+    id: 'de.windowing-tumbling-sliding-session',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/windowing-tumbling-sliding-session',
+    title: 'Windowing: tumbling, sliding, session, global',
+    syllabusTitle: 'Windowing: tumbling, sliding, session, global',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['window-types-state-cost', 'session-window-merge', 'pane-per-key-cleanup'],
+    uses: ['watermark-heuristic', 'idle-source-watermark'],
+    declared: [],
+    bridge:
+      "A watermark says when a chunk of time is probably complete enough to act on. A window is the chunk itself, and this topic is the four real shapes it can take, what each costs in state, and the one (session) whose very boundaries can move as data arrives.",
+    handoff:
+      "A window still has to decide, concretely, when to actually emit — on time, early, or more than once as late data trickles in — and what to do about the data a watermark swore wouldn't show up but did anyway. That's the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
