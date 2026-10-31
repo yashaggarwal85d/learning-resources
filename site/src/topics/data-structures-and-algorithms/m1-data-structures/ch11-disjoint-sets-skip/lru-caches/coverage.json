@@ -1,0 +1,177 @@
+{
+  "topic": "dsa.lru-caches",
+  "syllabus": [
+    {
+      "clause": "hash map + doubly linked list for O(1) get/put",
+      "at": [
+        { "step": "Two structures, one answer" },
+        { "step": "O(1), measured directly" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "CLOCK as the lock-friendly approximation",
+      "at": [
+        { "step": "CLOCK, the lock-friendly approximation" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "Redis's sampled approximate LRU → Data Engineering §5.5.",
+      "at": [
+        { "step": "A scan really does flush it" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "CPython `Lib/functools.py`",
+      "items": [
+        {
+          "item": "lru_cache is documented as thread-safe, with a cache_info/cache_clear/__wrapped__ surface",
+          "at": [
+            { "step": "Two structures, one answer" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Java SE 21 `LinkedHashMap`",
+      "items": [
+        {
+          "item": "An access-order constructor and the removeEldestEntry hook, documented as well suited to LRU caches",
+          "at": [
+            { "step": "Two structures, one answer" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OSTEP, Chapter 22: Beyond Physical Memory: Policies",
+      "items": [
+        {
+          "item": "The use-bit/clock algorithm: a circular sweep that clears a set use bit instead of evicting, Corbato 1969",
+          "at": [
+            { "step": "CLOCK, the lock-friendly approximation" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL `src/backend/storage/buffer/README`",
+      "items": [
+        {
+          "item": "The buffer manager's own clock-sweep victim selection, with a usage counter per buffer and a separate small ring for sequential scans and VACUUM",
+          "at": [
+            { "step": "CLOCK, the lock-friendly approximation" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Redis `src/evict.c`",
+      "items": [
+        {
+          "item": "The sampled-LRU comment block: sample a small number of keys (around five) to build a pool of eviction candidates, no ordered structure at all",
+          "at": [
+            { "step": "A scan really does flush it" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Redis documentation: Key eviction",
+      "items": [
+        {
+          "item": "maxmemory-samples defaults to five; raising it to ten brings the approximation closer to theoretical LRU",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Why the hash map alone isn't enough: it finds an entry in O(1) but keeps no usable order, and the doubly linked list alone isn't enough either: it orders entries but needs the map to avoid an O(n) scan to find one",
+        "at": [
+          { "step": "Two structures, one answer" }
+        ]
+      },
+      {
+        "item": "Why a node needing to know its own neighbours (not just its value) is what makes an O(1) splice possible, the same property the linked-list topic names",
+        "at": [
+          { "step": "Two structures, one answer" }
+        ]
+      },
+      {
+        "item": "That a get is also a write: moving the touched entry to the front changes shared state on every read, not only on a put",
+        "at": [
+          { "step": "What does a hit do, besides read?" }
+        ]
+      },
+      {
+        "item": "Why that write-on-read is exactly what makes a shared LRU cache contend under many threads: the reorder needs exclusive access even for a pure lookup",
+        "at": [
+          { "step": "What does a hit do, besides read?" },
+          { "deep": "Production failures this topic warns about" }
+        ]
+      },
+      {
+        "item": "That CLOCK's reference bit is a cheaper, coarser substitute for exact recency, not a free win: it gives up knowing which of several set-bit entries was used most recently, in exchange for a hit costing one bit set",
+        "at": [
+          { "step": "What would make a hit cheaper?" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why CLOCK's measured miss ratio lands close to exact LRU's on a workload with real locality, and that the gap is a property of the workload, not a universal guarantee",
+        "at": [
+          { "step": "CLOCK, the lock-friendly approximation" },
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "Why neither LRU nor CLOCK can tell 'used once, as part of something bigger than the cache' apart from 'used constantly': both rely only on recency, which a one-pass scan satisfies for everything it touches",
+        "at": [
+          { "step": "What happens when one giant scan runs through?" }
+        ]
+      },
+      {
+        "item": "That measuring the damage of a scan requires looking at a short window right after it, not the whole recovery period, since the cache self-warms and the effect otherwise disappears into noise — a real measurement mistake this topic's own script caught and fixed",
+        "at": [
+          { "step": "A scan really does flush it" },
+          { "deep": "Lab" }
+        ]
+      },
+      {
+        "item": "That sampled LRU trades all ordered bookkeeping for a handful of random probes per eviction, which costs it a measurably worse miss ratio than exact LRU on the same workload, in exchange for zero per-access cost",
+        "at": [
+          { "step": "A scan really does flush it" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "The explicit scope boundary: this topic ends on the exact problem the next topic (scan-resistant policies) solves, and does not attempt a fix of its own",
+        "at": [
+          { "step": "Recap" },
+          { "deep": "Where this goes next" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
