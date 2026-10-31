@@ -1,0 +1,75 @@
+{
+  "topic": "de.downsampling-rollups-retention-tiers",
+  "steps": [
+    {
+      "lines": [
+        "A dashboard's daily number comes from averaging a day's worth of hourly averages together.",
+        "One of those hours happened right after a restart and only had a tiny handful of readings in it.",
+        "That thin hour still counted exactly as much in the average as every single full, ordinary hour did."
+      ]
+    },
+    {
+      "lines": [
+        "Some summaries can be combined cleanly: take two of them and produce the exact summary of everything they covered together.",
+        "A minimum, a maximum, a running total, and a plain count all behave this way.",
+        "A percentile doesn't. There's no rule anywhere for combining two separate percentiles into the percentile of everything combined."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "Two of these hourly summaries, each storing a running total and a count instead of a plain average, get combined into one.",
+        "Does that combined result match exactly what computing straight from every individual reading would give?"
+      ],
+      "answer": [
+        "It does, exactly.",
+        "A running total and a count already hold everything there is to know about their own hour, so combining them throws nothing away that an average would have already lost."
+      ]
+    },
+    {
+      "lines": [
+        "Put it to the test directly.",
+        "The combined running total and the combined count land exactly on the true total and the true count from every reading.",
+        "Averaging the hourly averages together, by contrast, lands nowhere close."
+      ]
+    },
+    {
+      "lines": [
+        "A reading that shows up only after its hour has already been summarized still has to change something.",
+        "It changes that one hour's maximum, its count, and its average, all at once.",
+        "Every other hour that already had its summary computed stays completely untouched by it."
+      ]
+    },
+    {
+      "lines": [
+        "Keep the full-detail readings for a matter of days, a coarser one-minute summary for months, and an even coarser one-hour summary stretching back years.",
+        "A question about the last few hours reads straight from the full-detail data. A question spanning years reads from the coarsest summary available.",
+        "A question that spans both ranges at once has to read from two different summaries and stitch the two together into one answer."
+      ]
+    },
+    {
+      "lines": [
+        "A single genuine spike buried inside one hour's worth of readings barely nudges that hour's average at all.",
+        "The exact same hour's maximum shows that same spike in full, completely unchanged."
+      ]
+    },
+    {
+      "lines": [
+        "Only a summary that can be combined from two partial pieces survives being rolled up at all; an average gets derived from a total and a count, never stored on its own.",
+        "A reading arriving late still has to reopen the one summary it belongs to.",
+        "A spanning question has no choice but to stitch summaries together, and an average and a maximum simply keep two different truths."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "A dashboard reports a single daily average with no record anywhere of how many readings went into each hour behind that number.",
+        "Is that daily average trustworthy all on its own, with nothing else to check it against?"
+      ],
+      "answer": [
+        "It isn't.",
+        "Without each hour's own count sitting next to it, a thin, barely-sampled hour and a completely full, ordinary hour look exactly identical inside that one daily figure."
+      ]
+    }
+  ]
+}

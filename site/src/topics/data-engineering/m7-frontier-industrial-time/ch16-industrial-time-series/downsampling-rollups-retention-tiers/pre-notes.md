@@ -1,0 +1,6 @@
+- **Aggregate**: a function computed over a set of values (sum, mean, max, a quantile). *Where you meet it:* which of these can be merged from two rollups and which can't.
+- **Rollup**: a pre-aggregated row for one series over one time bucket. *Where you meet it:* this topic's own central object.
+- **Bucket**: the fixed time span (an hour, a day) a rollup summarizes. *Where you meet it:* the hourly and daily buckets in the hook and the lab.
+- **Retention**: how long a tier of data (raw, minute rollup, hour rollup) is kept before it's deleted or replaced by a coarser tier. *Where you meet it:* the three-tier storage plan.
+- **Downsampling**: reducing a series' resolution, usually by rolling it up to a coarser bucket. *Where you meet it:* the Thanos-sourced framing that its goal is query speed, not storage savings.
+- **Partial aggregate**: an intermediate result (from Chapter 2) that can be combined with another partial result to get the aggregate of their union. *Where you meet it:* exactly what makes min, max, sum and count mergeable.
