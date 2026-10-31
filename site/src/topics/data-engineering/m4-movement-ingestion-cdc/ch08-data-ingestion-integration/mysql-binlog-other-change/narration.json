@@ -1,0 +1,82 @@
+{
+  "topic": "de.mysql-binlog-other-change",
+  "steps": [
+    {
+      "lines": [
+        "A primary server fails. A replica gets promoted to take its place, and a CDC connector reconnects.",
+        "It reconnects using the position it remembered from the old primary, a file name and a byte offset inside that file.",
+        "On the new server, that exact same byte offset points at a completely different moment in history, and the connector has no way to know that happened."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what actually goes wrong here, answer this.",
+        "The connector just reconnected to the promoted replica using nothing but that old file-and-offset position.",
+        "Does it notice the position doesn't belong to this server, or does it just start reading from wherever that position happens to land?"
+      ],
+      "answer": [
+        "Saying it notices assumes the position itself carries some signature of which server it came from. It doesn't.",
+        "A file-and-offset position is just two numbers. Nothing about those numbers says which server wrote them, so the connector reads whatever transaction happens to sit there now."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why a position can even go wrong like that in the first place.",
+        "A binlog entry logged in statement format only records the SQL text that ran, not what values actually changed.",
+        "A binlog entry logged in row format records the real column values a statement changed, which is what makes it possible to decode at all."
+      ]
+    },
+    {
+      "lines": [
+        "I modeled that exact comparison, since this sandbox has no live MySQL to measure against directly.",
+        "The identical update, logged under a minimal row image, is missing the one old column value you'd actually need to see what changed.",
+        "The same update under a full row image keeps every old column, whether or not that particular column happened to change."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's the deeper reason the hook's own failure happens at all.",
+        "A binlog position is a byte address inside one specific file, on one specific server.",
+        "The moment you're reading from a different server, that byte address can point at anything. It was never describing a transaction. It was only ever describing a location."
+      ]
+    },
+    {
+      "lines": [
+        "I modeled the identical transaction with both kinds of identifier side by side.",
+        "Its file-and-offset position comes out different on the primary and on the replica, exactly as you'd expect from two separate files.",
+        "Its global transaction identifier comes out the same on both, because that identifier names the transaction itself, not where it happens to sit."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a completely different way a MySQL consumer can lose its place.",
+        "If a consumer stays down long enough, the binlog segment holding its old position eventually gets cleaned up on a fixed schedule.",
+        "A PostgreSQL slot would have pinned that segment in place for as long as the consumer needed it. MySQL's binlog does not work that way at all."
+      ]
+    },
+    {
+      "lines": [
+        "I modeled that retention window directly, using the exact number from Debezium's own example configuration.",
+        "A consumer down for an hour still finds its old position waiting for it, untouched.",
+        "A consumer down past the retention window finds that position already gone, and has no choice left but to start over with a fresh snapshot."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and MySQL's binlog answers three separate questions, each with its own real cost.",
+        "What gets logged depends on the row image setting. What survives a failover depends on using a GTID instead of a bare position. What happens to a stalled consumer depends on a retention clock, not a pinned slot.",
+        "That last one is the one worth remembering: MySQL never traps disk space on your behalf the way PostgreSQL does."
+      ]
+    },
+    {
+      "lines": [
+        "Here's one more thing none of that explains.",
+        "A row event only records column values by position, not by name. So what happens when you try to read an old event after a column has actually been added to the table?"
+      ],
+      "answer": [
+        "Saying the event carries enough of its own schema sounds reasonable, but a row event was never designed to describe its own columns.",
+        "The connector has to keep its own running record of every schema change, in the exact order the binlog recorded them, just to make sense of an event logged under an older schema."
+      ]
+    }
+  ]
+}

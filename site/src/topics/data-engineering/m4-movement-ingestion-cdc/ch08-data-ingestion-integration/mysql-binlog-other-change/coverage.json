@@ -1,0 +1,123 @@
+{
+  "topic": "de.mysql-binlog-other-change",
+  "syllabus": [
+    {
+      "clause": "row-based binlog with binlog_row_image=FULL, GTIDs for position independence across failover, binlog retention",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: does the connector notice" },
+        { "step": "Reveal: row-based logging is what makes an event decodable" },
+        { "step": "Reveal: row image, measured" },
+        { "step": "Reveal: a position is only meaningful on the server that wrote it" },
+        { "step": "Reveal: GTIDs, measured" },
+        { "step": "Reveal: retention expiry isn't PostgreSQL's failure mode" },
+        { "step": "Reveal: retention expiry, measured" },
+        { "step": "Recap" }
+      ]
+    },
+    {
+      "clause": "DDL parsing and the schema-history topic",
+      "at": [{ "step": "Prove it" }]
+    },
+    {
+      "clause": "Oracle (LogMiner/XStream) and SQL Server (CDC tables) as contrasting capture mechanisms",
+      "at": [{ "step": "Prove it" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Debezium connector for MySQL",
+      "items": [
+        {
+          "item": "The binlog-format must be set to ROW or row; the binlog_row_image must be set to FULL or full",
+          "at": [{ "step": "Reveal: row image, measured" }]
+        },
+        {
+          "item": "The connector records its position in the server's binlog, which is different on each server in the cluster; most HA MySQL clusters use GTIDs instead",
+          "at": [{ "step": "Reveal: GTIDs, measured" }]
+        },
+        {
+          "item": "After the logs have been pruned, the connector's position in the logs might no longer be available, and a new snapshot is required",
+          "at": [{ "step": "Reveal: retention expiry, measured" }]
+        },
+        {
+          "item": "This database schema history topic is for internal connector use only",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for Oracle / Oracle LogMiner docs",
+      "items": [
+        {
+          "item": "Oracle LogMiner is responsible only for reading redo and archive logs from disk and streaming the raw changes; XStream requires a GoldenGate licence",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "Microsoft docs: change data capture (SQL Server)",
+      "items": [
+        {
+          "item": "Change data capture utilizes the SQL Server Agent to log changes into a capture instance's own change table, named by appending _CT to the instance name",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "This sandbox has no MySQL, Oracle or SQL Server server to measure against, confirmed by checking for installed server binaries directly, matching CHAPTER.md's own anticipation of this limit rather than an undisclosed gap.",
+        "at": [{ "out": "disclosed environment limit, per CHAPTER.md's own allowance" }]
+      },
+      {
+        "item": "The hook's own failure mode — a connector silently reading the wrong transaction after a failover — is a direct, necessary consequence of a file-and-offset position being a byte address with no server identity encoded in it, not a hypothetical edge case.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The three settings this topic names (binlog_format, binlog_row_image, binlog_expire_logs_seconds) are independent knobs answering three different questions — what gets logged, how much of it, and for how long — modelled as three separate functions rather than one combined check.",
+        "at": [{ "step": "Reveal: row image, measured" }]
+      },
+      {
+        "item": "A GTID and a file-and-offset position are measured against the identical transaction in the same function, so the contrast is a controlled comparison, not two separate claims about two separate transactions.",
+        "at": [{ "step": "Reveal: GTIDs, measured" }]
+      },
+      {
+        "item": "The retention-expiry model uses Debezium's own documented example value for binlog_expire_logs_seconds, not an invented number, so the downtime thresholds tested are anchored to a real configuration default.",
+        "at": [{ "step": "Reveal: retention expiry, measured" }]
+      },
+      {
+        "item": "The contrast with PostgreSQL's slot (topic 10) is named explicitly as a contrast, not a restatement — a slot pins disk to protect a position; MySQL's retention clock protects disk at the cost of the position, the opposite trade.",
+        "at": [{ "step": "Reveal: retention expiry isn't PostgreSQL's failure mode" }]
+      },
+      {
+        "item": "The DDL/schema-history model shows a concrete case where the identical row event, addressed by column position, resolves to two different results depending on which schema-history entry is consulted, which is what makes the schema-history topic a necessity rather than a convenience.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "SQL Server's CDC is placed as a hybrid of topic 9's own query-based and log-based families, not a third independent category, reusing that topic's own vocabulary rather than inventing new terms for the identical distinction.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The wrong half of the first predict question — that a position carries its own server identity — is ruled out directly by the Debezium quote that the position 'is different on each server in the cluster,' with nothing in the quote suggesting the position is self-describing.",
+        "at": [{ "step": "Predict: does the connector notice" }]
+      },
+      {
+        "item": "The MariaDB GTID page named by CHAPTER.md was attempted and found to render as an unreadable JavaScript shell in this sandbox's fetch, disclosed honestly in SOURCES.md rather than quoted from memory or guessed at.",
+        "at": [{ "out": "disclosed source-fetch limitation" }]
+      },
+      {
+        "item": "Debezium's connector structure (how a schema-history Kafka topic is actually wired up and partitioned in production) is topic 19's own subject, used here only at the level of why the topic exists, not re-derived.",
+        "at": [{ "out": "named as pointing to topic 19's own full treatment" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

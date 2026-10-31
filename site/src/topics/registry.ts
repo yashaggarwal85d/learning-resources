@@ -6535,6 +6535,26 @@ export const TOPICS: TopicMeta[] = [
       "PostgreSQL gives a consumer a slot that remembers its place for it. MySQL does it differently: the consumer keeps its own position in a file-based log. The next topic is that log, and the contrasting designs of Oracle and SQL Server.",
   },
   {
+    id: 'de.mysql-binlog-other-change',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/mysql-binlog-other-change',
+    title: 'MySQL binlog and other change logs',
+    syllabusTitle: 'MySQL binlog and other change logs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['mysql-binlog-gtid-schema-history', 'engine-capture-mechanisms'],
+    uses: ['logical-decoding-slot', 'query-vs-log-cdc', 'replica-identity-before-image'],
+    declared: [],
+    bridge:
+      "PostgreSQL gives a consumer a slot that remembers its place for it. MySQL does not: the consumer keeps its own position in a file-based log. This topic is that log, why a schema history has to travel with it, and two other engines that capture changes in quite different ways.",
+    handoff:
+      "PostgreSQL's slot is a convenience with a sharp edge: it never lets go of what its consumer has not confirmed. When a consumer stalls, that edge is the production disk.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
