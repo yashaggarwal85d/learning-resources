@@ -6551,6 +6551,26 @@ export const TOPICS: TopicMeta[] = [
       "A lakehouse table is read by a batch-style query engine. The other destination this chapter's streams can land on is built to answer a query in milliseconds against data that arrived seconds ago, and that is the chapter's last topic.",
   },
   {
+    id: 'de.real-time-olap-ingestion',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/real-time-olap-ingestion',
+    title: 'Real-time OLAP ingestion',
+    syllabusTitle: 'Real-time OLAP ingestion',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['olap-segment-ingestion', 'olap-upsert-over-segments'],
+    uses: ['partition-segment-index', 'retention-vs-compaction', 'two-phase-commit-sink', 'dynamic-table-changelog-modes'],
+    declared: [],
+    bridge:
+      "A lakehouse table is the first destination a stream can land on. This, the chapter's last topic, is the other: a real-time OLAP store that can answer a query in milliseconds against data that arrived seconds ago, by building its own segments directly from the same kind of partition this chapter opened with.",
+    handoff:
+      "This chapter opened on a question Milestone 3's batch engines never had to ask: what do you do with data that never stops arriving. Everything from the partitioned log to a windowed aggregation to a checkpointed, rescaled Flink job was an answer to some piece of that question, ending in a result someone can actually query in near real time. The next milestone moves the question up a level: not how a single system computes correctly, but how a whole platform of such systems is run, paid for, and kept compliant in production. Cloud data architecture is next.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
