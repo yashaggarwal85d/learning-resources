@@ -1,0 +1,101 @@
+{
+  "topic": "de.downsampling-rollups-retention-tiers",
+  "syllabus": [
+    {
+      "clause": "rollups that stay mergeable (min, max, sum, count, sketches — never stored averages),",
+      "at": [
+        { "step": "Reveal: mergeable aggregates, and the one that isn't" },
+        { "step": "Predict: does merging two rollups match the raw computation?" },
+        { "step": "Reveal: merged exactly, never averaged" }
+      ]
+    },
+    {
+      "clause": "continuous aggregates and their refresh/late-data handling,",
+      "at": [{ "step": "Reveal: a late reading reopens one bucket" }]
+    },
+    {
+      "clause": "raw-to-rollup retention tiers and query routing by time range.",
+      "at": [{ "step": "Reveal: three tiers, and a query that spans two of them" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "TimescaleDB: Real-time aggregates",
+      "items": [
+        {
+          "item": "real-time aggregates combine pre-aggregated data with the most recent raw data; disabled by default from v2.13",
+          "at": [{ "step": "Reveal: a late reading reopens one bucket" }]
+        }
+      ]
+    },
+    {
+      "source": "Prometheus: Defining recording rules",
+      "items": [
+        {
+          "item": "recording rules precompute expensive expressions and save the result as a new time series",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "Thanos: Compactor documentation (downsampling and retention)",
+      "items": [
+        {
+          "item": "downsampling's goal is faster long-range queries, not saving space — a downsampled block adds roughly two more blocks per raw block",
+          "at": [{ "step": "Reveal: three tiers, and a query that spans two of them" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A rollup's mergeability isn't a property of the aggregate function alone, it's a property of whether the function can be computed from two partial results without access to the original data — min, max, sum and count all have this property; a quantile fundamentally does not, no matter how the rollup is stored.",
+        "at": [{ "step": "Reveal: mergeable aggregates, and the one that isn't" }]
+      },
+      {
+        "item": "Storing an average instead of sum-and-count isn't a smaller mistake that happens to work most of the time — it's a value that is already wrong the moment two unequal-sized buckets are combined, and the error compounds silently with every further rollup.",
+        "at": [{ "step": "Predict: does merging two rollups match the raw computation?" }]
+      },
+      {
+        "item": "A merge that reproduces the raw computation exactly, rather than approximately, is the entire point of choosing only mergeable aggregates — approximate agreement would still leave open whether the rollup's own merge logic was the thing introducing error.",
+        "at": [{ "step": "Reveal: merged exactly, never averaged" }]
+      },
+      {
+        "item": "A continuous aggregate's late-data problem doesn't go away by refreshing more often — it only shrinks the window during which a late reading can still slip past undetected, which is why the trade-off is explicitly a cost (more recomputation) traded for correctness, not a solved problem.",
+        "at": [{ "step": "Reveal: a late reading reopens one bucket" }]
+      },
+      {
+        "item": "A retention plan that saves storage but loses the ability to answer the specific questions a rollup didn't keep (a different granularity, a different statistic) has not actually reduced the cost of those questions — it has moved the cost to 'impossible' instead of 'expensive.'",
+        "at": [{ "step": "Reveal: three tiers, and a query that spans two of them" }]
+      },
+      {
+        "item": "A query that silently stitches two tiers together is doing real, nontrivial work that a query against a single tier never has to do — combining a partial window of raw data with a partial window of rolled-up data at a tier boundary without double-counting or gapping the seam.",
+        "at": [{ "step": "Reveal: three tiers, and a query that spans two of them" }]
+      },
+      {
+        "item": "A mean rollup and a max rollup over the same raw data aren't redundant — they answer different questions (what was typical vs. what was the worst case), and keeping only one of them means losing the ability to answer the other, permanently, once the raw data ages out.",
+        "at": [{ "step": "Reveal: a spike hidden by one rollup, kept by another" }]
+      },
+      {
+        "item": "A dashboard that silently changes which tier it's reading from, as the user widens the time window, is changing what question is actually being answered without saying so — the shape of the data at one-second resolution and at one-hour resolution are not the same claim about the world.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Fewer rows scanned for the same time range is the entire economic case for keeping a rollup at all — if a rollup query had to scan as many rows as the raw query to answer the same question, there would be no reason to materialize it in advance.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A dashboard reporting a single daily number with no record of how many samples contributed to each hour behind it gives a reader no way to tell a quiet, representative hour from a restart hour whose few readings happened to run hot — the count itself, not just the mean, is load-bearing information.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

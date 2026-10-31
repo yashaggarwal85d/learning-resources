@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the join and signal material this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" title="As-of alignment of unsynchronized streams" domain="data-engineering" host="de.as-alignment-unsynchronized-streams" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Resampling and gap filling" domain="data-engineering" host="de.resampling-gap-filling" by="this chapter, for the signal-type and filled-value-is-a-claim ideas this topic's rollups build on" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Real-time aggregates" href="https://docs.timescale.com/use-timescale/latest/continuous-aggregates/real-time-aggregates/" by="TimescaleDB documentation">The default-disabled-since-v2.13 behavior and the late-data refresh limitation this topic's recompute example follows.</Resource>
+  <Resource kind="reading" title="Defining recording rules" href="https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/" by="Prometheus documentation">Named for the continuous-aggregate idea's counterpart outside a time-series database.</Resource>
+  <Resource kind="reading" title="Compactor" href="https://thanos.io/tip/components/compact.md/" by="Thanos documentation">Named and quoted for its own downsampling schedule and retention-per-resolution design (sourced-only, not run).</Resource>
+</ul>
+
+</section>
