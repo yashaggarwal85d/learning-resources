@@ -1,0 +1,83 @@
+{
+  "topic": "de.tungsten-whole-stage-codegen",
+  "steps": [
+    {
+      "lines": [
+        "Catalyst already settled on three operators for this query, back in the last topic.",
+        "Here's the question this one actually answers. Does each of those three run its own loop, calling the next one row by row, or does something else take over entirely once the plan is chosen?",
+        "Let's look at what the engine itself generates, rather than guess from the operator names."
+      ]
+    },
+    {
+      "lines": [
+        "I pulled this straight from a real session's own plan text.",
+        "Range, filter, and project, three separate operators, all carry the exact same marker, star one, in the printed plan.",
+        "And Spark's own codegen report agrees with that marker. It names exactly one fused subtree, not three."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "That one generated method still has to hold a row's data somehow while it works on it. Does it build an ordinary object for each row, the way a normal interpreted loop would?",
+        "Think about what Tungsten is actually trying to avoid here, not what sounds like the simplest implementation."
+      ],
+      "answer": [
+        "It's tempting to assume generated code still needs some kind of object to carry a row's fields around.",
+        "But that per-field, per-object overhead is exactly what Tungsten set out to remove. The generated code writes raw bytes directly instead.",
+        "Skipping the object isn't an optimization layered on top. It's the entire point of generating this code in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the prediction holds exactly.",
+        "The generated Java source itself calls something named unsafe row writer, and writes every field straight into a structure called unsafe row.",
+        "That's raw bytes, laid out by hand in memory, never a plain object with ordinary getters and setters."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, and this one has a genuine twist in it.",
+        "The same fused pipeline reads its data from a vectorised parquet scan. Does that scan carry the same stage marker as everything running after it, or does it sit apart somehow?",
+        "Think about what a vectorised reader is actually doing differently from everything downstream of it."
+      ],
+      "answer": [
+        "It's easy to assume the scan shares the marker, since it feeds directly into the same fused pipeline.",
+        "But a vectorised reader works on a whole batch of columns at once. That's a genuinely different execution model from one generated method running row by row.",
+        "So it sits outside the fused code entirely, and something else has to connect the two worlds back together."
+      ]
+    },
+    {
+      "lines": [
+        "Measured: the parquet scan itself reports batched true, and carries no stage marker at all.",
+        "A separate node, named columnar to row, carries its own star one marker instead.",
+        "That node is the bridge. It's where the batch-of-columns world hands off into the row-at-a-time, fused world the rest of the plan runs in."
+      ]
+    },
+    {
+      "lines": [
+        "Last commitment, and it's the cleanest test of whether this fusion is reliable or fragile.",
+        "I drop the codegen field limit all the way down to zero, so every single stage blows straight past it on purpose. Does the plan end up with fewer markers now, or does it lose them completely?",
+        "Think about whether fusion happens stage by stage, or all at once for a whole subtree."
+      ],
+      "answer": [
+        "It's reasonable to guess that some smaller stages might still sneak in under a much lower limit.",
+        "But fusion isn't decided field by field. A whole subtree either stays under the limit together, or the entire thing falls back at once.",
+        "One stage over the limit doesn't shrink the fusion. It removes that stage's fusion completely."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly that complete removal.",
+        "With the limit at zero, every single star marker disappears from the plan, everywhere.",
+        "And Spark's own codegen report says so directly too. It reports zero fused subtrees, not some smaller number than before."
+      ]
+    },
+    {
+      "lines": [
+        "So here's everything this topic actually showed you, named precisely.",
+        "A shared stage marker fuses a whole subtree of operators into one generated method, which writes unsafe row bytes directly instead of ordinary objects.",
+        "The vectorised reader sits outside all of that, bridged in by its own node. And when fusion fails, it fails for a whole stage at once, visibly, with the marker and the report agreeing."
+      ]
+    }
+  ]
+}

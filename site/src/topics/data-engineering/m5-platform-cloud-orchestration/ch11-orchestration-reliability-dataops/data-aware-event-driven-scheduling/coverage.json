@@ -1,0 +1,105 @@
+{
+  "topic": "de.data-aware-event-driven-scheduling",
+  "syllabus": [
+    {
+      "clause": "Airflow assets (renamed from datasets in 3.0)",
+      "at": [
+        { "step": "Reveal: the asset model, renamed and extended" }
+      ]
+    },
+    {
+      "clause": "asset events and AssetWatchers on message queues",
+      "at": [
+        { "step": "Reveal: the asset model, renamed and extended" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "partition-driven asset scheduling (3.2) and partition mappers (3.3)",
+      "at": [
+        { "step": "Predict: what happens when granularities don't match?" },
+        { "step": "Reveal: a partition mapper, run live" }
+      ]
+    },
+    {
+      "clause": "Dagster declarative automation conditions and freshness policies",
+      "at": [
+        { "step": "Reveal: Dagster's declarative version, sourced" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "time-based vs data-driven triggering",
+      "at": [
+        { "step": "Recap" }
+      ]
+    },
+    {
+      "clause": "thundering herds and missed events",
+      "at": [
+        { "step": "Reveal: one asset update, measured" },
+        { "step": "Predict: does Airflow stagger them?" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Asset-Aware Scheduling (Apache Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "a Dag scheduled on multiple assets only runs once every one of them has updated since its last run", "at": [{ "step": "Reveal: one asset update, measured" }] },
+        { "item": "external systems can push asset events into Airflow directly through the REST API", "at": [{ "deep": "Internals" }] },
+        { "item": "only triggers inheriting from BaseEventTrigger are compatible with event-driven scheduling, to avoid infinite rescheduling", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Asset Definitions (Apache Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "the asset concept was previously called Dataset before being renamed in Airflow 3.0", "at": [{ "step": "Reveal: the asset model, renamed and extended" }] },
+        { "item": "pre-determined partitioning uses the timetable's schedule cadence and partition mappers to match upstream keys to downstream keys", "at": [{ "step": "Reveal: a partition mapper, run live" }] }
+      ]
+    },
+    {
+      "source": "Event-driven scheduling (Apache Airflow 3.3.2 documentation)",
+      "items": [
+        { "item": "an AssetWatcher monitors an external queue or storage system and turns a relevant event into an asset update", "at": [{ "step": "Reveal: the asset model, renamed and extended" }] },
+        { "item": "a triggerer restart redelivers unconfirmed messages, and a late-rejoining subscriber can miss events committed before it rejoined", "at": [{ "deep": "Frontier" }] },
+        { "item": "a failure can cause duplicate delivery but, by design, never a lost event for an already-subscribed listener", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Declarative Automation (Dagster Docs)",
+      "items": [
+        { "item": "an eager automation condition propagates an update to every downstream asset automatically", "at": [{ "step": "Reveal: Dagster's declarative version, sourced" }] },
+        { "item": "an on_missing condition fills in a missing partition the moment every upstream partition it needs is available", "at": [{ "step": "Reveal: Dagster's declarative version, sourced" }] }
+      ]
+    },
+    {
+      "source": "Asset freshness policies (Dagster Docs)",
+      "items": [
+        { "item": "a freshness policy communicates and enforces how current an asset's data must stay, separate from what triggers it to update", "at": [{ "step": "Reveal: Dagster's declarative version, sourced" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The measured seventeen-microsecond spread across six consumer Dag runs isn't a property of this particular experiment's scale — nothing in the asset-scheduling mechanism counts how many Dags are watching before deciding whether to space out their reactions, so the same near-zero spread should hold whether six Dags are watching or six hundred, which is exactly why a popular asset is a real capacity-planning concern and not a toy scenario.", "at": [{ "step": "Reveal: one asset update, measured" }] },
+      { "item": "A reader might assume staggering consumer Dag runs would be a sensible default Airflow could add. It deliberately doesn't: staggering would mean some consumers see a stale view of the asset's dependency graph for longer than others, which trades one correctness property (every watcher reacts to every update) for a load-smoothing property Airflow leaves to the deployment's own concurrency controls (pools, from two topics back) instead.", "at": [{ "step": "Predict: does Airflow stagger them?" }] },
+      { "item": "The Dataset-to-Asset rename in 3.0 is not merely cosmetic for anyone maintaining code across the boundary: import paths, the public SDK surface, and any serialized DAG definitions referencing the old name all needed migration, which is why Airflow's own docs flag it under 'Changed in version 3.0' rather than treating it as a footnote.", "at": [{ "step": "Reveal: the asset model, renamed and extended" }] },
+      { "item": "The partition mapper experiment deliberately chose a timestamp one second past an hour boundary (09:14:59 would have been an edge-adjacent choice that reads as ambiguous) to make the collapse-vs-distinct behavior unambiguous to a viewer: three keys with real separation inside the hour, one key with real separation across the boundary.", "at": [{ "step": "Reveal: a partition mapper, run live" }] },
+      { "item": "Push-based (REST API) and pull-based (AssetWatcher) event-driven scheduling are not competing designs for the same problem -- they're for different integration shapes. Push-based fits a system that already calls out to other APIs (it can simply add one more call to Airflow's). Pull-based fits a system Airflow has no hook into at all, where something has to sit and watch it from the outside.", "at": [{ "deep": "Internals" }] },
+      { "item": "'A failure can cause duplicate delivery but never a lost event' is stated for the ordinary case of an already-subscribed listener; it does not cover the late-rejoining-subscriber case the same documentation describes two sentences earlier, where a trigger that resubscribes after a restart genuinely can miss events from the window before it rejoined. Conflating these two cases would overstate the guarantee.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Dagster's freshness policy and an automation condition look similar (both involve 'is this asset okay') but answer different questions: an automation condition decides whether to launch a run; a freshness policy evaluates, after the fact, whether the asset's last materialization is still within its promised staleness bound, independent of whether anything is currently trying to update it.", "at": [{ "step": "Reveal: Dagster's declarative version, sourced" }] },
+      { "item": "The hook's eleven-Dag scenario and the lab's six-Dag measurement are deliberately different scales for the same reason earlier topics in this chapter used that pattern: eleven establishes an operationally real scenario, while six is sized to let every one of the resulting Dag runs' logical_date values be read cleanly from a single list-runs call within this session's own time budget.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader carrying forward the previous topic's pool model might assume a pool could smooth out a thundering herd of asset-triggered Dag runs the same way it smooths task concurrency. It can bound how many of the herd's tasks run at once, but it does nothing about the herd itself -- all eleven (or six, or a hundred) Dag runs still get created at the same instant; a pool only throttles what happens after that.", "at": [{ "step": "Recap" }] },
+      { "item": "time-based vs data-driven is not a strict dominance relationship -- the sourced failure modes (missed/duplicate events) and the measured thundering herd are the real costs of data-driven's speed, and a system that cannot tolerate either a rare missed event or a burst of simultaneous downstream runs has a genuine reason to prefer time-based scheduling even though it reacts slower.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

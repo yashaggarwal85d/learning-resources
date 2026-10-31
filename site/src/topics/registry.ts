@@ -5445,6 +5445,26 @@ export const TOPICS: TopicMeta[] = [
       "A deferred task still waits for something specific it already knows to watch for. Some pipelines need the opposite: a run triggered not by a clock or a known wait, but by data itself becoming available somewhere else.",
   },
   {
+    id: 'de.data-aware-event-driven-scheduling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-aware-event-driven-scheduling',
+    title: 'Data-aware and event-driven scheduling',
+    syllabusTitle: 'Data-aware and event-driven scheduling',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['data-aware-asset-scheduling', 'thundering-herd-event-trigger'],
+    uses: ['ch9.message-queue-delivery-semantics', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "A deferred task waits for one specific thing it already knows to watch. This topic is scheduling a whole run not by a clock or a known wait, but by an asset elsewhere becoming freshly available -- and the crowd-and-miss problems that triggering model brings with it.",
+    handoff:
+      "Everything in this section has treated the Dag, and its tasks, as the unit the orchestrator schedules. Dagster's model asks whether the Dag is even the right unit to think in, or whether the data products themselves -- the assets -- should be the thing the system is built around.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -5983,6 +6003,26 @@ export const TOPICS: TopicMeta[] = [
       "Every topic so far watched the plan Catalyst already produced run. This topic opens Catalyst itself, the planner Chapter 2's query-optimiser topic already introduced in the single-node case, now choosing join and aggregate strategies across a cluster.",
     handoff:
       "Catalyst decides the physical plan's shape. Tungsten, next, decides how fast the chosen shape actually runs — a different layer, planning versus execution.",
+  },
+  {
+    id: 'de.tungsten-whole-stage-codegen',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/tungsten-whole-stage-codegen',
+    title: 'Tungsten and whole-stage code generation',
+    syllabusTitle: 'Tungsten and whole-stage code generation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-tungsten-unsaferow', 'spark-whole-stage-codegen'],
+    uses: ['spark-catalyst-pipeline'],
+    declared: [],
+    bridge:
+      "Catalyst chose the physical plan's operators. This topic is how Spark runs them fast: not one virtual-call interpreter loop per row, but one generated method per stage, with rows stored as raw bytes instead of JVM objects.",
+    handoff:
+      "Codegen is the fast, common path. The very next topic is the one execution path it cannot touch at all — a pickled Python UDF — and exactly why that costs so much more.",
   },
   {
     id: 'de.failure-domains-regions-zones',
@@ -6683,5 +6723,25 @@ export const TOPICS: TopicMeta[] = [
       "A reader that can reassemble a whole record from flat columns can also decide, before reading any of them, which columns and rows it can skip entirely. This topic is exactly that: row-group statistics, the page index, bloom filters, and why none of it prunes anything if the data isn't sorted first.",
     handoff:
       "Every skipping trick so far lived inside one Parquet file's own footer. The next section asks what happens once there isn't one file anymore, but a whole table of them sitting in object storage with no file you can safely edit in place.",
+  },
+  {
+    id: 'de.variant-type-shredding',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/variant-type-shredding',
+    title: 'Variant type and shredding',
+    syllabusTitle: 'Variant type and shredding',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['variant-type-shredding'],
+    uses: ['dremel-shredding-levels', 'parquet-data-skipping'],
+    declared: [],
+    bridge:
+      "Every skipping trick so far lived inside flat, already-typed columns. This topic is the format's answer to data that isn't typed at all yet — the Variant type, and the shredding that recovers this chapter's statistics for the fields that matter most.",
+    handoff:
+      "A single Parquet file, however well encoded, typed and skippable, is still one immutable file. ORC is the one real rival that made different choices at every one of these same decisions — worth seeing once, directly, before this chapter leaves the single-file world for good.",
   },
 ];
