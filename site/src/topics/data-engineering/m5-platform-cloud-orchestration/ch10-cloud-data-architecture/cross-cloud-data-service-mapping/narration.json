@@ -1,0 +1,47 @@
+{
+  "topic": "de.cross-cloud-data-service-mapping",
+  "steps": [
+    {
+      "lines": [
+        "An engineer who's only ever touched AWS reads a job posting asking for OneLake and Knowledge Catalog experience, and their first reaction is that none of it applies to them.",
+        { "beat": 0.3 },
+        "It's two rows of a table they already understand, written under a different company's names. Nothing underneath those names is actually unfamiliar."
+      ]
+    },
+    {
+      "lines": [
+        "Pause and think about this before I answer it. A team moves a pipeline from one cloud to another. The compute engine gets swapped out with a rewrite, which is real work, but it's work with a known shape.",
+        "Something else about that same move turns out to be far harder to untangle. Which layer is it?"
+      ],
+      "answer": [
+        "Catalog and identity. Compute reads an open file format and can, in principle, run the exact same job somewhere else.",
+        "A catalog's policy model and an identity system's role graph are each that vendor's own internal state, with no standard way to export either one. That's where the real cost of a migration concentrates."
+      ]
+    },
+    {
+      "lines": [
+        "Three different vendors, the exact same two jobs. One service answers 'store any amount of data, get it back whenever you want' — under three different product names.",
+        "A second service answers 'decide who's even allowed to touch any of it' — again, three names, one underlying job."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a name that changed in the middle of this chapter actually being written. One cloud's own catalog product was renamed partway through this research — same mechanism underneath, a different label on the box.",
+        "That's not a mistake to patch quietly. It's the exact point this whole topic is making, happening in real time while it was being written."
+      ]
+    },
+    {
+      "lines": [
+        "Spark itself shows up under three names. A data warehouse shows up under three more. A streaming-ingest service shows up under three more again.",
+        "Nine product names, three underlying jobs, one mechanism doing each job no matter which vendor's box it's sitting in."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it all together. Object storage, identity and compute all survive a cloud migration with nothing worse than a rewrite — because what they read and write is an open format, not a locked-in one.",
+        { "beat": 0.3 },
+        "Catalog policy and identity's own role graph are the two things that genuinely don't come with you. What's next is the one mechanism every governed lakehouse now builds on, hiding under four different product names."
+      ]
+    }
+  ]
+}
