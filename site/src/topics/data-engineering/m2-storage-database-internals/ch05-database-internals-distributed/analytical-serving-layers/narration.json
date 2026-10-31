@@ -1,0 +1,78 @@
+{
+  "topic": "de.analytical-serving-layers",
+  "steps": [
+    {
+      "lines": [
+        "Same question, asked two ways against the exact same system, both measured directly.",
+        "One version scans every single raw record from the very beginning, every single time it's asked.",
+        "The other version is handed a table that already holds the answer — and comes back dramatically faster, watched directly rather than assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before settling on an answer.",
+        "Both versions of this question ran against the exact same underlying system, with nothing swapped out underneath.",
+        "So is the fast one fast because it's secretly a fundamentally different kind of system, or because it's simply being asked a much smaller question than the slow one?"
+      ],
+      "answer": [
+        "It's the smaller question — nothing about the system itself changed.",
+        "The real work of combining all those records into one answer already happened once, ahead of time.",
+        "What's left to scan on the fast path is tiny by comparison, which is the entire reason it comes back quickly."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that ahead-of-time work actually is, and isn't.",
+        "None of the real combining work disappears — it still has to happen somewhere.",
+        "What changes is when it happens: once, the moment new data arrives, instead of being redone from scratch every single time someone asks the question."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact comparison, with real numbers behind it rather than just a description.",
+        "A table built ahead of time, holding the combined answer already, is measured directly against the raw version it came from.",
+        "It answers the identical question many times faster, confirmed to give the exact same result either way."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real cost that speed carries, measured rather than just claimed.",
+        "A brand-new record is added to the raw version, and checking the raw version again immediately shows it, right away.",
+        "Checking the pre-built answer immediately afterward, though, measurably does not show that new record — not until that pre-built version is explicitly rebuilt."
+      ]
+    },
+    {
+      "lines": [
+        "One more idea, worth naming on its own.",
+        "A single pre-built answer only ever answers the one question it was built for.",
+        "A broader structure instead precomputes every combination across a chosen handful of categories at once, trading a lot more storage for being ready for any question drawn from those categories, not just a single one."
+      ]
+    },
+    {
+      "lines": [
+        "A handful of real, named systems take this idea one step further than anything described so far.",
+        "Instead of combining records later, on a schedule, they do that combining the instant each record first arrives.",
+        "And their own documentation is upfront about the real price of that: once something's been combined this way, you can no longer go back and ask about that one original record by itself."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Combining data ahead of time doesn't remove the work; it just moves when that work happens, to the moment data is written.",
+        "A pre-built answer is measurably faster, but that speed can come with the real cost of staleness until it's rebuilt. A broader structure generalizes one pre-built answer into many at once. And some real systems push that same idea all the way back to the instant data first arrives."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "Something needs to show a number that's correct down to the second, while being asked for constantly — far too often to recompute from the full raw records every time.",
+        "Of everything named in this topic, which approach actually fits, and what does choosing it really cost?"
+      ],
+      "answer": [
+        "The systems that combine data the instant it arrives, not on any kind of schedule.",
+        "A table rebuilt only periodically is never fresher than its last rebuild, and scanning every raw record directly isn't affordable at that request volume.",
+        "The real cost isn't the technique itself — it's standing up and running an entire extra, dedicated system just to get it."
+      ]
+    }
+  ]
+}

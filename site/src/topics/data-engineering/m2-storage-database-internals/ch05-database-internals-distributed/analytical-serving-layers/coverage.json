@@ -1,0 +1,120 @@
+{
+  "topic": "de.analytical-serving-layers",
+  "syllabus": [
+    {
+      "clause": "pre-aggregation, materialized serving tables and cubes",
+      "at": [
+        { "step": "Reveal: pre-aggregation is a cost shift, not a cost cut" },
+        { "step": "Reveal: a materialized serving table, measured" },
+        { "step": "Reveal: cubes generalize this to many questions at once" }
+      ]
+    },
+    {
+      "clause": "when to move from warehouse queries to a real-time OLAP store (Druid, Pinot, ClickHouse — engine detail in §6.4 and §9.3)",
+      "at": [
+        { "step": "Reveal: a real-time OLAP store's own rollup" },
+        { "step": "Prove it" },
+        { "topic": "Real-time OLAP ingestion", "domain": "data-engineering", "quote": "streaming ingestion into Druid, Pinot and ClickHouse" }
+      ]
+    },
+    {
+      "clause": "freshness vs concurrency vs cost",
+      "at": [
+        { "step": "Reveal: the freshness gap, measured" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ClickHouse docs — Materialized views",
+      "items": [
+        {
+          "item": "an incremental materialized view shifts aggregation's cost from query time to insert time",
+          "at": [{ "step": "Reveal: pre-aggregation is a cost shift, not a cost cut" }]
+        },
+        {
+          "item": "a refreshable materialized view instead re-runs its query periodically over the full dataset, so its results are only as fresh as the last refresh",
+          "at": [{ "step": "Reveal: the freshness gap, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Druid docs — Data rollup",
+      "items": [
+        {
+          "item": "rollup is ingestion-time pre-aggregation, dramatically reducing stored row count",
+          "at": [{ "step": "Reveal: a real-time OLAP store's own rollup" }]
+        },
+        {
+          "item": "the real, named trade-off of rollup is losing the ability to query individual events",
+          "at": [{ "step": "Reveal: a real-time OLAP store's own rollup" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a real aggregate query against a precomputed materialized table, measured directly, is many times faster than the identical query against the raw table it was built from, with the same answer either way",
+          "at": [{ "step": "Reveal: a materialized serving table, measured" }]
+        },
+        {
+          "item": "a real write to the raw table is measured visible there immediately, but measurably absent from the materialized table until the materialized table is explicitly refreshed",
+          "at": [{ "step": "Reveal: the freshness gap, measured" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The hook's own two measurements are not a contest between two different kinds of database; they are the same engine answering two differently sized questions, which is exactly the distinction the predict step is built to isolate before naming pre-aggregation as the actual mechanism.",
+        "at": [{ "step": "Hook: the same query, measured for real: scanning raw rows from scratch versus a table that already holds the answer" }]
+      },
+      {
+        "item": "Framing pre-aggregation as a cost shift rather than a cost cut matters because it predicts where the hidden cost reappears: not in the fast read, but in whatever process keeps the materialized table updated, which is exactly what the next reveal's freshness gap measures directly.",
+        "at": [{ "step": "Reveal: pre-aggregation is a cost shift, not a cost cut" }]
+      },
+      {
+        "item": "The measured speedup in examples.py is not a one-off artifact of DuckDB specifically; any engine pays roughly the same cost to scan and combine a large raw table versus reading a small precomputed one, which is why the same shape of result shows up across very different real systems.",
+        "at": [{ "step": "Reveal: a materialized serving table, measured" }]
+      },
+      {
+        "item": "The freshness gap measured here is a design choice, not a bug: a materialized table could be kept perfectly fresh by refreshing it on every single write, but that would erase the entire cost-shift benefit this topic's earlier reveal named, since the work would again happen on every write.",
+        "at": [{ "step": "Reveal: the freshness gap, measured" }]
+      },
+      {
+        "item": "A cube's own storage cost grows with the number of dimension combinations it precomputes, not with the size of the raw data alone, so a cube is a real trade-off against more dimensions, not a free generalization of a single materialized table.",
+        "at": [{ "step": "Reveal: cubes generalize this to many questions at once" }]
+      },
+      {
+        "item": "Rollup losing the ability to query individual events is a direct consequence of pre-aggregating at ingestion rather than losing information arbitrarily: once rows with the same dimension values and timestamp are combined into one, the real system no longer has any way to tell which original event contributed what.",
+        "at": [{ "step": "Reveal: a real-time OLAP store's own rollup" }]
+      },
+      {
+        "item": "This topic's own three options sit on a real spectrum, not three unrelated choices: a raw warehouse scan is always fresh and never pre-aggregates; a materialized view pre-aggregates on a schedule; a real-time OLAP store pre-aggregates on every single write — each step trading a little more staleness risk for a lot more read-time speed and write-time cost.",
+        "at": [{ "deep": "Internals" }]
+      },
+      {
+        "item": "This topic establishes which of three real techniques to reach for when serving an aggregate; it says nothing yet about how a consumer reads what a producer already wrote in the first place, which is exactly the gap the next topic closes by turning to queues and logs.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "The 'Prove it' step's own correct answer depends on both halves of the trade-off at once, not either alone: a team that only cared about freshness could over-pay for a real-time OLAP store even at low query volume, and a team that only cared about cost could under-provision freshness even when correctness truly needs it.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Pre-aggregation's own cost-shift idea connects directly back to this chapter's earlier cache material: a cache-aside layer also shifts work (a backing-store read) to the moment a miss happens rather than every request, which is the same underlying trade this topic names for aggregation specifically.",
+        "at": [{ "topic": "Cache patterns and eviction policies", "domain": "data-engineering", "quote": "cache-aside" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
