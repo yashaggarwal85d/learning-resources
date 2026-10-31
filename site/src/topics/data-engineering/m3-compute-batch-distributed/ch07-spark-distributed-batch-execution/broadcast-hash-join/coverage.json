@@ -1,0 +1,115 @@
+{
+  "topic": "de.broadcast-hash-join",
+  "syllabus": [
+    {
+      "clause": "the driver collects the small side and ships it to every executor as a torrent broadcast",
+      "at": [
+        { "step": "Reveal: under the default threshold, a BroadcastExchange and BroadcastHashJoin, zero shuffle Exchanges at all" }
+      ]
+    },
+    {
+      "clause": "autoBroadcastJoinThreshold, hints and the 8 GB table limit",
+      "at": [
+        { "step": "Predict: the same query, but the small table grows past the threshold" },
+        { "step": "Reveal: no broadcast at all now, a real SortMergeJoin with two shuffle Exchanges" }
+      ]
+    },
+    {
+      "clause": "why a broadcast becomes dangerous (stale statistics, driver OOM, filters that don't shrink the side)",
+      "at": [
+        { "deep": "Why a stale broadcast risks the driver, the sourced-only half" }
+      ]
+    },
+    {
+      "clause": "broadcast nested-loop join as the non-equi fallback",
+      "at": [
+        { "step": "Predict: the join condition is non-equi, but the small side is still small enough to broadcast" },
+        { "step": "Reveal: a BroadcastNestedLoopJoin instead; still no shuffle, but matching rows pairwise rather than by a hash" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Performance Tuning — Automatically Broadcasting Joins / Join Strategy Hints (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "autoBroadcastJoinThreshold sets the maximum broadcastable table size, defaulting to 10 MB, and -1 disables broadcasting entirely",
+          "at": [{ "step": "Reveal: no broadcast at all now, a real SortMergeJoin with two shuffle Exchanges" }]
+        },
+        {
+          "item": "the join strategy hints exist, BROADCAST overriding the threshold entirely; the same hint can produce either a broadcast hash join or a broadcast nested-loop join depending on whether an equi-join key exists",
+          "at": [{ "out": "the hint's own override of the threshold named only; this topic's own examples.py measures the threshold crossing itself, not the hint override" }]
+        }
+      ]
+    },
+    {
+      "source": "BroadcastHashJoinExec.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "the large (streamed) side is never shuffled once the small side is broadcast",
+          "at": [{ "step": "Reveal: under the default threshold, a BroadcastExchange and BroadcastHashJoin, zero shuffle Exchanges at all" }]
+        }
+      ]
+    },
+    {
+      "source": "BroadcastExchangeExec.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "BroadcastExchangeExec collects, transforms and broadcasts the small side's result — the mechanism behind the driver-memory risk from stale statistics",
+          "at": [{ "deep": "Why a stale broadcast risks the driver, the sourced-only half" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The source's own `MAX_BROADCAST_TABLE_BYTES` constant hard-codes the 8 GB table limit named in the syllabus directly in code (`8L << 30`), and `cannotBroadcastTableOverMaxTableBytesError`/`cannotBroadcastTableOverMaxTableRowsError` throw rather than silently falling back once either limit is crossed at broadcast time — a hard failure this topic names but does not reproduce, since actually exceeding 8 GB of driver-collected data is impractical in this local session.",
+        "at": [{ "out": "the 8 GB hard limit and its own thrown-error behaviour named only; this topic's own measurement stays well under it" }]
+      },
+      {
+        "item": "AQE's own runtime conversion of a sort-merge join into a broadcast hash join, once real post-shuffle statistics show one side is small enough, is a distinct, later-stage mechanism from this topic's own static, plan-time threshold check — AQE can promote a join to broadcast that the static planner never would have chosen, the mirror image of this topic's own threshold-crossing fallback.",
+        "at": [{ "out": "AQE's own runtime broadcast conversion named only; this topic's own examples.py disables AQE to keep the static threshold check isolated" }]
+      },
+      {
+        "item": "The `BROADCAST` join hint, when applied to both sides of a join at once, or in combination with another side's own `SHUFFLE_HASH` hint, is resolved by Spark's own documented priority order (BROADCAST over MERGE over SHUFFLE_HASH over SHUFFLE_REPLICATE_NL) rather than always honoured outright — 'no guarantee' the source's own words, since a specific strategy may not support every join type.",
+        "at": [{ "out": "the hint priority order and its own documented lack of a guarantee named only; this topic's own measurement uses no hints at all, only the size-based default" }]
+      },
+      {
+        "item": "A broadcast's own `broadcastTimeout` (300 seconds by default) can fail an otherwise-valid broadcast join independently of size — a slow build side (e.g. behind a complex upstream plan) can time out well under the byte and row limits, a distinct failure mode from both the size threshold this topic measures and the two hard byte/row limits named above.",
+        "at": [{ "out": "broadcastTimeout's own independent failure mode named only; this topic's own measurement never approaches either limit" }]
+      },
+      {
+        "item": "A filter that looks like it should shrink the broadcast side can fail to do so at plan time if Spark's own statistics for that filter's selectivity are stale or absent — the planner decides whether to broadcast using the ESTIMATED post-filter size from table statistics, not the actual runtime row count, which is exactly the 'filters that don't shrink the side' danger named in the syllabus and left undemonstrated here since it requires deliberately stale CBO statistics to reproduce safely.",
+        "at": [{ "out": "the stale-statistics-vs-actual-filter-selectivity gap named only; this topic's own examples.py uses sizes the planner estimates correctly throughout" }]
+      },
+      {
+        "item": "Both `BroadcastHashJoinExec` and `BroadcastNestedLoopJoin` pick a `buildSide` (which input gets collected and broadcast) independently of which side is written first in the join call — Spark's own planner chooses the smaller side as the build side regardless of left/right position in the source code, a detail this topic's own measurement confirms implicitly (the small table is always the build side) but does not isolate by forcing the larger side's position to vary.",
+        "at": [{ "out": "build-side selection being independent of left/right call order named only; this topic's own examples.py always writes the large table first and the small table second" }]
+      },
+      {
+        "item": "A broadcast outer join (left/right/full outer) has build-side restrictions a broadcast inner join does not: Spark can only broadcast the side that is NOT required to preserve all its rows (e.g. the right side in a left outer join), a join-type-specific constraint this topic's own inner-join measurement does not exercise.",
+        "at": [{ "out": "outer-join build-side restrictions named only; this topic's own examples.py measures inner joins exclusively" }]
+      },
+      {
+        "item": "`BroadcastNestedLoopJoin`'s own comparison cost is quadratic in the unbroadcast side's row count against the broadcast side's row count (every large-side row compared against every small-side row), in contrast to `BroadcastHashJoinExec`'s own O(1) hash lookup per large-side row — the real cost this topic's claim 3 trades away by losing the equality condition, named but not independently timed here.",
+        "at": [{ "out": "the nested-loop join's own quadratic comparison cost, contrasted with the hash join's O(1) lookup, named only; this topic's own measurement confirms which physical operator appears, not its relative wall-clock cost" }]
+      },
+      {
+        "item": "`BroadcastExchangeExec`'s own `broadcastTime` metric is tracked separately from `collectTime` and `buildTime` in the Spark UI's own SQL tab, letting a diagnosis distinguish a slow network broadcast from a slow driver-side collect or a slow build of the lookup structure — three distinct, independently measurable phases of the same operator this topic names as one mechanism.",
+        "at": [{ "out": "the three separately-metered phases (collect, build, broadcast) of BroadcastExchangeExec named only; this topic's own measurement reads the plan's own node names, not its runtime metrics" }]
+      },
+      {
+        "item": "A broadcast join's own small side is recomputed and re-broadcast on every execution of the query that triggers it (e.g. every micro-batch in a streaming join), unlike a `cache()`'d DataFrame that persists across actions — repeatedly broadcasting an unnecessarily large or slow-to-compute small side is a distinct recurring cost this topic's own single-execution measurement does not surface.",
+        "at": [{ "out": "the per-execution (not persisted) cost of a repeatedly-triggered broadcast join named only; this topic's own examples.py measures one execution of each plan" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

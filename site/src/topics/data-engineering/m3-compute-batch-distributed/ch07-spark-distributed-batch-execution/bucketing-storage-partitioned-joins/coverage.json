@@ -1,0 +1,113 @@
+{
+  "topic": "de.bucketing-storage-partitioned-joins",
+  "syllabus": [
+    {
+      "clause": "pre-shuffling tables on the join/aggregation key at write time so later joins skip the exchange",
+      "at": [
+        { "step": "Reveal: matching bucket counts, zero Exchange, the scan itself tagged a bucketed read" }
+      ]
+    },
+    {
+      "clause": "bucket-count-must-match and stale-bucketing pitfalls",
+      "at": [
+        { "step": "Predict: the two tables don't agree on bucket count" },
+        { "step": "Reveal: one real Exchange, and the matching side's own scan shows bucketing disabled too" }
+      ]
+    },
+    {
+      "clause": "storage-partitioned join (SPJ) over DSv2 sources such as Iceberg, which reuses the table's own partitioning instead of Hive bucketing",
+      "at": [
+        { "step": "Predict: a DSv2 table partitioned the same way" },
+        { "step": "Reveal: storage-partitioned join reuses the table's own reported partitioning, not Hive bucketBy at all" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Generic Load/Save Functions — Bucketing, Sorting and Partitioning (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "bucketing and sorting apply only to persistent tables, written with saveAsTable",
+          "at": [{ "out": "named only; this topic's own examples.py builds persistent tables, the requirement disclosed as sourced" }]
+        },
+        {
+          "item": "bucketBy distributes data across a fixed number of buckets, useful when the column's unique-value count is unbounded",
+          "at": [{ "step": "Reveal: matching bucket counts, zero Exchange, the scan itself tagged a bucketed read" }]
+        }
+      ]
+    },
+    {
+      "source": "Performance Tuning — Storage Partition Join (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "SPJ makes use of the existing storage layout to avoid the shuffle phase, a generalisation of bucket joins to DSv2 sources",
+          "at": [{ "step": "Reveal: storage-partitioned join reuses the table's own reported partitioning, not Hive bucketBy at all" }]
+        },
+        {
+          "item": "a successful SPJ leaves no Exchange node before the join in the plan",
+          "at": [{ "step": "Reveal: storage-partitioned join reuses the table's own reported partitioning, not Hive bucketBy at all" }]
+        }
+      ]
+    },
+    {
+      "source": "partitioning.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "KeyGroupedPartitioning is keyed on a data source's own reported partition transform expressions, not a hash Spark computes itself",
+          "at": [{ "step": "Reveal: storage-partitioned join reuses the table's own reported partitioning, not Hive bucketBy at all" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "SPJ's own SQL configs (`spark.sql.sources.v2.bucketing.pushPartValues.enabled`, `spark.sql.sources.v2.bucketing.allowJoinKeysSubsetOfPartitionKeys.enabled`, `spark.sql.sources.v2.bucketing.allowCompatibleTransforms.enabled`) extend shuffle elimination to cases classic bucketing never covers at all: a missing partition value on one side, a join that uses only some of the partition columns, or partition transforms that are compatible but not byte-identical — each a separate, narrower optimisation this topic names but does not independently measure.",
+        "at": [{ "out": "SPJ's own extension configs named only; this topic measures classic Hive bucketing and names SPJ's basic mechanism, not its own further optimisations" }]
+      },
+      {
+        "item": "`spark.sql.sources.v2.bucketing.partiallyClusteredDistribution.enabled` handles skew specifically inside SPJ by choosing one side as the big table and partially clustering its splits while replicating the other side's matching splits — a distinct, later-stage mechanism from the plain requirement-based elimination this topic measures with classic bucketing.",
+        "at": [{ "out": "SPJ's own skew-handling config named only, as a separate mechanism from this topic's own measured elimination" }]
+      },
+      {
+        "item": "Bucketing and SPJ both exercise the identical planner mechanism as this chapter's own exchange-elimination topic (hash/range partitioning): Catalyst's `EnsureRequirements` rule checking whether an existing output partitioning already satisfies a required distribution — bucketing and SPJ differ only in HOW the existing partitioning got there (an explicit `bucketBy` call vs. a DSv2 catalog's own reported partitioning), not in the planner rule that then exploits it.",
+        "at": [{ "out": "the shared EnsureRequirements mechanism named only, connecting this topic to the earlier exchange-elimination topic rather than re-measuring it" }]
+      },
+      {
+        "item": "A stale bucketing pitfall this topic's own examples.py doesn't reproduce directly: appending new rows to an already-bucketed table with a writer that ignores the table's own bucket spec (or via a non-Spark tool) can silently violate the bucketing invariant per-file, after which Spark's own bucketed read still claims the optimisation but returns wrong join results rather than merely losing the speedup — a correctness hazard, not just a performance one.",
+        "at": [{ "out": "the correctness-hazard version of stale bucketing (a writer violating the invariant silently) named only; this topic's own measurement covers the simpler, safe case of an honestly-different bucket count that Spark itself detects and falls back from" }]
+      },
+      {
+        "item": "Partitioning a table by a column (`partitionBy`, directory-based) and bucketing it by a different column (`bucketBy`) can be combined on the same table — the two mechanisms are independent and stack, one producing Hive-style directories, the other a fixed hash split inside each directory, as shown directly in Spark's own Generic Load/Save Functions example (`users_partitioned_bucketed`).",
+        "at": [{ "out": "combining partitionBy and bucketBy on the same table named only, from the source's own example; this topic's own examples.py measures bucketing alone" }]
+      },
+      {
+        "item": "Sorting within each bucket (`sortBy`, used in both this topic's own examples.py calls) is a separate, optional refinement on top of bucketing itself: it lets a later sort-merge join skip the per-partition sort step too, not just the shuffle, when the sort order also matches — a further elimination this topic's own plan-text assertions do not separately isolate from the Exchange-count measurement.",
+        "at": [{ "out": "sort-merge-join's own further sort-skipping benefit from matching sortBy named only; this topic's own assertions measure the Exchange count, not whether the Sort node itself was also eliminated" }]
+      },
+      {
+        "item": "`spark.sql.requireAllClusterKeysForCoPartition` (default true) requires the join's clustering keys to match the partition keys exactly, in the same order, for SPJ's co-partitioning to apply at all — a stricter default than classic bucketing's own matching rule, which this topic's own examples.py keeps at its default throughout.",
+        "at": [{ "out": "SPJ's own stricter default clustering-key-order requirement named only; this topic's own examples.py runs with every config at its default" }]
+      },
+      {
+        "item": "Bucket pruning (this chapter's own next-but-one topic territory, adjacent to static partition pruning covered two topics back) skips whole bucket files by a hash of the filter value rather than a directory name — a related but distinct pruning granularity from both this topic's own join-shuffle-elimination measurement and the earlier topic's own directory-level static pruning.",
+        "at": [{ "out": "bucket pruning named only as a related, finer-grained mechanism distinct from this topic's own join-elimination measurement" }]
+      },
+      {
+        "item": "A bucketed table's bucket count is fixed at write time and cannot be changed without rewriting the entire table — unlike `spark.sql.shuffle.partitions`, a session-level knob a later query can simply set differently, bucketing's own commitment is a physical, on-disk one that every future reader and writer of that table must agree with indefinitely.",
+        "at": [{ "out": "the permanence of a bucket count as a physical commitment, contrasted with the earlier topic's own session-level shuffle-partition knob, named only" }]
+      },
+      {
+        "item": "Iceberg's own `bucket(N, col)` partition transform (shown directly in the Performance Tuning docs' own SPJ example) is itself one specific partition-transform function among several a DSv2 catalog can register (others include identity, truncate and the time-based transforms), making Hive-style `bucketBy` a special case of a much larger transform vocabulary SPJ's own mechanism was built to generalise over.",
+        "at": [{ "out": "Iceberg's own broader transform-function vocabulary beyond bucket() named only, from the source's own example" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}
