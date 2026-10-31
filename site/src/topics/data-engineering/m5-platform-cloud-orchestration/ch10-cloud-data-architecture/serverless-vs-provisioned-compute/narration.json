@@ -1,0 +1,78 @@
+{
+  "topic": "de.serverless-vs-provisioned-compute",
+  "steps": [
+    {
+      "lines": [
+        "Notice what moved and what didn't. The job itself is identical. Only the billing model changed, and the bill went the wrong direction.",
+        "That's the whole trap: serverless isn't a discount, it's a different meter, and a meter can run against you just as easily as for you."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, think about what a flat rate actually charges for. It charges the same whether the thing sits idle or runs flat out.",
+        "A metered rate only charges for what actually happens. Which of these two jobs has more idle time for that flat rate to waste?"
+      ],
+      "answer": [
+        "The six-minute job. A provisioned cluster bills the same whether it's used for six minutes or twenty-four hours, so most of that reservation goes to waste on a job this short.",
+        "Serverless only charges for the six minutes actually used — nearly nothing. The six-hour job is already closer to earning out that same flat reservation."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the urge to treat these as one number with five labels. Glue's unit is a fixed slab of hardware. Databricks' unit isn't hardware at all — it moves with how much data the job actually touches.",
+        "Two vendors can call themselves serverless and still charge for completely different things."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trap in the syllabus's own wording, and I'm not going to repeat it uncorrected: slot-milliseconds sound like a meter you get billed on.",
+        "They're not. BigQuery hands you that number after the fact, as a receipt. What you actually pay for is bytes scanned, or slots you already bought."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the same eight virtual cores and thirty-two gigabytes turn into two completely different numbers once each vendor runs its own conversion.",
+        "Neither of these numbers is an estimate. One comes from a published rate, the other from a documented session floor — real figures, not guesses."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what each of these four actually costs you, not just that they're costs. A slow start costs you minutes once. Noisy neighbours cost you unpredictability every single run.",
+        "These aren't the same risk wearing different names — they show up at different moments and they bite in different ways."
+      ]
+    },
+    {
+      "lines": [
+        "Each one of these came straight out of that vendor's own page, not a workaround someone found on a forum.",
+        "If your defaults are wrong for your workload, the vendor already told you, in writing, exactly what knob exists to fix it."
+      ]
+    },
+    {
+      "lines": [
+        "Watch where the flat line and the rising line actually meet. Below that point, serverless is cheaper. Above it, every extra hour of use is money the flat rate already covered for free.",
+        "That crossing point isn't eyeballed off the chart — it's the same division this topic's code actually runs."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the asymmetry worth sitting with: one of these answers only works if you're using this one vendor's tool, forever.",
+        "The other one works no matter which engine shows up next year to read the table. That portability is the whole reason to prefer it when you can."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: don't ask which option is cheaper in general, ask where your own utilisation sits relative to the line.",
+        "Everything else here — units, hidden costs, escape hatches — only matters once you've answered that one question honestly."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, don't just compare four hours to six. Compare it to the specific number this topic already computed for exactly this job's shape."
+      ],
+      "answer": [
+        "Provisioned wins. Four hours a day already clears the computed break-even line of just over three hours for this workload's billing shape.",
+        "Past that line, every additional hour serverless bills by the second is an hour the provisioned cluster's flat rate was already covering for free."
+      ]
+    }
+  ]
+}

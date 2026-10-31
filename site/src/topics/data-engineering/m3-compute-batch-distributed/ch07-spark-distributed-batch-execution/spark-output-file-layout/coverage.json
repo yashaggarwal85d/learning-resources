@@ -1,0 +1,100 @@
+{
+  "topic": "de.spark-output-file-layout",
+  "syllabus": [
+    {
+      "clause": "output file count = writing tasks × partitions touched; maxRecordsPerFile, REBALANCE hints with AQE, and table-format write-distribution modes as the Spark-side answer to the small-file problem (general treatment in §6.1/§6.3).",
+      "at": [
+        { "step": "Reveal: the baseline, tasks times partitions" },
+        { "step": "Reveal: maxRecordsPerFile caps rows per file" },
+        { "step": "Elaborate: the cap doesn't touch task count at all" },
+        { "step": "Reveal: REBALANCE is a no-op without AQE" },
+        { "step": "Elaborate: with AQE, REBALANCE coalesces, REBALANCE(col) aligns to partitions" },
+        { "deep": "Table-format write-distribution modes" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "basicLogicalOperators.scala (Apache Spark source, GitHub, tag v4.0.0) — RebalancePartitions",
+      "items": [
+        {
+          "item": "RebalancePartitions rebalances output partitions by the given partition expressions, splitting skewed partitions rather than only coalescing, to avoid too-small/too-big files at write time",
+          "at": [{ "step": "Elaborate: with AQE, REBALANCE coalesces, REBALANCE(col) aligns to partitions" }]
+        },
+        {
+          "item": "the operator only makes sense when AQE is enabled",
+          "at": [{ "step": "Reveal: REBALANCE is a no-op without AQE" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark SQL \"Hints\" docs",
+      "items": [
+        {
+          "item": "the REBALANCE hint can take column names as parameters and is ignored outright if AQE is not enabled",
+          "at": [{ "step": "Reveal: REBALANCE is a no-op without AQE" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark configuration docs",
+      "items": [
+        {
+          "item": "spark.sql.files.maxRecordsPerFile caps the maximum number of records written to a single file; 0 (the default) means no limit",
+          "at": [{ "step": "Reveal: maxRecordsPerFile caps rows per file" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "REBALANCE has three forms beyond the plain hint: REBALANCE(n) targets a specific partition count, REBALANCE(col) rebalances by a column (measured here), and REBALANCE(n, col) combines both — all three still require AQE to do anything at all.",
+        "at": [{ "out": "the REBALANCE(n) and REBALANCE(n, col) forms named only; this topic's own examples.py measures the plain hint and REBALANCE(col)" }]
+      },
+      {
+        "item": "AQE's coalescePartitions.minPartitionSize and the advisory partition size are what REBALANCE actually targets when picking its post-shuffle task count — the same advisory-size machinery AQE's own post-shuffle coalescing (two topics back) uses outside of a write, not a separate write-only mechanism.",
+        "at": [{ "out": "the shared advisory-size machinery with AQE's general coalescing, named only; this topic's own examples.py sets minPartitionSize to force coalescing but does not vary it" }]
+      },
+      {
+        "item": "A small-files problem has a real cost beyond disk usage: every file is a separate object/metadata entry, so a high file count inflates driver-side listing time and, for a table format, the size of the manifest or metadata log that every reader has to open before reading any data.",
+        "at": [{ "out": "the downstream LIST/metadata cost named only; this topic's own examples.py measures file count directly, not listing time" }]
+      },
+      {
+        "item": "maxRecordsPerFile and REBALANCE solve different shapes of the problem: maxRecordsPerFile only ever splits a file that's too big into smaller ones (it cannot merge small files together), while REBALANCE only ever changes the task count feeding the write (it cannot cap an individual file's size once that task's share is decided) — a job with both too-many-small and too-few-huge files in different partitions may need both levers at once.",
+        "at": [{ "out": "the complementary (not overlapping) failure shapes the two levers fix, named only; this topic's own examples.py measures each lever in isolation" }]
+      },
+      {
+        "item": "Table-format write-distribution modes (Iceberg's write.distribution-mode, Delta's optimizeWrite) move the same rebalancing decision out of the query author's hands into the table's own default write behavior, so every writer gets small-file protection without remembering a hint — the general treatment the syllabus clause itself defers to §6.1/§6.3.",
+        "at": [{ "out": "table-format write-distribution modes named only, matching the syllabus clause's own explicit deferral; this topic's own examples.py measures plain Parquet writes with no table format layered on top" }]
+      },
+      {
+        "item": "partitionBy's own task-to-file mapping assumes each task writes at most one file per partition value it touches unless maxRecordsPerFile or a file-size cap intervenes — a task that touches all of the partition column's distinct values (as every task does in this topic's own skewed-free examples) writes exactly that many files, which is the entire content of the tasks-times-partitions rule.",
+        "at": [{ "out": "why the tasks-times-partitions rule holds exactly when every task touches every partition value, named only as the rule's own mechanism; this topic's own examples.py measures the rule's outcome directly via file counts, not by inspecting which task wrote which file" }]
+      },
+      {
+        "item": "bucketing (an earlier chapter 6.3/7.2 topic) adds a second multiplier to the file-count rule: a bucketed-and-partitioned write produces tasks times partitions times buckets files, since each task's output is further split by bucket id within each partition.",
+        "at": [{ "out": "the bucketing multiplier on the file-count rule, named only; this topic's own examples.py measures a partitioned-only write with no bucketing" }]
+      },
+      {
+        "item": "Dynamic partition overwrite mode (spark.sql.sources.partitionOverwriteMode=dynamic) changes which existing files get replaced, not how many new files a given task count produces — it composes with, but is independent of, the tasks-times-partitions file-count rule this topic measures.",
+        "at": [{ "out": "dynamic partition overwrite mode named only, as a related-but-independent write setting; this topic's own examples.py always overwrites the whole output path" }]
+      },
+      {
+        "item": "A REBALANCE hint placed on a query feeding an INSERT INTO or CTAS behaves identically to one placed on a plain SELECT — the hint attaches to the logical plan immediately above it, not specifically to a write path, so it works anywhere AQE can act on the resulting shuffle.",
+        "at": [{ "out": "REBALANCE's query-shape independence from the specific write statement, named only; this topic's own examples.py applies it only to a plain SELECT feeding a DataFrameWriter" }]
+      },
+      {
+        "item": "A downstream remedy for files that are already too small — table-format compaction (Iceberg/Delta's rewrite-data-files, Databricks predictive optimization) named in the small-files syllabus clause itself (§6.1/§6.3) — fixes the symptom after the fact, whereas this topic's two levers (maxRecordsPerFile, REBALANCE) prevent it at write time; they are not competing solutions to the same moment in the pipeline.",
+        "at": [{ "out": "compaction as an after-the-fact remedy versus this topic's write-time prevention, named only, cross-referencing the small-files syllabus clause directly; this topic's own examples.py measures only write-time prevention" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

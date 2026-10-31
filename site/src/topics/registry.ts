@@ -7151,6 +7151,26 @@ export const TOPICS: TopicMeta[] = [
       'Everything in this section changed what gets shuffled or scanned. The last topic of the section changes a different thing entirely: what Spark actually writes out when the job is done.',
   },
   {
+    id: 'de.spark-output-file-layout',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/spark-output-file-layout',
+    title: 'Controlling Spark output file layout',
+    syllabusTitle: 'Controlling Spark output file layout',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-output-file-layout'],
+    uses: ['spark-partition-sizing', 'spark-aqe'],
+    declared: [],
+    bridge:
+      'Every topic so far in this section changed what gets read or shuffled on the way in. This one closes the section on the opposite end: what Spark actually writes, and why the same small-files problem that haunts a lakehouse read (§6.1/§6.3) usually starts right here, at write time.',
+    handoff:
+      'Section 7.2 is done: the shuffle, the joins and the files are all explained. The next section turns from \'how much work and where\' to \'what happens when the machine running it runs out of room\' — Spark\'s own memory model.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -7329,6 +7349,26 @@ export const TOPICS: TopicMeta[] = [
       "A catalog that vends credentials is also the natural place to run a table's own upkeep for you. This topic is that idea under four names: S3 Tables, BigLake Iceberg tables, Unity Catalog managed Iceberg and Snowflake-managed Iceberg, and what each one actually automates versus what it still charges you to find out.",
     handoff:
       "Every one of these services runs on compute somewhere, billed either by the second it's reserved or by the request it serves — and that split, serverless against provisioned, is the section's last and most consequential cost question.",
+  },
+  {
+    id: 'de.serverless-vs-provisioned-compute',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/serverless-vs-provisioned-compute',
+    title: 'Serverless vs provisioned compute economics',
+    syllabusTitle: 'Serverless vs provisioned compute economics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['serverless-provisioned-breakeven', 'billing-granularity-comparison'],
+    uses: ['cloud-cost-four-dimensions', 'cross-cloud-service-rosetta', 'catalog-credential-vending'],
+    declared: [],
+    bridge:
+      "Every managed table service in the last topic runs on compute billed one of two ways: reserved by the second, or consumed by the request. This topic makes that choice with real numbers instead of a guess — break-even utilisation, not vibes.",
+    handoff:
+      "This section mapped and priced the cloud's own data services in general. One specific platform, Databricks, is common enough and deep enough that the syllabus gives it a full section of its own, starting with its compute model and the vectorised engine underneath it.",
   },
   {
     id: 'de.text-interchange-formats-their',
@@ -8704,5 +8744,25 @@ export const TOPICS: TopicMeta[] = [
       "A single immutable file, Parquet or ORC, still can't answer what 'a table' means once the storage underneath is an object store with no file you can edit in place. This topic opens exactly that substrate: what S3/GCS/ADLS actually guarantee today, and the 2024 conditional-write primitive every later topic in this section depends on.",
     handoff:
       "Object storage's own limits (no atomic rename, listing cost) are exactly what broke the table format everyone used before Iceberg and Delta existed: the plain directory-as-partition Hive table.",
+  },
+  {
+    id: 'de.why-hive-style-tables',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/why-hive-style-tables',
+    title: 'Why Hive-style tables broke',
+    syllabusTitle: 'Why Hive-style tables broke',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['hive-table-breakage'],
+    uses: ['object-storage-guarantees'],
+    declared: [],
+    bridge:
+      "Object storage's own limits are exactly what broke the table format everyone used before modern formats existed. This topic is that breakage, reproduced directly: a reader catching a partial multi-file write, and a measured listing-cost curve as file count grows.",
+    handoff:
+      "Fixing 'no atomic multi-partition commit' means replacing file listing with an explicit, versioned table state. That's the snapshot.",
   },
 ];
