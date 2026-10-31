@@ -7131,6 +7131,26 @@ export const TOPICS: TopicMeta[] = [
       'Everything in this section changed what gets shuffled or scanned. The last topic of the section changes a different thing entirely: what Spark actually writes out when the job is done.',
   },
   {
+    id: 'de.spark-output-file-layout',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/spark-output-file-layout',
+    title: 'Controlling Spark output file layout',
+    syllabusTitle: 'Controlling Spark output file layout',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-output-file-layout'],
+    uses: ['spark-partition-sizing', 'spark-aqe'],
+    declared: [],
+    bridge:
+      'Every topic so far in this section changed what gets read or shuffled on the way in. This one closes the section on the opposite end: what Spark actually writes, and why the same small-files problem that haunts a lakehouse read (§6.1/§6.3) usually starts right here, at write time.',
+    handoff:
+      'Section 7.2 is done: the shuffle, the joins and the files are all explained. The next section turns from \'how much work and where\' to \'what happens when the machine running it runs out of room\' — Spark\'s own memory model.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
