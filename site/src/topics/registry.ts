@@ -6171,6 +6171,26 @@ export const TOPICS: TopicMeta[] = [
       "Every topic so far assumed producers and consumers agree on what a record's fields mean. The moment a producer changes its schema without warning, that agreement breaks — and a schema registry is the contract that's supposed to stop it. That's next.",
   },
   {
+    id: 'de.schema-registry-compatibility',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/schema-registry-compatibility',
+    title: 'Schema Registry and compatibility modes',
+    syllabusTitle: 'Schema Registry and compatibility modes',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['schema-compatibility-modes', 'subject-naming-strategy'],
+    uses: ['data-contract-specification'],
+    declared: [],
+    bridge:
+      "A replay trusts that a record's fields still mean what they meant when it was first written. A schema registry is the contract that is supposed to guarantee exactly that, across every producer and consumer that was ever deployed against a topic. This topic is how that contract actually works.",
+    handoff:
+      "Every topic in this section so far assumed a stream of individual events with no particular relationship to real-world time. The next cluster of topics is about exactly that relationship: when an event happened, versus when it was processed, and what a stream processor can honestly claim about how complete its view is at any moment.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
