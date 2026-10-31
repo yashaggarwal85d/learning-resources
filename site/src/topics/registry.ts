@@ -5525,6 +5525,26 @@ export const TOPICS: TopicMeta[] = [
       "Choosing the right model for how a pipeline runs doesn't yet say anything about whether it is healthy once running. The next section turns from scheduling correctness to operating the result: what quality a pipeline promises, and what happens when it breaks that promise.",
   },
   {
+    id: 'de.data-slis-slos-error',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-slis-slos-error',
+    title: 'Data SLIs, SLOs and error budgets',
+    syllabusTitle: 'Data SLIs, SLOs and error budgets',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['data-sli-slo-error-budget', 'consumer-read-point-measurement'],
+    uses: ['de.data-intervals-catchup-backfills', 'ch13.lineage-graph-model'],
+    declared: [],
+    bridge:
+      "Choosing a model decides how a pipeline runs, but says nothing about whether it is healthy once running. This topic turns the quality dimensions this course has used all along into numbers with a target and a budget, measured where a consumer actually reads the data.",
+    handoff:
+      "A burn-rate alert tells you a budget is draining. What to do in the minutes after it fires -- and after it's gone -- is incident response, the next topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
