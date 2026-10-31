@@ -6305,6 +6305,26 @@ export const TOPICS: TopicMeta[] = [
       "Quality asks whether the parts were good. The plant also asks how much of its time it was making good parts at all. The next topic is OEE: availability, performance and quality, computed from the machine-state events the sensors emit.",
   },
   {
+    id: 'de.oee-downtime-event-modeling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m7-frontier-industrial-time/ch16-industrial-time-series/oee-downtime-event-modeling',
+    title: 'OEE and downtime event modeling',
+    syllabusTitle: 'OEE and downtime event modeling',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 7, title: 'Frontier: Industrial, Time-Series & the Modern/AI Stack' },
+    chapter: { number: 16, title: 'Industrial and Time-Series Data', section: '16.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['oee-availability-performance-quality', 'machine-state-interval-model', 'shift-boundary-interval-splitting', 'downtime-reason-hierarchy-micro-stops', 'mtbf-mttr'],
+    uses: ['equipment-hierarchy-dimension', 'hierarchy-as-of-versioning', 'quality-fact-process-context', 'lag-lead-change-detection', 'row-number-difference-islands', 'running-sum-session-id', 'event-stream-compression', 'fact-table-types-transaction-snapshot-accumulating-factless', 'bounded-reprocessing-window'],
+    declared: [],
+    bridge:
+      "Quality asks whether the parts were good. The plant also asks how much of its time it was making good parts at all. This topic is OEE, computed from the state and count events the machines emit, and the bugs that make two plants report different numbers for the same shift.",
+    handoff:
+      "OEE is built from events: a machine changes state and a part is counted. Some plant data is not an event at all but a running total that only ever goes up. The next topic is the energy and utility meter, whose raw reading is a counter, and what it takes to turn a counter into consumption.",
+  },
+  {
     id: 'de.communicating-tradeoffs-decision-makers',
     domain: 'data-engineering',
     slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/communicating-tradeoffs-decision-makers',
