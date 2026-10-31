@@ -1,0 +1,113 @@
+{
+  "topic": "de.compute-cost-controls-commitments",
+  "syllabus": [
+    {
+      "clause": "BigQuery editions with slot reservations/autoscaling vs on-demand bytes",
+      "at": [
+        { "step": "A byte cap that fails before the charge, not after" }
+      ]
+    },
+    {
+      "clause": "Snowflake warehouse sizing, auto-suspend and resource monitors",
+      "at": [
+        { "step": "A warehouse that stops billing the moment nobody needs it" }
+      ]
+    },
+    {
+      "clause": "Databricks budget policies",
+      "at": [
+        { "step": "A tag is not a cap" }
+      ]
+    },
+    {
+      "clause": "max-bytes-billed guardrails",
+      "at": [
+        { "step": "A byte cap that fails before the charge, not after" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "spot/preemptible with interruption-safe engines",
+      "at": [
+        { "step": "A steep discount, and the price of accepting it" }
+      ]
+    },
+    {
+      "clause": "committed-use/savings plans vs flexibility",
+      "at": [
+        { "step": "A multi-year discount, and the flexibility it costs you" }
+      ]
+    },
+    {
+      "clause": "cost regressions as CI failures",
+      "at": [
+        { "step": "A cost spike that fails the build, like any other regression" }
+      ]
+    },
+    {
+      "clause": "(§12.2)",
+      "at": [
+        { "topic": "Spark on Kubernetes internals", "domain": "data-engineering", "quote": "graceful executor decommissioning with shuffle/block migration (spot nodes)" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google Cloud: Estimate and control costs",
+      "items": [
+        { "item": "The number of bytes a query reads is estimated before execution, and a query whose estimate exceeds maximum_bytes_billed fails without incurring a charge", "at": [{ "step": "A byte cap that fails before the charge, not after" }] }
+      ]
+    },
+    {
+      "source": "Snowflake: Overview of warehouses",
+      "items": [
+        { "item": "Credit usage doubles with each warehouse size increase per full hour, but billing is per-second with a 60-second minimum, and warehouses auto-suspend when inactive and auto-resume on the next query", "at": [{ "step": "A warehouse that stops billing the moment nobody needs it" }] }
+      ]
+    },
+    {
+      "source": "Snowflake: Working with resource monitors",
+      "items": [
+        { "item": "A resource monitor tracks warehouse credit usage and can alert, suspend standard warehouses, or disable Adaptive Warehouses at a threshold, but works for warehouses only, not serverless features", "at": [{ "step": "A warehouse that stops billing the moment nobody needs it" }] }
+      ]
+    },
+    {
+      "source": "Databricks: Attribute usage with serverless usage policies",
+      "items": [
+        { "item": "A serverless usage policy attaches a tag to serverless activity, logged in billing records for budget attribution, applied automatically when a user has only one policy", "at": [{ "step": "A tag is not a cap" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Spot VMs; Create and use Spot VMs",
+      "items": [
+        { "item": "Spot VMs offer discounts up to 91% in exchange for preemption at any time; preemption sends a metadata signal, with a 120-second notice duration recommended, and a best-effort shutdown period up to 30 seconds", "at": [{ "step": "A steep discount, and the price of accepting it" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Committed use discounts",
+      "items": [
+        { "item": "A committed-use discount trades a 1- or 3-year spend or resource commitment for a discounted rate, with standard spend-based CUDs discounting until the hourly committed spend amount is met", "at": [{ "step": "A multi-year discount, and the flexibility it costs you" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that a byte cap acts before the charge exists, not that on-demand billing is inherently dangerous; a learner should be able to name exactly what the cap checks (an estimate, before execution), not just that it 'stops bad queries'", "at": [{ "step": "One missing filter, one month of budget, gone" }] },
+      { "item": "The predict step's correct answer is structural (refuses before the cost is incurred), not platform-specific; a learner should be able to separate a before-the-fact block from an after-the-fact alert before learning which vendor calls which mechanism what", "at": [{ "step": "Before the guardrails: which of these actually stop a cost, not just flag it?" }] },
+      { "item": "The clustered-table caveat (estimate can exceed actual bytes billed) is disclosed in FACT-CHECK.md and SOURCES.md even though reel.tsx doesn't dedicate a full step to it, so a learner researching the real guardrail isn't misled into thinking the cap is always exact", "at": [{ "step": "A byte cap that fails before the charge, not after" }] },
+      { "item": "The warehouse step's point is that auto-suspend and a resource monitor both actually act (suspend, disable), not merely notify; a learner who thinks a resource monitor only sends an email has missed that it can suspend a warehouse outright", "at": [{ "step": "A warehouse that stops billing the moment nobody needs it" }] },
+      { "item": "The Databricks step is careful not to overstate what a budget policy does: it is attribution tagging, not a spending cap, and the topic says so explicitly rather than implying parity with BigQuery's or Snowflake's blocking mechanisms", "at": [{ "step": "A tag is not a cap" }] },
+      { "item": "The spot-VM step states the 91% figure with its own 'up to' qualifier rather than as a guaranteed discount, and separates the metadata signal from the shutdown period rather than conflating the two timings", "at": [{ "step": "A steep discount, and the price of accepting it" }] },
+      { "item": "The commitment break-even step reuses topic 10's own break-even-utilization method rather than inventing a new formula, and the illustrative rates are disclosed as illustrative in both examples.py's docstring and FACT-CHECK.md, not presented as real published prices", "at": [{ "step": "A multi-year discount, and the flexibility it costs you" }] },
+      { "item": "The cost-regression step's point is that a dollar figure can fail a build exactly like any other regression check; a learner should be able to say what made the gate trip (a percentage increase over baseline), not just that 'cost matters'", "at": [{ "step": "A cost spike that fails the build, like any other regression" }] },
+      { "item": "The final predict step's correct answer names the byte cap specifically because it's the only listed option that runs before the charge; a learner who picks the budget tag or the dashboard has conflated attribution or observation with actual prevention", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot provision a real BigQuery, Snowflake, Databricks or Compute Engine account in this sandbox; an expert reviewer should expect examples.py's disclosed structural simulation of each documented mechanism against synthetic data, not a live billing account", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

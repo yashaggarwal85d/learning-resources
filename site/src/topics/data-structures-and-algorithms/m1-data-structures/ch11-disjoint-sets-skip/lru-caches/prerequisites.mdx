@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linked and intrusive lists">The O(1) splice this topic's doubly linked list reuses: a node that knows its own neighbours can be unlinked and relinked without a scan.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Separate chaining">The hash map half of this topic's pair, built from buckets and collision handling.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">The CPU cache miss this topic's own, software-level cache miss is deliberately distinguished from.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real systems
+
+<ul class="resources">
+  <Resource kind="reading" title="Lib/functools.py" href="https://raw.githubusercontent.com/python/cpython/main/Lib/functools.py" by="CPython">The lru_cache decorator this topic's thread-safety and cache-statistics claims are quoted from, word for word.</Resource>
+  <Resource kind="reading" title="LinkedHashMap" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/LinkedHashMap.html" by="Java SE 21">The access-order mode and removeEldestEntry hook this topic names as a real, built-in LRU cache.</Resource>
+</ul>
+
+</section>
