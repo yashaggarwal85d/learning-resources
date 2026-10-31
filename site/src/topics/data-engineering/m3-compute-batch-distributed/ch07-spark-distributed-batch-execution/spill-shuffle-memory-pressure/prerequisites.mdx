@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the executor memory model
+
+<ul class="resources">
+  <Resource kind="reel" title="Executor memory model" domain="data-engineering" host="de.executor-memory-model" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="UnsafeExternalSorter.java" href="https://github.com/apache/spark/blob/v4.0.0/core/src/main/java/org/apache/spark/util/collection/unsafe/sort/UnsafeExternalSorter.java" by="Apache Spark source, GitHub">The sorter's own spill method: triggered by memory pressure, and why its own memory-spilled count includes overhead the disk write never carries.</Resource>
+  <Resource kind="reading" title="Tuning Spark" href="https://spark.apache.org/docs/4.0.0/tuning.html" by="Apache Spark documentation">Execution memory's own scope — shuffles, joins, sorts, aggregations — and its direct link to avoiding unnecessary spills.</Resource>
+</ul>
+
+</section>

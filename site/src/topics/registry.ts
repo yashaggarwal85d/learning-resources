@@ -5601,6 +5601,26 @@ export const TOPICS: TopicMeta[] = [
       "Membership ('is it in there') is one question a tiny structure can answer approximately. The next topic is a completely different question answered the same way: how many distinct values are there, without storing any of them.",
   },
   {
+    id: 'de.hyperloglog-distinct-counting',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/hyperloglog-distinct-counting',
+    title: 'HyperLogLog and distinct counting',
+    syllabusTitle: 'HyperLogLog and distinct counting',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.6' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['hyperloglog-distinct-counting'],
+    uses: ['probabilistic-membership-filters'],
+    declared: [],
+    bridge:
+      "Membership is one question a tiny structure can answer approximately. This topic is a completely different question answered the same way: how many distinct values are there, built and measured for real against an exact count on a Zipf-skewed stream.",
+    handoff:
+      "Counting distinct values is one single number a sketch can approximate. The next, closing topic is a sketch for an entire distribution at once: a quantile.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -7247,6 +7267,26 @@ export const TOPICS: TopicMeta[] = [
       'The model says where memory lives. The next topic is the first thing that happens when it runs out: spill, the direct and usually first symptom of memory pressure.',
   },
   {
+    id: 'de.spill-shuffle-memory-pressure',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/spill-shuffle-memory-pressure',
+    title: 'Spill and shuffle memory pressure',
+    syllabusTitle: 'Spill and shuffle memory pressure',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-spill-mechanics'],
+    uses: ['spark-unified-memory-manager', 'spark-skew-diagnosis'],
+    declared: ['dsa-external-merge-sort'],
+    bridge:
+      "The memory model names the regions. Spill is what execution memory does the instant it's exceeded: the same external-merge-sort idea Algorithms Chapter 6 already taught, now triggered by a Spark task instead of a single process.",
+    handoff:
+      'Spill is memory pressure the engine handles automatically, if slowly. The next topic is memory pressure deliberately chosen on purpose — caching — and when that choice helps or hurts.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -7485,6 +7525,26 @@ export const TOPICS: TopicMeta[] = [
       "Compute is only useful once data actually arrives on it, and Databricks' own answer to 'files keep landing in object storage' is this topic: how it discovers new files, how it guarantees each one is ingested exactly once, and what happens to a row that doesn't match the schema it expected.",
     handoff:
       "Discovering and ingesting files is only useful if the result is governed the moment it lands — and Databricks' governance layer, which this chapter's catalog-and-vending pattern takes a concrete, fully-worked shape in, is next.",
+  },
+  {
+    id: 'de.unity-catalog-governance-model',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/unity-catalog-governance-model',
+    title: 'Unity Catalog governance model',
+    syllabusTitle: 'Unity Catalog governance model',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['unity-catalog-namespace-securables', 'tag-based-abac-policy', 'delta-sharing-protocol'],
+    uses: ['catalog-credential-vending', 'row-column-policy-enforcement', 'auto-loader-discovery-checkpoint'],
+    declared: [],
+    bridge:
+      "This chapter's catalog-and-vending mechanism, taught generically in 10.2, has one especially complete, concrete instance in the platform this section is about. This topic is that instance: a three-level namespace, four kinds of securable, tag-driven policy, and an open protocol for sharing a table with someone who has never heard of your Databricks account.",
+    handoff:
+      "Databricks is one lakehouse platform among several a learner will actually have to choose between, on real criteria: who owns the storage, how open the format really is, and what the exit cost looks like — which closes this section.",
   },
   {
     id: 'de.text-interchange-formats-their',
@@ -8920,5 +8980,25 @@ export const TOPICS: TopicMeta[] = [
       "An atomic pointer move only works if exactly one writer wins it when two race for the same move. This topic is that race itself, reproduced with two real concurrent writers: one commits, one is validated, retried, and either succeeds or correctly fails.",
     handoff:
       "Every commit so far appended or overwrote whole files. The next question is what a commit does when it only needs to change some rows inside a file — copy-on-write or merge-on-read.",
+  },
+  {
+    id: 'de.copy-on-write-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/copy-on-write-vs',
+    title: 'Copy-on-write vs merge-on-read',
+    syllabusTitle: 'Copy-on-write vs merge-on-read',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['cow-vs-mor'],
+    uses: ['optimistic-commit-protocol', 'table-snapshot-model'],
+    declared: [],
+    bridge:
+      "Every commit so far appended or overwrote whole files. This topic is what a commit does when it only needs to change some rows inside a file: copy-on-write's full rewrite versus merge-on-read's delete/log file, both measured on the identical 1%-update workload.",
+    handoff:
+      "Merge-on-read's own delete files are themselves a mechanism worth a topic on their own: how a deletion is actually recorded without rewriting the file it touches.",
   },
 ];
