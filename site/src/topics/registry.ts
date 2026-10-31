@@ -6291,6 +6291,26 @@ export const TOPICS: TopicMeta[] = [
       "A checkpoint or savepoint is a snapshot of state. What that state actually is, how much of it belongs to a given key, and what has to move when the job's parallelism changes, is the next topic.",
   },
   {
+    id: 'de.keyed-state-key-groups-rescaling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/keyed-state-key-groups-rescaling',
+    title: 'Keyed state, key groups and rescaling',
+    syllabusTitle: 'Keyed state, key groups and rescaling',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['state-backend-comparison', 'key-group-rescaling-unit'],
+    uses: ['checkpoint-barrier-chandy-lamport', 'savepoint-vs-checkpoint', 'pane-per-key-cleanup'],
+    declared: [],
+    bridge:
+      "A checkpoint or savepoint snapshots state. This topic is what that state actually is for a keyed operator, and the one fact that makes rescaling tractable at all: keys are never moved one at a time, only in fixed groups decided up front.",
+    handoff:
+      "Everything about state so far assumed it mostly lives on local disk or in memory, on the same machine that processes it. Flink 2.x changes that assumption architecturally, and what it buys and costs is the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
