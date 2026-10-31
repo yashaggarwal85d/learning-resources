@@ -7644,6 +7644,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything in this chapter so far assumed the pipeline was free to run anywhere the cloud allows. For data about a person who lives in the EU, that assumption is false by law before it is false by architecture — which the next section makes exact.",
   },
   {
+    id: 'de.gdpr-by-design-pipelines',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/gdpr-by-design-pipelines',
+    title: 'GDPR by design in pipelines',
+    syllabusTitle: 'GDPR by design in pipelines',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['purpose-limitation-tagging', 'retention-enforced-deletion', 'art30-record-from-lineage'],
+    uses: ['managed-table-maintenance-service', 'lifecycle-snapshot-corruption'],
+    declared: ['a general, non-legal awareness that GDPR exists and concerns personal data'],
+    bridge:
+      "Everything in this chapter so far assumed a pipeline was free to run anywhere and process anything the architecture allowed. For data about a person who lives in the EU, that assumption is false by law before it is false by architecture — and this topic is where the law becomes a pipeline design: purpose tags, enforced retention, and a record of processing a regulator can actually be shown.",
+    handoff:
+      "GDPR by design governs what a pipeline may do with data it holds. It says nothing yet about where that data is allowed to physically sit, or who outside the EU might be legally entitled to demand it — which is a harder, more architectural question, and the one this section ends on.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
