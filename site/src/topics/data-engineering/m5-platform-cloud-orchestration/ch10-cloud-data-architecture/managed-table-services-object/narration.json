@@ -1,0 +1,64 @@
+{
+  "topic": "de.managed-table-services-object",
+  "steps": [
+    {
+      "lines": [
+        "Notice what the team actually bought when they adopted this service: automatic compaction and snapshot cleanup. Notice what they didn't buy: any promise that every tool downstream would keep working forever.",
+        "Those are two separate guarantees, and only one of them was ever on offer here."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, rule out the easy explanations. The rows didn't change. The files weren't deleted. One specific reader simply stopped being able to open something that every other reader opens fine."
+      ],
+      "answer": [
+        "The writer moved the table forward to a newer spec version. Every engine that already speaks that version reads it without noticing anything happened.",
+        "The one engine that doesn't speak it yet can't be talked into understanding a format it was never built to parse — that's not a bug, it's just a version it hasn't reached."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the urge to flatten these into one row. Each vendor picked a different set of jobs to automate, and the differences matter more than the similarity.",
+        "One gives you three named operations. Another hands over everything, read and write both. Knowing which one you're actually getting changes what you still have to build yourself."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what's easy to miss: this fee doesn't replace your storage bill, it sits on top of it. A separate line for watching your objects, and a separate line for touching them during cleanup.",
+        "At scale, on a table with a million small files, that second bill is not a rounding error."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what you're actually trading, not just what you're saving. Running the job yourself means you pick exactly when it runs and exactly what it costs.",
+        "Hand it off, and you get neither of those back — only the fact that it happens at all, on a schedule and at a price someone else set."
+      ]
+    },
+    {
+      "lines": [
+        "Sit with this for a second: this isn't a competitor's weak spot being pointed out. It's one company's own documentation, about its own two products, admitting one of them can't open what the other one writes."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the files column stay completely still while the result column flips. That's the whole point of running this for real instead of just describing it: nothing about the data moved, and the read still broke.",
+        "If a demonstration like this ever needed the data to change to make its case, it wouldn't actually be proving what it claims to prove."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: a vendor's name on a service tells you almost nothing about which specific jobs it runs for you. Go check its own documentation, every time, for every one of these four.",
+        "And remember that a writer moving forward on its own schedule can strand a reader that never got the memo."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, think about what pinning actually fixes versus what it just postpones. Does freezing one engine's version forever make the underlying mismatch go away, or does it just push the day you deal with it further out?"
+      ],
+      "answer": [
+        "It postpones it. Nothing about freezing one engine stops the format itself from continuing to move forward elsewhere.",
+        "Eventually a feature only available on the newer version, or a vendor default, or some other dependency forces the same reckoning — just later, and usually with less warning than this time."
+      ]
+    }
+  ]
+}

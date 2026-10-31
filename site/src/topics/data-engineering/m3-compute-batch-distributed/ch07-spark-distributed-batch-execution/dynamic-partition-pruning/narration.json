@@ -1,0 +1,77 @@
+{
+  "topic": "de.dynamic-partition-pruning",
+  "steps": [
+    {
+      "lines": [
+        "Picture a million-row table split into a hundred pieces by region.",
+        "A second, much smaller table has its own filter, and that filter only cares about a handful of those regions.",
+        "The real question is how much of that big table a join even needs to touch to answer it."
+      ]
+    },
+    {
+      "lines": [
+        "Turn the relevant setting off entirely and run the join.",
+        "Every single piece of the big table gets read. All of them, regardless of what the small table's filter actually wanted.",
+        "That's the number everything else in this one gets compared against."
+      ]
+    },
+    {
+      "lines": [
+        "The big table happens to be split by the exact same column the join uses to match rows.",
+        "That feels like it should be the whole story.",
+        "Is lining those two columns up, on its own, enough to skip reading most of the table?"
+      ],
+      "answer": "It isn't. Something else has to be true about how the join itself gets planned, not just about how the table is stored."
+    },
+    {
+      "lines": [
+        "Here's what's still missing: the planner has to decide to broadcast the small table in the first place.",
+        "Splitting the big table the right way does nothing by itself.",
+        "Both things have to be true together before any skipping happens."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with: the small table doesn't get read twice just because its values are being reused for two different jobs.",
+        "It gets sent out once, as part of planning the join itself, and that exact same copy doubles as the filter deciding which pieces of the big table to skip.",
+        "Nothing extra gets fetched to make this work."
+      ]
+    },
+    {
+      "lines": [
+        "Flip the first condition instead and leave the second one alone.",
+        "This time the big table was never split into pieces by anything at all.",
+        "Does that same small-table filter still manage to cut down what gets read?"
+      ],
+      "answer": "No. There's no boundary inside the table for a filter like that to act on, so nothing gets skipped no matter how narrow the filter is."
+    },
+    {
+      "lines": [
+        "Check the plan, and there's no trace of the skipping behavior anywhere in it.",
+        "The big table gets read start to finish, exactly as if that small table's filter had never existed.",
+        "Without pieces to begin with, there was never anything for a filter to remove."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly where to go look for proof this is happening, rather than taking it on faith.",
+        "A formatted version of the plan has its own separate section just for this, naming precisely which part of the big table's scan is being filtered, and showing the small table's own values being read again to build that filter.",
+        "That second read is not wasted work; it's the mechanism itself, written right into the plan."
+      ]
+    },
+    {
+      "lines": [
+        "Now put both conditions back in place at the same time and look at the real numbers.",
+        "Twelve pieces read instead of every single one of them. Three regions touched instead of all of them.",
+        "And the final answer that comes out the other end is identical either way."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate things had to be true at once: the big table split by the right column, and the join actually choosing to broadcast the small side.",
+        "Neither one alone was enough; only both together changed what got read.",
+        "And you don't have to guess whether it happened. The plan itself names the exact mechanism, right there to check."
+      ]
+    }
+  ]
+}
