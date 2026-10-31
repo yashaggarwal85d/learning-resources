@@ -1,0 +1,150 @@
+{
+  "topic": "de.catalog-enforced-access-credential",
+  "syllabus": [
+    {
+      "clause": "the shared mechanism behind Lake Formation, Unity Catalog, BigLake metastore, Apache Polaris and OneLake security",
+      "at": [
+        { "step": "One diagram, five vendor names" }
+      ]
+    },
+    {
+      "clause": "the catalog holds policy, a trusted engine enforces row/column filters, and the catalog vends short-lived, down-scoped storage credentials",
+      "at": [
+        { "step": "A quick fix that quietly skips every mask" },
+        { "step": "A row filter and a column mask, both real" }
+      ]
+    },
+    {
+      "clause": "(Iceberg REST credential vending)",
+      "at": [
+        { "step": "The open-protocol version has a name too" }
+      ]
+    },
+    {
+      "clause": "so engines never hold bucket-wide IAM",
+      "at": [
+        { "step": "What makes that mask apply to every other engine but not this one?" }
+      ]
+    },
+    {
+      "clause": "tag-based grants",
+      "at": [
+        { "step": "A grant on a tag survives a table the policy never knew about" }
+      ]
+    },
+    {
+      "clause": "cross-account sharing",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "Spark-native fine-grained writes (Glue 5.1)",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "the bypass failure mode (an untrusted engine reading files directly)",
+      "at": [
+        { "step": "The bypass, reproduced for real" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "catalog protocol itself is §6.3",
+      "at": [
+        { "topic": "Catalogs as commit coordinators", "domain": "data-engineering", "quote": "what a table catalog actually does" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS Lake Formation: How it works",
+      "items": [
+        { "item": "The four-step flow by name (get metadata, check permissions, get credentials, get data); the catalog checks permissions before the engine ever gets temporary storage access; the catalog's own documentation uses the exact phrase \"credential vending\"", "at": [{ "step": "A quick fix that quietly skips every mask" }, { "step": "One diagram, five vendor names" }] }
+      ]
+    },
+    {
+      "source": "AWS Lake Formation: Tag-based access control",
+      "items": [
+        { "item": "A grant expressed on an LF-Tag (a key-value attribute) rather than on the object itself; LF-Tags are explicitly not the same as IAM tags", "at": [{ "step": "A grant on a tag survives a table the policy never knew about" }] }
+      ]
+    },
+    {
+      "source": "AWS Lake Formation: Cross-account data sharing",
+      "items": [
+        { "item": "A cross-account grant shares a database or table with another AWS account or principal through the catalog's own permission model via AWS RAM, not a bucket ACL", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Using AWS Glue with AWS Lake Formation for fine-grained access control",
+      "items": [
+        { "item": "Glue 5.0+'s Spark-native fine-grained access control enforces row/column/cell filters inside the Spark job via a separate, privileged system driver profile, replacing the older GlueContext/DynamicFrame table-level-only path", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Databricks: What is Unity Catalog?",
+      "items": [
+        { "item": "Unity Catalog operates beneath every query automatically, the same job as Lake Formation's credential-vending flow under a different product", "at": [{ "step": "One diagram, five vendor names" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Introduction to BigLake tables",
+      "items": [
+        { "item": "BigLake moves access control to the table level rather than the file level", "at": [{ "step": "One diagram, five vendor names" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Introduction to BigQuery row-level security",
+      "items": [
+        { "item": "A row access policy filters rows based on the querying principal's own identity — the row-filter primitive reproduced locally", "at": [{ "step": "A row filter and a column mask, both real" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Introduction to data masking",
+      "items": [
+        { "item": "A data masking rule applied to a column and bound to specific principals — the column-mask primitive reproduced locally", "at": [{ "step": "A row filter and a column mask, both real" }] }
+      ]
+    },
+    {
+      "source": "Apache Polaris: home page",
+      "items": [
+        { "item": "Apache Polaris is a real open-source catalog implementing the Iceberg REST API", "at": [{ "step": "One diagram, five vendor names" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg: REST Catalog OpenAPI specification",
+      "items": [
+        { "item": "LoadTableResult carries a storage-credentials field; a client signals support for vended-credentials delegation and checks storage-credentials before any other config", "at": [{ "step": "The open-protocol version has a name too" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn: Data security overview (Microsoft Fabric / OneLake)",
+      "items": [
+        { "item": "OneLake enforces a data plane (OneLake security) scoped down to rows and columns, separate from its control plane", "at": [{ "step": "One diagram, five vendor names" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's 'quick fix' framing matters: a learner who thinks the bypass is rare or exotic will underweight it; it is the single most common real-world misconfiguration behind every one of these five catalogs' own security documentation", "at": [{ "step": "A quick fix that quietly skips every mask" }] },
+      { "item": "The predict step's point is structural, not procedural — the fix is never 'patch the mask,' because the mask was never broken; the fix is always 'stop handing out bulk credentials'", "at": [{ "step": "What makes that mask apply to every other engine but not this one?" }] },
+      { "item": "The five vendor names are not interchangeable trivia; a learner who can recite all five but can't draw the shared get-metadata/check-permissions/get-credentials/get-data flow from memory has not learned the mechanism, only the vocabulary", "at": [{ "step": "One diagram, five vendor names" }] },
+      { "item": "security_invoker on a Postgres view is not a cosmetic detail; omitting it silently runs the view with the owner's privileges, bypassing RLS for the querying user entirely — the exact subtlety this topic's own examples.py caught and fixed while building it", "at": [{ "step": "A row filter and a column mask, both real" }] },
+      { "item": "Iceberg REST credential vending being opt-in (a client signals support, a server may decline) means a REST catalog client that never checks storage-credentials can silently fall back to a less-scoped path — worth knowing before assuming every Iceberg REST deployment vends credentials by default", "at": [{ "step": "The open-protocol version has a name too" }] },
+      { "item": "Tag-based grants solve a real operational problem (a grant written per-object needs rewriting every time a new object appears) but also widen blast radius silently — a mistagged table inherits every grant on that tag, which is the trade-off worth teaching alongside the convenience", "at": [{ "step": "A grant on a tag survives a table the policy never knew about" }] },
+      { "item": "Cross-account sharing and Spark-native fine-grained writes are named rather than reproduced because reproducing them needs a second AWS account or a running Glue job respectively — a learner should not expect a local demo of either and should treat the OUTLINE.md scope note as the actual boundary, not an oversight", "at": [{ "deep": "Internals" }] },
+      { "item": "The bypass demonstration's power comes from holding the policy, the table and the query identical between the two reads and varying only the credential — a learner who doesn't notice that control is the whole argument will miss why this is proof and not just an assertion", "at": [{ "step": "The bypass, reproduced for real" }] },
+      { "item": "The recap's five-names framing should not be read as 'memorize five products'; it should be read as 'one mechanism has at least five names, so expect a sixth'", "at": [{ "step": "In one breath" }] },
+      { "item": "The prove-it question's correct answer (deleting the account doesn't close the bypass, removing BYPASSRLS/the IAM path does) generalizes past this one topic: it is the same 'fix the capability, not the instance' lesson any access-control incident response needs, not a fact specific to Postgres", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

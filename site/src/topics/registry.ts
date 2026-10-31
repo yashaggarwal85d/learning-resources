@@ -7191,6 +7191,26 @@ export const TOPICS: TopicMeta[] = [
       "Four of this table's cells — catalog, storage, Spark, identity — all converge on one mechanism that every governed lakehouse now uses, under four different product names. That mechanism is next.",
   },
   {
+    id: 'de.catalog-enforced-access-credential',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/catalog-enforced-access-credential',
+    title: 'Catalog-enforced access and credential vending',
+    syllabusTitle: 'Catalog-enforced access and credential vending',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['catalog-credential-vending', 'row-column-policy-enforcement', 'catalog-bypass-failure'],
+    uses: ['cross-cloud-service-rosetta', 'short-lived-federated-credential', 'object-store-consistency-guarantee'],
+    declared: [],
+    bridge:
+      "Four cells of that table all pointed at one mechanism. This topic is that mechanism itself: a catalog that holds policy, an engine the catalog trusts to enforce it, and a credential handed out scoped to exactly what one query needs — never a bucket-wide key.",
+    handoff:
+      "A catalog that vends credentials is also the natural place to make someone else run the table's own upkeep — compaction, snapshot expiry, orphan cleanup — as a service instead of a cron job you own.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
