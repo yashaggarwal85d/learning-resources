@@ -7111,6 +7111,26 @@ export const TOPICS: TopicMeta[] = [
       'Identity and secrets answer who can act and with what. Neither answers what any of this actually costs — and a pipeline that is perfectly secure and perfectly correct can still be a budget incident, which is where this section ends.',
   },
   {
+    id: 'de.cloud-cost-anatomy-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/cloud-cost-anatomy-data',
+    title: 'Cloud cost anatomy for data workloads',
+    syllabusTitle: 'Cloud cost anatomy for data workloads',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['cloud-cost-four-dimensions', 'small-file-request-storm'],
+    uses: ['failure-domain-blast-radius', 'object-store-consistency-guarantee', 'storage-tier-lifecycle-tradeoff', 'conditional-write-compare-swap', 'prefix-throttling-hot-key'],
+    declared: [],
+    bridge:
+      "Identity and secrets answer who can act and with what. Neither answers what any of it costs — and this topic is the bill's real shape: storage, requests, compute, network and the managed-service premium, each priced separately instead of waved at as 'expensive.'",
+    handoff:
+      "Those four dimensions are universal, but every cloud sells the services that generate them under a different name. The next section is a map: the same mechanism under three vendors' three different product names.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
