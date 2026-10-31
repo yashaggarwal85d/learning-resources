@@ -5785,6 +5785,26 @@ export const TOPICS: TopicMeta[] = [
       "A unit test catches a known kind of bug on a small fixture. It says nothing about whether a real change to a real table, at full scale, actually changed the output the way intended. That comparison is the next topic.",
   },
   {
+    id: 'de.data-diff-regression-testing',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/data-diff-regression-testing',
+    title: 'Data-diff regression testing',
+    syllabusTitle: 'Data-diff regression testing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['data-diff-join-vs-bisection', 'diff-tolerance-column-summary'],
+    uses: ['testing-pyramid-transformations', 'float-non-associativity'],
+    declared: [],
+    bridge:
+      "A unit test says a transformation behaves correctly on a small fixture. This topic is the check that a real change, on real data, actually changed the output the way intended and nothing else -- compared two full ways, and at a cost that has to be managed past a certain scale.",
+    handoff:
+      "Running this diff on every single pull request, against every model in a large project, is more compute than most teams can afford. Running it selectively, only where a change could actually reach, is the next topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
