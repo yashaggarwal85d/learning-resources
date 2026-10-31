@@ -5485,6 +5485,26 @@ export const TOPICS: TopicMeta[] = [
       "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. The next topic is one real engine's actual internals: Redis and Valkey.",
   },
   {
+    id: 'de.redis-valkey-internals',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/redis-valkey-internals',
+    title: 'Redis and Valkey internals',
+    syllabusTitle: 'Redis and Valkey internals',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.5' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['redis-valkey-internals'],
+    uses: ['cache-patterns-eviction'],
+    declared: [],
+    bridge:
+      "Every pattern in this section so far has been described abstractly, independent of any one real cache engine. This topic is one real engine's actual internals: Redis/Valkey's own event loop, persistence model, replication, and the real licensing history that now decides which of the two you actually choose.",
+    handoff:
+      "A cache in front of a database is one read-side pattern. The next topic is a different one this chapter hasn't yet connected to Chapter 3's own warehouse material: pre-aggregated, analytical serving layers.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -7051,6 +7071,26 @@ export const TOPICS: TopicMeta[] = [
       "A role answers who may act. It says nothing about the other kind of secret a pipeline needs — a database password, a third-party API key — which has to live somewhere between deployments, and that somewhere is its own discipline.",
   },
   {
+    id: 'de.secrets-management-pipelines',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/secrets-management-pipelines',
+    title: 'Secrets management for pipelines',
+    syllabusTitle: 'Secrets management for pipelines',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['dual-credential-rotation', 'dynamic-short-lived-db-credential'],
+    uses: ['short-lived-federated-credential'],
+    declared: [],
+    bridge:
+      'A role answers who may act. A database password or a third-party key is a different kind of secret, one that has to exist somewhere between deployments — and this topic is where it should live, and how it gets replaced without an outage.',
+    handoff:
+      'Identity and secrets answer who can act and with what. Neither answers what any of this actually costs — and a pipeline that is perfectly secure and perfectly correct can still be a budget incident, which is where this section ends.',
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
@@ -8184,5 +8224,25 @@ export const TOPICS: TopicMeta[] = [
       "A single Parquet file, however well encoded, typed and skippable, is still one immutable file. This topic closes the single-file section by putting Parquet next to the one real rival that made different choices at nearly every decision: ORC.",
     handoff:
       "A single immutable file, Parquet or ORC, still can't answer the next question on its own: what does 'a table,' with atomic commits across many files, mean once the storage underneath is an object store with no file you can edit in place? That's where this chapter turns next.",
+  },
+  {
+    id: 'de.object-storage-as-database',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/object-storage-as-database',
+    title: 'Object storage as a database substrate',
+    syllabusTitle: 'Object storage as a database substrate',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['object-storage-guarantees'],
+    uses: [],
+    declared: [],
+    bridge:
+      "A single immutable file, Parquet or ORC, still can't answer what 'a table' means once the storage underneath is an object store with no file you can edit in place. This topic opens exactly that substrate: what S3/GCS/ADLS actually guarantee today, and the 2024 conditional-write primitive every later topic in this section depends on.",
+    handoff:
+      "Object storage's own limits (no atomic rename, listing cost) are exactly what broke the table format everyone used before Iceberg and Delta existed: the plain directory-as-partition Hive table.",
   },
 ];
