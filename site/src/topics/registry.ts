@@ -6365,6 +6365,26 @@ export const TOPICS: TopicMeta[] = [
       "Every format so far has been one file, self-contained. The next section is the one format that won the lakehouse: Parquet, starting from its own file anatomy.",
   },
   {
+    id: 'de.design-docs-rfcs-adrs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/design-docs-rfcs-adrs',
+    title: 'Design docs, RFCs and ADRs',
+    syllabusTitle: 'Design docs, RFCs and ADRs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['design-doc-structure', 'cross-team-rfc-review', 'adr-context-decision-consequences', 'superseded-decision-marking'],
+    uses: ['slo-tiering', 'cost-per-freshness-tier', 'dominant-cost-lever'],
+    declared: [],
+    bridge:
+      "A tier gets chosen, and the one-page summary that got it chosen is read once and then forgotten the moment the meeting ends. The decision itself — which tier, why, and what would change the team's mind later — still has to survive the person who made it leaving the room, which is this topic's own subject.",
+    handoff:
+      "A decision written down and dated is still only tested the day it breaks. The last topic in this chapter, and this course, is what happens next: naming the impact in the terms topic 2 taught, writing it down the way this topic taught, without naming a person to blame for it.",
+  },
+  {
     id: 'de.parquet-file-anatomy',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/parquet-file-anatomy',
