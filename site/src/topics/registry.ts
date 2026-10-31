@@ -7071,6 +7071,26 @@ export const TOPICS: TopicMeta[] = [
       'Skew is a shuffle problem solved by rearranging work across the network. Dynamic partition pruning, next, is the opposite kind of lever: removing work before the shuffle by never reading it.',
   },
   {
+    id: 'de.dynamic-partition-pruning',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dynamic-partition-pruning',
+    title: 'Dynamic partition pruning (DPP)',
+    syllabusTitle: 'Dynamic partition pruning (DPP)',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-dynamic-partition-pruning'],
+    uses: ['spark-partition-pruning', 'spark-broadcast-hash-join'],
+    declared: [],
+    bridge:
+      'Skew remedies rearrange a shuffle that still has to happen. DPP removes files from the fact-table scan before any shuffle starts, using the small side\'s own filter as the pruning signal.',
+    handoff:
+      'Everything in this section changed what gets shuffled or scanned. The last topic of the section changes a different thing entirely: what Spark actually writes out when the job is done.',
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
