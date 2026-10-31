@@ -1,0 +1,145 @@
+{
+  "topic": "de.bloom-cuckoo-xor-filters",
+  "syllabus": [
+    {
+      "clause": "approximate membership with no false negatives",
+      "at": [
+        { "step": "Hook: a tiny bit array answers a membership question about a value it never stored" },
+        { "step": "Predict: can the filter ever wrongly say a value is absent when it was actually added" },
+        { "step": "Reveal: the guarantee comes from using the same hash positions both ways" }
+      ]
+    },
+    {
+      "clause": "sizing from target false-positive rate (bits per key, hash count)",
+      "at": [
+        { "step": "Reveal: sizing is a trade a target false-positive rate dictates" },
+        { "step": "Reveal: a real filter's measured rate, checked against its own predicted rate" }
+      ]
+    },
+    {
+      "clause": "cuckoo filters adding deletes, xor/binary-fuse and ribbon filters (RocksDB) trading build cost for space",
+      "at": [
+        { "step": "Reveal: a standard filter can never delete a single item" },
+        { "step": "Reveal: xor and ribbon filters trade build cost for an even smaller footprint" }
+      ]
+    },
+    {
+      "clause": "uses in LSM reads, Parquet column filters (§6.2), join pruning and runtime filters",
+      "at": [
+        { "step": "Prove it" },
+        { "topic": "Data skipping: statistics, page indexes, bloom filters", "domain": "data-engineering", "quote": "optional split-block bloom filters for high-cardinality equality predicates" },
+        { "deep": "Outcomes" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — Bloom filter",
+      "items": [
+        {
+          "item": "a Bloom filter is a space-efficient probabilistic structure for approximate set membership; false positives possible, false negatives never",
+          "at": [{ "step": "Hook: a tiny bit array answers a membership question about a value it never stored" }]
+        },
+        {
+          "item": "fewer than 10 bits per element are required for a 1% false-positive probability, independent of set size",
+          "at": [{ "step": "Reveal: sizing is a trade a target false-positive rate dictates" }]
+        }
+      ]
+    },
+    {
+      "source": "Graf & Lemire — Xor Filters: Faster and Smaller Than Bloom and Cuckoo Filters",
+      "items": [
+        {
+          "item": "an xor filter is immutable once built and needs the whole set known up front, in exchange for being faster and smaller than a Bloom or cuckoo filter",
+          "at": [{ "step": "Reveal: xor and ribbon filters trade build cost for an even smaller footprint" }]
+        }
+      ]
+    },
+    {
+      "source": "Fan, Andersen, Kaminsky, Mitzenmacher — Cuckoo Filter: Practically Better Than Bloom",
+      "items": [
+        {
+          "item": "a standard Bloom filter cannot delete a single item without rebuilding the whole filter; a cuckoo filter deletes by removing a stored fingerprint directly",
+          "at": [{ "step": "Reveal: a standard filter can never delete a single item" }]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB wiki — RocksDB Bloom Filter",
+      "items": [
+        {
+          "item": "a Ribbon filter saves about 30% of Bloom filter space at the cost of about 3-4x the construction CPU and substantially higher temporary build memory",
+          "at": [{ "step": "Reveal: xor and ribbon filters trade build cost for an even smaller footprint" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a real filter sized for a 1% target over a real key set measures a false-positive rate within hundredths of a percentage point of the sizing formula's own prediction, with zero false negatives across every inserted key checked",
+          "at": [{ "step": "Reveal: a real filter's measured rate, checked against its own predicted rate" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The hook's own single-direction error is not an accident of implementation; it falls directly out of using the same hash positions for both insertion and lookup, which is exactly why the predict step can ask about the opposite, impossible direction with a definite answer rather than a probabilistic one.",
+        "at": [{ "step": "Hook: a tiny bit array answers a membership question about a value it never stored" }]
+      },
+      {
+        "item": "A Bloom filter's false-positive rate is not a property of the data being stored at all; it is entirely a function of the ratio between the number of bits allocated and the number of keys inserted, which is why the same sizing formula applies regardless of what the keys actually are.",
+        "at": [{ "step": "Reveal: the guarantee comes from using the same hash positions both ways" }]
+      },
+      {
+        "item": "Choosing a looser target false-positive rate is not free even though it uses less memory: it directly trades away real accuracy for real space, and that trade is made once, at build time, rather than something a filter can be tuned on later without rebuilding it.",
+        "at": [{ "step": "Reveal: sizing is a trade a target false-positive rate dictates" }]
+      },
+      {
+        "item": "Measuring a real filter's false-positive rate against a held-out, disjoint set of keys is the only honest way to validate the sizing formula, because testing against the same keys that were inserted would only ever show zero false positives by construction and say nothing about the formula's own predictive accuracy.",
+        "at": [{ "step": "Reveal: a real filter's measured rate, checked against its own predicted rate" }]
+      },
+      {
+        "item": "A cuckoo filter's ability to delete a single item is not a minor convenience; it changes what kind of workload the structure fits at all, since a standard Bloom filter effectively commits to a fixed set for its entire lifetime unless the whole thing is thrown away and rebuilt.",
+        "at": [{ "step": "Reveal: a standard filter can never delete a single item" }]
+      },
+      {
+        "item": "Xor and ribbon filters being immutable is the same underlying trade-off as a cuckoo filter's deletability, viewed from the opposite direction: both are choices about how much a structure commits to knowing its final contents up front, in exchange for a different real resource (deletability vs. space and speed).",
+        "at": [{ "step": "Reveal: xor and ribbon filters trade build cost for an even smaller footprint" }]
+      },
+      {
+        "item": "This topic's own recap deliberately orders its four takeaways from the structure's one unbreakable guarantee (no false negatives) through to the family's most specialized members (xor, ribbon), mirroring how a real engineer would actually decide: first trust the base guarantee, then size it, then reach for a specialized variant only once a specific extra need (deletes, or less space) appears.",
+        "at": [{ "deep": "Internals" }]
+      },
+      {
+        "item": "The 'Prove it' step's own scenario is deliberately built so that the tempting answer (switching to a cuckoo filter) is wrong for a structural reason, not a performance one: the system in the scenario never deletes a single filter entry independently of its whole file, so the one real capability a cuckoo filter adds has nothing to attach to here.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Naming the real systems that already use this family (topic 8's own LSM reads, Parquet's own column filters, join pruning, runtime filters) matters precisely because this topic's own lab builds the structure in isolation; without naming those real uses, a learner could mistake the structure for a purely theoretical exercise rather than a mechanism already running in systems covered earlier and later in this course.",
+        "at": [{ "deep": "Outcomes" }]
+      },
+      {
+        "item": "This topic closes the chapter by introducing approximate structures as a category, which is a genuinely different kind of trade-off than anything earlier in the chapter: every prior mechanism (WAL, MVCC, LSM trees, caching, serving layers, queues and logs) traded performance or complexity for correctness that remained exact, while this family trades a small amount of correctness itself for memory.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "Count-Min Sketch is named as a related but distinct structure deliberately, rather than treated as another variant of the same family: a Bloom filter answers a yes-or-no membership question, while Count-Min Sketch answers a how-many-times question, and conflating the two would misrepresent what each structure's own error guarantee actually protects.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "The original Bloom filter paper being unfetchable in this sandbox doesn't weaken the core guarantee taught here, since Wikipedia's own substitute article states the identical no-false-negatives property and cites the original paper directly, and the real sizing formula is independently verified by this topic's own executed measurement rather than taken on faith from either source.",
+        "at": [{ "topic": "LSM trees: write and read paths", "domain": "data-engineering", "quote": "per-file Bloom filters" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

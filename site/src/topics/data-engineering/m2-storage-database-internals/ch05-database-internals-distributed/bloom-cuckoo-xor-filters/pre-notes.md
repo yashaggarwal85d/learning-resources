@@ -1,0 +1,6 @@
+- **Hash function, from Chapter 1's own basic behavior**: a function mapping a key to a fixed-size number, used to pick positions in the array. *Where you meet it:* the "same positions" reveal, driving both insertion and lookup.
+- **Bit array**: a fixed-size block of individual on/off flags, the whole structure's own storage. *Where you meet it:* the hook and every reveal, as the thing being sized and queried.
+- **False positive**: a lookup wrongly reporting a value as present when it was never added. *Where you meet it:* the only error this family of structure can ever make.
+- **False negative**: a lookup wrongly reporting a value as absent when it was genuinely added. *Where you meet it:* the predict step's own question, and the guarantee this family never breaks.
+- **Fingerprint, from this topic's own cuckoo reveal**: a short, derived value stored per item instead of the item itself. *Where you meet it:* the cuckoo filter's own real way to delete a single entry.
+- **LSM-tree per-file filter, from topic 8**: a real, already-built instance of this exact family, skipping a file that can't hold a key before a disk read. *Where you meet it:* the bridge, and the closing "Prove it" step.
