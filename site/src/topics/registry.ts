@@ -6045,6 +6045,26 @@ export const TOPICS: TopicMeta[] = [
       "The first crash window — a lost ack causing a producer retry to duplicate a write — has a direct fix inside the producer itself. That's next.",
   },
   {
+    id: 'de.idempotent-producer',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/idempotent-producer',
+    title: 'Idempotent producer',
+    syllabusTitle: 'Idempotent producer',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['idempotent-producer-pid-epoch'],
+    uses: ['delivery-semantics-vocabulary', 'crash-window-duplication', 'leader-epoch-fencing'],
+    declared: [],
+    bridge:
+      "A lost ack causes a producer retry that, without anything else, duplicates a write. This topic is the producer-side fix: a session id, an epoch, and a sequence number the broker itself checks before accepting a batch.",
+    handoff:
+      "Idempotence covers one producer, one partition, one session. A single logical write that touches several partitions — or reads from Kafka and writes back to it — needs all of those writes to succeed or fail together. That's a transaction, the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
