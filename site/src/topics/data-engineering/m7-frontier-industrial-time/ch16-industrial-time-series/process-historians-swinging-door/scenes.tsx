@@ -90,10 +90,10 @@ export function RevealStep({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   return (
     <Svg label="exception filtering before compression, swinging-door knees within a stated error band, a plain knee average that misleads, a time-weighted fix, and step series that need step interpolation" h={260}>
-      <Row y={50} label="exception, swinging door" value="filter, then compress" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="error band" value="holds, measured" valueColor={C.second} o={easeOut(seg(t, 0.15, 0.45))} />
+      <Row y={50} label="exception, swinging door" value="filter, compress" o={easeOut(seg(t, 0, 0.3))} />
+      <Row y={95} label="error band" value="holds" valueColor={C.second} o={easeOut(seg(t, 0.15, 0.45))} />
       <Row y={140} label="knee average" value="misleads" valueColor={C.badText} o={easeOut(seg(t, 0.35, 0.65))} />
-      <Row y={185} label="time-weighted, step mode" value="the fix" valueColor={C.focus} o={easeOut(seg(t, 0.55, 0.85))} />
+      <Row y={185} label="time-weighted" value="the fix" valueColor={C.focus} o={easeOut(seg(t, 0.55, 0.85))} />
     </Svg>
   );
 }

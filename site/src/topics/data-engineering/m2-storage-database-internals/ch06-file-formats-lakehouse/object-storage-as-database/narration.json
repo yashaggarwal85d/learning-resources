@@ -1,0 +1,79 @@
+{
+  "topic": "de.object-storage-as-database",
+  "steps": [
+    {
+      "lines": [
+        "A single immutable file, Parquet or ORC, still can't answer what a table actually means once the storage underneath isn't a file system at all.",
+        "This topic opens exactly that substrate: what object storage really guarantees today, and the one primitive every later topic in this chapter leans on."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a simple question. Write an object to S three, and the instant that write succeeds, read it back.",
+        "Does that read see the new object right away, or could it still see stale data for a little while?"
+      ],
+      "answer": [
+        "It always sees the new object immediately. S three has delivered strong read-after-write consistency for every request since December of twenty twenty.",
+        "Before that change, it was only eventually consistent — a read right after a write really could come back stale."
+      ]
+    },
+    {
+      "lines": [
+        "Before December of twenty twenty, S three was eventually consistent. A read right after a write might still return the old version, or nothing at all.",
+        "Since that change, any read that comes after a successful write response sees the new object immediately, every single time, with no window where it could still be stale."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something object storage genuinely does not give you: an atomic rename. What people call a rename is really two separate requests — copy the object under a new name, then delete the old one.",
+        "Run that against a real local object-storage server and stop right after the copy, before the delete. Both the original and the copy exist at the same time.",
+        "Nothing in the protocol stops that. A crash between the two calls is a real, reachable state, not a hypothetical one."
+      ],
+      "takeaway": "A rename that's really copy-then-delete has no atomicity between the two calls — a crash in between leaves both objects sitting there."
+    },
+    {
+      "lines": [
+        "Now picture two writers racing for the same key at almost the same instant, with no external lock service coordinating them.",
+        "Can they both succeed?"
+      ],
+      "answer": [
+        "No. A conditional header makes the object store itself pick exactly one winner — the other request gets rejected outright.",
+        "Without that header, the last write to land on disk just silently overwrites whatever was there before."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this happen for real. Writer A sends a create with the If-None-Match header set to the wildcard, meaning only succeed if this key doesn't exist yet. It succeeds.",
+        "Writer B sends the exact same kind of request for the exact same key, against the same real server. It comes back rejected, with a genuine Precondition Failed error — not a simulated one."
+      ]
+    },
+    {
+      "lines": [
+        "If-None-Match handles creation. If-Match is the same idea for updates — a real compare-and-swap on the object's current ETag.",
+        "Send an update carrying the object's current ETag, and it commits. Send that same update again, but now the ETag you're holding is stale because someone else already changed it — rejected, the exact same way."
+      ],
+      "takeaway": "If-Match turns an update into a real compare-and-swap — a stale ETag gets rejected exactly like a conflicting create."
+    },
+    {
+      "lines": [
+        "One more thing object storage doesn't give you for free: listing. A real paginated listing of two hundred fifty objects, fifty objects per page, takes five separate round trips, not one.",
+        "And every prefix has its own request-rate ceiling. Push past it and the object store starts throttling you, prefix by prefix."
+      ]
+    },
+    {
+      "lines": [
+        "Put it together, and here's what that one conditional-write primitive actually buys you.",
+        "Without it, two writers racing for the same key end with whichever write happened to land last — silently, with no error, no signal that anything was lost.",
+        "With If-None-Match or If-Match in place, exactly one writer's commit survives, and the object store itself enforces that, with no external coordination service at all."
+      ],
+      "takeaway": "Conditional writes are an atomic compare-and-swap built right into object storage — no external lock service required."
+    },
+    {
+      "lines": [
+        "Step back, and here's the shape of it. Reads have been strongly consistent since twenty twenty, so that worry is gone for good.",
+        "Rename never was atomic, and it still isn't — that one hasn't changed.",
+        "What has changed is the commit primitive. If-None-Match and If-Match turn object storage from a place you merely store bytes into a place you can actually commit to, one writer at a time."
+      ]
+    }
+  ]
+}
