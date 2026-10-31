@@ -5845,6 +5845,26 @@ export const TOPICS: TopicMeta[] = [
       "Slim CI proves a change is safe before it merges. The next topic is proving it stays safe at the moment it actually reaches production -- a different kind of safety, checked at deploy time rather than PR time.",
   },
   {
+    id: 'de.write-audit-publish-safe',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/write-audit-publish-safe',
+    title: 'Write-audit-publish and safe deploys',
+    syllabusTitle: 'Write-audit-publish and safe deploys',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['write-audit-publish-pattern', 'canary-rollout-partition-tenant'],
+    uses: ['data-diff-join-vs-bisection', 'testing-pyramid-transformations', 'data-slis-slos-error', 'ch6.table-snapshot-time-travel'],
+    declared: [],
+    bridge:
+      "Slim CI proves a change is safe before it merges. This topic is proving it stays safe at the moment it actually reaches production: write it somewhere production can't see yet, audit it there, and only publish if the audit passes.",
+    handoff:
+      "WAP protects a pipeline's own deploys. It says nothing about a change that breaks a consumer's expectations even though every internal test passed -- a column renamed that another team's dashboard still reads by its old name. That contract, enforced automatically, is the chapter's last topic.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
