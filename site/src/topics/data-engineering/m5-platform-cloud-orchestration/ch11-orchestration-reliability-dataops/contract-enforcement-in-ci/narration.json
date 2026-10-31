@@ -1,0 +1,83 @@
+{
+  "topic": "de.contract-enforcement-in-ci",
+  "steps": [
+    {
+      "lines": [
+        "A producer renames a column on an ordinary Tuesday, with every one of their own tests passing green.",
+        "Nothing in their own pipeline ever reads that old name, so from where they're sitting, nothing looks wrong at all.",
+        "Three other teams' dashboards, which do read it, find out only once they break in production, with no warning at all.",
+        "The identical rename, attempted against a real written contract instead, is rejected in minutes, naming all three owners by name."
+      ]
+    },
+    {
+      "lines": [
+        "Worth sitting with this question before the next few steps settle it directly.",
+        "The previous topic's write-audit-publish proves a pipeline's own deploy won't corrupt its own production table.",
+        "Does that exact same guarantee also protect every team that actually reads what that pipeline produces?",
+        "Or is protecting the publish itself a genuinely different problem from protecting the people downstream of it?"
+      ],
+      "answer": "No, it's a different problem. A CI gate only enforces whatever its own tests happen to check. Nothing protects a downstream reader at all, unless something states, in a form a machine can actually check, exactly what the producer is promising them."
+    },
+    {
+      "lines": [
+        "Here's that something, built as one real, versioned, machine-readable file.",
+        "A table's schema lives right alongside its own quality rules, its service-level targets, and who actually owns it.",
+        "All four pieces sit together in one place, rather than scattered across four different documents nobody keeps in sync.",
+        "This one is built for real, for the shop's own orders table, following the actual published standard."
+      ]
+    },
+    {
+      "lines": [
+        "Now the gate that actually reads this contract before anything merges.",
+        "A straight rename, with nothing in the new schema naming what it replaces, gets classified as breaking with no path at all.",
+        "That exact classification is what blocks the merge outright, before the change ever reaches production.",
+        "The identical rename, proposed only once a replacement column openly names what it deprecates, is correctly let through instead."
+      ],
+      "takeaway": "A CI gate that reads the contract blocks exactly the renames a consumer never saw coming."
+    },
+    {
+      "lines": [
+        "One more question worth predicting before the next reveal answers it outright.",
+        "A CI gate only ever runs once a change actually goes through a real pull request, start to finish.",
+        "Does that cover every single way this contract could end up genuinely violated in practice?",
+        "Or is there a real kind of write that a pull-request-shaped gate could never see coming at all?"
+      ],
+      "answer": "No, it doesn't cover every case. A write from an out-of-band job, run completely outside the normal pipeline, never goes through a pull request at all, so a CI gate never gets the chance to run against it in the first place."
+    },
+    {
+      "lines": [
+        "Here's exactly that case, caught by a second, completely separate check.",
+        "An out-of-band job writes straight to the table, skipping every pull request and every CI run entirely.",
+        "The same written contract, checked again for real at the actual moment of the write itself, is the only thing watching.",
+        "It catches a genuinely missing required field and a genuinely negative amount, neither one ever seen by any CI gate."
+      ]
+    },
+    {
+      "lines": [
+        "One more real mechanism, aimed at a completely different moment of risk.",
+        "An approved, non-breaking change to the orders table still genuinely reaches three separate downstream tables.",
+        "Those three tables are owned, in this real example, by three genuinely different teams across the company.",
+        "A real lineage graph finds every single one of those three owners automatically, and notifies each one without being asked."
+      ],
+      "takeaway": "Nobody has to remember who reads a table once its lineage graph already knows."
+    },
+    {
+      "lines": [
+        "Pulling all four of these real mechanisms together now, for real.",
+        "A contract as code, a producer-side CI gate, a runtime check, and lineage-driven owner notification.",
+        "Each one closes a genuinely different gap a safe deploy, all on its own, still leaves wide open.",
+        "Together, they're what makes a pipeline unable to ship a change its own stated promises would reject."
+      ],
+      "takeaway": "A pipeline that cannot ship a change its own promises would reject protects everyone who reads it."
+    },
+    {
+      "lines": [
+        "One real run to close out this entire chapter, against the shop's own contract.",
+        "Propose the exact same rename twice: once with absolutely no migration path, and once done properly through expand first.",
+        "Run both proposals through the exact same real classifier and the exact same real CI gate.",
+        "Does the gate end up blocking both renames, or does only the one with no real path ever get blocked?"
+      ],
+      "answer": "Only the one with no real migration path gets blocked. The straight rename is classified breaking with no path and stopped outright, while the expand-first rename names exactly what it deprecates, and the gate correctly lets it through."
+    }
+  ]
+}
