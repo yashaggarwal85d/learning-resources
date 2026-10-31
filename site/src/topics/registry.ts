@@ -5885,6 +5885,26 @@ export const TOPICS: TopicMeta[] = [
       "WAP protects a pipeline's own deploys. It says nothing about a change that breaks a consumer's expectations even though every internal test passed -- a column renamed that another team's dashboard still reads by its old name. That contract, enforced automatically, is the chapter's last topic.",
   },
   {
+    id: 'de.contract-enforcement-in-ci',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/contract-enforcement-in-ci',
+    title: 'Contract enforcement in CI',
+    syllabusTitle: 'Contract enforcement in CI',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['data-contract-as-code-odcs', 'producer-ci-runtime-contract-gates'],
+    uses: ['schema-registry-compatibility-modes', 'expand-migrate-contract-rollout', 'data-slis-slos-error', 'software-defined-asset-model', 'data-contract-specification'],
+    declared: [],
+    bridge:
+      "WAP protects a pipeline's own publish. This topic is the contract that protects everyone downstream of it: a single, versioned, machine-checked statement of what a table promises, enforced automatically before a breaking change ever ships and again if one slips through anyway.",
+    handoff:
+      "A contract enforced in CI closes the loop this chapter opened: a schedule that runs the right tasks (11.1), a model chosen for the work's real shape (11.2), a platform that knows when it's broken and recovers (11.3), and a pipeline that cannot ship a change its own promises would reject (11.4). The next chapter turns from running the platform to packaging and delivering it: containers and Kubernetes.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
