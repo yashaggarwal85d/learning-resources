@@ -1,0 +1,148 @@
+{
+  "topic": "de.api-ingestion-pagination-limits",
+  "syllabus": [
+    {
+      "clause": "offset vs cursor/keyset pagination and consistency under concurrent writes",
+      "at": [
+        { "step": "Predict: what a keyset cursor fixes" },
+        { "step": "Reveal: offset pagination, measured" },
+        { "step": "Reveal: keyset cursor, measured" }
+      ]
+    },
+    {
+      "clause": "rate limits (429, Retry-After, token buckets)",
+      "at": [
+        { "step": "Reveal: the token bucket" },
+        { "step": "Reveal: obeying the wait time, measured" }
+      ]
+    },
+    {
+      "clause": "exponential backoff with jitter",
+      "at": [
+        { "step": "Reveal: many clients, one resource" },
+        { "step": "Reveal: jitter, measured" }
+      ]
+    },
+    {
+      "clause": "idempotency keys for writes",
+      "at": [
+        { "step": "Reveal: idempotency keys" },
+        { "step": "Reveal: idempotency key, measured" }
+      ]
+    },
+    {
+      "clause": "OAuth token refresh and secret rotation",
+      "at": [
+        { "step": "Prove it" },
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Additional HTTP Status Codes (RFC 6585)",
+      "items": [
+        {
+          "item": "the 429 status code indicates the user has sent too many requests (rate limiting) and the response MAY include a Retry-After header",
+          "at": [{ "step": "Reveal: the token bucket" }]
+        }
+      ]
+    },
+    {
+      "source": "HTTP Semantics (RFC 9110)",
+      "items": [
+        {
+          "item": "Retry-After can be either an HTTP-date or a number of seconds to delay",
+          "at": [{ "out": "named as the seconds form Stripe's own API uses; not independently exercised in this topic's own mock" }]
+        }
+      ]
+    },
+    {
+      "source": "The OAuth 2.0 Authorization Framework (RFC 6749)",
+      "items": [
+        {
+          "item": "the authorization server MAY issue a new refresh token, in which case the client MUST discard the old one",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "Exponential Backoff And Jitter (AWS Architecture Blog)",
+      "items": [
+        {
+          "item": "N clients compete in the first round, N-1 in the second round, and so on, and the no-jitter approach is the clear loser on both work and time",
+          "at": [{ "step": "Reveal: many clients, one resource" }, { "step": "Reveal: jitter, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Idempotent requests (Stripe docs)",
+      "items": [
+        {
+          "item": "idempotency keys are up to two hundred fifty-five characters long and are pruned after at least twenty-four hours (API v1)",
+          "at": [{ "step": "Reveal: idempotency keys" }]
+        }
+      ]
+    },
+    {
+      "source": "Scaling your API with rate limiters (Stripe engineering blog)",
+      "items": [
+        {
+          "item": "Stripe uses the token bucket algorithm to do rate limiting, with a bucket per user",
+          "at": [{ "step": "Reveal: the token bucket" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Offset pagination re-reads a row when an insert shifts later rows into the position the next fetch reads, and skips a row when a delete shifts later rows out of a position the next fetch would have read — both measured directly against identical mutations.",
+        "at": [{ "step": "Reveal: offset pagination, measured" }]
+      },
+      {
+        "item": "A keyset cursor eliminates the re-read entirely, because it names a row's own identity rather than a position an insert can shift — but it cannot recover a row deleted before the cursor ever reaches it, which is the same blind spot a hard delete leaves for any cursor.",
+        "at": [{ "step": "Reveal: keyset cursor, measured" }]
+      },
+      {
+        "item": "A token-bucket limiter's 429 response can carry the exact wait until a token exists again; a client that reads and obeys that number wastes close to the fewest calls mathematically possible, measured directly against a client guessing with a short fixed delay.",
+        "at": [{ "step": "Reveal: obeying the wait time, measured" }]
+      },
+      {
+        "item": "Fixed exponential backoff keeps every losing client retrying on the same schedule, so the same group of clients collides again on the same later round; adding randomness breaks that synchronization and measurably reduces both total requests and time to completion, reproducing the AWS Architecture Blog's own experiment.",
+        "at": [{ "step": "Reveal: jitter, measured" }]
+      },
+      {
+        "item": "An idempotency key turns a write into something as safe to repeat as a read: the same key retried three times against a real mock endpoint recorded exactly one underlying charge and returned the identical response every time.",
+        "at": [{ "step": "Reveal: idempotency key, measured" }]
+      },
+      {
+        "item": "An OAuth authorization server is free to rotate the refresh token on a successful refresh and invalidate the old one immediately, so two workers racing on the identical stale token cannot both succeed — a shared lock serializing the two attempts removes the race entirely, both measured directly.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Rotating a client secret the same abrupt way would recreate the identical outage shape; the documented fix is accepting two valid secrets at once during a transition window rather than a hard cutover.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Chapter 4 topic 9's resilient-client patterns (timeouts, retries, backoff) are applied here to a whole ingestion loop under rate limiting rather than re-taught from scratch; topic 3's high-watermark-cursor vocabulary (naming identity instead of position) reappears as the keyset fix, not re-derived independently.",
+        "at": [{ "out": "composed from Chapter 4 topic 9 and topic 3, not re-taught" }]
+      },
+      {
+        "item": "This topic's own measured miss (a keyset cursor still missing a row deleted before it is read) is the same structural gap topic 3's hard-delete measurement names for a database cursor, reinforcing that no polling-based approach, database or API, can see a deletion it never gets to.",
+        "at": [{ "out": "echoes topic 3's own hard-delete finding, not independently re-derived" }]
+      },
+      {
+        "item": "The mock paginated API, the 429 storm and the keyset/backoff fixes measured in this topic are the REST half of the 8.1 chapter lab; topic 6 hosts the crash-mid-batch injection and the idempotent MERGE re-run that closes it.",
+        "at": [{ "out": "feeds the shared 8.1 lab, per CHAPTER.md's lab-hosting table" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

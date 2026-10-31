@@ -6283,6 +6283,26 @@ export const TOPICS: TopicMeta[] = [
       "A cursor works only when the source is a database you can query. Many sources are not: a vendor's REST API, with its own pagination, limits and failures, is the next shape of the same problem.",
   },
   {
+    id: 'de.api-ingestion-pagination-limits',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/api-ingestion-pagination-limits',
+    title: 'API ingestion: pagination, limits and retries',
+    syllabusTitle: 'API ingestion: pagination, limits and retries',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['keyset-pagination-consistency', 'rate-limit-backoff-ingestion'],
+    uses: ['resilient-client-patterns', 'high-watermark-cursor'],
+    declared: ['basic-http'],
+    bridge:
+      "A cursor needs a database to query. Many sources are an API instead. This topic is the same problem when the source speaks HTTP: how to page through it without losing rows, how to obey its limits, and how to retry without doing a write twice.",
+    handoff:
+      "Databases and APIs are both asked for data. A third kind of source simply drops files and walks away, onto an object store that has no atomic rename. How a pipeline picks them up safely is the next topic.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',

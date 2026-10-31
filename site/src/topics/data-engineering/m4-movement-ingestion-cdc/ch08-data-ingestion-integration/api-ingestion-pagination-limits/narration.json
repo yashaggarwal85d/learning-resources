@@ -1,0 +1,96 @@
+{
+  "topic": "de.api-ingestion-pagination-limits",
+  "steps": [
+    {
+      "lines": [
+        "A nightly pull against an API, paged the ordinary way, by position.",
+        "Rows the pull already read show up a second time. Other rows never show up at all.",
+        "Neither failure raises an error anywhere. The pull itself reports nothing but success."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you the difference.",
+        "A keyset cursor remembers a row's own identity instead of a position in a list. That sounds like it should fix everything a position-based page can get wrong.",
+        "So does switching to it erase every kind of miss, or just some of them?"
+      ],
+      "answer": [
+        "Erasing every miss is the tempting answer, but a cursor can only ever act on a row it's told to look at — if that row is deleted before the cursor gets anywhere near it, there's nothing left to find, identity or not.",
+        "What a keyset cursor really earns you is narrower and just as real: nothing already behind the cursor can ever be re-read, because nothing about its position depends on how many rows came or went in front of it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why a position-based page drifts, run for real against a list that keeps changing underneath it.",
+        "A row inserted at the front pushes every later row one place further back. The very next page fetch lands exactly where an already-read row now sits, and reads it a second time.",
+        "A row deleted from the part already read does the opposite: everything after it slides one place forward, and the next page fetch now starts past a row it was never shown."
+      ]
+    },
+    {
+      "lines": [
+        "The same two writes, read this time by a cursor that names a row instead of a position.",
+        "An insert at the front changes nothing about where the cursor already is, because the cursor was never a position to begin with — the duplicate reads simply stop happening.",
+        "But the one row deleted before the cursor reached it is still gone without a trace. Naming a row by its identity doesn't help once that identity no longer exists anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "A rate limit isn't just a wall a request bounces off of.",
+        "A token-bucket limiter keeps a running balance per client, spending one token per request and topping the balance back up on a steady schedule.",
+        "An empty balance doesn't just refuse the request — the response can name the exact moment a token will be sitting there again."
+      ]
+    },
+    {
+      "lines": [
+        "I measured what happens when a client actually listens to that number versus when it doesn't.",
+        "A client that waits exactly as long as it's told spends almost nothing beyond the one call that discovered the balance was empty in the first place.",
+        "A client guessing with its own short, fixed pause asks again long before any token could possibly exist, and pays for that guess with call after wasted call."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture that same limiter with many clients hitting it at once, all competing for one slot that only one of them can win each round.",
+        "Backing off after losing a round sounds like the obvious fix, and it is one — but only if every loser doesn't back off by the exact same amount."
+      ]
+    },
+    {
+      "lines": [
+        "I ran this contention directly, the same way the architecture writeup that first described it did.",
+        "Backing off by a fixed amount keeps every losing client in lockstep, so the exact same group collides again on the exact same later round.",
+        "Adding randomness to that same backoff breaks the lockstep apart. Across five separate runs, that one change alone cut both the total number of requests and the time to finish roughly in half."
+      ]
+    },
+    {
+      "lines": [
+        "A write is a different kind of risk entirely — repeating it can mean doing the real-world thing twice.",
+        "Attaching a key the client generates itself turns a retry into something the server can recognize as the same request, not a new one.",
+        "The server's own job becomes simple: the first time that key shows up, do the work; every time after, hand back exactly what it already did."
+      ]
+    },
+    {
+      "lines": [
+        "I retried the identical write three separate times with that same key, against a real running write endpoint.",
+        "Only the very first attempt ever touched anything. Every attempt after it, including both retries, got back the exact same response without a second write ever happening.",
+        "A key turns a write that would otherwise double-charge on a retry into something exactly as safe to repeat as a plain read."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and four completely different failures each got exactly one fix.",
+        "A position that drifts gets a cursor. A limit that isn't obeyed gets a number telling you precisely when to come back. Clients colliding in lockstep get randomness. A write that can't tell a retry from a repeat gets a key.",
+        "None of those four fixes has anything to do with the credential the whole pull is running under in the first place.",
+        "Rotating that credential outright, the same way, would just trade one outage for another — the fix there is accepting the old one and the new one together for a while, never cutting over in one single instant."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, run directly: two workers splitting one long pull, both holding the exact same refresh credential, both trying to exchange it at the same moment.",
+        "What happens to whichever one the server gets to second?"
+      ],
+      "answer": [
+        "Both succeeding sounds reasonable, since they're asking for the identical thing at the identical moment — but the server is free to hand out a brand-new credential on a successful exchange and retire the old one on the spot.",
+        "The worker that loses the race is handed back a flat rejection, holding a credential that stopped being valid the instant the other worker's request went through. A shared lock, making the two take turns instead of racing, is what actually closes that gap."
+      ]
+    }
+  ]
+}
