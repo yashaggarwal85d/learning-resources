@@ -5365,6 +5365,26 @@ export const TOPICS: TopicMeta[] = [
       "Fan-out can make thousands of task instances want to run at once. Something has to decide how many actually do, and in what order, without starving anything else sharing the cluster. That is the next topic.",
   },
   {
+    id: 'de.concurrency-controls-pools-queues',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/concurrency-controls-pools-queues',
+    title: 'Concurrency controls: pools, queues, priorities',
+    syllabusTitle: 'Concurrency controls: pools, queues, priorities',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 11, title: 'Orchestration, Reliability and Data Operations', section: '11.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['pool-slot-concurrency-control', 'priority-weight-scheduling', 'starvation-fairness-tradeoff'],
+    uses: ['de.dynamic-task-mapping-fan', 'ch8.database-extraction-without-hurting', 'de.orchestrator-architecture-scheduler'],
+    declared: [],
+    bridge:
+      "Fan-out can produce thousands of task instances that all want to run at once. This topic is what decides how many actually do, in what order, and how a fragile source is protected from being overrun by exactly the kind of fan-out the last topic showed.",
+    handoff:
+      "A task waiting in a pool for a slot still occupies a worker process while it waits. Some tasks wait for hours, not seconds — for an external job, or a sensor polling an API. Holding a worker that whole time is wasteful, and there is a mechanism built specifically to avoid it.",
+  },
+  {
     id: 'de.driver-executors-task-hierarchy',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/driver-executors-task-hierarchy',
@@ -5843,6 +5863,26 @@ export const TOPICS: TopicMeta[] = [
       "Topic 1 gave the hierarchy's names. This topic answers the question it left open: exactly which operators force the scheduler to cut a new stage, and why that cut is where real work — a shuffle — has to happen.",
     handoff:
       "A stage boundary is a promise that a shuffle happens there. The next topic opens that promise: what a shuffle actually writes to disk and sends over the network to make the next stage's input exist.",
+  },
+  {
+    id: 'de.sort-based-shuffle-mechanics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/sort-based-shuffle-mechanics',
+    title: 'Sort-based shuffle mechanics',
+    syllabusTitle: 'Sort-based shuffle mechanics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-shuffle-mechanics', 'spark-map-output-tracker'],
+    uses: ['spark-stage-boundary'],
+    declared: [],
+    bridge:
+      "The previous topic named the shuffle as the thing that happens at a stage boundary. This topic opens what that actually is on disk and over the wire: one sorted file and one index per map task, fetched by every reducer that needs a piece of it.",
+    handoff:
+      "Knowing what a shuffle writes says nothing yet about how many tasks run it, or how evenly — the next topic's own concern, locality and parallelism.",
   },
   {
     id: 'de.failure-domains-regions-zones',
@@ -6363,5 +6403,45 @@ export const TOPICS: TopicMeta[] = [
       "Every layout from the last topic still has to survive a reader using a different version of the schema than the writer did. This topic is schema evolution itself, compared directly across Avro, Protobuf and Parquet, with a real rename that breaks one matching strategy and survives another.",
     handoff:
       "Every format so far has been one file, self-contained. The next section is the one format that won the lakehouse: Parquet, starting from its own file anatomy.",
+  },
+  {
+    id: 'de.design-docs-rfcs-adrs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m8-synthesis-capstones-stakeholder/ch19-stakeholder-engineering/design-docs-rfcs-adrs',
+    title: 'Design docs, RFCs and ADRs',
+    syllabusTitle: 'Design docs, RFCs and ADRs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 8, title: 'Synthesis: Capstones, Benchmarking & Stakeholder Craft' },
+    chapter: { number: 19, title: 'Stakeholder Engineering: Requirements, Contracts and Communication', section: '19.1' },
+    minutes: 16,
+    verified: '2026-10-30',
+    introduces: ['design-doc-structure', 'cross-team-rfc-review', 'adr-context-decision-consequences', 'superseded-decision-marking'],
+    uses: ['slo-tiering', 'cost-per-freshness-tier', 'dominant-cost-lever'],
+    declared: [],
+    bridge:
+      "A tier gets chosen, and the one-page summary that got it chosen is read once and then forgotten the moment the meeting ends. The decision itself — which tier, why, and what would change the team's mind later — still has to survive the person who made it leaving the room, which is this topic's own subject.",
+    handoff:
+      "A decision written down and dated is still only tested the day it breaks. The last topic in this chapter, and this course, is what happens next: naming the impact in the terms topic 2 taught, writing it down the way this topic taught, without naming a person to blame for it.",
+  },
+  {
+    id: 'de.parquet-file-anatomy',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/parquet-file-anatomy',
+    title: 'Parquet file anatomy',
+    syllabusTitle: 'Parquet file anatomy',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.2' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['parquet-file-anatomy'],
+    uses: ['row-vs-columnar-layout', 'schema-evolution-column-matching'],
+    declared: [],
+    bridge:
+      "Every format so far has been one file, self-contained, and this topic opens the one that won the lakehouse: Parquet's own file anatomy, read directly from a file this sandbox writes and inspects byte by byte.",
+    handoff:
+      "A row group is just column chunks, and a column chunk is just pages of values — but those values are rarely stored as plain, unencoded bytes. The next topic is exactly how they're encoded.",
   },
 ];
