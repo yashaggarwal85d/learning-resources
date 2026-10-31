@@ -6065,6 +6065,26 @@ export const TOPICS: TopicMeta[] = [
       "Idempotence covers one producer, one partition, one session. A single logical write that touches several partitions — or reads from Kafka and writes back to it — needs all of those writes to succeed or fail together. That's a transaction, the next topic.",
   },
   {
+    id: 'de.kafka-transactions-read-committed',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/kafka-transactions-read-committed',
+    title: 'Kafka transactions and read-committed',
+    syllabusTitle: 'Kafka transactions and read-committed',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 9, title: 'Streaming Systems: Kafka, Flink, and Beyond', section: '9.2' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['kafka-transaction-coordinator', 'read-committed-lso', 'consume-transform-produce-eos'],
+    uses: ['idempotent-producer-pid-epoch', 'leader-epoch-fencing', 'delivery-semantics-vocabulary'],
+    declared: [],
+    bridge:
+      "Idempotence covers one producer, one partition, one session. A consume-transform-produce step touches an input offset and one or more output partitions together, and all of it must succeed or fail as one unit. This topic is that unit: a Kafka transaction.",
+    handoff:
+      "A transaction keeps everything inside Kafka consistent. The moment the far end of a pipeline is not Kafka — a database, a file, an API — a Kafka transaction alone can't make that write atomic with anything. That's the next topic.",
+  },
+  {
     id: 'de.dag-scheduling-stage-boundaries',
     domain: 'data-engineering',
     slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/dag-scheduling-stage-boundaries',
