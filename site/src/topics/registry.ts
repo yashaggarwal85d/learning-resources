@@ -5885,6 +5885,26 @@ export const TOPICS: TopicMeta[] = [
       "Knowing what a shuffle writes says nothing yet about how many tasks run it, or how evenly — the next topic's own concern, locality and parallelism.",
   },
   {
+    id: 'de.task-scheduling-locality-parallelism',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/task-scheduling-locality-parallelism',
+    title: 'Task scheduling, locality and parallelism',
+    syllabusTitle: 'Task scheduling, locality and parallelism',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.1' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-locality-levels', 'spark-shuffle-partitions-config'],
+    uses: ['spark-shuffle-mechanics'],
+    declared: [],
+    bridge:
+      "The shuffle produces blocks sitting on specific executors. This topic is about the scheduler's own choice of which executor runs the next task, given where its input actually lives.",
+    handoff:
+      "Locality and parallelism are about placing and sizing the tasks the planner already decided to run. The next two topics go one level up, into the planner itself: how Catalyst decided what to run in the first place.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
