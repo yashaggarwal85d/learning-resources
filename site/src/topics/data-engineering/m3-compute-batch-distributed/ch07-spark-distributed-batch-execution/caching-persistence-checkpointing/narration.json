@@ -1,0 +1,71 @@
+{
+  "topic": "de.caching-persistence-checkpointing",
+  "steps": [
+    {
+      "lines": [
+        "Picture the exact same piece of work, run twice, one right after the other.",
+        "Does the second run get to remember what the first one worked out, or does it pay that same price all over again?"
+      ]
+    },
+    {
+      "lines": [
+        "Run it without telling the engine to remember anything at all.",
+        "Both runs genuinely redo the entire thing from scratch. The second run is no cheaper than the first — not even a little."
+      ]
+    },
+    {
+      "lines": [
+        "Now ask the engine to hold onto that same result before running it twice.",
+        "Does the second run get to reuse what the first one worked out, or does it still redo the whole thing over again?"
+      ],
+      "answer": "It reuses the first run's own answer instead of redoing the work."
+    },
+    {
+      "lines": [
+        "Here's exactly what the measurement shows.",
+        "The first run pays the full price and holds onto the result. The second run reuses that same result right away — confirmed directly, not just by how fast it felt: the underlying work genuinely never runs a second time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why that works.",
+        "Once the result is held onto, it just sits there ready to hand back as-is.",
+        "Whatever work produced it in the first place, however expensive, simply never runs again on reuse."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of question. That remembered result is now competing for room with something else, and part of it gets pushed out to make space.",
+        "Does a plain, memory-only version of that remembered result survive losing its room, or does the engine quietly redo the lost part later?"
+      ],
+      "answer": "It's gone. The engine has to redo that lost part from the original work."
+    },
+    {
+      "lines": [
+        "Here's the measurement, laid out plainly.",
+        "The memory-only version, once it loses its room, gets fully redone the very next time anyone needs it.",
+        "A version that's allowed to spill onto disk instead is simply read back from there — no redoing the work at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the reasoning behind that result.",
+        "The choice you make for where a remembered result goes when it runs out of room is exactly the decision for what losing part of it later actually costs you.",
+        "Forgotten and redone from scratch, or written down once and read back cheaply — that choice is the whole difference."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth seeing. Picture a piece of work whose own answer is allowed to come out different every single time it runs.",
+        "Run it twice without remembering anything, and every single row disagrees with itself across those two runs.",
+        "Remember it just once, and every later run agrees with that first answer, exactly, on every row, every time."
+      ]
+    },
+    {
+      "lines": [
+        "So remembering a piece of work trades that work for its result, and the choice you make for what happens when room runs out decides exactly what losing part of it later will actually cost.",
+        "And remembering locks in one single answer from a piece of work that was never promised to give you the same one twice."
+      ]
+    }
+  ]
+}

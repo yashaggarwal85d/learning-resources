@@ -7387,6 +7387,25 @@ export const TOPICS: TopicMeta[] = [
       'Spill is memory pressure the engine handles automatically, if slowly. The next topic is memory pressure deliberately chosen on purpose — caching — and when that choice helps or hurts.',
   },
   {
+    id: 'de.caching-persistence-checkpointing',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/caching-persistence-checkpointing',
+    title: 'Caching, persistence and checkpointing',
+    syllabusTitle: 'Caching, persistence and checkpointing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.3' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-cache-vs-checkpoint', 'spark-storage-levels'],
+    uses: ['spark-unified-memory-manager'],
+    bridge:
+      "Spill was memory pressure forced on the engine by too little room. Caching is the opposite: memory pressure the developer chooses on purpose, by asking Spark to keep something around — and it can steal exactly the execution memory the previous topic described.",
+    handoff:
+      "Caching and checkpointing are both about surviving across jobs. The next topic is about surviving within one: the JVM's own garbage collector, and the pauses it causes under the same memory pressure.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -7665,6 +7684,26 @@ export const TOPICS: TopicMeta[] = [
       "Databricks is one lakehouse platform, taught here in real depth. This topic is the comparison a learner actually has to make in a real job: who owns the storage, how open the format really is underneath the marketing, what each pricing model actually charges for, and what it costs to leave each one.",
     handoff:
       "Choosing a platform and its services is a decision made once, or rarely. Keeping that choice reproducible and affordable over hundreds of later changes is a discipline in its own right — infrastructure as code and FinOps, which open the next section.",
+  },
+  {
+    id: 'de.iac-state-plan-drift',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/iac-state-plan-drift',
+    title: 'IaC state, plan and drift',
+    syllabusTitle: 'IaC state, plan and drift',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['iac-state-plan-apply-drift', 'module-boundary-platform-unit', 'policy-as-code-gate'],
+    uses: ['short-lived-federated-credential', 'passrole-escalation-boundary', 'catalog-credential-vending'],
+    declared: ['basic familiarity with version control and declarative configuration'],
+    bridge:
+      "Choosing a platform is a decision made once. Keeping that choice reproducible, reviewable and safe to change hundreds of times after is infrastructure as code — the discipline this topic teaches from its single most important fact: the tool diffs against its own state file, not the live cloud, and that file can be corrupted or lied to.",
+    handoff:
+      "A reproducible platform is the precondition for answering what it actually costs and attributing that cost fairly — which is where this section, and the chapter's own cost thread from 10.1, converge.",
   },
   {
     id: 'de.text-interchange-formats-their',

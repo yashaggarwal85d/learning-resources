@@ -1,0 +1,85 @@
+{
+  "topic": "de.iac-state-plan-drift",
+  "steps": [
+    {
+      "lines": [
+        "Watch the timing here, not the outcome. Two operators, the same file, eight seconds apart. Neither one sees an error on their screen.",
+        "The second plan was already wrong the moment it was computed — it just didn't know that yet."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, think about what a plan would even need to compare against to make this kind of mistake possible.",
+        "Of these four options, which one is actually sitting between your configuration and your real infrastructure?"
+      ],
+      "answer": [
+        "Its own last-known record — not the live cloud, checked fresh.",
+        "Which means the plan is only ever as current as that record. Let the record go stale, and the plan goes stale with it."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what this box is not. It isn't a live connection to your cloud account, refreshed on demand.",
+        "It's a written-down memory of the last thing the tool actually did — and every future plan trusts that memory completely."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the second request fail, not stall. There's no queue here, no retry, no race that sometimes goes the other way.",
+        "One holder, one lock. The second operator simply cannot start until the first one is done."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the urge to treat plan as a formality on the way to apply. Nothing in the real world changes while this box is open.",
+        "Apply is the only step that touches anything — which is exactly why reviewing the plan, not the apply, is where a mistake actually gets caught."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with: these two aren't opposite problems, they're the same gap, just discovered from different sides.",
+        "One notices reality already moved. The other deliberately catches the tool up to it, without tearing anything down to do it."
+      ]
+    },
+    {
+      "lines": [
+        "Don't mistake this for a technical requirement. Nothing forces these three into one unit — grouping them is a decision about what one review has to cover.",
+        "Split them into three, and someone can change the role without anyone reviewing the bucket it protects."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually changed here. Not the tool's behavior that day — the legal terms underneath using it.",
+        "That distinction is the whole reason a fork was even a reasonable response, instead of just reading the fine print more carefully."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what this buys you: real loops, real conditionals, the full power of an actual language describing your infrastructure.",
+        "Now watch what it costs. That same power can write imperative logic that quietly breaks the very safety story a plan is supposed to guarantee."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this isn't a suggestion with a comment thread attached. The plan simply does not reach apply.",
+        "A rule that can be ignored is a guideline. A rule that blocks the plan itself is something else entirely."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: the record can go stale, which is why a lock matters, and a policy gate is the only one of these that reads the plan's own content.",
+        "State, lock, plan, apply, drift, import, policy gate — seven ideas, one underlying story about trusting a record instead of reality."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice this plan already shipped — the question isn't how to detect it after the fact, it's what would have stopped it before.",
+        "Of everything covered, which mechanism actually reads a plan's content and can refuse it?"
+      ],
+      "answer": [
+        "A policy-as-code gate — the only mechanism here that inspects what the plan actually contains.",
+        "Locking only stops two operators from colliding. It was never going to stop one operator's single, perfectly uncontested, bad plan."
+      ]
+    }
+  ]
+}
