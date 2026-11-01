@@ -1,0 +1,8 @@
+- **Event time** -- the timestamp a record carries about when it actually happened, as opposed to when the engine happens to process it.
+- **Watermark** -- the engine's own estimate of how caught-up it is on event time: the maximum event time seen so far, minus a configured delay threshold.
+- **Delay threshold** -- the `withWatermark` argument naming how late an event is allowed to arrive before the engine stops waiting for it.
+- **Window** -- a fixed-size, possibly overlapping bucket of event time (e.g. 12:00-12:10) that a windowed aggregation groups rows into.
+- **Late data** -- a record whose own event time falls behind the current watermark by the time it arrives.
+- **State eviction** -- the engine discarding a window's accumulated aggregation state once that window is considered closed for good.
+- **Global watermark** -- the single watermark value Structured Streaming computes across every input stream when a query reads from more than one, by default the minimum of each stream's own watermark.
+- **multipleWatermarkPolicy** -- the SQL configuration (`min` by default, `max` optionally) controlling whether the global watermark takes the slowest or the fastest stream's own watermark.

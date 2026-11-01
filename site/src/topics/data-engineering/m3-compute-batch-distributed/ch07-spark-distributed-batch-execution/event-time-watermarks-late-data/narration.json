@@ -1,0 +1,67 @@
+{
+  "topic": "de.event-time-watermarks-late-data",
+  "steps": [
+    {
+      "lines": [
+        "A plan that reruns on a schedule still has to decide what it's allowed to forget.",
+        "Here's the rule that draws that line, and bounds how much the engine has to keep around."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that rule, built by hand from the data itself.",
+        "Take the latest time the engine has ever seen, back off by the delay configured, and that's the exact number Spark reports back, one trigger behind."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a case worth thinking through before the answer comes.",
+        "An event shows up after its own moment has passed, but still inside that delay. Does the engine take it in, or has it already moved on?"
+      ],
+      "answer": "Taken in. The slot it belongs to hasn't closed yet, even though the event itself is late."
+    },
+    {
+      "lines": [
+        "Taken in, correctly.",
+        "Late against the newest thing seen, yes, but the slot that event belongs to is still open for business."
+      ]
+    },
+    {
+      "lines": [
+        "So lateness by itself was never the deciding factor.",
+        "What actually decides is whether the slot that event belongs to is still open, or has already been closed out for good."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the harder version of the same question.",
+        "Send that identical lateness in again, only one round later, after the cutoff has moved past where that slot ends. Taken, or refused this time?"
+      ],
+      "answer": "Refused completely. Nothing about the event changed; the cutoff moved past it instead."
+    },
+    {
+      "lines": [
+        "Refused, completely, this time.",
+        "Nothing changed about the event between the two attempts. What moved was the cutoff, past the far edge of the slot that would have held it."
+      ]
+    },
+    {
+      "lines": [
+        "So a slot doesn't fade out gradually.",
+        "It closes the instant the cutoff passes its own far edge, and there's no partial credit for almost making it in time."
+      ]
+    },
+    {
+      "lines": [
+        "Feed this from several sources at once, and there's a choice to make.",
+        "Hold everyone to the slowest source's own pace, or let the fastest one set it and give up some of the slower one's own data."
+      ]
+    },
+    {
+      "lines": [
+        "One number, built from the newest time seen, minus a delay.",
+        "One real cost that comes with it: the engine forgets a slot the moment that number crosses its edge, no matter how close the data came."
+      ]
+    }
+  ]
+}

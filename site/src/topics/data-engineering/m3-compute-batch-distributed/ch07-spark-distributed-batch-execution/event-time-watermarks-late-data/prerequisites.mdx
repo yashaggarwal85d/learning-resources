@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: micro-batch incremental execution
+
+<ul class="resources">
+  <Resource kind="reel" title="Micro-batch incremental execution" domain="data-engineering" host="de.micro-batch-incremental-execution" by="the previous topic, opening section 7.4" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Structured Streaming: APIs on DataFrames and Datasets" href="https://spark.apache.org/docs/4.0.0/streaming/apis-on-dataframes-and-datasets.html" by="Apache Spark documentation">The watermark illustration, and how a global watermark is chosen across multiple input streams.</Resource>
+  <Resource kind="reading" title="EventTimeWatermarkExec.scala" href="https://raw.githubusercontent.com/apache/spark/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/streaming/EventTimeWatermarkExec.scala" by="Apache Spark source, GitHub">The watermark's own calculation from the maximum observed event time and the delay.</Resource>
+</ul>
+
+</section>

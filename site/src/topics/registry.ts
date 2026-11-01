@@ -7454,6 +7454,25 @@ export const TOPICS: TopicMeta[] = [
       "Micro-batch execution says when a batch runs. It says nothing yet about how late an event is allowed to arrive before the engine gives up waiting for it — the next topic's own bound, the watermark.",
   },
   {
+    id: 'de.event-time-watermarks-late-data',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/event-time-watermarks-late-data',
+    title: 'Event time, watermarks and late data',
+    syllabusTitle: 'Event time, watermarks and late data',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.4' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-watermark-mechanics'],
+    uses: ['spark-micro-batch-execution'],
+    bridge:
+      "Micro-batch execution says a plan reruns on a schedule. This topic is the mechanism that keeps that plan's state from growing forever: a bound on how late an event may arrive before the engine stops waiting for it.",
+    handoff:
+      "A watermark bounds state. The next topic is what actually accumulates inside that bound — the stateful operators and the output modes that decide what gets emitted and when.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
