@@ -1,0 +1,248 @@
+{
+  "topic": "dsa.integer-compression",
+  "syllabus": [
+    {
+      "clause": "varint/LEB128",
+      "at": [
+        { "step": "Varint, the whole mechanism" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "frame-of-reference",
+      "at": [
+        { "step": "Frame of reference" },
+        { "step": "One outlier, one whole block" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "PFOR",
+      "at": [
+        { "step": "Patching" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "SIMD bit-packing",
+      "at": [
+        { "step": "Branches against bits, together" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "Stream VByte",
+      "at": [
+        { "step": "Grouped control bytes" },
+        { "step": "Does separating the streams change the size?" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "decode speed vs ratio for posting lists and columnar pages",
+      "at": [
+        { "step": "Branches against bits, together" },
+        { "step": "Where this is used" },
+        { "deep": "Internals" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering §5.1, Rust Systems Engineering Ch.24",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google Protocol Buffers, \"Encoding\"",
+      "items": [
+        {
+          "item": "Seven payload bits per byte, the eighth a continuation flag; one as a single byte, a hundred and fifty as two bytes",
+          "at": [
+            { "step": "Varint, the whole mechanism" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "The ZigZag mapping for signed varints: positive p to 2p, negative n to 2|n|-1",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "WebAssembly specification, \"Values\"",
+      "items": [
+        {
+          "item": "All integers use LEB128, in either unsigned or signed variant",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Lemire and Boytsov, \"Decoding billions of integers per second through vectorization\"",
+      "items": [
+        {
+          "item": "SIMD-BP128: nearly twice as fast as the previously fastest schemes, saves up to two bits per integer, blocks of 128 integers",
+          "at": [
+            { "step": "Branches against bits, together" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "SIMD-FastPFOR: within ten percent of a state-of-the-art scheme while twice as fast decoding",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Lemire, Kurz and Rupp, \"Stream VByte: faster byte-oriented integer compression\"",
+      "items": [
+        {
+          "item": "VARINT-GB's grouped control byte reduces branch mispredictions by a factor of four",
+          "at": [
+            { "step": "Grouped control bytes" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Stream VByte separates the control stream from the data stream; up to twice as fast as VARINT-G8IU; over four billion integers per second on a named machine",
+          "at": [
+            { "step": "Does separating the streams change the size?" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "FastPFor README",
+      "items": [
+        {
+          "item": "The fastest scheme works over blocks of 128 integers, not 1,024 or more; Stream VByte works over blocks of four",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Lucene, Lucene99PostingsFormat",
+      "items": [
+        {
+          "item": "Packed block size fixed at a hundred and twenty eight; frequency blocks use patching, document-delta blocks do not",
+          "at": [
+            { "step": "Where this is used" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Parquet, Encodings.md",
+      "items": [
+        {
+          "item": "Delta encoding and the run-length/bit-packing hybrid, two separately named encodings",
+          "at": [
+            { "step": "Where this is used" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Zukowski, Héman, Nes and Boncz 2006; Goldstein, Ramakrishnan and Shaft 1998 (citation only, not read)",
+      "items": [
+        {
+          "item": "PFOR and frame of reference's own origins, attributed by name and date only",
+          "at": [
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "Why a varint's own continuation flag is a genuinely data-dependent branch and not something a decoder could know in advance from the list alone",
+        "at": [
+          { "step": "Known in advance, or not?" }
+        ]
+      },
+      {
+        "item": "Why a single outlier forces an entire frame-of-reference block to a wider width, never just the one value: a block has exactly one stored width for everything in it",
+        "at": [
+          { "step": "One outlier, one whole block" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why patching a handful of exceptions aside costs far less than widening a whole block to fit them, and why that trade only pays off when outliers are rare",
+        "at": [
+          { "step": "Patching" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why separating the control stream from the data stream changes nothing about the bit budget but everything about whether a vector instruction can read the data as one contiguous run",
+        "at": [
+          { "step": "Does separating the streams change the size?" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why this topic's own measured list shows frame of reference costing more bits than plain varint — a real, outlier-driven result on this particular list, not a universal ranking of the two schemes",
+        "at": [
+          { "step": "Branches against bits, together" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why decode speed is reported only from the papers' own named hardware in this topic, never from a Python timing — interpreter overhead would hide exactly the branch counts the topic is about",
+        "at": [
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "That the Roaring array container from the previous topic is literally the plain sorted list this topic starts from — the two topics' own running examples connect directly, not just by analogy",
+        "at": [
+          { "step": "Recap" }
+        ]
+      },
+      {
+        "item": "Why a frequency block benefits from patching while a document-delta block does not, in Lucene's own postings format — a real production instance of exactly this topic's own patching-versus-not trade-off",
+        "at": [
+          { "step": "Where this is used" },
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "That the counting floor computed here (log base two of the binomial coefficient) is the exact same style of argument Chapter 1 and Chapter 12 each used for their own structures, applied now to a sorted list rather than a filter or a comparison tree",
+        "at": [
+          { "step": "Is the smallest encoding also the fastest?" },
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why a reader should not treat this topic's specific measured numbers (15.97, 16.93, 15.21 bits per id) as fixed facts about these codecs in general: they are this one list's own measurements, not a property of varint or frame of reference themselves",
+        "at": [
+          { "deep": "Internals" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Compressed bitmaps: Roaring">The plain sorted array container this topic compresses further.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">Word-level parallelism and branch misprediction, the two costs every codec here is measured against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Fenwick trees">The prefix-sum idea that turns a decoded gap list back into the original sorted ids.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">The counting-style argument behind this topic's own information-theoretic floor.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The papers
+
+<ul class="resources">
+  <Resource kind="reading" title="Decoding billions of integers per second through vectorization" href="https://arxiv.org/pdf/1209.2137" by="Lemire and Boytsov, Software: Practice and Experience 2015">SIMD-BP128, SIMD-FastPFOR, and the frame-of-reference and PFOR lineage this topic's codecs come from.</Resource>
+  <Resource kind="reading" title="Stream VByte: faster byte-oriented integer compression" href="https://arxiv.org/pdf/1709.08990" by="Lemire, Kurz and Rupp, Information Processing Letters 2018">The grouped-control-byte idea this topic's own measured byte code is modeled on.</Resource>
+</ul>
+
+</section>
