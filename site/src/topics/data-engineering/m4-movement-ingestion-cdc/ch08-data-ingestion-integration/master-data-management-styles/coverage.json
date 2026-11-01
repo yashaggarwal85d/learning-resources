@@ -1,0 +1,120 @@
+{
+  "topic": "de.master-data-management-styles",
+  "syllabus": [
+    {
+      "clause": "registry, consolidation, coexistence and centralised (transactional) hub styles",
+      "at": [
+        { "step": "Reveal: registry, a cross-reference with no master copy" },
+        { "step": "Reveal: consolidation, a golden copy for reporting" },
+        { "step": "Reveal: coexistence, synced both ways" },
+        { "step": "Reveal: centralised, the hub and only the hub" }
+      ]
+    },
+    {
+      "clause": "match-merge pipelines and stewardship workflows",
+      "at": [{ "step": "Reveal: the match-merge pipeline and its stewardship queue" }]
+    },
+    {
+      "clause": "customer/product/plant master consistency across ERP/CRM (cross-ref the SAP/master-data note in Ch.10.5)",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Reveal: the same entity across ERP and CRM" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia: Master data management",
+      "items": [
+        {
+          "item": "There are several models for implementing a technology solution for master data management, named as registry, consolidation, coexistence and transaction/centralized",
+          "at": [
+            { "step": "Reveal: registry, a cross-reference with no master copy" },
+            { "step": "Reveal: consolidation, a golden copy for reporting" },
+            { "step": "Reveal: coexistence, synced both ways" },
+            { "step": "Reveal: centralised, the hub and only the hub" }
+          ]
+        },
+        {
+          "item": "Data consolidation is the process of capturing master data from multiple sources and integrating it into a single hub for replication to other destination systems",
+          "at": [{ "step": "Reveal: consolidation, a golden copy for reporting" }]
+        }
+      ]
+    },
+    {
+      "source": "Profisee: Master Data Management (MDM) Implementation Styles, Explained",
+      "items": [
+        {
+          "item": "Registry: source systems continue to manage their own data, while downstream applications rely on the MDM platform for golden records",
+          "at": [{ "step": "Reveal: registry, a cross-reference with no master copy" }]
+        },
+        {
+          "item": "Consolidation: updates are not pushed back to source systems",
+          "at": [{ "step": "Reveal: consolidation, a golden copy for reporting" }]
+        },
+        {
+          "item": "Coexistence: master data resides in the hub, but source systems retain operational data and handle transactions",
+          "at": [{ "step": "Reveal: coexistence, synced both ways" }]
+        },
+        {
+          "item": "Centralized: all transactions and updates occur within the hub, and data is then distributed to operational systems",
+          "at": [{ "step": "Reveal: centralised, the hub and only the hub" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The first predict question's correct answer is checked specifically against which of the four styles actually write back to a source (coexistence and centralized do; registry and consolidation never do), rather than against a general claim that 'MDM fixes duplicates,' which would not distinguish the four styles from each other.",
+        "at": [{ "step": "Predict: does fixing this mean rewriting a source" }]
+      },
+      {
+        "item": "The final predict question's correct answer is checked against the specific requirement the scenario states (every order system keeps writing its own orders) rather than against a general preference for centralization, since centralized is the style most teams reach for by name recognition despite directly violating that requirement.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The registry-versus-consolidation distinction is checked against Profisee's own separate descriptions of each (one only cross-references, the other assembles an actual copy) rather than treated as two names for the same light-touch idea, since the reel's own two reveal steps draw exactly this line.",
+        "at": [
+          { "step": "Reveal: registry, a cross-reference with no master copy" },
+          { "step": "Reveal: consolidation, a golden copy for reporting" }
+        ]
+      },
+      {
+        "item": "This topic's own disclosed scope decision — no lab exists, since the 8.3 lab's record-linkage half is a set of skipped syllabus topics — is read literally against CHAPTER.md's own 'Lab' line rather than treated as an unexplained omission, and is recorded in SOURCES.md and REVIEW.md.",
+        "at": [{ "out": "disclosed no-lab status, per CHAPTER.md's own 'Lab' line and SOURCES.md" }]
+      },
+      {
+        "item": "The claim that no vendor-neutral primary architecture reference was found is checked by a direct re-fetch of the Microsoft Azure architecture MDM page at build time, confirming CHAPTER.md's own plan-time finding (HTTP 404) rather than assuming it without checking.",
+        "at": [{ "out": "disclosed source substitution, per SOURCES.md and REVIEW.md" }]
+      },
+      {
+        "item": "The match-merge pipeline's own four steps (standardise, match, merge by survivorship, publish) are checked against CHAPTER.md's own named shape rather than against a generic ETL pipeline description, and the stewardship queue is kept distinct from the pipeline itself, since CHAPTER.md's own clause separates 'pipelines' from 'workflows.'",
+        "at": [{ "step": "Reveal: the match-merge pipeline and its stewardship queue" }]
+      },
+      {
+        "item": "Record linkage, blocking, clustering, survivorship algorithms and golden-record construction are each checked against CHAPTER.md's own 'Leaves out' line and confirmed named only (not taught) anywhere in this topic's reel and narration, since they are this syllabus's own skipped topics.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "The Hook's own incident (two keys, two credit limits, a double-counted customer) is checked against CHAPTER.md's own named Hook rather than invented, and the figure draws the two records joined by a dashed question mark exactly as CHAPTER.md's own 'Visual idea' names it.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The SAP/master-data cross-reference in the raw syllabus line names '§10.5,' which CHAPTER.md's own notes confirm is a typo for §10.6; this topic's coverage.json copies the raw syllabus clause verbatim (including the typo) while the Hook and reveal steps themselves make no claim depending on which section number is correct, so the typo is disclosed rather than silently corrected on screen.",
+        "at": [{ "out": "disclosed syllabus bug, per CHAPTER.md's own 'Notes for the release run'" }]
+      },
+      {
+        "item": "The claim that choosing a style decides location, not meaning, is checked against this topic's own Handoff line and against the next topic's own Bridge line (word for word), confirming the two topics' own boundary is drawn consistently rather than redrawn differently on each side.",
+        "at": [{ "out": "cross-topic seam check, per registry.ts's own bridge/handoff pair" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

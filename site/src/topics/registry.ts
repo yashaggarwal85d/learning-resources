@@ -6885,6 +6885,26 @@ export const TOPICS: TopicMeta[] = [
       "Transport is solved: a row and every change to it reach the analytical side, in order, once in effect. The harder question is whether two systems' rows describe the same customer, and which one is right. That is not a transport problem, and it starts with who owns the truth.",
   },
   {
+    id: 'de.master-data-management-styles',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/master-data-management-styles',
+    title: 'Master data management styles',
+    syllabusTitle: 'Master data management styles',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.3' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['mdm-styles'],
+    uses: ['query-vs-log-cdc', 'cdc-landing-strategies', 'conformed-dimension', 'scd-type-2'],
+    declared: [],
+    bridge:
+      "Transport is solved: a row and every change to it reach the analytical side, in order, once in effect. Whether two systems' rows describe the same customer, and which is right, is not a transport problem. This topic is who owns the truth: the four master data styles.",
+    handoff:
+      "Choosing a style decides where the master lives, not what its fields mean. Two systems can agree that a customer exists and still disagree on its country code, its currency and the time zone of its timestamps. Mapping those is the last topic of the chapter.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
