@@ -7435,6 +7435,25 @@ export const TOPICS: TopicMeta[] = [
       "Section 7.3 closes the chapter's batch-execution half: how a job runs, shuffles, spends memory and fails. The next section is the same engine asked to do something structurally different: compute incrementally, forever, over data that never finishes arriving.",
   },
   {
+    id: 'de.micro-batch-incremental-execution',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/micro-batch-incremental-execution',
+    title: 'Micro-batch incremental execution',
+    syllabusTitle: 'Micro-batch incremental execution',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.4' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['spark-micro-batch-execution', 'spark-offset-commit-log'],
+    uses: ['spark-catalyst-pipeline', 'spark-task-hierarchy'],
+    bridge:
+      "Every topic so far ran one plan once against data that already existed. This topic is the same Catalyst-and-Tungsten machinery asked to run a small plan over and over, once per trigger, against data still arriving — Structured Streaming's one new idea.",
+    handoff:
+      "Micro-batch execution says when a batch runs. It says nothing yet about how late an event is allowed to arrive before the engine gives up waiting for it — the next topic's own bound, the watermark.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
