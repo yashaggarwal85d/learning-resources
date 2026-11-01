@@ -1,0 +1,136 @@
+{
+  "topic": "de.semantic-integration-schemas-codes",
+  "syllabus": [
+    {
+      "clause": "schema matching and mapping across heterogeneous sources",
+      "at": [{ "step": "Reveal: matching two schemas by evidence" }]
+    },
+    {
+      "clause": "reference/lookup data and crosswalk tables (slowly changing)",
+      "at": [{ "step": "Reveal: a crosswalk joined by event time" }]
+    },
+    {
+      "clause": "reconciling units, currencies and time zones",
+      "at": [
+        { "step": "Reveal: one meaning per unit string" },
+        { "step": "Reveal: the currency's own minor-unit exponent" },
+        { "step": "Reveal: a UTC instant plus its own zone" }
+      ]
+    },
+    {
+      "clause": "owning the mapping as versioned, tested data",
+      "at": [{ "step": "Reveal: owning the mapping as tested data" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "UCUM: The Unified Code for Units of Measure (purpose)",
+      "items": [
+        {
+          "item": "The purpose is to facilitate unambiguous electronic communication of quantities together with their units",
+          "at": [{ "step": "Reveal: one meaning per unit string" }]
+        }
+      ]
+    },
+    {
+      "source": "UCUM: The Unified Code for Units of Measure (one semantic element)",
+      "items": [
+        {
+          "item": "Every expression in UCUM is mapped to one and only one semantic element",
+          "at": [{ "step": "Reveal: one meaning per unit string" }]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia: ISO 4217 (minor unit)",
+      "items": [
+        {
+          "item": "ISO 4217 provides information about the relationships between currencies and their minor units",
+          "at": [{ "step": "Reveal: the currency's own minor-unit exponent" }]
+        }
+      ]
+    },
+    {
+      "source": "IANA: Time Zone Database",
+      "items": [
+        {
+          "item": "The database contains code and data representing the history of local time for many representative locations worldwide",
+          "at": [{ "step": "Reveal: a UTC instant plus its own zone" }]
+        },
+        {
+          "item": "The database is updated periodically to reflect changes made by political bodies to time zone boundaries",
+          "at": [{ "out": "named only, per pre-notes.md and post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 documentation: Date/Time Functions and Operators (AT TIME ZONE)",
+      "items": [
+        {
+          "item": "AT TIME ZONE converts a timestamp without time zone to a timestamp with time zone, assuming the given value is in the named time zone",
+          "at": [{ "step": "Reveal: a UTC instant plus its own zone" }]
+        }
+      ]
+    },
+    {
+      "source": "Rahm and Bernstein: schema-matching taxonomy (named only)",
+      "items": [
+        {
+          "item": "Schema matching is classified along several axes: schema-level versus instance-level, element versus structure, and linguistic versus constraint-based matching",
+          "at": [{ "step": "Reveal: matching two schemas by evidence" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The first predict question's correct answer is checked against which specific mechanism each bug comes from (a missing minor-unit scale factor versus a missing time zone) rather than against a vague claim that 'unit problems are all related,' since the measured functions for each bug are entirely independent of each other in examples.py.",
+        "at": [{ "step": "Predict: are these two bugs the same fix" }]
+      },
+      {
+        "item": "The currency conversion claim is checked by measuring the exact ratio between the buggy and correct conversions (off by precisely the minor-unit scale factor) rather than asserting a vague 'wrong by a lot,' confirming the Hook's own 'off by a factor of a hundred' claim is a measured result, not a dramatized one.",
+        "at": [{ "step": "Reveal: the currency's own minor-unit exponent" }]
+      },
+      {
+        "item": "The DST-transition claim is checked by having examples.py itself find the real transition date by scanning real AT TIME ZONE output across a span of days, rather than hard-coding a date from memory, so the claim holds even if the underlying IANA rules were to change before this topic is re-verified.",
+        "at": [{ "step": "Reveal: a UTC instant plus its own zone" }]
+      },
+      {
+        "item": "The final predict question's correct answer is checked against the actual mechanism of an anti-join mapping test (which names the specific orphan code) rather than against a general claim that 'the load would fail,' since the scenario's own point is that the failure is specific and named, not generic.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The Hook's own two-bug framing (integer cents plus local time, versus decimals plus UTC) is checked against CHAPTER.md's own named Hook rather than invented, and the 'off by a factor of a hundred' and 'off by an hour' figures are each confirmed as the measured results of examples.py's own two bug-reproduction functions, not placeholder numbers.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The crosswalk's own point-in-time join is checked by measuring two facts on either side of a real re-categorization event, confirming each fact gets the mapping that was actually valid at its own event time rather than the mapping that happens to be current when the query runs — the exact distinction CHAPTER.md's own clause draws.",
+        "at": [{ "step": "Reveal: a crosswalk joined by event time" }]
+      },
+      {
+        "item": "This topic's own disclosed access barrier — Rahm and Bernstein's survey sits behind a sign-in wall and its own mirror refused a direct fetch on a certificate mismatch — is checked by actually attempting both routes at build time rather than assuming CHAPTER.md's own plan-time finding still holds, and the taxonomy named from secondary summaries is clearly marked as not a direct quote.",
+        "at": [{ "out": "disclosed source access barrier, per SOURCES.md and REVIEW.md" }]
+      },
+      {
+        "item": "Record linkage, blocking, clustering, survivorship and golden-record construction are each checked against CHAPTER.md's own 'Leaves out' line and confirmed named only (not taught) anywhere in this topic's reel and narration, since they are this syllabus's own skipped topics.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "The mapping-test claim is checked end to end in examples.py: the same anti-join query is run before an unmapped code exists (zero orphans), immediately after one is inserted (one named orphan), and after the missing crosswalk row is added (zero orphans again), confirming the test genuinely runs against live data rather than a canned pass.",
+        "at": [{ "step": "Reveal: owning the mapping as tested data" }]
+      },
+      {
+        "item": "This topic's own handoff is checked word for word against Chapter 9's own first topic (which this chapter's own CHAPTER.md names explicitly as needing to open from 'the partitioned log that carries a stream of events'), confirming the chapter boundary is drawn consistently on both sides rather than redrawn differently when Chapter 9 is eventually built.",
+        "at": [{ "out": "cross-chapter seam check, per CHAPTER.md's own 'Notes for the release run'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -6905,6 +6905,26 @@ export const TOPICS: TopicMeta[] = [
       "Choosing a style decides where the master lives, not what its fields mean. Two systems can agree that a customer exists and still disagree on its country code, its currency and the time zone of its timestamps. Mapping those is the last topic of the chapter.",
   },
   {
+    id: 'de.semantic-integration-schemas-codes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/semantic-integration-schemas-codes',
+    title: 'Semantic integration: schemas, codes and units',
+    syllabusTitle: 'Semantic integration: schemas, codes and units',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.3' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['semantic-integration-crosswalk', 'unit-currency-timezone-reconciliation'],
+    uses: ['scd-type-2', 'backdated-fact-scd2-mapping', 'decimal-precision-scale', 'timestamp-resolution', 'dbt-tests-data-unit', 'mdm-styles'],
+    declared: [],
+    bridge:
+      "Choosing a style decides where the master lives, not what its fields mean. Two systems can agree a customer exists and still disagree on its country code, its currency and the time zone of its timestamps. This topic is how meaning is reconciled and owned.",
+    handoff:
+      "This chapter moved data from where it is produced to where it can be read, row by row and change by change, and made two systems' records agree. The next chapter takes the other kind of source: not a database to be read, but a stream of events that someone is already appending to, and the partitioned log that carries them. Kafka's internals are next.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
