@@ -6787,6 +6787,26 @@ export const TOPICS: TopicMeta[] = [
       "Debezium turns database changes into events. There is a second thing teams want from the same machinery: to publish a domain event whenever they change their own data, without the dual-write bug. The outbox pattern uses the very same log for that.",
   },
   {
+    id: 'de.transactional-outbox-pattern',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/transactional-outbox-pattern',
+    title: 'Transactional outbox pattern',
+    syllabusTitle: 'Transactional outbox pattern',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['transactional-outbox'],
+    uses: ['debezium-architecture-envelope', 'cdc-ordering-transaction-metadata', 'cdc-schema-evolution-resnapshot', 'slot-wal-retention-incident', 'exactly-once-effect-recipe'],
+    declared: [],
+    bridge:
+      "Debezium turns database changes into events. Teams want a second thing from the same machinery: to publish a domain event whenever they change their own data, without the dual-write bug. This topic is that pattern, built on the very same log.",
+    handoff:
+      "Everything so far assumed a Kafka cluster in the middle. Some pipelines do not want one: they want the database's log read straight into a stream processor and out to a lakehouse. That path is Flink CDC.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
