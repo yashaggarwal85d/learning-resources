@@ -5765,6 +5765,26 @@ export const TOPICS: TopicMeta[] = [
       "Counting distinct values is one single number a sketch can approximate. The next, closing topic is a sketch for an entire distribution at once: a quantile.",
   },
   {
+    id: 'de.quantile-sketches-t-digest',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/quantile-sketches-t-digest',
+    title: 'Quantile sketches: t-digest, DDSketch, KLL',
+    syllabusTitle: 'Quantile sketches: t-digest, DDSketch, KLL',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.6' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['quantile-sketches'],
+    uses: ['hyperloglog-distinct-counting'],
+    declared: [],
+    bridge:
+      "Counting distinct values is one single number a sketch can approximate. This closing topic is a sketch for an entire distribution at once: a quantile, with a real demonstration of why averaging per-partition percentiles is simply wrong, and why a real mergeable sketch fixes it.",
+    handoff:
+      "This chapter opened at the single physical page an engine reads and writes and closed at a sketch that approximates an entire distribution in a few kilobytes — the full range between an engine's own internals and the statistics built on top of it. The next chapter turns to the files these engines and sketches actually read and write at rest, starting with the oldest and most trap-ridden of them: plain-text interchange formats like CSV and JSON.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',

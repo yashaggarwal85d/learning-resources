@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the chapter's last sketch family, built on the same idea
+
+<ul class="resources">
+  <Resource kind="reel" title="HyperLogLog and distinct counting" domain="data-engineering" host="de.hyperloglog-distinct-counting" by="the sibling sketch family: one single number approximated in fixed memory, this topic's own closing contrast against an entire distribution" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Computing Extremely Accurate Quantiles Using t-Digests" href="https://arxiv.org/pdf/1902.04023" by="Dunning & Ertl">t-digest's own clustering and buffer-and-merge construction.</Resource>
+  <Resource kind="reading" title="DDSketch: A Fast and Fully-Mergeable Quantile Sketch with Relative-Error Guarantees" href="https://arxiv.org/pdf/1908.10693" by="Masson, Rim, Lee">The rank-error-vs-relative-error distinction, and DDSketch's own use by Datadog.</Resource>
+  <Resource kind="reading" title="Optimal Quantile Approximation in Streams" href="https://arxiv.org/pdf/1603.05346" by="Karnin, Lang, Liberty">KLL's own rank-error guarantee.</Resource>
+  <Resource kind="reading" title="quantileTDigest" href="https://clickhouse.com/docs/reference/functions/aggregate-functions/quantileTDigest" by="ClickHouse documentation">A real warehouse engine's own t-digest-backed function.</Resource>
+</ul>
+
+</section>
