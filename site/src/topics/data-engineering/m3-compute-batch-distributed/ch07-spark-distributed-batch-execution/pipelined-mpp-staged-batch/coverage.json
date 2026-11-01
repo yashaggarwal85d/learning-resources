@@ -1,0 +1,126 @@
+{
+  "topic": "de.pipelined-mpp-staged-batch",
+  "syllabus": [
+    {
+      "clause": "Trino-style pipelined, in-memory exchange (low latency, a failed task fails the query) vs Spark-style materialised shuffle (recoverable, higher latency); Trino fault-tolerant execution with spooled exchanges as the convergence point; how to pick per workload (Trino internals in §6.4).",
+      "at": [
+        { "step": "Reveal: Spark trades latency for recoverability, by writing every stage's output first" },
+        { "step": "Predict: the same computation, large batches vs one row at a time. Which is faster, per row?" },
+        { "step": "Reveal: the batched version is faster, by a wide margin, measured directly" },
+        { "step": "Elaborate: that speed is what a row-at-a-time exchange gives up" },
+        { "step": "Predict: streaming row by row vs materialising the whole result. Whose memory grows with row count?" },
+        { "step": "Reveal: materialising grows with row count, streaming stays flat, measured directly" },
+        { "step": "Elaborate: fault-tolerant execution is the convergence point" },
+        { "step": "Reveal: three real models, three different trades" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Trino documentation, \"Fault-tolerant execution\"",
+      "items": [
+        {
+          "item": "By default, if a Trino node lacks the resources to execute a task or otherwise fails during query execution, the query fails and must be run again manually",
+          "at": [{ "step": "Elaborate: that speed is what a row-at-a-time exchange gives up" }]
+        },
+        {
+          "item": "with fault-tolerant execution enabled, intermediate exchange data is spooled and can be re-used by another worker in the event of a worker outage or other fault",
+          "at": [{ "step": "Elaborate: fault-tolerant execution is the convergence point" }]
+        },
+        {
+          "item": "a TASK retry policy instructs Trino to retry individual query tasks in the event of failure, and requires an exchange manager to be configured",
+          "at": [{ "step": "Elaborate: fault-tolerant execution is the convergence point" }]
+        },
+        {
+          "item": "fault-tolerant execution is turned off by default",
+          "at": [{ "step": "Hook" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Ray documentation, \"Ray Data internals\"",
+      "items": [
+        {
+          "item": "Ray Data's streaming execution doesn't wait for one operator to complete to start the next; each operator takes in and outputs a stream of blocks, so datasets too large to fit in cluster memory can still be processed",
+          "at": [{ "step": "Reveal: materialising grows with row count, streaming stays flat, measured directly" }]
+        },
+        {
+          "item": "each physical operator has an associated out queue; when a physical operator produces outputs, the executor moves them to that operator's out queue",
+          "at": [{ "step": "Reveal: three real models, three different trades" }]
+        },
+        {
+          "item": "to limit object store use, Ray Data applies backpressure and stops launching tasks once enough data is buffered",
+          "at": [{ "step": "Reveal: materialising grows with row count, streaming stays flat, measured directly" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark documentation, \"RDD Programming Guide\"",
+      "items": [
+        {
+          "item": "to organize all the data for a single reduceByKey reduce task, Spark needs to perform an all-to-all operation -- read from all partitions, then bring together values across partitions -- this is the shuffle",
+          "at": [{ "step": "Reveal: Spark trades latency for recoverability, by writing every stage's output first" }]
+        },
+        {
+          "item": "Spark actions are executed through a set of stages, separated by distributed shuffle operations",
+          "at": [{ "step": "Hook" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "Trino's QUERY retry policy (distinct from TASK) retries the whole query from scratch on failure rather than spooling exchange data for per-task retry, and is the lighter-weight fault-tolerance mode Trino offers for shorter queries.",
+        "at": [{ "out": "QUERY retry policy named only as the other fault-tolerant execution mode; this topic's own examples.py doesn't run against a live Trino cluster to compare retry policies" }]
+      },
+      {
+        "item": "Trino's dynamic filtering pushes a build-side join's actual key set down into the probe-side scan at runtime, pruning partitions or row groups before they're even read -- a cost-based optimisation orthogonal to the pipelined-vs-staged execution trade this topic measures.",
+        "at": [{ "out": "dynamic filtering named only as a related Trino optimisation; this topic's own examples.py measures throughput and memory, not join pruning" }]
+      },
+      {
+        "item": "Presto, Trino's ancestor, originally shipped with no mid-query fault tolerance at all; Trino (the fork by Presto's original creators) is what later added fault-tolerant execution as an optional, off-by-default mode.",
+        "at": [{ "out": "Presto's own historical lack of fault tolerance named only, as the lineage behind Trino's later addition; this topic's own sources quote Trino's current documentation, not Presto's" }]
+      },
+      {
+        "item": "Ray Data's executor picks which operator to run next partly by choosing the operator with the smallest out queue, a scheduling heuristic for keeping memory bounded that this topic's examples.py doesn't reproduce since it models only two linear pipelines, not a multi-operator DAG.",
+        "at": [{ "out": "the smallest-out-queue scheduling heuristic named only; this topic's own examples.py compares two single-pass pipelines, not a scheduler choosing among several operators" }]
+      },
+      {
+        "item": "When Ray Data produces more data than its object store can hold even under backpressure, Ray Core spills those objects to disk rather than failing the job outright, a graceful-degradation behavior distinct from Trino's fail-the-query default.",
+        "at": [{ "out": "object spilling to disk under memory pressure named only; this topic's own examples.py measures in-process Python memory, not Ray's object store" }]
+      },
+      {
+        "item": "Spark's own shuffle service (the External Shuffle Service, or its disaggregated successors) decouples shuffle-file serving from the executor process that wrote them, so an executor can be lost without losing access to shuffle data already written -- a resilience mechanism this chapter covered earlier (§7.3/§7.4) and this topic assumes rather than re-measures.",
+        "at": [{ "out": "the shuffle service's role in decoupling shuffle-data serving from executor lifetime named only; this topic's own examples.py doesn't exercise executor loss" }]
+      },
+      {
+        "item": "Databricks' Photon engine (covered in §6.1) is a vectorised execution engine that still runs inside Spark's own stage-at-a-time, materialised-shuffle model -- vectorisation speeds up work within a stage, but doesn't change which model this topic's trade-off is about.",
+        "at": [{ "out": "Photon's own vectorisation named only as orthogonal to the pipelined-vs-staged distinction; this topic's own examples.py measures batching speed generically, not Photon specifically" }]
+      },
+      {
+        "item": "Flink's pipelined network exchange (covered in the stream-processing chapters) uses credit-based flow control for backpressure between operators, a mechanism distinct from both Trino's spooled-exchange fault tolerance and Ray Data's out-queue backpressure, despite all three being 'pipelined' in some sense.",
+        "at": [{ "out": "Flink's credit-based flow control named only, as a third system also called pipelined but built differently; this topic's own sources and examples.py don't cover Flink" }]
+      },
+      {
+        "item": "A GPU batch-inference workload (the chapter's own named use case for Ray Data in §7.7) particularly favours operator-level streaming because holding a full batch of decoded images in memory just to feed a GPU stage can exceed GPU memory long before it exceeds host memory -- the GPU-utilisation claim this topic sources from Ray's documentation rather than measuring, since the builder's machine has no GPU.",
+        "at": [{ "out": "the GPU-memory-specific reason operator-level streaming matters for this workload named only; this topic's own examples.py runs CPU-only and measures host memory, not GPU memory or utilisation" }]
+      },
+      {
+        "item": "Interactive BI workloads favour Trino's pipelined model precisely because their queries are short enough that the occasional full-query retry costs less wall-clock time than Spark's per-stage materialisation overhead would cost on every single query -- the workload-shape criterion this topic's outcomes ask the learner to name, stated explicitly here.",
+        "at": [{ "out": "the specific latency-vs-retry-cost arithmetic behind the BI-favours-pipelined recommendation named only; this topic's own examples.py demonstrates the batching-speed and memory-growth mechanisms behind the trade-off, not a workload-level cost comparison" }]
+      },
+      {
+        "item": "Trino's coordinator/worker architecture (covered in §6.4) is what actually constructs and schedules the pipelined stages this topic contrasts with Spark's; the coordinator compiles a query into a plan of stages connected by exchanges, and workers execute tasks within those stages without this topic re-deriving that architecture.",
+        "at": [{ "out": "Trino's coordinator/worker architecture and query compilation named only, cross-referenced to §6.4 per CHAPTER.md's own pointer; this topic's own examples.py doesn't run a real Trino cluster" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}
