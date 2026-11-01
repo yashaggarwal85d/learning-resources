@@ -1,0 +1,8 @@
+- **Query plan**: the sequence of operations (scans, filters, joins) a database engine chooses to execute a query. *Where you meet it:* the EXPLAIN-based elaboration.
+- **Predicate pushdown**: moving a filter condition as close as possible to where data is read, so unneeded rows are skipped early. *Where you meet it:* named as what a policy can block, in the plan-cost elaboration.
+- **View**: a saved query that behaves like a table when read, without storing its own copy of the data. *Where you meet it:* one of the Hook's three paths.
+- **Materialized view**: a view whose result is actually stored and refreshed, carrying whatever values were visible when it was built. *Where you meet it:* named as a bypass path in the final reveal.
+- **Mask**: replacing or obscuring a column's real value for some readers while leaving it unchanged in storage. *Where you meet it:* the Hook's masked-email scenario.
+- **Row filter**: a condition that removes entire rows from a query's result for some readers. *Where you meet it:* the measured policy throughout this reel.
+- **Role**: (from the previous topic) a named bundle of privileges assigned to a person; here, the subject whose query a row policy conditions on. *Where you meet it:* the `analyst_role` in every predict/reveal pair.
+- **Least privilege**: giving access only to what a role's job requires. *Where you meet it:* named in BigQuery's own description of row-level security.

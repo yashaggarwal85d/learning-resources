@@ -1,0 +1,78 @@
+{
+  "topic": "de.row-column-security-dynamic",
+  "steps": [
+    {
+      "lines": [
+        "The email column is supposedly masked for anyone on the analyst team, and somehow an analyst still gets the real addresses.",
+        "Three different queries ran. One filtered straight on the masked column. One hit a table built from a copy of the data. One read a file straight out of storage. Which of those did the masking actually cover, and which one slipped past it?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the line that actually matters, and it's worth drawing clearly.",
+        "A filter written into the application only protects whoever's request goes through that particular application.",
+        "A policy written into the engine itself applies to every single query against that table, no matter who sends it or what tool they're using."
+      ]
+    },
+    {
+      "lines": [
+        "So try this one before I tell you.",
+        "A table holds three thousand customer rows, and there's no row-security policy on it yet. Query it as the role that's eventually going to be restricted. How many rows come back?"
+      ],
+      "answer": [
+        "Every single one of them. A role's name alone restricts nothing — nothing has actually told the engine to hold anything back yet.",
+        "Until a policy exists on that table, whatever grants that role holds just apply, in full."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what happens when it's actually run.",
+        "With no policy anywhere in sight, that role's query comes back with the entire table — all three thousand rows, measured directly."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what a row-security policy actually is, underneath all the vendor terminology.",
+        "It's a yes-or-no expression the engine checks against every single row, and it runs before whatever the user's own query asked for.",
+        "There's exactly one carve-out — a function proven mathematically incapable of leaking anything might get run a touch earlier by the optimizer. Everything else waits its turn."
+      ]
+    },
+    {
+      "lines": [
+        "Same test, new twist. Work it out first.",
+        "Put a policy on that table limiting this role to one region — which happens to be a third of the rows. Run the exact same query again. Nothing about the query itself changed. How many rows this time?"
+      ],
+      "answer": [
+        "Exactly whatever the policy allows — full stop.",
+        "The policy gets checked whether or not the query's own conditions ever mention it. The query never had to ask for anything; the engine asked on its own."
+      ]
+    },
+    {
+      "lines": [
+        "And sure enough: the identical query, not touched at all, now comes back with exactly one thousand rows out of the three thousand that exist.",
+        "The policy decided that. The query had nothing to do with it."
+      ]
+    },
+    {
+      "lines": [
+        "Now look at what actually happened under the hood, not just at the row count.",
+        "Read the plan the engine chose before any policy existed, and there's no extra step in it at all. Read the plan again after the policy goes on, and a whole new step shows up — a Filter.",
+        "Whenever an engine has to choose between running fast and keeping something secret, it chooses secret, every time, even when that costs more."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing worth knowing, because it closes the loop on the Hook.",
+        "A superuser account — the kind that's allowed to bypass this entire mechanism by design — still sees all three thousand rows, measured directly, policy or no policy.",
+        "Reading the underlying file straight off disk works exactly the same way. So does a copy someone already pulled out, or a view built on top that nobody thought to protect. None of those ever ask the engine anything in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it.",
+        "A policy inside the engine runs before the query, covers every caller, and can genuinely cost something to run — all three measured directly.",
+        "None of that reaches whoever never had to go through the engine at all. That gap is exactly where the Hook's leak came from."
+      ]
+    }
+  ]
+}
