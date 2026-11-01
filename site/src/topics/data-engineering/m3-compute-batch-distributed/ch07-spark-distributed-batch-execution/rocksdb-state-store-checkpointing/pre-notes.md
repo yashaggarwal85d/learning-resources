@@ -1,0 +1,7 @@
+- **State store** -- a versioned key-value store Structured Streaming uses to hold a stateful operator's data across batches.
+- **HDFS-backed state store provider** -- the default provider; keeps state as JVM objects in an in-memory map, backed by files in an HDFS-compatible file system.
+- **RocksDB state store provider** -- an alternative provider that keeps state in native memory and on local disk instead of the JVM heap, recommended once state holds millions of keys.
+- **Changelog checkpointing** -- a RocksDB checkpointing mode that uploads only the changes since the last checkpoint, instead of a full state snapshot every commit.
+- **Snapshot checkpointing** -- the traditional RocksDB checkpointing mode, uploading the full data files of the RocksDB instance on every commit.
+- **Checkpoint structure v2** -- a proposed (unshipped as of Spark 4.0.1) redesign giving every state checkpoint a globally unique, never-overwritten ID, to guarantee a linear version lineage.
+- **State rebalancing** -- redistributing state store providers across executors or nodes; not supported by Spark's own bounded-memory feature for RocksDB.
