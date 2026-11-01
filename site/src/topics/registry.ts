@@ -7835,6 +7835,26 @@ export const TOPICS: TopicMeta[] = [
       "SAP and the plant floor are two real-world systems with their own extraction rules. The platform all of this ultimately has to run on — fully in the cloud, fully on-prem, or split between the two — is the chapter's own closing question.",
   },
   {
+    id: 'de.on-prem-data-platforms-after',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/on-prem-data-platforms-after',
+    title: 'On-prem data platforms after Hadoop',
+    syllabusTitle: 'On-prem data platforms after Hadoop',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.7' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['on-prem-modern-stack', 'data-gravity-on-prem-tradeoff'],
+    uses: ['object-store-consistency-guarantee', 'ot-edge-buffer-backpressure-isolation', 'residency-sovereignty-localisation', 'cloud-cost-four-dimensions'],
+    declared: [],
+    bridge:
+      "SAP and the plant floor are two real systems with their own rules about where they live. This topic is the platform question underneath both of them: what running a data platform entirely on an organisation's own hardware actually looks like today, and the real, falsifiable reasons that can still beat the cloud.",
+    handoff:
+      "Very few real platforms are purely on-prem or purely cloud. The closing topic of this chapter is the connection between them — what it costs, how fast it is, and what happens to a pipeline when that connection goes down for hours.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
