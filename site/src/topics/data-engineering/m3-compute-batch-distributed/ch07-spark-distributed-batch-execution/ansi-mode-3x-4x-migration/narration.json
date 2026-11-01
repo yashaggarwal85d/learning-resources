@@ -1,0 +1,67 @@
+{
+  "topic": "de.ansi-mode-3x-4x-migration",
+  "steps": [
+    {
+      "lines": [
+        "Every example run so far in this chapter has quietly assumed one setting was already on.",
+        "Here's what that setting actually is, and what changed the moment it flipped."
+      ]
+    },
+    {
+      "lines": [
+        "That setting flips the answer to a simple question: what happens when a calculation goes wrong.",
+        "An overflow, a value that can't be converted, a split by nothing at all -- each of those used to come back as nothing, silently. Now each one stops the query and says so."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the answer comes.",
+        "Take the largest whole number a thirty-two bit slot can hold, and add one more to it, with the new setting on. Does that raise an error, or does it quietly wrap around to a negative number the way it used to?"
+      ],
+      "answer": "It raises an error. Wrapping silently to a negative number is exactly the behavior this setting turns off."
+    },
+    {
+      "lines": [
+        "Raises an error, and that's measured directly, not assumed.",
+        "Turn the new setting off, and the identical calculation goes back to wrapping around to a negative number -- the old behavior, still there underneath."
+      ]
+    },
+    {
+      "lines": [
+        "There's a second place this same idea shows up, and it's worth separating from the first.",
+        "Converting a value on its way into a table follows its own, separate rule -- one that can be dialed independently of the main setting this topic is about."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second question, same shape as the first.",
+        "Take a letter that can't possibly be a number, and try to convert it to a whole number, with the new setting on. Does that raise an error, or does it quietly come back empty?"
+      ],
+      "answer": "It raises an error. A conversion that can't work is now treated the same way an overflow is."
+    },
+    {
+      "lines": [
+        "Raises an error here too, and again, measured directly.",
+        "With the setting off, that same impossible conversion comes back empty instead -- matching what it did before the setting existed."
+      ]
+    },
+    {
+      "lines": [
+        "There's a deliberate escape hatch, and it's worth knowing it exists.",
+        "A handful of functions, each one a forgiving version of an ordinary operation, come back empty on purpose instead of raising -- one expression opting out, without switching the whole setting off."
+      ]
+    },
+    {
+      "lines": [
+        "Carrying an older job forward onto this version has a method, and it's a mechanical one.",
+        "Run the same set of checks under the old behavior and the new one, compare every difference in the output, and look closely at each conversion that difference points to."
+      ]
+    },
+    {
+      "lines": [
+        "One setting, flipped, changed what a wrong calculation does by default -- from quietly nothing, to a stop and a reason why.",
+        "And a small, named set of exceptions exists for exactly the cases where quietly nothing is still what's wanted."
+      ]
+    }
+  ]
+}

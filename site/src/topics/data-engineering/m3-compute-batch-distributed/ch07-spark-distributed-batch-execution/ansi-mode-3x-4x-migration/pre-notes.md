@@ -1,0 +1,6 @@
+- **ANSI mode (`spark.sql.ansi.enabled`)** -- a Spark SQL setting, on by default since Spark 4.0, that makes invalid operations (overflow, malformed casts, division by zero) raise a runtime exception instead of silently returning NULL.
+- **Store assignment policy (`spark.sql.storeAssignmentPolicy`)** -- a separate setting, independent of ANSI mode, that governs implicit casting when inserting values into a table column of a different type. Defaults to `ANSI`.
+- **`try_*` functions** (`try_cast`, `try_add`, `try_divide`, etc.) -- forgiving versions of ordinary operators and casts that return NULL on error instead of raising, even with ANSI mode on.
+- **Arithmetic overflow** -- when a numeric operation's result exceeds the target type's representable range; under ANSI mode, this raises `SparkArithmeticException` instead of silently wrapping.
+- **Malformed cast** -- a `CAST` whose source value can't be converted to the target type (e.g. the string `'a'` to `INT`); under ANSI mode, this raises `SparkNumberFormatException` instead of returning NULL.
+- **Migration method** -- running the same test suite under both ANSI settings, diffing the outputs, and auditing every implicit cast the diff surfaces, to find every behavior change a 3.5 job would hit on 4.x.

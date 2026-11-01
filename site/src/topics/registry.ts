@@ -7566,6 +7566,25 @@ export const TOPICS: TopicMeta[] = [
       "Structured Streaming is done: the engine, the correctness boundary and the state store that scales it. The next section turns from the engine's execution model to the platform itself — what changed under Spark's feet in its 4.x releases.",
   },
   {
+    id: 'de.ansi-mode-3x-4x-migration',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/ansi-mode-3x-4x-migration',
+    title: 'ANSI mode and the 3.x → 4.x migration',
+    syllabusTitle: 'ANSI mode and the 3.x → 4.x migration',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.5' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-ansi-mode', 'spark-migration-method'],
+    uses: ['spark-catalyst-pipeline'],
+    bridge:
+      "Every example run so far in this chapter ran on Spark 4.x, where ANSI mode was already on. This topic is the thing that changed to make that true, and what silently broke for anyone porting a 3.5 job forward.",
+    handoff:
+      "ANSI mode changed the meaning of expressions Spark already had. The next topic is a genuinely new capability: a type for semi-structured data that didn't exist before 4.x at all.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
