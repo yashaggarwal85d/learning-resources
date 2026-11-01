@@ -6727,6 +6727,26 @@ export const TOPICS: TopicMeta[] = [
       "A column added is only the most polite change in the stream. The rudest is a row that stops existing. How a delete is represented, what Kafka does with it, and how a table format applies it is the next topic.",
   },
   {
+    id: 'de.deletes-tombstones',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/deletes-tombstones',
+    title: 'Deletes and tombstones',
+    syllabusTitle: 'Deletes and tombstones',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['cdc-delete-tombstone', 'delete-retention-race'],
+    uses: ['replica-identity-before-image', 'cdc-schema-evolution-resnapshot', 'cursor-miss-modes', 'merge-statement'],
+    declared: [],
+    bridge:
+      "A column added is only the most polite change in the stream. The rudest is a row that stops existing. This topic is how a delete is represented, what Kafka does with the marker it leaves, and the race a slow consumer loses against it.",
+    handoff:
+      "Every record in this chapter has carried a position, an LSN or a GTID, and a Kafka offset is a second one. Which of them a restart trusts, and what a replay can and cannot promise, is the next topic.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
