@@ -7473,6 +7473,25 @@ export const TOPICS: TopicMeta[] = [
       "A watermark bounds state. The next topic is what actually accumulates inside that bound — the stateful operators and the output modes that decide what gets emitted and when.",
   },
   {
+    id: 'de.stateful-operators-output-modes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/stateful-operators-output-modes',
+    title: 'Stateful operators and output modes',
+    syllabusTitle: 'Stateful operators and output modes',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.4' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-stateful-operators', 'spark-output-modes'],
+    uses: ['spark-watermark-mechanics'],
+    bridge:
+      "The watermark bounds how long state waits. This topic is what that state actually is — an aggregation's running totals, a join's buffered rows — and the three ways Spark is willing to emit it.",
+    handoff:
+      "Operators and output modes describe what the query computes. The next topic is the guarantee about what happens if the query, or the whole driver, dies partway through computing it.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
