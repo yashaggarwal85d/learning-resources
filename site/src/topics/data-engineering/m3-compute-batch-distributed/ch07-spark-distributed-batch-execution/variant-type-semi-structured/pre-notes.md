@@ -1,0 +1,6 @@
+- **VARIANT** -- a Spark SQL type storing semi-structured data as self-describing binary (a one-byte header per value, plus a shared field-name dictionary), rather than as plain JSON text or a fixed, inferred schema.
+- **`parse_json`** -- parses a JSON string into a VARIANT value, raising an exception on malformed input. `try_parse_json` returns NULL instead of raising.
+- **`variant_get`** -- extracts a sub-value from a VARIANT by path, casting it to a requested type; raises on a failed cast. `try_variant_get` returns NULL instead of raising.
+- **Field-name dictionary** -- VARIANT's metadata binary: a version id plus a list of distinct field-name strings, shared once across an entire column rather than repeated per value.
+- **Shredding** -- promoting a frequently-read VARIANT field into its own typed Parquet column, trading slower writes for faster reads of that field; generally available starting with Spark 4.1, a later release than this chapter's pinned 4.0.1.
+- **Inferred struct** -- a Spark `StructType` schema inferred from semi-structured data at read time; fast to read, but commits to one type per field and silently nulls a value that doesn't match.

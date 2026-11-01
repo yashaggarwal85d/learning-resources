@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: ANSI mode and the 3.x to 4.x migration
+
+<ul class="resources">
+  <Resource kind="reel" title="ANSI mode and the 3.x → 4.x migration" domain="data-engineering" host="de.ansi-mode-3x-4x-migration" by="the previous topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spark Release 4.1.0" href="https://spark.apache.org/releases/spark-release-4.1.0.html" by="Apache Spark">VARIANT reaching general availability with shredding.</Resource>
+  <Resource kind="reading" title="Spark SQL, Built-in Functions" href="https://spark.apache.org/docs/4.1.0/api/sql/index.html" by="Apache Spark documentation">parse_json, variant_get, and their non-throwing try_* counterparts.</Resource>
+  <Resource kind="reading" title="Variant.java / VariantUtil.java" href="https://raw.githubusercontent.com/apache/spark/v4.1.0/common/variant/src/main/java/org/apache/spark/types/variant/VariantUtil.java" by="Apache Spark source (v4.1.0)">VARIANT's binary encoding: the header byte and the shared field-name dictionary.</Resource>
+  <Resource kind="reading" title="VariantShreddingWriter.java" href="https://raw.githubusercontent.com/apache/spark/v4.1.0/common/variant/src/main/java/org/apache/spark/types/variant/VariantShreddingWriter.java" by="Apache Spark source (v4.1.0)">The class that implements shredding a Variant value into typed Parquet columns.</Resource>
+</ul>
+
+</section>
