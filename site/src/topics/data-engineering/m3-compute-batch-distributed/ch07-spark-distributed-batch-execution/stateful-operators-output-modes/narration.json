@@ -1,0 +1,67 @@
+{
+  "topic": "de.stateful-operators-output-modes",
+  "steps": [
+    {
+      "lines": [
+        "That bound you just saw decides how long something waits. It says nothing about what that something actually is.",
+        "Here's the answer: running totals, buffered rows waiting on a match, anything a query has to remember across triggers."
+      ]
+    },
+    {
+      "lines": [
+        "There are exactly three ways to let that remembered state out.",
+        "Hand over only what's brand new since last time. Hand over only what changed. Or hand over the entire thing, every single time, no matter how big it's gotten."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a case worth guessing at before the answer comes.",
+        "Take a query that matches two streams against each other as they arrive, and ask it to hand over the entire result every time. Does it run, or does it refuse?"
+      ],
+      "answer": "It refuses, flatly. A match between two streams can never take back what it already said."
+    },
+    {
+      "lines": [
+        "Refused, and refused immediately, before a single row has even moved.",
+        "Not a crash partway through. A flat no, the moment the query is asked to start."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why that particular combination can never work.",
+        "Once this kind of query hands over a matched row, it never goes back and revises it. Handing over the entire thing again and again assumes exactly the opposite."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different case to guess at.",
+        "Take that same matching query, and this time give it no sense of how far behind either side is allowed to fall. Does it run, or does it refuse?"
+      ],
+      "answer": "It runs fine. What's missing isn't permission -- it's any excuse to ever forget anything."
+    },
+    {
+      "lines": [
+        "It runs, and keeps running.",
+        "But watch what it's quietly holding onto. Measured directly: the amount it remembers only ever goes up, trigger after trigger, with nothing ever let go."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why it never lets go on its own.",
+        "This kind of query keeps a copy of every row from both sides, waiting for its match to show up. Nothing tells it a row has waited long enough to give up on."
+      ]
+    },
+    {
+      "lines": [
+        "Give it that missing piece back, along with a rule for how close in time a match has to be.",
+        "Measured: what it remembers climbs for a little while, then holds steady, never climbing past that point again."
+      ]
+    },
+    {
+      "lines": [
+        "Three ways to say what a query hands over, each one ruled in or out by the shape of the query itself.",
+        "And a separate rule entirely for what it's allowed to keep remembering in the first place."
+      ]
+    }
+  ]
+}

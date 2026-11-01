@@ -1,0 +1,8 @@
+- **Output mode** -- how a streaming query's result table is written to its sink at each trigger: append, update, or complete.
+- **Append mode** -- writes only the rows added to the result since the last trigger; requires that no already-written row ever change.
+- **Update mode** -- writes only the rows that changed since the last trigger.
+- **Complete mode** -- rewrites the entire result table to the sink at every trigger.
+- **Stateful operator** -- a streaming operator (aggregation, join, deduplication) that must remember data across triggers to produce correct output.
+- **Stream-stream join** -- a join between two streaming sources, implemented by buffering both sides as state and matching new rows against what's already buffered.
+- **State eviction** -- discarding buffered state once a watermark (and, for a join, a time-range condition) guarantees it can no longer affect future output.
+- **dropDuplicatesWithinWatermark** -- deduplication that, unlike plain watermark-bounded `dropDuplicates`, doesn't require the event-time column itself to be part of the unique identifier.
