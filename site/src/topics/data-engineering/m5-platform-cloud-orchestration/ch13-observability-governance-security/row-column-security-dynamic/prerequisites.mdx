@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the models, and the plan-reading machinery
+
+<ul class="resources">
+  <Resource kind="reel" title="Access-control models: RBAC, ABAC, policy-as-code" domain="data-engineering" host="de.access-control-models-rbac" by="the previous topic of this chapter — the decision point this topic's engine enforces" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="5.9. Row Security Policies" href="https://www.postgresql.org/docs/current/ddl-rowsecurity.html" by="PostgreSQL documentation">The runnable local example this topic's own measurement uses.</Resource>
+  <Resource kind="reading" title="Understanding Dynamic Data Masking" href="https://docs.snowflake.com/en/user-guide/security-column-ddm-intro" by="Snowflake documentation">Masking at query time, stored data unchanged.</Resource>
+  <Resource kind="reading" title="Understanding row access policies" href="https://docs.snowflake.com/en/user-guide/security-row-intro" by="Snowflake documentation">Row access as a separate schema-level object.</Resource>
+  <Resource kind="reading" title="Row filters and column masks" href="https://docs.databricks.com/aws/en/data-governance/unity-catalog/row-and-column-filters" by="Databricks documentation">The engine's own "secure choice" statement.</Resource>
+  <Resource kind="reading" title="Introduction to BigQuery row-level security" href="https://cloud.google.com/bigquery/docs/row-level-security-intro" by="Google Cloud documentation">Row-level access policies as least privilege.</Resource>
+  <Resource kind="reading" title="Data filtering and cell-level security in Lake Formation" href="https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html" by="AWS documentation">Row and column filtering combined into one mechanism.</Resource>
+</ul>
+
+</section>

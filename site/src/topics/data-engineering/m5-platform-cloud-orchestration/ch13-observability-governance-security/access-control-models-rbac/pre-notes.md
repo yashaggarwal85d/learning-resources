@@ -1,0 +1,9 @@
+- **Authentication vs authorisation**: authentication confirms who someone is; authorisation decides what they may do. *Where you meet it:* the identity-federation reveal, SSO handles the first, policy handles the second.
+- **Role**: a named bundle of privileges, assigned to a person instead of handing out privileges one at a time. *Where you meet it:* the Hook and the RBAC-shape reveal.
+- **Group**: a collection of identities that can be assigned roles or permissions together. *Where you meet it:* named in Cedar's own RBAC description (roles implemented via groups of principals).
+- **Attribute**: a property of a subject, object or environment (a tag, a department, a time of day) that a policy can evaluate. *Where you meet it:* the ABAC elaboration.
+- **Policy**: a rule that maps attributes or roles to an allow/deny (or filter/mask) decision. *Where you meet it:* throughout, especially the decision-point elaboration.
+- **Identity provider (IdP)**: the system of record for who a person is, used by other systems instead of each managing its own accounts. *Where you meet it:* the identity-federation reveal.
+- **Single sign-on**: authenticating once with the IdP and being trusted by every connected system afterward (via SAML or OIDC). *Where you meet it:* the same reveal.
+- **Provisioning**: creating, updating and removing accounts across systems automatically, usually via SCIM, as a person joins, changes role, or leaves. *Where you meet it:* the same reveal, "offboarding removes access everywhere."
+- **Least privilege**: giving a person only the access their job requires, no more. *Where you meet it:* the Hook, as security's own stated reason for the per-triple role scheme.

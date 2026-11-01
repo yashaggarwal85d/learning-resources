@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: classification, keys, and the policy the engine enforces
+
+<ul class="resources">
+  <Resource kind="reel" title="Data classification and sensitive-data discovery" domain="data-engineering" host="de.data-classification-sensitive-data" by="topic 4 of this chapter — what gets classified before it can be erased or shredded" />
+  <Resource kind="reel" title="Envelope encryption, KMS and key rotation" domain="data-engineering" host="de.envelope-encryption-kms-key" by="topic 5 of this chapter — the key hierarchy this topic's crypto-shredding deletes a key from" />
+  <Resource kind="reel" title="Pseudonymisation vs anonymisation" domain="data-engineering" host="de.pseudonymisation-vs-anonymisation" by="topic 6 of this chapter" />
+  <Resource kind="reel" title="Access-control models: RBAC, ABAC, policy-as-code" domain="data-engineering" host="de.access-control-models-rbac" by="topic 7 of this chapter" />
+  <Resource kind="reel" title="Row/column security and dynamic masking in-engine" domain="data-engineering" host="de.row-column-security-dynamic" by="topic 8 of this chapter — the previous topic" />
+  <Resource kind="reel" title="Copy-on-write vs merge-on-read" domain="data-engineering" host="de.copy-on-write-vs" by="Chapter 6 — the delete-file mechanism this topic's own snapshot model follows" />
+  <Resource kind="reel" title="Deletion vectors across formats" domain="data-engineering" host="de.deletion-vectors-across-formats" by="Chapter 6 — the exact MOR mechanism this topic's Delta deletion-vector source describes" />
+  <Resource kind="reel" title="Retention and log compaction" domain="data-engineering" host="de.retention-log-compaction" by="Chapter 9 — tombstones and delete.retention.ms, measured again here from the erasure side" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Maintenance" href="https://iceberg.apache.org/docs/latest/maintenance/" by="Apache Iceberg documentation">Snapshot expiry and why data files survive until no snapshot references them.</Resource>
+  <Resource kind="reading" title="Table utility commands" href="https://docs.delta.io/latest/delta-utility.html" by="Delta Lake documentation">VACUUM's own seven-day default retention threshold.</Resource>
+  <Resource kind="reading" title="What are deletion vectors?" href="https://docs.delta.io/latest/delta-deletion-vectors.html" by="Delta Lake documentation">Marking a row removed without rewriting its data file.</Resource>
+  <Resource kind="reading" title="Kafka Log Compaction" href="https://docs.confluent.io/kafka/design/log_compaction.html" by="Confluent documentation">Tombstones, and delete.retention.ms as the window before a tombstone itself is collected.</Resource>
+  <Resource kind="reading" title="Art. 17 GDPR -- Right to erasure ('right to be forgotten')" href="https://gdpr-info.eu/art-17-gdpr/" by="GDPR">The "without undue delay" obligation this topic's hook answers.</Resource>
+  <Resource kind="reading" title="Guidelines for Media Sanitization (NIST SP 800-88 Rev. 2)" href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-88r2.pdf" by="NIST">Cryptographic erase as a recognised purge technique for virtual storage.</Resource>
+</ul>
+
+</section>
