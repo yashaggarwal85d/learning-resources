@@ -1,0 +1,81 @@
+{
+  "topic": "de.quantile-sketches-t-digest",
+  "steps": [
+    {
+      "lines": [
+        "One single pile of data, already split up into several separate chunks ahead of time.",
+        "Someone asks for one particular tail value out of all of it, and there turn out to be two genuinely different ways of actually working that out.",
+        "Those two separate approaches land on two numbers that don't agree with each other at all."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before settling on an answer.",
+        "Several separate partitions have each already worked out their own correct value for that same tail percentile.",
+        "Is simply averaging those separate values together a valid way to estimate what the whole combined dataset's own real tail percentile actually is?"
+      ],
+      "answer": [
+        "No, it genuinely is not — doing that this way is simply the wrong move, mathematically.",
+        "A percentile isn't the kind of quantity that combines by plain averaging, the way a running total or a count would.",
+        "What the true combined value actually comes out to depends on the whole shape of all that data put together, not on quietly blending each separate partition's own answer."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real counterexample that proves exactly that, computed for real.",
+        "A real dataset, genuinely split into real partitions, with the one true combined value worked out directly by looking at every single point together at once.",
+        "Set directly side by side against that plain average from a moment ago, the two numbers simply do not match each other."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one real distinction that explains why some of these structures handle this so differently.",
+        "One real kind of guarantee bounds how far off an estimated position within the data can possibly be.",
+        "A genuinely different real kind of guarantee instead bounds how far off the actual value itself can possibly be — and once the tail of the data gets heavy, that difference starts to matter enormously."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that whole distinction checked against something built and measured for real.",
+        "The one true combined value, a plain average of each partition's own separate value, and a single structure combined from every partition's own version of it, all worked out on the exact same real data.",
+        "The plain average drifts noticeably away from the truth. The combined structure stays close to it."
+      ],
+      "takeaway": "A combined structure stays close to the truth where a plain average drifts away from it."
+    },
+    {
+      "lines": [
+        "Being able to combine several of these together like that isn't happening by accident.",
+        "Taking two of these structures, combining them into one, and then tidying the result back down afterward is a real mechanism these structures are deliberately built around, right from the very start.",
+        "That's named directly in these structures' own original descriptions, not something that merely happens to work out that way."
+      ],
+      "takeaway": "Combining several of these together is a deliberate design choice, not an accident."
+    },
+    {
+      "lines": [
+        "Real, already-shipped systems bear this choice out directly, each in their own way.",
+        "One real warehouse system's own documented feature ships one particular version of this whole approach, directly.",
+        "A completely different, real system built for watching live systems ships a genuinely different version of that same approach instead, at real, enormous scale."
+      ],
+      "takeaway": "Different real, already-shipped systems each picked a different version of this approach."
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Averaging separate partitions' own values together is measurably the wrong move, proven here by a real counterexample.",
+        "One real kind of guarantee bounds a position, while a genuinely different one bounds the value itself, which is exactly why a combined structure stays close to the truth where a plain average does not. And real, already-shipped systems each picked their own different version of this whole approach."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A dashboard already averages each separate instance's own reported tail latency together into one single number shown to whoever's on call.",
+        "A teammate asks why that single number sometimes looks perfectly fine while real users are actually complaining about genuinely slow requests. What's actually wrong with that dashboard's own number, and what would actually fix it?"
+      ],
+      "answer": [
+        "Averaging each instance's own separate value together is exactly that same mathematically wrong move all over again.",
+        "One genuinely struggling instance just gets diluted away into the average instead of ever actually showing up in it.",
+        "Replacing that plain average with one single structure combined across every instance together would show the real, true combined tail latency instead."
+      ]
+    }
+  ]
+}

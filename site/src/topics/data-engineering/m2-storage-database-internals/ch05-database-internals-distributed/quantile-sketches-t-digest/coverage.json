@@ -1,0 +1,141 @@
+{
+  "topic": "de.quantile-sketches-t-digest",
+  "syllabus": [
+    {
+      "clause": "rank-error vs relative-error guarantees",
+      "at": [{ "step": "Reveal: a rank-error guarantee bounds a different thing than a relative-error one" }]
+    },
+    {
+      "clause": "why averaging per-partition percentiles is wrong",
+      "at": [
+        { "step": "Predict: is averaging several partitions' own tail percentile a valid estimate of the whole dataset's real one" },
+        { "step": "Reveal: a real counterexample, computed on a real partitioned dataset, proves it" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "mergeability",
+      "at": [
+        { "step": "Reveal: a merged sketch stays a valid approximation; a naive average does not" },
+        { "step": "Reveal: mergeability is a real, deliberate design choice" }
+      ]
+    },
+    {
+      "clause": "which engines and observability tools use which",
+      "at": [{ "step": "Reveal: real engines and real tools each picked a different one of these sketches" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dunning & Ertl — Computing Extremely Accurate Quantiles Using t-Digests",
+      "items": [
+        {
+          "item": "t-digest clusters real-valued samples by mean and count, giving particularly high accuracy near the tails",
+          "at": [{ "step": "Reveal: mergeability is a real, deliberate design choice" }]
+        },
+        {
+          "item": "t-digest's own buffer-and-merge construction allocates memory statically and merges by combining and re-compressing",
+          "at": [{ "step": "Reveal: mergeability is a real, deliberate design choice" }]
+        }
+      ]
+    },
+    {
+      "source": "Masson, Rim, Lee — DDSketch: A Fast and Fully-Mergeable Quantile Sketch with Relative-Error Guarantees",
+      "items": [
+        {
+          "item": "a rank-error guarantee can translate into an arbitrarily large relative error on heavy-tailed data, worked out concretely as a swing of many real seconds",
+          "at": [{ "step": "Reveal: a rank-error guarantee bounds a different thing than a relative-error one" }]
+        },
+        {
+          "item": "DDSketch is the first fully-mergeable, relative-error quantile sketch, and is used by Datadog at wide scale",
+          "at": [{ "step": "Reveal: real engines and real tools each picked a different one of these sketches" }]
+        }
+      ]
+    },
+    {
+      "source": "Karnin, Lang, Liberty — Optimal Quantile Approximation in Streams",
+      "items": [
+        {
+          "item": "KLL gives a rank-error guarantee: an additive bound on how far an estimated rank can be from the true rank",
+          "at": [{ "step": "Reveal: a rank-error guarantee bounds a different thing than a relative-error one" }]
+        }
+      ]
+    },
+    {
+      "source": "ClickHouse documentation — quantileTDigest",
+      "items": [
+        {
+          "item": "a real warehouse engine ships a t-digest-backed percentile function with its own documented performance-vs-precision trade-off",
+          "at": [{ "step": "Reveal: real engines and real tools each picked a different one of these sketches" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "on a real partitioned, heavy-tailed dataset, a naive average of per-partition p99 values lands 5.6% off the true global p99, while a digest merged from per-partition digests lands only 0.6% off it",
+          "at": [
+            { "step": "Reveal: a real counterexample, computed on a real partitioned dataset, proves it" },
+            { "step": "Reveal: a merged sketch stays a valid approximation; a naive average does not" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The hook's own two-different-answers claim is not a coincidence of this particular dataset; it is a direct consequence of a percentile not being an additive quantity, unlike a sum or a count, which is exactly why the predict step can ask about averaging percentiles with a definite, non-obvious answer rather than a close call.",
+        "at": [{ "step": "Hook: the same partitioned data, two ways of computing a percentile land on two different answers" }]
+      },
+      {
+        "item": "The predict step's wrong answer (averaging each partition's own correct value gives the right answer) is tempting precisely because it would be correct for a mean or a total; the explain text names the specific reason it fails for a percentile (the true combined value depends on the whole shape of the combined data) rather than merely asserting the result differs.",
+        "at": [{ "step": "Predict: is averaging several partitions' own tail percentile a valid estimate of the whole dataset's real one" }]
+      },
+      {
+        "item": "This topic's own counterexample deliberately includes a real burst of unusually slow points concentrated in a single partition, rather than using uniformly distributed partitions, because that is the realistic shape of the production failure this topic warns about: one struggling instance's own real tail gets diluted by an average rather than surfaced by it.",
+        "at": [{ "step": "Reveal: a real counterexample, computed on a real partitioned dataset, proves it" }]
+      },
+      {
+        "item": "Rank-error and relative-error guarantees are not simply 'better' or 'worse' versions of each other; they answer different questions about the same estimate, and a sketch chosen for the wrong one of the two can satisfy its own stated guarantee perfectly while still being useless for the actual decision a team needs to make from it.",
+        "at": [{ "step": "Reveal: a rank-error guarantee bounds a different thing than a relative-error one" }]
+      },
+      {
+        "item": "The initial build of this topic's own mergeable digest demonstrated this lesson the hard way: a digest sized for a single partition's own total weight became measurably less accurate than the naive average once merged across many partitions, until its own resolution parameter was raised to account for the combined weight — a real illustration that a sketch's own fixed-size guarantee is tunable, not automatic.",
+        "at": [{ "step": "Reveal: a merged sketch stays a valid approximation; a naive average does not" }]
+      },
+      {
+        "item": "Mergeability being a deliberate design choice rather than an emergent property matters because it means a team cannot simply bolt mergeability onto an arbitrary summary statistic after the fact; the structure (centroids, or any other mergeable representation) has to be chosen up front specifically because it supports a real combine-and-recompress operation.",
+        "at": [{ "step": "Reveal: mergeability is a real, deliberate design choice" }]
+      },
+      {
+        "item": "Different real systems choosing different sketches from this same family is not inconsistency; a warehouse's own batch percentile function and a real-time observability platform's own latency tracking have different constraints (query-time flexibility vs. ingestion-time speed at massive scale), and each sketch in this family is tuned for a different point on that trade-off.",
+        "at": [{ "step": "Reveal: real engines and real tools each picked a different one of these sketches" }]
+      },
+      {
+        "item": "This chapter's own closing idea — approximating an entire distribution in a few kilobytes — is a strictly larger ambition than either of the chapter's two earlier sketch families (a yes-or-no membership check, or a single cardinality number), which is exactly why this topic closes the chapter rather than opening a new section of its own.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "Stream sampling (reservoir and weighted reservoir sampling) is named as a related but distinct tool deliberately, rather than folded into this chapter's own sketch family, because sampling keeps actual raw data points rather than a compressed statistical summary, which is a genuinely different trade-off than any sketch in this chapter makes.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "The 'Prove it' step's own scenario is built so the tempting wrong answer (needing a bigger sample) fails for a structural reason, not a data-volume one: no amount of additional sampling fixes an averaging mistake that is wrong by construction, which is exactly the same mistake this topic's own earlier counterexample already demonstrated at the partition level.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic's own quantile-sketch material completes the same small-fixed-memory-for-a-bounded-error philosophy that topic 30's membership filters and topic 31's cardinality sketches already established, but for a third, strictly richer kind of question: approximating an entire distribution rather than a single yes-or-no answer or a single count.",
+        "at": [{ "topic": "HyperLogLog and distinct counting", "domain": "data-engineering", "quote": "mergeability across partitions and time" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
