@@ -1,0 +1,85 @@
+{
+  "topic": "de.right-erasure-immutable-lakehouses",
+  "steps": [
+    {
+      "lines": [
+        "Somebody exercises their right to be forgotten. The delete runs, and every query you try comes back clean.",
+        "A month later an auditor goes looking anyway, and finds the same name sitting in three places at once: the lakehouse table, a message log, and last night's backup. One of those three a plain delete statement can actually reach. The other two need something else entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that trips people up about a table built on snapshots.",
+        "A delete never edits anything in place. It writes a brand new snapshot that simply says this row is gone now.",
+        "The snapshot that existed one moment earlier is still sitting there, still pointing at the exact same file, which nothing has touched at all."
+      ]
+    },
+    {
+      "lines": [
+        "Work this one out before I say it.",
+        "Go back and query the snapshot that existed the instant before that delete ran. Does it still hand back the row that just got supposedly erased?"
+      ],
+      "answer": [
+        "It does. That old snapshot was never touched by the delete at all.",
+        "It still references the same file, which still physically holds the row exactly as it was."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what measuring it shows.",
+        "Query the table the normal way, and the row is gone, just as it should be. Query that earlier snapshot by its own identifier, and the row comes right back, completely untouched."
+      ]
+    },
+    {
+      "lines": [
+        "So erasure takes two more steps the delete alone never did.",
+        "Expiring the old snapshots clears them out of the metadata, so nobody can time-travel back to them anymore. Compacting then rewrites the actual file, leaving out anything no surviving snapshot still needs.",
+        "Neither of those happens by itself. Left alone, a real system will quietly hold onto that file for roughly a week before it even considers removing it."
+      ]
+    },
+    {
+      "lines": [
+        "New system, same kind of question. Think it through first.",
+        "A tombstone record gets written specifically to erase somebody's value out of a compacted log. Does writing that tombstone also erase the fact that a deletion ever happened?"
+      ],
+      "answer": [
+        "No. The tombstone is its own record, sitting right there in the log.",
+        "It gets kept around for its own separate stretch of time before a later cleanup sweeps it out too, so the value disappearing and the tombstone disappearing are two different moments."
+      ]
+    },
+    {
+      "lines": [
+        "Measuring it confirms that split exactly.",
+        "The instant after the tombstone gets written, the value is already gone, but the tombstone record itself is still sitting right there. Only once its own configured window has fully run out does a later cleanup actually remove it too."
+      ]
+    },
+    {
+      "lines": [
+        "Which creates a real gap for anyone reading slowly.",
+        "A reader that falls behind by more than that window, then finally scans from the very start, never even sees the tombstone. No value, and no sign a deletion ever happened — which is exactly how a backup taken before anyone touched the key can keep quietly holding the data."
+      ]
+    },
+    {
+      "lines": [
+        "One mechanism closes every single gap at once, and it's worth seeing measured directly.",
+        "Encrypt a person's data everywhere it lives — the table, the log, and a backup taken well before any of this starts — each under that one person's own key.",
+        "Delete that single key, and all three copies go unreadable in the same instant, without rewriting a single byte of any of them.",
+        "Somebody else's data, sitting in those exact same copies under a key nobody deleted, stays perfectly readable."
+      ]
+    },
+    {
+      "lines": [
+        "None of this means anything to an auditor unless it can actually be shown.",
+        "The evidence is the table's snapshot list after expiry, the physical file listing, and the key store's own record that a key was deleted — plus running the search again and watching it come back empty.",
+        "Writing the retention rule itself down as versioned, checkable configuration is what turns a vague promise about deleting data after some number of days into something a reviewer can actually verify."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the full shape of what just happened.",
+        "A delete on its own leaves the earlier snapshot standing exactly where it was. Expiring and compacting is what finally erases the file. A tombstone hides a value well before the log forgets the tombstone itself ever existed.",
+        "And one deleted key reaches every single copy at once — measured, not assumed."
+      ]
+    }
+  ]
+}

@@ -6625,6 +6625,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything so far assumed the data can be changed or hidden after the fact. A lakehouse is built so that nothing is overwritten: every old snapshot is still there. The next topic is what 'delete this person' means in a system designed to forget nothing.",
   },
   {
+    id: 'de.right-erasure-immutable-lakehouses',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/right-erasure-immutable-lakehouses',
+    title: 'Right to erasure in immutable lakehouses',
+    syllabusTitle: 'Right to erasure in immutable lakehouses',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['erasure-vs-time-travel-snapshot-expiry', 'delete-files-until-compaction', 'kafka-tombstones-retention-erasure', 'per-subject-crypto-shredding-cost', 'erasure-proof-retention-as-code'],
+    uses: ['dek-kek-envelope-hierarchy', 'kek-rotation-vs-dek-reencryption', 'crypto-shredding-key-deletion', 'pseudonymised-vs-anonymised-data', 'keyed-vs-plain-hash-pseudonyms', 'sensitivity-tier-and-category', 'automated-sensitive-data-discovery', 'engine-enforced-row-column-security', 'policy-bypass-paths', 'cow-vs-mor', 'deletion-vectors', 'tombstone-retention'],
+    declared: [],
+    bridge:
+      "Everything so far assumed the data can be changed or hidden after the fact. A lakehouse is built so that nothing is overwritten: every old snapshot is still there. This topic is what 'delete this person' means in a system designed to forget nothing.",
+    handoff:
+      "Erasure, masking and access all depended on knowing where a column lives and where it flows. That knowledge has to live somewhere other than people's heads. The next topic opens the governance tooling, starting with the place metadata is kept: the catalog.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',
