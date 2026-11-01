@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the slot model and the handover this topic replaces for a large table
+
+<ul class="resources">
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Initial snapshot to stream handoff" domain="data-engineering" host="de.initial-snapshot-stream-handoff" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="DBLog: A Watermark Based Change-Data-Capture Framework" href="https://arxiv.org/pdf/2010.12597" by="Andreakis & Papapanagiotou, Netflix">The watermark algorithm this topic's own examples.py implements by hand.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">Chunk size, buffered collision resolution, signals, and the read-only variant.</Resource>
+  <Resource kind="reading" title="Debezium connector for MySQL" href="https://debezium.io/documentation/reference/stable/connectors/mysql.html" by="Debezium docs">The GTID-based read-only variant, named for contrast only.</Resource>
+  <Resource kind="reading" title="PostgreSQL CDC Source" href="https://nightlies.apache.org/flink/flink-cdc-docs-stable/docs/connectors/flink-sources/postgres-cdc/" by="Flink CDC docs">The parallel chunked-reader analogue, named only.</Resource>
+</ul>
+
+</section>

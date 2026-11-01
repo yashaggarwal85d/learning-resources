@@ -6631,6 +6631,26 @@ export const TOPICS: TopicMeta[] = [
       "The snapshot has a weakness: a crash in the middle throws it away and it starts again, blocking the stream meanwhile, and a table added later needs the whole ceremony. The fix was published by Netflix: snapshot in small chunks while the log keeps flowing.",
   },
   {
+    id: 'de.incremental-snapshots-watermark-windows',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/incremental-snapshots-watermark-windows',
+    title: 'Incremental snapshots with watermark windows',
+    syllabusTitle: 'Incremental snapshots with watermark windows',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['watermark-window-incremental-snapshot'],
+    uses: ['snapshot-stream-handoff', 'snapshot-modes', 'logical-decoding-slot', 'parallel-range-extraction'],
+    declared: [],
+    bridge:
+      "The snapshot has a weakness: a crash in the middle throws it away, and it starts again, blocking the stream meanwhile, while a table added later needs the whole ceremony. This topic is Netflix's fix, published as DBLog: snapshot in small primary-key chunks, bracketed by two markers in the log, while the stream keeps flowing.",
+    handoff:
+      "Snapshot rows and streamed changes now share one stream, so a consumer has to rely on what order that stream preserves. Within a key, a lot; across tables and partitions, almost nothing; and a transaction's rows may be scattered. That is the next topic.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
