@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: resilient clients, and the cursor this topic reuses
+
+<ul class="resources">
+  <Resource kind="reel" title="Resilient clients: timeouts, retries, idempotency" domain="data-engineering" host="de.resilient-clients-timeouts-retries" by="Chapter 4, §4.2" />
+  <Resource kind="reel" title="Incremental extraction with high-watermark cursors" domain="data-engineering" host="de.incremental-extraction-high-watermark" by="Chapter 8, §8.1" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Additional HTTP Status Codes" href="https://www.rfc-editor.org/rfc/rfc6585.txt" by="RFC 6585">The 429 status code and the optional Retry-After it may carry.</Resource>
+  <Resource kind="reading" title="HTTP Semantics: Retry-After" href="https://www.rfc-editor.org/rfc/rfc9110.txt" by="RFC 9110">The two legal forms a Retry-After value can take.</Resource>
+  <Resource kind="reading" title="The OAuth 2.0 Authorization Framework" href="https://datatracker.ietf.org/doc/html/rfc6749" by="RFC 6749">The refresh-token rotation rule behind this topic's own race.</Resource>
+  <Resource kind="reading" title="Exponential Backoff And Jitter" href="https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/" by="AWS Architecture Blog">Why fixed backoff still clusters retries, and what jitter fixes.</Resource>
+  <Resource kind="reading" title="Idempotent requests" href="https://docs.stripe.com/api/idempotent_requests" by="Stripe docs">The documented idempotency-key behaviour this topic measures.</Resource>
+  <Resource kind="reading" title="Scaling your API with rate limiters" href="https://stripe.com/blog/rate-limiters" by="Stripe engineering blog">The token-bucket model this topic's own limiter implements.</Resource>
+</ul>
+
+</section>

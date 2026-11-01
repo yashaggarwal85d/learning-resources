@@ -1,0 +1,110 @@
+{
+  "topic": "de.incremental-extraction-high-watermark",
+  "syllabus": [
+    {
+      "clause": "full vs incremental loads",
+      "at": [
+        { "step": "Hook" }
+      ]
+    },
+    {
+      "clause": "cursor columns (updated_at, sequence ids) and why they miss rows (commit order ≠ timestamp order, clock skew, non-monotonic updates, invisible hard deletes)",
+      "at": [
+        { "step": "Predict: what a cursor can never see" },
+        { "step": "Reveal: the mechanism" },
+        { "step": "Reveal: reproduced for real" },
+        { "step": "Reveal: sequence ids are not commit order either" },
+        { "step": "Reveal: the one miss lookback cannot fix" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "lookback windows plus idempotent merge as the fix",
+      "at": [
+        { "step": "Reveal: lookback plus idempotent merge, reproduced" },
+        { "step": "Reveal: sizing the lookback" }
+      ]
+    },
+    {
+      "clause": "when the answer is log-based CDC instead (§8.2)",
+      "at": [
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Date/Time Functions and Operators (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "transaction_timestamp()/now() return the transaction's own start time and never change during that transaction",
+          "at": [{ "step": "Reveal: the mechanism" }, { "step": "Reveal: reproduced for real" }]
+        },
+        {
+          "item": "clock_timestamp() returns the actual current time and changes even within one statement, unlike transaction_timestamp()/now()",
+          "at": [{ "out": "named as the contrasting function PostgreSQL itself documents; not independently exercised in this topic's own lab" }]
+        }
+      ]
+    },
+    {
+      "source": "Sequence Manipulation Functions (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "a value handed out by nextval is not reclaimed for re-use if its own transaction later aborts",
+          "at": [{ "step": "Reveal: sequence ids are not commit order either" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "An updated_at cursor's only real blind spot among the options a learner might guess is a hard delete, because a repeated read of an unchanged row is exactly what an idempotent merge is built to absorb harmlessly, measured directly across three repeats.",
+        "at": [{ "step": "Predict: what a cursor can never see" }]
+      },
+      {
+        "item": "A slow transaction's committed row is stamped with its own start time, not its commit time, so it can land behind a watermark a cursor already advanced past while that transaction was still open — measured directly: the cursor run found nothing while the transaction was open, advanced its watermark anyway, and the transaction's own later commit landed stamped behind that line.",
+        "at": [{ "step": "Reveal: reproduced for real" }]
+      },
+      {
+        "item": "A sequence-id cursor has the identical disagreement with commit order for a different reason: nextval hands out a value immediately and never reclaims it on rollback, so a transaction that grabbed an earlier number can still commit later than one that grabbed a later number.",
+        "at": [{ "step": "Reveal: sequence ids are not commit order either" }]
+      },
+      {
+        "item": "A lookback margin catches the missed row, and an idempotent merge keyed on the primary key makes re-reading that same row three times leave the row count and its data completely unchanged, measured directly.",
+        "at": [{ "step": "Reveal: lookback plus idempotent merge, reproduced" }]
+      },
+      {
+        "item": "The lookback margin has to be sized from the slowest transaction a source actually runs, measured, not assumed; a margin picked shorter than that recreates the exact miss it was meant to close.",
+        "at": [{ "step": "Reveal: sizing the lookback" }]
+      },
+      {
+        "item": "A hard delete leaves no updated_at behind at all, measured directly: the source's own row count drops by one and a cursor query for that id after the deletion's own watermark finds nothing, which no lookback window, however wide, repairs.",
+        "at": [{ "step": "Reveal: the one miss lookback cannot fix" }]
+      },
+      {
+        "item": "A bulk UPDATE that writes every column except updated_at is mechanically identical to a hard delete from a cursor's point of view: the column is only ever set by whatever explicitly writes it, so skipping it leaves no timestamp signal that anything changed.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Once a source's transactions run long enough, or its intermediate states matter, a cursor built this way has outgrown what it can promise, and the fix becomes reading the source's own change log directly instead of polling a column after the fact — the decision rule this topic hands to 8.2.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Chapter 2 topic 9's MERGE/upsert atomicity and Chapter 3 topic 13's idempotent-merge-load pattern are the two prior-topic mechanisms this topic's own lookback fix reuses rather than re-teaches; Chapter 5 topic 11's isolation-anomaly vocabulary names the same commit-order-versus-timestamp-order disagreement this topic measures directly.",
+        "at": [{ "out": "composed from Chapter 2 topic 9, Chapter 3 topic 13 and Chapter 5 topic 11, not re-taught" }]
+      },
+      {
+        "item": "This topic's own measured miss modes (commit order, clock skew, non-monotonic updates, hard deletes) are exactly the missed-row list topic 9's query-based-versus-log-based comparison builds on.",
+        "at": [{ "out": "feeds topic 9's own comparison, per CHAPTER.md's chapter-plan cross-reference" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

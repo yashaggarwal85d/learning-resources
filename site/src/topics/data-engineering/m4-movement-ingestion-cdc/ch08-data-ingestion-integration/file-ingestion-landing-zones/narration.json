@@ -1,0 +1,96 @@
+{
+  "topic": "de.file-ingestion-landing-zones",
+  "steps": [
+    {
+      "lines": [
+        "A partner's job writes a batch of files to a drop prefix and crashes partway through.",
+        "A reader lists that prefix the next morning and reads whatever is actually sitting there, with absolutely no idea anything went wrong.",
+        "The revenue figure it reports is measurably short of the truth, and nothing about the run itself ever says so."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you the fix.",
+        "This second reader refuses to trust a single data file directly. It only ever checks for one small object, written by the producer strictly last, listing exactly what belongs in the batch.",
+        "The identical crash happens. What does this reader see instead?"
+      ],
+      "answer": [
+        "Seeing the files that genuinely landed sounds reasonable, since they really are sitting there in storage — but this reader was never built to look at them directly in the first place.",
+        "It sees nothing at all, because the one thing it actually checks for, that small listing object, was never written before the crash. No data, no partial batch, nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why the instinct to just rename a staging folder into place doesn't work here.",
+        "Object storage gives you exactly one atomic operation: writing a single object, all at once. There is no rename at all underneath it.",
+        "So committing a whole batch by renaming a directory isn't a slow version of something safe. It's not a safe operation on this kind of storage to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "I ran both versions of that same crash directly.",
+        "The reader checking for the listing object finds nothing and trusts nothing — not the thirty-one files that are sitting right there, not a guess, nothing.",
+        "The identical producer, left to actually finish, writes that listing object last, and its own count matches the batch exactly, every file accounted for."
+      ]
+    },
+    {
+      "lines": [
+        "Two more ways to get the identical signal, each suited to a different situation.",
+        "A marker object written strictly last does the same job in one small file instead of a separate listing.",
+        "A conditional write goes one step further: it can make two producers racing for the exact same destination resolve to exactly one winner, deterministically, instead of leaving it to whichever one happens to finish last."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that exact race, both ways, against a real store.",
+        "An ordinary write lets whichever producer runs second simply replace the first one's work. Nothing complains. Nothing records that it happened.",
+        "The identical race under a conditional write rejects the second producer outright, on the spot, and the first producer's own work is the one left standing."
+      ]
+    },
+    {
+      "lines": [
+        "A file that fails validation is a different kind of problem than a crash.",
+        "Moving it aside with the exact reason it failed attached is the whole fix — not retrying it forever, hoping it somehow passes, and not quietly skipping it as if it never existed.",
+        "A setting that does that second thing, skip and keep going, trades one visible failure for a much quieter one: a gap in the data with no record anywhere of why."
+      ]
+    },
+    {
+      "lines": [
+        "I ran this against three real files, one of them deliberately broken.",
+        "Two land normally, completely untouched by anything this topic is testing.",
+        "The third fails on one specific field, and it's quarantined carrying that exact, specific reason — not a generic failure, the actual cause."
+      ]
+    },
+    {
+      "lines": [
+        "Validating a schema is really a question about timing, not correctness.",
+        "Catch it the moment a file lands, and whoever's on call that day deals with it immediately, while the context is still fresh.",
+        "Defer that same check to whenever something finally reads the file, and the identical bug can sit there, invisible, for a very long time."
+      ]
+    },
+    {
+      "lines": [
+        "I measured exactly how long that deferral can stretch.",
+        "Catching the bad file at landing time takes zero runs — it's caught before anything downstream ever touches it.",
+        "Deferring the check instead left the identical bug completely unnoticed for dozens of runs, until the one run that happened to finally touch the column that was broken the whole time."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and three completely different problems each got their own fix.",
+        "A commit that might be half-finished gets a manifest, a marker, or a condition. A file that's simply bad gets quarantined with a reason attached. A schema check gets a timing decision, not a yes-or-no answer.",
+        "Every single source this chapter has looked at so far needed its own version of one and the same underlying property."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, run for real: new files announced by notification instead of discovered by listing.",
+        "A storage system's own documentation is upfront about this: the identical notification can arrive more than once. Does that make listing the safer choice?"
+      ],
+      "answer": [
+        "Picking listing because it needs no extra logic sounds like the safer, simpler choice — but its own cost keeps climbing as more objects pile up under that same prefix, whether or not any of them are actually new.",
+        "A notification already names the one object that just landed, so its cost never grows with the prefix at all. The price for that is handling an occasional repeat, and a plain dedup by key handles that completely."
+      ]
+    }
+  ]
+}

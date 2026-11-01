@@ -1,0 +1,100 @@
+{
+  "topic": "de.idempotent-resumable-extraction",
+  "syllabus": [
+    {
+      "clause": "durable checkpoints of offsets/watermarks committed with or after the output",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: which ordering loses data" },
+        { "step": "Reveal: checkpoint first" },
+        { "step": "Reveal: all three orderings, measured" }
+      ]
+    },
+    {
+      "clause": "deterministic batch ids so a re-run overwrites rather than appends",
+      "at": [
+        { "step": "Reveal: the batch id that makes a re-run safe" },
+        { "step": "Reveal: deterministic versus non-deterministic ids, measured" }
+      ]
+    },
+    {
+      "clause": "at-least-once delivery plus idempotent writes as the general recipe for exactly-once effect",
+      "at": [
+        { "step": "Reveal: the whole recipe, named" },
+        { "step": "Reveal: proof by diffing two runs, measured" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Structured Streaming Programming Guide: foreachBatch (Apache Spark docs)",
+      "items": [
+        {
+          "item": "foreachBatch provides only at-least-once write guarantees by default, but the batchId can be used to deduplicate the output and get an exactly-once guarantee",
+          "at": [{ "step": "Reveal: the whole recipe, named" }]
+        }
+      ]
+    },
+    {
+      "source": "INSERT (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "ON CONFLICT can be used to specify an alternative action to raising a unique constraint or exclusion constraint violation error",
+          "at": [{ "step": "Reveal: the whole recipe, named" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Advancing a checkpoint before writing the output loses the batch entirely on a crash between them, measured directly: the checkpoint is marked done, the crash happens before any output write, and nothing downstream ever retries a batch the checkpoint already calls finished.",
+        "at": [{ "step": "Reveal: checkpoint first" }, { "step": "Reveal: all three orderings, measured" }]
+      },
+      {
+        "item": "Writing the output before advancing the checkpoint only duplicates a batch on restart, never loses it, because the rows were already durably written before the crash; committing both together as one atomic step stays consistent regardless of which side of the commit the crash lands on, all three orderings measured directly against the identical mock warehouse.",
+        "at": [{ "step": "Reveal: all three orderings, measured" }]
+      },
+      {
+        "item": "A batch id derived from the input range it covers computes to the identical value on every run of that same range, so a re-run overwrites the same destination; a batch id derived from a counter or the clock names a new destination each run, so a re-run's rows pile up beside the first attempt's — both measured directly across two full runs of the identical input.",
+        "at": [{ "step": "Reveal: deterministic versus non-deterministic ids, measured" }]
+      },
+      {
+        "item": "At-least-once delivery (redeliveries allowed) plus an idempotent, keyed write (applying one twice is harmless) is the general recipe for an exactly-once effect, not exactly-once delivery; proved directly by crashing a batch partway through, re-running it to completion, and diffing the result byte for byte against a single clean run with no crash at all.",
+        "at": [{ "step": "Reveal: the whole recipe, named" }, { "step": "Reveal: proof by diffing two runs, measured" }]
+      },
+      {
+        "item": "Kafka Connect's own source-connector offsets and the KIP-618 transactional producer behind exactly-once source support are the identical recipe applied at the framework level; named here only as the broker-side instance of the same idea and left to Chapter 9 for their own internals, never re-taught as this topic's content.",
+        "at": [{ "out": "named as pointing to Chapter 9's own full treatment of Kafka Connect exactly-once support" }]
+      },
+      {
+        "item": "This topic hosts the closing leg of the shared 8.1 chapter lab per CHAPTER.md's own lab-hosting table — the crash-mid-batch injection and the two-full-reruns byte-diff are this topic's own executable proof, completing what topics 2 through 5 each built toward.",
+        "at": [{ "out": "closes the shared 8.1 chapter lab, per CHAPTER.md" }]
+      },
+      {
+        "item": "A crash that duplicates an entire batch produces rows that individually pass every row-level check, because each row is correct on its own — the bug is only visible at the level of how many times the batch as a whole was applied, not in any single row's contents.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The wrong half of the predict question — that writing the output first loses data because the checkpoint never catches up — is ruled out directly: a crash after the output write but before the checkpoint advance leaves the rows durably written, so a restart can only redo that work, never lose it.",
+        "at": [{ "step": "Predict: which ordering loses data" }]
+      },
+      {
+        "item": "A deterministic batch id and an idempotent write are two separate decisions that only together produce a safe re-run: a deterministic id without an idempotent write still produces a duplicate at the same destination if the write itself isn't keyed, and an idempotent write without a deterministic id never gets the chance to overwrite, because every re-run computes a new destination.",
+        "at": [{ "step": "Reveal: the whole recipe, named" }]
+      },
+      {
+        "item": "The byte-for-byte diff in the final measured reveal is checked against a second run that never crashed at all, not merely against the first attempt's own partial state — proving the recipe reaches the identical outcome as the no-failure case, not just a self-consistent one.",
+        "at": [{ "step": "Reveal: proof by diffing two runs, measured" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

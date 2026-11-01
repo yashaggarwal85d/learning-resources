@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the WAL, crash recovery, and the CDC choice this topic opens
+
+<ul class="resources">
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.write-ahead-logging-fsync" by="Chapter 5, §5.1" />
+  <Resource kind="reel" title="Checkpoints and crash recovery" domain="data-engineering" host="de.checkpoints-crash-recovery" by="Chapter 5, §5.1" />
+  <Resource kind="reel" title="Physical vs logical replication" domain="data-engineering" host="de.physical-vs-logical-replication" by="Chapter 5, §5.3" />
+  <Resource kind="reel" title="Query-based vs log-based CDC" domain="data-engineering" host="de.query-based-vs-log" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Logical Decoding Concepts" href="https://www.postgresql.org/docs/current/logicaldecoding-explanation.html" by="PostgreSQL docs">The slot and repeat-tolerance mechanics this topic's own measurements read directly.</Resource>
+  <Resource kind="reading" title="pg_replication_slots" href="https://www.postgresql.org/docs/current/view-pg-replication-slots.html" by="PostgreSQL docs">The restart_lsn and confirmed_flush_lsn columns read live in this topic's own measurements.</Resource>
+  <Resource kind="reading" title="ALTER TABLE (REPLICA IDENTITY)" href="https://www.postgresql.org/docs/current/sql-altertable.html" by="PostgreSQL docs">The four settings this topic's own before-image measurement exercises directly.</Resource>
+  <Resource kind="reading" title="CREATE PUBLICATION" href="https://www.postgresql.org/docs/current/sql-createpublication.html" by="PostgreSQL docs">What a publication selects, named in this topic's own prose.</Resource>
+  <Resource kind="reading" title="PostgreSQL 16 release notes" href="https://www.postgresql.org/docs/16/release-16.html" by="PostgreSQL docs">The standby-decoding addition this sandbox's own server can run, confirmed directly.</Resource>
+  <Resource kind="reading" title="PostgreSQL 17 release notes" href="https://www.postgresql.org/docs/17/release-17.html" by="PostgreSQL docs">The failover-slot addition this sandbox's own server cannot run, confirmed directly.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">The two output plugins and the no-primary-key consequence, named in this topic's own prose.</Resource>
+</ul>
+
+</section>

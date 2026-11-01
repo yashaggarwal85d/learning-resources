@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the object-storage contract this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" title="Object storage as a storage tier" domain="data-engineering" host="de.object-storage-as-storage" by="Chapter 1, §1.2" />
+  <Resource kind="reel" title="API ingestion: pagination, limits and retries" domain="data-engineering" host="de.api-ingestion-pagination-limits" by="Chapter 8, §8.1" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="hadoop-aws: Committing work to S3 with the S3A Filesystem Client" href="https://hadoop.apache.org/docs/stable/hadoop-aws/tools/hadoop-aws/committers.html" by="Apache Hadoop docs">Why renaming directories to commit is unsafe on an object store.</Resource>
+  <Resource kind="reading" title="Conditional writes" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-writes.html" by="AWS S3 docs">The If-None-Match header this topic's own race measures.</Resource>
+  <Resource kind="reading" title="Event notifications" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html" by="AWS S3 docs">The at-least-once delivery behind this topic's own dedup measurement.</Resource>
+  <Resource kind="reading" title="Generic File Source Options" href="https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html" by="Apache Spark docs">The ignoreCorruptFiles option named as the silent-skip anti-pattern.</Resource>
+</ul>
+
+</section>

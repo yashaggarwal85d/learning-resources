@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: vacuum, replication, and the two engines this topic names
+
+<ul class="resources">
+  <Resource kind="reel" title="Vacuum, bloat and transaction-ID wraparound" domain="data-engineering" host="de.vacuum-bloat-transaction-id" by="Chapter 5, §5.1" />
+  <Resource kind="reel" title="Physical vs logical replication" domain="data-engineering" host="de.physical-vs-logical-replication" by="Chapter 5, §5.3" />
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="MySQL binlog and other change logs" domain="data-engineering" host="de.mysql-binlog-other-change" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Logical Decoding Concepts" href="https://www.postgresql.org/docs/current/logicaldecoding-explanation.html" by="PostgreSQL docs">The stalled-slot caution this topic's own measurement reproduces directly.</Resource>
+  <Resource kind="reading" title="Replication configuration" href="https://www.postgresql.org/docs/current/runtime-config-replication.html" by="PostgreSQL docs">max_slot_wal_keep_size and idle_replication_slot_timeout, the two named safety valves.</Resource>
+  <Resource kind="reading" title="pg_replication_slots" href="https://www.postgresql.org/docs/current/view-pg-replication-slots.html" by="PostgreSQL docs">restart_lsn, read live in this topic's own lag-monitoring measurement.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">The idle-captured-table, multi-database and AWS RDS variants, named in prose.</Resource>
+</ul>
+
+</section>

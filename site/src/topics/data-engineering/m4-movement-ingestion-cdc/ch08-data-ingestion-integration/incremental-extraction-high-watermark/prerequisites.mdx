@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: MERGE and upsert, SCD Type 2, isolation anomalies, and the full extract
+
+<ul class="resources">
+  <Resource kind="reel" title="MERGE, upsert and concurrent writers" domain="data-engineering" host="de.merge-upsert-concurrent-writers" by="Chapter 2, §2.9" />
+  <Resource kind="reel" title="SCD Type 2 implementation" domain="data-engineering" host="de.scd-type-2-implementation" by="Chapter 3, §3.13" />
+  <Resource kind="reel" title="Isolation anomalies beyond ANSI" domain="data-engineering" host="de.isolation-anomalies-beyond-ansi" by="Chapter 5, §5.11" />
+  <Resource kind="reel" title="Database extraction without hurting production" domain="data-engineering" host="de.database-extraction-without-hurting" by="Chapter 8, §8.1" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Date/Time Functions and Operators" href="https://www.postgresql.org/docs/current/functions-datetime.html" by="PostgreSQL docs">Why transaction_timestamp and now stay fixed for a transaction's whole life.</Resource>
+  <Resource kind="reading" title="Sequence Manipulation Functions" href="https://www.postgresql.org/docs/current/functions-sequence.html" by="PostgreSQL docs">Why a nextval value is never handed back, even on rollback.</Resource>
+</ul>
+
+</section>

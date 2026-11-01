@@ -1,0 +1,82 @@
+{
+  "topic": "de.incremental-snapshots-watermark-windows",
+  "steps": [
+    {
+      "lines": [
+        "A chunk reads one particular order's row, and at nearly that same instant, something else deletes that exact order.",
+        "With nothing in the log marking where that chunk's own read actually happened, the snapshot can hand that deleted order right back to you.",
+        "A deleted row reappearing because of timing alone is exactly the kind of bug nobody notices until a customer asks where their cancelled order went."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you the fix, work through this with me.",
+        "That order was deleted at almost the exact moment its row got pulled into the chunk.",
+        "Does that deleted order come back in this chunk's own output, or does it stay gone for good?"
+      ],
+      "answer": [
+        "Saying it comes back treats a chunk's own read as the final word on a row, when it was only ever a provisional one.",
+        "It stays gone, because a marker placed around the chunk lets anything that happens afterward, including that delete, outrank what the chunk already read."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual mechanism that keeps that delete from getting overridden.",
+        "A chunk opens by writing one marker, reads its rows into memory, and then closes by writing a second marker right after.",
+        "Anything that touches one of those same rows in between those two markers automatically outranks whatever the chunk itself already read."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that exact mechanism against this sandbox's own real database, not a description of it.",
+        "An update landing inside that window replaced the chunk's own stale copy outright, every single time.",
+        "And a delete landing inside that same window removed the row completely, with nothing ever coming back to haunt the output."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what this entire algorithm never once needed to do.",
+        "The only writes it makes anywhere are those two marker updates, once per chunk, and nothing else.",
+        "Every other table in the database, including the one being copied, never gets locked for even a moment, so the log just keeps moving the whole time."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the full version of this against the real database, not a single isolated chunk.",
+        "I copied an entire table chunk by chunk, and between every single one of those chunks, I fired off real updates, deletes, and brand-new inserts.",
+        "At the end, I diffed the result against the source table directly, and it matched exactly, despite constant writing the whole way through."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that makes this whole approach genuinely practical, not just correct.",
+        "The only thing ever stored anywhere is the position of the last chunk that actually finished.",
+        "So stopping this process partway through and picking it back up later costs you nothing beyond redoing whatever chunk was already in flight."
+      ]
+    },
+    {
+      "lines": [
+        "I measured that exact claim directly, against the real database again.",
+        "One run went straight through every chunk without ever stopping.",
+        "A second run, on the identical starting data, was deliberately stopped after its second chunk and resumed later from exactly that point, and both of them ended up in the exact same final state."
+      ]
+    },
+    {
+      "lines": [
+        "Pull all of today's measurements together, and here's the single idea underneath every one of them.",
+        "A window of two markers lets anything the live log does to a row overrule whatever a chunk already read, needs no lock anywhere on the table, and tolerates being stopped and picked back up at any chunk boundary.",
+        "One mechanism is quietly doing all three of those jobs at once."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing this hasn't settled yet.",
+        "Say a table gets added to a connector that's already been running for weeks, and nobody wants to stop that stream just to go pick it up. What actually triggers a snapshot of just that one table?"
+      ],
+      "answer": [
+        "Restarting the whole connector would resnapshot everything it already has, not just the table that's actually missing.",
+        "Sending a signal that names that one table, through a signalling table or a Kafka signalling topic, triggers exactly its own chunked snapshot while every other table keeps streaming without any interruption."
+      ]
+    }
+  ]
+}

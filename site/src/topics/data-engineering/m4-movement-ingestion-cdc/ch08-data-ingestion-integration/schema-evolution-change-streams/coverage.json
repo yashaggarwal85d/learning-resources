@@ -1,0 +1,130 @@
+{
+  "topic": "de.schema-evolution-change-streams",
+  "syllabus": [
+    {
+      "clause": "capturing DDL, schema history, propagating column adds/drops/type changes through a schema registry into lakehouse and warehouse sinks",
+      "at": [
+        { "step": "Reveal: no DDL event" },
+        { "step": "Reveal: add and drop, measured" },
+        { "step": "Reveal: a retype looks the same way" },
+        { "step": "Reveal: widening, measured" },
+        { "step": "Reveal: narrowing, measured" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "incompatible changes that require re-snapshot",
+      "at": [{ "step": "Reveal: when retyping is not enough" }, { "step": "Recap" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Debezium connector for PostgreSQL (DDL limitation)",
+      "items": [
+        {
+          "item": "The connector relies on and reflects the PostgreSQL logical decoding feature, which has the following limitations: Logical decoding does not support DDL changes",
+          "at": [{ "step": "Reveal: no DDL event" }]
+        },
+        {
+          "item": "The Debezium connector for PostgreSQL does not support schema changes while an incremental snapshot is running",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for MySQL (schema history topic)",
+      "items": [
+        {
+          "item": "In a separate database schema history Kafka topic, the connector records all DDL statements along with the position in the binlog where each DDL statement appeared",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium JDBC sink connector (schema evolution)",
+      "items": [
+        {
+          "item": "When schema.evolution is set to basic, the connector automatically creates or alters the destination database table according to the structure of the incoming event",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        },
+        {
+          "item": "If you configure the JDBC connector to use an Oracle 23 database as the sink target, you cannot rely on schema evolution to automatically create a field that uses the Oracle 23 BOOLEAN data type",
+          "at": [{ "out": "named only, the dialect-rejection caveat, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: Schema Evolution",
+      "items": [
+        {
+          "item": "schema.change.behavior is of enum type and could be set to exception, evolve, try_evolve, lenient or ignore, each a different policy for how upstream schema changes are applied to a downstream sink",
+          "at": [{ "out": "named only, per post-notes.md Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "dlt docs: Schema evolution",
+      "items": [
+        {
+          "item": "A variant column is added when a column's datatype changes, rather than altering the existing column in place",
+          "at": [{ "out": "named only, per SOURCES.md" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The no-DDL-event claim is confirmed by direct inspection of the decoded stream's own contents (an empty BEGIN/COMMIT pair), not by reasoning about what logical decoding is documented to omit, so the measurement could have falsified the claim if PostgreSQL's own behavior differed from its documentation.",
+        "at": [{ "step": "Reveal: no DDL event" }]
+      },
+      {
+        "item": "The add-and-drop measurement reuses the identical table and slot across both operations in one function, so the comparison is genuinely the same column's own lifecycle, not two separately constructed scenarios that merely look similar.",
+        "at": [{ "step": "Reveal: add and drop, measured" }]
+      },
+      {
+        "item": "The widening and narrowing measurements apply the identical retype mechanism (ALTER COLUMN ... TYPE) to two different target types, isolating the sink's own reaction as the only variable that changes between a lossless and a lossy outcome, rather than varying the source-side operation too.",
+        "at": [{ "step": "Reveal: widening, measured" }]
+      },
+      {
+        "item": "The narrowing measurement's own sink value is asserted to differ from the exact decoded value, not merely asserted to equal some rounded constant, so the proof demonstrates loss relative to the source's own real number rather than merely matching an expected literal.",
+        "at": [{ "step": "Reveal: narrowing, measured" }]
+      },
+      {
+        "item": "The dropped column's old value is confirmed still present and unchanged in the sink after the drop, not merely absent from new rows, which is the sharper and more specific claim CHAPTER.md's own 'destructive downstream' characterization requires.",
+        "at": [{ "step": "Reveal: add and drop, measured" }]
+      },
+      {
+        "item": "The wrong option in the first predict question — that a consumer gets an error back for a dropped field — is ruled out directly by the measured proof that the row event simply omits the field, with no error path exercised anywhere in examples.py.",
+        "at": [{ "step": "Predict: loud error or silence" }]
+      },
+      {
+        "item": "The wrong option in the final predict question — that a sink decides row by row whether a new column is allowed — is ruled out by definition: a sink only ever sees a row after a schema decision has already been made upstream, so it structurally cannot be the gate CHAPTER.md's own registry clause describes.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Every scratch table, slot and DuckDB connection this topic creates is confirmed dropped or closed inside the same function that created it, verified by three successive clean runs of examples.py, and the shared orders table (50001 rows) is never touched by any of this topic's four functions.",
+        "at": [{ "out": "verified directly before writing any content, per REVIEW.md" }]
+      },
+      {
+        "item": "Debezium's own MySQL schema history, JDBC sink schema.evolution, and Flink CDC's configurable behaviors are each disclosed explicitly as named-only, since running any real Debezium connector or Flink CDC needs a JVM and Kafka this sandbox doesn't have, and this sandbox additionally has no MySQL server (confirmed absent in topic 11).",
+        "at": [{ "out": "disclosed environment limit, per SOURCES.md" }]
+      },
+      {
+        "item": "The compatibility-mode lattice, the expand/contract rollout, lakehouse column-ID schema evolution, and data contracts are each named in CHAPTER.md's own 'Leaves out' line and none of them appear anywhere in this topic's reel, narration or examples.py.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "The incompatible-change clause is answered by naming the exact mechanism (an incremental snapshot) rather than inventing a new repair strategy, keeping this topic's own claim consistent with topic 14's own chunked-snapshot design instead of contradicting it.",
+        "at": [{ "step": "Reveal: when retyping is not enough" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

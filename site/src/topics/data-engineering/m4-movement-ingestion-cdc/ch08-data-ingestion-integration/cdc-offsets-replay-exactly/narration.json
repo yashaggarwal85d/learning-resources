@@ -1,0 +1,83 @@
+{
+  "topic": "de.cdc-offsets-replay-exactly",
+  "steps": [
+    {
+      "lines": [
+        "A connector running inside a container gets killed partway through its own ordinary work, right between producing a large batch of change events and committing where it had gotten to.",
+        "On the way back up it has no memory of having already sent that batch, so it sends the exact same records out a second time.",
+        "A simple counter downstream that just adds up every amount it sees has no way of knowing those records already landed once, so its total comes out far too high."
+      ]
+    },
+    {
+      "lines": [
+        "Before I reveal what actually happens on restart, think through this with me.",
+        "That commit never went through before the crash landed.",
+        "Does the connector come back up and skip the batch it had already sent out, or does it send that identical batch out again?"
+      ],
+      "answer": [
+        "Skipping it would require the connector to remember, somewhere, that it already sent that batch, and nothing recorded that anywhere.",
+        "It sends the identical batch again, because producing a record and moving the stored position are two separate acts, and only the second one ever happened here."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the distinction underneath everything today's lesson covers.",
+        "A connector is actually tracking two separate positions at once, not one.",
+        "One lives in the source database's own log, and the other is the position of the record the connector wrote out, and the framework stores that second one in its own dedicated place, updating it on a schedule rather than after every single record."
+      ]
+    },
+    {
+      "lines": [
+        "I measured this directly, against a real decoded stream from this sandbox's own database, rather than just describing it.",
+        "I read the same pending batch of changes twice in a row without ever telling the source to move past it, and both reads came back with the exact same records.",
+        "Then I read a fresh batch and told the source to move past it immediately afterward, and a second read after that came back completely empty."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something worth knowing about the tool doing the capturing itself.",
+        "It openly says it builds no layer of its own for catching duplicate records.",
+        "Its documented default behavior is to risk a repeat rather than ever risk losing something, so while it's recovering from any kind of fault, a few repeated events are the expected cost."
+      ]
+    },
+    {
+      "lines": [
+        "I put that exact claim to the test using the duplicated batch from earlier.",
+        "One reader just added up every amount it saw, with no regard for whether it had seen a record before.",
+        "A second reader only counted a record once, by remembering the unique position each one carried, and only that second reader's total matched what was actually true."
+      ]
+    },
+    {
+      "lines": [
+        "So how does the framework actually close this gap when a team needs it closed?",
+        "It writes the records and the position update together, as one atomic unit, so a crash can never land between them the way it did at the start of this lesson.",
+        "It also locks out any older, lingering copy of a connector before trusting a newer one, and a cluster already running has to turn this on in two careful stages rather than one sudden switch."
+      ]
+    },
+    {
+      "lines": [
+        "Now for the failure that can't be patched over with better timing at all.",
+        "I pointed a read at a position that no longer existed on the server, because I had already discarded the place it referred to on purpose.",
+        "That read failed immediately with an error, and the only way to get the pipeline moving again was to start over completely clean, from a brand-new position."
+      ]
+    },
+    {
+      "lines": [
+        "Let's gather everything today actually established, because it isn't one lesson, it's four.",
+        "Two positions live in two different places, and a crash between them can replay whatever was already sent out.",
+        "The tool doing the capturing admits it keeps no safety net of its own, a transaction can genuinely close that specific gap, and a discarded position can only ever be replaced, never resumed."
+      ]
+    },
+    {
+      "lines": [
+        "One last question, because a team might assume turning on that transactional guarantee settles everything.",
+        "Say a source connector just finished turning that guarantee on, successfully, with nothing going wrong.",
+        "Does that alone mean whatever is reading from its output can never end up counting a single record twice?"
+      ],
+      "answer": [
+        "That guarantee only ever covered the connector's own write of its records and its own position, nothing past that boundary.",
+        "Whatever reads from the far side of that topic still has to protect itself, exactly the way the tool doing the capturing already admitted it does not do that job for anyone."
+      ]
+    }
+  ]
+}

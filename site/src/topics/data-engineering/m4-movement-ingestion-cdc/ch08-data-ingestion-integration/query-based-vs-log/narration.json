@@ -1,0 +1,82 @@
+{
+  "topic": "de.query-based-vs-log",
+  "steps": [
+    {
+      "lines": [
+        "An order moves through four states in just a few seconds. New, then paid, then shipped, then refunded.",
+        "A poll watching that row runs on its own schedule, samples it once, and happens to catch it at refunded.",
+        "Every record anyone can query later says this order went straight to refunded. There's no trace it was ever paid, or ever shipped, at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you what actually catches the states a poll misses.",
+        "The identical four-second sequence, but this time a trigger copies every change into a separate shadow table the instant each one happens, inside the same transaction as the real write.",
+        "Does that shadow table see the states the poll walked straight past?"
+      ],
+      "answer": [
+        "Saying no sounds reasonable if you think of a trigger as watching the transaction as a whole, the way a poll effectively does.",
+        "But a trigger fires on every individual statement, each one inside its own transaction. Four separate updates to the same row trigger four separate captures, not one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why a poll behaves this way at all.",
+        "A poll is one query, asked on a timer. Whatever happens to a row between two consecutive runs of that timer is simply invisible to it.",
+        "It isn't a bug. The poll was never watching continuously. It was only ever sampling."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that exact sequence against this sandbox's own real database, not a simulation.",
+        "A single poll query against the test order sees exactly one state, the one it happened to catch.",
+        "A real logical replication slot, reading the identical window, hands back all four states, new, paid, shipped, refunded, in the exact order they actually happened."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second, completely different way a poll goes wrong.",
+        "A row gets inserted and deleted inside the same short window. A poll that asks what's changed since the last watermark finds nothing at all.",
+        "Not because nothing happened. Because the one thing that would prove something happened is no longer there to be found."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that exact insert-then-delete against the real database.",
+        "The poll's own watermark query comes back with zero rows for that order, identical to what it would show if that order had simply never existed.",
+        "The replication slot, reading the same window, shows exactly one delete event, naming the row and the moment it happened."
+      ]
+    },
+    {
+      "lines": [
+        "A trigger fixes the gaps a poll has. It doesn't do that for free.",
+        "The trigger runs inside the same transaction as the write it's capturing, copying the change into a shadow table before that transaction even commits.",
+        "Which means every single write to the real table is now, mechanically, two writes instead of one."
+      ]
+    },
+    {
+      "lines": [
+        "I measured that doubling directly, and then measured what the log costs for the identical information.",
+        "Four real writes to a test order produce exactly four rows in the trigger's own shadow table. Not three, not five. One for one.",
+        "The replication slot gets the identical four changes for nothing extra, because it's just reading what the server had already written to its own log for recovery."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and three approaches to the same problem come out with three very different bills.",
+        "Polling misses whatever happens between its own samples. A trigger sees everything, but doubles every write along the way. The log sees everything too, and costs nothing extra to read.",
+        "That last part sounds like it can't possibly be the whole story, and it isn't."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part reading the log doesn't let you skip.",
+        "The log itself costs nothing extra to read. What does holding a position in it, so you can keep reading from where you left off, actually cost?"
+      ],
+      "answer": [
+        "Saying there's no extra cost treats the read as the whole story, but a consumer that wants to resume later has to hold a place in that log somehow.",
+        "That place is a real, ongoing cost: it pins storage on the source for as long as you haven't caught up, needs real privileges to set up, and breaks outright if a failover loses it."
+      ]
+    }
+  ]
+}

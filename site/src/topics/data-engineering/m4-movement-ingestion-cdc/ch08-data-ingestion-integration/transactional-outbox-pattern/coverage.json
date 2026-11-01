@@ -1,0 +1,129 @@
+{
+  "topic": "de.transactional-outbox-pattern",
+  "syllabus": [
+    {
+      "clause": "avoiding dual writes by writing domain events to an outbox table in the same transaction and letting CDC publish them (outbox event router)",
+      "at": [
+        { "step": "Predict: is the event recoverable" },
+        { "step": "Reveal: the outbox fix" },
+        { "step": "Reveal: the dual-write loss, measured" },
+        { "step": "Reveal: the router routes and dedups" },
+        { "step": "Reveal: routing and dedup, measured" }
+      ]
+    },
+    {
+      "clause": "ordering, payload design, outbox cleanup, and why it beats application-level publish-after-commit",
+      "at": [
+        { "step": "Reveal: ordering, measured" },
+        { "step": "Reveal: cleanup safety, measured" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Debezium docs: Outbox Event Router",
+      "items": [
+        {
+          "item": "id contains the unique ID of the event, used as a header to remove duplicate messages",
+          "at": [
+            { "step": "Reveal: the router routes and dedups" },
+            { "step": "Reveal: routing and dedup, measured" }
+          ]
+        },
+        {
+          "item": "aggregatetype replaces the default routedByValue variable, so route.topic.replacement defaults to outbox.event.routedByValue",
+          "at": [
+            { "step": "Reveal: the router routes and dedups" },
+            { "step": "Reveal: routing and dedup, measured" }
+          ]
+        },
+        {
+          "item": "The SMT automatically filters out DELETE operations on an outbox table",
+          "at": [
+            { "step": "Reveal: the router routes and dedups" },
+            { "step": "Reveal: cleanup safety, measured" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: PostgreSQL connector (logical decoding messages)",
+      "items": [
+        {
+          "item": "A message event captures a generic logical decoding message that is written directly to the WAL by using the pg_logical_emit_message function",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 docs: System Administration Functions",
+      "items": [
+        {
+          "item": "pg_logical_emit_message emits a logical decoding message, used to pass generic messages to logical decoding plugins through WAL",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: Outbox Quarkus Extension",
+      "items": [
+        {
+          "item": "The extension provides a Quarkus application a reusable, configurable component pairing the outbox pattern with Debezium's CDC connector pipeline",
+          "at": [{ "out": "named only, per pre-notes.md and references.md" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The dual-write measurement's two halves share the same table shape, slot plugin and decoding method, differing only in whether the event was written in the order's own transaction or a separate one, isolating the transaction boundary itself as the only variable between loss and recovery.",
+        "at": [{ "step": "Reveal: the dual-write loss, measured" }]
+      },
+      {
+        "item": "The routing measurement uses two genuinely different aggregate types (order, shipment) rather than two rows of the same type, so the different-topic outcome demonstrates the router's own aggregatetype-based logic rather than an artifact of two otherwise-identical rows.",
+        "at": [{ "step": "Reveal: routing and dedup, measured" }]
+      },
+      {
+        "item": "The ordering measurement deliberately interleaves the two aggregates' own writes in the insert order itself (A, B, A, B), rather than writing one aggregate's events together and the other's separately, so the correct per-aggregate ordering it recovers cannot be an artifact of how the events happened to be written.",
+        "at": [{ "step": "Reveal: ordering, measured" }]
+      },
+      {
+        "item": "The cleanup measurement captures the insert with one call to the decoding function before the delete is even issued, rather than issuing both writes first and decoding afterward, so the proof demonstrates genuine capture-then-cleanup ordering rather than two writes that merely happened to both appear in one later read.",
+        "at": [{ "step": "Reveal: cleanup safety, measured" }]
+      },
+      {
+        "item": "The wrong option in the first predict question — that the database still knows the publish is owed — is ruled out by the measured mechanism itself: the decoded stream after the crash contains zero outbox inserts, meaning nothing was ever written anywhere that could later be consulted to recover or even notice the missing announcement.",
+        "at": [{ "step": "Predict: is the event recoverable" }]
+      },
+      {
+        "item": "The wrong option in the final predict question — that the router's delete-filtering makes cleanup timing irrelevant — is ruled out directly by the measured cleanup function: filtering protects only against the delete itself leaking through as a fake event, which is a separate concern from whether the row's own insert was captured before it was removed.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The outbox fix in the first function reuses the identical connection pattern as the failing dual-write half (one connection, one transaction, one commit), differing only in whether the outbox INSERT is inside that same transaction, so the recovered event's presence traces specifically to the transaction boundary and not to any other difference in how the two halves connect or commit.",
+        "at": [{ "step": "Reveal: the dual-write loss, measured" }]
+      },
+      {
+        "item": "The router's own dedup-key claim is checked against the outbox row's own id column rather than against the aggregateid, since the documentation's own id field is what a consumer is told to use for deduplication, and conflating it with the aggregateid would understate what the row actually carries for that purpose.",
+        "at": [{ "step": "Reveal: routing and dedup, measured" }]
+      },
+      {
+        "item": "Every scratch table and replication slot this topic creates is confirmed dropped inside the same function that created it, verified by three successive clean runs of examples.py, and the shared orders table is never touched by any of this topic's four functions.",
+        "at": [{ "out": "verified directly before writing any content, per REVIEW.md" }]
+      },
+      {
+        "item": "Consumer-side deduplication, Kafka transactions, sagas and durable execution, and the CDC machinery of topics 10-19 are each named in CHAPTER.md's own 'Leaves out' line, and none of them appear anywhere in this topic's reel, narration or examples.py beyond naming the outbox row's own id as a dedup key.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

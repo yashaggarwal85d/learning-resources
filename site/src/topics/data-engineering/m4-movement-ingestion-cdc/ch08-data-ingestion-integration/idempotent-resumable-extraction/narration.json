@@ -1,0 +1,82 @@
+{
+  "topic": "de.idempotent-resumable-extraction",
+  "steps": [
+    {
+      "lines": [
+        "An extractor is partway through a large batch when it crashes, somewhere between finishing its last write and saving the checkpoint that would have marked the batch done.",
+        "The restart has no way to tell that the rows are already sitting in the warehouse. It only knows the checkpoint never advanced, so it does the honest thing and runs the batch again.",
+        "Every row it produces this second time passes every row-level check anyone could write, because each row, on its own, is completely correct. The warehouse just now has two of each."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you which crash actually destroys data.",
+        "The checkpoint advance and the output write have to happen in some order, one before the other. A crash that lands between them loses the batch in one ordering and duplicates it in the other.",
+        "Which ordering is which?"
+      ],
+      "answer": [
+        "Writing the output first feels like the riskier move, since the checkpoint is left behind — but a crash right there only means the restart redoes work that already finished. The rows are already safe.",
+        "Marking the checkpoint done first is the dangerous order. A crash immediately after tells every downstream system this batch is finished, and nothing will ever go back and ask for it again."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that losing order, isolated.",
+        "The checkpoint gets marked done. Then the crash happens, before a single row of the output has actually been written anywhere.",
+        "Nothing watching that checkpoint has any reason to suspect a problem. As far as the rest of the system is concerned, this batch simply succeeded."
+      ]
+    },
+    {
+      "lines": [
+        "I ran all three orderings directly, not as a thought experiment.",
+        "Checkpoint first, then a crash: the batch is gone, permanently. Output first, then a crash before the checkpoint catches up: the restart reprocesses the whole batch, and it lands twice.",
+        "Committing the output and the checkpoint together, as one atomic step, stayed consistent no matter which side of that commit the crash landed on."
+      ]
+    },
+    {
+      "lines": [
+        "An atomic commit stops the crash from landing in a bad spot. It does nothing about the duplicate itself once a redo happens, and that's where the next idea comes in.",
+        "A batch id built from the input range it actually covers, rather than a counter that increments or a clock that keeps moving, computes to the exact same value every single time that same range is processed.",
+        "That one choice decides everything that follows: whether a redo lands on top of the first attempt, or sits beside it as a second copy."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the identical input through both kinds of id and compared what each re-run actually did.",
+        "The range-derived id named the same destination both times, so the second run simply overwrote the first, and the row count came out exactly right.",
+        "The counter-derived id named a new destination on the second run, because the counter itself had moved on. Its rows didn't overwrite anything. They just piled up next to what was already there."
+      ]
+    },
+    {
+      "lines": [
+        "Put those two pieces together and you get a recipe, and it's worth being precise about what the recipe actually promises.",
+        "At-least-once delivery means a redo, a retry, or a redelivery is allowed to happen. Nothing here stops that. An idempotent write keyed on something stable means applying that redo twice changes nothing the second time.",
+        "Together, those two give you an exactly-once effect. They do not give you exactly-once delivery, and this topic never claims they do."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the proof, run for real rather than argued for.",
+        "I crashed a batch partway through its rows, let the restart pick up and finish it, and then compared the resulting state against a second run of the identical batch that never crashed at all.",
+        "The two came out byte for byte identical. The crash changed nothing about where the data ended up."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and this topic is really one property wearing three different outfits.",
+        "An atomic commit decides where a crash can land without causing damage. A stable batch id decides whether a redo lands on top of the original or beside it. Idempotent writes turn that landing into a no-op.",
+        "Every source this chapter has covered needed its own version of exactly this: a run that can be repeated without changing the answer."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, and the words matter here.",
+        "A message broker redelivers the identical message to the same consumer twice. Does that break exactly-once delivery, exactly-once effect, both, or neither?"
+      ],
+      "answer": [
+        "Saying it breaks both treats delivery and effect as the same promise, but exactly-once effect was never about counting how many times something was delivered.",
+        "It breaks exactly-once delivery outright, that part is simple counting. But if the consumer's own write is idempotent, the second delivery changes nothing, and the effect stays exactly once."
+      ]
+    }
+  ]
+}

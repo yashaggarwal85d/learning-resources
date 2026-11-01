@@ -1,0 +1,99 @@
+{
+  "topic": "de.query-based-vs-log",
+  "syllabus": [
+    {
+      "clause": "polling and triggers (load on the source, missed deletes and intermediate states, write amplification)",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: does a trigger see the gap" },
+        { "step": "Reveal: a poll's one sample" },
+        { "step": "Reveal: the intermediate states, measured" },
+        { "step": "Reveal: a poll can't see what's gone" },
+        { "step": "Reveal: the delete, measured" },
+        { "step": "Reveal: a trigger's real cost" },
+        { "step": "Reveal: write cost and log cost, both measured" }
+      ]
+    },
+    {
+      "clause": "reading the database's own replication log (complete, ordered, low overhead, but operationally coupled to the source)",
+      "at": [
+        { "step": "Reveal: the intermediate states, measured" },
+        { "step": "Reveal: the delete, measured" },
+        { "step": "Reveal: write cost and log cost, both measured" },
+        { "step": "Recap" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Logical Decoding Concepts (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "Logical decoding is the process of extracting all persistent changes to a database's tables into a coherent, easy to understand format",
+          "at": [{ "step": "Reveal: the intermediate states, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL connector (Debezium docs)",
+      "items": [
+        {
+          "item": "PostgreSQL normally purges write-ahead log (WAL) segments after some period of time, so the connector does not have the complete history of all changes",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A poll's own query sees only the state of a row at the moment it runs, measured directly: four real statements (one insert, three status updates) against a test order, read back by a single poll query, show only the final status.",
+        "at": [{ "step": "Reveal: the intermediate states, measured" }]
+      },
+      {
+        "item": "A real logical replication slot, decoding the identical window with the test_decoding plugin, returns every one of the four states in the exact commit order they happened, which is what the poll's own single sample structurally cannot do.",
+        "at": [{ "step": "Reveal: the intermediate states, measured" }]
+      },
+      {
+        "item": "A poll's watermark query cannot distinguish a row that never existed from one that existed and was deleted inside the same interval, measured directly: an inserted-then-deleted test row returns zero matches from the poll's own query, identical to a row that was never inserted at all.",
+        "at": [{ "step": "Reveal: the delete, measured" }]
+      },
+      {
+        "item": "The identical deleted row's own delete event is present, named and ordered, in the replication slot's own decoded output, measured directly as exactly one DELETE event for that row's id.",
+        "at": [{ "step": "Reveal: the delete, measured" }]
+      },
+      {
+        "item": "A trigger-based shadow table doubles every write it captures, measured directly: four real writes to a test order through a real AFTER INSERT OR UPDATE trigger produce exactly four corresponding rows in the shadow table, a one-to-one, not partial, amplification.",
+        "at": [{ "step": "Reveal: write cost and log cost, both measured" }]
+      },
+      {
+        "item": "A logical replication slot's own read cost scales with the number of real changes made, not with the size of the table being watched, measured directly: three real changes against a table of over fifty thousand rows return exactly three change events from the slot.",
+        "at": [{ "step": "Reveal: write cost and log cost, both measured" }]
+      },
+      {
+        "item": "The wrong half of the first predict question — that a trigger only fires on a transaction's final state — is ruled out by PostgreSQL's own trigger semantics and by direct measurement: an AFTER UPDATE trigger fires once per row-affecting statement, inside that statement's own transaction.",
+        "at": [{ "step": "Predict: does a trigger see the gap" }]
+      },
+      {
+        "item": "The wrong half of the final predict question — that reading WAL is entirely free — is ruled out by the Debezium quote directly: WAL is purged after a retention window, so a consumer's own position in that log is a real, ongoing cost, not a free lunch.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic hosts no lab of its own, per CHAPTER.md's own table — the poll-versus-trigger-versus-log comparison on orders is this topic's own measured example and feeds the shared 8.2 chapter lab.",
+        "at": [{ "out": "no lab of its own; feeds the 8.2 chapter lab, per CHAPTER.md" }]
+      },
+      {
+        "item": "PostgreSQL's own engine-specific internals behind logical decoding (WAL structure in full, slots, output plugins, REPLICA IDENTITY) are topic 10's own subject, used here only at the level pg_logical_slot_get_changes exposes it, and not re-derived.",
+        "at": [{ "out": "named as pointing to topic 10's own full treatment" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

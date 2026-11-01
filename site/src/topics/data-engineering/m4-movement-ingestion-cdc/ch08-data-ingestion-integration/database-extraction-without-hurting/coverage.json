@@ -1,0 +1,133 @@
+{
+  "topic": "de.database-extraction-without-hurting",
+  "syllabus": [
+    {
+      "clause": "query-based JDBC extraction with parallel range reads (partition column, bounds, fetch size)",
+      "at": [
+        { "step": "Reveal: the bounds set a stride, not a filter" },
+        { "step": "Reveal: the measured skew" }
+      ]
+    },
+    {
+      "clause": "bulk export/COPY",
+      "at": [
+        { "step": "Reveal: COPY against row-by-row SELECT, measured" }
+      ]
+    },
+    {
+      "clause": "read-replica offloading",
+      "at": [
+        { "step": "Reveal: a replica moves the cost, it does not remove it" }
+      ]
+    },
+    {
+      "clause": "consistent multi-table snapshots (one repeatable-read transaction)",
+      "at": [
+        { "step": "Reveal: a consistent snapshot across workers" }
+      ]
+    },
+    {
+      "clause": "how long-running extracts block vacuum and inflate replica lag",
+      "at": [
+        { "step": "Reveal: the vacuum cost, measured directly" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "JDBC To Other Databases (Apache Spark docs)",
+      "items": [
+        {
+          "item": "lowerBound and upperBound decide the partition stride, not a row filter — every row is still partitioned and returned",
+          "at": [{ "step": "Reveal: the bounds set a stride, not a filter" }, { "step": "Predict: which partition does the real work" }]
+        },
+        {
+          "item": "fetchsize determines how many rows come back per round trip and helps drivers that default to a low fetch size",
+          "at": [{ "out": "named on screen as a setting, not tuned in this topic's own measurement" }]
+        }
+      ]
+    },
+    {
+      "source": "COPY (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "COPY moves data between PostgreSQL tables and standard file-system files",
+          "at": [{ "step": "Reveal: COPY against row-by-row SELECT, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Snapshot Synchronization Functions (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "pg_export_snapshot saves a transaction's current snapshot as a string a second client can import",
+          "at": [{ "step": "Reveal: a consistent snapshot across workers" }]
+        }
+      ]
+    },
+    {
+      "source": "Hot Standby (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "hot_standby_feedback prevents VACUUM from removing recently-dead rows a standby query might need, delaying cleanup on the primary instead",
+          "at": [{ "step": "Reveal: a replica moves the cost, it does not remove it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A parallel JDBC read's bounds set a fixed-width stride across the key range; they never filter which rows are read, so every row still lands in some partition.",
+        "at": [{ "step": "Reveal: the bounds set a stride, not a filter" }]
+      },
+      {
+        "item": "A clustered, skewed key sends nearly all its rows into whichever single partition's stride covers that clustered range, measured directly: two thousand rows in the first partition, zero in fourteen more, forty-eight thousand in the last.",
+        "at": [{ "step": "Reveal: the measured skew" }]
+      },
+      {
+        "item": "Increasing the partition count does not proportionally fix a skewed key's imbalance, because the skew lives in the data's own distribution, not in how many pieces the range is cut into — measured directly at sixty-four partitions, where the busiest partition still held over sixteen thousand rows.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "A REPEATABLE READ transaction's pg_export_snapshot lets a second, fully separate connection see the exact same data, unaffected by a concurrent commit in between — a fresh connection with no snapshot sees the new row instead.",
+        "at": [{ "step": "Reveal: a consistent snapshot across workers" }]
+      },
+      {
+        "item": "COPY TO measured faster than a row-by-row SELECT fetchall over the identical rows, every trial run this session, which is why it is the bulk path to reach for first.",
+        "at": [{ "step": "Reveal: COPY against row-by-row SELECT, measured" }]
+      },
+      {
+        "item": "Offloading a long read to a replica does not remove its cost: without hot_standby_feedback the replica's own query risks cancellation; with it, the primary's own cleanup is held back instead, for as long as the replica's query needs.",
+        "at": [{ "step": "Reveal: a replica moves the cost, it does not remove it" }]
+      },
+      {
+        "item": "A long-running extract's own open snapshot pins the xmin horizon on the table it reads, exactly like a replica's hot_standby_feedback pins it on the primary — measured directly: ten thousand dead tuples that a real VACUUM run cannot reclaim while that snapshot is still open.",
+        "at": [{ "step": "Reveal: the vacuum cost, measured directly" }]
+      },
+      {
+        "item": "VACUUM running does not guarantee cleanup happens; it only reclaims row versions nothing still needs, so a long transaction elsewhere makes a VACUUM run a no-op for the rows it's protecting.",
+        "at": [{ "step": "Reveal: the vacuum cost, measured directly" }]
+      },
+      {
+        "item": "The fetchsize option exists specifically because some JDBC drivers default to a very small round-trip batch size (the Spark docs name Oracle's ten-row default as the motivating example), so a default-tuned driver can silently make a large extract far slower than it needs to be.",
+        "at": [{ "out": "named on screen, not independently measured in this topic's own lab" }]
+      },
+      {
+        "item": "Chapter 5's vacuum-and-xid-wraparound mechanism and its own snapshot-isolation topic are the two prior-topic mechanisms this topic exercises directly rather than re-teaches: the dead-tuple measurement is vacuum's own side effect, and the snapshot export/import is snapshot isolation's own guarantee put to a second, practical use.",
+        "at": [{ "out": "composed from Chapter 5 topics 7 and 12, not re-taught" }]
+      },
+      {
+        "item": "This topic's own measurements (partition skew, snapshot consistency, COPY throughput, vacuum pinning) are the full-extract baseline the next topic's chapter lab compares its incremental, cursor-based extract against.",
+        "at": [{ "out": "feeds topic 3's lab as the full-extract baseline, per CHAPTER.md's lab-hosting table" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

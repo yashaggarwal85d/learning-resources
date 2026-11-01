@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: MERGE itself, the identity a delete's before-image answers to, and how DDL already proved nothing announces itself
+
+<ul class="resources">
+  <Resource kind="reel" title="MERGE, upsert and concurrent writers" domain="data-engineering" host="de.merge-upsert-concurrent-writers" by="Chapter 2, §2.1" />
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Schema evolution in change streams" domain="data-engineering" host="de.schema-evolution-change-streams" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Event flattening (New Record State Extraction)" href="https://debezium.io/documentation/reference/stable/transformations/event-flattening.html" by="Debezium docs">The two-record delete, and the drop/tombstone/rewrite handling modes.</Resource>
+  <Resource kind="reading" title="Log compaction" href="https://docs.confluent.io/kafka/design/log_compaction.html" by="Confluent docs, standing in for an unreadable Apache Kafka page">The tombstone definition, the retention default, and the lagging-consumer race.</Resource>
+  <Resource kind="reading" title="Debezium JDBC sink connector" href="https://debezium.io/documentation/reference/stable/connectors/jdbc.html" by="Debezium docs">delete.enabled, named only.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">The before field's own tie to REPLICA IDENTITY, and tombstones.on.delete.</Resource>
+</ul>
+
+</section>
