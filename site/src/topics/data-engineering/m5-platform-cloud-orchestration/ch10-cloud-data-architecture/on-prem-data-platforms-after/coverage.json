@@ -1,0 +1,78 @@
+{
+  "topic": "de.on-prem-data-platforms-after",
+  "syllabus": [
+    {
+      "clause": "what an on-prem stack looks like now: legacy HDFS/YARN estates vs S3-compatible object storage + Kubernetes + Spark/Trino + Iceberg",
+      "at": [
+        { "step": "A decade-old estate, and the pattern that replaced it" },
+        { "step": "Not simulated: a real store, a real table, a real snapshot" }
+      ]
+    },
+    {
+      "clause": "private-cloud and virtualisation-licensing pressure",
+      "at": [
+        { "step": "A licensing shift that pushed organisations to look again" }
+      ]
+    },
+    {
+      "clause": "when on-prem wins (data gravity, OT proximity, sovereignty, steady utilisation)",
+      "at": [
+        { "step": "Four reasons, each with its own falsifiable test" }
+      ]
+    },
+    {
+      "clause": "and the operational bill it carries",
+      "at": [
+        { "step": "What the cloud was quietly doing for you" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "MinIO documentation",
+      "items": [
+        { "item": "MinIO AIStor is an exascale data store natively supporting the S3 API for objects and Iceberg for tables, deployable onto Kubernetes infrastructure through a first-party operator model", "at": [{ "step": "A decade-old estate, and the pattern that replaced it" }] }
+      ]
+    },
+    {
+      "source": "Trino documentation",
+      "items": [
+        { "item": "Trino is a distributed SQL query engine designed to query large data sets distributed over one or more heterogeneous data sources, holding none of the data itself", "at": [{ "step": "A decade-old estate, and the pattern that replaced it" }] }
+      ]
+    },
+    {
+      "source": "CIO Dive (citing Forrester)",
+      "items": [
+        { "item": "Within a month of the acquisition closing, Broadcom ended VMware's perpetual licenses for subscription billing and pared the product line to two offerings, reaching an ecosystem where roughly eighty percent of organizations use VMware infrastructure products", "at": [{ "step": "A licensing shift that pushed organisations to look again" }] },
+        { "item": "The business-model shift from perpetual to subscription licensing, not a technology change, is what industry sources describe as the cause of customer anger and re-evaluation", "at": [{ "step": "A licensing shift that pushed organisations to look again" }] }
+      ]
+    },
+    {
+      "source": "Dremio: Data Gravity",
+      "items": [
+        { "item": "Data gravity describes accumulated data attracting services and applications to itself, implying data is ideally processed where it is stored since moving it carries real cost and latency", "at": [{ "step": "Four reasons, each with its own falsifiable test" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that the workload's utilisation shape, not its scale, is why the cloud bill went up; a learner who answers 'the cloud is just more expensive' rather than naming the missing idle window has missed the predict step's correction", "at": [{ "step": "Moved to the cloud for savings, and the bill went up" }] },
+      { "item": "The predict step's correct answer names the specific mechanism (no idle time, no elasticity discount) rather than a blanket claim that cloud or on-prem is always cheaper", "at": [{ "step": "Before the stack: what did the cloud actually fail to deliver here?" }] },
+      { "item": "The storage-and-table-format step is explicit that this is the one layer in the chapter genuinely run, not simulated, and equally explicit that Kubernetes and a JVM Spark/Trino process are not executed in this sandbox; a learner should not come away believing a full cluster was orchestrated", "at": [{ "step": "Not simulated: a real store, a real table, a real snapshot" }] },
+      { "item": "The licensing-shock step states the shift precisely as a business-model change (perpetual to subscription), not a vague 'prices went up'; a learner should be able to name what specifically changed", "at": [{ "step": "A licensing shift that pushed organisations to look again" }] },
+      { "item": "Each of the four reasons is stated as its own falsifiable test; a learner who names 'on-prem is cheaper' without identifying which specific test a workload passes has missed the point this step and its takeaway both make explicitly", "at": [{ "step": "Four reasons, each with its own falsifiable test" }] },
+      { "item": "The operational-bill step is careful to state that winning on the four reasons does not erase this cost, avoiding the one-sided framing that on-prem is simply 'better' once any reason applies", "at": [{ "step": "What the cloud was quietly doing for you" }] },
+      { "item": "The final predict step's correct answer identifies that none of the four reasons apply to a bursty, mostly-idle workload, which is the deliberate mirror image of the hook's own always-on workload; a learner who picks any of the four reasons has missed that this scenario is a counter-example, not a confirming one", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot demonstrate a real legacy HDFS/YARN estate in this sandbox; only the modern pattern's storage-and-table-format layer is run for real, disclosed in OUTLINE.md and FACT-CHECK.md, with the legacy estate described from the syllabus's own framing rather than demonstrated", "at": [{ "deep": "Internals" }] },
+      { "item": "The cost-comparison numbers in examples.py are disclosed as an illustrative model built to demonstrate the mechanism, not a claim about any real organization's actual bill", "at": [{ "deep": "Internals" }] },
+      { "item": "CHAPTER.md's own scope quote matches the real syllabus line in full for this topic, so no forward-reference or dropped-clause handling was needed, unlike several earlier topics in this chapter", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

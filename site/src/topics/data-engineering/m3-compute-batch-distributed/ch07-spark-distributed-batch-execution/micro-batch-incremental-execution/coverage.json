@@ -1,0 +1,103 @@
+{
+  "topic": "de.micro-batch-incremental-execution",
+  "syllabus": [
+    {
+      "clause": "the engine plans one incremental batch per trigger against new source offsets; offset log (write-ahead) and commit log in the checkpoint; trigger types (processingTime, availableNow; once deprecated); why micro-batch latency floors sit around hundreds of milliseconds.",
+      "at": [
+        { "step": "Reveal: one trigger, one incremental batch" },
+        { "step": "Reveal: not single-digit milliseconds" },
+        { "step": "Elaborate: the floor is planning, not data" },
+        { "step": "Reveal: three seconds apart, every time" },
+        { "step": "Elaborate: a log that's replayed, never guessed" },
+        { "step": "Reveal: the trigger types, side by side" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"Structured Streaming: APIs on DataFrames and Datasets\" docs",
+      "items": [
+        {
+          "item": "unspecified trigger: micro-batches start as soon as the previous one has completed processing",
+          "at": [{ "step": "Reveal: the trigger types, side by side" }]
+        },
+        {
+          "item": "fixed-interval trigger: if the previous batch finishes within the interval, the engine waits for the interval to end before starting the next one",
+          "at": [{ "step": "Reveal: three seconds apart, every time" }]
+        },
+        {
+          "item": "the one-time trigger is deprecated in favor of available-now, which offers a stronger processing guarantee and better gradual watermark advancement",
+          "at": [{ "step": "Reveal: the trigger types, side by side" }]
+        },
+        {
+          "item": "available-now processes all data available at the time of execution, across possibly multiple micro-batches, and then stops the query on its own",
+          "at": [{ "step": "Reveal: the trigger types, side by side" }]
+        }
+      ]
+    },
+    {
+      "source": "MicroBatchExecution.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "markMicroBatchStart checkpoints offsets to the offset log before the microbatch itself runs",
+          "at": [{ "step": "Reveal: one trigger, one incremental batch" }]
+        },
+        {
+          "item": "markMicroBatchEnd commits the offset to the commit log only after the microbatch has completed execution",
+          "at": [{ "step": "Elaborate: a log that's replayed, never guessed" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The offset log and commit log together let Spark classify a failed run precisely on restart: a batch with an offset-log entry but no matching commit-log entry is known to be incomplete and must be rerun from that exact offset, never silently skipped or silently re-read from scratch.",
+        "at": [{ "out": "the precise failure classification the two-log design enables named only; this topic's own examples.py confirms the logs exist and stay in lockstep, not the restart-time branch logic that reads them" }]
+      },
+      {
+        "item": "Continuous processing mode (experimental, mentioned only in passing in CHAPTER.md's own handoff) abandons the micro-batch model entirely for a long-running task per partition, trading the checkpoint-based fault tolerance this topic measures for true low, sub-millisecond latency and a narrower set of supported operations (no aggregations).",
+        "at": [{ "out": "continuous processing's own tradeoff against micro-batch named only, as the structurally different model this topic's own handoff gestures toward; this topic's own examples.py measures only micro-batch triggers" }]
+      },
+      {
+        "item": "spark.sql.streaming.minBatchesToRetain controls how many completed batches' worth of offset-log, commit-log, and state-store checkpoint data Spark keeps around rather than cleaning up -- a real, bounded cost of the write-ahead design this topic's own examples.py doesn't exercise (every probe query ran for only a handful of batches).",
+        "at": [{ "out": "checkpoint retention and its own bounded storage cost named only; this topic's own examples.py never runs long enough to trigger cleanup" }]
+      },
+      {
+        "item": "RocksDB state store changelog checkpointing (an alternative to the traditional snapshot-based checkpointing this topic's offset/commit logs sit alongside) uploads only the changes made to state since the last checkpoint rather than a full snapshot, reducing per-batch checkpoint cost specifically for stateful queries with large state -- a refinement to the checkpoint mechanism this topic's own stateless rate-source probes never touch.",
+        "at": [{ "out": "RocksDB changelog checkpointing named only as a refinement for stateful queries; this topic's own examples.py uses no stateful operators and so never checkpoints state" }]
+      },
+      {
+        "item": "The availableNow trigger's own fallback behavior -- performing a one-time micro-batch instead when any source doesn't support Trigger.AvailableNow -- means a query author can't always assume the stronger guarantee just by requesting it; the actual trigger behavior depends on every source involved, not just the one requested.",
+        "at": [{ "out": "the availableNow-to-one-time fallback and its source-dependence named only; this topic's own examples.py uses the rate source, which supports availableNow, so the fallback path never triggers" }]
+      },
+      {
+        "item": "queryPlanning time, one of the named components inside a batch's own durationMs breakdown (alongside getBatch, addBatch, commitOffsets, and walCommit), is itself a measurable sub-cost of the latency floor this topic names only in aggregate -- re-optimizing the identical incremental plan every single trigger is part of what the floor actually pays for.",
+        "at": [{ "out": "queryPlanning as a specific, measurable component of the aggregate latency floor named only; this topic's own examples.py asserts the aggregate triggerExecution floor, not the queryPlanning sub-component specifically" }]
+      },
+      {
+        "item": "A rate source's own deterministic row generation (each partition produces a fixed, predictable sequence keyed by elapsed time) makes it a reliable tool for probing trigger timing precisely, unlike a file or Kafka source, where variable data arrival would confound a latency-floor or trigger-spacing measurement with genuine data-volume variance.",
+        "at": [{ "out": "why the rate source specifically suits a timing probe named only; this topic's own examples.py uses the rate source for exactly this reason, without stating the reasoning inline" }]
+      },
+      {
+        "item": "Kafka's own offset semantics (a monotonically increasing per-partition integer) versus the file source's own offset representation (a set of file names already processed) show the offset log's abstraction holding across genuinely different underlying mechanisms -- this topic's own examples.py measures the rate source's own simple numeric offset, one instance of a general mechanism.",
+        "at": [{ "out": "offset representation varying by source, with the offset log abstracting over all of them, named only; this topic's own examples.py uses only the rate source's own offset format" }]
+      },
+      {
+        "item": "spark.sql.streaming.noDataMicroBatches.enabled governs whether a trigger still runs a micro-batch when no new data has arrived -- relevant specifically to advancing the watermark and clearing old state on a schedule, a case this topic's own examples.py never exercises since its probes always have data flowing from the rate source.",
+        "at": [{ "out": "no-data micro-batches and their own watermark-advancement purpose named only; this topic's own examples.py always has new data available, so a no-data batch never runs" }]
+      },
+      {
+        "item": "walCommit, a separate named component in a batch's own durationMs breakdown from commitOffsets, is specifically the cost of durably writing the write-ahead log entry itself to the checkpoint's storage backend -- distinguishing the cost of the write-ahead mechanism's own durability from the cost of deciding what to write.",
+        "at": [{ "out": "walCommit as its own distinct cost component, separate from commitOffsets, named only; this topic's own examples.py reads the aggregate triggerExecution time, not this specific sub-component" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

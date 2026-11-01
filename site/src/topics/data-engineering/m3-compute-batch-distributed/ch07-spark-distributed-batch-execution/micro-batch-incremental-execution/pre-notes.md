@@ -1,0 +1,8 @@
+- **Trigger** -- the setting that decides when a streaming query starts its next micro-batch: a fixed interval, as soon as possible, available-now (process everything queued, then stop), or once (deprecated).
+- **Offset** -- a source-specific marker of how far a streaming query has read; a Kafka offset, a file-source's set of file names, or a rate source's row count.
+- **Offset log** -- the checkpoint's own write-ahead log, one entry per batch, recording exactly which offsets that batch is reading up to before it runs.
+- **Commit log** -- the checkpoint's own record of which batches actually finished; written only after a batch's output has been produced.
+- **Checkpoint directory** -- the directory a streaming query persists its offset log, commit log, and operator state into, so it can resume correctly after a restart or a crash.
+- **Micro-batch** -- one incremental run of a streaming query's plan over the new data between its previous offset and its current one.
+- **Watermark** -- the point up to which a streaming query considers event time "caught up," used to decide when late data is dropped and when state can be cleared.
+- **Available-now trigger** -- a trigger that processes everything currently available, across as many batches as needed, then stops the query on its own.

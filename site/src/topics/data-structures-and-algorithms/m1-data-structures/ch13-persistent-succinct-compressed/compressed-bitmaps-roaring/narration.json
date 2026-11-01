@@ -1,0 +1,124 @@
+{
+  "topic": "dsa.compressed-bitmaps-roaring",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "A question against billions of rows usually comes down to several conditions at once, each one matching some set of rows, and the final answer is wherever those sets overlap.",
+        { "beat": 0.4 },
+        "One way to hold such a set costs the same fixed amount of memory no matter how many rows it actually matches. Another costs a little for every single matching row, and stays smaller right up until a sizeable fraction of everything matches.",
+        { "beat": 0.4 },
+        "Neither one is honest about a set that happens to be crowded in one region, empty in another, and strung out in long unbroken stretches somewhere else. What does?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the structure that answers that. Split the whole range of possible row numbers into many equal pieces, each one covering the same stretch of numbers.",
+        { "beat": 0.4 },
+        "A set becomes a short, sorted list of which pieces it actually touches at all, and for each piece touched, a small container holding only that piece's own matching numbers.",
+        { "beat": 0.4 },
+        "A piece a set never touches costs nothing whatsoever — it simply isn't in the list."
+      ]
+    },
+    {
+      "lines": [
+        "Take one piece holding a hundred matching numbers, scattered with no two of them next to each other, and a second piece holding many more matching numbers, but bunched into just a few long unbroken stretches.",
+        { "beat": 0.4 },
+        "Does whichever container shape wins for the first piece also win for the second?"
+      ],
+      "answer": [
+        "No. The right container for a piece depends entirely on that piece's own shape, never on a fixed rule and never on count alone.",
+        "A hundred scattered numbers and thirty thousand bunched numbers can each favor a completely different container, because what each container actually charges for depends on how the numbers are arranged, not how many there are."
+      ]
+    },
+    {
+      "lines": [
+        "So every piece gets measured honestly, against three real containers.",
+        { "beat": 0.4 },
+        "A short sorted list, charging a little for every number it holds — cheapest when a piece is sparse. A fixed-size row of on-off switches, charging exactly the same no matter how many numbers are on — cheapest when a piece is dense.",
+        { "beat": 0.3 },
+        "And a list of unbroken stretches, charging almost nothing extra the longer a single stretch runs — cheapest when a piece is clustered.",
+        { "beat": 0.4 },
+        "Whichever of the three actually comes out smallest for a given piece is the one that piece gets. Never guessed, always measured."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where the crossover between the first two containers actually falls, and it isn't a tuned number someone picked by eye.",
+        { "beat": 0.4 },
+        "The sorted-list container charges a little for every number; the switches container charges a fixed amount regardless. Set those two costs equal to each other and solve, and one particular count of matching numbers falls straight out as the exact point where neither container beats the other.",
+        { "beat": 0.4 },
+        "Below that count, the sorted list wins. Above it, the fixed row of switches wins."
+      ]
+    },
+    {
+      "lines": [
+        "Now imagine the most extreme piece possible: every single number in its whole range matches, with nothing left out at all — one unbroken stretch from the very first number to the very last.",
+        { "beat": 0.4 },
+        "Does holding that piece cost almost nothing, or does it cost something for every one of those many thousands of matching numbers?"
+      ],
+      "answer": [
+        "Almost nothing — a handful of bytes, full stop, however long that single stretch runs.",
+        "The stretch container only ever charges for how many separate unbroken runs a piece breaks into, never for how many numbers those runs actually cover — and one single stretch covering everything is the cheapest case there is."
+      ]
+    },
+    {
+      "lines": [
+        "That container barely notices how many numbers a piece holds, only how many separate unbroken stretches those numbers fall into.",
+        { "beat": 0.4 },
+        "A set typically starts out built from only the first two container shapes. A separate pass can scan it afterward and switch any piece over to the stretch container, wherever doing so actually shrinks it",
+        { "beat": 0.3 },
+        "— a pass normally run just once, right before the whole set is handed off to be queried.",
+        { "beat": 0.4 },
+        "Few long stretches win decisively this way; many short ones barely move at all."
+      ]
+    },
+    {
+      "lines": [
+        "Take three different shapes of a real condition over several million row numbers — one crowded everywhere, one scattered thinly, one strung out into clusters — and measure all three against the fixed-cost structure, the per-number structure, and this one, picking a container piece by piece.",
+        { "beat": 0.4 },
+        "Picking per piece beats the fixed-cost structure every single time, and beats the per-number structure every single time too, regardless of which of the three shapes is being measured."
+      ]
+    },
+    {
+      "lines": [
+        "Now intersect two of these sets, piece by piece. One of them simply has no container at all for some particular piece that the other one does hold.",
+        { "beat": 0.4 },
+        "What does that missing piece cost the intersection?"
+      ],
+      "answer": [
+        "Nothing whatsoever — a piece missing from one side is simply skipped outright, never computed and thrown away.",
+        "The two short sorted lists of pieces are merged exactly the way any two sorted lists are merged, and a piece with nothing to match on the other side is never even visited."
+      ]
+    },
+    {
+      "lines": [
+        "Walk only the pieces every side actually shares, and inside a shared piece, the comparison depends on which containers met there.",
+        { "beat": 0.4 },
+        "Two fixed rows of switches combine in one single pass, matched position against matched position.",
+        { "beat": 0.3 },
+        "Two sorted lists of numbers get merged the ordinary way when they're close to the same size — but once one list dwarfs the other, jumping ahead by rapidly growing steps and then narrowing back in finds the overlap in far fewer comparisons than a plain merge ever would.",
+        { "beat": 0.4 },
+        "Measure both approaches as the size gap between two lists widens, and the jumping approach pulls decisively ahead exactly once that gap gets large, while costing nothing extra when the two lists started out close in size."
+      ]
+    },
+    {
+      "lines": [
+        "This exact structure shows up, in different strengths, across more than one real system.",
+        { "beat": 0.4 },
+        "A search engine's own filtering code, built independently but clearly inspired by this same two-level idea. A cluster computing engine that pulls in this very structure directly for its own internal bookkeeping.",
+        { "beat": 0.3 },
+        "A real-time analytics store's inverted index. And another analytics store that picked this exact design as its default way of compressing a bitmap index."
+      ]
+    },
+    {
+      "lines": [
+        "So here's where this one lands, set against the structure from the previous lesson. That earlier one answered one yes-or-no question honestly most of the time, at a steep discount in memory, and paid for the discount with an occasional wrong yes.",
+        { "beat": 0.4 },
+        "This one gives up none of that honesty — no wrong answer in either direction — while still landing close to whatever the tightest truthful encoding of each piece's own shape would need.",
+        { "beat": 0.4 },
+        "And what it stores one way, as a short sorted list of small numbers, turns out to be compressible still further than that."
+      ]
+    }
+  ]
+}

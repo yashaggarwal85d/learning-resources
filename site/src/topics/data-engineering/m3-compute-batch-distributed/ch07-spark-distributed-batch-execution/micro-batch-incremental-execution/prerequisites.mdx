@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: diagnosing jobs from the Spark UI
+
+<ul class="resources">
+  <Resource kind="reel" title="Diagnosing jobs from the Spark UI" domain="data-engineering" host="de.diagnosing-jobs-spark-ui" by="the previous topic, closing section 7.3" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Structured Streaming: APIs on DataFrames and Datasets" href="https://spark.apache.org/docs/4.0.0/streaming/apis-on-dataframes-and-datasets.html" by="Apache Spark documentation">The trigger types table, including why the one-time trigger is deprecated in favor of available-now.</Resource>
+  <Resource kind="reading" title="MicroBatchExecution.scala" href="https://raw.githubusercontent.com/apache/spark/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/streaming/MicroBatchExecution.scala" by="Apache Spark source, GitHub">The offset log written at the start of a batch, and the commit log written only once it finishes.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,67 @@
+{
+  "topic": "de.on-prem-data-platforms-after",
+  "steps": [
+    {
+      "lines": [
+        "Watch what didn't change here. Not the workload, not the hardware it would've run on — just where it's running.",
+        "And the bill went up anyway. Whatever the cloud promised, it isn't delivering it for a workload shaped like this one."
+      ]
+    },
+    {
+      "lines": [
+        "Before the rest of this topic, think about what the cloud's whole pricing story actually depends on.",
+        "It depends on a workload having quiet moments to shrink into. This one doesn't have any. What does that do to the math?"
+      ],
+      "answer": [
+        "No idle time means no discount — the workload pays the full rate around the clock.",
+        "Elasticity isn't a universal discount. It's a reward for having somewhere to scale down to, and this workload never does."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what each half of this picture was actually built for, not just what replaced what.",
+        "The old estate assumed one specific cluster shape. The new one swaps every piece of that for something general-purpose — storage, scheduling, the engine, the table format, each its own layer now."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention here, because this is the one thing in the whole topic that's actually running, not just described.",
+        "Watch the second write land. That's not a diagram of a snapshot — it's a real one, sitting on a real object store, that you could query back out right now."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what actually happened in this timeline, not just that prices changed.",
+        "The licensing model flipped from something you own to something you keep paying for. That's the part that reached almost everyone, and that's the part that made people look elsewhere."
+      ]
+    },
+    {
+      "lines": [
+        "Notice these are four separate tests, not four flavors of the same argument.",
+        "Each one either applies to a workload or it doesn't. Say 'on-prem is cheaper' without naming which of these four actually fits, and you haven't really made an argument yet."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what's missing from this picture that was always there before, quietly, in the background.",
+        "Nobody refreshes the hardware for you. Nobody runs the cluster for you. And nothing catches you if you guessed capacity wrong."
+      ]
+    },
+    {
+      "lines": [
+        "If you keep one thing: winning one of those four tests and avoiding the operational bill are two completely different claims.",
+        "The modern stack replaces the old one piece by piece. A licensing shift, not new technology, triggered the second look. Four tests decide the winner. And the bill doesn't disappear just because on-prem passed one."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, look at the shape of this workload again — minutes of real work, then nothing, every single day.",
+        "That shape is the opposite of the hook's workload. Does moving it on-prem actually make sense here?"
+      ],
+      "answer": [
+        "No — this is exactly the shape the cloud's pricing model is built to reward.",
+        "Idle time isn't a problem to solve by moving on-prem. It's the one thing elasticity already handles for free."
+      ]
+    }
+  ]
+}
