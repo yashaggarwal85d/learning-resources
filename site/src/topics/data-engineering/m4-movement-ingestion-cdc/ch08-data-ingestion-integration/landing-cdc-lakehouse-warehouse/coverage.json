@@ -1,0 +1,150 @@
+{
+  "topic": "de.landing-cdc-lakehouse-warehouse",
+  "syllabus": [
+    {
+      "clause": "append-only change log + periodic MERGE vs streaming upserts into MOR tables (§6.3)",
+      "at": [
+        { "step": "Reveal: append-only change log, periodic MERGE" },
+        { "step": "Reveal: streaming upserts into a merge-on-read table" }
+      ]
+    },
+    {
+      "clause": "ordering by source LSN, not arrival time",
+      "at": [
+        { "step": "Predict: is append-then-MERGE naturally protected" },
+        { "step": "Reveal: the winner is the greater source LSN" }
+      ]
+    },
+    {
+      "clause": "compaction cost of high-update tables",
+      "at": [{ "step": "Reveal: compaction's own cost scales with update rate" }]
+    },
+    {
+      "clause": "warehouse-native CDC ingestion (Snowpipe Streaming, BigQuery CDC upserts)",
+      "at": [{ "step": "Reveal: a warehouse that lands CDC natively" }]
+    },
+    {
+      "clause": "topic-to-table materialisation (§9.3)",
+      "at": [{ "step": "Reveal: turning a topic into a table without hand-writing the merge" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "BigQuery docs: Change data capture",
+      "items": [
+        {
+          "item": "The pseudocolumn _CHANGE_TYPE only accepts the values UPSERT and DELETE",
+          "at": [{ "step": "Reveal: a warehouse that lands CDC natively" }]
+        },
+        {
+          "item": "You must declare primary keys for the destination table in BigQuery; composite primary keys containing up to 16 columns are supported",
+          "at": [{ "step": "Reveal: a warehouse that lands CDC natively" }]
+        },
+        {
+          "item": "Applying row modifications at query run time increases query latency and cost, which is why max_staleness exists",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Snowflake docs: Snowpipe Streaming, Named Channels and exactly-once delivery",
+      "items": [
+        {
+          "item": "Named Channels provide ordered, exactly-once ingestion for applications that coordinate Snowflake commits with source offsets",
+          "at": [{ "step": "Reveal: a warehouse that lands CDC natively" }]
+        },
+        {
+          "item": "Named Channels suit partitioned sources such as Kafka or CDC, where each source partition maps to a channel",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Snowflake docs: Snowpipe Streaming overview",
+      "items": [
+        {
+          "item": "ingest-to-queryable latency as low as 5 seconds, disclosed as a vendor figure",
+          "at": [{ "step": "Reveal: a warehouse that lands CDC natively" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: Iceberg pipeline connector",
+      "items": [
+        {
+          "item": "Iceberg is a documented Flink CDC pipeline sink, one of the streaming-upsert examples this topic names",
+          "at": [{ "step": "Reveal: streaming upserts into a merge-on-read table" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: JDBC sink connector",
+      "items": [
+        {
+          "item": "The JDBC sink's own idempotent-upsert mode is the single-target precedent this topic generalizes to a lakehouse current-state table",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Airbyte docs: Incremental | Append + Deduped",
+      "items": [
+        {
+          "item": "This sync mode combines two rows in the destination and uses the most recent data, a vendor-managed contrast to this topic's own hand-built LSN tiebreak",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The first predict question is checked specifically against what a comparison-free merge actually does (keeps whichever change was merged last) rather than against a vague claim that a periodic strategy is 'slower and therefore safer,' since the measured proof shows the naive merge fails identically whether it runs continuously or periodically.",
+        "at": [{ "step": "Predict: is append-then-MERGE naturally protected" }]
+      },
+      {
+        "item": "The LSN-ordering claim is checked by actually running the same real decoded events through the same MERGE logic twice, in true order and in reversed order, rather than asserted from the documentation alone, so the convergence claim is a measured result, not a restatement of CHAPTER.md's own text.",
+        "at": [{ "step": "Reveal: the winner is the greater source LSN" }]
+      },
+      {
+        "item": "The compaction-cost claim is checked at two concretely different update rates on the same twenty keys, with the superseded-row count read directly off the hand-built data-file table rather than estimated, so the 'proportional to update rate' claim is a measured ratio (exactly five times), not an approximation.",
+        "at": [{ "step": "Reveal: compaction's own cost scales with update rate" }]
+      },
+      {
+        "item": "The final predict question's correct answer is checked against the specific mechanism of a streaming upsert (superseded rows accumulate, key count does not) rather than against a general claim that 'MOR tables get slow,' which would not explain which specific quantity is unbounded.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The Hook's own framing (a replayed batch and a live event, in opposite order) is checked against this chapter's own topic 13 (the snapshot-and-stream loop, whose replayed events are exactly this kind of out-of-order arrival), not against a hypothetical arrival-order mistake invented for this topic alone.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The BigQuery and Snowpipe Streaming claims are checked word for word against each vendor's own current documentation page rather than against a general familiarity with 'warehouse CDC support,' and the latency figure is explicitly disclosed as a vendor figure rather than presented as a measured one.",
+        "at": [{ "step": "Reveal: a warehouse that lands CDC natively" }]
+      },
+      {
+        "item": "This topic's own disclosed scope decision — no real Iceberg or Paimon table format exists in this sandbox, so examples.py runs on a real DuckDB database with a real MERGE INTO statement instead — is read literally against CHAPTER.md's own disclosed fallback ('on Chapter 6's table-format library if live, else on DuckDB, disclosed') rather than treated as an unexplained substitution.",
+        "at": [{ "out": "disclosed scope decision, per CHAPTER.md's own 'Lab' line and REVIEW.md" }]
+      },
+      {
+        "item": "The topic-to-table materialisation clause is named only, exactly as CHAPTER.md's own entry frames it (Chapter 9 topic 26's own subject), and the Airbyte source used to illustrate it is checked to confirm it describes deduplication to the latest row without exposing an LSN-style tiebreak, so the contrast drawn against this topic's own hand-built mechanism is accurate rather than assumed.",
+        "at": [{ "step": "Reveal: turning a topic into a table without hand-writing the merge" }]
+      },
+      {
+        "item": "Flink's or Spark's own streaming sink mechanics, commit frequency and small files, table maintenance as a scheduled job, the medallion layers, and SCD2 history from CDC are each checked against CHAPTER.md's own 'Leaves out' line and confirmed absent from this topic's reel and narration beyond the single declared pointer to copy-on-write versus merge-on-read.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "The claim that append-then-MERGE's own current-state table size never depends on update rate is checked directly against the same measured function that confirms the opposite for the streaming-upsert landing's own superseded-row count, so the contrast drawn in post-notes.md is a measured comparison, not two separately asserted claims.",
+        "at": [{ "step": "Reveal: compaction's own cost scales with update rate" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

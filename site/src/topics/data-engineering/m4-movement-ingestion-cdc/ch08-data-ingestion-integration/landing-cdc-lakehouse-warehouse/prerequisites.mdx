@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: deletes, the raw layer, the envelope, SCD2, and the lakehouse's own merge machinery
+
+<ul class="resources">
+  <Resource kind="reel" title="MERGE, upsert and concurrent writers" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 2, §2.1" />
+  <Resource kind="reel" title="Raw/bronze landing-layer design" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 8, §8.1" />
+  <Resource kind="reel" title="SCD Type 2 implementation" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 3, §3.2" />
+  <Resource kind="reel" title="Medallion architecture and its limits" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 3, §3.3" />
+  <Resource kind="reel" title="Deletes and tombstones" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Debezium architecture and event model" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Copy-on-write vs merge-on-read" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 6, §6.3" />
+  <Resource kind="reel" title="Small files, compaction and file sizing" domain="data-engineering" host="de.landing-cdc-lakehouse-warehouse" by="Chapter 6, §6.3" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Change data capture" href="https://docs.cloud.google.com/bigquery/docs/change-data-capture" by="BigQuery docs">The _CHANGE_TYPE pseudocolumn, primary-key requirements, and max_staleness.</Resource>
+  <Resource kind="reading" title="Named Channels and exactly-once delivery" href="https://docs.snowflake.com/en/user-guide/snowpipe-streaming/snowpipe-streaming-channels" by="Snowflake docs">Offset tokens, ordered exactly-once ingestion, Kafka and CDC partitions.</Resource>
+  <Resource kind="reading" title="Snowpipe Streaming" href="https://docs.snowflake.com/en/user-guide/snowpipe-streaming/data-load-snowpipe-streaming-overview" by="Snowflake docs">The vendor's own ingest-to-queryable latency figure.</Resource>
+  <Resource kind="reading" title="Iceberg pipeline connector" href="https://nightlies.apache.org/flink/flink-cdc-docs-release-3.7/docs/connectors/pipeline-connectors/iceberg/" by="Flink CDC docs">Named only, re-used from topic 21.</Resource>
+  <Resource kind="reading" title="JDBC sink connector" href="https://debezium.io/documentation/reference/stable/connectors/jdbc.html" by="Debezium docs">Named only, re-used from topic 19.</Resource>
+  <Resource kind="reading" title="Incremental | Append + Deduped" href="https://docs.airbyte.com/platform/using-airbyte/core-concepts/sync-modes/incremental-append-deduped" by="Airbyte docs">A vendor-managed contrast to this topic's own hand-built LSN tiebreak.</Resource>
+</ul>
+
+</section>

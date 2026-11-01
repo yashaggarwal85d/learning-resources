@@ -1,0 +1,83 @@
+{
+  "topic": "de.landing-cdc-lakehouse-warehouse",
+  "steps": [
+    {
+      "lines": [
+        "A change to one order gets replayed from an earlier batch, and the exact same order also changes live, in the opposite order from how those two things actually happened.",
+        "Once both versions land in the table, the table ends up keeping the older one.",
+        "Everything upstream behaved correctly. The mistake happened entirely at the moment of landing."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what actually decides the winner here, think through this with me.",
+        "One landing strategy appends every change first and only merges the latest one into the table every few minutes, rather than updating the table the instant each change shows up.",
+        "Does simply waiting before merging protect that strategy from the exact mistake you just saw, or can that same mistake still reach it?"
+      ],
+      "answer": [
+        "Waiting before merging changes nothing about which row actually wins unless the merge itself compares something about where each change came from.",
+        "Without that comparison, whichever change happens to get merged last still wins, no matter how long the table waited to merge anything at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly how that first landing strategy actually works.",
+        "Every single change gets appended into its own table first, in the order it arrives, with nothing merged into the real table yet.",
+        "Every few minutes, one single step takes only the latest change for each key and merges just that into the table everyone actually reads from."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's a completely different way to land the exact same kind of change.",
+        "Instead of waiting on a periodic step, each change gets written immediately as a brand new file, plus a small marker pointing at whatever earlier file it's replacing.",
+        "A read happening right after that write already sees the correct current value, merged together on the spot, at the cost of redoing that same merge again on every single read until something eventually cleans those files up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one decision that actually prevents today's opening mistake from ever happening again.",
+        "Whichever single step merges two changes to the same row compares where each change actually sat in the source's own ongoing record, not when either one happened to show up here.",
+        "Because of that one comparison, an older change can never overwrite a newer row, regardless of which order the two of them get fed into that merge."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part of today's lesson that explains what that second, immediate landing strategy actually costs over time.",
+        "A table whose own rows keep changing over and over produces proportionally more of those small leftover files, every single one of them still sitting there until something rewrites them away.",
+        "Meanwhile, the table landed by the first strategy, the one merged every few minutes, never grows past exactly however many distinct rows actually exist, no matter how often any one of them changes."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's how two different warehouses actually offer this same capability built directly into themselves.",
+        "One major warehouse lets a write explicitly declare itself as an update or a deletion against a key a team has already told that warehouse to expect.",
+        "A different major warehouse offers a channel design built specifically for strictly ordered sources, guaranteeing each channel's own writes land exactly once, with its own documentation naming a latency as low as just a few seconds."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a third option worth knowing about before we wrap up today's lesson.",
+        "Instead of a team writing either of today's two merge strategies by hand, a managed capability can take a stream of changes and turn it directly into a queryable table completely on its own.",
+        "That option still makes exactly the same underlying choice this lesson just walked through. It simply makes that choice somewhere a team never has to look at directly."
+      ]
+    },
+    {
+      "lines": [
+        "Let's gather what today actually showed, because every piece of it comes back to one single tradeoff.",
+        "Appending changes and merging them periodically, writing changes immediately and merging them at read time, comparing source position instead of arrival order, and two warehouses that bake this choice directly into themselves.",
+        "Freshness, how much gets written, and how much gets read back out all trade against one another, and no single strategy here ever escapes that trade. It only decides where that cost actually lands."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, because a team might assume the wrong cost is the one actually growing out of control.",
+        "Picture a table whose rows each change dozens of times every single day, landed by that second, immediate strategy, with nobody ever running the cleanup step that rewrites old files away.",
+        "Given that, which specific cost keeps growing completely without bound?"
+      ],
+      "answer": [
+        "It's the pile of leftover, superseded rows sitting in those small files, not the table's own row count.",
+        "Every single update adds one more leftover file without ever removing the ones already sitting there, so that pile only ever grows until somebody finally runs the cleanup step."
+      ]
+    }
+  ]
+}

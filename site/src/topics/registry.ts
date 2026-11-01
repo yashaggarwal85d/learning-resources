@@ -6845,6 +6845,26 @@ export const TOPICS: TopicMeta[] = [
       "Whichever way the changes get here, they arrive as inserts, updates and deletes, and an analytical table has to apply them. The last topic of this section is how, and what that costs the lakehouse and the warehouse.",
   },
   {
+    id: 'de.landing-cdc-lakehouse-warehouse',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/landing-cdc-lakehouse-warehouse',
+    title: 'Landing CDC in lakehouse and warehouse',
+    syllabusTitle: 'Landing CDC in lakehouse and warehouse',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['cdc-landing-strategies', 'lsn-ordered-merge'],
+    uses: ['cdc-delete-tombstone', 'cdc-source-offset-vs-kafka-offset', 'debezium-architecture-envelope', 'raw-layer-replay-metadata', 'lakehouse-merge-rewrite', 'merge-statement', 'scd-type-2', 'flink-cdc-kafkaless-pipeline'],
+    declared: [],
+    bridge:
+      "Whichever way the changes get here, they arrive as inserts, updates and deletes, and an analytical table has to apply them. This topic is how, in a lakehouse and in a warehouse, and why the winner of two changes is decided by log position and never by arrival.",
+    handoff:
+      "Transport is solved: a row and every change to it reach the analytical side, in order, once in effect. The harder question is whether two systems' rows describe the same customer, and which one is right. That is not a transport problem, and it starts with who owns the truth.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
