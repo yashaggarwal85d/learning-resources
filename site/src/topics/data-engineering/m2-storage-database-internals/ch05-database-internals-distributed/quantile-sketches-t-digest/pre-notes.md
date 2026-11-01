@@ -1,0 +1,5 @@
+- **Percentile / quantile**: the value below which a given fraction of a dataset falls. *Where you meet it:* every reveal, as the thing being computed three different ways.
+- **Partition, from this chapter's own queue/log and sketch material**: an independently processed slice of a larger dataset. *Where you meet it:* the hook and the counterexample reveal.
+- **Centroid, from this topic's own mergeable sketch**: one cluster of nearby real values, stored as a mean and a count. *Where you meet it:* the merge-by-design reveal.
+- **Register/harmonic mean, from topic 31's own sketch family**: a different sketch family's own fixed-memory building block, for a different question (how many, not a distribution). *Where you meet it:* the bridge, contrasted with this topic's own quantile question.
+- **Tail latency**: the slow end of a response-time distribution, where averages mislead most. *Where you meet it:* the "Prove it" step's own dashboard scenario.

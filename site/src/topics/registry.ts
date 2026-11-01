@@ -5765,6 +5765,26 @@ export const TOPICS: TopicMeta[] = [
       "Counting distinct values is one single number a sketch can approximate. The next, closing topic is a sketch for an entire distribution at once: a quantile.",
   },
   {
+    id: 'de.quantile-sketches-t-digest',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/quantile-sketches-t-digest',
+    title: 'Quantile sketches: t-digest, DDSketch, KLL',
+    syllabusTitle: 'Quantile sketches: t-digest, DDSketch, KLL',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.6' },
+    minutes: 15,
+    verified: '2026-10-31',
+    introduces: ['quantile-sketches'],
+    uses: ['hyperloglog-distinct-counting'],
+    declared: [],
+    bridge:
+      "Counting distinct values is one single number a sketch can approximate. This closing topic is a sketch for an entire distribution at once: a quantile, with a real demonstration of why averaging per-partition percentiles is simply wrong, and why a real mergeable sketch fixes it.",
+    handoff:
+      "This chapter opened at the single physical page an engine reads and writes and closed at a sketch that approximates an entire distribution in a few kilobytes — the full range between an engine's own internals and the statistics built on top of it. The next chapter turns to the files these engines and sketches actually read and write at rest, starting with the oldest and most trap-ridden of them: plain-text interchange formats like CSV and JSON.",
+  },
+  {
     id: 'de.orchestrator-architecture-scheduler',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch11-orchestration-reliability-dataops/orchestrator-architecture-scheduler',
@@ -6963,6 +6983,26 @@ export const TOPICS: TopicMeta[] = [
       "Once a column is classified restricted, the first protection is that it cannot be read by anyone who steals the disk. This topic is how a key hierarchy delivers that, and what rotating or deleting a key really does to the data: envelope encryption.",
     handoff:
       "Encryption makes data unreadable to a thief. It does not change what the data legally is for the people who hold the key, and it does not help once an analyst has decrypted it. The next topic is the line between data that can be tied to a person and data that cannot: pseudonymisation versus anonymisation.",
+  },
+  {
+    id: 'de.pseudonymisation-vs-anonymisation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/pseudonymisation-vs-anonymisation',
+    title: 'Pseudonymisation vs anonymisation',
+    syllabusTitle: 'Pseudonymisation vs anonymisation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['pseudonymised-vs-anonymised-data', 'edps-v-srb-relative-identifiability', 'keyed-vs-plain-hash-pseudonyms', 'linkage-attack'],
+    uses: ['dek-kek-envelope-hierarchy', 'crypto-shredding-key-deletion', 'sensitivity-tier-and-category', 'discovery-false-negatives'],
+    declared: ['keyed-hash', 'cryptographic-hash', 'eu-regulatory-residency-architecture'],
+    bridge:
+      "Encryption makes data unreadable to a thief. It does not change what the data legally is for the people who hold the key, and it does not help once an analyst has decrypted it. This topic is the line between data that can be tied to a person and data that cannot: pseudonymisation versus anonymisation.",
+    handoff:
+      "Whether a dataset is personal data decides what you must protect. The next question is who inside your own company may read it, and how that rule is written down so a machine can apply it: access-control models.",
   },
   {
     id: 'de.partitioned-log-segments-indexes',
