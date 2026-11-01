@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Progress guarantees and linearizability">Blocking vs. lock-free, compare-and-swap, and the correctness definition this topic checks its own stalled-producer history against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Ring buffers and bounded queues">The single-threaded ring and its power-of-two masking, now shared by many producers and consumers at once.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">Cache lines, the unit this topic's padding is built around.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="mpmc_bounded_q.h" href="https://github.com/gabime/spdlog/blob/1bd10957cb47824c0e24859db2bd637e472ab97d/include/spdlog/details/mpmc_bounded_q.h" by="Dmitry Vyukov's algorithm, vendored in spdlog">A license-attributed copy of the exact queue this topic implements and traces.</Resource>
+  <Resource kind="reading" title="array_queue.rs" href="https://github.com/crossbeam-rs/crossbeam/blob/master/crossbeam-queue/src/array_queue.rs" by="crossbeam-rs">A production Rust implementation of the same algorithm, padded against false sharing.</Resource>
+  <Resource kind="reading" title="LMAX Disruptor User Guide" href="https://lmax-exchange.github.io/disruptor/user-guide/index.html" by="LMAX Exchange">The Sequence, Sequencer, Sequence Barrier and claim-then-publish vocabulary this topic compares against Vyukov's design.</Resource>
+</ul>
+
+</section>
