@@ -68,7 +68,7 @@ export function RevealCompactionCost({ t }: StepCtx) {
     <Svg label="a table whose rows change often produces proportionally more files for compaction to rewrite; append-then-merge's own current table never grows with update rate." h={220}>
       <Row y={60} label="low update rate" value="few superseded rows" o={easeOut(seg(t, 0, 0.4))} />
       <Row y={110} label="high update rate" value="proportionally more" valueColor={C.badText} o={easeOut(seg(t, 0.2, 0.6))} />
-      <Row y={160} label="the current table itself" value="same size either way" valueColor={C.focus} o={easeOut(seg(t, 0.4, 0.8))} />
+      <Row y={160} label="current table" value="same size" valueColor={C.focus} o={easeOut(seg(t, 0.4, 0.8))} />
     </Svg>
   );
 }
@@ -78,7 +78,7 @@ export function RevealWarehouseNative({ t }: StepCtx) {
     <Svg label="BigQuery accepts UPSERT and DELETE on a declared primary key; Snowpipe Streaming's Named Channels give ordered, exactly-once ingestion by offset token." h={220}>
       <Row y={60} label="BigQuery" value="UPSERT, DELETE, a key" o={easeOut(seg(t, 0, 0.4))} />
       <Row y={110} label="Snowpipe Streaming" value="ordered, exactly-once" valueColor={C.focus} o={easeOut(seg(t, 0.2, 0.6))} />
-      <Row y={160} label="latency, vendor figure" value="as low as five seconds" o={easeOut(seg(t, 0.4, 0.8))} />
+      <Row y={160} label="latency" value="five seconds" o={easeOut(seg(t, 0.4, 0.8))} />
     </Svg>
   );
 }
@@ -86,7 +86,7 @@ export function RevealWarehouseNative({ t }: StepCtx) {
 export function RevealTopicToTable({ t }: StepCtx) {
   return (
     <Svg label="a third way to the same table: turning a change topic directly into one, without a team writing the merge by hand at all." h={200}>
-      <Row y={70} label="append-then-merge, streaming upsert" value="written by hand" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={70} label="both earlier paths" value="hand-written" o={easeOut(seg(t, 0, 0.5))} />
       <Row y={130} label="topic-to-table" value="the merge, managed" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.65))} />
     </Svg>
   );
@@ -95,10 +95,10 @@ export function RevealTopicToTable({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   return (
     <Svg label="append-then-merge, streaming upserts, the LSN tiebreak, compaction's own cost, and two warehouse-native paths — all one choice, made several ways." h={260}>
-      <Row y={50} label="two landing strategies" value="different freshness, cost" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="the winner of two changes" value="decided by LSN" valueColor={C.focus} o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="compaction cost" value="scales with update rate" o={easeOut(seg(t, 0.25, 0.55))} />
-      <Row y={185} label="a warehouse's own path" value="the same choice, hosted" o={easeOut(seg(t, 0.4, 0.75))} />
+      <Row y={50} label="two landing strategies" value="different freshness" o={easeOut(seg(t, 0, 0.3))} />
+      <Row y={95} label="winner of two" value="decided by LSN" valueColor={C.focus} o={easeOut(seg(t, 0.15, 0.45))} />
+      <Row y={140} label="compaction cost" value="scales with updates" o={easeOut(seg(t, 0.25, 0.55))} />
+      <Row y={185} label="warehouse-native path" value="hosted too" o={easeOut(seg(t, 0.4, 0.75))} />
     </Svg>
   );
 }
@@ -107,7 +107,7 @@ export function ProveIt({ t }: StepCtx) {
   return (
     <Svg label="a table's rows now change fifty times a day each, and the team never runs compaction. Which cost grows without bound?" h={200}>
       <Row y={70} label="current-state table size" value="not yet revealed" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="superseded rows awaiting compaction" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+      <Row y={130} label="rows awaiting compaction" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }

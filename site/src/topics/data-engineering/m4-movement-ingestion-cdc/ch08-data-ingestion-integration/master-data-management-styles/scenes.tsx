@@ -29,7 +29,7 @@ export function Predict({ t }: StepCtx) {
   return (
     <Svg label="does fixing a duplicate like this always mean rewriting the CRM's or the ERP's own data, or can a style fix it without touching either source?" h={200}>
       <Row y={70} label="rewrite a source directly" value="one way to fix it" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="fix it without touching either" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+      <Row y={130} label="fix it, no rewrite" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
@@ -75,7 +75,7 @@ export function RevealMatchMerge({ t }: StepCtx) {
     <Svg label="standardise, match, merge by survivorship, publish — and whatever the rules can't resolve waits in a steward's own queue." h={220}>
       <Row y={60} label="standardise, match, merge" value="automatic, by rule" o={easeOut(seg(t, 0, 0.4))} />
       <Row y={110} label="survivorship" value="decides which value wins" valueColor={C.focus} o={easeOut(seg(t, 0.2, 0.6))} />
-      <Row y={160} label="what the rules can't resolve" value="a steward's own queue" valueColor={C.badText} o={easeOut(seg(t, 0.4, 0.8))} />
+      <Row y={160} label="unresolved cases" value="a steward's queue" valueColor={C.badText} o={easeOut(seg(t, 0.4, 0.8))} />
     </Svg>
   );
 }
@@ -83,7 +83,7 @@ export function RevealMatchMerge({ t }: StepCtx) {
 export function RevealAcrossErpCrm({ t }: StepCtx) {
   return (
     <Svg label="the same customer, product or plant can sit in an ERP and a CRM at once; each style gives that pair a different kind of consistency." h={200}>
-      <Row y={70} label="customer, product, plant" value="in both systems at once" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={70} label="customer, product, plant" value="in both systems" o={easeOut(seg(t, 0, 0.5))} />
       <Row y={130} label="consistency" value="depends on the style chosen" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.65))} />
     </Svg>
   );
