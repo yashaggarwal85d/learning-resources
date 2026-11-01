@@ -1,5 +1,7 @@
 # References
 
+Last verified: 2026-11-01
+
 - OpenJDK, `java.util.concurrent.ConcurrentHashMap` — `jdk21u`, `master` branch. <https://raw.githubusercontent.com/openjdk/jdk21u/master/src/java.base/share/classes/java/util/concurrent/ConcurrentHashMap.java>
 - Shalev, Ori, and Nir Shavit. "Split-Ordered Lists: Lock-Free Extensible Hash Tables." *Journal of the ACM* 53, no. 3 (2006): 379–405. <https://people.csail.mit.edu/shanir/publications/Split-Ordered_Lists.pdf>
 - crossbeam-rs, `crossbeam-queue/src/array_queue.rs`, `master` branch (reused from the previous topic, for the "based on Vyukov's bounded MPMC queue" attribution). <https://raw.githubusercontent.com/crossbeam-rs/crossbeam/master/crossbeam-queue/src/array_queue.rs>

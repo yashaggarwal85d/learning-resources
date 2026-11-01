@@ -58,7 +58,7 @@ export function ReaderDuringResizePredict({ t }: StepCtx) {
       </g>
       <g opacity={b}>
         <path d="M120 260 L120 230" stroke={C.latte} strokeWidth={1.4} fill="none" />
-        <T x={120} y={280} s={13} a="middle" f={C.caramel}>reader — wait, look twice, or a note?</T>
+        <T x={300} y={280} s={13} a="middle" f={C.caramel}>reader: wait, look twice, or a note?</T>
       </g>
     </Svg>
   );
@@ -96,7 +96,7 @@ export function CasEmptyBin({ t }: StepCtx) {
       <g opacity={b}>
         <path d="M240 60 L240 100" stroke={C.caramel} strokeWidth={1.6} fill="none" />
         <T x={240} y={48} s={12} a="middle" f={C.caramel}>CAS</T>
-        <T x={300} y={127} s={12} a="middle" f={C.latte}>first node, no lock</T>
+        <T x={240} y={185} s={12} a="middle" f={C.latte}>first node, no lock</T>
       </g>
     </Svg>
   );
@@ -205,7 +205,7 @@ export function ForwardingNode({ t }: StepCtx) {
         {[0, 1, 2, 3].map((i) => bin(280 + i * 55, 80, 'new', C.taupe))}
         <path d="M140 97 L280 97" stroke={C.caramel} strokeWidth={1.4} fill="none" />
         <T x={210} y={85} s={11} a="middle" f={C.caramel}>reader follows the note</T>
-        <T x={460} y={170} s={12} a="middle" f={C.latte}>a second thread migrates the next range</T>
+        <T x={300} y={250} s={12} a="middle" f={C.latte}>a second thread migrates the next range</T>
       </g>
     </Svg>
   );
@@ -257,12 +257,15 @@ export function Recap({ t }: StepCtx) {
   return (
     <Svg label="Three small pictures side by side — stripes, a bin array with CAS and locks, a split-ordered line — each on its own rung of the progress ladder" h={300}>
       <g opacity={a}>
-        <rect x={60} y={90} width={110} height={70} fill="none" stroke={C.taupe} strokeWidth={1.4} />
-        <T x={115} y={180} s={11} a="middle" f={C.latte}>lock striping — blocking</T>
-        <rect x={220} y={90} width={110} height={70} fill="none" stroke={C.caramel} strokeWidth={1.4} />
-        <T x={275} y={180} s={11} a="middle" f={C.latte}>CAS on bins — lock-free on the fast path</T>
-        <rect x={380} y={90} width={110} height={70} fill="none" stroke={C.cinnamon} strokeWidth={1.4} />
-        <T x={435} y={180} s={11} a="middle" f={C.latte}>split-ordered — lock-free throughout</T>
+        <rect x={40} y={70} width={100} height={60} fill="none" stroke={C.taupe} strokeWidth={1.4} />
+        <T x={90} y={150} s={12} a="middle" f={C.latte}>lock striping</T>
+        <T x={90} y={225} s={12} a="middle" f={C.latte}>blocking</T>
+        <rect x={250} y={70} width={100} height={60} fill="none" stroke={C.caramel} strokeWidth={1.4} />
+        <T x={300} y={150} s={12} a="middle" f={C.latte}>CAS on bins</T>
+        <T x={300} y={225} s={12} a="middle" f={C.latte}>fast-path lock-free</T>
+        <rect x={460} y={70} width={100} height={60} fill="none" stroke={C.cinnamon} strokeWidth={1.4} />
+        <T x={510} y={150} s={12} a="middle" f={C.latte}>split-ordered</T>
+        <T x={510} y={225} s={12} a="middle" f={C.latte}>fully lock-free</T>
       </g>
     </Svg>
   );

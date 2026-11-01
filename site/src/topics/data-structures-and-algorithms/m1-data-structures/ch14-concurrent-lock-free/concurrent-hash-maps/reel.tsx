@@ -85,7 +85,7 @@ const reel: Reel = {
       ),
       duration: 4.6,
       fig: "a bin's own first node, framed as the lock",
-      takeaway: 'No lock object per bin — the bin’s own first node is the lock, so an empty bin costs nothing to guard.',
+      takeaway: "The bin's own first node is the lock, so an empty bin costs nothing to guard.",
       Visual: S.LockFirstNode,
     },
     {
@@ -153,6 +153,7 @@ const reel: Reel = {
       ),
       duration: 5,
       fig: 'a chain reaching the threshold, a tree where the table is large enough',
+      takeaway: 'A bin that long almost never happens by chance — it signals a hostile key distribution.',
       Visual: S.TreeifiedBin,
     },
     {
@@ -179,6 +180,7 @@ const reel: Reel = {
       ),
       duration: 5,
       fig: 'one sorted list, dummy markers at bucket starts, doubled with nothing moved',
+      takeaway: 'Doubling the bucket array adds dummy nodes only — it moves not one real item.',
       Visual: S.SplitOrderedList,
     },
     {
