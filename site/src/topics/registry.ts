@@ -6825,6 +6825,26 @@ export const TOPICS: TopicMeta[] = [
       "Everything so far assumed a Kafka cluster in the middle. Some pipelines do not want one: they want the database's log read straight into a stream processor and out to a lakehouse. That path is Flink CDC.",
   },
   {
+    id: 'de.flink-cdc-pipelines',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/flink-cdc-pipelines',
+    title: 'Flink CDC pipelines',
+    syllabusTitle: 'Flink CDC pipelines',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['flink-cdc-kafkaless-pipeline'],
+    uses: ['watermark-window-incremental-snapshot', 'debezium-architecture-envelope', 'cdc-schema-evolution-resnapshot', 'cdc-exactly-once-caveats'],
+    declared: [],
+    bridge:
+      "Everything so far assumed a Kafka cluster in the middle. Some pipelines do not want one: they want the log read straight into a stream processor and written to a lakehouse. This topic is that path, what it makes simpler, and the shared log it gives up.",
+    handoff:
+      "Whichever way the changes get here, they arrive as inserts, updates and deletes, and an analytical table has to apply them. The last topic of this section is how, and what that costs the lakehouse and the warehouse.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',

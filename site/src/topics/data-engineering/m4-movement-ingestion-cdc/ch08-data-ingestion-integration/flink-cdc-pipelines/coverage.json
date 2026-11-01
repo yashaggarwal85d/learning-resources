@@ -1,0 +1,147 @@
+{
+  "topic": "de.flink-cdc-pipelines",
+  "syllabus": [
+    {
+      "clause": "Flink CDC 3.x as the Kafka-less path: lock-free parallel chunked snapshots plus binlog/WAL reading inside Flink",
+      "at": [
+        { "step": "Predict: does the snapshot stay lock-free" },
+        { "step": "Reveal: the parallel lock-free snapshot" },
+        { "step": "Reveal: PostgreSQL's own version is experimental" },
+        { "step": "Reveal: the log read straight into Flink" }
+      ]
+    },
+    {
+      "clause": "YAML-defined end-to-end pipelines with schema-change propagation into Paimon/Iceberg/Doris/StarRocks",
+      "at": [
+        { "step": "Reveal: one YAML file, several possible sinks" },
+        { "step": "Reveal: schema changes, declared not coded" }
+      ]
+    },
+    {
+      "clause": "when it beats Debezium + Kafka and what it gives up (no shared durable log for other consumers)",
+      "at": [
+        { "step": "Reveal: what this path gives up" },
+        { "step": "Recap" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Flink CDC docs: Welcome to Flink CDC (introduction)",
+      "items": [
+        {
+          "item": "JDK: JDK 11 or later (Flink CDC is built on JDK 11 since 3.6.0); Apache Flink: Flink 1.20.x or Flink 2.2.x",
+          "at": [{ "out": "named only, per pre-notes.md and post-notes.md Internals" }]
+        },
+        {
+          "item": "By submitting the YAML file with flink-cdc.sh, a Flink job will be compiled",
+          "at": [{ "step": "Reveal: one YAML file, several possible sinks" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: MySQL CDC Source",
+      "items": [
+        {
+          "item": "The source can be parallel during snapshot reading, can perform checkpoints at chunk granularity, and doesn't need to acquire a global read lock before snapshot reading",
+          "at": [
+            { "step": "Predict: does the snapshot stay lock-free" },
+            { "step": "Reveal: the parallel lock-free snapshot" }
+          ]
+        },
+        {
+          "item": "If the source runs in parallel, each parallel reader should have a unique server id, so the server-id must be a range larger than the parallelism",
+          "at": [{ "out": "named only, per pre-notes.md" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: Postgres CDC Source",
+      "items": [
+        {
+          "item": "Incremental Snapshot Reading is marked Experimental, with the feature defaulting to off",
+          "at": [{ "step": "Reveal: PostgreSQL's own version is experimental" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: Schema Evolution",
+      "items": [
+        {
+          "item": "schema.change.behavior is of enum type, and could be set to exception, evolve, try_evolve, lenient or ignore",
+          "at": [{ "step": "Reveal: schema changes, declared not coded" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: Data Pipeline (core concept)",
+      "items": [
+        {
+          "item": "The documented pipeline sinks include Paimon, Fluss, Kafka, Doris, StarRocks, Elasticsearch, MaxCompute, OceanBase, Iceberg and Hudi",
+          "at": [{ "step": "Reveal: one YAML file, several possible sinks" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: Iceberg pipeline connector",
+      "items": [
+        {
+          "item": "Iceberg is one of the documented pipeline connector sinks",
+          "at": [{ "out": "named only, confirming the Iceberg sink CHAPTER.md names" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "This topic's own first predict question is checked specifically against the documentation's own separation of the source's snapshot-reading behavior from the broker-or-no-broker choice, rather than against an assumption that 'simpler' pipelines necessarily simplify every mechanism inside them.",
+        "at": [{ "step": "Predict: does the snapshot stay lock-free" }]
+      },
+      {
+        "item": "The PostgreSQL-versus-MySQL contrast is drawn from the same documentation set's own two connector pages, read side by side, rather than from a single page's own framing, so the experimental-and-off-by-default status is confirmed as PostgreSQL's own documented position, not an inference from MySQL's different status.",
+        "at": [{ "step": "Reveal: PostgreSQL's own version is experimental" }]
+      },
+      {
+        "item": "The final predict question's correct answer is checked specifically against the absence of any durable log component in the architecture this topic itself just described, rather than against a general claim that Flink CDC 'can't' support multiple sinks — it can, within one pipeline, but a second independent consumer is the genuinely different case being tested.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The hook's own framing (more time on the middle than the data) is checked against the specific three-component chain CHAPTER.md's own hook names (Debezium, Kafka, a sink connector), not against Kafka-based CDC pipelines in general, many of which are justified precisely by needing that middle for more than one consumer.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The five schema-change behaviors are checked against the documentation's own enum values verbatim (exception, evolve, try_evolve, lenient, ignore) rather than against a paraphrase, since CHAPTER.md's own clause names exactly five behaviours by name.",
+        "at": [{ "step": "Reveal: schema changes, declared not coded" }]
+      },
+      {
+        "item": "This topic's own 'Lab' line in CHAPTER.md is read literally: it names topic 14's own implementation as the thing that already reproduces the lock-free chunked read, not as a claim that this topic needs its own separate reproduction, so no examples.py exists for this topic and that absence is itself disclosed in SOURCES.md and REVIEW.md rather than left unexplained.",
+        "at": [{ "out": "disclosed no-lab status, per CHAPTER.md's own 'Lab' line and SOURCES.md" }]
+      },
+      {
+        "item": "The requirements claim (JDK 11+, Flink 1.20.x or 2.2.x) is checked against the exact wording of the introduction page's own Requirements section, including the specific detail that the JDK 11 baseline began with version 3.6.0, rather than a generic 'needs Java' claim.",
+        "at": [{ "out": "named only, per pre-notes.md" }]
+      },
+      {
+        "item": "Flink's own runtime, checkpoints, state and Flink SQL, the incremental-snapshot algorithm (used, not re-taught), landing in table formats, and Paimon/Fluss as streaming storage are each named in CHAPTER.md's own 'Leaves out' line, and none of them appear anywhere in this topic's reel or narration beyond the single declared pointer to Flink as a stateful stream processor.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "The full sink list (Paimon, Fluss, Kafka, Doris, StarRocks, Elasticsearch, MaxCompute, OceanBase, Iceberg, Hudi) is read directly off the Data Pipeline page's own navigation rather than assembled from memory of what Flink CDC 'typically' supports, so every name in this topic traces to a specific fetched page.",
+        "at": [{ "step": "Reveal: one YAML file, several possible sinks" }]
+      },
+      {
+        "item": "The claim that a second consumer requires 'another slot, another load' on the source database is checked against this chapter's own earlier topics (slot and binlog mechanics, topics 10-11) rather than asserted as a new fact, since CHAPTER.md's own clause for this topic explicitly frames it as a consequence of mechanisms already taught.",
+        "at": [{ "step": "Reveal: what this path gives up" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}
