@@ -1,0 +1,83 @@
+{
+  "topic": "de.schema-evolution-change-streams",
+  "steps": [
+    {
+      "lines": [
+        "On a Friday, a developer retypes one column so it can finally carry a fraction, something it was never built to hold before.",
+        "The pipeline watching that table keeps running, completely unaware, and whatever sits downstream never gets told its own shape should have changed too.",
+        "From that exact moment on, every value with a fraction in it arrives, gets written, and nothing anywhere raises so much as a warning."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what actually has to happen for a consumer to even notice a column is gone.",
+        "A dropped column simply stops being part of every row event from that point forward.",
+        "Does a consumer expecting that field get told it's missing somehow, or does it just quietly never arrive again?"
+      ],
+      "answer": [
+        "Expecting an error assumes something out there is checking for a field it can't possibly know to look for anymore.",
+        "Nothing arrives, and nothing says why, because dropping a column is handled exactly the same quiet way adding one is."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one fact that explains why neither of those changes ever gets its own announcement.",
+        "I ran an actual column change against the real database and looked at exactly what came out of the decoded stream.",
+        "What came out was an opening marker and a closing one, with absolutely nothing recorded in between them at all."
+      ]
+    },
+    {
+      "lines": [
+        "I measured both halves of that same idea directly, one right after the other, on the same table.",
+        "Adding a column produced no announcement of its own; it simply showed up, for the first time, on the very next row that happened to carry it.",
+        "Dropping a column worked identically in reverse, and whatever that field held before the drop stayed frozen at the sink, with nothing ever able to touch it again."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's why retyping a column isn't some separate, more dramatic kind of event.",
+        "To the stream itself, retyping produces exactly the same shape of thing adding or dropping does: one ordinary row event.",
+        "The only thing different about it is a small type label sitting next to a column name that hasn't changed at all."
+      ]
+    },
+    {
+      "lines": [
+        "I picked a genuinely demanding case to test that idea against: a value too large for the column's original type to ever hold.",
+        "The decoded stream carried the new, wider type and the full value without any trouble at all.",
+        "A sink that widened its own matching column before writing stored that exact value, with absolutely nothing lost in the process."
+      ]
+    },
+    {
+      "lines": [
+        "I reused that identical mechanism, but retyped the column toward something that could hold a fraction instead of something wider.",
+        "This time, I deliberately left the sink's own column at its original, narrower type, to see what would actually happen.",
+        "The write succeeded anyway, and the fractional part of the value was rounded away on the spot, with no error of any kind."
+      ]
+    },
+    {
+      "lines": [
+        "Not every change can be solved this cleanly, though, and it's worth naming exactly where that limit sits.",
+        "Once a column's own older rows genuinely can't be reinterpreted correctly under its new shape, no amount of widening or reapplying a type fixes that.",
+        "At that point, the only real repair left is taking a fresh, incremental snapshot of that one table."
+      ]
+    },
+    {
+      "lines": [
+        "Pull everything measured today together, and one plain rule sits underneath all of it.",
+        "Adding or dropping a column never announces itself; it only ever shows up, or stops showing up, on its own row event.",
+        "Widening survives a reader that keeps its own shape current, and narrowing punishes the reader that doesn't."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question this hasn't actually settled yet, and it matters more than it sounds.",
+        "A brand-new column shows up in a stream your own sink has genuinely never encountered before.",
+        "Something, somewhere, has to decide whether that's even allowed before a single row gets written anywhere. Whose decision is that, exactly?"
+      ],
+      "answer": [
+        "A sink deciding row by row only ever finds out there's a problem after it has already tried, and failed, to write one.",
+        "A schema registry checks a brand-new version against its own compatibility rule first, before any consumer is ever handed an event built from it."
+      ]
+    }
+  ]
+}

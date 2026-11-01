@@ -6689,6 +6689,26 @@ export const TOPICS: TopicMeta[] = [
       "Order and atomicity cover the rows. The columns themselves change too: a deploy adds, drops or retypes one, and the stream has to carry the new shape without breaking its readers. That is schema evolution in a change stream.",
   },
   {
+    id: 'de.schema-evolution-change-streams',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/schema-evolution-change-streams',
+    title: 'Schema evolution in change streams',
+    syllabusTitle: 'Schema evolution in change streams',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['cdc-schema-evolution-resnapshot'],
+    uses: ['mysql-binlog-gtid-schema-history', 'watermark-window-incremental-snapshot', 'logical-decoding-slot', 'data-contract-specification'],
+    declared: [],
+    bridge:
+      "Order and atomicity cover the rows. The columns change too: a deploy adds, drops or retypes one, and the stream has to carry the new shape without breaking the readers of the old one. This topic is how DDL travels through a change stream and which changes force you to start over.",
+    handoff:
+      "A column added is only the most polite change in the stream. The rudest is a row that stops existing. How a delete is represented, what Kafka does with it, and how a table format applies it is the next topic.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
