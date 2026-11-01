@@ -1,0 +1,110 @@
+{
+  "topic": "dsa.progress-guarantees-linearizability",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Picture two threads, each one simply adding one to a shared counter that starts out at zero. Run them with absolutely nothing coordinating them, and the counter can finish at one instead of two.",
+        { "beat": 0.4 },
+        "Wrap that counter in a lock and the arithmetic stops going wrong — but now whichever thread is holding that lock can get suspended, and every other thread that wants the counter simply waits behind it, for however long that suspension lasts.",
+        { "beat": 0.4 },
+        "So here's the real question worth sitting with: could a counter ever be built that nobody has to wait behind at all?"
+      ]
+    },
+    {
+      "lines": [
+        "Each thread's own three steps here are read the counter, add one, and write the result back. Those three-step runs, one per thread, can interleave with each other in quite a few different orders.",
+        { "beat": 0.4 },
+        "Of every single one of those possible orders, how many of them actually end up losing an update?"
+      ],
+      "answer": [
+        "Eighteen out of twenty of them.",
+        "Only the two fully serial orders, where one thread's whole run finishes before the other even starts, land on the correct result. Every order where the two runs actually interleave loses an update."
+      ]
+    },
+    {
+      "lines": [
+        "Replay every one of those interleavings and sort each one by where the counter actually lands. The split that falls out is eighteen landing on one, and only two landing on the correct two.",
+        { "beat": 0.4 },
+        "There's a clean rule hiding behind that split: a run is correct exactly when neither thread's own read falls inside the other thread's stretch from its read to its write. That one rule picks out precisely those two correct orders, no more and no fewer."
+      ]
+    },
+    {
+      "lines": [
+        "A mutual-exclusion lock fixes every single one of those interleavings — with the lock held, there's simply no way for the bad orders to happen anymore.",
+        { "beat": 0.4 },
+        "It trades that fix for a different failure. Whichever thread is holding the lock can be suspended, descheduled, or just plain slow, and every other thread waiting on that same counter sits behind it for exactly as long as that takes, however long that turns out to be."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a primitive built to avoid needing a lock at all. Read the value, work out what it ought to become, and then swap in that new value, but only if nothing else has touched it since the read.",
+        { "beat": 0.4 },
+        "If something else did get there first, don't overwrite it — read again and try the whole thing over. A counter built this way never once has to hand out a lock."
+      ]
+    },
+    {
+      "lines": [
+        "Imagine one thread's own attempt at that swap keeps losing to the other thread's attempt, every single time, for a thousand tries straight in a row.",
+        { "beat": 0.4 },
+        "While that's happening, does the system as a whole ever actually make progress?"
+      ],
+      "answer": [
+        "Yes — the thread that keeps winning finishes every single time.",
+        "The winning thread's own swap succeeds on every one of those attempts, so the system as a whole keeps moving the entire time, even though the losing thread, on this particular schedule, never gets anywhere at all."
+      ]
+    },
+    {
+      "lines": [
+        "Measured on exactly that adversarial schedule, the losing thread fails every single one of a thousand straight attempts, while the winning thread succeeds immediately, every single time.",
+        { "beat": 0.4 },
+        "A hardware atomic add sits above even that: it finishes in one single step, no matter what any other thread happens to be doing at all. That's the top rung of a ladder with four rungs: blocking, obstruction-free, lock-free, and wait-free, now all four of them named.",
+        { "beat": 0.4 },
+        "Lock-free only guarantees that the system as a whole keeps moving. Only wait-free goes further and guarantees that every single thread does."
+      ]
+    },
+    {
+      "lines": [
+        "Draw an operation as a stretch of time, from the moment it gets called to the moment it returns. Two operations whose stretches overlap are called concurrent.",
+        { "beat": 0.4 },
+        "And here's the subtle part: nothing about the clock on the wall alone can say which of two overlapping operations actually happened first."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose an enqueue of some value finishes entirely, called and returned, before a dequeue even begins. That dequeue then comes back saying the structure is empty.",
+        { "beat": 0.4 },
+        "Could an ordinary queue, the kind only one thread ever touches at a time, ever actually behave this way?"
+      ],
+      "answer": [
+        "No — once that enqueue finished, nothing can un-happen it.",
+        "An ordinary queue, touched by only one thread at a time, could never come back empty right after an enqueue that already finished. There's simply no sequential retelling of events where that value isn't already sitting inside the queue."
+      ]
+    },
+    {
+      "lines": [
+        "Check a sequence of operations by searching for any legal sequential order of them that still respects what the clock on the wall already decided.",
+        { "beat": 0.4 },
+        "One sequence, where an enqueue overlaps a dequeue that returns that very same value, does have such an order, even though the two operations overlapped in time.",
+        { "beat": 0.4 },
+        "The other sequence, the one where the structure claims to be empty right after a completed enqueue, has no such order at all. It gets rejected outright."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that makes this whole idea actually usable: a system built out of several separate structures is correct overall exactly when each one of those structures is correct on its own.",
+        { "beat": 0.4 },
+        "So a queue and a map living in the very same program can each be checked completely separately, with nobody needing to reason about the two of them together at once.",
+        { "beat": 0.4 },
+        "The transaction world's own correctness condition, by contrast, does not have that same property at all."
+      ]
+    },
+    {
+      "lines": [
+        "What makes a structure correct under many threads at once now has a name and a precise definition. What a structure does when one of those threads stalls now has a name too, and a ranking.",
+        { "beat": 0.4 },
+        "Neither one of those, on its own, actually says how to go build a structure that earns them. Next time, the smallest real one that actually tries."
+      ]
+    }
+  ]
+}

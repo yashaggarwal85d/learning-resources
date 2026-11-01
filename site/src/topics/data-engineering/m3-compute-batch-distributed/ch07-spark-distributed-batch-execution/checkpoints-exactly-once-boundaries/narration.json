@@ -1,0 +1,68 @@
+{
+  "topic": "de.checkpoints-exactly-once-boundaries",
+  "steps": [
+    {
+      "lines": [
+        "Getting the right answer once is only half the job.",
+        "The other half is what's left standing after something dies partway through computing it. That's what today is actually about."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first test of that, done for real.",
+        "Kill a batch right after it finishes its own work, but before the log says it finished. Restart from that same saved progress.",
+        "Nothing missing. Nothing doubled. At least, not yet."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder version of the same question.",
+        "Keep that exact crash and restart, but this time the thing receiving the output only promises it'll get there eventually, maybe more than once. Does the whole pipeline still come out exact?"
+      ],
+      "answer": "It doesn't. Something that only promises 'eventually, maybe twice' writes it twice."
+    },
+    {
+      "lines": [
+        "It doesn't, and here's exactly where it breaks.",
+        "One batch's own row now shows up twice on the receiving end. The replay itself was perfect. What happened after the replay wasn't."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the line that actually got crossed.",
+        "Everything up through replaying the right batch correctly is one system's job, and it did that job. What a receiver does once that batch lands in its lap is a separate job entirely."
+      ]
+    },
+    {
+      "lines": [
+        "One more version, with one thing added back.",
+        "Same receiver, same kind of weak promise -- except now it checks a number handed to it each time, and refuses to write anything it's already seen that number for. Exact, this time?"
+      ],
+      "answer": "Yes. The same number never gets written twice, no matter how many times it shows up."
+    },
+    {
+      "lines": [
+        "Yes, this time.",
+        "Same crash, same restart, same weak receiver underneath -- but checking that one number first catches the replay before anything gets written twice."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why checking that one number is enough.",
+        "A replayed batch gets handed back the exact same number it had the first time, never a fresh one. That's the one property a check like this actually needs."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, and this one doesn't end cleanly.",
+        "Change what a running aggregation groups by, then restart it from the same saved progress. It refuses outright, before a single new row gets touched."
+      ]
+    },
+    {
+      "lines": [
+        "Saved progress, correctly replayed, is only one system's own promise.",
+        "Past that promise, it's on the receiver to survive being handed the same thing twice, and on the saved progress itself to still match the question being asked of it."
+      ]
+    }
+  ]
+}
