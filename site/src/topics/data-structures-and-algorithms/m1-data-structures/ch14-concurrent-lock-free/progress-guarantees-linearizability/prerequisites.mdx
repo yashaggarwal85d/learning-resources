@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Stacks, queues and deques">The sequential queue this topic's histories are checked against, before anything is concurrent.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Ring buffers and bounded queues">The single-threaded ring buffer whose concurrent form the next topic builds.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Deamortization and global rebuilding">Tail latency — why a suspended lock holder is exactly that kind of event.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The papers
+
+<ul class="resources">
+  <Resource kind="reading" title="Linearizability: a correctness condition for concurrent objects" href="https://www.cs.cmu.edu/~wing/publications/HerlihyWing90.pdf" by="Herlihy and Wing, ACM TOPLAS 1990">The formal definition this topic's checker implements, word for word.</Resource>
+  <Resource kind="reading" title="Wait-Free Synchronization" href="https://cs.brown.edu/people/mph/Herlihy91/p124-herlihy.pdf" by="Herlihy, ACM TOPLAS 1991">The wait-free and bounded wait-free definitions this topic's own ladder is built from.</Resource>
+  <Resource kind="reading" title="Obstruction-Free Synchronization" href="https://cs.brown.edu/people/mph/HerlihyLM03/main.pdf" by="Herlihy, Luchangco and Moir, ICDCS 2003">The lock-free definition and the third rung of the progress ladder, obstruction-freedom.</Resource>
+</ul>
+
+</section>
