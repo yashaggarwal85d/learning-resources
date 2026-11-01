@@ -1,0 +1,78 @@
+{
+  "topic": "dsa.elementary-sorts-sorting-networks",
+  "syllabus": [
+    {
+      "clause": "insertion, selection and bubble sort",
+      "at": [
+        { "step": "Insertion sort" },
+        { "step": "Selection sort" },
+        { "step": "Bubble sort, and an unstable swap" }
+      ]
+    },
+    {
+      "clause": "stability and in-place vocabulary",
+      "at": [
+        { "step": "Bubble sort, and an unstable swap" },
+        { "step": "Stable, in place, or both" }
+      ]
+    },
+    {
+      "clause": "why insertion sort and small sorting networks still finish every hybrid sort on tiny or nearly sorted ranges",
+      "at": [
+        { "step": "Three real libraries, one small cutoff" },
+        { "step": "A fixed sequence, no branch to mispredict" },
+        { "step": "Checked against every input it can see" }
+      ]
+    },
+    {
+      "clause": "the Ω(n log n) bound from Ch.1",
+      "at": [{ "step": "The bound, briefly" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dobbelaere, \"List of sorting networks\"",
+      "items": [
+        { "item": "Size/depth bounds for four and eight inputs, citing Knuth vol. 3", "at": [{ "step": "The bound, briefly" }] },
+        { "item": "The page's own drawn four-input network", "at": [{ "deep": "Where this goes next" }] },
+        { "item": "Larger networks (Batcher's, bitonic, 18+ inputs)", "at": [{ "out": "CHAPTER.md names these in post-notes only; nothing about their construction is built." }] }
+      ]
+    },
+    {
+      "source": "Rust, smallsort.rs (tag 1.81.0)",
+      "items": [
+        { "item": "sort13_optimal/sort9_optimal cutoffs at thirteen and nine elements", "at": [{ "step": "Three real libraries, one small cutoff" }] },
+        { "item": "Why a fixed helper avoids calling the general sort recursively on tiny ranges", "at": [{ "step": "Three real libraries, one small cutoff" }] }
+      ]
+    },
+    {
+      "source": "GCC libstdc++, stl_algo.h (master)",
+      "items": [
+        { "item": "_S_threshold = 16, the introsort-to-insertion-sort handoff point", "at": [{ "step": "Three real libraries, one small cutoff" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (independent pass, elementary-sorts-sorting-networks)",
+    "date": "2026-11-01",
+    "items": [
+      { "item": "Insertion sort's work is proportional to how far from sorted the input already is, not just its size", "at": [{ "step": "Insertion sort" }] },
+      { "item": "Insertion sort makes zero moves on already-sorted input, only n-1 comparisons", "at": [{ "step": "Insertion sort" }] },
+      { "item": "Selection sort's comparison count never changes no matter how sorted the input already is", "at": [{ "step": "Selection sort" }] },
+      { "item": "Selection sort bounds its writes to at most one per position, which is why it's chosen when writes are expensive (e.g. flash memory)", "at": [{ "step": "Selection sort" }] },
+      { "item": "Bubble sort with an early-exit check is technically adaptive but still loses to insertion sort on the same input", "at": [{ "step": "Bubble sort, and an unstable swap" }] },
+      { "item": "A sort can be stable without being in place, and in place without being stable — the four combinations aren't all equally easy to achieve together", "at": [{ "step": "Stable, in place, or both" }] },
+      { "item": "A hybrid sort's insertion-sort fallback threshold is chosen because small-input overhead (recursion, function calls) dominates asymptotic savings at that size", "at": [{ "step": "Three real libraries, one small cutoff" }] },
+      { "item": "A sorting network's comparisons never depend on the data, so its wire diagram is fixed before any key is seen", "at": [{ "step": "A fixed sequence, no branch to mispredict" }] },
+      { "item": "The zero-one principle lets a finite check (all-0/1 inputs) stand in for checking all possible key values on an oblivious network", "at": [{ "step": "Checked against every input it can see" }] },
+      { "item": "A sorting network is still bound by the same comparison-model lower bound as any other comparison sort, since it never skips a comparison based on the data", "at": [{ "step": "The bound, briefly" }] },
+      { "item": "Meeting the lower bound exactly at one small input size doesn't mean an algorithm is optimal at every size", "at": [{ "step": "The bound, briefly" }] },
+      { "item": "The same four input-shape questions (random, sorted, reversed, duplicates) that matter for insertion sort reappear for every later sort in this chapter", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "Claude (adversarial pass)",
+    "open": []
+  }
+}
