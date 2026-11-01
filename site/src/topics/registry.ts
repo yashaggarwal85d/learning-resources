@@ -7827,6 +7827,25 @@ export const TOPICS: TopicMeta[] = [
       "Exactly-once is a guarantee about correctness after failure. The next topic is about the one resource that guarantee leans on hardest at scale: where the state itself actually lives, and what happens once there's too much of it for memory.",
   },
   {
+    id: 'de.rocksdb-state-store-checkpointing',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/rocksdb-state-store-checkpointing',
+    title: 'RocksDB state store and state checkpointing',
+    syllabusTitle: 'RocksDB state store and state checkpointing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.4' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-state-store-providers'],
+    uses: ['spark-stateful-operators', 'spark-gc-symptoms'],
+    bridge:
+      "Exactly-once leans on the state store surviving a restart. This topic opens that store itself: the default in-heap provider that this chapter's examples can use directly, and the RocksDB provider real production jobs switch to once state outgrows the JVM heap — the same GC pressure topic 20 already explained.",
+    handoff:
+      "Structured Streaming is done: the engine, the correctness boundary and the state store that scales it. The next section turns from the engine's execution model to the platform itself — what changed under Spark's feet in its 4.x releases.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',

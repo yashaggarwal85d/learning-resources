@@ -1,0 +1,113 @@
+{
+  "topic": "de.rocksdb-state-store-checkpointing",
+  "syllabus": [
+    {
+      "clause": "HDFS-backed in-heap provider (still the OSS default) vs RocksDB provider (native memory + local disk; recommended for millions of keys); changelog checkpointing, checkpoint structure v2, bounded memory, state rebalancing; the GC/OOM failure that forces the switch.",
+      "at": [
+        { "step": "Reveal: the default provider keeps state on the JVM's own heap" },
+        { "step": "Predict: a million-key aggregation. GC time flat, or climbing?" },
+        { "step": "Reveal: climbs on the default provider -- RocksDB stays flat" },
+        { "step": "Elaborate: native memory and local disk, not JVM objects" },
+        { "step": "Predict: every checkpoint re-uploads the full snapshot. True or false?" },
+        { "step": "Reveal: false -- changelog checkpointing uploads only the changes" },
+        { "step": "Elaborate: the snapshot still happens -- just not every batch" },
+        { "step": "Reveal: this chapter's own examples never needed any of this" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"Structured Streaming: APIs on DataFrames and Datasets\" docs",
+      "items": [
+        {
+          "item": "the HDFS backend state store provider is the default implementation, storing data in a memory map first and backing it by files in an HDFS-compatible file system",
+          "at": [{ "step": "Reveal: the default provider keeps state on the JVM's own heap" }]
+        },
+        {
+          "item": "maintaining millions of keys in state on the default provider can cause large JVM garbage collection pauses and high variation in micro-batch processing times",
+          "at": [{ "step": "Predict: a million-key aggregation. GC time flat, or climbing?" }, { "step": "Reveal: climbs on the default provider -- RocksDB stays flat" }]
+        },
+        {
+          "item": "the RocksDB solution manages state in native memory and local disk rather than JVM memory, while still saving changes to the provided checkpoint location for the same fault-tolerance guarantees",
+          "at": [{ "step": "Elaborate: native memory and local disk, not JVM objects" }]
+        },
+        {
+          "item": "changelog checkpointing uploads changes made to the state since the last checkpoint, instead of uploading the data files of RocksDB instances, avoiding the cost of capturing and uploading snapshots",
+          "at": [{ "step": "Predict: every checkpoint re-uploads the full snapshot. True or false?" }, { "step": "Reveal: false -- changelog checkpointing uploads only the changes" }]
+        },
+        {
+          "item": "snapshots are still persisted periodically in the background for predictable failure recovery and changelog trimming",
+          "at": [{ "step": "Elaborate: the snapshot still happens -- just not every batch" }]
+        },
+        {
+          "item": "changing the location of a state store provider between batches requires the extra overhead of loading checkpointed state onto the new executor",
+          "at": [{ "step": "Reveal: this chapter's own examples never needed any of this" }]
+        }
+      ]
+    },
+    {
+      "source": "SPARK-49374: RocksDB State Store Checkpoint Structure V2 (Apache Spark JIRA)",
+      "items": [
+        {
+          "item": "the proposed checkpoint structure v2 guarantees a linear dependency between batch versions by giving every new checkpoint a globally unique ID that can never be overwritten",
+          "at": [{ "step": "Reveal: this chapter's own examples never needed any of this" }]
+        },
+        {
+          "item": "the current non-linear checkpoint lineage makes old-version cleanup expensive, since a long-running state store has to read metadata for all previous versions and list all files to clean up safely",
+          "at": [{ "step": "Reveal: this chapter's own examples never needed any of this" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "Checkpoint structure v2 (SPARK-49374) was still Open and Unresolved with no fix version as of this topic's own research, meaning it is not present in the Spark 4.0.1 used for every measured claim in this chapter -- the scope item is real and documented, but genuinely unmeasurable against the pinned version rather than merely skipped for convenience.",
+        "at": [{ "out": "checkpoint structure v2's own unshipped status, and why that makes it unmeasurable here specifically, named only; this topic's own examples.py measures the GC and checkpoint-size claims available in the shipped 4.0.1 feature set" }]
+      },
+      {
+        "item": "spark.sql.streaming.stateStore.rocksdb.boundedMemoryUsage, when enabled, caps total RocksDB memory across all state store instances on a node via a write buffer manager -- but the docs explicitly call this a soft limit, since memory already allocated to in-use higher-level readers can still push total usage above the configured cap temporarily.",
+        "at": [{ "out": "the bounded-memory config and its own soft-limit caveat named only; this topic's own examples.py doesn't configure or test memory bounding, only measures the baseline RocksDB-vs-default GC and checkpoint-size difference" }]
+      },
+      {
+        "item": "A strict (non-soft) memory limit for RocksDB state stores is explicitly not supported, because doing so would cause query failures and Spark does not support rebalancing state across additional nodes to relieve the pressure -- the state-rebalancing gap this topic's scope names is the direct reason a hard memory cap isn't offered as an option at all.",
+        "at": [{ "out": "the absence of state rebalancing as the specific reason a strict memory limit isn't offered, named only; this topic's own examples.py measures GC and checkpoint-size behavior on a single node, not a multi-node rebalancing scenario" }]
+      },
+      {
+        "item": "spark.sql.streaming.stateStore.rocksdb.trackTotalNumberOfRows defaults to true and adds a real lookup cost on every write; disabling it trades away the numTotalStateRows metric (which then reports 0) for better write performance -- an observability-versus-performance tradeoff this topic's own GC-focused measurement doesn't touch.",
+        "at": [{ "out": "the row-tracking performance tradeoff and its observability cost named only; this topic's own examples.py leaves this config at its default throughout" }]
+      },
+      {
+        "item": "Changelog checkpointing is documented as backward-compatible in both directions: a query can be migrated onto it from traditional checkpointing by enabling the config, or migrated back off it by disabling the config, with a restart required either way but no performance degradation from the switch itself.",
+        "at": [{ "out": "changelog checkpointing's own bidirectional migration compatibility named only; this topic's own examples.py runs each checkpointing mode in its own fresh checkpoint directory rather than migrating a single query between them" }]
+      },
+      {
+        "item": "State store task locality (preferred location scheduling) means a state store provider that keeps running on the same executor across batches can reuse its already-loaded state rather than reloading it from the checkpoint -- the loadedMapCacheHitCount and loadedMapCacheMissCount metrics on the HDFS provider let an operator directly observe how often this reuse actually happens.",
+        "at": [{ "out": "the specific HDFS-provider metrics for observing task-locality reuse named only; this topic's own examples.py runs entirely in local[2] mode, where every task already runs in the same process regardless of locality" }]
+      },
+      {
+        "item": "The experimental State Data Source, read-only as of Spark 4.0, lets a batch query read a running streaming query's own checkpointed state directly -- giving visibility into exactly the kind of growing key count this topic measures, without stopping the query to inspect it.",
+        "at": [{ "out": "the State Data Source's own read-only introspection capability named only; this topic's own examples.py measures state growth indirectly, through GC time and checkpoint byte counts, not by reading the state store's contents directly" }]
+      },
+      {
+        "item": "compactOnCommit, a RocksDB-specific config defaulting to false, performs a range compaction of the RocksDB instance on every commit when enabled -- a separate lever from changelog checkpointing for managing the cost of RocksDB's own on-disk storage, operating on local disk layout rather than on what gets uploaded.",
+        "at": [{ "out": "compaction-on-commit as a separate RocksDB cost lever from changelog checkpointing named only; this topic's own examples.py leaves this config at its default (disabled) throughout" }]
+      },
+      {
+        "item": "RocksDB's own compression setting (lz4 by default) trades CPU time for a smaller on-disk and uploaded footprint -- a second, independent lever alongside changelog checkpointing that could further shrink the checkpoint bytes this topic measures, without changing what triggers an upload in the first place.",
+        "at": [{ "out": "RocksDB's own compression setting as an independent lever on checkpoint size named only; this topic's own examples.py leaves compression at its default throughout both the snapshot and changelog probes" }]
+      },
+      {
+        "item": "Spark 4.2's automatic snapshot repair for the state store and its new row-level checksums (named in the previous topic's own sourced-only coverage of Spark 4.2's state-store changes) are forward-looking reliability improvements layered on top of the same RocksDB and HDFS providers this topic measures on 4.0.1, not a replacement for either provider.",
+        "at": [{ "out": "Spark 4.2's own state-store reliability additions, as layered improvements rather than a provider replacement, named only; this topic's own examples.py measures the 4.0.1 providers directly, without these 4.2-era additions" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}
