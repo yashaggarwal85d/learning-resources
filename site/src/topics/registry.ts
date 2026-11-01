@@ -7509,6 +7509,44 @@ export const TOPICS: TopicMeta[] = [
       "A watermark bounds state. The next topic is what actually accumulates inside that bound — the stateful operators and the output modes that decide what gets emitted and when.",
   },
   {
+    id: 'de.stateful-operators-output-modes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/stateful-operators-output-modes',
+    title: 'Stateful operators and output modes',
+    syllabusTitle: 'Stateful operators and output modes',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.4' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-stateful-operators', 'spark-output-modes'],
+    uses: ['spark-watermark-mechanics'],
+    bridge:
+      "The watermark bounds how long state waits. This topic is what that state actually is — an aggregation's running totals, a join's buffered rows — and the three ways Spark is willing to emit it.",
+    handoff:
+      "Operators and output modes describe what the query computes. The next topic is the guarantee about what happens if the query, or the whole driver, dies partway through computing it.",
+  },
+  {
+    id: 'de.checkpoints-exactly-once-boundaries',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/checkpoints-exactly-once-boundaries',
+    title: 'Checkpoints and exactly-once boundaries',
+    syllabusTitle: 'Checkpoints and exactly-once boundaries',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.4' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-exactly-once-boundary', 'spark-foreachbatch-idempotent'],
+    uses: ['spark-offset-commit-log', 'spark-stateful-operators'],
+    bridge:
+      "Stateful operators compute the right answer once. This topic is what survives a crash in the middle of computing it: the checkpoint's offsets, state and commit log, and exactly how far that guarantee reaches before it needs help from the source and the sink.",
+    handoff:
+      "Exactly-once is a guarantee about correctness after failure. The next topic is about the one resource that guarantee leans on hardest at scale: where the state itself actually lives, and what happens once there's too much of it for memory.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',
@@ -7927,6 +7965,26 @@ export const TOPICS: TopicMeta[] = [
       "SAP and the plant floor are two real systems with their own rules about where they live. This topic is the platform question underneath both of them: what running a data platform entirely on an organisation's own hardware actually looks like today, and the real, falsifiable reasons that can still beat the cloud.",
     handoff:
       "Very few real platforms are purely on-prem or purely cloud. The closing topic of this chapter is the connection between them — what it costs, how fast it is, and what happens to a pipeline when that connection goes down for hours.",
+  },
+  {
+    id: 'de.hybrid-connectivity-egress-latency',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/hybrid-connectivity-egress-latency',
+    title: 'Hybrid connectivity, egress and latency',
+    syllabusTitle: 'Hybrid connectivity, egress and latency',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.7' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['bandwidth-delay-product', 'cross-wan-replication-failure-buffer', 'latency-budget-allocation'],
+    uses: ['cloud-cost-four-dimensions', 'on-prem-modern-stack', 'data-gravity-on-prem-tradeoff', 'ot-edge-buffer-backpressure-isolation', 'residency-sovereignty-localisation', 'sap-extraction-mechanism-choice', 'short-lived-federated-credential', 'dynamic-short-lived-db-credential'],
+    declared: [],
+    bridge:
+      "Very few real platforms are purely on-prem or purely cloud. This closing topic is the connection between them made exact — what it costs, how fast it really is, and what a cross-WAN pipeline must guarantee when that connection goes down for hours instead of seconds — and it is where this chapter's own closing lab pulls identity, secrets, residency, SAP and the OT boundary together into one design.",
+    handoff:
+      "This chapter answered where things run and under what legal and physical constraint. None of it answered how the work actually gets scheduled onto that platform, retried when it fails, backfilled when it's late, or kept inside its own promised time budget — which is exactly where Chapter 11 begins.",
   },
   {
     id: 'de.text-interchange-formats-their',

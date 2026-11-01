@@ -1,0 +1,67 @@
+{
+  "topic": "de.hybrid-connectivity-egress-latency",
+  "steps": [
+    {
+      "lines": [
+        "Notice what the question isn't. It isn't 'did we lose anything' — that's a guess dressed up as a question.",
+        "The real question is whether you can show it, with a count, after the fact. Keep that distinction in mind for the whole topic."
+      ]
+    },
+    {
+      "lines": [
+        "Before the rest of this topic, think about what a system does with work it can't ship yet.",
+        "It has two choices, really: hold onto it, or give up on it. Which one sounds like something you'd trust a pipeline to do on its own?"
+      ],
+      "answer": [
+        "It holds everything locally, in the order it arrived, and never stops accepting new work at the source.",
+        "That's the same discipline this chapter already taught for a factory floor, now applied to a link between two buildings instead."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what you're actually buying with each option, not just what it costs.",
+        "One of these reserves a lane just for you. The other shares the road with everyone else on the internet that hour."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that surprises people: a fast link and a slow pipeline can both be telling the truth at once.",
+        "If a single conversation can't keep enough data moving at a time, the rest of that capacity just sits there, unused, no matter how big the number on the contract is."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the shape of this proof, not just its headline.",
+        "Counting what left and what arrived, in the same sequence, is the only thing standing between 'probably fine' and actually knowing. Everything else here is just setup for that one count."
+      ]
+    },
+    {
+      "lines": [
+        "Think about a deadline as something you spend, piece by piece, not something you simply meet or miss.",
+        "The trip itself spends some of it. Whatever's already fixed in the pipeline spends more. What's left over is the only honest number left to work with."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and notice this picture isn't introducing anything new — it's assembling pieces you already have.",
+        "Each decision here was made somewhere earlier in this chapter. What's new is the wire connecting them, sized for real, and tested against the thing that actually breaks it."
+      ]
+    },
+    {
+      "lines": [
+        "If you keep one thing: a circuit's speed on paper and its usable speed in practice are two different numbers.",
+        "A reserved lane earns its latency. A link's capacity needs more than one stream to actually use. A deadline is only as generous as what hasn't already been spent. And a recovery claim without a count is just a hope."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice what changed in this version of the story and what didn't.",
+        "The count still comes out even. Does that one number, on its own, tell you the whole story?"
+      ],
+      "answer": [
+        "No — a matching count only rules out loss. It says nothing about whether the sequence survived intact.",
+        "That's exactly why the proof in this topic checks both separately, instead of trusting one number to speak for the other."
+      ]
+    }
+  ]
+}

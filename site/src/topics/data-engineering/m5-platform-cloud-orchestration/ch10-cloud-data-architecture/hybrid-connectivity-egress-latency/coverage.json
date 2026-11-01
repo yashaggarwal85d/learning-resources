@@ -1,0 +1,92 @@
+{
+  "topic": "de.hybrid-connectivity-egress-latency",
+  "syllabus": [
+    {
+      "clause": "dedicated interconnects vs VPN",
+      "at": [
+        { "step": "A dedicated circuit, or a path over the public internet" }
+      ]
+    },
+    {
+      "clause": "bandwidth-delay product and bulk-transfer throughput",
+      "at": [
+        { "step": "Why one stream can leave a fast link half-idle" }
+      ]
+    },
+    {
+      "clause": "egress pricing",
+      "at": [
+        { "step": "One design, four decisions already made" }
+      ]
+    },
+    {
+      "clause": "cross-WAN CDC and streaming (MirrorMaker 2 / cluster linking, buffering, ordering across link failure)",
+      "at": [
+        { "step": "Before the mechanism: what actually happens during those four hours?" },
+        { "step": "The drill: cut the link, prove the count" }
+      ]
+    },
+    {
+      "clause": "latency budgets for near-real-time pipelines",
+      "at": [
+        { "step": "Working backward from the deadline" }
+      ]
+    },
+    {
+      "clause": "deciding where compute lives (data gravity)",
+      "at": [
+        { "step": "One design, four decisions already made" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS Direct Connect documentation",
+      "items": [
+        { "item": "AWS Direct Connect is available in speeds starting at 50 Mbps and scaling up to 400 Gbps", "at": [{ "step": "A dedicated circuit, or a path over the public internet" }] },
+        { "item": "Three factors determine Direct Connect pricing when connecting to a region or local zone: capacity, port hours, and data transfer out (DTO); data transfer in is $0.00/GB in all locations", "at": [{ "step": "One design, four decisions already made" }] }
+      ]
+    },
+    {
+      "source": "Amazon EC2 On-Demand Pricing (Data Transfer)",
+      "items": [
+        { "item": "AWS customers receive 100GB of data transfer out to the internet free each month, aggregated across AWS services and regions; cross-AZ transfer is charged at $0.01/GB in each direction", "at": [{ "step": "One design, four decisions already made" }] }
+      ]
+    },
+    {
+      "source": "Apache Kafka Geo-Replication (Cross-Cluster Data Mirroring) documentation",
+      "items": [
+        { "item": "MirrorMaker 2 is built on the Kafka Connect framework and replicates consumer groups including offsets, preserves partitioning, and is fault-tolerant and horizontally scalable; inter-cluster replication is different from intra-cluster replication", "at": [{ "step": "Before the mechanism: what actually happens during those four hours?" }] },
+        { "item": "It is recommended to filter records from aborted transactions out of replicated data by configuring the consumer that reads from source clusters with isolation.level set to read_committed", "at": [{ "step": "The drill: cut the link, prove the count" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia: Bandwidth-delay product",
+      "items": [
+        { "item": "The bandwidth-delay product is the product of a data link's capacity (in bits per second) and its round-trip delay time (in seconds), equivalent to the maximum amount of data in flight, sent but not yet acknowledged", "at": [{ "step": "Why one stream can leave a fast link half-idle" }] },
+        { "item": "The TCP window scale option may be used to solve the problem caused by insufficient window size, which is limited to 65,535 bytes without scaling", "at": [{ "step": "Why one stream can leave a fast link half-idle" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook names the real question precisely as proof, not reassurance — a learner who answers 'nothing was lost, probably' rather than 'prove it by counting' has missed the point the whole topic is built to make", "at": [{ "step": "The link comes back up. Did anything get lost?" }] },
+      { "item": "The first predict step's correct answer names the specific mechanism (local buffering, in order, never blocking the source), echoing topic 20's own 'never block the source' lesson rather than treating this as a new, unrelated idea", "at": [{ "step": "Before the mechanism: what actually happens during those four hours?" }] },
+      { "item": "The bandwidth-delay-product step is explicit that the demo uses an artificially latency-shaped local link, not real tc/netem traffic shaping, matching the disclosure in OUTLINE.md and FACT-CHECK.md", "at": [{ "step": "Why one stream can leave a fast link half-idle" }] },
+      { "item": "The drill step states both of examples.py's actual assertions (count and order) rather than only the count, so a learner cannot come away believing a matching row count alone is sufficient proof", "at": [{ "step": "The drill: cut the link, prove the count" }] },
+      { "item": "The ADR synthesis step cites each of the four earlier topics' decisions by name rather than re-deriving them, consistent with CHAPTER.md's framing that this topic adds the wire between decisions already made elsewhere", "at": [{ "step": "One design, four decisions already made" }] },
+      { "item": "The final predict step's correct answer draws the exact distinction examples.py's own two assertions draw (count vs order), so the step cannot be answered correctly without having understood the drill's proof structure, not just its headline claim", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot demonstrate real tc/netem kernel-level traffic shaping or a real multi-site Kafka cluster in this sandbox; both are disclosed as structural simulations in OUTLINE.md and FACT-CHECK.md, with the real mechanism's documented behaviour (not a claim of having run it) cited instead", "at": [{ "deep": "Internals" }] },
+      { "item": "CHAPTER.md's own scope quote matches the real syllabus line in full for this topic, confirmed by direct read of syllabus/data-engineering.md, so no forward-reference or dropped-clause handling was needed", "at": [{ "deep": "Internals" }] },
+      { "item": "The latency-budget step's arithmetic (deadline minus WAN hop minus fixed overhead) is stated as a derivation a learner can redo for their own numbers, not as a fixed figure belonging to this topic's one worked example", "at": [{ "step": "Working backward from the deadline" }] },
+      { "item": "The recap restates all four mechanism steps (interconnect choice, bandwidth-delay product, latency budget, buffered catch-up) without introducing a fifth claim not already taught earlier in the reel", "at": [{ "step": "In one breath" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "topic": "de.stateful-operators-output-modes",
+  "syllabus": [
+    {
+      "clause": "streaming aggregation, stream-stream joins (watermark plus time-range condition required to evict state), dropDuplicatesWithinWatermark, chained stateful operators; append vs update vs complete semantics and which sinks accept which.",
+      "at": [
+        { "step": "Reveal: three output modes, side by side" },
+        { "step": "Predict: complete mode, on a stream-stream join. Accepted?" },
+        { "step": "Reveal: rejected, before the query even starts" },
+        { "step": "Elaborate: why joins only support append" },
+        { "step": "Predict: the same join, with no watermark at all. Accepted?" },
+        { "step": "Reveal: accepted -- but the buffered state only grows" },
+        { "step": "Elaborate: a join buffers both sides as state" },
+        { "step": "Reveal: watermark plus time range -- the growth stops" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"Structured Streaming: APIs on DataFrames and Datasets\" docs",
+      "items": [
+        {
+          "item": "append mode outputs only the new rows added to the Result Table since the last trigger, supported only for queries where rows already added never change",
+          "at": [{ "step": "Reveal: three output modes, side by side" }]
+        },
+        {
+          "item": "complete mode outputs the whole Result Table to the sink after every trigger, supported for aggregation queries",
+          "at": [{ "step": "Reveal: three output modes, side by side" }]
+        },
+        {
+          "item": "update mode outputs only the rows in the Result Table that were updated since the last trigger",
+          "at": [{ "step": "Reveal: three output modes, side by side" }]
+        },
+        {
+          "item": "as of Spark 2.4, joins can be used only when the query is in Append output mode; other output modes are not yet supported",
+          "at": [{ "step": "Predict: complete mode, on a stream-stream join. Accepted?" }, { "step": "Reveal: rejected, before the query even starts" }]
+        },
+        {
+          "item": "other aggregations (no watermark defined) do not support append mode, since aggregates can update and that would violate append's own semantics",
+          "at": [{ "step": "Elaborate: why joins only support append" }]
+        },
+        {
+          "item": "a stream-stream inner join is supported, optionally specifying a watermark on both sides plus time constraints for state cleanup",
+          "at": [{ "step": "Reveal: watermark plus time range -- the growth stops" }]
+        },
+        {
+          "item": "you can deduplicate records in data streams within the time range of a watermark using dropDuplicatesWithinWatermark, which requires a watermark with a delay threshold to already be set",
+          "at": [{ "step": "Elaborate: a join buffers both sides as state" }]
+        }
+      ]
+    },
+    {
+      "source": "StreamingSymmetricHashJoinExec.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "each join side buffers past input rows as streaming state, effectively a multi-map from equi-join key to the list of past input rows received with that key",
+          "at": [{ "step": "Elaborate: a join buffers both sides as state" }]
+        },
+        {
+          "item": "if a timestamp column with an event time watermark is present in the join keys or input data, the watermark is used to figure out which buffered rows will not join with new data and can be discarded",
+          "at": [{ "step": "Reveal: watermark plus time range -- the growth stops" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "Spark's join-state eviction distinguishes eventTimeWatermarkForLateEvents (same watermark used to filter incoming late rows on both sides) from eventTimeWatermarkForEviction (used specifically to decide which buffered state to drop) -- two distinct watermark roles this topic's own measured claim treats as a single 'the watermark' decision.",
+        "at": [{ "out": "the two separate named watermark roles inside the join operator's own implementation named only; this topic's own examples.py measures the net effect (state plateaus) rather than distinguishing the two internal roles" }]
+      },
+      {
+        "item": "dropDuplicatesWithinWatermark differs from plain dropDuplicates with a watermark column by not requiring the event-time column itself to be part of the unique identifier, which matters specifically when the same logical event can carry different event times across duplicate deliveries (e.g. a non-idempotent writer that stamps event time at write).",
+        "at": [{ "out": "the specific use case dropDuplicatesWithinWatermark exists for, distinct from ordinary watermark-bounded deduplication, named only; this topic's own examples.py measures output-mode and join-state behavior, not deduplication" }]
+      },
+      {
+        "item": "mapGroupsWithState and flatMapGroupsWithState cannot be used before or after a stream-stream join in the same query, a structural restriction independent of the output-mode restriction this topic measures -- a query author could satisfy the append-mode requirement and still have the query rejected for this separate reason.",
+        "at": [{ "out": "the join-plus-arbitrary-stateful-operator restriction, separate from output mode, named only; this topic's own examples.py builds no mapGroupsWithState/flatMapGroupsWithState query" }]
+      },
+      {
+        "item": "Spark 4.0's transformWithState operator is positioned to replace the legacy mapGroupsWithState/flatMapGroupsWithState pair for arbitrary stateful operations, with its own in-depth documentation the source material names but doesn't detail inline -- a forward-looking alternative this topic's own append/complete/update distinction doesn't need to cover.",
+        "at": [{ "out": "transformWithState as the newer replacement for arbitrary stateful operators named only; this topic's own examples.py uses only built-in aggregation and join operators" }]
+      },
+      {
+        "item": "The query-type/output-mode compatibility matrix lists five distinct query shapes (aggregation with watermark, aggregation without watermark, mapGroupsWithState, flatMapGroupsWithState, joins), each with its own supported-mode set -- this topic's own examples.py measures only the join row and, by implication, the join-vs-complete rejection, not the full five-way matrix.",
+        "at": [{ "out": "the full five-row compatibility matrix named only; this topic's own examples.py constructs and tests only the join case directly" }]
+      },
+      {
+        "item": "A stream-stream join's support matrix varies by join type (inner, left outer, right outer, full outer, left semi) and by which side the watermark is specified on -- inner joins need only an optional watermark for state cleanup, while outer joins require a watermark and time constraint on a specific side for correct results, not merely for cleanup.",
+        "at": [{ "out": "the join-type-specific watermark requirements (optional cleanup vs. required correctness) named only; this topic's own examples.py tests only an inner join" }]
+      },
+      {
+        "item": "Sorting operations on a streaming Dataset are supported only after an aggregation and only in Complete output mode -- a second, narrower case (beyond plain aggregation) where Complete mode is specifically required rather than merely one option among several.",
+        "at": [{ "out": "the sort-after-aggregation-requires-complete-mode constraint named only; this topic's own examples.py never performs a sort on a streaming Dataset" }]
+      },
+      {
+        "item": "The console and memory sinks both support Append and Complete modes but are explicitly documented as debug-only, since both collect the entire output into the driver's own memory on every trigger -- a sink-level constraint layered on top of the output-mode compatibility this topic measures at the query-type level.",
+        "at": [{ "out": "the debug-only, driver-memory-bound nature of the console/memory sinks named only; this topic's own examples.py uses the noop sink for the state-growth probes and the memory sink only for the rejected-complete-mode probe" }]
+      },
+      {
+        "item": "The global watermark policy (minimum by default across multiple input streams, configurable to maximum) applies to a stream-stream join exactly as it does to a single-stream windowed aggregation covered in the previous topic -- the join's own two watermarks (left and right) are reduced to one global watermark by the identical mechanism.",
+        "at": [{ "out": "the previous topic's global-watermark-policy mechanism applying unchanged to a join's own two watermarks named only; this topic's own examples.py uses the same delay on both sides, so the policy choice never has a visible effect" }]
+      },
+      {
+        "item": "Spark cannot check or force that a stateful operator's own output respects the output mode's semantics (e.g. a mapGroupsWithState function emitting old rows under Update mode, which Spark doesn't expect but also doesn't block) -- a self-discipline requirement on the query author that output-mode rejection, where it does happen, doesn't cover.",
+        "at": [{ "out": "the unenforced, author's-own-responsibility semantics gap for custom stateful functions named only; this topic's own examples.py uses only built-in aggregation and join operators, which Spark does enforce" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}
