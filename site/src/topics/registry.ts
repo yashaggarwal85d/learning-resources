@@ -7943,6 +7943,25 @@ export const TOPICS: TopicMeta[] = [
       "ANSI mode changed the meaning of expressions Spark already had. The next topic is a genuinely new capability: a type for semi-structured data that didn't exist before 4.x at all.",
   },
   {
+    id: 'de.variant-type-semi-structured',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/variant-type-semi-structured',
+    title: 'VARIANT type for semi-structured data',
+    syllabusTitle: 'VARIANT type for semi-structured data',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.5' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-variant-type'],
+    uses: ['spark-ansi-mode'],
+    bridge:
+      "ANSI mode changed how existing types behave. This topic closes the section, and the chapter's engine-internals material, with a type that didn't exist before 4.x: VARIANT, built to stop semi-structured data from forcing a choice between a brittle inferred schema and an opaque JSON string.",
+    handoff:
+      "VARIANT closes this chapter's engine-internals material. Section 7.6 has no reel; the chapter's own closing topic picks up right after it, stepping outside Spark's execution model entirely to name what it chose not to be.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',

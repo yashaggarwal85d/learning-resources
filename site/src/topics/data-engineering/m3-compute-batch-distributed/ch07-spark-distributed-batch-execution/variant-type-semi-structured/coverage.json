@@ -1,0 +1,131 @@
+{
+  "topic": "de.variant-type-semi-structured",
+  "syllabus": [
+    {
+      "clause": "binary encoding (field-name dictionary + self-describing value) vs JSON strings vs inferred structs; parse_json, variant_get, path extraction; shredding frequently accessed fields into typed Parquet columns (GA in 4.1: faster reads, slower writes); interop with Parquet/Iceberg v3/Delta variant (cross-ref §6.2/§6.3).",
+      "at": [
+        { "step": "Reveal: semi-structured data used to force a choice between two bad options" },
+        { "step": "Predict: extracting one field, over and over. Faster from a JSON string, or from VARIANT?" },
+        { "step": "Reveal: slower from the JSON string, measured directly" },
+        { "step": "Elaborate: VARIANT is self-describing binary, not text" },
+        { "step": "Predict: a field whose type varies row to row, cast into a fixed struct. Does every row survive?" },
+        { "step": "Reveal: the mismatched row quietly becomes NULL, measured directly" },
+        { "step": "Elaborate: a struct picks one type per field before any data arrives" },
+        { "step": "Reveal: shredding buys the struct's own speed back, for the fields that earn it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "\"Spark Release 4.1.0\" notes",
+      "items": [
+        {
+          "item": "VARIANT is GA with shredding for faster reads on semi-structured data, plus recursive CTE support and new approximate data sketches (KLL and Theta)",
+          "at": [{ "step": "Reveal: shredding buys the struct's own speed back, for the fields that earn it" }]
+        },
+        {
+          "item": "[SPARK-54454] Enable VARIANT type by default (VARIANT type GA)",
+          "at": [{ "step": "Hook" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark SQL built-in functions reference",
+      "items": [
+        {
+          "item": "parse_json(jsonStr) - Parse a JSON string as a Variant value. Throw an exception when the string is not valid JSON value",
+          "at": [{ "step": "Reveal: slower from the JSON string, measured directly" }]
+        },
+        {
+          "item": "variant_get(v, path[, type]) - Extracts a sub-variant from v according to path, and then cast the sub-variant to type ... Throws an exception if the cast fails",
+          "at": [{ "step": "Reveal: slower from the JSON string, measured directly" }, { "step": "Reveal: the mismatched row quietly becomes NULL, measured directly" }]
+        },
+        {
+          "item": "try_variant_get and try_parse_json return NULL instead of throwing, for a path that doesn't exist or a cast/parse that fails",
+          "at": [{ "step": "Elaborate: a struct picks one type per field before any data arrives" }]
+        }
+      ]
+    },
+    {
+      "source": "Variant.java / VariantUtil.java (Apache Spark source, v4.1.0)",
+      "items": [
+        {
+          "item": "a variant value consists of a one-byte header and a number of content bytes; the header byte is divided into type info and basic type",
+          "at": [{ "step": "Elaborate: VARIANT is self-describing binary, not text" }]
+        },
+        {
+          "item": "the variant metadata includes a version id and a dictionary of distinct strings, shared across the column rather than repeated per value",
+          "at": [{ "step": "Elaborate: VARIANT is self-describing binary, not text" }]
+        },
+        {
+          "item": "Variant.java is structurally equivalent to org.apache.spark.unsafe.types.VariantVal, defined separately to avoid depending on or modifying Spark",
+          "at": [{ "step": "Elaborate: VARIANT is self-describing binary, not text" }]
+        }
+      ]
+    },
+    {
+      "source": "VariantShreddingWriter.java / VariantSchema.java (Apache Spark source, v4.1.0)",
+      "items": [
+        {
+          "item": "VariantShreddingWriter is the class that implements shredding a Variant value",
+          "at": [{ "step": "Reveal: shredding buys the struct's own speed back, for the fields that earn it" }]
+        },
+        {
+          "item": "a shredding schema contains a value and an optional typed_value field; a typed_value that is itself an array or struct recursively contains its own shredding schema for its elements or fields",
+          "at": [{ "step": "Reveal: shredding buys the struct's own speed back, for the fields that earn it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "VARIANT itself (not shredding) was already usable in Spark 4.0, this chapter's own pinned version, under a preview/non-default flag -- shredding specifically, and VARIANT being on by default, are what SPARK-54454 GA'd in 4.1; the type's binary encoding and parse_json/variant_get this topic measures were already real and usable in 4.0.1.",
+        "at": [{ "out": "VARIANT's own 4.0 availability versus its 4.1 GA and default-on status, named only; this topic's own examples.py measures parse_json/variant_get against 4.0.1 directly, where both already work" }]
+      },
+      {
+        "item": "variant_explode flattens a VARIANT array or object into multiple rows, similar in spirit to explode() on an ArrayType column, but operating on a VARIANT's own internal structure rather than a statically-typed Spark collection.",
+        "at": [{ "out": "variant_explode named only as a related function; this topic's own examples.py uses variant_get for scalar path extraction, not array/object flattening" }]
+      },
+      {
+        "item": "schema_of_variant returns the inferred SQL schema of a variant value as a string, which is one real way to discover a semi-structured dataset's actual shape before deciding whether a field is stable enough to shred or declare as a struct field.",
+        "at": [{ "out": "schema_of_variant's own role in discovering a dataset's real shape named only; this topic's own examples.py constructs the mixed-type example by hand rather than discovering it from schema_of_variant" }]
+      },
+      {
+        "item": "spark.sql.variant.allowDuplicateKeys controls whether parse_json tolerates a JSON object with the same key appearing twice (keeping the last one) rather than raising -- a parsing-leniency knob distinct from the try_* functions' error-vs-NULL behavior this topic measures.",
+        "at": [{ "out": "the duplicate-key parsing config named only as a separate leniency knob; this topic's own examples.py doesn't construct JSON with duplicate keys" }]
+      },
+      {
+        "item": "Variant path syntax follows a dotted/bracketed convention ($.field, $.array[0], $.field.nested) matching the same path grammar get_json_object and JSONPath-style extraction already use, so migrating a get_json_object expression to variant_get is mostly a function-name swap, not a new syntax to learn.",
+        "at": [{ "out": "the shared path-syntax convenience for migration named only; this topic's own examples.py uses the simplest single-field path ($.x, $.user_id) in both the JSON-string and VARIANT cases" }]
+      },
+      {
+        "item": "Parquet's own VariantShredding.md specification (referenced directly in VariantSchema.java's own documentation comment) defines shredding at the file-format level, meaning a shredded VARIANT column is readable by any Parquet reader that implements the spec, not only by Spark.",
+        "at": [{ "out": "shredding's cross-engine Parquet-spec-level portability named only; this topic's own examples.py doesn't test reading a shredded file from a non-Spark reader" }]
+      },
+      {
+        "item": "Interop with Iceberg v3 tables requires the table itself to be created as a v3 table before a VARIANT column can be added, since the VARIANT type was introduced specifically in the Iceberg v3 table-format spec, not retrofitted onto v1/v2 tables.",
+        "at": [{ "out": "the Iceberg v3 table-version requirement for VARIANT columns named only; this topic's own examples.py reads and writes plain Parquet files, not an Iceberg table" }]
+      },
+      {
+        "item": "spark.sql.variant.pushVariantIntoScan, when enabled, lets a variant_get extraction be pushed down into a compatible data source's own scan (such as a shredded Parquet reader resolving straight to the typed column), rather than extracting after the full VARIANT value has already been read.",
+        "at": [{ "out": "variant-extraction scan pushdown named only; this topic's own examples.py measures unshredded VARIANT extraction, where there is no typed column for a pushdown to resolve to" }]
+      },
+      {
+        "item": "A VARIANT value has a documented size limit (enforced via VariantSizeLimitException in the same source module this topic quotes), meaning an unbounded or deeply nested JSON payload can fail parse_json outright rather than silently truncating -- a failure mode distinct from the struct-cast NULL-on-mismatch this topic measures.",
+        "at": [{ "out": "the VARIANT size-limit exception as a distinct failure mode from the struct-cast case named only; this topic's own examples.py uses small, well under any size-limit payloads" }]
+      },
+      {
+        "item": "Delta Lake's own variant-type support mirrors Iceberg's version-gating pattern: a Delta table needs the relevant table feature (variantType-preview or its successor) enabled before a VARIANT column can be written to it, matching how Parquet and Iceberg each gate the same capability behind a format or table-version requirement.",
+        "at": [{ "out": "Delta's table-feature gating for VARIANT columns named only, as the same pattern Iceberg v3 and Parquet's own shredding spec use; this topic's own examples.py writes plain Parquet, not a Delta table" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

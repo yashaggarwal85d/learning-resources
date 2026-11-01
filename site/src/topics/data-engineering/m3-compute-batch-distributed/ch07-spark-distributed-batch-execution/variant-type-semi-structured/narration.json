@@ -1,0 +1,69 @@
+{
+  "topic": "de.variant-type-semi-structured",
+  "steps": [
+    {
+      "lines": [
+        "The last setting we looked at changed how an existing kind of value behaves.",
+        "This one is different. It's a kind of value that simply didn't exist before, built for data whose own shape isn't fixed."
+      ]
+    },
+    {
+      "lines": [
+        "Before it existed, holding that kind of data meant picking between two choices, and neither one was good.",
+        "Keep it as plain text, and the engine understands nothing about it. Force it into a fixed shape, and the moment one record doesn't match that shape, something breaks."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the answer comes.",
+        "Pull the same one piece out of a record, over and over, many times. Is that faster when the record is kept as plain text, or when it's kept in the new, purpose-built form?"
+      ],
+      "answer": "The purpose-built form is faster. The plain text pays its parsing cost every single time; the other form only paid it once."
+    },
+    {
+      "lines": [
+        "Slower from plain text, and that's measured directly, not assumed.",
+        "Pulling the same piece out again and again costs real, meaningfully more time from plain text than from the purpose-built form, on the identical underlying data."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why one stays fast where the other doesn't.",
+        "The new form carries its own description right alongside the value -- what kind of thing it is, where each named piece lives -- shared once across a whole column, not repeated record by record. Pulling a piece out becomes following a pointer, not reading text from the start."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of question.",
+        "Take one piece of data that's sometimes a number and sometimes plain text, record by record, and force it into a column that only allows one of those. Does every single record make it through, or does one quietly vanish?"
+      ],
+      "answer": "One vanishes. The record whose value doesn't match the column's one allowed type comes back as nothing at all."
+    },
+    {
+      "lines": [
+        "One vanishes, and that's measured directly too.",
+        "The record that doesn't match the fixed shape comes back as nothing. Read the same data through the new, purpose-built form instead, and every single record's actual value comes through untouched."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why that happens.",
+        "A fixed shape has to commit to exactly one type for a field before a single record has even arrived. The moment real data disagrees with that early commitment, something has to be thrown away."
+      ]
+    },
+    {
+      "lines": [
+        "There's a way to get some of that fixed shape's own speed back, without going back to its brittleness.",
+        "Pull just the one piece that gets read constantly out into its own dedicated, fast column, and leave everything else exactly as tolerant as it was.",
+        "That particular trick arrived in a Spark release that comes after the one every other example in this chapter runs on, so it's named here from what Spark itself documents about it, not measured directly."
+      ]
+    },
+    {
+      "lines": [
+        "Three ways of holding the same kind of data, and each one pays its own cost somewhere different.",
+        "Plain text pays every single time it's read. A fixed shape pays once, up front, by risking what it might throw away.",
+        "The purpose-built form in between pays once too, but keeps everything -- at least until one piece of it needs to be made just as fast as the fixed shape."
+      ]
+    }
+  ]
+}
