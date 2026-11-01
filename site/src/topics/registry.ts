@@ -7510,6 +7510,25 @@ export const TOPICS: TopicMeta[] = [
       "Operators and output modes describe what the query computes. The next topic is the guarantee about what happens if the query, or the whole driver, dies partway through computing it.",
   },
   {
+    id: 'de.checkpoints-exactly-once-boundaries',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m3-compute-batch-distributed/ch07-spark-distributed-batch-execution/checkpoints-exactly-once-boundaries',
+    title: 'Checkpoints and exactly-once boundaries',
+    syllabusTitle: 'Checkpoints and exactly-once boundaries',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 3, title: 'Compute: Batch & Distributed Processing' },
+    chapter: { number: 7, title: 'Apache Spark and Distributed Batch Execution', section: '7.4' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['spark-exactly-once-boundary', 'spark-foreachbatch-idempotent'],
+    uses: ['spark-offset-commit-log', 'spark-stateful-operators'],
+    bridge:
+      "Stateful operators compute the right answer once. This topic is what survives a crash in the middle of computing it: the checkpoint's offsets, state and commit log, and exactly how far that guarantee reaches before it needs help from the source and the sink.",
+    handoff:
+      "Exactly-once is a guarantee about correctness after failure. The next topic is about the one resource that guarantee leans on hardest at scale: where the state itself actually lives, and what happens once there's too much of it for memory.",
+  },
+  {
     id: 'de.failure-domains-regions-zones',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/failure-domains-regions-zones',

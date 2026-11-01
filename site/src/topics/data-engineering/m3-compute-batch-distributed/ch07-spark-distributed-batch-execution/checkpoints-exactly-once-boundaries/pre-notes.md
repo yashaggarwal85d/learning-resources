@@ -1,0 +1,7 @@
+- **Exactly-once (end to end)** -- a guarantee that every record affects the final result exactly once, spanning the source, the engine, and the sink together, not any one of them alone.
+- **At-least-once** -- a weaker guarantee that a record is never lost, but may be processed or written more than once, typically after a crash and replay.
+- **Idempotent write** -- a write that produces the same final result no matter how many times it's repeated with the same input.
+- **foreachBatch** -- a sink API that hands the developer a batch's own DataFrame and its `batchId`, to apply arbitrary write logic per micro-batch.
+- **batchId** -- the integer identifying one micro-batch, deterministic across restarts: a replayed batch gets the same id it had the first time.
+- **Checkpoint compatibility** -- whether a streaming query can resume correctly from an existing checkpoint after the query's own definition has changed between restarts.
+- **Replayable source** -- a source that can re-deliver the exact same data for a given offset range, required for the engine's own replay guarantee to mean anything.
