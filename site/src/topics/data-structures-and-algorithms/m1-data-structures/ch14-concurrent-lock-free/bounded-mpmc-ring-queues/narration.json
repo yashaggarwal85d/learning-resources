@@ -1,0 +1,120 @@
+{
+  "topic": "dsa.bounded-mpmc-ring-queues",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Picture several threads writing into a shared ring and several more threads reading out of it, all at once.",
+        { "beat": 0.3 },
+        "Wrapping the whole ring in a single lock makes every one of those accesses correct, but once enough threads are waiting on that lock, it becomes the only thing anyone's actually waiting on.",
+        { "beat": 0.4 },
+        "A different design gets by on a single compare-and-swap for each operation, and never hands out a lock to anyone at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a schedule worth sitting with. One thread claims the very next slot in the ring, and then gets suspended before it actually writes anything into that slot.",
+        { "beat": 0.4 },
+        "A second thread comes right behind it, claims the slot after that one, writes its own message, and finishes normally.",
+        { "beat": 0.4 },
+        "Now a reading thread shows up and asks for whatever's next. What does it actually get back?"
+      ],
+      "answer": [
+        "It gets back empty, even though a slot right next door already has a real message waiting in it.",
+        "The reading side only ever looks at the one slot its own counter is currently pointing to, in strict order. It has no way to look ahead, and no reason to — so a slot further along that already has data in it simply doesn't help."
+      ]
+    },
+    {
+      "lines": [
+        "Keep asking that same reading thread for whatever's next, over and over, while the stalled slot stays stalled. Every single time, the answer comes back the same: nothing's there yet.",
+        { "beat": 0.4 },
+        "That's not a bug anywhere in particular. It's the direct consequence of a reading thread that only ever consults the one slot in front of it, never anything further along, no matter what that further slot happens to be holding."
+      ]
+    },
+    {
+      "lines": [
+        "Give every single slot in the ring its own number, starting out equal to that slot's own position. Keep two more shared counters off to the side: one for the next slot a writer should claim, one for the next a reader should claim.",
+        { "beat": 0.4 },
+        "A slot's own number isn't really counting anything — it's answering one question. Whose turn is this slot, right now?"
+      ]
+    },
+    {
+      "lines": [
+        "Compare a slot's own number against whichever position a thread happens to be holding. Three outcomes, and only three, cover every case.",
+        { "beat": 0.4 },
+        "Equal means this slot is free, right now, for exactly this thread's turn.",
+        { "beat": 0.3 },
+        "Less means it's still carrying something from a previous pass around the ring — full, as far as a writer's concerned, or already taken, as far as a reader's concerned.",
+        { "beat": 0.3 },
+        "Greater means some other thread already claimed this very turn a moment ago, so there's nothing to do but check again."
+      ]
+    },
+    {
+      "lines": [
+        "Go back to that stalled thread from earlier. It never comes back. It never writes anything, and it never updates its own slot's number.",
+        { "beat": 0.4 },
+        "Left completely alone, with absolutely nothing else stepping in to help, does the ring ever recover from this by itself?"
+      ],
+      "answer": [
+        "No — that one slot stays stuck exactly as it is, and so does any reading thread that's waiting specifically on it.",
+        "Nothing inside the data structure itself has any way to notice a stalled thread, let alone do anything about it. The slot simply sits there, claimed and empty, for exactly as long as that thread stays gone."
+      ]
+    },
+    {
+      "lines": [
+        "Measured directly: ten thousand straight attempts to read from that one stalled slot, and every single one of them comes back the same way, with nothing there.",
+        { "beat": 0.4 },
+        "There's a single compare-and-swap doing all the coordination here, and not one lock anywhere in the whole design — and it's still blocking, not lock-free, by the exact same definition from before. A single suspended thread holds up one specific other thread, for as long as it takes.",
+        { "beat": 0.4 },
+        "A design with no lock in it can still be a blocking design. Those two things were never the same promise."
+      ]
+    },
+    {
+      "lines": [
+        "Write down that exact sequence of events as a formal history: the second thread's write finishes completely, and only afterward does the reading thread begin and come back with nothing.",
+        { "beat": 0.4 },
+        "Run that history through the very same checker built last time, the one that searches for any legal order consistent with real time. For this particular history, it finds none at all.",
+        { "beat": 0.4 },
+        "Change just one thing — let the read overlap the write instead of strictly following it — and a legal order appears immediately."
+      ]
+    },
+    {
+      "lines": [
+        "A completely different design splits this same job three ways: something that tracks where a producer is, something that coordinates producers directly, and something that tells a consumer what's safe to read next.",
+        { "beat": 0.4 },
+        "Writing into that design is also split into two separate steps: first claim a spot, and only afterward actually publish into it. Does organizing the work this way get rid of the earlier stalling problem, or does it just move that problem somewhere else?"
+      ],
+      "answer": [
+        "It just moves it — a spot that's claimed but never actually published still stalls every consumer waiting behind it.",
+        "The design's own documentation says exactly this: a claimed spot that never gets published leaves every dependent consumer stuck, with no way back short of restarting the whole thing."
+      ]
+    },
+    {
+      "lines": [
+        "Underneath two very different-looking designs sits the very same idea: some per-slot marker that says whose turn it currently is, whether that marker lives right inside the slot or off to the side of it.",
+        { "beat": 0.4 },
+        "Both designs also guard their own shared counters the same way, with empty space on either side, so that two threads updating two different counters never end up fighting over the same small stretch of memory.",
+        { "beat": 0.4 },
+        "Splitting the work differently doesn't make a stall cheaper to deal with. It only decides which thread ends up waiting for it."
+      ]
+    },
+    {
+      "lines": [
+        "Take two ordinary counters, each one bumped over and over by its own dedicated thread, and put them right next to each other in memory, close enough to share the same small stretch a processor's cache actually moves around as a single unit.",
+        { "beat": 0.4 },
+        "Every bump from either thread now forces the other thread's entire cached copy to be thrown out and reloaded, even though the two threads never once touch each other's actual value.",
+        { "beat": 0.4 },
+        "Spread those same two counters out onto separate stretches of memory instead, measured on a real machine running real threads, and that entire cost simply disappears."
+      ]
+    },
+    {
+      "lines": [
+        "Correctness now has a name, and a stalled thread's effect on everyone else now has a rank on a ladder.",
+        { "beat": 0.3 },
+        "Neither one, by itself, says how to actually go build something that earns both at once — this one does, with a single compare-and-swap, and its own honestly measured curve on a real machine that doesn't always favor it the way you might expect.",
+        { "beat": 0.4 },
+        "A shared table is hard in a different way entirely: it has to keep growing while threads are actively using it. Next time, exactly that."
+      ]
+    }
+  ]
+}
