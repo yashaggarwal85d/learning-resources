@@ -6747,6 +6747,26 @@ export const TOPICS: TopicMeta[] = [
       "Every record in this chapter has carried a position, an LSN or a GTID, and a Kafka offset is a second one. Which of them a restart trusts, and what a replay can and cannot promise, is the next topic.",
   },
   {
+    id: 'de.cdc-offsets-replay-exactly',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/cdc-offsets-replay-exactly',
+    title: 'CDC offsets, replay and exactly-once',
+    syllabusTitle: 'CDC offsets, replay and exactly-once',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['cdc-source-offset-vs-kafka-offset', 'cdc-exactly-once-caveats'],
+    uses: ['exactly-once-effect-recipe', 'logical-decoding-slot', 'snapshot-modes', 'slot-safety-valves', 'mysql-binlog-gtid-schema-history'],
+    declared: [],
+    bridge:
+      "Every record in this chapter has carried a position, an LSN or a GTID, and a Kafka offset is a second one. This topic is which of them a restart trusts, where each is stored, and what a replay can honestly promise.",
+    handoff:
+      "The pieces are all here: a slot, a snapshot, events, offsets. One project assembles them behind a configuration file. How Debezium is structured, and what its event envelope looks like, is the next topic.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',

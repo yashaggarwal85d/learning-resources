@@ -1,0 +1,148 @@
+{
+  "topic": "de.cdc-offsets-replay-exactly",
+  "syllabus": [
+    {
+      "clause": "two positions (source LSN/GTID vs Kafka offset) and how Kafka Connect stores source offsets",
+      "at": [
+        { "step": "Predict: what the restart emits" },
+        { "step": "Reveal: two positions, two stores" },
+        { "step": "Reveal: the crash and replay, measured" }
+      ]
+    },
+    {
+      "clause": "Kafka Connect exactly-once source support (KIP-618) used by Debezium",
+      "at": [{ "step": "Reveal: exactly-once, by transaction" }]
+    },
+    {
+      "clause": "Debezium has no dedup layer of its own",
+      "at": [
+        { "step": "Reveal: no dedup layer of its own" },
+        { "step": "Reveal: naive against dedup, measured" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "recovery when the source log position has been purged (re-snapshot)",
+      "at": [{ "step": "Reveal: a purged position, measured" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "KIP-618: Exactly-Once Support for Source Connectors",
+      "items": [
+        {
+          "item": "The framework should be expanded to atomically write source records and their source offsets to Kafka, and to prevent zombie tasks from producing data to Kafka",
+          "at": [{ "step": "Reveal: exactly-once, by transaction" }]
+        },
+        {
+          "item": "exactly.once.source.support controls whether to enable exactly-once support for source connectors in the cluster by writing source records and their offsets in a Kafka transaction, and by proactively fencing out old task generations before bringing up new ones",
+          "at": [{ "step": "Reveal: exactly-once, by transaction" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: Exactly-once delivery (EOS)",
+      "items": [
+        {
+          "item": "Currently, Debezium does not implement an internal deduplication layer to enforce exactly-once semantics",
+          "at": [{ "step": "Reveal: no dedup layer of its own" }]
+        },
+        {
+          "item": "It remains unclear whether the implementation is fully correct or if there are edge cases where exactly-once semantics might be violated, citing two Jepsen reports and open Kafka issues",
+          "at": [{ "out": "named only, per pre-notes.md and post-notes.md Internals" }]
+        },
+        {
+          "item": "MariaDB, MongoDB, MySQL, Oracle, PostgreSQL and SQL Server source connectors support participation in Kafka Connect's exactly-once delivery",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: PostgreSQL connector",
+      "items": [
+        {
+          "item": "While it is recovering from a fault, the connector might emit some duplicate change events; Debezium, like Kafka, provides at least once delivery of change events",
+          "at": [{ "step": "Reveal: no dedup layer of its own" }]
+        }
+      ]
+    },
+    {
+      "source": "Confluent docs: Kafka Connect configuration reference (standing in for an unreadable Apache Kafka page)",
+      "items": [
+        {
+          "item": "To enable exactly-once source support on a new cluster, set exactly.once.source.support to enabled; on an existing cluster, first set it to preparing on every worker, then set it to enabled, each via a rolling upgrade",
+          "at": [{ "step": "Reveal: exactly-once, by transaction" }]
+        }
+      ]
+    },
+    {
+      "source": "Confluent docs: Kafka sink connector configuration reference",
+      "items": [
+        {
+          "item": "errors.tolerance controls behavior for tolerating errors during connector operation: none fails the task immediately, all skips over problematic records",
+          "at": [{ "out": "named only, per CHAPTER.md's own Sources line" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 docs: Logical Decoding Concepts",
+      "items": [
+        {
+          "item": "A logical slot will emit each change just once in normal operation; the current position is persisted only at checkpoint, so a crash can cause recent changes to be sent again, and clients are responsible for handling the same message more than once",
+          "at": [{ "step": "Reveal: the crash and replay, measured" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The crash-and-replay measurement reads the identical pending batch twice with nothing advanced between the two reads, rather than simulating a restart by reconnecting only, so the proof isolates the unmoved position itself as the cause, not any artifact of closing and reopening a connection.",
+        "at": [{ "step": "Reveal: the crash and replay, measured" }]
+      },
+      {
+        "item": "The committed-in-time contrast runs against a freshly created slot and table, not the same slot already read from in the crash scenario, so the empty second read proves the position moved, not merely that a different slot happened to have nothing pending.",
+        "at": [{ "step": "Reveal: the crash and replay, measured" }]
+      },
+      {
+        "item": "The naive-versus-dedup measurement runs both readers over the exact same duplicated stream produced by one crash scenario, so the contrast is the same input's two different outcomes, not two separately constructed inputs that might differ for unrelated reasons.",
+        "at": [{ "step": "Reveal: naive against dedup, measured" }]
+      },
+      {
+        "item": "The dedup reader keys on each change's own log position rather than on the row's own primary key, which is the detail that actually matters: deduping by primary key would also collapse two separate, legitimate updates to the same row into one.",
+        "at": [{ "step": "Reveal: naive against dedup, measured" }]
+      },
+      {
+        "item": "The purged-position measurement drops the slot entirely rather than merely advancing it far past the data, so the failure it reproduces is specifically an unrecoverable position, not the ordinary and expected case of a slot with nothing new to report.",
+        "at": [{ "step": "Reveal: a purged position, measured" }]
+      },
+      {
+        "item": "The wrong option in the first predict question — that the restart skips the already-produced batch — is ruled out by the measured mechanism itself: nothing in a peek-only read ever records that a batch was sent, so there is nothing for a restart to consult in order to skip it.",
+        "at": [{ "step": "Predict: what the restart emits" }]
+      },
+      {
+        "item": "The wrong option in the final predict question — that enabling exactly-once source support protects the whole pipeline end to end — is ruled out directly by Debezium's own documented no-dedup-layer statement, which draws the boundary at the connector's own write, not at whatever reads from its output topic.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Every scratch table and replication slot this topic creates is confirmed dropped inside the same function that created it, verified by three successive clean runs of examples.py, and the shared orders table is never touched by any of this topic's four functions.",
+        "at": [{ "out": "verified directly before writing any content, per REVIEW.md" }]
+      },
+      {
+        "item": "The Confluent Kafka Connect configuration reference is used explicitly as a disclosed substitute for the unreadable Apache Kafka Connect user guide, confirmed unreachable the same way earlier topics in this chapter confirmed it, rather than silently passing off a different source as the one CHAPTER.md names.",
+        "at": [{ "out": "disclosed source substitution, per SOURCES.md" }]
+      },
+      {
+        "item": "Kafka transactions, the idempotent producer, read_committed consumption, and end-to-end exactly-once with external sinks are each named in CHAPTER.md's own 'Leaves out' line, and none of them appear anywhere in this topic's reel, narration or examples.py.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}
