@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Progress guarantees and linearizability">Blocking vs. lock-free, compare-and-swap, and the correctness criterion every structure in this chapter is checked against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bounded MPMC ring queues">A lap counter per cell, the contrast this topic draws against a lock per bin, and the false-sharing padding this topic reuses.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Separate chaining">The sequential bin-and-chain table this topic makes concurrent.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Resizing and incremental rehashing">One thread amortizing a table's growth; this topic has every thread pay a share instead.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Practical hash functions and HashDoS">Why a hostile key distribution can pile nodes into one bin, the problem treeified bins exist to bound.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Red-black trees">The balanced tree a treeified bin becomes once its chain is long enough.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Skip lists">The ordered structure this topic contrasts its unordered maps against, and the single-writer concurrency argument it already made once.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="ConcurrentHashMap.java" href="https://raw.githubusercontent.com/openjdk/jdk21u/master/src/java.base/share/classes/java/util/concurrent/ConcurrentHashMap.java" by="OpenJDK, jdk21u">CAS on an empty bin, the first node as its own lock, the Poisson table, treeify thresholds and the cooperative resize's forwarding nodes.</Resource>
+  <Resource kind="reading" title="Split-Ordered Lists: Lock-Free Extensible Hash Tables" href="https://people.csail.mit.edu/shanir/publications/Split-Ordered_Lists.pdf" by="Ori Shalev and Nir Shavit">The lock-free alternative: one list sorted by the bit-reversal of the hash, doubling that moves no item.</Resource>
+  <Resource kind="reading" title="lib.rs" href="https://raw.githubusercontent.com/xacrimon/dashmap/master/src/lib.rs" by="dashmap">The Rust form of lock striping: cache-padded read-write locks, one per shard.</Resource>
+</ul>
+
+</section>

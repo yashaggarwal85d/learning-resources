@@ -1,0 +1,85 @@
+{
+  "topic": "dsa.concurrent-hash-maps",
+  "syllabus": [
+    {
+      "clause": "lock striping",
+      "at": [{ "step": "One lock, then many stripes" }]
+    },
+    {
+      "clause": "Java ConcurrentHashMap (CAS on bins, treeified bins)",
+      "at": [
+        { "step": "One compare and swap, no lock" },
+        { "step": "The first node is the lock" },
+        { "step": "A reader never takes it" },
+        { "step": "Nine probabilities, computed" },
+        { "step": "Eight nodes, a tree instead of a chain" },
+        { "step": "A note at the old bin's head" }
+      ]
+    },
+    {
+      "clause": "split-ordered lists (Shalev & Shavit, JACM 2006) for lock-free resizing",
+      "at": [{ "step": "One list, in bit-reversed order" }]
+    },
+    {
+      "clause": "sharded maps (dashmap)",
+      "at": [{ "step": "Eight shards, two locks" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ConcurrentHashMap.java (jdk21u, master)",
+      "items": [
+        { "item": "CAS on an empty bin's first node", "at": [{ "step": "One compare and swap, no lock" }] },
+        { "item": "The bin's own first node used as its lock", "at": [{ "step": "The first node is the lock" }] },
+        { "item": "Retrieval operations generally do not block", "at": [{ "step": "A reader never takes it" }] },
+        { "item": "The Poisson bin-length table, parameter about 0.5", "at": [{ "step": "Nine probabilities, computed" }] },
+        { "item": "TREEIFY_THRESHOLD (8), MIN_TREEIFY_CAPACITY (64), UNTREEIFY_THRESHOLD (6)", "at": [{ "step": "Eight nodes, a tree instead of a chain" }] },
+        { "item": "ForwardingNodes and helpTransfer during a resize", "at": [{ "step": "A note at the old bin's head" }] },
+        { "item": "DEFAULT_CONCURRENCY_LEVEL and the unused Segment class", "at": [{ "step": "One lock, then many stripes" }] },
+        { "item": "The JDK 7 segment design's own internals", "at": [{ "out": "CHAPTER.md instructs this topic not to describe the pre-Java-8 segment design beyond the current source's own backward-reference comment, without reading a JDK 7 source; none was read this session." }] }
+      ]
+    },
+    {
+      "source": "Split-Ordered Lists (Shalev & Shavit, JACM 2006)",
+      "items": [
+        { "item": "Bit-reversal ordering, recursive split-ordering", "at": [{ "step": "One list, in bit-reversed order" }] },
+        { "item": "Dummy nodes marking bucket starts, doubling with no items moved", "at": [{ "step": "One list, in bit-reversed order" }] },
+        { "item": "Builds on Michael's lock-free list, which builds on Harris", "at": [{ "deep": "Where this goes next" }] },
+        { "item": "The NUMA/UltraSPARC II performance claim, hardware named", "at": [{ "deep": "Where this goes next" }] }
+      ]
+    },
+    {
+      "source": "dashmap (README.md, src/lib.rs, master)",
+      "items": [
+        { "item": "An array of cache-padded read-write-locked hashbrown shards", "at": [{ "step": "Eight shards, two locks" }] },
+        { "item": "Shard count: (available_parallelism * 4).next_power_of_two()", "at": [{ "step": "Eight shards, two locks" }] },
+        { "item": "May deadlock if called while holding a reference into the map", "at": [{ "deep": "Where this goes next" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (independent pass, concurrent-hash-maps)",
+    "date": "2026-11-01",
+    "items": [
+      { "item": "A lock around the whole table serializes every thread regardless of which keys they touch", "at": [{ "step": "One lock, then many stripes" }] },
+      { "item": "Lock striping trades that for S-fold less contention, at the cost of whole-table operations needing every lock", "at": [{ "step": "One lock, then many stripes" }] },
+      { "item": "An insert into an empty bin needs no lock at all, only a successful CAS", "at": [{ "step": "One compare and swap, no lock" }] },
+      { "item": "A failed CAS on an empty bin means another thread won that bin first, so the insert retries", "at": [{ "step": "One compare and swap, no lock" }] },
+      { "item": "Using the first node itself as the lock avoids allocating a lock object per bin", "at": [{ "step": "The first node is the lock" }] },
+      { "item": "A get on a bin under a pending write is not blocked by that write's lock", "at": [{ "step": "A reader never takes it" }] },
+      { "item": "The probability of a long chain under a random hash falls off sharply (Poisson with a small parameter), so a long chain in practice signals a bad or hostile hash, not luck", "at": [{ "step": "Nine probabilities, computed" }] },
+      { "item": "Treeifying only helps once the table itself is large enough; a small table resizes instead of treeifying a bin", "at": [{ "step": "Eight nodes, a tree instead of a chain" }] },
+      { "item": "A treeified bin keeps its own read-write lock so lookups during a tree rebuild still mostly avoid blocking", "at": [{ "step": "Eight nodes, a tree instead of a chain" }] },
+      { "item": "A resize that every thread can help with avoids the single-thread amortized migration of a sequential table", "at": [{ "step": "A note at the old bin's head" }] },
+      { "item": "A forwarding marker is how a reader learns a bin has already moved, without needing to lock anything to find out", "at": [{ "step": "A note at the old bin's head" }] },
+      { "item": "A split-ordered list never needs to rehash or move a real item when the bucket array grows — only new dummy nodes are threaded in", "at": [{ "step": "One list, in bit-reversed order" }] },
+      { "item": "Sharding is lock striping restated for a language whose standard library doesn't ship a built-in concurrent map", "at": [{ "step": "Eight shards, two locks" }] },
+      { "item": "All three structures sit at a different point on the blocking-to-wait-free ladder from topic 45 for different operations (writes vs. reads vs. resize)", "at": [{ "step": "Recap: three structures, three rungs" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "Claude (adversarial pass)",
+    "open": []
+  }
+}
