@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: snapshot isolation and the two slot topics this one builds on
+
+<ul class="resources">
+  <Resource kind="reel" title="Snapshot isolation and write skew" domain="data-engineering" host="de.snapshot-isolation-write-skew" by="Chapter 5, §5.2" />
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Replication-slot WAL retention incidents" domain="data-engineering" host="de.replication-slot-wal-retention" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Logical Decoding Concepts" href="https://www.postgresql.org/docs/current/logicaldecoding-explanation.html" by="PostgreSQL docs">The exported-snapshot mechanism this topic measures directly.</Resource>
+  <Resource kind="reading" title="Server Programming Interface" href="https://www.postgresql.org/docs/current/functions-admin.html" by="PostgreSQL docs">pg_export_snapshot, named for contrast with a slot's own export.</Resource>
+  <Resource kind="reading" title="Streaming Replication Protocol" href="https://www.postgresql.org/docs/current/protocol-replication.html" by="PostgreSQL docs">CREATE_REPLICATION_SLOT and the exported snapshot's own lifetime rule.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">Snapshot modes, isolation modes, and the restart-from-zero rule.</Resource>
+  <Resource kind="reading" title="Debezium connector for MySQL" href="https://debezium.io/documentation/reference/stable/connectors/mysql.html" by="Debezium docs">The global-read-lock alternative, named for contrast only.</Resource>
+</ul>
+
+</section>

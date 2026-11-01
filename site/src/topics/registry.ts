@@ -6611,6 +6611,26 @@ export const TOPICS: TopicMeta[] = [
       "A slot protects a position in the log. But a new consumer has no position yet and needs the table as it stands now, then every change after exactly that moment, with no gap and no overlap. How that handover works is the next topic.",
   },
   {
+    id: 'de.initial-snapshot-stream-handoff',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/initial-snapshot-stream-handoff',
+    title: 'Initial snapshot to stream handoff',
+    syllabusTitle: 'Initial snapshot to stream handoff',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['snapshot-stream-handoff', 'snapshot-modes'],
+    uses: ['logical-decoding-slot', 'consistent-snapshot-export', 'snapshot-isolation', 'slot-wal-retention-incident'],
+    declared: [],
+    bridge:
+      "A slot protects a position in the log, but a new consumer has no position yet. It needs the table as it stands, then every change after exactly that moment. This topic is the handover: a snapshot at a known log position, and the modes that decide what a restart does.",
+    handoff:
+      "The snapshot has a weakness: a crash in the middle throws it away and it starts again, blocking the stream meanwhile, and a table added later needs the whole ceremony. The fix was published by Netflix: snapshot in small chunks while the log keeps flowing.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
