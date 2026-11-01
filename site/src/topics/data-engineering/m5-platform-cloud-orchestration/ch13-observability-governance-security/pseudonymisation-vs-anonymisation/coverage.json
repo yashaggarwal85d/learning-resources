@@ -1,0 +1,150 @@
+{
+  "topic": "de.pseudonymisation-vs-anonymisation",
+  "syllabus": [
+    {
+      "clause": "the legal and technical line: pseudonymised data remains personal data for whoever can re-identify; the CJEU's relative approach in EDPS v SRB (C‑413/23 P, Sept 2025: may be non-personal for a recipient with no means to re-identify) and the pending GDPR changes in the Digital Omnibus; keyed hashing (HMAC) vs plain hashing (dictionary attacks on emails and phone numbers), linkage attacks.",
+      "at": [
+        { "step": "Reveal: pseudonymisation and encryption protect data; they do not change what it legally is for whoever holds the key" },
+        { "step": "Reveal: the dictionary attack recovers the large majority of the table, measured directly" },
+        { "step": "Elaborate: a keyed hash needs a secret the attacker never has" },
+        { "step": "Reveal: a real, measurable fraction gets re-identified, with the key never compromised" },
+        { "step": "Elaborate: the CJEU's EDPS v SRB judgment -- pseudonymised data isn't personal data in all cases, for every person" },
+        { "step": "Reveal: the Digital Omnibus proposal would write this relative approach into the law directly -- not yet adopted" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "GDPR Article 4(5) and Recital 26 (gdpr-info.eu)",
+      "items": [
+        {
+          "item": "pseudonymisation means processing personal data so it can no longer be attributed to a data subject without additional information, kept separately and protected",
+          "at": [{ "step": "Reveal: pseudonymisation and encryption protect data; they do not change what it legally is for whoever holds the key" }]
+        },
+        {
+          "item": "pseudonymised data that could be attributed to a natural person by additional information should be considered information on an identifiable natural person; identifiability is judged by all the means reasonably likely to be used",
+          "at": [{ "step": "Reveal: pseudonymisation and encryption protect data; they do not change what it legally is for whoever holds the key" }]
+        }
+      ]
+    },
+    {
+      "source": "GDPR Article 32 (gdpr-info.eu)",
+      "items": [
+        {
+          "item": "pseudonymisation and encryption of personal data are named directly as security-of-processing measures",
+          "at": [{ "step": "Reveal: pseudonymisation and encryption protect data; they do not change what it legally is for whoever holds the key" }]
+        }
+      ]
+    },
+    {
+      "source": "Court of Justice of the EU, Press Release No 107/25 (Case C-413/23 P, EDPS v SRB)",
+      "items": [
+        {
+          "item": "the Court confirmed pseudonymised data must not be regarded as personal data in all cases and for every person; pseudonymisation may, depending on circumstances, effectively prevent someone other than the controller from identifying the data subject",
+          "at": [{ "step": "Elaborate: the CJEU's EDPS v SRB judgment -- pseudonymised data isn't personal data in all cases, for every person" }]
+        },
+        {
+          "item": "the identifiable nature of the data subject must be assessed at the time of collection and from the point of view of the controller, for the controller's own transparency duty",
+          "at": [{ "step": "Elaborate: the CJEU's EDPS v SRB judgment -- pseudonymised data isn't personal data in all cases, for every person" }]
+        }
+      ]
+    },
+    {
+      "source": "EDPB Guidelines 01/2025 on Pseudonymisation",
+      "items": [
+        {
+          "item": "if the transformation is known to be a plain hash of a name, hashing all known candidate names and matching the output recovers the pseudonymised dataset",
+          "at": [
+            { "step": "Reveal: the dictionary attack recovers the large majority of the table, measured directly" },
+            { "step": "Elaborate: a keyed hash needs a secret the attacker never has" }
+          ]
+        },
+        {
+          "item": "the secret parameters or keys involved in the cryptographic algorithm are the pseudonymisation secrets; one-way functions are preferred for difficulty of reversal even when the secret parameters are known",
+          "at": [{ "step": "Elaborate: a keyed hash needs a secret the attacker never has" }]
+        }
+      ]
+    },
+    {
+      "source": "EDPB-EDPS Joint Opinion 2/2026 on the Digital Omnibus proposal",
+      "items": [
+        {
+          "item": "the proposal would add a paragraph to Article 4(1) making information not personal for an entity that cannot identify the natural person, taking into account the means reasonably likely to be used by that entity",
+          "at": [{ "step": "Reveal: the Digital Omnibus proposal would write this relative approach into the law directly -- not yet adopted" }]
+        },
+        {
+          "item": "a newly proposed Article 41a would let the Commission specify by implementing act the means and criteria determining whether pseudonymised data stops being personal data for certain entities",
+          "at": [{ "step": "Reveal: the Digital Omnibus proposal would write this relative approach into the law directly -- not yet adopted" }]
+        },
+        {
+          "item": "the EDPB and EDPS strongly urge the co-legislators not to adopt the proposed changes to the definition of personal data",
+          "at": [{ "step": "Reveal: the Digital Omnibus proposal would write this relative approach into the law directly -- not yet adopted" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a dictionary attack hashing a known candidate email list with the same plain SHA-256 function recovers the large majority of a synthetic pseudonymised table's entries; the identical attack against the same emails under keyed HMAC, without the secret key, recovers none; a linkage attack joining quasi-identifiers (postcode, birth year, product category) from a pseudonymised release against an outside reference list re-identifies a real, measurable fraction of individuals never named in the release",
+          "at": [
+            { "step": "Reveal: the dictionary attack recovers the large majority of the table, measured directly" },
+            { "step": "Elaborate: a keyed hash needs a secret the attacker never has" },
+            { "step": "Reveal: a real, measurable fraction gets re-identified, with the key never compromised" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The case C-413/23 P was decided under Regulation (EU) 2018/1725, the data-protection regulation for EU institutions, bodies and agencies, not the GDPR directly -- the Court's own press release and the Digital Omnibus's own explanatory memorandum both treat its reasoning as applicable to the GDPR's structurally identical Article 4(1) definition, but this topic names that distinction rather than treating the two regulations as interchangeable.",
+        "at": [{ "out": "the judgment's own regulatory basis (EUDPR, not GDPR) named only; this topic's own measured claims concern hashing and linkage, not the specific regulation a court applies" }]
+      },
+      {
+        "item": "The CJEU's judgment actually set aside the General Court's ruling overall, on a separate point about whether personal opinions expressed in free-text comments 'relate to' their author -- the relative-identifiability holding this topic measures and teaches was the one part of the General Court's reasoning the CJEU specifically confirmed as correct, not the outcome of the case as a whole.",
+        "at": [{ "out": "the judgment's own mixed outcome (set aside overall, confirmed on this one point) named only; this topic's own reel presents only the confirmed relative-identifiability holding" }]
+      },
+      {
+        "item": "k-anonymity, l-diversity, t-closeness and differential privacy are all skipped syllabus topics that formalise exactly the linkage-attack risk this topic measures empirically, with mathematical guarantees (such as requiring every quasi-identifier combination to match at least k records) rather than a single measured re-identification rate on one synthetic dataset.",
+        "at": [{ "out": "k-anonymity and differential privacy named only as the formal treatments of this topic's own linkage-attack mechanism, per CHAPTER.md's own 'leaves out' note; this topic's own examples.py measures a raw re-identification rate, not a k-anonymity guarantee" }]
+      },
+      {
+        "item": "The Netflix Prize de-anonymisation (Narayanan and Shmatikov, 2008) is the canonical real-world cited failure of exactly this topic's own linkage-attack mechanism at a much larger scale: cross-referencing an anonymised movie-ratings dataset against public IMDb reviews re-identified individual Netflix subscribers using the same quasi-identifier-matching principle this topic's own examples.py demonstrates on synthetic data.",
+        "at": [{ "out": "the Netflix Prize case named only as the real-world precedent for this topic's own synthetic linkage attack; this topic's own examples.py uses a synthetic dataset, not the real Netflix data" }]
+      },
+      {
+        "item": "Tokenization and format-preserving encryption, both skipped syllabus topics, are alternative pseudonymisation techniques to hashing that preserve a value's format (such as a tokenized credit card number keeping the same digit count and structure) so downstream systems built for the original format keep working, at the cost of needing a token vault or reversible key rather than a one-way function.",
+        "at": [{ "out": "tokenization and format-preserving encryption named only as alternative techniques CHAPTER.md's own 'leaves out' note excludes; this topic's own examples.py measures plain and keyed cryptographic hashing only" }]
+      },
+      {
+        "item": "A brute-force attack against a pseudonym differs from the dictionary attack this topic measures: a dictionary attack matches a known candidate list's hashes against the pseudonymised table, while a brute-force attack enumerates the entire possible input space (feasible for a low-entropy input like a phone number, infeasible for a well-formed email address) without needing a candidate list at all.",
+        "at": [{ "out": "brute-force attacks on low-entropy identifiers (like phone numbers) named only as the companion attack to the dictionary attack this topic measures on emails; this topic's own examples.py measures the dictionary-attack mechanism against emails" }]
+      },
+      {
+        "item": "The EDPB's own guidance recommends a documented plan for replacing a pseudonymisation algorithm or key if it becomes cryptographically weak, including a migration path (such as re-pseudonymising with a new keyed function) that does not require reconstituting the original personal data first.",
+        "at": [{ "out": "the EDPB's own key/algorithm-replacement planning guidance named only; this topic's own examples.py uses a single static key throughout, not a key-rotation scenario" }]
+      },
+      {
+        "item": "The Digital Omnibus's proposed Article 41a would apply the same implementing-act criteria to the EUDPR (the regulation the EDPS v SRB judgment itself was decided under) as to the GDPR, per the joint opinion's own footnote -- meaning the same proposed mechanism would resolve the exact ambiguity the SRB case left open, for future cases under either regulation.",
+        "at": [{ "out": "Article 41a's own cross-application to the EUDPR named only; this topic's own reel presents the GDPR's Article 4(1) amendment as the primary proposed change" }]
+      },
+      {
+        "item": "A salt (a per-value random string, stored alongside the hash, not secret) defends against a precomputed rainbow-table attack across an entire dataset but does not defend against a targeted dictionary attack on a single known candidate the way a secret HMAC key does -- a salt and a pseudonymisation secret solve genuinely different threat models despite both being called 'random values added to a hash'.",
+        "at": [{ "out": "the salt-vs-keyed-secret distinction named only; this topic's own examples.py measures a plain unsalted hash against a keyed HMAC, not a salted-but-unkeyed hash" }]
+      },
+      {
+        "item": "This topic's own linkage attack works because the outside reference list and the pseudonymised release share the exact same quasi-identifier values for the same individuals; in practice an attacker's outside list is rarely this clean, and real linkage-attack success rates in published research vary widely depending on how many quasi-identifiers are available and how precisely they are recorded in both datasets.",
+        "at": [{ "deep": "Frontier" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

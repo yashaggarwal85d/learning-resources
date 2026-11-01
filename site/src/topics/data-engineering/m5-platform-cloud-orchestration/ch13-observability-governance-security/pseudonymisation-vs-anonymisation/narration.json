@@ -1,0 +1,80 @@
+{
+  "topic": "de.pseudonymisation-vs-anonymisation",
+  "steps": [
+    {
+      "lines": [
+        "Somebody on the analytics team asks for customer emails, quote, hashed so it's anonymous.",
+        "Grab a list of emails you already know belong to real customers, run them through the exact same function, and most of that supposedly anonymous table matches straight back to names. So was it ever anonymous at all?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the distinction that actually matters, and it's easy to miss.",
+        "Turning a name into a pseudonym doesn't erase the person behind it — it just means you need one more piece, held somewhere else, to get back to them.",
+        "Whoever is still holding that other piece is still, legally and practically, holding personal data. The transformation protected it. It didn't change what it is."
+      ]
+    },
+    {
+      "lines": [
+        "So try this one yourself before I answer it.",
+        "Take a list of emails you already suspect are in a pseudonymised table, run each one through the same plain function the table used, and look for matches.",
+        "Does that recover most of the table, or does the hash scramble things too badly for a match to ever land?"
+      ],
+      "answer": [
+        "It recovers most of it, and the reason is almost embarrassingly simple: that function gives the identical output every single time for the identical input.",
+        "Anyone who can guess the candidates and run the same function gets the same answers the table did — there's no secret standing in the way."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what happens when you actually measure it, not just reason about it.",
+        "A plain hash is public machinery — anyone can run it — and deterministic, so the same guess always lands the same place. Put a real candidate list through it, and the large majority of a pseudonymised table falls out the other side."
+      ]
+    },
+    {
+      "lines": [
+        "Now add one ingredient and watch the same attack collapse completely.",
+        "A keyed hash folds in a secret the attacker was never handed, so without that secret the output simply isn't reproducible by anyone outside the room.",
+        "Run the identical dictionary attack against data pseudonymised this way, and it recovers nothing, measured directly. That secret is the additional piece the law has in mind."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second scenario, and again, work it out before I say anything.",
+        "This time the pseudonymised release has no names, no emails, nothing like that — just things like a postcode, a birth year, a product category. Join that against some other list out there that happens to have names attached to those same details.",
+        "Does stripping the names out like that actually make the release anonymous?"
+      ],
+      "answer": [
+        "No — and this is the part people trip over. A handful of ordinary-looking details, combined, can pin down one specific person almost as tightly as a name would.",
+        "No key to crack, no dictionary to run. Just two lists sharing enough detail to line up against each other."
+      ]
+    },
+    {
+      "lines": [
+        "And that's borne out directly: join those quasi-identifiers against an outside list, and a real, measurable share of people in the release get matched back to a name.",
+        "Notice what never happened anywhere in that attack — nobody touched a key, nobody ran a dictionary. The re-identification came entirely from the shape of the data itself."
+      ]
+    },
+    {
+      "lines": [
+        "This is exactly the question Europe's top court had to settle, in a case about pseudonymised comments from a bank resolution process.",
+        "Its answer: identifiability isn't a fixed property of a dataset sitting on a shelf. It depends on who's looking at it, and what they can actually get their hands on.",
+        "So the same pseudonymised file can genuinely be personal data for the party holding the extra piece, and not personal data at all for a party that has no realistic way to ever get it."
+      ]
+    },
+    {
+      "lines": [
+        "That relative way of thinking isn't just sitting in a court ruling — it's now sitting in a draft of the law itself.",
+        "A pending reform would write that same idea straight into the definition of personal data, and let regulators spell out later, case by case, exactly when a pseudonym stops counting as personal for a given recipient.",
+        "It's still only a proposal. The continent's own privacy regulators have publicly urged against adopting it."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it, put back together.",
+        "A plain hash is a public dictionary waiting to be matched — nothing about hashing it changes that. Fold in a real secret, and that same attack walks away empty-handed.",
+        "But take the names off entirely, and the surrounding details can still betray someone. Anonymous was never about which transformation you ran. It's about what somebody holding real data, right now, can actually do with what's left."
+      ]
+    }
+  ]
+}
