@@ -6669,6 +6669,26 @@ export const TOPICS: TopicMeta[] = [
       "Snapshot rows and streamed changes now share one stream, so a consumer has to rely on what order that stream preserves. Within a key, a lot; across tables and partitions, almost nothing; and a transaction's rows may be scattered. That is the next topic.",
   },
   {
+    id: 'de.ordering-transaction-boundaries',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/ordering-transaction-boundaries',
+    title: 'Ordering and transaction boundaries',
+    syllabusTitle: 'Ordering and transaction boundaries',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['cdc-ordering-transaction-metadata'],
+    uses: ['logical-decoding-slot', 'snapshot-stream-handoff', 'query-vs-log-cdc', 'isolation-anomalies'],
+    declared: [],
+    bridge:
+      "Snapshot rows and changes now share one stream, so a consumer has to know what order that stream keeps. This topic is the answer: per-key order survives, order across tables and partitions does not, and the transaction metadata that lets a consumer put a transaction back together.",
+    handoff:
+      "Order and atomicity cover the rows. The columns themselves change too: a deploy adds, drops or retypes one, and the stream has to carry the new shape without breaking its readers. That is schema evolution in a change stream.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',

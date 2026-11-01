@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the slot, the handoff, and the anomalies a transaction's own isolation can already produce
+
+<ul class="resources">
+  <Resource kind="reel" title="Isolation anomalies beyond ANSI" domain="data-engineering" host="de.isolation-anomalies-beyond-ansi" by="Chapter 5, §5.2" />
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Initial snapshot to stream handoff" domain="data-engineering" host="de.initial-snapshot-stream-handoff" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">Transaction metadata (BEGIN/END, txID:LSN, event_count, data_collections) and the change-event key.</Resource>
+  <Resource kind="reading" title="Logical Decoding Concepts" href="https://www.postgresql.org/docs/current/logicaldecoding-explanation.html" by="PostgreSQL docs">A logical slot emits each change just once, only after commit.</Resource>
+  <Resource kind="reading" title="Logical Decoding Output Plugin Callbacks" href="https://www.postgresql.org/docs/18/logicaldecoding-output-plugin.html" by="PostgreSQL docs">The stream_* callbacks for streaming a large in-progress transaction, named only.</Resource>
+  <Resource kind="reading" title="PostgreSQL 14 Release Notes" href="https://www.postgresql.org/docs/release/14.0/" by="PostgreSQL docs">The addition that lets a long transaction stream to a subscriber before it commits.</Resource>
+</ul>
+
+</section>

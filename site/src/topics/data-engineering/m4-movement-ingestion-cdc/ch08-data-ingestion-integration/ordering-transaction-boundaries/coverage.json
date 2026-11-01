@@ -1,0 +1,153 @@
+{
+  "topic": "de.ordering-transaction-boundaries",
+  "syllabus": [
+    {
+      "clause": "per-key order via primary-key partitioning",
+      "at": [
+        { "step": "Reveal: per-key order" },
+        { "step": "Reveal: per-key order, measured" }
+      ]
+    },
+    {
+      "clause": "loss of cross-table and cross-partition order",
+      "at": [
+        { "step": "Reveal: cross-table order breaks" },
+        { "step": "Reveal: cross-table order, measured" }
+      ]
+    },
+    {
+      "clause": "transaction metadata (BEGIN/END events with per-table counts) to reassemble transactions downstream",
+      "at": [
+        { "step": "Reveal: transaction metadata" },
+        { "step": "Reveal: reassembly, measured" }
+      ]
+    },
+    {
+      "clause": "what \"exactly-once\" means when a transaction spans many topics",
+      "at": [{ "step": "Prove it" }, { "step": "Recap" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Debezium connector for PostgreSQL (Transaction metadata)",
+      "items": [
+        {
+          "item": "For every transaction BEGIN and END, Debezium generates an event with a status and an id String composed of the Postgres transaction ID and the LSN of the operation, separated by a colon: the format is txID:LSN",
+          "at": [
+            { "step": "Reveal: transaction metadata" },
+            { "step": "Reveal: reassembly, measured" }
+          ]
+        },
+        {
+          "item": "event_count (for END events) is the total number of events emitted by the transaction; data_collections is an array of pairs of data_collection and event_count that indicates the number of events emitted for each data collection",
+          "at": [
+            { "step": "Reveal: transaction metadata" },
+            { "step": "Reveal: reassembly, measured" }
+          ]
+        },
+        {
+          "item": "Debezium registers and receives metadata only for transactions that occur after the connector is deployed; metadata for transactions before that is not available",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for PostgreSQL (Change event keys)",
+      "items": [
+        {
+          "item": "For a given table, the change event's key has a structure that contains a field for each column in the primary key of the table at the time the event was created",
+          "at": [
+            { "step": "Reveal: per-key order" },
+            { "step": "Reveal: per-key order, measured" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL docs: Logical Decoding Concepts",
+      "items": [
+        {
+          "item": "A logical slot will emit each change just once in normal operation",
+          "at": [{ "out": "measured in examples.py's uncommitted_changes_are_never_emitted, named only in post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL docs: Logical Decoding Output Plugin Callbacks",
+      "items": [
+        {
+          "item": "An output plugin may also define functions to support streaming of large, in-progress transactions, via the stream_start_cb, stream_stop_cb, stream_abort_cb, stream_commit_cb and stream_change_cb callbacks",
+          "at": [{ "out": "named only, per post-notes.md Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 14 Release Notes",
+      "items": [
+        {
+          "item": "PostgreSQL 14 enhances the logical replication API to allow streaming large in-progress transactions, rather than writing them to disk until they complete",
+          "at": [{ "out": "named only, per post-notes.md Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The uncommitted-insert proof uses two genuinely separate database connections, not one connection checked twice, so the claim that a second reader sees nothing rests on an actual cross-connection race, not a single session's own view of its own uncommitted work.",
+        "at": [{ "step": "Hook" }]
+      },
+      {
+        "item": "The per-key measurement deliberately interleaves three keys' own updates out of key order across nine separate small transactions, rather than batching each key's updates together, so the claim that per-key order survives is tested against the harder, more realistic case of a genuinely scrambled source stream.",
+        "at": [{ "step": "Reveal: per-key order, measured" }]
+      },
+      {
+        "item": "The cross-table measurement reuses the identical one-commit transaction (one order, three items) for both the broken and the reassembled demonstration, so the comparison is the same underlying event stream split and then rejoined two different ways, not two separately constructed scenarios.",
+        "at": [{ "step": "Reveal: cross-table order, measured" }]
+      },
+      {
+        "item": "The reassembly measurement builds its own txID:LSN transaction id and event_count directly from the slot's own real lsn and xid columns, never by parsing a transaction id out of the decoded text, matching Debezium's own documented identity exactly rather than approximating it.",
+        "at": [{ "step": "Reveal: reassembly, measured" }]
+      },
+      {
+        "item": "The naive consumer in the cross-table-breaks measurement is modeled with an explicit, initially empty known_order_ids set rather than an implicit assumption, so the orphan count it produces is a direct, inspectable consequence of that data structure's own state at the moment the items queue is drained.",
+        "at": [{ "step": "Reveal: cross-table order breaks" }]
+      },
+      {
+        "item": "The wrong option in the first predict question — that a transaction spanning two tables breaks the same way a single row's own changes would — is ruled out by the fact that per-key order has an explicit mechanism (the primary-key-based change-event key) that a cross-table commit has no equivalent of once split.",
+        "at": [{ "step": "Predict: does order break the same way" }]
+      },
+      {
+        "item": "The final predict question's wrong option — that Kafka's own per-partition ordering already covers a multi-topic transaction — is ruled out directly by the measured orphan-join proof: Kafka's guarantee is confirmed to hold only inside one partition, never across the two separate topics a two-table commit was split into.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Every scratch table and replication slot this topic creates is dropped inside the same function that created it, confirmed by three successive clean runs of examples.py, and the shared orders table (50001 rows) is never touched by any of this topic's four functions.",
+        "at": [{ "out": "verified directly before writing any content, per REVIEW.md" }]
+      },
+      {
+        "item": "Debezium's own transaction-metadata feature is disclosed explicitly as named-only, since running Debezium itself needs a JVM and Kafka this sandbox doesn't have; this topic's own reassembly logic reproduces the identical txID:LSN/event_count/data_collections design by hand against real slot output, not Debezium's own implementation.",
+        "at": [{ "out": "disclosed environment limit, per SOURCES.md" }]
+      },
+      {
+        "item": "Kafka's own partition-ordering guarantee and key-to-partition stability are used by name only, matching CHAPTER.md's own instruction that Chapter 9 topic 7 owns and teaches that guarantee, so this topic never re-derives or re-proves it independently.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Uses'" }]
+      },
+      {
+        "item": "Kafka transactions, the delivery guarantee and offsets of CDC, and event time and watermarks in stream processing are each named in CHAPTER.md's own 'Leaves out' line and none of them appear anywhere in this topic's reel, narration or examples.py.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "The PostgreSQL 14 streaming-of-in-progress-transactions option and the output plugin's stream_* callbacks are named only, since exercising either needs an output plugin built against those callbacks, which this sandbox's own test_decoding plugin does not use by default.",
+        "at": [{ "out": "disclosed environment limit, per post-notes.md Frontier" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}
