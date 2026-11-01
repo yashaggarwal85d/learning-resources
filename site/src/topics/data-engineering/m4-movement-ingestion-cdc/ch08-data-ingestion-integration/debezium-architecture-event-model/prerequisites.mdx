@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the slot, the snapshot, and every field this topic's event card now assembles
+
+<ul class="resources">
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Initial snapshot to stream handoff" domain="data-engineering" host="de.initial-snapshot-stream-handoff" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Ordering and transaction boundaries" domain="data-engineering" host="de.ordering-transaction-boundaries" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Schema evolution in change streams" domain="data-engineering" host="de.schema-evolution-change-streams" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Deletes and tombstones" domain="data-engineering" host="de.deletes-tombstones" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="CDC offsets, replay and exactly-once" domain="data-engineering" host="de.cdc-offsets-replay-exactly" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Release Series 3.7" href="https://debezium.io/releases/3.7/" by="Debezium docs">The Java-version split across deployment shapes, and the latest stable release.</Resource>
+  <Resource kind="reading" title="Debezium Architecture" href="https://debezium.io/documentation/reference/stable/architecture.html" by="Debezium docs">The three deployment shapes: Kafka Connect, Debezium Server, the embedded engine.</Resource>
+  <Resource kind="reading" title="Store Debezium state (Debezium Server)" href="https://debezium.io/documentation/reference/stable/operations/debezium-server.html" by="Debezium docs">Redis Stream as a documented sink target.</Resource>
+  <Resource kind="reading" title="New Record State Extraction (event flattening)" href="https://debezium.io/documentation/reference/stable/transformations/event-flattening.html" by="Debezium docs">The unwrap transform's own mechanism and cost.</Resource>
+  <Resource kind="reading" title="Debezium JDBC sink connector" href="https://debezium.io/documentation/reference/stable/connectors/jdbc.html" by="Debezium docs">Idempotent upsert, delete.enabled, schema.evolution = basic.</Resource>
+  <Resource kind="reading" title="Kafka Connect configuration reference" href="https://docs.confluent.io/platform/current/installation/configuration/connect/" by="Confluent docs, standing in for an unreadable Apache Kafka page">The offset-storage topic, named only.</Resource>
+</ul>
+
+</section>

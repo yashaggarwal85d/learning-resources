@@ -6767,6 +6767,26 @@ export const TOPICS: TopicMeta[] = [
       "The pieces are all here: a slot, a snapshot, events, offsets. One project assembles them behind a configuration file. How Debezium is structured, and what its event envelope looks like, is the next topic.",
   },
   {
+    id: 'de.debezium-architecture-event-model',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m4-movement-ingestion-cdc/ch08-data-ingestion-integration/debezium-architecture-event-model',
+    title: 'Debezium architecture and event model',
+    syllabusTitle: 'Debezium architecture and event model',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 4, title: 'Movement: Ingestion, CDC & Streaming' },
+    chapter: { number: 8, title: 'Data Ingestion, Integration and Change Data Capture', section: '8.2' },
+    minutes: 15,
+    verified: '2026-11-01',
+    introduces: ['debezium-architecture-envelope'],
+    uses: ['logical-decoding-slot', 'cdc-delete-tombstone', 'cdc-source-offset-vs-kafka-offset', 'snapshot-modes', 'cdc-ordering-transaction-metadata', 'cdc-schema-evolution-resnapshot'],
+    declared: [],
+    bridge:
+      "The pieces are all here: a slot, a snapshot, events, offsets. One project assembles them behind a configuration file. This topic is how Debezium is structured, how it is deployed, and what each field of its event means.",
+    handoff:
+      "Debezium turns database changes into events. There is a second thing teams want from the same machinery: to publish a domain event whenever they change their own data, without the dual-write bug. The outbox pattern uses the very same log for that.",
+  },
+  {
     id: 'de.telemetry-pipelines-logs-metrics',
     domain: 'data-engineering',
     slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/telemetry-pipelines-logs-metrics',
