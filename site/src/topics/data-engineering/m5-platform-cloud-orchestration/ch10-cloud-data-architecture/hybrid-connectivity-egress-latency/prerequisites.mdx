@@ -1,0 +1,61 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="workload-identity-before-this">
+
+### <span class="n">01</span> Workload identity and least privilege (Before this)
+
+<ul class="resources">
+  <Resource kind="reading" title="AWS, 'IAM roles for service accounts (IRSA)'" href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html" by="AWS" length="5 min">The short-lived, federated credential this topic's hybrid design still relies on for the cloud leg of the pipeline.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="secrets-management-before-this">
+
+### <span class="n">02</span> Secrets management for pipelines (Before this)
+
+<ul class="resources">
+  <Resource kind="reading" title="AWS, 'Rotate AWS Secrets Manager secrets'" href="https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html" by="AWS" length="5 min">The dynamic, short-lived database credential pattern this topic's cloud-side replication target still needs.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="residency-before-this">
+
+### <span class="n">03</span> Residency, transfers and extraterritorial access (Before this)
+
+<ul class="resources">
+  <Resource kind="reading" title="European Commission, 'EU-US data transfers'" href="https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/eu-us-data-transfers_en" by="European Commission" length="5 min">The residency and works-council constraint this topic's ADR applies when deciding what may cross the WAN link at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="sap-extraction-before-this">
+
+### <span class="n">04</span> SAP extraction paths and limits (Before this)
+
+<ul class="resources">
+  <Resource kind="reading" title="Theobald Software, 'SAP Note 3255746: How to Achieve Data Integration Without ODP-RFC'" href="https://theobald-software.com/en/blog/sap-note-325574" by="Theobald Software" length="8 min">The trigger- or log-based extraction path this topic's ADR assumes already left the SAP system before it reaches the WAN link.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="it-ot-before-this">
+
+### <span class="n">05</span> IT/OT integration without blocking production (Before this)
+
+<ul class="resources">
+  <Resource kind="reading" title="Software Toolbox, 'Industrial DMZ (iDMZ): Design, Data Flows & Common Mistakes'" href="https://softwaretoolbox.com/resources/what-is-industrial-dmz" by="Software Toolbox" length="10 min">The OT edge buffer this topic's ADR cites as already isolating the plant floor before data reaches this topic's own hybrid link.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="on-prem-before-this">
+
+### <span class="n">06</span> On-prem data platforms after Hadoop (Before this)
+
+<ul class="resources">
+  <Resource kind="reading" title="Dremio, 'What Is Data Gravity?'" href="https://www.dremio.com/wiki/data-gravity/" by="Dremio" length="6 min">The data-gravity decision rule this topic applies directly to decide where compute should live relative to the WAN link.</Resource>
+</ul>
+
+</section>

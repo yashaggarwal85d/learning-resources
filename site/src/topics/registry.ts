@@ -7874,6 +7874,26 @@ export const TOPICS: TopicMeta[] = [
       "Very few real platforms are purely on-prem or purely cloud. The closing topic of this chapter is the connection between them — what it costs, how fast it is, and what happens to a pipeline when that connection goes down for hours.",
   },
   {
+    id: 'de.hybrid-connectivity-egress-latency',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch10-cloud-data-architecture/hybrid-connectivity-egress-latency',
+    title: 'Hybrid connectivity, egress and latency',
+    syllabusTitle: 'Hybrid connectivity, egress and latency',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 10, title: 'Cloud Data Architecture', section: '10.7' },
+    minutes: 20,
+    verified: '2026-10-31',
+    introduces: ['bandwidth-delay-product', 'cross-wan-replication-failure-buffer', 'latency-budget-allocation'],
+    uses: ['cloud-cost-four-dimensions', 'on-prem-modern-stack', 'data-gravity-on-prem-tradeoff', 'ot-edge-buffer-backpressure-isolation', 'residency-sovereignty-localisation', 'sap-extraction-mechanism-choice', 'short-lived-federated-credential', 'dynamic-short-lived-db-credential'],
+    declared: [],
+    bridge:
+      "Very few real platforms are purely on-prem or purely cloud. This closing topic is the connection between them made exact — what it costs, how fast it really is, and what a cross-WAN pipeline must guarantee when that connection goes down for hours instead of seconds — and it is where this chapter's own closing lab pulls identity, secrets, residency, SAP and the OT boundary together into one design.",
+    handoff:
+      "This chapter answered where things run and under what legal and physical constraint. None of it answered how the work actually gets scheduled onto that platform, retried when it fails, backfilled when it's late, or kept inside its own promised time budget — which is exactly where Chapter 11 begins.",
+  },
+  {
     id: 'de.text-interchange-formats-their',
     domain: 'data-engineering',
     slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/text-interchange-formats-their',
