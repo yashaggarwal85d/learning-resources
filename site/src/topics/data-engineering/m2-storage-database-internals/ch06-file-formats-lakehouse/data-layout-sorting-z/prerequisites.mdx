@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Data skipping: statistics, page indexes, bloom filters" domain="data-engineering" host="de.data-skipping-statistics-page" by="This chapter's seventh topic" />
+  <Resource kind="reel" title="Snapshot lifecycle: time travel to garbage collection" domain="data-engineering" host="de.snapshot-lifecycle-time-travel" by="This chapter's seventeenth topic" />
+  <Resource kind="reel" title="Small files, compaction and file sizing" domain="data-engineering" host="de.small-files-compaction-file" by="This chapter's eighteenth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Use liquid clustering for Delta tables" href="https://docs.delta.io/delta-clustering/" by="Delta Lake">Incremental vs. full reclustering, and why liquid clustering replaces partitioning and ZORDER.</Resource>
+  <Resource kind="reading" title="Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The table specification's own Sorting section: sort order ids, fields, and the reserved unsorted order.</Resource>
+  <Resource kind="reading" title="Data skipping" href="https://docs.databricks.com/en/delta/data-skipping.html" by="Databricks">Per-file statistics, Z-ordering, and why it needs statistics to work.</Resource>
+  <Resource kind="reading" title="Clustering" href="https://hudi.apache.org/docs/clustering" by="Apache Hudi">Stitching small files, sorting by clustering columns, and incremental scheduling.</Resource>
+</ul>
+
+</section>

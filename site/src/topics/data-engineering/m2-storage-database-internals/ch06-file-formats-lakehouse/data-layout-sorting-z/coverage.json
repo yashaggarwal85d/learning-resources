@@ -1,0 +1,73 @@
+{
+  "topic": "de.data-layout-sorting-z",
+  "syllabus": [
+    { "clause": "why layout determines data skipping", "at": [{ "step": "Reveal: reproduced for real — the identical two-column predicate, measured against each layout" }] },
+    { "clause": "linear sort orders vs space-filling curves (Z-order, Hilbert) for multi-column predicates", "at": [
+      { "step": "Reveal: reproduced for real — real row-group bounds, computed directly" },
+      { "step": "Reveal: reproduced for real — the identical two-column predicate, measured against each layout" }
+    ] },
+    { "clause": "Delta liquid clustering, Iceberg sort orders and Hudi clustering as the format-level mechanisms", "at": [{ "step": "Reveal: Delta's, Iceberg's, and Hudi's own words — three formats, the same one idea" }] },
+    { "clause": "incremental vs full re-clustering cost", "at": [{ "step": "Reveal: reproduced for real — incremental versus full reclustering, measured by rows rewritten" }] }
+  ],
+  "sources": [
+    {
+      "source": "Delta Lake, Use liquid clustering for Delta tables",
+      "items": [
+        { "item": "liquid clustering lets data layout evolve without rewriting existing data, improving on partitioning and ZORDER", "at": [{ "step": "Reveal: Delta's, Iceberg's, and Hudi's own words — three formats, the same one idea" }] },
+        { "item": "clustering is not compatible with partitioning or ZORDER", "at": [{ "deep": "Frontier" }] },
+        { "item": "liquid clustering is incremental: data is only rewritten as necessary; already-clustered files with different clustering columns are not rewritten", "at": [{ "step": "Reveal: reproduced for real — incremental versus full reclustering, measured by rows rewritten" }] },
+        { "item": "OPTIMIZE FULL reclusters all existing data and can take hours on large, previously-unclustered tables", "at": [{ "step": "Reveal: reproduced for real — incremental versus full reclustering, measured by rows rewritten" }] },
+        { "item": "OPTIMIZE FULL is needed when clustering columns change; otherwise it behaves like OPTIMIZE", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Spec (Sorting)",
+      "items": [
+        { "item": "a sort order lets data be sorted within partitions by columns to gain performance, declared per data or delete file", "at": [{ "step": "Reveal: Delta's, Iceberg's, and Hudi's own words — three formats, the same one idea" }] },
+        { "item": "a sort order is an id plus an ordered list of sort fields; field order determines the order the sort is applied", "at": [{ "deep": "Frontier" }] },
+        { "item": "sort order id 0 is reserved for the unsorted order", "at": [{ "deep": "Frontier" }] },
+        { "item": "writers are not required to use the default sort order if it is prohibitively expensive, as for streaming writes", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Data skipping",
+      "items": [
+        { "item": "per-file min/max statistics, null counts, and row counts are collected automatically and used at query time to skip irrelevant files", "at": [{ "step": "Reveal: reproduced for real — real row-group bounds, computed directly" }] },
+        { "item": "Z-ordering colocates related information in the same set of files; data-skipping algorithms use that co-locality to reduce data read", "at": [{ "step": "Reveal: reproduced for real — the identical two-column predicate, measured against each layout" }] },
+        { "item": "Z-ordering columns without statistics collected is ineffective and wastes compute", "at": [{ "deep": "Frontier" }] },
+        { "item": "Databricks recommends liquid clustering for all new tables; it cannot be combined with ZORDER", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Hudi, Clustering",
+      "items": [
+        { "item": "clustering can stitch small files into larger ones and cluster data by sort key for query-time data locality", "at": [{ "step": "Reveal: Delta's, Iceberg's, and Hudi's own words — three formats, the same one idea" }] },
+        { "item": "Hudi sorts file groups in a clustering plan by the specified columns while meeting target file sizes, by default", "at": [{ "deep": "Frontier" }] },
+        { "item": "Hudi supports incremental scheduling, processing only partitions changed since the last completed clustering operation", "at": [{ "deep": "Frontier" }] },
+        { "item": "Hudi's clustering service lets writers keep inserting new data while clustering runs in the background, with snapshot isolation", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The 256-row dataset in examples.py is a synthetic, deliberately small and dense Cartesian product (every (a, b) pair for a, b in 0..15), not a sample of real production data, disclosed in the script's own docstring and FACT-CHECK.md red-team #1. What transfers is the real, executed mechanism — row-group bounds computed directly, and a real predicate evaluated against them.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 'arrival order' layout is a fixed, deterministic multiplicative-hash permutation standing in for real streaming arrival order, not a claim that real arrival order always produces zero locality, per FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: reproduced for real — the same 256 rows, three different physical orders" }] },
+      { "item": "Row-group pruning as implemented here (an exact min/max-bounds overlap test) is the same real mechanism topic 7's Parquet statistics and page indexes use, applied here to a two-column predicate rather than one column, per FACT-CHECK.md red-team #3.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The incremental-vs-full reclustering demonstration models Delta's own documented behavior directly, not Hudi's or Iceberg's own specific incremental-clustering implementations in detail (both are named and sourced but not separately coded), per FACT-CHECK.md red-team #4.", "at": [{ "step": "Reveal: reproduced for real — incremental versus full reclustering, measured by rows rewritten" }] },
+      { "item": "This topic's executed demonstration uses Z-order (bit-interleaving) specifically, not a Hilbert curve's recursive construction — both are named per the syllabus line, but Z-order is the simpler, directly-implementable mechanism; Hilbert curves achieve better locality through a different, more complex construction, named but not separately coded, per FACT-CHECK.md red-team #5.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The prerequisites panel lists topic 7 and topics 17-18, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "The pruning counts (16, 4, 1 groups out of 16) are exact by construction given the chosen domain, group size, and predicate — not approximations — and the domain/group-size (16, 16) were chosen specifically so Z-order's groups align to clean 4x4 boxes in (a, b) space.", "at": [{ "step": "Reveal: reproduced for real — the identical two-column predicate, measured against each layout" }] },
+      { "item": "All four demonstrations in examples.py are deterministic (fixed Cartesian-product dataset, a fixed multiplicative-hash permutation, no randomness, no timing), verified byte-identical across 3 consecutive runs — no flaky-timing risk.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic hosts no chapter lab of its own, per CHAPTER.md's note.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The predicate used throughout (a in 4..7, b in 4..7) deliberately aligns with a single Z-order group's exact boundary, so the measured 1-group result is the best case for Z-order; a predicate straddling two quadrants would need more than one group even under Z-order, a nuance named but not separately demonstrated.", "at": [{ "deep": "Frontier" }] },
+      { "item": "declared: [] beyond topic 7 and topics 17-18, matching CHAPTER.md's own note for this topic.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

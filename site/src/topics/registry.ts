@@ -10212,4 +10212,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "File size is only half of what makes a statistic useful for pruning. The other half is whether the rows inside each file are actually sorted or clustered by the columns a query filters on.",
   },
+  {
+    id: 'de.data-layout-sorting-z',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/data-layout-sorting-z',
+    title: 'Data layout: sorting, Z-order, Hilbert, clustering',
+    syllabusTitle: 'Data layout: sorting, Z-order, Hilbert, clustering',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['table-data-layout-clustering'],
+    uses: ['parquet-data-skipping', 'small-files-compaction'],
+    declared: [],
+    bridge:
+      "File size is only half of what makes a statistic useful for pruning. This topic is the other half: whether rows inside each file are actually sorted or clustered by the columns a query filters on, with a real multi-column predicate measured under a linear sort versus a Z-order curve.",
+    handoff:
+      "A well-laid-out table of snapshots is still just a sequence of point-in-time states. The next topic is reading that sequence itself as data: incremental reads and change feeds.",
+  },
 ];

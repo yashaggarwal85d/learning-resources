@@ -1,0 +1,67 @@
+{
+  "topic": "de.data-layout-sorting-z",
+  "steps": [
+    {
+      "lines": [
+        "The last topic was about what it costs to leave files small, and what repacking them buys back. But repacking files bigger doesn't answer a separate question.",
+        "Once a file is a reasonable size, are the rows sitting inside it actually arranged so a statistic can tell a query anything useful at all?"
+      ]
+    },
+    {
+      "lines": [
+        "Picture a table whose files are sorted by just one column. A query comes in filtering on that column and a second, completely different column, both at once.",
+        "Does the existing sort on that first column help this two-column query prune files fully, or only partly?"
+      ],
+      "answer": [
+        "Only partly, and here's why. A single sort order has exactly one leading column it's organized around.",
+        "That sort genuinely helps on its own column. But rows that happen to share that first column's value can still scatter wildly across the second column, inside the very same file."
+      ]
+    },
+    {
+      "lines": [
+        "This was reproduced directly: the exact same dataset, laid out three completely different real ways on disk.",
+        "One arrangement in plain arrival order, one sorted along a single column, and one using a real space-filling curve that weaves both columns together. Same underlying data, every single time — only its physical arrangement changes."
+      ]
+    },
+    {
+      "lines": [
+        "And for each of those three arrangements, the actual boundaries of every group of rows were computed directly off the real data, nothing assumed.",
+        "Here's what stands out: under the single-column sort, every group's boundary lines up perfectly with one value of that first column — but spans the entire range of the second column, start to finish."
+      ]
+    },
+    {
+      "lines": [
+        "Now take one identical query, filtering on both columns at once, and run it against all three arrangements for real.",
+        "Plain arrival order has to check essentially everything. The single-column sort narrows things down, but only along the column it was built around. The space-filling curve narrows things down to barely anything at all — because it was built to respect both columns together, not just one."
+      ]
+    },
+    {
+      "lines": [
+        "New data keeps showing up in a table that's already been organized this way. When that table gets reorganized again to absorb it, here's the question.",
+        "Does reorganizing rewrite the entire table from scratch every single time, or only the part that actually needs to change?"
+      ],
+      "answer": [
+        "Only the part that needs to change, and the people who built this feature say so directly, in their own words.",
+        "Data that's already sitting in the right place stays exactly where it is. Only the new arrivals, and whatever they land next to, actually get touched."
+      ]
+    },
+    {
+      "lines": [
+        "Three completely different table formats, three completely different names for this same idea, straight from each one's own documentation.",
+        "Strip away the branding, and all three are doing the exact same thing: arranging rows on disk to match the columns a query is actually going to filter on."
+      ]
+    },
+    {
+      "lines": [
+        "So this was checked directly, by actually counting which rows get rewritten. A fresh batch of new rows, landing entirely inside one group that was already organized.",
+        "Reorganizing just that one piece touches only the rows in that group, plus the new arrivals. Reorganizing the whole table from scratch touches every single row that exists — a dramatically larger amount of work for the exact same new data."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole idea in one line. A plain single-column sort only ever helps the column it was built around.",
+        "A real space-filling curve gives a query that filters on several columns at once genuine help on every one of them simultaneously. And keeping that arrangement up to date doesn't have to mean redoing everything — it can mean touching only what actually changed."
+      ]
+    }
+  ]
+}
