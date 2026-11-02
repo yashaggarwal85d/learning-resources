@@ -1,0 +1,83 @@
+{
+  "topic": "de.redshift-distribution-sort-keys",
+  "steps": [
+    {
+      "lines": [
+        "Two platforms in a row have now split storage away from compute, and stitched the two back together over a network.",
+        "This one grew up a completely different way.",
+        "It never split those two apart in the first place -- it ties them to the same machines from the start."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a cluster of machines, and one table you need spread across all of them.",
+        "Does every single machine end up holding its own full copy of that table?",
+        "Guess before the next slide answers it."
+      ],
+      "answer": [
+        "No, not a full copy on every machine.",
+        "The rows get split up and spread across them instead."
+      ]
+    },
+    {
+      "lines": [
+        "One machine out front takes every incoming question and figures out how to answer it.",
+        "The machines doing the actual work sit behind it, and each one of those is itself cut into smaller pieces.",
+        "A row of the table lands on exactly one of those pieces, chosen by a rule you pick ahead of time."
+      ]
+    },
+    {
+      "lines": [
+        "That placement rule comes in a handful of different flavors, each scattering rows a different way.",
+        "Pick wrong, and two tables that need to be joined end up sitting on completely different machines.",
+        "Fixing that mismatch mid-query means physically moving data across the network -- and that move is often the most expensive part of the whole plan."
+      ]
+    },
+    {
+      "lines": [
+        "Within one of those pieces, rows can also be kept in a chosen order, not just scattered randomly.",
+        "The system quietly remembers the lowest and highest value sitting in each small chunk of storage.",
+        "A question asking for a narrow range can then skip straight past entire chunks it already knows can't contain the answer."
+      ]
+    },
+    {
+      "lines": [
+        "The last two platforms you saw both kept storage and compute as two separate, independently-growing things.",
+        "Here, where machines and their work have always been tied together from the start, does growing one side still force you to grow the other?",
+        "Guess before the next slide answers it."
+      ],
+      "answer": [
+        "No, it doesn't have to force that anymore.",
+        "A newer design here pulls those two apart too, just by a different route."
+      ]
+    },
+    {
+      "lines": [
+        "One newer option still gives you machines, but backs their storage with something durable and separate underneath.",
+        "A step beyond that removes the machines from the picture for you entirely.",
+        "You're billed for raw computing power alone, with no machine count to decide on at all."
+      ]
+    },
+    {
+      "lines": [
+        "Left alone, this system watches how busy incoming questions are and adjusts how many it runs side by side on its own.",
+        "When even that isn't enough and work would start backing up in a line, it reaches for a second, temporary set of machines automatically.",
+        "Nobody has to notice the slowdown or ask for that extra capacity by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Files sitting in an entirely separate storage system, never loaded in here at all, can still be queried directly, right where they already live.",
+        "Meanwhile, back inside this system's own tables, nobody has to hand-pick how rows get placed or ordered.",
+        "It keeps watching real questions as they run and adjusts both of those choices by itself."
+      ]
+    },
+    {
+      "lines": [
+        "This platform tied machines and their work together from day one, instead of splitting them the way the last two did.",
+        "Even so, placement rules, ordering within a chunk, skipping chunks by range, and two separate newer paths to pulling storage and compute apart again all showed up here too.",
+        "Three very different platforms, three very different starting points -- and one practical question is still left: which one, and when."
+      ]
+    }
+  ]
+}
