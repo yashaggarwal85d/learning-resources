@@ -1,0 +1,10 @@
+- **Lineage**: the record of which datasets and transformations produced a given piece of data. *Where you meet it:* the whole topic.
+- **Job**: OpenLineage's own term for a defined piece of work -- a task, a model, a query. *Where you meet it:* the object-model reveal.
+- **Run**: one occurrence of a job actually executing. *Where you meet it:* the START/COMPLETE predict-and-reveal pair.
+- **Dataset**: whatever a job reads or writes, in OpenLineage's own object model. *Where you meet it:* the object-model reveal and every event after it.
+- **Event**: a message a run emits reporting its own state, such as START or COMPLETE. *Where you meet it:* the additive-events reveal.
+- **Facet**: an optional, versioned attachment to a run, job or dataset -- a schema, a column-lineage mapping, a quality result. *Where you meet it:* the facets elaboration.
+- **JSON schema**: (from earlier topics) the versioned structure a facet's own `_schemaURL` points to, letting a consumer know exactly what shape to expect. *Where you meet it:* named alongside facets.
+- **Listener**: code hooked into an engine (Spark's own SparkListener) that observes a job's execution and emits lineage events from it. *Where you meet it:* the integrations elaboration.
+- **Logical plan**: (from earlier topics) the engine's own internal representation of what a query actually does, read at runtime rather than parsed from SQL text. *Where you meet it:* the SQL-parse-vs-plan predict-and-reveal pair.
+- **DAG**: (from earlier topics) the directed graph a pipeline's tasks and a lineage graph's own nodes and edges both take the shape of. *Where you meet it:* implicit throughout the object model.

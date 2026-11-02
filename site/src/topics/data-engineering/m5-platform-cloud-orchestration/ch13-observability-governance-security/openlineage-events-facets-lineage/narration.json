@@ -1,0 +1,86 @@
+{
+  "topic": "de.openlineage-events-facets-lineage",
+  "steps": [
+    {
+      "lines": [
+        "One column in a revenue table comes out wrong. You've got the actual Spark code in front of you, and a catalog entry that just says it's derived from orders.",
+        "Which input columns, through which transformations, actually produced that one number? And here's the real question: would just reading the SQL text get you the same answer as watching what the engine actually ran?"
+      ]
+    },
+    {
+      "lines": [
+        "There's a standard way of describing exactly this, and it only has three moving pieces.",
+        "Whatever the work itself is, keep that separate in your head from any one time it happened, and keep that separate again from whatever it touched along the way. Three different questions, three different answers."
+      ]
+    },
+    {
+      "lines": [
+        "Work this one out first.",
+        "A run fires off a starting event the moment it begins, and a finishing event once it's done. Does that starting event already know what the job is going to write out, or does that only show up once it's actually finished?"
+      ],
+      "answer": [
+        "Only once it's finished — there's no way around that.",
+        "These events build on each other over time. The starting one carries whatever's true the moment things kick off, and the finishing one adds whatever became true by the time the job was actually done — including the thing it wrote."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what you see when you actually look.",
+        "The starting event comes through with an empty list of outputs. The finishing event, for that exact same run, is the one that adds the output and a description of its schema — nothing about any of that existed in the record before that moment."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a detail that matters more than it sounds like it should.",
+        "Any of these events can carry optional little attachments — a schema, a map of which input columns feed which output column, a quality result, even the SQL itself.",
+        "And the whole point of making them optional is that something reading the event just skips right past whichever attachment it doesn't recognize, instead of falling over."
+      ]
+    },
+    {
+      "lines": [
+        "New puzzle. Figure it out before I tell you.",
+        "Say a query has a conditional expression in it, calls out to a custom function, and reads from a table whose actual name only gets built once the job is running.",
+        "If you just read the raw SQL text, do you end up finding the exact same column relationships as someone who watches the engine actually execute it?"
+      ],
+      "answer": [
+        "No — and the gap is bigger than people expect.",
+        "Reading plain text, you can see that a custom function gets called, but you've got zero visibility into what it actually touches inside itself. And a table name that only gets assembled at runtime never resolves to anything real in the text at all."
+      ]
+    },
+    {
+      "lines": [
+        "Measuring it side by side makes that gap completely concrete.",
+        "Reading the text alone catches only the one argument that's visible on the surface, missing a second column the function quietly reads on its own. The table name just stays as an unresolved placeholder.",
+        "Walking the actual plan the engine ran catches the function's entire real set of inputs, and the table name exactly as it ended up resolving."
+      ]
+    },
+    {
+      "lines": [
+        "On the plumbing side, things have actually simplified a fair bit recently.",
+        "What used to be a separate, fragile Airflow package now lives built directly inside Airflow itself. Spark listens to its own internal job events, and Flink and dbt each do their own version of the same thing from their own internals.",
+        "Totally different engines underneath, but they all end up emitting the exact same shape of event."
+      ]
+    },
+    {
+      "lines": [
+        "One particular project is worth naming directly, because it's the reference point for all of this.",
+        "It's the project that implements this whole specification in its original, canonical form, and it was originally open-sourced by a company called WeWork.",
+        "And it's far from the only thing reading these events — a couple of the bigger metadata catalogs pull from the exact same stream into their own graphs."
+      ]
+    },
+    {
+      "lines": [
+        "One honest limitation is worth sitting with before moving on.",
+        "A graph built this way is only ever as good as what actually got instrumented. Anything decided purely at the moment something runs, and never turned into an event at all, simply isn't going to show up in the graph.",
+        "Same goes for anything that leaves the systems you're actually watching — a one-off export, a manual copy somebody made by hand."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it, pulled together.",
+        "A job, a run and a dataset, reported through events that build on each other over time rather than all at once. Optional attachments carry extra meaning that nothing breaks if a reader doesn't understand.",
+        "And watching what actually ran will always tell you more than reading what the text merely suggested it might do."
+      ]
+    }
+  ]
+}

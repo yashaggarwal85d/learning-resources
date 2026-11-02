@@ -1,0 +1,133 @@
+{
+  "topic": "de.openlineage-events-facets-lineage",
+  "syllabus": [
+    {
+      "clause": "the run/job/dataset event model (START/COMPLETE/FAIL), facets (schema, column lineage, data quality, SQL), integrations (Airflow provider built in, Spark listener, Flink, dbt), consumers (Marquez reference server, DataHub, cloud catalogs), column lineage from SQL parsing vs runtime plans, and the gaps static lineage misses.",
+      "at": [
+        { "step": "Reveal: a Job, a Run and a Dataset -- OpenLineage's own object model" },
+        { "step": "Reveal: no -- measured directly, START carries no output at all; COMPLETE adds it later, under the same run id" },
+        { "step": "Elaborate: facets are optional, versioned attachments -- a schema, a column-lineage mapping, a data-quality result, a job's own SQL" },
+        { "step": "Reveal: no -- measured directly, SQL-text parsing misses the UDF's hidden input and never resolves the dynamic table name; the runtime plan sees both" },
+        { "step": "Elaborate: integrations -- the Airflow provider is now built directly into Airflow itself; Spark, Flink and dbt each emit the same event shape from their own internals" },
+        { "step": "Reveal: Marquez is the reference implementation, open-sourced by WeWork; DataHub and cloud catalogs consume the same events too" },
+        { "step": "Elaborate: the gaps static lineage misses -- anything decided at runtime, and anything that leaves the instrumented systems" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OpenLineage specification -- Object Model",
+      "items": [
+        {
+          "item": "a Job is a process that consumes or produces datasets; a Run is one occurrence of a job executing; run state updates are additive, carrying forward what an earlier event already said",
+          "at": [
+            { "step": "Reveal: a Job, a Run and a Dataset -- OpenLineage's own object model" },
+            { "step": "Reveal: no -- measured directly, START carries no output at all; COMPLETE adds it later, under the same run id" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OpenLineage specification -- The Run Cycle",
+      "items": [
+        {
+          "item": "a batch job is typically represented as a START event followed by a COMPLETE event, with COMPLETE, ABORT and FAIL as terminal events",
+          "at": [{ "step": "Reveal: no -- measured directly, START carries no output at all; COMPLETE adds it later, under the same run id" }]
+        }
+      ]
+    },
+    {
+      "source": "OpenLineage specification -- Column Level Lineage Dataset Facet",
+      "items": [
+        {
+          "item": "a DIRECT transformation means the output column value was derived from the input field; an INDIRECT one means the input impacted the output without being derived from it; IDENTITY means the value is taken as-is",
+          "at": [
+            { "step": "Elaborate: facets are optional, versioned attachments -- a schema, a column-lineage mapping, a data-quality result, a job's own SQL" },
+            { "step": "Reveal: no -- measured directly, SQL-text parsing misses the UDF's hidden input and never resolves the dynamic table name; the runtime plan sees both" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OpenLineage -- Apache Airflow integration page",
+      "items": [
+        {
+          "item": "the Airflow integration has relocated into the official OpenLineage Airflow Provider for Airflow 2.7 and newer; the legacy external package is no longer maintained",
+          "at": [{ "step": "Elaborate: integrations -- the Airflow provider is now built directly into Airflow itself; Spark, Flink and dbt each emit the same event shape from their own internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Marquez Project -- site",
+      "items": [
+        {
+          "item": "Marquez is the reference implementation of OpenLineage, open-sourced by WeWork, and already works with the integrations the OpenLineage community has built",
+          "at": [{ "step": "Reveal: Marquez is the reference implementation, open-sourced by WeWork; DataHub and cloud catalogs consume the same events too" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a run's START event carries no output dataset; the COMPLETE event for the identical run id adds the output and a schema facet; parsing a job's SQL text misses a UDF's own hidden second input and never resolves a parameter-built table name, while walking the actual runtime plan sees both",
+          "at": [
+            { "step": "Reveal: no -- measured directly, START carries no output at all; COMPLETE adds it later, under the same run id" },
+            { "step": "Reveal: no -- measured directly, SQL-text parsing misses the UDF's hidden input and never resolves the dynamic table name; the runtime plan sees both" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      {
+        "item": "A parent run facet ties a task's own run to its parent DAG's run, which is how a lineage consumer joins a single Airflow task's events back into the whole pipeline run it belongs to -- a relationship this topic names but does not build a measurement for, since this topic's own toy model emits a single, unparented run.",
+        "at": [{ "out": "the parent run facet's own join mechanism named only; this topic's own measurement emits one run with no parent relationship" }]
+      },
+      {
+        "item": "Design-time events (JobEvent, DatasetEvent) carry metadata not tied to any run at all -- a job's declared inputs/outputs in source code, or a dataset's schema as registered independent of any execution -- distinct from the run-time RunEvent this topic's own measurement builds.",
+        "at": [{ "out": "design-time JobEvent/DatasetEvent named only; this topic's own measurement builds only RunEvents (START, COMPLETE)" }]
+      },
+      {
+        "item": "OpenLineage's own run-cycle page documents an OTHER state that may be sent anytime before a terminal state, including before START, giving agility to attach additional metadata outside the normal START-then-terminal sequence -- a state this topic's own two-event measurement never needs.",
+        "at": [{ "out": "the OTHER run state named only; this topic's own measurement uses exactly START and COMPLETE" }]
+      },
+      {
+        "item": "A real OpenLineage Spark listener's own documentation recommends enabling a dataset-lineage-only mode for column lineage, because without it indirect lineage edges can grow toward a near-cartesian-product of fields on a wide join -- a real cost consideration this topic's own two-column toy model is too small to demonstrate.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Great Expectations and other data-quality tools attach their own results as an OpenLineage data-quality facet, which is how this chapter's own later data-quality-frameworks topic's checks become visible on the same lineage graph this topic builds, rather than living in a separate, disconnected system.",
+        "at": [{ "out": "the data-quality facet's own cross-topic role named only; this topic's own measurement builds a schema facet, not a data-quality facet" }]
+      },
+      {
+        "item": "A dbt integration's own lineage is a post-run artifact processor reading the manifest and run-results files after a dbt run finishes, rather than an in-process listener watching the run as it happens the way Spark's SparkListener does -- the same event shape, produced by a structurally different mechanism.",
+        "at": [{ "out": "dbt's own post-run-artifact integration mechanism named only; this topic's own measurement models an in-process listener shape" }]
+      },
+      {
+        "item": "The column-lineage facet's own masking flag lets a producer mark a transformation as one that obscures the input's actual value (a hash, a redaction) separately from naming the transformation type itself -- a fourth field this topic's own toy model's two-field edge sets don't carry.",
+        "at": [{ "out": "the column-lineage facet's own masking flag named only; this topic's own measurement tracks which columns feed which output, not whether that feed is masked" }]
+      },
+      {
+        "item": "A lineage graph assembled from many jobs' own events can contain cycles or near-cycles in practice (a job that reads back from a table it also writes to on a later run), which is a different structural case from the single straight-line job this topic's own measurement traces.",
+        "at": [{ "out": "multi-run cyclic lineage graphs named only; this topic's own measurement traces one job's single run" }]
+      },
+      {
+        "item": "This chapter's own later lineage-driven-impact-analysis topic (topic 14) is the one that actually walks a built lineage graph to answer \"what breaks downstream,\" using exactly the kind of graph this topic's events and facets assemble -- this topic stops at building and reading the graph, not acting on it.",
+        "at": [{ "out": "topic 14's own downstream-impact-analysis use of the graph named only; this topic's own scope ends at assembling and reading the graph" }]
+      },
+      {
+        "item": "OpenLineage's own object model explicitly states it \"cares how Datasets come into being, not just that relationships exist between them\" -- meaning a consumer gets the actual transformation history behind an edge, not merely the fact that one dataset depends on another, which is what makes the column-lineage facet's DIRECT/INDIRECT distinction meaningful in the first place.",
+        "at": [{ "step": "Elaborate: facets are optional, versioned attachments -- a schema, a column-lineage mapping, a data-quality result, a job's own SQL" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

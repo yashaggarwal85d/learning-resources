@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: traces, the catalog, Spark's plan and orchestration runs
+
+<ul class="resources">
+  <Resource kind="reel" title="OpenTelemetry across batch and streaming" domain="data-engineering" host="de.opentelemetry-across-batch-streaming" by="topic 2 of this chapter — the trace/span model this topic's own run events parallel" />
+  <Resource kind="reel" title="Metadata platforms and active catalogs" domain="data-engineering" host="de.metadata-platforms-active-catalogs" by="topic 10 of this chapter — the previous topic, whose catalog stores these events' lineage edges" />
+  <Resource kind="reel" title="Catalyst: from unresolved to physical plan" domain="data-engineering" host="de.catalyst-unresolved-physical-plan" by="Chapter 7 §7.1 — the actual runtime plan a Spark listener reads" />
+  <Resource kind="reel" title="Orchestrator architecture: scheduler, executor, metadata DB" domain="data-engineering" host="de.orchestrator-architecture-scheduler" by="Chapter 11 §11.1 — the Airflow runs and tasks this topic's events report on" />
+  <Resource kind="reel" title="Contract enforcement in CI" domain="data-engineering" host="de.contract-enforcement-in-ci" by="Chapter 11 §11.4 — dbt's own CI integration, one of this topic's named integrations" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Object Model" href="https://openlineage.io/docs/spec/object-model" by="OpenLineage specification">The Job/Run/Dataset model and additive events.</Resource>
+  <Resource kind="reading" title="The Run Cycle" href="https://openlineage.io/docs/spec/run-cycle/" by="OpenLineage specification">START and the terminal COMPLETE/FAIL/ABORT events.</Resource>
+  <Resource kind="reading" title="Column Level Lineage Dataset Facet" href="https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet/" by="OpenLineage specification">DIRECT, INDIRECT and IDENTITY transformation types.</Resource>
+  <Resource kind="reading" title="Apache Airflow" href="https://openlineage.io/docs/integrations/airflow/" by="OpenLineage documentation">The integration's move into Airflow's own provider package.</Resource>
+  <Resource kind="reading" title="Marquez Project" href="https://marquezproject.ai/" by="Marquez">The reference implementation, open-sourced by WeWork.</Resource>
+</ul>
+
+</section>
