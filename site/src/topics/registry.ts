@@ -10372,4 +10372,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Iceberg's own transaction log is a metadata tree of files. The next arc shows the same shared-foundations ideas built from a visibly different mechanism: Delta's ordered JSON log.",
   },
+  {
+    id: 'de.delta-transaction-log',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/delta-transaction-log',
+    title: 'The Delta transaction log',
+    syllabusTitle: 'The Delta transaction log',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.2' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['delta-transaction-log'],
+    uses: ['table-snapshot-model', 'optimistic-commit-protocol'],
+    declared: [],
+    bridge:
+      "Iceberg's own transaction log is a metadata tree of files. This topic opens the Delta arc by showing the same commit-and-history idea built from a visibly different mechanism: an ordered JSON log, reconstructed by hand from a real _delta_log directory in this sandbox.",
+    handoff:
+      "A JSON log entry is only a commit once it's written atomically as the next version number. The next topic is exactly how Delta makes that atomic today, and where its catalog-managed-tables story is heading.",
+  },
 ];

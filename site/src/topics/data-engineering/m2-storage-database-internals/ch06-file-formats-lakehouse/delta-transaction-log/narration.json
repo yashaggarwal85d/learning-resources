@@ -1,0 +1,73 @@
+{
+  "topic": "de.delta-transaction-log",
+  "steps": [
+    {
+      "lines": [
+        "One format's answer to this whole problem was a tree of metadata files, traced by hand a few topics back. Here's a second, genuinely different answer to the exact same problem.",
+        "Same job: an ordered, trustworthy history of everything that ever happened to a table. Completely different shape: not a tree of files pointing at each other, but a plain, ordered sequence of JSON entries."
+      ]
+    },
+    {
+      "lines": [
+        "Picture five of those JSON entries, sitting right there on disk, each one just a diff against whatever came before it. Nothing has been read yet.",
+        "To know, right now, exactly which files belong to this table — not which files existed at some point, which ones belong to it this instant — how much of that do you actually have to go read?"
+      ],
+      "answer": [
+        "All of it, in order, from the very first entry. Each one is only a diff against the version before it, never the whole picture on its own.",
+        "So there's no shortcut yet. Reconstructing the present means replaying the entire past, one ordered entry at a time."
+      ]
+    },
+    {
+      "lines": [
+        "Here are those five entries, genuinely written to disk in this sandbox, each one following the format's own naming rule to the letter: the next version number, padded out to twenty digits.",
+        "Plain newline-delimited JSON. One line, one action. Nothing clever, nothing binary — just an ordered stack of small, readable facts."
+      ]
+    },
+    {
+      "lines": [
+        "Those five files were just replayed by hand, genuinely, reading nothing but what's sitting on disk. Every add, every remove, every metadata and protocol change, folded together in order.",
+        "The answer that falls out: four files genuinely live right now, nine rows between them. And one file that existed briefly in the middle of that history and was later removed? Correctly absent. Gone, because its removal was replayed too."
+      ]
+    },
+    {
+      "lines": [
+        "Now a real checkpoint gets written, genuinely, at version two — a complete, already-reconciled snapshot of everything up through that point.",
+        "Knowing that exists now: to get to version four's state, is replaying all the way from version zero still the only option, or has something real actually changed?"
+      ],
+      "answer": [
+        "Something real has changed. A checkpoint already is the fully reconciled state as of its version — there's no reason to walk through history that's already been folded into it.",
+        "From here on, a reader can start at that checkpoint and only replay whatever's newer than it. The earliest history becomes work nobody has to redo."
+      ]
+    },
+    {
+      "lines": [
+        "That checkpoint isn't just claimed here — it's a real file, genuine columnar Parquet, written to disk. And it was checked, directly, against an entirely separate, from-scratch replay of the same three versions.",
+        "The two agree exactly. Which is exactly the property a checkpoint has to have to be trustworthy at all: it has to equal a full replay, just arrived at faster."
+      ]
+    },
+    {
+      "lines": [
+        "That shortcut was taken for real, right here: start from the version-two checkpoint, replay only versions three and four on top of it, and compare the result to a full replay from the very beginning.",
+        "Identical file set, either way. And the small pointer file that makes this findable in practice — the one naming which checkpoint to start from — was written for real too, so nothing here depends on listing the whole directory."
+      ]
+    },
+    {
+      "lines": [
+        "Two more real files, both built the same honest way: compute something independently, then check it against a ground truth instead of just asserting it.",
+        "A compacted file covering two commits at once, checked against reading those same two commits directly — they match. And an integrity file whose numbers — how many files, how many total bytes — are computed straight from the real reconciled state, not typed in by hand."
+      ]
+    },
+    {
+      "lines": [
+        "One more real change, sitting right in this same history: version zero's own protocol entry speaks in plain numbers only — nothing but a minimum reader version, a minimum writer version.",
+        "After a real upgrade, genuinely applied at version three, that exact same idea — what a client has to support to touch this table safely — gets said a completely different way: as an explicit, named list of capabilities instead of a bare number."
+      ]
+    },
+    {
+      "lines": [
+        "So: an ordered JSON log is the whole truth, replayable from nothing but itself. A checkpoint is that truth, already folded down, so nobody has to start from zero. Compaction and an integrity file sit on top, both optional, both checked against ground truth here rather than assumed.",
+        "And what a client has to support to touch this table safely is moving away from a bare number, toward an explicit, named list. One JSON entry becomes a real commit only once it's written atomically — exactly where this story goes next."
+      ]
+    }
+  ]
+}

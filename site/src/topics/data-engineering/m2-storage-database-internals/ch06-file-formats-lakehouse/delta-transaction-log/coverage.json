@@ -1,0 +1,61 @@
+{
+  "topic": "de.delta-transaction-log",
+  "syllabus": [
+    {
+      "clause": "_delta_log as ordered JSON commits (add/remove/metaData/protocol actions), Parquet checkpoints (classic, multi-part, V2 with sidecars), _last_checkpoint, log compaction and version checksum files; reconstructing table state; protocol reader/writer versions replaced by named table features.",
+      "at": [
+        { "step": "Reveal: five real commits, written by hand to spec" },
+        { "step": "Reveal: reconstructed by hand, from nothing but the raw log" },
+        { "step": "Reveal: a real checkpoint, verified against an independent replay" },
+        { "step": "Reveal: short-circuited for real, same answer either way" },
+        { "step": "Reveal: a real log compaction file, and a real version checksum" },
+        { "step": "Reveal: the same protocol, two different vocabularies" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Delta Lake, Transaction Log Protocol",
+      "items": [
+        { "item": "Delta files use newline-delimited JSON format, where every action is stored as a single-line JSON document", "at": [{ "step": "Reveal: five real commits, written by hand to spec" }] },
+        { "item": "A given snapshot of the table can be computed by replaying the events committed to the table in ascending order by commit version", "at": [{ "step": "Reveal: reconstructed by hand, from nothing but the raw log" }] },
+        { "item": "A collection of add actions with unique path keys, corresponding to the newest (path, deletionVector.uniqueId) pair encountered for each path", "at": [{ "step": "Reveal: reconstructed by hand, from nothing but the raw log" }] },
+        { "item": "The intersection of the primary keys in the add collection and remove collection must be empty", "at": [{ "deep": "Deep-dive" }] },
+        { "item": "A checkpoint contains the complete replay of all actions, up to and including the checkpointed table version, with invalid actions removed", "at": [{ "step": "Reveal: a real checkpoint, verified against an independent replay" }] },
+        { "item": "Rather than list the entire directory, readers can locate a recent checkpoint by looking at the _delta_log/_last_checkpoint file", "at": [{ "step": "Reveal: short-circuited for real, same answer either way" }] },
+        { "item": "Log compaction files reside in the _delta_log directory, aggregating actions for a commit range", "at": [{ "step": "Reveal: a real log compaction file, and a real version checksum" }] },
+        { "item": "The Delta transaction log must remain an append-only log; writers can optionally emit a Version Checksum file with every commit", "at": [{ "step": "Reveal: a real log compaction file, and a real version checksum" }] },
+        { "item": "Reader Version 3 and Writer Version 7 add two lists of table features to the protocol action", "at": [{ "step": "Reveal: the same protocol, two different vocabularies" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, How does Delta Lake manage feature compatibility?",
+      "items": [
+        { "item": "Table features are the successor to protocol versions, designed for improved flexibility for clients that read and write Delta Lake", "at": [{ "step": "Reveal: the same protocol, two different vocabularies" }] },
+        { "item": "A Delta table feature is a marker indicating the table supports a particular feature, either a write-only or a read/write protocol feature", "at": [{ "deep": "Deep-dive" }] },
+        { "item": "Protocol version upgrades are irreversible and may break existing readers, writers, or both", "at": [{ "deep": "Production" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "Table state is reconstructed by hand from the raw log, not read via any library, and the result is checked against exact expected files and row counts, not eyeballed.", "at": [{ "step": "Reveal: reconstructed by hand, from nothing but the raw log" }] },
+      { "item": "A file that is added then later removed is correctly excluded from the reconstructed state, demonstrating Action Reconciliation's add/remove primary-key rule directly, not just describing it.", "at": [{ "step": "Reveal: reconstructed by hand, from nothing but the raw log" }] },
+      { "item": "The checkpoint is real Parquet, not a JSON stand-in, and its correctness is established by comparison against an independent replay rather than assumed.", "at": [{ "step": "Reveal: a real checkpoint, verified against an independent replay" }] },
+      { "item": "The short-circuit claim (checkpoint + newer commits == full replay) is demonstrated by actually doing both and comparing results, not just asserted in narration.", "at": [{ "step": "Reveal: short-circuited for real, same answer either way" }] },
+      { "item": "The log compaction file's content is checked against reading the source commits directly, showing the two are equivalent, not merely that a compacted file exists.", "at": [{ "step": "Reveal: a real log compaction file, and a real version checksum" }] },
+      { "item": "The version checksum's numFiles/tableSizeBytes are computed from live state, not hardcoded to match an expected value.", "at": [{ "step": "Reveal: a real log compaction file, and a real version checksum" }] },
+      { "item": "The protocol-to-table-features contrast is shown on the same table across a real version boundary (v0 vs. v3), not two unrelated examples.", "at": [{ "step": "Reveal: the same protocol, two different vocabularies" }] },
+      { "item": "Multi-part and V2-with-sidecars checkpoints are explicitly scoped as named-only, not built, matching CHAPTER.md's own scope for this topic.", "at": [{ "deep": "Frontier" }] },
+      { "item": "No deltalake/delta-rs library is used anywhere; the disclosure that this is a from-scratch build against the spec, not the reference implementation's exact byte output, is explicit in FACT-CHECK.md.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The bridge/handoff framing correctly identifies this as opening a new arc (Delta) rather than continuing the Iceberg arc, matching CHAPTER.md's own chapter structure.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}
