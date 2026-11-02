@@ -1,0 +1,128 @@
+{
+  "topic": "de.real-time-olap-ingestion",
+  "syllabus": [
+    {
+      "clause": "streaming ingestion into Druid, Pinot and ClickHouse",
+      "at": [{ "step": "Reveal: the same shape, three stores" }]
+    },
+    {
+      "clause": "per-partition consumers building segments",
+      "at": [{ "step": "Reveal: a consuming task per partition builds a segment" }]
+    },
+    {
+      "clause": "exactly-once offset/segment commits",
+      "at": [
+        { "step": "Reveal: an atomic offset-and-segment commit" },
+        { "step": "Reveal: a naive, non-atomic commit falls out of step" }
+      ]
+    },
+    {
+      "clause": "Pinot upsert tables",
+      "at": [{ "step": "Reveal: an upsert overlay answers it instead" }]
+    },
+    {
+      "clause": "ClickHouse Kafka engine vs ClickPipes",
+      "at": [{ "step": "Reveal: ClickHouse's Kafka engine or ClickPipes" }]
+    },
+    {
+      "clause": "serving trade-offs in §5.5 and engine internals in §6.4",
+      "at": [{ "step": "Setup: the other destination a stream can land on" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Storage overview (Apache Druid, latest docs)",
+      "items": [
+        {
+          "item": "each segment is created by a consuming task as mutable and uncommitted, queryable as soon as it's added",
+          "at": [{ "step": "Reveal: a consuming task per partition builds a segment" }]
+        },
+        {
+          "item": "indexing creates new segments, and handoff publishes and serves them through Historical services",
+          "at": [{ "step": "Reveal: a consuming task per partition builds a segment" }]
+        },
+        {
+          "item": "Druid commits stream offsets to its metadata store alongside segment metadata in the same transaction, ensuring exactly-once publishing",
+          "at": [{ "step": "Reveal: an atomic offset-and-segment commit" }]
+        }
+      ]
+    },
+    {
+      "source": "Stream ingestion with Upsert (Apache Pinot, release 1.4.0 docs)",
+      "items": [
+        {
+          "item": "FULL upsert replaces an older record completely when a new record shares its primary key",
+          "at": [{ "step": "Reveal: an upsert overlay answers it instead" }]
+        },
+        {
+          "item": "upsert maintains in-memory metadata (ValidDocIndexes) tracking which docIds are valid in a segment",
+          "at": [{ "step": "Reveal: an upsert overlay answers it instead" }]
+        }
+      ]
+    },
+    {
+      "source": "Kafka table engine (ClickHouse, current docs)",
+      "items": [
+        {
+          "item": "the Kafka table engine publishes/subscribes to data flows and processes streams as they become available",
+          "at": [{ "step": "Reveal: ClickHouse's Kafka engine or ClickPipes" }]
+        },
+        {
+          "item": "ClickHouse recommends ClickPipes instead for Cloud users, citing private networking, independent scaling, and monitoring",
+          "at": [{ "step": "Reveal: ClickHouse's Kafka engine or ClickPipes" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Opening on Pinot's upsert overlay, the most surprising of this topic's three ideas, rather than on segments (the most familiar, already seen in topic 1), front-loads the one reveal that most needs motivating before the chapter's own vocabulary carries the rest.",
+        "at": [{ "step": "Hook: a sealed segment that never changes" }]
+      },
+      {
+        "item": "Splitting the exactly-once commit into two separate reveals (the atomic mechanism, then a naive non-atomic alternative that fails) rather than stating the atomic version alone makes the failure mode concrete instead of asserted.",
+        "at": [{ "step": "Reveal: a naive, non-atomic commit falls out of step" }]
+      },
+      {
+        "item": "Naming the per-partition-consumer model as the same vocabulary this chapter's first topic taught, rather than reintroducing segments as a new idea, is the deliberate closing move of a chapter built to echo its own early vocabulary in a real system.",
+        "at": [{ "step": "Reveal: a consuming task per partition builds a segment" }]
+      },
+      {
+        "item": "Framing ClickHouse's Kafka engine versus ClickPipes explicitly as the same build-versus-buy axis an earlier chapter already taught, rather than as a ClickHouse-specific choice, is what keeps this topic's final reveal from reading as a product feature comparison.",
+        "at": [{ "step": "Reveal: ClickHouse's Kafka engine or ClickPipes" }]
+      },
+      {
+        "item": "The recap deliberately names every concept this topic reuses from elsewhere in the syllabus (segments, exactly-once, upsert, build-versus-buy) rather than presenting any of them as new, because this topic's actual content is showing those ideas land in a fourth place, not introducing a fifth idea.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "This topic's hook (an update that never touched the sealed segment) and its recap's close on reused ideas are the same move at two different scales — first a single surprising fact, then the whole topic's structure.",
+        "at": [{ "step": "Hook: a sealed segment that never changes" }]
+      },
+      {
+        "item": "The toy per-partition-segment, atomic-commit, and upsert-overlay models are deliberately simplified standalone demonstrations, not ports of Druid's, Pinot's, or ClickHouse's actual ingestion internals, and every figure shown is this run's own measured output, not a cited vendor benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic explicitly defers serving-side trade-offs and storage-engine internals to the sections CHAPTER.md's own syllabus clause names, rather than touching either, keeping its scope to ingestion only as the syllabus clause states.",
+        "at": [{ "step": "Setup: the other destination a stream can land on" }]
+      },
+      {
+        "item": "Pairing Pinot's upsert overlay with topic 6's compaction and topic 24's upsert changelog mode in post-notes rather than the reel itself keeps the reel's own reveal focused on the one new mechanism (query-time overlay) instead of re-teaching two earlier ones.",
+        "at": [{ "step": "Reveal: an upsert overlay answers it instead" }]
+      },
+      {
+        "item": "Closing the chapter on three reused ideas landing in a third and fourth destination, rather than on a new standalone concept, matches CHAPTER.md's own framing that this topic's job is to close out the chapter, not open a new thread.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

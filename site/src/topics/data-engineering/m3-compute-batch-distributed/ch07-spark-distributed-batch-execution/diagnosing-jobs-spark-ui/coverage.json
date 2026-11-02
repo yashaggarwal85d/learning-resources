@@ -1,0 +1,99 @@
+{
+  "topic": "de.diagnosing-jobs-spark-ui",
+  "syllabus": [
+    {
+      "clause": "reading the SQL tab plan with per-operator metrics, stage task-metric distributions (duration, GC, spill, shuffle-read blocked time), executor tab and event logs in the History Server; turning symptoms into a hypothesis (skew vs spill vs GC vs small files vs driver bottleneck).",
+      "at": [
+        { "step": "Reveal: skew -- one task dwarfs the rest" },
+        { "step": "Reveal: the table confirms it" },
+        { "step": "Reveal: spill and GC -- the task-level columns decide" },
+        { "step": "Reveal: small files and a driver bottleneck" },
+        { "step": "Elaborate: a fixed triage order, not five separate tools" },
+        { "deep": "Reading the SQL tab and the History Server" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"Web UI\" docs",
+      "items": [
+        {
+          "item": "GC time is the total JVM garbage collection time, and scheduler delay is the time a task waits to be scheduled -- two distinct per-task metrics with different diagnoses",
+          "at": [{ "step": "Reveal: spill and GC -- the task-level columns decide" }, { "step": "Reveal: small files and a driver bottleneck" }]
+        },
+        {
+          "item": "shuffle spill (memory) is the deserialized size in memory; shuffle spill (disk) is the serialized size actually written",
+          "at": [{ "step": "Reveal: spill and GC -- the task-level columns decide" }]
+        },
+        {
+          "item": "the SQL tab's own query details page shows physical operators annotated with per-operator metrics, including spill size, directly on the plan graph",
+          "at": [{ "deep": "Reading the SQL tab and the History Server" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark \"Monitoring and Instrumentation\" docs",
+      "items": [
+        {
+          "item": "with spark.eventLog.enabled set, Spark persists the events that encode everything the UI displays",
+          "at": [{ "deep": "Reading the SQL tab and the History Server" }]
+        },
+        {
+          "item": "the History Server reconstructs an application's UI from its persisted event logs, provided those logs exist",
+          "at": [{ "deep": "Reading the SQL tab and the History Server" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Shuffle-read fetch wait time -- the time a task spends blocked waiting for shuffle data from remote executors -- is a sixth, distinct signature from the five this topic's own examples.py measures: a high value there points at network or remote-executor slowness, not at skew, spill, GC, small files, or an idle driver.",
+        "at": [{ "out": "shuffle-read fetch wait time named only as a sixth distinct signature; this topic's own examples.py runs entirely in local mode, where remote-executor fetch wait is not representative of a real multi-node cluster" }]
+      },
+      {
+        "item": "The Executors tab's own per-executor summary (task count, total duration, total GC time, shuffle read/write) is the fastest first check for a driver bottleneck specifically, since idle executors across the whole tab during a known-slow stretch are visible without opening any individual stage at all.",
+        "at": [{ "out": "the Executors tab's own summary view named as the fastest entry point for the driver-bottleneck diagnosis; this topic's own examples.py confirms the same idle stretch via the REST API's per-stage task-time sum rather than the rendered tab itself" }]
+      },
+      {
+        "item": "A stage's DAG visualization on the Jobs and Stages tabs shows which stages depend on which, so a driver bottleneck (time between two jobs) and a stage resubmission (extra attempts within one job) are visually distinguishable even before reading any task-level metric.",
+        "at": [{ "out": "the DAG visualization's own role in telling a driver gap apart from a stage resubmission named only; this topic's own examples.py distinguishes them through REST API timestamps and stage-attempt counts, not the rendered DAG graph" }]
+      },
+      {
+        "item": "Peak execution memory (the maximum memory used by internal shuffle/aggregation/join data structures during a task) is the metric that would show *why* a task spilled, complementing the spill-bytes columns this topic's own examples.py measures directly: a peak near the task's own memory budget explains the spill that the spill columns only report happened.",
+        "at": [{ "out": "peak execution memory named as the explanatory metric behind an observed spill; this topic's own examples.py measures the spill event itself (bytes spilled to memory and disk), not the peak-memory metric that would explain why it happened" }]
+      },
+      {
+        "item": "Compaction of rolling event log files (spark.eventLog.rolling.enabled) keeps a single long-running application's event log from becoming one huge file that's expensive for the History Server to replay -- a practical concern for diagnosing a job that ran for hours, distinct from any of the five failure modes this topic's own examples.py reproduces in a short-lived local session.",
+        "at": [{ "out": "event-log rolling and compaction named only as a practical History Server concern for long-running applications; this topic's own examples.py runs short-lived local sessions where rolling never triggers" }]
+      },
+      {
+        "item": "The number-of-output-rows SQL metric, shown per operator on the plan graph, is often the fastest way to confirm a small-files or over-partitioning diagnosis without touching the Stages tab at all: a Scan operator producing far more partitions than its own row count would justify is directly visible there.",
+        "at": [{ "out": "the number-of-output-rows SQL metric named as a faster alternative confirmation path for the small-files diagnosis; this topic's own examples.py confirms small files through the Stages tab's own per-task scheduler-delay and CPU-time columns instead" }]
+      },
+      {
+        "item": "A thread dump, available per executor from the Executors tab, shows exactly what every thread on that executor is doing at the moment it's captured -- the one tool in the Spark UI that can distinguish a task genuinely computing (a hot loop) from one blocked (on a lock, on I/O, on a remote fetch) when the task-metric columns alone look identical.",
+        "at": [{ "out": "the per-executor thread dump named as the tool that resolves an ambiguous task-metric reading by showing what the thread is actually doing; this topic's own examples.py reads only aggregate REST API metrics, never a live thread dump" }]
+      },
+      {
+        "item": "Associated accumulators, shown on a task's own details page when named accumulators exist, let a job author surface custom per-task counters (rows rejected by a filter, bytes read from a specific source) directly in the UI -- a sixth diagnostic surface beyond the five built-in failure modes this topic's own examples.py reproduces, available only when the job itself chose to instrument it.",
+        "at": [{ "out": "named accumulators on the task details page named only as an author-instrumented diagnostic surface; this topic's own examples.py uses no named accumulators" }]
+      },
+      {
+        "item": "WholeStageCodegen's own annotation in the SQL plan (a numbered id prefixing each fused physical operator) lets a reader cross-reference a specific stage's task metrics back to the exact block of fused operators that produced them, connecting the Stages tab's own per-task numbers to the SQL tab's own plan graph rather than treating the two tabs as unrelated views.",
+        "at": [{ "out": "the WholeStageCodegen numbering as the cross-reference between the Stages tab and the SQL tab named only; this topic's own examples.py reads the Stages/Executors REST API directly and does not cross-reference a rendered SQL plan" }]
+      },
+      {
+        "item": "spark.history.fs.cleaner.* configs let the History Server automatically delete old event logs past a retention window -- a practical operational concern for keeping years of diagnosable history bounded, distinct from any of this topic's own measured, single-session failure modes.",
+        "at": [{ "out": "History Server log retention/cleaner configs named only as a separate operational concern from this topic's own single-session measurements" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

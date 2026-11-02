@@ -1,0 +1,72 @@
+{
+  "topic": "de.source-side-interrogation",
+  "syllabus": [
+    {
+      "clause": "origin, format and schema ownership/evolution",
+      "at": [{ "step": "Reveal: origin, format, schema ownership and evolution" }]
+    },
+    {
+      "clause": "volume, rate, burst and seasonality",
+      "at": [{ "step": "Reveal: rate, growth, protocol, and quota" }]
+    },
+    {
+      "clause": "delivery reliability (late, duplicate, lost, corrupted data; source outages)",
+      "at": [{ "step": "Reveal: an event id beats a timestamp for dedup" }]
+    },
+    {
+      "clause": "pull vs push and connector growth",
+      "at": [{ "step": "Reveal: a source box and its question cards" }, { "deep": "Lab" }]
+    },
+    {
+      "clause": "protocol, auth, rate limits and quotas",
+      "at": [{ "step": "Reveal: rate, growth, protocol, and quota" }, { "step": "Reveal: the question that exposes a hidden constraint" }]
+    },
+    {
+      "clause": "encryption, residency and compliance at source",
+      "at": [{ "step": "Reveal: the question that exposes a hidden constraint" }]
+    },
+    {
+      "clause": "per-delivery metadata, audit and lineage",
+      "at": [{ "step": "Reveal: an event id beats a timestamp for dedup" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Bitol / Linux Foundation — Open Data Contract Standard (ODCS), \"Definition\" and \"Fundamentals\"",
+      "items": [
+        { "item": "A data contract describes the keys and values expected in a YAML document, per the Open Data Contract Standard.", "at": [{ "step": "Reveal: origin, format, schema ownership and evolution" }] },
+        { "item": "A data contract's own status field is named and enumerated: \"proposed\", \"draft\", \"active\", \"deprecated\", \"retired\".", "at": [{ "step": "Reveal: origin, format, schema ownership and evolution" }] },
+        { "item": "A data contract carries its own current version field.", "at": [{ "step": "Reveal: origin, format, schema ownership and evolution" }] }
+      ]
+    },
+    {
+      "source": "Stripe — \"Receive Stripe events in your webhook endpoint\"",
+      "items": [
+        { "item": "Stripe doesn't guarantee the delivery of events in the order that they're generated.", "at": [{ "step": "Reveal: an event id beats a timestamp for dedup" }] },
+        { "item": "Webhook endpoints might occasionally receive the same event more than once; guard against this by logging processed event IDs, not timestamps.", "at": [{ "step": "Reveal: an event id beats a timestamp for dedup" }] },
+        { "item": "Stripe attempts to deliver events for up to three days with exponential backoff in live mode.", "at": [{ "step": "Reveal: rate, growth, protocol, and quota" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A measurement beats an adjective, every time one is available.", "at": [{ "step": "Reveal: a measurement beats an adjective" }] },
+      { "item": "A resend without an event id to key on is a duplicate waiting to happen.", "at": [{ "step": "Reveal: an event id beats a timestamp for dedup" }] },
+      { "item": "A quota is a hidden ceiling until someone asks for the number.", "at": [{ "step": "Reveal: the question that exposes a hidden constraint" }] },
+      { "item": "An unanswerable question is itself the most useful answer in the interview: it names a constraint before production does.", "at": [{ "step": "Prove it: a second partner, two unanswered questions" }] },
+      { "item": "A diagram describes what was built, not how a source behaves under retry, outage, or change — which is why it can't substitute for the interview.", "at": [{ "step": "Predict: which five questions would have caught each crack?" }] },
+      { "item": "Each answer in the source interview routes to exactly one design decision: resend and downtime to dedup and buffering, ownership and notice to the contract, rate and growth to the estimate.", "at": [{ "step": "Reveal: a source box and its question cards" }] },
+      { "item": "This topic leaves out the design method's own answers to these questions (topics 1-9), destination-side questions (topic 11), and the ingestion, CDC, contract, and classification mechanics themselves.", "at": [{ "deep": "Internals" }] },
+      { "item": "A source interview and measurement-over-adjective are established design practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop what goes into the pipeline; the next topic (destination-side interrogation) gives what has to come out, which most changes the design.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The maintenance cost of connectors grows with source count: each new source is a connector to build, monitor, and upgrade, which is the real cost of \"just one more source\".", "at": [{ "step": "Reveal: a source box and its question cards" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

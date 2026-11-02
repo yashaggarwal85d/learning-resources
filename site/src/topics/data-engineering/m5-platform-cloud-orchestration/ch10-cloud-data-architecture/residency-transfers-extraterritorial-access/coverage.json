@@ -1,0 +1,86 @@
+{
+  "topic": "de.residency-transfers-extraterritorial-access",
+  "syllabus": [
+    {
+      "clause": "residency (where bytes rest) vs sovereignty (who can compel access, e.g. the US CLOUD Act) vs localisation",
+      "at": [
+        { "step": "Before the vocabulary: which legal question does a given requirement actually ask?" },
+        { "step": "Three separate questions, deliberately not one box" },
+        { "step": "The CLOUD Act's own test: possession, not location" }
+      ]
+    },
+    {
+      "clause": "Schrems II, SCCs with transfer-impact assessments",
+      "at": [
+        { "step": "A framework struck down once, replaced, and struck down again" }
+      ]
+    },
+    {
+      "clause": "the EU–US Data Privacy Framework (upheld by the General Court in Latombe, Sept 2025; appeal C‑703/25 P pending at the CJEU)",
+      "at": [
+        { "step": "A framework upheld once, and already under appeal" }
+      ]
+    },
+    {
+      "clause": "remote support access as a transfer",
+      "at": [
+        { "step": "A storage region pinned to the EU, and a support contract that reaches outside it" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "region-pinned storage and compute routing, EU-only operations, customer-held keys as a supplementary measure",
+      "at": [
+        { "step": "Customer-held keys, and the one case where they do nothing" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "US DOJ: CLOUD Act white paper",
+      "items": [
+        { "item": "A provider subject to US jurisdiction must disclose data within its possession, custody or control regardless of whether it is located inside or outside the US; the Act clarified rather than created this principle", "at": [{ "step": "The CLOUD Act's own test: possession, not location" }] }
+      ]
+    },
+    {
+      "source": "European Commission: EU-US data transfers",
+      "items": [
+        { "item": "The adequacy decision for the EU-US Data Privacy Framework was adopted 10 July 2023, following safeguards introduced to address Schrems II", "at": [{ "step": "A framework upheld once, and already under appeal" }] }
+      ]
+    },
+    {
+      "source": "EDPB: Recommendations 01/2020",
+      "items": [
+        { "item": "A transfer-impact assessment requires evaluating the destination country's law and practice on public-authority access before relying on an Article 46 transfer tool", "at": [{ "step": "A framework struck down once, replaced, and struck down again" }] },
+        { "item": "Encryption is only an effective supplementary measure when the importer never needs the data in the clear and the key stays outside the importer's custody; where cleartext access is needed, no technical measure is available", "at": [{ "step": "Customer-held keys, and the one case where they do nothing" }] }
+      ]
+    },
+    {
+      "source": "Digital Policy Alert / WilmerHale",
+      "items": [
+        { "item": "The General Court dismissed Latombe's challenge on 3 September 2025 (Case T-553/23); Latombe appealed to the CJEU on 31 October 2025 (Case C-703/25 P)", "at": [{ "step": "A framework upheld once, and already under appeal" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that remote access is itself a transfer independent of where storage sits, not that region-pinning was done incorrectly; a learner should name the actual gap (the support session), not conclude the pinning decision itself was wrong", "at": [{ "step": "A storage region pinned to the EU, and a support contract that reaches outside it" }] },
+      { "item": "The predict step's correct answer identifies sovereignty as the compelled-access question specifically; a learner who conflates it with residency has missed the entire point this topic exists to make", "at": [{ "step": "Before the vocabulary: which legal question does a given requirement actually ask?" }] },
+      { "item": "The CLOUD Act step's point is the statute's own 'regardless of location' language, not a general claim that US law can reach anything anywhere; a learner should be able to state the actual test (possession, custody, or control) rather than a vague sense of US extraterritorial reach", "at": [{ "step": "The CLOUD Act's own test: possession, not location" }] },
+      { "item": "The Schrems II step is careful to state that SCCs require their own transfer-impact assessment to remain valid now, not that SCCs alone were always sufficient; a learner should be able to name what the assessment actually evaluates", "at": [{ "step": "A framework struck down once, replaced, and struck down again" }] },
+      { "item": "The Latombe step states the framework's status precisely — upheld by the General Court, under appeal at the CJEU — without predicting the appeal's outcome; an expert reviewer should expect this honest uncertainty, not a confident prediction either way", "at": [{ "step": "A framework upheld once, and already under appeal" }] },
+      { "item": "The customer-held-keys step states the real limit explicitly (no technical measure when cleartext access is needed), sourced from the EDPB's own Use Case 6 analysis, not an invented caveat", "at": [{ "step": "Customer-held keys, and the one case where they do nothing" }] },
+      { "item": "The final predict step's correct answer identifies the remote-viewing session itself as the actual exposure, since residency and localisation are both satisfied in that scenario; a learner who picks residency or localisation has missed that those two questions are already answered correctly here", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic could not fetch CURIA's own judgment or press release directly in this sandbox (HTTP 403/empty); an expert reviewer should expect the Latombe dates and case numbers sourced from two independent, mutually-corroborating secondary sources rather than a direct primary-source quote, as disclosed in FACT-CHECK.md", "at": [{ "deep": "Internals" }] },
+      { "item": "The chapter's 10.5 lab (Art. 30 record from lineage reused from topic 17, plus a residency CI policy gate) is reproduced as a minimal, disclosed simulation in examples.py, not a real deployment pipeline or IaC policy engine", "at": [{ "deep": "Internals" }] },
+      { "item": "The topic keeps the three legal questions (residency, sovereignty, localisation) visually and conceptually separate throughout, never merging them into one combined 'compliance' box, which is the single most common architecture mistake named in OUTLINE.md", "at": [{ "step": "Three separate questions, deliberately not one box" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

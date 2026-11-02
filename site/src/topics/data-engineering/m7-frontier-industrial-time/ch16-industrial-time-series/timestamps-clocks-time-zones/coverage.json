@@ -1,0 +1,138 @@
+{
+  "topic": "de.timestamps-clocks-time-zones",
+  "syllabus": [
+    {
+      "clause": "device vs gateway vs ingest timestamps,",
+      "at": [{ "step": "Reveal: three clocks, three different jobs" }]
+    },
+    {
+      "clause": "drifting PLC clocks and NTP at the edge,",
+      "at": [
+        { "step": "Predict: can a backwards NTP step still land out of order?" },
+        { "step": "Reveal: the step, measured" }
+      ]
+    },
+    {
+      "clause": "UTC storage with plant-local presentation,",
+      "at": [{ "step": "Reveal: UTC stored, local rendered" }]
+    },
+    {
+      "clause": "DST gaps and repeats in shift calendars;",
+      "at": [
+        { "step": "Reveal: a calendar generated, not hard-coded" },
+        { "step": "Reveal: the same bug, in a different chapter" }
+      ]
+    },
+    {
+      "clause": "choosing which timestamp is event time.",
+      "at": [{ "step": "Reveal: choosing event time, and recording the choice" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OPC UA Part 4: Services — 7.11 DataValue",
+      "items": [
+        {
+          "item": "a DataValue carries a source timestamp and a server timestamp; the source timestamp never changes once assigned to a value instance",
+          "at": [{ "step": "Reveal: three clocks, three different jobs" }]
+        }
+      ]
+    },
+    {
+      "source": "OPC UA Part 4: Services — 7.39 TimestampsToReturn",
+      "items": [
+        {
+          "item": "TimestampsToReturn lets a client ask for the source timestamp, the server timestamp, both, or neither",
+          "at": [{ "step": "Reveal: three clocks, three different jobs" }]
+        }
+      ]
+    },
+    {
+      "source": "RFC 5905: Network Time Protocol Version 4",
+      "items": [
+        {
+          "item": "NTP's on-wire protocol depends only on measured clock offsets, not reliable message delivery",
+          "at": [{ "step": "Reveal: the step, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "RFC 3339: Date and Time on the Internet: Timestamps",
+      "items": [
+        {
+          "item": "the Unknown Local Offset Convention represents a known UTC instant with an unknown local offset as -00:00",
+          "at": [{ "step": "Reveal: UTC stored, local rendered" }]
+        }
+      ]
+    },
+    {
+      "source": "Theory and pragmatics of the tz code and data (IANA tz database)",
+      "items": [
+        {
+          "item": "time zone abbreviations are ambiguous across regions; use numeric UT offsets instead",
+          "at": [{ "step": "Reveal: a calendar generated, not hard-coded" }]
+        }
+      ]
+    },
+    {
+      "source": "IEEE 1588-2019: Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems",
+      "items": [
+        {
+          "item": "the standard's own abstract: precise clock synchronization in packet-based networks, sub-microsecond accuracy with minimal resources",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The three clocks don't form a ranking from worst to best — they answer three different questions (what happened, when the plant heard about it, when it was stored), and a pipeline that always prefers the 'most trustworthy' one regardless of signal is making a decision it never actually examined.",
+        "at": [{ "step": "Reveal: three clocks, three different jobs" }]
+      },
+      {
+        "item": "A clock that is never corrected mid-stream (the gateway's, the platform's) is monotone by construction, not by virtue of being more accurate — monotonicity and accuracy are independent properties, and this topic's device clock is simultaneously the most physically meaningful and the only one of the three that can go backwards.",
+        "at": [{ "step": "Predict: can a backwards NTP step still land out of order?" }]
+      },
+      {
+        "item": "An out-of-order timestamp is diagnostic information, not noise to be sorted away — the fact that it happened tells you a correction occurred between two readings, which a silent re-sort would destroy along with the anomaly.",
+        "at": [{ "step": "Reveal: the step, measured" }]
+      },
+      {
+        "item": "Storing an instant in UTC and rendering it in local time on demand is a decision to treat 'when' and 'how it's displayed' as two separable concerns — the moment a system stores local time without its zone, those two concerns become permanently fused, and no later process can safely separate them again.",
+        "at": [{ "step": "Reveal: UTC stored, local rendered" }]
+      },
+      {
+        "item": "A hard-coded shift table and a tz-database-generated one agree on every single ordinary day of the year, which is exactly what makes the hard-coded one dangerous: the two days it's wrong are rare enough that nobody notices until the wrong answer is already in a report.",
+        "at": [{ "step": "Reveal: a calendar generated, not hard-coded" }]
+      },
+      {
+        "item": "A ratio over 100 percent is never evidence the thing being measured exceeded its own ceiling — it's evidence that the number it was divided by doesn't match the thing's real scale, which is a denominator bug, not a numerator achievement.",
+        "at": [{ "step": "Reveal: the same bug, in a different chapter" }]
+      },
+      {
+        "item": "Recording which clock produced an event time, as its own column, converts an assumption a future reader would otherwise have to reconstruct (or guess wrong) into a fact they can simply read — the cost of that column is far smaller than the cost of someone re-deriving the choice from circumstantial evidence months later.",
+        "at": [{ "step": "Reveal: choosing event time, and recording the choice" }]
+      },
+      {
+        "item": "This chapter's earlier shift-boundary bug (topic 4, a downtime event crossing a shift change) and this topic's DST bug share the identical arithmetic shape — a fixed-length assumption meeting a boundary that doesn't respect it — which is why recognizing the shape matters more than memorizing either specific scenario.",
+        "at": [{ "step": "Reveal: the same bug, in a different chapter" }]
+      },
+      {
+        "item": "A system that reports a suspiciously clean, round, or unchanging number on exactly the days where real-world irregularity would be expected (both DST transition days reporting precisely 8 hours, all year) is reporting evidence of its own bug, not evidence of robustness.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "OPC UA's choice to expose both a source and a server timestamp, and let the client choose which to receive, is itself an acknowledgment that there is no single universally correct timestamp for a reading — the standard pushes exactly the decision this topic makes explicit (which clock is event time) down to the consumer, per request, rather than picking one for them.",
+        "at": [{ "step": "Reveal: three clocks, three different jobs" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

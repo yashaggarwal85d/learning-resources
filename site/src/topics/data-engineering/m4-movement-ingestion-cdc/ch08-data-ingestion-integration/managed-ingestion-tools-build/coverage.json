@@ -1,0 +1,121 @@
+{
+  "topic": "de.managed-ingestion-tools-build",
+  "syllabus": [
+    {
+      "clause": "Fivetran (merging with dbt Labs, announced Oct 2025), Airbyte, dlt, Meltano, Kafka Connect",
+      "at": [
+        { "step": "Reveal: how a key gets billed at all" },
+        { "step": "Reveal: four ways to meet a new column" }
+      ]
+    },
+    {
+      "clause": "connector maintenance as the real cost",
+      "at": [
+        { "step": "Reveal: what a hand-built connector actually owns" },
+        { "step": "Reveal: the failure-mode count, measured" }
+      ]
+    },
+    {
+      "clause": "row/MAR-based pricing",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: which table costs more" },
+        { "step": "Reveal: the two tables, measured" }
+      ]
+    },
+    {
+      "clause": "schema-drift handling",
+      "at": [
+        { "step": "Reveal: four ways to meet a new column" },
+        { "step": "Reveal: all four modes, measured" }
+      ]
+    },
+    {
+      "clause": "when to own a connector",
+      "at": [
+        { "step": "Recap" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Usage-based pricing (Fivetran docs)",
+      "items": [
+        {
+          "item": "MAR is the number of distinct rows synced from the source system to your destination system in a given calendar month, and once a row is active, it is only counted once per month",
+          "at": [{ "step": "Reveal: how a key gets billed at all" }, { "step": "Reveal: the two tables, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Fivetran + dbt Labs Complete Merger (Fivetran press release)",
+      "items": [
+        {
+          "item": "Fivetran today announced the completion of its merger with dbt Labs",
+          "at": [{ "step": "Reveal: how a key gets billed at all" }]
+        }
+      ]
+    },
+    {
+      "source": "Schema and data contracts (dlt docs)",
+      "items": [
+        {
+          "item": "evolve, freeze, discard_row and discard_value are the four schema contract modes, each with a distinct documented behavior",
+          "at": [{ "step": "Reveal: four ways to meet a new column" }, { "step": "Reveal: all four modes, measured" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A small, fully reprocessed table can cost more under MAR pricing than a much larger, rarely touched one, measured directly: a five-thousand-row table backfilled in full bills more than a fifty-thousand-row table with a tenth-of-a-percent monthly change rate.",
+        "at": [{ "step": "Reveal: the two tables, measured" }]
+      },
+      {
+        "item": "MAR cost is independent of how many times a key is updated within the billing month, measured directly: the identical set of keys bills identically whether touched once or twenty times in the same month.",
+        "at": [{ "step": "Reveal: the two tables, measured" }]
+      },
+      {
+        "item": "The four schema-contract modes applied to the identical drifted record produce four distinct, mutually exclusive outcomes — keep everything, load nothing, drop the row, or drop only the field — measured directly against the same incoming record each time.",
+        "at": [{ "step": "Reveal: all four modes, measured" }]
+      },
+      {
+        "item": "A hand-built connector covering this chapter's own topics two through seven must separately solve twelve distinct, named failure modes, counted directly rather than cited, each traceable to a specific earlier topic.",
+        "at": [{ "step": "Reveal: the failure-mode count, measured" }]
+      },
+      {
+        "item": "A data-sovereignty requirement overrides volume, latency need and source commonness in the build-versus-buy decision, measured directly against three concrete scenarios: a common, loose-latency SaaS source buys, a regulated and sovereignty-constrained source builds regardless of its low volume, and a long tail of many small sources builds by default.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The syllabus's own wording that Fivetran is 'merging' with dbt Labs is out of date; the merger completed on the first of June 2026, per Fivetran's own press release, and this topic states it in the past tense rather than as pending, per CHAPTER.md's own instruction to correct this.",
+        "at": [{ "out": "corrects CHAPTER.md's own noted syllabus staleness" }]
+      },
+      {
+        "item": "Airbyte's credit-based pricing and sync-mode documentation, Meltano's Singer-based state model, and Kafka Connect's errors.tolerance and dead-letter-queue configuration are named from their own documentation in prose, not re-measured in examples.py, since none of them can run inside this topic's own in-process measurement without a live managed service or broker.",
+        "at": [{ "out": "named in post-notes without independent re-measurement" }]
+      },
+      {
+        "item": "This topic hosts no lab of its own, per CHAPTER.md's own table — the 8.1 chapter lab's hand-built extractors from topics two through seven are themselves the 'build' side of this topic's own comparison.",
+        "at": [{ "out": "no lab of its own, per CHAPTER.md" }]
+      },
+      {
+        "item": "The wrong half of the first predict question — that the larger table costs more because it has more rows in total — is ruled out directly: MAR bills only rows actually touched in the billing period, which the measured run shows favoring the smaller, fully reprocessed table instead.",
+        "at": [{ "step": "Predict: which table costs more" }]
+      },
+      {
+        "item": "The wrong half of the final predict question — that low volume alone justifies buying — is ruled out directly by the decision rule's own structure: sovereignty is checked first and short-circuits every other factor before volume or latency are even weighed.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

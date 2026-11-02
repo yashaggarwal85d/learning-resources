@@ -1,0 +1,90 @@
+{
+  "topic": "de.consensus-inside-data-systems",
+  "steps": [
+    {
+      "lines": [
+        "Picture a cluster of five identical copies of the same data.",
+        "Right now, a pair of those copies suddenly stops answering at all.",
+        "The remaining trio just carries on taking new writes, and it isn't making a lucky guess."
+      ]
+    },
+    {
+      "lines": [
+        "Commit to an answer before the reveal.",
+        "Two of these five nodes just became unreachable.",
+        "Does the remaining group still need every single node to agree before it can safely commit a write?"
+      ],
+      "answer": [
+        "It's tempting to assume every node has to sign off for a decision to be trustworthy.",
+        "But any two majorities drawn from the same group always share at least one member in common. That shared member means two different majorities can never disagree about what actually got committed.",
+        "So no. A majority already gives that guarantee. Full agreement was never required."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this measured directly, side by side.",
+        "Three of these five nodes are still reachable, and three already clears the bar for a majority. That group commits.",
+        "A rule demanding every node agree would have refused the very instant the first node went dark."
+      ]
+    },
+    {
+      "lines": [
+        "Now push it further, down below that majority line.",
+        "Only two of the five nodes are reachable now. Watch what the group actually does with an incoming write.",
+        "It refuses outright. It doesn't fall back to some smaller, unsafe agreement. It simply stops."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where that same quorum loss hits very differently depending on how it's organized.",
+        "One single consensus group covering an entire keyspace loses its quorum, and every key in that keyspace stops accepting writes at once.",
+        "Split that same keyspace into many independent groups instead, and the identical quorum loss in just one of them leaves every other one completely untouched."
+      ]
+    },
+    {
+      "lines": [
+        "One more prediction before this topic's second reveal.",
+        "A write that lands entirely inside one consensus group commits in a single round trip.",
+        "Does a transaction that spans two separate groups cost the exact same?"
+      ],
+      "answer": [
+        "It's tempting to assume both groups could just commit in parallel for no extra cost.",
+        "But each group can only speak for its own piece on its own. Getting both pieces to agree to commit together needs its own coordinating round of prepare, and then a separate round of commit, layered on top of what each group already pays.",
+        "So no. It costs real, measurable extra round trips, not the same price."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact cost, measured directly.",
+        "A write landing inside one single group costs one round trip, start to finish.",
+        "The identical write spread across two groups, coordinated properly, costs several times that before a single byte actually changes."
+      ]
+    },
+    {
+      "lines": [
+        "None of this is hypothetical. Real systems document every piece of it.",
+        "Kafka keeps a small quorum of controllers agreeing on cluster metadata. etcd keeps its entire keyspace inside one single group just like that.",
+        "CockroachDB and TiKV go the other way entirely, handing every range its own separate group."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "A majority, not everyone, is already enough to commit. Losing quorum means refusing a write outright, never guessing at one.",
+        "One group turns a quorum loss into a cluster-wide event. Many groups keep it local. And crossing between groups always costs real, extra round trips."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. A cluster runs a hundred completely independent per-range consensus groups.",
+        "A single rack loses power, and that takes down exactly one node out of five in ten of those hundred groups.",
+        "Given everything just measured here: does the whole cluster stop accepting writes until that rack comes back?"
+      ],
+      "answer": [
+        "It's tempting to picture one rack failure as one big, cluster-wide event.",
+        "But each of those groups only cares about its own five members. Losing just one out of five in ten different groups still leaves four reachable in each of them, comfortably above the majority of three that each one needs.",
+        "So no. None of those ten groups even loses quorum, and the other ninety never even notice."
+      ]
+    }
+  ]
+}

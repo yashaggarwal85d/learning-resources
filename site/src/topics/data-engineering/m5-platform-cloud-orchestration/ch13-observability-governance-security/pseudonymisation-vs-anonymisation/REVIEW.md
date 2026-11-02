@@ -1,76 +1,62 @@
 # Review — de.pseudonymisation-vs-anonymisation
 
-## Content review, self-review, 2026-10-30
+## Content review, self-review, 2026-11-01
 
-1. **One cross-chapter `uses` id `CHAPTER.md` cites doesn't resolve.** Chapter 10 §10.5 (EU
-   regulatory architecture) is unresolvable because Chapter 10 is unbuilt beyond its own
-   `CHAPTER.md` (confirmed: no topic folders under `ch10-cloud-data-architecture`), consistent
-   with topics 4 and 5's own finding of the same gap. **Fixed** by declaring it rather than
-   guessing, logged in `OUTLINE.md` → "Changes from the chapter plan" and again in
-   `post-notes.md`'s "Frontier."
-2. **Gap hunt against the syllabus line:** all five clauses (the legal line, the CJEU's relative
-   approach, the pending Digital Omnibus, keyed vs plain hashing, linkage attacks) mapped in
-   `coverage.json`; no clause left unmapped. The initial coverage draft split the syllabus line
-   into five separate clauses that didn't each appear as a literal substring of the syllabus
-   line's own text (the build's coverage checker requires a word-for-word copy, including the
-   syllabus markdown's non-breaking hyphen in "EDPS v SRB (C‑413/23 P..."); fixed by copying three
-   clauses verbatim from the cleaned syllabus line instead of paraphrasing clause boundaries. The
-   expert list also needed a tenth item to meet the build's ten-item minimum.
-3. **Flow check:** `status: 'held'`, so `checkFlow` skips this topic. Coverage and topic-file
-   checks both pass.
-4. **Expert reader pass:** the CJEU reveal (step 6) and the Digital Omnibus reveal (step 8) are
-   tested from two different angles rather than repeating the same claim — one is a decided
-   judgment with a stated caveat about which regulation it was decided under, the other is an
-   undecided proposal with a stated date and status, and the topic is explicit that the second
-   does not inherit the first's authority.
-5. **Engagement:** hook and predict both on steps 1–2 (within the first four); a second predict
-   at step 11 ("Prove it") requires applying the dictionary-attack-versus-linkage-attack
-   distinction to a new scenario (key destroyed, quasi-identifiers intact) rather than recalling
-   an earlier claim directly; three takeaways at steps 7, 8, 9 (all after the reel's own midpoint
-   of step 6), checked at sixteen, fourteen and eighteen words via a Python word-count pass before
-   the build ran; recap at step 10.
-6. **Narration teaches, not reads:** clean on the first `narration-teaches.mjs` run. Legal
-   citations (the case number, the regulation number, the article number) were deliberately never
-   spoken as such — paraphrased as "a case that went through Europe's highest court" and "a
-   proposal working its way through Europe's lawmaking process" — consistent with `CHAPTER.md`'s
-   own "Spoken numbers" rule that a case or article number is said as words, not read as a code.
-7. **Numbers checked against `examples.py`:** nine of ten known emails recovered by the plain-hash
-   dictionary attack, zero recovered against HMAC without the key, roughly two in three rows
-   uniquely re-identified by the linkage attack with the pseudonymisation key never used — every
-   number in `reel.tsx` prose is spelled out as a word and traces to an asserted value.
+1. **EUR-Lex/InfoCuria sources unfetchable in this sandbox.** Both serve JavaScript-rendered
+   pages here (0 characters of text). Substituted `gdpr-info.eu` for the GDPR articles/recital
+   (clean fetch) and the CJEU's own official press release PDF for the judgment, which
+   `CHAPTER.md`'s own wording explicitly permits ("the Court's press release is the official
+   summary").
+2. **CHAPTER.md's cited Digital Omnibus EUR-Lex number appears wrong.** CHAPTER.md says
+   "EUR-Lex 52025PC0837"; the EDPB-EDPS Joint Opinion 2/2026 (a primary source, fetched directly)
+   consistently cites the proposal in its own footnotes as "COM(2025) 836 final." Used the
+   primary document's own number, documented the discrepancy in `SOURCES.md`'s "Note on source
+   naming" rather than silently picking either number.
+3. **The judgment's actual outcome is mixed, not a clean confirmation.** The CJEU set aside the
+   General Court's ruling overall (on a separate point about personal opinions "relate to" their
+   author) while specifically confirming the relative-identifiability reasoning this topic
+   teaches. Documented explicitly in `SOURCES.md` and `FACT-CHECK.md`; the reel itself presents
+   only the confirmed holding, never the case's outcome as a whole.
+4. **Gap hunt against the syllabus line:** the single clause (relative identifiability, EDPS v
+   SRB, Digital Omnibus, keyed vs plain hashing, linkage attacks) is fully mapped across all 10
+   reel steps in `coverage.json`; no part of the clause left unmapped.
+5. **Two quotes failed `sources.mjs check` on the first pass** — both from the EDPB-EDPS Joint
+   Opinion, spanning across mid-sentence footnote-reference numbers. Fixed by truncating each
+   quote to end immediately before the footnote marker. Re-ran: 16 quotes, 0 problems.
+6. **Flow check:** `status: 'held'`, so `checkFlow` skips this topic.
+7. **Engagement:** hook at step 1; predicts at steps 3 and 6 (both within or just past the
+   reel's first half, each followed by its own reveal); three takeaways at steps 5, 8 and 10
+   (Recap), each checked under 20 words by hand (18, 17, 19).
+8. **Narration teaches, not reads:** rewrote every line as the professor's own framing (why this
+   matters, what the measurement actually shows) rather than restating `reel.tsx`'s body
+   sentences — the exact failure mode caught on an earlier, unrelated topic this session
+   ("50% of its narration is the description word for word"). No raw digits in any narration
+   line; all counts ("most of the table," "a real, measurable fraction") paraphrased from the
+   reel's own prose, never stated as a number.
+9. **`declared` placeholders:** `keyed-hash`, `cryptographic-hash` and
+   `eu-regulatory-residency-architecture` follow the already-shipped repo convention (seen in
+   `de.data-classification-sensitive-data` and `de.envelope-encryption-kms-key`) for a
+   cross-chapter concept with no single resolvable `introduces` id, rather than inventing a false
+   match.
 
 ### Checks run
 
-- `node scripts/sources.mjs check pseudonymisation-vs-anonymisation`: 21 quotes found word for
-  word, 0 problems — three fixes needed first: three GDPR citations against `eur-lex.europa.eu`
-  (JS-rendered, 0 usable characters) were switched to `gdpr-info.eu`'s plain-text pages; an
-  elided quote ("...") in the EDPB guidelines citation was split into two separate exact quotes;
-  one Joint Opinion quote's trailing clause was trimmed to stop before a footnote-number artifact
-  in the PDF extraction.
-- `python3 examples.py`: all asserts pass (three functions built on real `hashlib`/`hmac`
-  primitives over synthetic candidate lists, never real personal data), clean on first run.
-- `node scripts/narration-teaches.mjs`: clean on first run, no fixes needed.
-- `node scripts/check-all.mjs` (via `npm run build`): two fixes during the build — the coverage
-  clause-wording mismatch and the expert-list item count, both above; clean on the rebuild, 238
-  pages built.
-- `node scripts/check-all.mjs --only reels --topic pseudonymisation-vs-anonymisation`: "1 live
-  reel(s) at desktop and phone sizes" — passed. `test:editor` failed with the same pre-existing,
-  already-tracked sandbox limitation noted in topics 1-5's `REVIEW.md` (a Playwright popup-page
-  event that never fires in this container, unrelated to this topic's content).
+- `node scripts/sources.mjs check`: 16 quotes found word for word, 0 problems (after the
+  footnote-marker fix above).
+- `python3 examples.py`: all three claims verified, confirmed robust across reseeding.
+- `node scripts/check-all.mjs --topic .../pseudonymisation-vs-anonymisation --only build`: pass.
+- `node scripts/check-all.mjs --topic .../pseudonymisation-vs-anonymisation --skip reels,links`:
+  locked, docs, sources, build, narration all pass.
+- `PREVIEW_HELD=1 npx astro build`: 466 pages built, clean.
+- `PREVIEW_HELD=1 node tests/reels.mjs http://localhost:4321/learning-resources/
+  pseudonymisation-vs-anonymisation`: "Reel smoke test passed: 1 live reel(s) at desktop and
+  phone sizes."
 
-## Looks review, self-review, 2026-10-30
+## Looks review, self-review, 2026-11-01
 
-Reviewed screenshots in `site/test-results/phone-pseudonymisation-vs-anonymisation-*.png` (phone
-size, spot-checked the predict frame, the controller's-duty reveal, the linkage-attack reveal and
-the "Prove it" frame):
-
-1. No label/value row overlap at phone width in any reviewed frame.
-2. Both predict panels (steps 2 and 11) render their option cards cleanly alongside multi-sentence
-   body text and the explain block's first line.
-3. The three takeaway panels render fully, italic, clearly separated from the body text.
-4. Every reviewed step's readout states its point in words on the right-hand rows ("stops the
-   attack" / "matched, no key" / "no excuse" / "destroyed"), not through brightness alone.
-5. No clipped, crowded or under-size text found at phone width in any reviewed frame.
+Reel smoke test covered both desktop and phone sizes for all 10 steps, including the two predict
+panels (steps 3 and 6) and the four-row Recap scene, with no overflow or swipe-caption failures.
+Row label/value pairs in `scenes.tsx` kept to 1-3 words each throughout.
 
 **No independent reviewer ran this review or the content review above — both are self-reviews by
 the same session that wrote the topic.**

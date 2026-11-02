@@ -1,0 +1,63 @@
+{
+  "topic": "de.requirements-into-slos",
+  "syllabus": [
+    {
+      "clause": "turn functional asks and non-functional constraints (freshness, latency, completeness, correctness, availability, retention) into measurable SLOs",
+      "at": [
+        { "step": "Reveal: five questions turn 'real-time' into one row of the ledger" },
+        { "step": "Reveal: the six-dimension checklist, and the two the ask left silent" }
+      ]
+    },
+    {
+      "clause": "define what \"correct\" means for this system (exactly-once effect? eventual completeness by T+1?) before choosing anything",
+      "at": [
+        { "step": "Reveal: 'correct' is a specification, not a feeling" },
+        { "step": "Reveal: which definition the dashboard actually needs" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google SRE Book — Chapter 4, Service Level Objectives",
+      "items": [
+        { "item": "Indicators — definition, latency/error-rate/throughput examples, aggregation over a window into rate/average/percentile.", "at": [{ "step": "Reveal: five questions turn 'real-time' into one row of the ledger" }] },
+        { "item": "Why percentiles over the mean — worst-case (p99/p99.9) vs typical case (median), skew of response-time data.", "at": [{ "step": "Reveal: five questions turn 'real-time' into one row of the ledger" }] },
+        { "item": "Correctness as an indicator, and whose responsibility it is.", "at": [{ "step": "Reveal: the six-dimension checklist, and the two the ask left silent" }] },
+        { "item": "Objectives — the SLI ≤ target / bound ≤ SLI ≤ bound structure, worked example.", "at": [{ "step": "Reveal: five questions turn 'real-time' into one row of the ledger" }] },
+        { "item": "Agreements — SLA vs SLO, the 'what happens if missed' test, the common conflation of the two terms.", "at": [{ "deep": "Internals" }] },
+        { "item": "Service Level Objectives chapter opening — SLI, SLO and SLA as three deliberately separated terms.", "at": [{ "deep": "Internals" }] },
+        { "item": "Objectives in practice — start from what users care about, not what is easy to measure.", "at": [{ "step": "Hook: the shop wants real-time, accurate revenue — what did those two words actually specify?" }] }
+      ]
+    },
+    {
+      "source": "Google SRE Workbook — Chapter 2, Implementing SLOs",
+      "items": [
+        { "item": "The worksheet method for turning a system into SLIs — list user interactions, draw the architecture, group components by category.", "at": [{ "deep": "Production failures this topic warns about" }] },
+        { "item": "Recommending five or fewer SLI types per critical function, to keep the set actionable.", "at": [{ "deep": "Production failures this topic warns about" }] },
+        { "item": "Critical user journeys as the unit SLOs should be defined around, rather than components in isolation.", "at": [{ "deep": "Production failures this topic warns about" }] },
+        { "item": "A component's inherited reliability ceiling — a dependency can't give a journey a guarantee stronger than its own.", "at": [{ "deep": "Production failures this topic warns about" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "An SLI/SLO/SLA derivation starts from the consequence of being wrong, not from what's easiest to measure — the SRE book's own stated order of operations.", "at": [{ "step": "Hook: the shop wants real-time, accurate revenue — what did those two words actually specify?" }] },
+      { "item": "Five fixed questions (for whom, measured where, which percentile, which window, what on a miss) turn a vague adjective into a concrete SLO, repeatably, for any ask.", "at": [{ "step": "Reveal: five questions turn 'real-time' into one row of the ledger" }] },
+      { "item": "A six-dimension checklist (freshness, latency, completeness, correctness, availability, retention) catches the dimensions a vague ask silently leaves unspecified.", "at": [{ "step": "Reveal: the six-dimension checklist, and the two the ask left silent" }] },
+      { "item": "'Correct' is not one idea: exactly-once effect, eventual completeness by a cutoff, bounded error and at-most-once are four different systems with four different dominant costs, not four phrasings of one thing.", "at": [{ "step": "Reveal: 'correct' is a specification, not a feeling" }] },
+      { "item": "The actual consequence of being wrong (not habit, not rigor-signaling) is what should select which of the four definitions of correct a system needs.", "at": [{ "step": "Reveal: which definition the dashboard actually needs" }] },
+      { "item": "An SLO requires five things together; agreement on a word's meaning supplies none of them, so an unmeasurable requirement must be rejected outright rather than 'clarified.'", "at": [{ "step": "Predict: once everyone agrees what 'reliable' means, is that already an SLO?" }] },
+      { "item": "Percentiles, not the mean, are the right way to state a latency-shaped SLI, because response-time data is skewed and the mean hides the worst case that users actually feel.", "at": [{ "deep": "Internals" }] },
+      { "item": "A critical user journey, not an individual component, is the recommended unit to define an SLO around — a practiced, more disciplined version of the five-questions habit this topic teaches from scratch.", "at": [{ "deep": "Production failures this topic warns about" }] },
+      { "item": "A component's own reliability ceiling bounds any journey that critically depends on it; this is the 'how big is it, and what depends on what' thinking that gets fully worked out next in capacity estimation.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The error-budget, burn-rate-alerting and exactly-once mechanics this topic's requirements imply are not re-taught here — Chapters 11, 13 and 14 own them — this topic only derives the numbers those mechanisms are later built to meet.", "at": [{ "topic": "Data SLIs, SLOs and error budgets", "quote": "error budgets that gate risky changes and backfills" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

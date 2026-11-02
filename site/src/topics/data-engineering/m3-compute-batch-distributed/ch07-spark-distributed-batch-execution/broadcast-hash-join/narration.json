@@ -1,0 +1,63 @@
+{
+  "topic": "de.broadcast-hash-join",
+  "steps": [
+    {
+      "lines": [
+        "Two tables agreeing on their own split at write time let a join skip its shuffle. Here's a completely different route to the same destination: what if one side is just small enough to copy to every machine in the first place?",
+        "That's the real question. Not whether Spark can shrink a shuffle, but whether it needs one at all once one side is small enough.",
+        "Let's see what a real plan actually does once one side genuinely is that small."
+      ]
+    },
+    {
+      "lines": [
+        "I measured this directly, and there's nothing left to shuffle at all.",
+        "The small side gets copied, whole, to every single machine doing the work. Once every machine already has the whole thing, the large side never needs to move.",
+        "So the plan simply has no shuffle step in it anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "Same join, but the small side has grown. It's now past the point Spark considers safe to copy everywhere. Does it still get copied, or does something change?",
+        "Think about whether a size limit like this one is usually a strong suggestion, or an actual wall."
+      ],
+      "answer": [
+        "It's tempting to assume a limit like this one bends a little for a close call.",
+        "But it doesn't bend at all. The moment the estimate crosses it, copying the whole thing everywhere is off the table completely.",
+        "There's no partial copy, no smaller broadcast. The option is simply gone."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the wall really is a wall.",
+        "Nothing gets copied anywhere now. Both sides pay for a real shuffle instead, and the join itself falls back to the same shuffle-based strategy a join between two large tables would use.",
+        "Crossing that one number changed the entire shape of the plan, not just its size."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, back under the size limit, but changing something else about the question entirely.",
+        "This time, the condition joining the two tables isn't an equality anymore — it's a plain comparison. Does copying the small side still work the same way underneath?",
+        "Think about what a hash actually needs to be useful for finding a match."
+      ],
+      "answer": [
+        "It's easy to assume a comparison just gets hashed some other way.",
+        "But a hash only helps when you're checking equality. A plain comparison gives the engine nothing to hash at all.",
+        "So the matching itself has to work completely differently once there's no equality to lean on."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the copying still happens, but the matching changes completely.",
+        "The small side is still copied whole, so there's still no shuffle anywhere. But now every row on the large side is checked against the small side directly, one by one, instead of through a lookup.",
+        "Same decision to copy. A completely different way of using what got copied."
+      ]
+    },
+    {
+      "lines": [
+        "So here's everything this topic actually showed you, named precisely.",
+        "Copying a small side whole removes the shuffle entirely, but only below a hard size limit. Cross that limit, and the fallback is total, not partial. And a plain comparison instead of equality still lets copying happen, but turns the matching itself into checking every pair directly."
+      ]
+    }
+  ]
+}

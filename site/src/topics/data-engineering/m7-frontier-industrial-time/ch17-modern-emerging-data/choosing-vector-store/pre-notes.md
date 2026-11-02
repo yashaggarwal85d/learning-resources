@@ -1,0 +1,6 @@
+- **Extension**: software that adds capability directly into an existing database, rather than running as a separate system.
+- **Sharding**: splitting a dataset across many machines so no single one needs to hold all of it.
+- **Hybrid search**: combining keyword search and vector similarity search into one ranked result.
+- **Tenancy**: how strictly different customers' data is kept separate from each other.
+- **Latency SLO**: the target time an answer is promised back in.
+- **Operational ownership**: whether a team runs the system itself or pays someone else to run it.

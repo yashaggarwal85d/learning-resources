@@ -1,0 +1,70 @@
+{
+  "topic": "de.trade-off-articulation-decision",
+  "syllabus": [
+    {
+      "clause": "at least three alternatives with explicit costs",
+      "at": [
+        { "step": "Reveal: three alternatives, including the one you don't like" },
+        { "step": "Reveal: a choice with one option isn't a decision" }
+      ]
+    },
+    {
+      "clause": "an ADR per major choice",
+      "at": [{ "step": "Reveal: the ADR's five parts" }, { "step": "Reveal: superseded, not edited" }]
+    },
+    {
+      "clause": "\"what would make us change our mind\"",
+      "at": [{ "step": "Reveal: what would change our mind is the record's real power" }]
+    },
+    {
+      "clause": "and the next bottleneck at 10× load",
+      "at": [{ "step": "Reveal: the 10× frame finds the next bottleneck first" }]
+    },
+    {
+      "clause": "pacing a 45-minute whiteboard session (requirements 5–10 min, high level 10, deep dives 20, wrap-up 5)",
+      "at": [
+        { "step": "Hook: only one of them is not surprised later" },
+        { "step": "Prove it: an early diagram eats the clock" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Michael Nygard — Documenting Architecture Decisions (Cognitect, 2011)",
+      "items": [
+        { "item": "Large, valueless specification documents go unread and unmaintained; small, modular records have a better chance of staying current.", "at": [{ "step": "Reveal: the ADR's five parts" }] },
+        { "item": "An ADR's Decision section is stated in full sentences, in active voice.", "at": [{ "step": "Reveal: the ADR's five parts" }] },
+        { "item": "A reversed decision keeps the old record around, marked superseded, rather than edited away.", "at": [{ "step": "Reveal: superseded, not edited" }] },
+        { "item": "An ADR's Consequences section lists every resulting effect, not just the favorable ones.", "at": [{ "step": "Reveal: the ADR's five parts" }] }
+      ]
+    },
+    {
+      "source": "ADR GitHub organization — Architectural Decision Records (ADRs)",
+      "items": [
+        { "item": "An Architectural Decision is a justified design choice addressing an architecturally significant requirement.", "at": [{ "step": "Reveal: the ADR's five parts" }] },
+        { "item": "An ADR captures a single architectural decision and its rationale, including its trade-offs and consequences.", "at": [{ "step": "Reveal: the ADR's five parts" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A choice with one option considered is not a decision.", "at": [{ "step": "Reveal: a choice with one option isn't a decision" }] },
+      { "item": "A decision record's power is in what would change our mind, not in the decision itself.", "at": [{ "step": "Reveal: what would change our mind is the record's real power" }] },
+      { "item": "The 10× frame finds the next bottleneck before the load does.", "at": [{ "step": "Reveal: the 10× frame finds the next bottleneck first" }] },
+      { "item": "A diagram, however detailed, is not the same artifact as a priced alternative and a stated revisit trigger.", "at": [{ "step": "Predict: which fields of a record would have made the surprise predictable?" }] },
+      { "item": "A fixed session budget forces an early overrun to come out of a later block, usually the deep dives.", "at": [{ "step": "Prove it: an early diagram eats the clock" }] },
+      { "item": "This topic leaves out the individual method steps, requirements gathering, the worked designs, and interview-behavioural coaching deliberately — it teaches the defending skill, not the method steps themselves.", "at": [{ "deep": "Internals" }] },
+      { "item": "Architecture decision records and the 10× scaling frame are established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop a defensible design, which the next topic (source-side interrogation) assumes the team must now gather the right requirements for, since the method so far assumed they were already known.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A decision card holds at least three alternatives, each with a decisive cost in the same units, including 'do nothing', reusing this chapter's own earlier decision-card pattern.", "at": [{ "step": "Reveal: three alternatives, including the one you don't like" }] },
+      { "item": "Context in an ADR is written in value-neutral language, describing the forces in tension rather than arguing for the decision.", "at": [{ "step": "Reveal: the ADR's five parts" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "topic": "de.async-barrier-snapshots",
+  "steps": [
+    {
+      "lines": [
+        "Trigger the exact same checkpoint, on the exact same backed-up input, under two different settings.",
+        "One of those settings takes forever to finish. The other barely notices the backlog is even there.",
+        "Same backlog, same job, same moment. The only thing that changed is which mode was chosen."
+      ]
+    },
+    {
+      "lines": [
+        "Running continuously doesn't mean nothing ever breaks. A single worker can still fail, mid job, without warning.",
+        "Recovering from that cleanly means having a consistent picture of every bit of state, taken while things keep moving.",
+        "Getting that picture, without ever pausing the whole job to take it, is the actual problem here."
+      ]
+    },
+    {
+      "lines": [
+        "One small signal gets sent in alongside the ordinary data, flowing through exactly the same paths everything else does.",
+        "Once every path into a given step has carried that signal, that step has seen everything from before it clean.",
+        "That's an old idea from distributed snapshots, borrowed almost whole, just carried by the data itself this time."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "One path into a step is badly clogged with work nobody's gotten to yet, right as that signal gets sent.",
+        "Does the signal just wait behind all that clogged-up work, or does it somehow skip past it instead?"
+      ],
+      "answer": [
+        "Depends entirely on which setting got chosen beforehand.",
+        "One setting makes the signal wait its turn behind everything clogged ahead of it, on every single path in.",
+        "The other setting acts the moment the signal shows up at all, clog and all, no waiting required."
+      ]
+    },
+    {
+      "lines": [
+        "Pick the waiting setting, and a step holds off on doing anything until that signal has arrived everywhere at once.",
+        "One badly clogged path drags that arrival out, and everything else sits there waiting on it to catch up.",
+        "The whole snapshot only moves as fast as its single slowest path, every single time, by design."
+      ]
+    },
+    {
+      "lines": [
+        "Pick the other setting, and a step acts the instant it sees that signal on even just one path.",
+        "Whatever was still sitting there, clogged and unprocessed, just gets folded straight into the picture being taken.",
+        "Nothing waits. The picture just ends up carrying more inside it than it otherwise would have."
+      ]
+    },
+    {
+      "lines": [
+        "Taking a brand new full picture every single time gets more expensive the longer a job has been running.",
+        "Taking only what's changed since the last picture stays the same size, no matter how much came before it.",
+        "One grows without any limit at all. The other stays flat, bounded only by what just happened."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "The stricter guarantee about what gets processed costs more to keep up, every single time it runs.",
+        "Is paying that extra cost still the right call to make by default, or does a cheaper option usually win?"
+      ],
+      "answer": [
+        "The stricter guarantee is still what gets chosen by default, for almost everything.",
+        "The cheaper option risks quietly processing the same piece of work twice after a failure, which matters for most jobs.",
+        "Only work that truly can't tolerate any extra waiting at all should ever reach for the cheaper one."
+      ]
+    },
+    {
+      "lines": [
+        "Under the stricter guarantee, nothing gets double counted, ever, no matter how a failure happens to land.",
+        "Under the cheaper one, a failure can occasionally mean the same piece of work gets handled twice over.",
+        "Most work should take the stricter guarantee. Only the most latency-sensitive work should ever trade it away."
+      ]
+    },
+    {
+      "lines": [
+        "One kind of picture gets taken automatically, over and over, owned entirely by the system running the job.",
+        "A different kind of picture only ever gets taken on purpose, by someone who wants it, for a reason.",
+        "That second kind is built to survive a job changing shape on purpose, not just a plain failure."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The waiting setting that really did wait. The other setting that really barely slowed down on the same backlog.",
+        "And the picture-taking cost that really did stay flat, even as the full version kept climbing on its own."
+      ]
+    },
+    {
+      "lines": [
+        "So: a signal that travels with the data itself, borrowed from an old idea about distributed snapshots.",
+        "Wait for it everywhere and pay for whatever's slowest, or act the moment it shows up and carry more along.",
+        "One picture gets taken automatically and owned by the system. A different picture only gets taken on purpose."
+      ]
+    }
+  ]
+}

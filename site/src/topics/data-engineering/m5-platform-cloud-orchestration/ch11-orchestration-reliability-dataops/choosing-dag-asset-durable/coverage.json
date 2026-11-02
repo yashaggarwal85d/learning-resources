@@ -1,0 +1,93 @@
+{
+  "topic": "de.choosing-dag-asset-durable",
+  "syllabus": [
+    {
+      "clause": "decision rules across Airflow 3 (time- and asset-triggered batch DAGs), Dagster (asset graph, lineage-first), Temporal (code-first, long-lived, event-driven, sagas) and Prefect (dynamic Python flows)",
+      "at": [
+        { "step": "Reveal: three shapes, named" },
+        { "step": "Reveal: the decision rule" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "hybrid designs (the DAG orchestrator triggers a durable workflow for the long-running human-paced part)",
+      "at": [
+        { "step": "Predict: what does a hybrid design look like?" },
+        { "step": "Reveal: the hybrid handoff" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Temporal Workflow (Temporal Documentation)",
+      "items": [
+        { "item": "a Temporal Workflow can run for years, surviving infrastructure failure", "at": [{ "step": "Reveal: three shapes, named" }] },
+        { "item": "resuming a workflow replays its Event History rather than restoring a memory snapshot", "at": [{ "step": "Reveal: why the durable side survives, sourced" }] }
+      ]
+    },
+    {
+      "source": "Event History (Temporal Documentation)",
+      "items": [
+        { "item": "a crashed Worker recovers Workflow state from the Event History, recreating state to what it was immediately before the crash", "at": [{ "step": "Reveal: why the durable side survives, sourced" }] }
+      ]
+    },
+    {
+      "source": "What is a Temporal Worker? (Temporal Documentation)",
+      "items": [
+        { "item": "a Worker Process polls a Task Queue and executes code in response to a Task", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Worker Versioning (Temporal Documentation)",
+      "items": [
+        { "item": "Worker Versioning lets a team deploy Workflow code changes without breaking running Workflows", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Announcing GA for Worker Versioning and Public Preview for Upgrade on Continue-as-New (Temporal Blog)",
+      "items": [
+        { "item": "Worker Versioning reached General Availability across all Temporal SDKs", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Saga Pattern (Temporal Documentation)",
+      "items": [
+        { "item": "a saga coordinates local transactions, each with a compensating action run in reverse order on failure", "at": [{ "step": "Reveal: the decision rule" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Introduction (Prefect Docs)",
+      "items": [
+        { "item": "Prefect turns Python functions into production-grade pipelines whose structure can depend on runtime values", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "This session's own real Apache Airflow 3.3.2 sandbox",
+      "items": [
+        { "item": "a sensor polling an in-process counter never accumulates state across reschedule-mode pokes and fails on timeout", "at": [{ "step": "Prove it" }] },
+        { "item": "a sensor polling a file's existence survives a real scheduler restart mid-wait because its state is held in the metadata DB, not the scheduler's memory", "at": [{ "step": "Prove it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook deliberately uses two sensors in the identical mode (reschedule) rather than contrasting reschedule mode against poke mode -- the point isn't 'reschedule mode is fragile', which would be false, it's that reschedule mode only preserves what it's told to check against something durable, and an in-process counter is never durable regardless of mode.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume 'durable execution' means Temporal specifically, but the decision rule names a property of the workload (duration, human-in-the-loop, saga need), not a vendor; DBOS, Restate and AWS Lambda durable functions are named in the chapter's own skipped 'durable execution landscape' entry as other systems occupying the same shape, carried here only as the fact that Temporal is not the only option.", "at": [{ "step": "Reveal: three shapes, named" }] },
+      { "item": "The decision rule's four properties are not independent in practice: a workload needing a saga across multiple systems is very often also the one with a human-paced wait inside it (an approval that triggers compensating refunds elsewhere), so a workload can fail more than one of the rule's tests at once rather than cleanly sitting on one axis.", "at": [{ "step": "Reveal: the decision rule" }] },
+      { "item": "The hybrid handoff pattern assumes the batch orchestrator can cheaply poll or wait on an external system without itself occupying a worker the whole time -- this is exactly the deferrable-task mechanism topic six already taught, so the hybrid pattern described here is, mechanically, 'defer on a Temporal workflow's completion' rather than a new primitive.", "at": [{ "step": "Reveal: the hybrid handoff" }] },
+      { "item": "Event History replay is not magic amnesia-proofing: Temporal's own documentation notes the replayed code 'has to make the same decisions when given the same history' and must avoid non-deterministic calls (Date.now(), raw randomness) outside of Activities -- the four skipped syllabus entries (determinism, versioning, signals/sagas, the landscape survey) are exactly the mechanics that make this safe in practice, named here only as a pointer.", "at": [{ "step": "Reveal: why the durable side survives, sourced" }] },
+      { "item": "The 'Prove it' step's two Airflow sensors are a faithful miniature of the hook, not a different claim: both ran in reschedule mode, both were subject to the same real scheduler restart, and the only variable that differed was where each one's own fact lived -- in the metadata DB versus in one process's memory -- isolating exactly the property the chapter's lab is meant to demonstrate.", "at": [{ "step": "Prove it" }] },
+      { "item": "The full chapter lab (migrate the approval-gate workflow to Temporal itself, kill workers mid-approval, deploy a code change mid-flight, compare recovery time/code size/infrastructure cost) could not be completed in this sandbox: the Temporal CLI dev server binary downloads cleanly but every attempt to execute it is blocked by this session's own sandbox execution policy, disclosed here rather than worked around, per the chapter's own 'disclosed sourced-only for any leg it cannot complete' rule.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The hybrid handoff's framing ('the DAG hands off just the long step') understates one real cost: the batch orchestrator still has to track the handoff itself as a task, which means the idempotency rules topic two taught still apply to triggering the durable workflow -- triggering it twice on a retry needs the same care any other side-effecting task does.", "at": [{ "step": "Reveal: the hybrid handoff" }] },
+      { "item": "Worker Versioning reaching General Availability is relevant to this topic's decision rule in a subtle way: before GA, teams choosing durable execution had to weigh an extra operational risk (breaking in-flight Workflows on every deploy) that the decision rule as stated doesn't mention, because the rule assumes the version-safety problem is already solved by the platform, which is now true but wasn't always.", "at": [{ "deep": "Internals" }] },
+      { "item": "The two real Airflow sensors in 'Prove it' are a narrower claim than 'durable execution beats batch orchestration' -- they only show that a fact's storage location (process memory vs. metadata DB), not the orchestration model itself, decides what survives a restart; a batch DAG task checking durable state survives the same way the approval-gate sensor did, without needing Temporal at all.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

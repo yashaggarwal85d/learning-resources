@@ -1,0 +1,95 @@
+{
+  "topic": "de.jvm-garbage-collection-symptoms",
+  "syllabus": [
+    {
+      "clause": "GC time in the executor tab, long G1 pauses causing heartbeat timeouts and lost executors; object-heavy RDD/UDF code vs Tungsten binary rows; Spark 4.x on Java 17/21 and the GC choices that matter.",
+      "at": [
+        { "step": "Reveal: the baseline -- the everyday-objects run pays real cleanup cost" },
+        { "step": "Reveal: zero -- the binary-row run pays no measured cleanup cost" },
+        { "step": "Elaborate: why -- cleanup cost tracks object count" },
+        { "step": "Reveal: no -- a tiny sliver of the job's own total time" },
+        { "step": "Elaborate: why -- a nonzero cost only matters next to the total" },
+        { "deep": "Long G1 pauses, heartbeat timeouts and lost executors" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"Tuning Spark\" docs (garbage collection tuning section)",
+      "items": [
+        {
+          "item": "GC can be a problem with large object churn, but usually isn't a problem for programs that just read an RDD once and run many operations on it",
+          "at": [{ "step": "Reveal: the baseline -- the everyday-objects run pays real cleanup cost" }]
+        },
+        {
+          "item": "the cost of garbage collection is proportional to the number of Java objects",
+          "at": [{ "step": "Elaborate: why -- cleanup cost tracks object count" }]
+        },
+        {
+          "item": "Since 4.0.0, Spark uses JDK 17 by default, which also makes the G1GC garbage collector the default",
+          "at": [{ "deep": "Long G1 pauses, heartbeat timeouts and lost executors" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark 4.0.0 release notes",
+      "items": [
+        {
+          "item": "Spark 4.0 drops JDK 8/11 support, making JDK 17 the default, and separately adds build/run support for Java 21",
+          "at": [{ "deep": "Long G1 pauses, heartbeat timeouts and lost executors" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A G1 pause long enough can exceed spark.executor.heartbeatInterval's own reporting window, and if it also exceeds spark.network.timeout, the driver marks that executor lost entirely and resubmits its tasks elsewhere -- a cluster-scale failure mode that local mode cannot reproduce, since local[N] has no separate executor process for the driver to lose.",
+        "at": [{ "out": "the heartbeat-timeout-to-lost-executor mechanism named only, since this topic's own examples.py runs in local mode, which has no separate executor process to lose" }]
+      },
+      {
+        "item": "The first thing to try if GC is a problem, per the Tuning Spark docs' own stated order of operations, is serialized caching (one byte array per partition instead of many deserialized objects) -- a direct, practical fix available before reaching for JVM flag tuning, distinct from this topic's own object-count framing of why GC happens at all.",
+        "at": [{ "out": "serialized caching as the docs' own first recommended GC fix, named only; this topic's own examples.py measures the GC-cost-vs-object-count contrast rather than the serialized-caching remedy itself" }]
+      },
+      {
+        "item": "The JVM's young generation is itself split into Eden and two Survivor regions, and a minor GC's own job is copying still-live objects between them before anything reaches the Old generation -- the mechanical detail behind why 'minor GC count' in the executors REST endpoint can be large even when total GC time stays small, since each individual minor GC is meant to be fast.",
+        "at": [{ "out": "the Eden/Survivor young-generation mechanics named only; this topic's own examples.py reads the cumulative totalGCTime and task-level jvmGcTime metrics without breaking them down by minor-vs-major GC region" }]
+      },
+      {
+        "item": "A full GC invoked repeatedly before a task completes is the docs' own named signal that there isn't enough memory available for executing tasks at all -- a more severe symptom than this topic's own measured case, where GC time is real but small relative to total run time, not a sign of memory exhaustion.",
+        "at": [{ "out": "repeated full GCs as the more severe insufficient-memory signal named only; this topic's own examples.py measures a job with real but proportionally small GC time, not a memory-exhausted one" }]
+      },
+      {
+        "item": "spark.memory.fraction interacts directly with GC tuning: the docs' own advice, if the Old generation is close to full, is to lower spark.memory.fraction so less cached data competes with task working memory for the same heap space -- tying this topic's own GC discussion back to the unified memory manager the chapter's earlier topics already taught.",
+        "at": [{ "out": "spark.memory.fraction's own interaction with GC tuning named only, cross-referencing the chapter's own unified-memory-manager topic; this topic's own examples.py does not vary spark.memory.fraction" }]
+      },
+      {
+        "item": "G1's own region size can be tuned directly with -XX:G1HeapRegionSize, which the Tuning Spark docs call out as particularly important with large executor heaps -- a direct tuning lever beyond simply reading GC time, distinct from this topic's own measurement of GC time itself.",
+        "at": [{ "out": "G1HeapRegionSize as a direct tuning lever named only; this topic's own examples.py reads GC time rather than tuning G1's own region size" }]
+      },
+      {
+        "item": "UDF code written in Python runs in a separate worker process with its own CPython reference-counting collector, entirely outside the JVM's own heap and GC this topic measures -- so a slow Python UDF's own per-call overhead is a distinct cost from the JVM-side object churn this topic's own examples.py demonstrates with RDD-API Scala-side object creation during a shuffle.",
+        "at": [{ "out": "Python UDF overhead as a cost outside the JVM's own GC named only; this topic's own examples.py demonstrates JVM-side object churn via the RDD API's own shuffle, not Python UDF overhead" }]
+      },
+      {
+        "item": "The executor tab's own GC time column and the REST API's jvmGcTime/totalGCTime fields expose the identical underlying JVM metric through two different interfaces, the same relationship the previous topic's own expert list named for spill metrics -- this topic's own examples.py reads the metric via the REST API directly rather than screen-scraping the UI.",
+        "at": [{ "out": "the Spark UI's own equivalent display of the identical GC metric named only; this topic's own examples.py reads the metric via the REST API" }]
+      },
+      {
+        "item": "Concurrent GC time (reported separately from minor/major GC time in the executors REST endpoint's peakMemoryMetrics) reflects G1's own background marking work, which can overlap with running tasks rather than pausing them outright -- a third GC time category beyond the minor/major split this topic's own examples.py reads only as a single cumulative totalGCTime figure.",
+        "at": [{ "out": "concurrent GC time as a third, overlapping-with-execution GC category named only; this topic's own examples.py reads only the cumulative totalGCTime figure, not the minor/major/concurrent breakdown" }]
+      },
+      {
+        "item": "Measuring GC's real impact properly, per the docs' own stated first step, means collecting JVM-level GC logs directly (-verbose:gc -XX:+PrintGCDetails) on the cluster's worker nodes, not just reading the Spark UI's own summary numbers -- a more detailed diagnostic path beyond what this topic's own examples.py uses (the REST API's own summary metrics, sufficient for the before/after contrast this topic measures).",
+        "at": [{ "out": "direct JVM GC-log collection as the docs' own first recommended diagnostic step, named only; this topic's own examples.py reads the REST API's own summary metrics instead" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

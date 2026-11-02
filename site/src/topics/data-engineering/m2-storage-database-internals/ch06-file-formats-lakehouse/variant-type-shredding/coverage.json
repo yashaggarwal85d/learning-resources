@@ -1,0 +1,47 @@
+{
+  "topic": "de.variant-type-shredding",
+  "syllabus": [
+    { "clause": "the Variant logical type for semi-structured data (binary-encoded value + metadata dictionary) shared by Parquet, Spark 4, Iceberg v3 and Delta 4.x", "at": [{ "step": "Reveal: the Variant encoding stores every record exactly" }, { "deep": "Three ways to store the same record" }] },
+    { "clause": "shredding frequently present fields into typed columns so stats and pushdown work, with a residual binary for the rest", "at": [{ "step": "Reveal: shredding, field by field" }, { "step": "Reveal: a typed-column filter touches zero residual bytes" }, { "deep": "Three ways to store the same record" }] },
+    { "clause": "Variant vs JSON strings vs fully typed structs", "at": [{ "step": "Reveal: 3 of 6 records lose a field" }, { "step": "Reveal: measured size, three ways" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Parquet Format, VariantEncoding.md",
+      "items": [
+        { "item": "a Variant is 2 binary values: value and metadata", "at": [{ "step": "Reveal: the Variant encoding stores every record exactly" }] },
+        { "item": "metadata is a header byte, dictionary_size, offsets, then UTF-8 dictionary bytes", "at": [{ "deep": "Three ways to store the same record" }] },
+        { "item": "object field IDs/offsets must be sorted lexicographically by field name", "at": [{ "step": "Reveal: the Variant encoding stores every record exactly" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet Format, VariantShredding.md",
+      "items": [
+        { "item": "shredding extracts fields into separate Parquet columns for compactness, statistics and projection", "at": [{ "step": "Reveal: shredding, field by field" }] },
+        { "item": "value and typed_value are used together; which is non-null decides meaning", "at": [{ "step": "Reveal: shredding, field by field" }] },
+        { "item": "typed_value statistics can skip a file/row-group/page when value is always null", "at": [{ "step": "Reveal: a typed-column filter touches zero residual bytes" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The struct's data loss in this topic is two different failure modes, not one: the scroll event loses depth_pct because no column exists for it at all, while button_id: \"unknown\" is dropped because a column exists but can't hold the value's actual type — both are silent, but for different reasons.", "at": [{ "step": "Reveal: 3 of 6 records lose a field" }] },
+      { "item": "The Variant metadata dictionary is shared across every value column of the same Variant, including shredded typed_value columns — field names are stored once, not once per record, which is why the metadata stays tiny even as the number of records grows.", "at": [{ "deep": "Three ways to store the same record" }] },
+      { "item": "Shredding is decided per field, not per record or per table — this topic's own button_id column shows both a fully-shredded case (an int) and a fallback case (a string) existing for the same field across different records.", "at": [{ "step": "Reveal: shredding, field by field" }] },
+      { "item": "A field being 'always shredded' in this topic's 6-record sample (event_type) is a property of this sample, not a guarantee of the Variant type itself — a later record with a non-string event_type would fall back exactly as button_id does for record 6.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The size comparison in this topic understates shredding's real-world benefit on purpose: a 6-record sample is too small to show the compounding effect of typed-column compression and run-length encoding that a real columnar file gets on millions of rows.", "at": [{ "step": "Reveal: measured size, three ways" }] },
+      { "item": "The query-cost claim (0 residual bytes read for a shredded event_type filter) is a stronger and more general result than the size claim, because it holds even when shredding barely shrinks the file at all.", "at": [{ "step": "Reveal: shredding's real win isn't size" }] },
+      { "item": "Partial shredding (VariantShredding.md's own term) is what happens to records 2 and 3 in this topic: a real field survives in the residual value column precisely because it wasn't one of the fields chosen to shred, not because shredding itself failed.", "at": [{ "step": "Reveal: shredding, field by field" }] },
+      { "item": "This topic's encoder implements only the primitive types its own dataset needs (null, int32, short string, object); the specification defines many more (decimals, dates, timestamps, arrays, UUIDs) on the identical header-byte pattern, disclosed rather than silently left out.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Readers must still be able to read an unshredded value+metadata group even on a table where some files shred a field and others don't — this topic's own 'Variant (unshredded)' step is exactly that minimum guaranteed form.", "at": [{ "step": "Reveal: the Variant encoding stores every record exactly" }] },
+      { "item": "The struct's silent data loss in this topic is the same failure class topic 7's truncated-statistics bug warned about: a reader (or in this case a schema) trusting a shape that isn't actually true of the data produces wrong results with no visible error.", "at": [{ "step": "Reveal: 3 of 6 records lose a field" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: capacity estimation, replay, data-quality monitoring, and the platform
+
+<ul class="resources">
+  <Resource kind="reel" title="Back-of-envelope capacity estimation" domain="data-engineering" host="de.real-time-quality-anomaly">The estimate chain this topic reuses for per-series state instead of a single pipeline.</Resource>
+  <Resource kind="reel" title="Correctness under replay and late data" domain="data-engineering" host="de.real-time-quality-anomaly">The replay-as-a-first-class-path idea this topic's backtest is built on.</Resource>
+  <Resource kind="reel" title="Data-quality monitoring platform" domain="data-engineering" host="de.real-time-quality-anomaly">The alert-precision metric and lineage-grouped routing this topic reuses for per-series alerts.</Resource>
+  <Resource kind="reel" title="Feature platform with point-in-time correctness" domain="data-engineering" host="de.real-time-quality-anomaly">The clean time-split discipline this topic's own backtest follows to avoid leakage.</Resource>
+  <Resource kind="reel" title="Global manufacturing telemetry platform" domain="data-engineering" host="de.real-time-quality-anomaly">The platform and the asset hierarchy this topic's dashboard and detector run on top of.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="EWMA Control Charts" href="https://itl.nist.gov/div898/handbook/pmc/section3/pmc324.htm" by="NIST Engineering Statistics Handbook">The EWMA statistic's own definition and its contrast with a Shewhart chart.</Resource>
+  <Resource kind="reading" title="What are Control Charts?" href="https://itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm" by="NIST Engineering Statistics Handbook">The control-limit and out-of-control-signal mechanics behind this topic's SPC-rule baseline.</Resource>
+</ul>
+
+</section>

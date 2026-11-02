@@ -1,0 +1,83 @@
+{
+  "topic": "de.drift-label-delay-monitoring",
+  "steps": [
+    {
+      "lines": [
+        "A model's own stability score stays flat and comfortable, month after month, well under where anyone would call it worrying.",
+        "Meanwhile its actual precision out in production has been quietly cut in half over that exact same stretch of time.",
+        "By the one number everyone's watching, nothing moved at all."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real question sitting underneath that contradiction.",
+        "What kind of change can a test built entirely around the input's own distribution never be built to notice in the first place?",
+        "And once you name it, what would have actually caught this one instead?"
+      ],
+      "answer": [
+        "It isn't that the inputs secretly shifted somewhere the test failed to look.",
+        "The inputs look exactly the same as always. What quietly changed is what those same inputs now predict."
+      ]
+    },
+    {
+      "lines": [
+        "Two genuinely different things get lumped together under the word drift, and they aren't the same failure at all.",
+        "One of them is the input itself physically moving, values showing up that simply didn't before.",
+        "The other is something stranger: the inputs keep looking exactly like they always did, but the relationship between those inputs and the label underneath them has quietly moved instead."
+      ]
+    },
+    {
+      "lines": [
+        "Take an obvious, unmistakable shift and run three different per-feature tests against it side by side.",
+        "One bins the data and sums up a weighted difference across those bins. Another walks the full, unbinned curve directly, looking for the largest gap. A third handles sparse or lopsided categories more gracefully than either of the first two.",
+        "On a shift this obvious, all three land on the same unmistakable verdict."
+      ]
+    },
+    {
+      "lines": [
+        "Now narrow that same kind of shift down until it's concentrated in one small, specific slice of the data instead of spread out everywhere.",
+        "The binned test, built around coarse buckets, barely notices it at all. The test that walks the full curve point by point picks up noticeably more of it.",
+        "Neither test is malfunctioning here. They're simply reading the identical shift at two very different resolutions."
+      ]
+    },
+    {
+      "lines": [
+        "A small, steady trickle of missing values creeps into a column, and somewhere in the pipeline those gaps get quietly filled in with the column's own average.",
+        "Run a distribution test against that patched-up column, and it barely registers anything unusual at all.",
+        "But the plain, direct question, what fraction of this column was actually missing, answers itself immediately and without any ambiguity."
+      ]
+    },
+    {
+      "lines": [
+        "The true label for a prediction can take days, sometimes weeks, before anyone actually learns what really happened.",
+        "So in that gap, a team leans on stand-ins instead: how the inputs look, how the outputs look, how confident the model sounds, what downstream signals happen to move.",
+        "Calling each one a proxy, out loud, is the entire point. It stands in for the label. It never becomes the label itself."
+      ]
+    },
+    {
+      "lines": [
+        "Go back to that earlier case where the relationship quietly flipped while the inputs looked untouched.",
+        "The feature's own distribution test sat right near zero the entire time, giving no warning whatsoever.",
+        "And underneath that silence, real precision didn't dip a little. It collapsed completely, with nothing in the proxy ever hinting it was coming."
+      ]
+    },
+    {
+      "lines": [
+        "Put the whole shape back together.",
+        "Tell apart an input that moved from a meaning that moved instead. Expect three different per-feature tests to disagree with each other sometimes, on purpose, because they're built differently. Check a null rate directly rather than trusting a distribution to reveal it on its own.",
+        "And treat any proxy's movement, or its silence, as a hint worth a second look, never as settled proof either way."
+      ]
+    },
+    {
+      "lines": [
+        "Picture three separate per-feature tests, run on the exact same data, all agreeing there's nothing to see here.",
+        "And right alongside that unanimous verdict, real precision has visibly, unmistakably fallen.",
+        "Do you trust what all three tests are telling you, or trust the number you can actually watch move with your own eyes?"
+      ],
+      "answer": [
+        "Those three tests were never built with the label in view in the first place, so their calm agreement proves nothing about whether the deeper relationship underneath has shifted.",
+        "A real, visible drop in precision is exactly the situation a label-tied proxy exists to flag, the moment enough of the real label finally comes in to check it against."
+      ]
+    }
+  ]
+}

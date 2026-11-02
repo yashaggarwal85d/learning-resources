@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Container resource limits: cgroups and OOM" domain="data-engineering" host="de.container-resource-limits-cgroups" by="the kernel limit the kubelet writes into each container" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="resources">
+
+### <span class="n">02</span> Kubernetes objects
+
+<ul class="resources">
+  <Resource kind="reading" title="Controllers" href="https://kubernetes.io/docs/concepts/architecture/controller/" by="Kubernetes documentation" length="10 min">The control-loop idea this refresher's reconciliation step draws on.</Resource>
+  <Resource kind="reading" title="StatefulSets" href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/" by="Kubernetes documentation" length="10 min">Sticky pod identity, the source for the Deployment-vs-StatefulSet contrast.</Resource>
+  <Resource kind="reading" title="Secrets" href="https://kubernetes.io/docs/concepts/configuration/secret/" by="Kubernetes documentation" length="10 min">Why a Secret is not encryption by default.</Resource>
+  <Resource kind="reading" title="Persistent Volumes" href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/" by="Kubernetes documentation" length="10 min">PV, PVC and StorageClass, the source for the storage step.</Resource>
+  <Resource kind="reading" title="Taints and Tolerations" href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/" by="Kubernetes documentation" length="10 min">The repel/allow mechanism this refresher's placement step draws on.</Resource>
+</ul>
+
+</section>

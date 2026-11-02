@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: signal metadata, rollups, compression, and metric design
+
+<ul class="resources">
+  <Resource kind="reel" title="Resampling and gap filling" domain="data-engineering" host="de.resampling-gap-filling" by="this chapter, for the signal-type and tag metadata this topic's label scheme builds on" />
+  <Resource kind="reel" title="Downsampling, rollups and retention tiers" domain="data-engineering" host="de.downsampling-rollups-retention-tiers" by="this chapter, for one other way a time-series system keeps fewer bytes" />
+  <Resource kind="reel" title="Time-series compression" domain="data-engineering" host="de.time-series-compression" by="the previous topic of this chapter, for how a series shrinks before this topic asks how it's found" />
+  <Resource kind="reel" title="Telemetry for pipelines: logs, metrics, traces" domain="data-engineering" host="de.telemetry-pipelines-logs-metrics" by="Chapter 13, for the metric-design side of cardinality this topic stays off of, staying only on storage and index cost" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Data model" href="https://prometheus.io/docs/concepts/data_model/" by="Prometheus documentation">The series-identity rule this topic's cardinality arithmetic is built directly on.</Resource>
+  <Resource kind="reading" title="Metric and label naming" href="https://prometheus.io/docs/practices/naming/" by="Prometheus documentation">The high-cardinality warning the hook's batch-label blowup measures directly.</Resource>
+  <Resource kind="reading" title="TSDB format (postings)" href="https://raw.githubusercontent.com/prometheus/prometheus/main/tsdb/docs/format/index.md" by="Prometheus repository documentation">The postings structure this topic's index is built and intersected to match.</Resource>
+  <Resource kind="reading" title="Introducing InfluxDB 3.0" href="https://www.influxdata.com/blog/introducing-influxdb-3-0/" by="InfluxData blog">Named and quoted for the unlimited-cardinality, scan-based architecture claim (sourced-only, not run directly).</Resource>
+</ul>
+
+</section>

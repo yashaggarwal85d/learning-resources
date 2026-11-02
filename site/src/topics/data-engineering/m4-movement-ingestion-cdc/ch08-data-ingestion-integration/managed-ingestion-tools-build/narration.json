@@ -1,0 +1,82 @@
+{
+  "topic": "de.managed-ingestion-tools-build",
+  "steps": [
+    {
+      "lines": [
+        "A team runs what looks like a routine backfill on a managed pipeline, and the next bill comes in three times higher than usual.",
+        "Nobody added a single new row. The table's own count barely moved at all.",
+        "What actually changed is how many of its rows got touched this month, and on this kind of pricing, touched is all that matters."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question before I show you why that bill behaved the way it did.",
+        "Two tables each get an identical backfill this month. One is small, and every single one of its rows gets rewritten. The other is much larger, and ordinarily almost nothing in it changes.",
+        "Under a pricing model that bills by the row actually touched, which one costs more?"
+      ],
+      "answer": [
+        "Picking the larger table because it simply has more rows sounds reasonable, but this kind of pricing was never about how big a table is in total.",
+        "It's the smaller table. The backfill touches every single one of its rows, while the larger table's own ordinary trickle of changes barely scratches its surface."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one rule that makes that outcome make sense.",
+        "A row, or really the key that identifies it, gets counted the moment it's touched this month. After that, for the rest of the month, it's already been counted.",
+        "Update that same key five more times before the month ends, and not one of those updates adds anything further to the bill."
+      ]
+    },
+    {
+      "lines": [
+        "I ran both tables through that exact rule directly.",
+        "The small table gets fully rewritten, so every one of its rows counts as touched. The large table barely changes all month, so only a sliver of its rows ever counts at all.",
+        "The smaller table, despite having a fraction of the rows, comes out costing more. Size was never the variable that mattered here."
+      ]
+    },
+    {
+      "lines": [
+        "A new column shows up in the source data, and there are really only four honest ways to react to it.",
+        "Let it straight through. Reject the entire batch outright. Quietly drop just the one row carrying it. Or load the row anyway, dropping only the field nobody expected.",
+        "Each of those is a real, documented policy, not a hack someone improvised."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the identical drifted row through all four.",
+        "Letting it through and rejecting outright sit at opposite extremes: one accepts everything, the other accepts nothing at all.",
+        "Dropping just the row or just the field sits in between, each one sacrificing a smaller, more specific piece to keep the rest of the load moving."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what a managed tool is actually charging you for, underneath the sales pitch.",
+        "This chapter alone had to solve a cursor that silently lies, pagination that duplicates and drops rows, a rate limiter that needs honoring, a token that needs rotating, a commit that needs an atomic marker, and a batch id that needs to be deterministic.",
+        "Every one of those got solved here by hand, specifically for this one source."
+      ]
+    },
+    {
+      "lines": [
+        "I counted up every one of those problems directly, instead of guessing at a number.",
+        "Twelve distinct failure modes, each with its own fix, spread across topics as early as a skewed parallel read and as late as a raw layer's own replay metadata.",
+        "A managed tool's price tag is mostly those twelve problems, already solved, for whatever sources it happens to support."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and three separate measurements turn out to feed exactly one decision.",
+        "What a tool actually bills you for. How it reacts the moment a schema drifts. And how many of the chapter's own named problems it has already solved for you.",
+        "Put those three together, and build-versus-buy stops being a feeling and starts being a number."
+      ]
+    },
+    {
+      "lines": [
+        "One more case, and the two options sound close enough that it's worth being careful.",
+        "A new source shows up: a regulated, proprietary feed from a core banking system, not much volume, and a strict rule about where its data is allowed to live."
+      ],
+      "answer": [
+        "Picking buy because the volume is low misses the one factor that was never about volume in the first place.",
+        "A sovereignty requirement rules out a managed tool before price or volume ever get weighed, because a managed service's own infrastructure usually crosses exactly the boundary that rule exists to prevent."
+      ]
+    }
+  ]
+}

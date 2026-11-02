@@ -1,0 +1,49 @@
+{
+  "topic": "de.columnar-encodings-dictionary-rle",
+  "syllabus": [
+    { "clause": "dictionary encoding and fallback when the dictionary grows too large, the RLE/bit-packing hybrid, DELTA_BINARY_PACKED, delta byte arrays, BYTE_STREAM_SPLIT for floats", "at": [{ "step": "Predict: a 6-value column, written 200 times over?" }, { "step": "Reveal: dictionary + RLE/bit-packing, two pages" }, { "step": "Reveal: the real fallback, not an idealized one" }, { "step": "Reveal: RLE/bit-packing's narrow charter" }, { "step": "Predict: 200 near-sorted ids — wider or narrower wins?" }, { "step": "Reveal: DELTA_BINARY_PACKED, miniblock by miniblock" }, { "step": "Reveal: two different bets" }] },
+    { "clause": "encoding first, general compression second", "at": [{ "step": "Reveal: encode first, compress second" }] },
+    { "clause": "lightweight encodings in research and newer formats (FSST for strings, ALP for floats, cascading encodings)", "at": [{ "deep": "Frontier" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Parquet Format, Encodings.md",
+      "items": [
+        { "item": "dictionary encoding builds a per-chunk dictionary of encountered values, stored as integer indexes, falling back to PLAIN if the dictionary grows too big", "at": [{ "step": "Reveal: dictionary + RLE/bit-packing, two pages" }, { "step": "Reveal: the real fallback, not an idealized one" }] },
+        { "item": "a dictionary data page is a 1-byte bit width followed by RLE/bit-packed entry ids", "at": [{ "step": "Reveal: dictionary + RLE/bit-packing, two pages" }] },
+        { "item": "RLE/bit-packing is scoped to levels, dictionary indices, and booleans only", "at": [{ "step": "Reveal: RLE/bit-packing's narrow charter" }] },
+        { "item": "DELTA_BINARY_PACKED computes consecutive differences, then subtracts a per-block frame of reference", "at": [{ "step": "Reveal: DELTA_BINARY_PACKED, miniblock by miniblock" }] },
+        { "item": "DELTA_BYTE_ARRAY stores a shared prefix length plus the unshared suffix and is always preferred over PLAIN for byte arrays", "at": [{ "step": "Reveal: two different bets" }] },
+        { "item": "BYTE_STREAM_SPLIT creates K byte-streams of length N and does not by itself reduce size", "at": [{ "step": "Reveal: two different bets" }, { "step": "Reveal: encode first, compress second" }] },
+        { "item": "ALP converts floats to integers via decimal scaling, frame-of-reference and exceptions", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "FSST, README.md",
+      "items": [
+        { "item": "FSST targets high-cardinality string columns where dictionary compression does not work well, with random access and compressed-domain equality", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "Dictionary encoding's win is proportional to repetition, not column size — this topic measures the fallback firing on a genuinely distinct column (200 of 200 values unique), not an assumed threshold.", "at": [{ "step": "Reveal: the real fallback, not an idealized one" }] },
+      { "item": "RLE/bit-packing's single page-wide bit width is a direct design trade against DELTA_BINARY_PACKED's per-miniblock width — the former assumes a narrow value range across an entire page, the latter adapts within a block.", "at": [{ "step": "Reveal: RLE/bit-packing's narrow charter" }, { "step": "Reveal: DELTA_BINARY_PACKED, miniblock by miniblock" }] },
+      { "item": "The spec's own DELTA_BINARY_PACKED worked example uses a shortened block size only to keep the example readable — a real writer uses a block size of 128 with 4 miniblocks, which is what this topic's own encoder uses on its shipment-id column, not the example's size.", "at": [{ "step": "Reveal: DELTA_BINARY_PACKED, miniblock by miniblock" }] },
+      { "item": "DELTA_BYTE_ARRAY's win depends on sort order, not just repetition — this topic's tracking-code column is explicitly sorted before encoding, matching the precondition the specification itself assumes.", "at": [{ "step": "Reveal: two different bets" }] },
+      { "item": "BYTE_STREAM_SPLIT's own stated property is that it does not shrink data by itself — this topic verifies that directly (identical byte count as PLAIN) before showing the actual benefit appears only after a general compressor runs on the transposed bytes.", "at": [{ "step": "Reveal: encode first, compress second" }] },
+      { "item": "Three of this topic's five hand-rolled encoders (DELTA_BINARY_PACKED, DELTA_BYTE_ARRAY, BYTE_STREAM_SPLIT) are checked against the Parquet specification's own published worked examples — exact intermediate deltas, prefix/suffix lengths, and transposed byte order — before being applied to this topic's own dataset, which is stronger than checking only that encode and decode round-trip each other.", "at": [{ "step": "Reveal: DELTA_BINARY_PACKED, miniblock by miniblock" }, { "step": "Reveal: two different bets" }] },
+      { "item": "FSST and ALP are named only at the level of what each targets and how, per their own project's summary — neither is hand-implemented here, since both are substantially more involved than the five encodings this topic does implement.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The high-cardinality column used to trigger the dictionary fallback is constructed to be genuinely, verifiably distinct (asserted in examples.py), not merely assumed to exceed the limit.", "at": [{ "step": "Reveal: the real fallback, not an idealized one" }] },
+      { "item": "Dictionary encoding and RLE/bit-packing are two separate mechanisms working together, not one encoding — the dictionary page maps values to small integers, and RLE/bit-packing is what actually compresses the resulting integer stream.", "at": [{ "step": "Reveal: dictionary + RLE/bit-packing, two pages" }] },
+      { "item": "The zlib compression ratio measured on the byte-stream-split column versus PLAIN is a real, computed ratio from actual compressed byte counts, not an illustrative or assumed number.", "at": [{ "step": "Reveal: encode first, compress second" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

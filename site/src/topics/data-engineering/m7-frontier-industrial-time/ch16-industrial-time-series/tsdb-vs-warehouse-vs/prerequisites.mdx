@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: compression, cardinality, storage engines, and the capacity-estimate chain
+
+<ul class="resources">
+  <Resource kind="reel" title="Time-series compression" domain="data-engineering" host="de.time-series-compression" by="this chapter, for the chunk encoding this topic's engines apply to the hot tier" />
+  <Resource kind="reel" title="Series cardinality and the label index" domain="data-engineering" host="de.series-cardinality-label-index" by="this chapter, for the index every row of this topic's matrix depends on" />
+  <Resource kind="reel" title="Time-series storage engine internals" domain="data-engineering" host="de.time-series-storage-engine" by="this chapter, for the engine internals this topic chooses between rather than re-explains" />
+  <Resource kind="reel" title="Back-of-envelope capacity estimation" domain="data-engineering" host="de.back-envelope-capacity-estimation" by="Chapter 15, for the capacity-estimate-chain method this topic's cost chain applies" />
+  <Resource kind="reel" title="Trade-off articulation and decision records" domain="data-engineering" host="de.trade-off-articulation-decision" by="Chapter 15, for the three-alternatives-with-costs method this topic's decision matrix is an instance of" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Storage" href="https://prometheus.io/docs/prometheus/latest/storage/" by="Prometheus documentation">The local-storage limitation this topic names for the metrics-row engines, already run against directly in a prior topic of this chapter.</Resource>
+  <Resource kind="reading" title="MergeTree" href="https://clickhouse.com/docs/engines/table-engines/mergetree-family/mergetree" by="ClickHouse documentation">The sparse-primary-key and partition-pruning design this topic names for the high-rate-analytics row (sourced-only, no ClickHouse instance in this environment).</Resource>
+  <Resource kind="reading" title="Storage model" href="https://questdb.com/docs/concept/storage-model/" by="QuestDB documentation">The three-tier (WAL, hot columnar, cold Parquet) architecture this topic names for the same row (sourced-only).</Resource>
+  <Resource kind="reading" title="Create a Last Value Cache" href="https://docs.influxdata.com/influxdb3/core/admin/last-value-cache/create/" by="InfluxDB 3 Core documentation">The in-memory last-value shortcut this topic names alongside ClickHouse's and QuestDB's own (sourced-only).</Resource>
+  <Resource kind="reading" title="Design" href="https://thanos.io/tip/thanos/design.md/" by="Thanos documentation">The dated $0.02/GB object-storage unit price this topic's capacity-and-cost chain reuses from a prior topic of this chapter.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,85 @@
+{
+  "topic": "de.schema-change-rollout-expand",
+  "syllabus": [
+    {
+      "clause": "expand → migrate consumers → contract across producers and consumers",
+      "at": [
+        { "step": "Reveal: expand, migrate, contract, named" },
+        { "step": "Reveal: a premature contract genuinely breaks the laggard" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "schema-registry compatibility modes (backward/forward/full)",
+      "at": [
+        { "step": "Reveal: the compatibility modes that decide what is allowed" }
+      ]
+    },
+    {
+      "clause": "dual-write/dual-read windows",
+      "at": [
+        { "step": "Reveal: dual-write, bounded" }
+      ]
+    },
+    {
+      "clause": "coordinated with contract checks (§11.4) and CDC schema evolution (§8.2)",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Schema Evolution and Compatibility (Confluent Platform Documentation)",
+      "items": [
+        { "item": "BACKWARD compatibility: consumers using the new schema can read data produced with the last schema", "at": [{ "step": "Reveal: the compatibility modes that decide what is allowed" }] },
+        { "item": "FORWARD compatibility: data produced with a new schema can be read by consumers using the last schema", "at": [{ "step": "Reveal: the compatibility modes that decide what is allowed" }] },
+        { "item": "FULL compatibility means schemas are both backward and forward compatible", "at": [{ "step": "Reveal: the compatibility modes that decide what is allowed" }] },
+        { "item": "Confluent Schema Registry's default compatibility type is BACKWARD, not BACKWARD_TRANSITIVE", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Parallel Change (Martin Fowler's bliki)",
+      "items": [
+        { "item": "parallel change (expand and contract) breaks a backward-incompatible change into expand, migrate and contract", "at": [{ "step": "Reveal: expand, migrate, contract, named" }] },
+        { "item": "the migrate phase updates all clients from the old version to the new one, and can be the longest phase", "at": [{ "step": "Reveal: expand, migrate, contract, named" }, { "step": "Reveal: a premature contract genuinely breaks the laggard" }] }
+      ]
+    },
+    {
+      "source": "Database migration: Concepts and principles (Part 1) (Google Cloud Architecture Center)",
+      "items": [
+        { "item": "writing to both the source and target as two separate transactions risks a failure between the two writes, leaving them inconsistent", "at": [{ "step": "Reveal: dual-write, bounded" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real expand/migrate/contract rollout and compatibility checker",
+      "items": [
+        { "item": "a toy compatibility checker confirms the expand step is backward, forward and fully compatible on the shop's real orders schema", "at": [{ "step": "Reveal: the compatibility modes that decide what is allowed" }] },
+        { "item": "the same checker shows contracting straight from the expand schema fails the forward rule, before any consumer is even involved", "at": [{ "step": "Predict: is a contract right after expand just as safe as after migrate?" }] },
+        { "item": "a premature contract run against a real unmigrated consumer raises a genuine KeyError naming exactly that consumer, while every migrated consumer is unaffected", "at": [{ "step": "Reveal: a premature contract genuinely breaks the laggard" }, { "step": "Prove it" }] },
+        { "item": "the dual-write window is measured in real ticks and asserted against a bound, rather than left open-ended", "at": [{ "step": "Reveal: dual-write, bounded" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's real failure isn't the rename itself -- a rename is a completely ordinary schema change. The failure is collapsing three phases that each need their own verification into a single deploy with no way to tell, before it ships, whether every consumer is actually ready.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume backward and forward compatibility are symmetric opposites of the same check -- they're not: BACKWARD is about a new reader processing old data, FORWARD is about an old reader processing new data, and a change can clear one without clearing the other, which is exactly why FULL names a third, stricter mode.", "at": [{ "step": "Reveal: the compatibility modes that decide what is allowed" }] },
+      { "item": "Confluent's own stated reason for defaulting to BACKWARD rather than FORWARD is specifically about being able to rewind a Kafka consumer to the start of a topic -- a consideration that doesn't automatically transfer to a non-Kafka schema registry, so the default itself is Kafka-shaped, not a universal best practice.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own compatibility checker is deliberately simplified (presence and defaults only) compared to a real Avro/Protobuf/JSON Schema compatibility engine, which also reasons about type widening, enum additions, and nested record changes -- the simplification isolates the expand/contract timing question this topic is actually teaching, not a claim that it's a complete implementation.", "at": [{ "step": "Prove it" }] },
+      { "item": "A dual-write window's real cost is paid by the producer, not the consumers -- every write now has to succeed (or be retried) against two target shapes, and Google Cloud's own material on writing to two destinations names the specific risk of the two writes being separate operations that can fail independently.", "at": [{ "step": "Reveal: dual-write, bounded" }] },
+      { "item": "A reader coming from topic 13's disaster-recovery lab might assume 'contract' here is as destructive as deleting a backup -- it isn't: contract removes a field that dual-write has made fully redundant, confirmed unread by every consumer, which is a different risk profile from deleting the only copy of something.", "at": [{ "deep": "Internals" }] },
+      { "item": "Migrate being 'the longest phase,' per Fowler's own account, means a rollout's actual risk window is proportional to how many consumers exist and how hard each one is to coordinate -- a two-consumer internal rollout and a fifty-consumer external API rollout follow the identical three phases but have wildly different real durations.", "at": [{ "step": "Reveal: expand, migrate, contract, named" }] },
+      { "item": "The premature-contract demonstration deliberately leaves exactly one consumer unmigrated rather than showing a worse case (most consumers unmigrated) -- the point is that the failure is precise and attributable to that one consumer, not that the blast radius is necessarily small in every real rollout.", "at": [{ "step": "Reveal: a premature contract genuinely breaks the laggard" }] },
+      { "item": "This topic names the manual rollout discipline a CI contract-enforcement gate (a later topic in this chapter) checks for automatically -- the relationship runs in one direction: this topic's discipline is what the gate verifies happened, not something the gate performs on a team's behalf.", "at": [{ "deep": "Frontier" }] },
+      { "item": "CDC schema evolution (Chapter 8) faces the same expand/migrate/contract shape under a harder constraint: a CDC stream can't pause between phases the way a batch deploy can, since downstream consumers are reading continuously, so the streaming analogue has to handle the same three phases without ever being able to declare a clean stopping point between them.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "topic": "de.workload-identity-least-privilege",
+  "steps": [
+    {
+      "lines": [
+        "A contractor's laptop gets stolen, with an access key pasted into a file years ago and forgotten about entirely. That key still works. Nobody ever rotated it, nobody ever scoped it down, and it reaches both raw and curated data without asking twice.",
+        { "beat": 0.3 },
+        "Now run the exact same theft a second time, against a design built around identity instead of a static key. The credential the thief actually finds already expired minutes ago, and it never had any path to curated data in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Pause and think about this before I answer it. The same laptop, stolen the same way, twice. The thief's skill didn't change, and the laptop's own defenses had already failed both times, the instant it left someone's bag.",
+        "So what single property, belonging only to the second credential, explains almost the entire difference in what that theft actually cost?"
+      ],
+      "answer": [
+        "It was short-lived and scoped to one role, not encrypted disk or a firewall that already failed to stop the theft.",
+        "A federated credential is minted fresh for a workload, expires soon after, and is scoped to exactly the role that workload assumed. It's never written to a human's disk at all, so there's nothing sitting there waiting to be found later."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the pattern underneath three different vendor names. A workload proves who it is to a broker, and that broker hands back a credential that's only good for a short while.",
+        "AWS actually has two names for this same idea: the older approach built on an identity provider, and a newer, simpler one that skips that step entirely. The other two major clouds each have their own name for the identical exchange."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a distinction that genuinely trips people up. A trust policy and a permission policy sound like the same kind of thing, and they are not.",
+        "A trust policy decides who's even allowed to become this role for a moment. A permission policy decides what that role, once it's been assumed, is actually allowed to go do. Get either one wrong, and the role breaks in a completely different way depending on which one it was."
+      ]
+    },
+    {
+      "lines": [
+        "A permission boundary never hands anyone a single new permission. All it does is cap whatever an identity policy was trying to grant, by taking the overlap between the two.",
+        { "beat": 0.3 },
+        "Now draw that exact same idea around an entire account instead of one role, and you've got an organization-level guardrail. Same cap, same never-grants-anything rule, just sized up to reach every entity in that account, including its own root user."
+      ]
+    },
+    {
+      "lines": [
+        "Take a principal that's allowed to launch something, and give it permission to hand that launch any role at all, with no restriction on which one. It ends up holding every permission that role has, by proxy, without ever being granted a single one of them directly.",
+        { "beat": 0.3 },
+        "Now put the one restriction back: only let it hand over roles that match an approved naming pattern. Same principal, same attempted launch, and this time passing the dangerous role fails outright, while the approved one still works exactly as intended."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where everything from this topic actually pays off in practice. Don't ask whether a breach was contained after the fact. Ask, before you ever write the policy, whether two roles were ever allowed to overlap in the first place.",
+        "Build the raw layer's role and the curated layer's role as if they belonged to two completely different companies sharing one building.",
+        "Give them nothing in common on purpose, and a theft of either one simply can't open the other's door. There was never a shared lock between them to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it all together. Roles instead of static keys, everywhere this applies. Trust, permission, boundary and organization guardrail are four separate gates, never one.",
+        { "beat": 0.3 },
+        "Scope exactly which role a principal is allowed to hand off, and never let a raw-data role and a curated-data role share a single permission. What's still missing is the other kind of secret entirely — the one a role can't replace."
+      ]
+    },
+    {
+      "lines": [
+        "One more to work out yourself. A team hands their deployment pipeline permission to pass absolutely any role in the account, reasoning that every role that exists right now is already scoped about as tight as it can get.",
+        "Is that reasoning actually safe, or does it just look safe today?"
+      ],
+      "answer": [
+        "It only looks safe today. Every role being tightly scoped right now says nothing at all about every role that will ever exist in that account.",
+        "The moment someone creates a far more powerful role for some completely unrelated reason, that same pipeline can pass it too — the exact gap we just closed, quietly reopened by a policy that was never actually scoped, just written at a moment when nothing dangerous happened to exist yet."
+      ]
+    }
+  ]
+}

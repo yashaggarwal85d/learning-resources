@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: SPC, IT/OT ownership, timestamps, gap filling and retention tiers
+
+<ul class="resources">
+  <Resource kind="reel" title="Quality data and SPC" domain="data-engineering" host="de.quality-data-spc" by="this chapter, for the control-limits-vs-spec-limits question this topic names as a different one" />
+  <Resource kind="reel" title="IT/OT boundary and data ownership" domain="data-engineering" host="de.it-ot-boundary-data" by="this chapter, for the change-management path a firmware scale change should have announced" />
+  <Resource kind="reel" title="Timestamps, clocks and time zones in telemetry" domain="data-engineering" host="de.timestamps-clocks-time-zones" by="this chapter, for the device/gateway timestamp distinction this topic's backfill-vs-clock-fault classifier depends on" />
+  <Resource kind="reel" title="Resampling and gap filling" domain="data-engineering" host="de.resampling-gap-filling" by="this chapter, for the filled-value-is-a-claim idea this topic's quarantine (not deletion) extends" />
+  <Resource kind="reel" title="Downsampling, rollups and retention tiers" domain="data-engineering" host="de.downsampling-rollups-retention-tiers" by="this chapter, for the late-data invalidation this topic's backfill path reuses" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="StatusCode" href="https://reference.opcfoundation.org/Core/Part4/v105/docs/7.38" by="OPC UA Part 4: Services">The Good/Uncertain/Bad convention this topic's quality flag is modeled on.</Resource>
+  <Resource kind="reading" title="DataValue" href="https://reference.opcfoundation.org/Core/Part4/v105/docs/7.11" by="OPC UA Part 4: Services">A value paired with a status rather than deleted, the precedent for this topic's quarantine entry.</Resource>
+  <Resource kind="reading" title="EURange" href="https://reference.opcfoundation.org/Core/Part8/v105/docs/5.3" by="OPC UA Part 8: Data Access">The sourced instrument-span convention this topic's range check cites, used in place of an unreachable vendor datasheet.</Resource>
+  <Resource kind="reading" title="Kelvin" href="https://physics.nist.gov/cuu/Units/kelvin.html" by="NIST">The physical limit (absolute zero) this topic's out-of-range fault is checked against.</Resource>
+</ul>
+
+</section>

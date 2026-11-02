@@ -1,0 +1,100 @@
+{
+  "topic": "de.point-time-correct-training",
+  "steps": [
+    {
+      "lines": [
+        "Picture a churn model that looks genuinely strong the day it's evaluated offline.",
+        "Put the same model in front of real traffic, and it barely edges out a coin flip.",
+        "Nobody touched the model in between. So the model isn't where the problem lives."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual question hiding underneath that gap.",
+        "When you build a training row, do you read a feature's value as it stands today, or as it stood at the exact moment the label happened?",
+        "Those can be two completely different numbers. Which one is the training set allowed to trust?"
+      ],
+      "answer": [
+        "It's tempting to say it shouldn't matter, since it's the same underlying data either way.",
+        "But a feature's value today already includes everything that happened since the label, including things the outcome itself caused.",
+        "Reading the value as of the label's own moment is the only version a live model will ever actually get to see."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the mechanism that enforces that discipline.",
+        "Start at the label's own timestamp, and scan backward in time.",
+        "Stop the instant you hit the first feature value sitting at or before that moment, and use that one, never a later one."
+      ],
+      "takeaway": "An as-of join doesn't ask what a feature is now. It asks what it was, the moment the label happened."
+    },
+    {
+      "lines": [
+        "Now watch that discipline matter, on a real dataset built for exactly this.",
+        "Join the labels to each feature's current value, train on it, and the resulting score looks excellent.",
+        "Join the same labels the correct way instead, scanning backward from each label's own moment, and that score drops hard.",
+        "Nothing about the model changed between those two runs. Only which value each join was allowed to see did."
+      ],
+      "takeaway": "The naive score was never a lie about the training data. It was the truth about data a live model will never have."
+    },
+    {
+      "lines": [
+        "Not every leak is a timing problem, though, and this next one proves it.",
+        "Picture a column that records why a customer cancelled, and notice it's only ever filled in for customers who already cancelled.",
+        "Scan backward from the label's own moment all you like. That column still has nothing in it yet, for anyone, because the thing it records hasn't happened."
+      ],
+      "takeaway": "Temporal leakage is a question of when you looked. This one is a question of why the field exists at all."
+    },
+    {
+      "lines": [
+        "One more pair of edge cases worth committing to before we measure them.",
+        "First, a label from before any feature value for that customer even exists yet.",
+        "Second, a label whose nearest feature value sits further back than the staleness limit you've set allows.",
+        "In both cases, what should the join actually hand back?"
+      ],
+      "answer": [
+        "It's tempting to grab the nearest value anyway, on the theory that something is better than nothing.",
+        "But past that stated limit, the honest answer is that the feature's state is unknown, not a convenient guess standing in for it.",
+        "So both cases should come back empty, and quietly substituting the nearest value would hide exactly the gap the limit exists to surface."
+      ]
+    },
+    {
+      "lines": [
+        "Both of those cases, run for real, do exactly that.",
+        "A label with nothing earlier to scan back to comes back empty.",
+        "A label whose nearest value sits outside the staleness window also comes back empty, even though a value does technically exist further back."
+      ],
+      "takeaway": "A staleness limit isn't a performance setting. It's an admission that a feature's value can get too old to mean anything."
+    },
+    {
+      "lines": [
+        "One last way this can quietly go wrong, and it has nothing to do with timing at all.",
+        "Add a brand new feature to a model that's already live, and someone has to compute its history for every label that came before launch.",
+        "Do that backfill with the exact same transformation that runs online, from one shared piece of logic feeding both paths.",
+        "Approximate that transformation a second time instead, even with the best intentions, and you've quietly built two different features sharing one name."
+      ],
+      "takeaway": "A backfilled feature isn't close enough to the online version. If it isn't identical, it's a second feature wearing the first one's name."
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "Read every feature as of the label's own moment, never as of today.",
+        "Drop any field that only exists because the outcome already happened, since no amount of join timing rescues that one.",
+        "And respect a stated limit on how old known is allowed to be, rather than quietly filling the gap with a guess."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario, pulling all of this together.",
+        "A new feature gets added nine months after launch, and the engineer doing the backfill never had access to the original online code.",
+        "They approximate it instead, from the warehouse tables, doing their honest best.",
+        "Given everything you've just watched measured here, should that backfilled history be trusted as the same feature?"
+      ],
+      "answer": [
+        "It's tempting to assume the warehouse holds the same underlying facts, so close enough should be fine.",
+        "But without the exact transformation, that approximation is a plausible stand-in that can quietly diverge from what the live service actually computes.",
+        "That gap stays invisible until it shows up as a mismatch between what was served and what was trained on, which is precisely what the next topic sets out to measure directly."
+      ]
+    }
+  ]
+}

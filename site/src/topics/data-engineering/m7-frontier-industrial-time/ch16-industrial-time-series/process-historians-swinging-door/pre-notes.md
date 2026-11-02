@@ -1,0 +1,7 @@
+- **Historian**: a time-series store built specifically for plant data, decades older than the TSDBs of §16.2. *Where you meet it:* the whole topic's subject.
+- **Tag**: a historian's own name for one series (a single sensor or calculated point). *Where you meet it:* the temperature tag in the hook and throughout `examples.py`.
+- **Deadband**: a threshold a value has to move past before it's reported or stored. *Where you meet it:* exception filtering, performed before compression ever runs.
+- **Interpolation**: computing a value between two stored points, as if they were connected by a line (or, for a step signal, held flat). *Where you meet it:* the recorded-vs-interpolated retrieval distinction.
+- **Error band**: the stated tolerance a compression scheme promises every discarded point stays within. *Where you meet it:* swinging-door's own compression deviation, measured against the original signal.
+- **Knee point**: a point a compression scheme chooses to keep, at the moment it has to, to honor the error band. *Where you meet it:* every point `SwingingDoor` actually stores.
+- **Time-weighted average**: an average that weights by how long a value held, not by how many rows represent it. *Where you meet it:* the fix for the hook's own biased mean.

@@ -1,0 +1,83 @@
+{
+  "topic": "de.ordering-transaction-boundaries",
+  "steps": [
+    {
+      "lines": [
+        "One single commit on the source database put an order and its three items into existence together, as one atomic act.",
+        "But nothing forces a consumer to read those two tables' own streams back in that same order, side by side.",
+        "So a join written as though they always arrive paired up finds, every so often, that the pieces showed up apart."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what actually ties a row's own history together before you answer this.",
+        "A single row's changes carry something a split transaction doesn't: a key that every one of its own events shares.",
+        "Does a multi-table commit lose that same anchor the moment it gets divided, or does something else hold it together?"
+      ],
+      "answer": [
+        "Saying both break the same way ignores that one of them has an anchor the other one never gets.",
+        "A row's own key survives being split across however many events it produces; a transaction has no equivalent tag once its changes land in separate places."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one fact that explains why a single row never loses its own place in line.",
+        "Every change event carries the primary key of the row it came from, stamped on it as its own identity.",
+        "Group a stream by that one field, and whatever order those grouped events arrived in is exactly the order they actually happened."
+      ]
+    },
+    {
+      "lines": [
+        "I measured that grouping claim against this sandbox's own real database, not a staged example.",
+        "Three separate rows each got updated three times, and I deliberately mixed up which row's update went out next.",
+        "Split by key afterward, every single row's own three values came back in precisely the order they were written, despite the scramble."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch what happens the moment a transaction's own changes have to leave on two separate paths.",
+        "Each table gets routed to its own destination, so one commit covering two tables becomes two independent deliveries.",
+        "Nothing requires those two deliveries to be read back in the order they were originally written together."
+      ]
+    },
+    {
+      "lines": [
+        "I reproduced that exact split against the real database, using the identical commit from before.",
+        "One table's own delivery got drained in full before the other table's delivery had been touched at all.",
+        "Every item from that drained delivery still pointed at an order that, from this consumer's own view, hadn't shown up yet."
+      ]
+    },
+    {
+      "lines": [
+        "Losing that shared anchor isn't the end of the story, though, because the source still remembers it.",
+        "Two extra markers frame every commit: one announcing it has begun, and one announcing it is finished.",
+        "That closing marker carries a total count of events, broken down table by table, built straight from the transaction's own real position in the log."
+      ]
+    },
+    {
+      "lines": [
+        "I rebuilt that same split transaction's own identity directly from the slot's real numbers, not from guessing.",
+        "A consumer held every change aside by its own transaction number, instead of acting on each one right away.",
+        "The moment the count of held changes matched what that closing marker promised, the join released, and not one item was left waiting on an order that never arrived."
+      ]
+    },
+    {
+      "lines": [
+        "So here's where today's two measurements actually land, side by side.",
+        "One row's own order needs nothing extra, because its key already ties its history together on its own.",
+        "A transaction spanning several tables needs a consumer willing to wait for its own closing count before it treats anything as settled."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder version of the same question to leave you with.",
+        "A transaction can land across several separate destinations at once, and none of those destinations knows anything about the others.",
+        "Whose responsibility is it, exactly, to put that transaction back together as one atomic act again?"
+      ],
+      "answer": [
+        "Each destination already keeps its own records in order on its own, but that guarantee stops dead at its own boundary and never reaches the next one over.",
+        "Rebuilding the transaction falls to whoever is reading all of those destinations, using the same opening marker, closing marker, and count this topic just measured."
+      ]
+    }
+  ]
+}

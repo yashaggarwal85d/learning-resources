@@ -1,0 +1,80 @@
+{
+  "topic": "de.correctness-under-replay-late",
+  "steps": [
+    {
+      "lines": [
+        "A job gets re-run, purely to fix one small bug, over the exact same data as before.",
+        "The number it reports for a day that's already closed books quietly shifts, by just a sliver. Nobody touched a single row of the underlying data.",
+        "Same input, same fix. So what else, hiding somewhere, actually disagreed?"
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The input going in is confirmed to be exactly the same both times. Something else, buried in the logic itself, clearly wasn't.",
+        "What's the one kind of thing that could quietly sneak into a calculation like that?"
+      ],
+      "answer": [
+        "Not the data. Something living inside the calculation's own logic.",
+        "Maybe it secretly asked what time it was right now. Maybe it quietly leaned on whatever order rows happened to arrive in. Maybe it sampled something without ever fixing a starting point.",
+        "Any one of those turns an identical rerun into a different answer, even though nothing about the underlying data moved at all."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate properties, together, are what actually make rerunning something safe to trust.",
+        "One: feed it the exact same input, and it hands back the exact same output, every time, with nothing else sneaking in.",
+        "Two: write the same result twice, and nothing extra happens the second time around."
+      ]
+    },
+    {
+      "lines": [
+        "Run a properly fixed version twice, and both runs land on the exact same answer, every time.",
+        "Run a version still hiding a quiet clock-check inside it, and the second run lands somewhere slightly different. That gap between the two is the bug itself, now impossible to miss."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a single moving line, constantly asserting: everything up to right here has fully arrived.",
+        "That's a working guess, not an unbreakable promise. Anything that still shows up after that line has already moved past it counts as late, by definition — and someone now has to decide what happens to it."
+      ]
+    },
+    {
+      "lines": [
+        "With no plan at all for that lateness, a late arrival simply vanishes. Gone, with nobody the wiser.",
+        "Build in a proper window for correcting things, and that exact same late arrival instead quietly updates what was already published — carrying a brand new version alongside it, never silently writing over the old one."
+      ]
+    },
+    {
+      "lines": [
+        "How wide that correction window actually needs to be comes straight from a real, measured rate of how often things show up late.",
+        "A wider window is never a free safety cushion. It means holding onto more state for longer, and it means a number people already saw can keep shifting under them more often."
+      ]
+    },
+    {
+      "lines": [
+        "Every single thing this pipeline ever publishes should carry its own tag: exactly which version of the logic, and which cut of the data, produced it.",
+        "A correction adds on a fresh version instead of ever quietly erasing what came before.",
+        "That alone is what lets someone downstream lock onto one specific version, and lets someone auditing it later rebuild exactly what was reported, and precisely when."
+      ]
+    },
+    {
+      "lines": [
+        "A trustworthy rerun comes from two properties working together, not either one alone.",
+        "A moving line names what counts as late. A proper correction window updates things instead of quietly dropping them.",
+        "And carrying a version on everything published is what finally lets anyone lock onto, or later rebuild, exactly what was said."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: this same pipeline also fires off a receipt by email, as a pure side effect.",
+        "Making the pipeline's own writes safe to redo — does that safety automatically reach all the way out to that email too?"
+      ],
+      "answer": [
+        "No. Making one system's own writes safe to repeat says nothing at all about a completely separate system sitting outside it.",
+        "Without its own way of recognizing a repeat, rerunning the pipeline just quietly fires that same email off a second time.",
+        "The fix has to live at the side effect itself. It can't simply be assumed just because the pipeline upstream of it is already correct."
+      ]
+    }
+  ]
+}

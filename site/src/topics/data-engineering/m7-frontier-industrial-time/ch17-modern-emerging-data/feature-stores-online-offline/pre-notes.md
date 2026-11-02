@@ -1,0 +1,6 @@
+- **Offline store**: the interface over historical, time-series feature values used to build training sets.
+- **Online store**: a low-latency store holding only the latest value per entity, populated by materialization.
+- **Materialization**: the scheduled job that loads values from the offline store's sources into the online store.
+- **SLA**: a stated limit (a number, not a feeling) on how old a served value is allowed to be.
+- **Key-value store**: a database read by key with no query language, built for single-row lookups at low latency.
+- **Code path**: the specific code that computes a value — two code paths computing the "same" thing is the chapter's first skew cause.

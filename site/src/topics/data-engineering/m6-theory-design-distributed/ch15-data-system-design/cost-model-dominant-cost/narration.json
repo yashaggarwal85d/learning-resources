@@ -1,0 +1,83 @@
+{
+  "topic": "de.cost-model-dominant-cost",
+  "steps": [
+    {
+      "lines": [
+        "A team's analytics bill doubles over a few months, while the actual business behind it barely grows at all.",
+        "A full month gets spent tuning cluster sizes, and the savings from that month turn out to be almost nothing.",
+        "One single query, quietly scanning an entire table over and over for a dashboard nobody's opened since it launched, turns out to be most of that bill."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A whole month of effort went into tuning how big the clusters were. The actual largest line on the bill is something else completely.",
+        "Which one is it?"
+      ],
+      "answer": [
+        "Effort spent is never evidence of where a cost actually sits.",
+        "One unwatched query, scanning a full table on every single run, turns into a charge for bytes read that can dwarf anything cluster tuning could ever hope to save.",
+        "That whole month of tuning simply went into the wrong category of cost entirely."
+      ]
+    },
+    {
+      "lines": [
+        "A handful of cost categories make up any bill: raw compute, storage, moving data around, individual requests, and software licensing.",
+        "Re-expressing each one per unit of whatever the business actually sells makes wildly different designs, and different scales, finally comparable to each other.",
+        "And every single number here has to trace back to an actual, dated price someone looked up, never something simply assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Re-sort those same categories purely by their actual share of the total bill, and they almost never come out anywhere close to even.",
+        "One of them usually towers over every other category combined.",
+        "Spending real effort improving the smaller categories first, before that one dominant category has even been found, is effort spent on the wrong problem."
+      ]
+    },
+    {
+      "lines": [
+        "Three particular shapes show up as that dominant category again and again: bytes read by a query, data crossing between zones that didn't need to, and compute sitting there paid for but doing nothing.",
+        "Naming which of those three shapes is actually happening here is the real diagnostic step. A bill essentially never needs five separate fixes. It needs exactly one."
+      ]
+    },
+    {
+      "lines": [
+        "Once that one dominant category is actually named, a specific lever lands directly on it.",
+        "That lever doesn't just vaguely help. It shrinks the category by a ratio someone actually measured, with a real saving attached to it, stated per unit of business."
+      ]
+    },
+    {
+      "lines": [
+        "Redraw that exact same ranked picture for a design where data crossing zones happens to be the dominant category instead, and a completely different lever applies: keeping things local, respecting which zone data actually lives in.",
+        "Redraw it again for a design where paid-for, idle compute dominates, and the lever changes again: scaling down automatically, or pausing entirely.",
+        "Whichever lever gets reached for has to match whichever category is actually dominant. The lever that fixes one of these three does essentially nothing for either of the other two."
+      ]
+    },
+    {
+      "lines": [
+        "That first lever's own saving shrinks the dominant bar convincingly.",
+        "Right beside it, though, a second, thinner bar quietly starts growing: a brand new cost that pre-processing the data ahead of time to avoid all that scanning has itself just introduced.",
+        "Any lever that successfully lowers one cost can introduce a second cost of its own, and that second cost has to be priced too, not simply ignored."
+      ]
+    },
+    {
+      "lines": [
+        "Pricing a design honestly means pricing it per unit of the actual business, across every one of those categories.",
+        "Ranking those categories by actual share finds the one that genuinely dominates, instead of guessing.",
+        "A lever gets picked to match that specific dominant category, with its saving stated as an actual measured ratio.",
+        "And that lever's own second-order cost gets priced right alongside whatever it saved, not left out of the picture."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: months later, with the design itself completely unchanged, one provider cuts their price for moving data between zones sharply.",
+        "Does the same ranked picture, run again against that brand new price sheet, still show the exact same category dominating as before?"
+      ],
+      "answer": [
+        "Not necessarily, and definitely not something to simply assume.",
+        "Rankings here are built from actual billed share, and that share moves the instant any one price moves underneath it.",
+        "A steep enough cut to whichever category used to dominate can hand the lead over to a category that never changed at all — which is exactly why this gets re-run on fresh numbers, never assumed to still hold from before."
+      ]
+    }
+  ]
+}

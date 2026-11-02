@@ -1,0 +1,130 @@
+{
+  "topic": "de.task-scheduling-locality-parallelism",
+  "syllabus": [
+    {
+      "clause": "locality levels (PROCESS/NODE/RACK/ANY) and delay scheduling",
+      "at": [
+        { "step": "Reveal: locality has nowhere to go here" },
+        { "deep": "Delay scheduling, named from Spark's own source" }
+      ]
+    },
+    {
+      "clause": "spark.default.parallelism vs spark.sql.shuffle.partitions",
+      "at": [
+        { "step": "Reveal: default parallelism is the core count" },
+        { "step": "Reveal: 200, not 4" },
+        { "step": "Reveal: independent, confirmed both ways" }
+      ]
+    },
+    {
+      "clause": "dynamic allocation and the shuffle-tracking requirement",
+      "at": [{ "deep": "Dynamic allocation and the shuffle-tracking requirement" }]
+    },
+    {
+      "clause": "FIFO vs FAIR pools for concurrent jobs in one application",
+      "at": [{ "deep": "FIFO and FAIR scheduling pools" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark configuration docs — spark.default.parallelism (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "in local mode, with no parent RDD and no explicit count, default parallelism equals the number of cores",
+          "at": [{ "step": "Reveal: default parallelism is the core count" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark SQL Performance Tuning docs — spark.sql.shuffle.partitions (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "spark.sql.shuffle.partitions configures the number of partitions for shuffling joins or aggregations, default 200",
+          "at": [{ "step": "Reveal: 200, not 4" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark Job Scheduling docs — FIFO and FAIR pools (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "Spark's scheduler runs jobs in FIFO fashion by default, first job gets priority until it runs out of tasks",
+          "at": [{ "deep": "FIFO and FAIR scheduling pools" }]
+        },
+        {
+          "item": "the fair scheduler is opt-in via spark.scheduler.mode",
+          "at": [{ "deep": "FIFO and FAIR scheduling pools" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark source: TaskSchedulerImpl.scala (Apache Spark project, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "delay scheduling sacrifices job fairness for data locality to improve cluster and workload throughput",
+          "at": [
+            { "step": "Reveal: locality has nowhere to go here" },
+            { "deep": "Delay scheduling, named from Spark's own source" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "spark.default.parallelism's local-mode definition (core count) is a special case of its general rule: for parent-RDD operations like reduceByKey/join it's the largest number of partitions already present in a parent RDD, not a cluster-wide constant.",
+        "at": [{ "step": "Reveal: default parallelism is the core count" }]
+      },
+      {
+        "item": "spark.sql.shuffle.partitions applies only to DataFrame/SQL-layer shuffles (joins, aggregations); it has no effect on a plain RDD's parallelize or map, which is exactly why the two settings this topic measures never interact.",
+        "at": [
+          { "step": "Reveal: 200, not 4" },
+          { "step": "Reveal: independent, confirmed both ways" }
+        ]
+      },
+      {
+        "item": "AQE's coalescePartitions feature (on by default in Spark 4.x) can shrink a shuffle's actual runtime partition count below spark.sql.shuffle.partitions for small data — this topic's own examples.py disables AQE specifically to measure the configured setting cleanly, disclosed as a methodology note rather than silently hidden.",
+        "at": [{ "out": "AQE and coalescePartitions is this chapter's own later topic to measure directly; named only as a methodology disclosure here" }]
+      },
+      {
+        "item": "The four locality levels (PROCESS_LOCAL, NODE_LOCAL, RACK_LOCAL, ANY) form a strict preference order the scheduler tries from best to worst, waiting spark.locality.wait milliseconds at each level before dropping to the next — local mode's single JVM means PROCESS_LOCAL is always immediately available, so no drop and no wait is ever observable.",
+        "at": [{ "step": "Reveal: locality has nowhere to go here" }]
+      },
+      {
+        "item": "Dynamic allocation (spark.dynamicAllocation.enabled) scales executor count up and down with workload, but since Spark 3.0 it requires either an external shuffle service or shuffle tracking (spark.dynamicAllocation.shuffleTracking.enabled) so a shrinking executor's shuffle files aren't lost mid-job — named as a real production dependency, not measured, since local mode has exactly one executor and nothing to scale.",
+        "at": [{ "deep": "Dynamic allocation and the shuffle-tracking requirement" }]
+      },
+      {
+        "item": "FAIR scheduling's pools (configured via fairscheduler.xml) let independent jobs, not just tasks within one job, share a cluster's resources concurrently instead of queueing strictly behind each other — the production case this topic names is multiple users or applications sharing one long-running SparkContext (e.g. a notebook server), not a single batch job.",
+        "at": [{ "deep": "FIFO and FAIR scheduling pools" }]
+      },
+      {
+        "item": "spark.default.parallelism and spark.sql.shuffle.partitions being independent also means raising core count alone (more executors) never changes an existing job's shuffle output partition count — a common production surprise when scaling a cluster up doesn't reduce small-file or small-partition overhead the way engineers expect.",
+        "at": [{ "out": "named as a production consequence; not independently measured, since local mode can't vary executor count at all" }]
+      },
+      {
+        "item": "The 'legacy' locality-wait-reset heuristic TaskSchedulerImpl.scala documents (resetting the wait timer on every task launch rather than only on a fair-share offer) was changed as of a specific SPARK JIRA because it let a popular TaskSet starve other locality levels indefinitely — named only as a historical note from the source's own comment, not independently sourced further.",
+        "at": [{ "out": "historical implementation detail named only in passing from the quoted scaladoc; not a separate syllabus clause" }]
+      },
+      {
+        "item": "Catalyst's AQE can also raise, not just lower, the number of reduce-side tasks actually scheduled relative to spark.sql.shuffle.partitions in the opposite direction (skew-join splitting), the mirror case to the coalescing this topic's methodology note disables — named only as a forward pointer to the chapter's later AQE/skew topics.",
+        "at": [{ "out": "forward pointer only; AQE skew handling is this chapter's own later topic" }]
+      },
+      {
+        "item": "Both parallelism settings are read, not just set, at different times in a job's life: spark.default.parallelism is consulted once, when an RDD with no parent is created, while spark.sql.shuffle.partitions is consulted fresh at each shuffle's own planning time — which is exactly why this topic's third measurement (changing the config, then checking both a new shuffle and a new bare RDD) can observe one move and the other not, in the same session.",
+        "at": [
+          { "step": "Predict: change the shuffle setting by hand" },
+          { "step": "Reveal: independent, confirmed both ways" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

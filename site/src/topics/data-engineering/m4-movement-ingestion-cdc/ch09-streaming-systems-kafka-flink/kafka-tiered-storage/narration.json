@@ -1,0 +1,85 @@
+{
+  "topic": "de.kafka-tiered-storage",
+  "steps": [
+    {
+      "lines": [
+        "A compliance team wants years of history kept around, fully readable.",
+        "Priced on the broker's own disk, that bill is simply absurd.",
+        "Move the old, closed part of the log somewhere cheaper, and the same years of history stay readable for a fraction of the cost."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the same strip this chapter keeps coming back to, with one new boundary drawn across it.",
+        "Past that boundary, the older material now lives in object storage instead.",
+        "Before it, the newest material still sits exactly where it always has, on the broker's own disk."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A segment has just finished closing.",
+        "Does moving it to cheaper storage wait until local space is actually running short, or does that move start right away?"
+      ],
+      "answer": [
+        "It starts right away, the instant the segment closes.",
+        "Nothing about local disk running short needs to happen first.",
+        "A dedicated piece of the broker watches for exactly this moment and begins the copy immediately."
+      ]
+    },
+    {
+      "lines": [
+        "So there are really two separate clocks here, not one.",
+        "The copy begins the moment a segment closes.",
+        "Deleting that segment's local copy only happens afterward, once a separate local-retention window has run out on top of that."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "A consumer asks for an old offset using the exact same call it always uses.",
+        "From that call alone, can it tell whether the answer is about to come from local disk, or from somewhere much farther away?"
+      ],
+      "answer": [
+        "No, it genuinely can't tell from the call itself.",
+        "The request looks identical either way.",
+        "Only how long the answer takes to arrive gives away which one actually served it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact gap, measured rather than assumed.",
+        "A request for something still local comes back fast.",
+        "The same kind of request for something that's already moved away comes back dramatically slower, even though nothing about asking for it changed at all."
+      ]
+    },
+    {
+      "lines": [
+        "There's a second subtlety worth separating out cleanly.",
+        "One setting controls how long a segment's local copy sticks around on disk.",
+        "A completely different setting controls how long that data exists anywhere at all, and shrinking the first one no longer shrinks the second."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the limit this whole mechanism runs into, and the reason behind it.",
+        "Once a segment is moved away, the system treats its bytes as fixed forever.",
+        "A log that keeps rewriting its own segments in place breaks that assumption outright, which is exactly why the two features can't be turned on together."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel so far came from one real run of this topic's own toy tiered-storage model, happening just now.",
+        "Which segments ended up where, the fast read against the slow one, side by side.",
+        "And the rejection itself, confirmed directly rather than just asserted."
+      ]
+    },
+    {
+      "lines": [
+        "So: a closed segment moves itself the instant it closes, on its own clock, not when disk space gets tight.",
+        "Keeping it around locally and keeping it around at all are two separate settings now, not one.",
+        "Reads stay exactly as simple as before — they just aren't all equally fast anymore."
+      ]
+    }
+  ]
+}

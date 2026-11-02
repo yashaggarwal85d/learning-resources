@@ -1,0 +1,58 @@
+{
+  "topic": "de.e-commerce-warehouse-incremental",
+  "syllabus": [
+    {
+      "clause": "dimensional model for orders, inventory and customers",
+      "at": [{ "step": "Reveal: grain first, three alternatives" }]
+    },
+    {
+      "clause": "incremental/merge loads with SCD handling",
+      "at": [{ "step": "Reveal: the deleted-source-row hazard" }, { "step": "Reveal: the late-arriving dimension" }, { "step": "Reveal: SCD policy and the merge" }]
+    },
+    {
+      "clause": "serving marts and the semantic layer",
+      "at": [{ "step": "Reveal: marts and the semantic layer" }]
+    },
+    {
+      "clause": "cost of full vs incremental refresh",
+      "at": [{ "step": "Reveal: the full-versus-incremental crossover" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "dbt Developer Hub — \"Configure incremental models\"",
+      "items": [
+        { "item": "Without a unique_key, an incremental model defaults to append-only behavior, inserting every row regardless of duplicates.", "at": [{ "step": "Reveal: SCD policy and the merge" }] },
+        { "item": "With a unique_key, a row present in both the new and old data gets updated in place instead of appended as a duplicate.", "at": [{ "step": "Reveal: SCD policy and the merge" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL documentation — \"MERGE\"",
+      "items": [
+        { "item": "MERGE provides a single statement that can conditionally INSERT, UPDATE or DELETE rows.", "at": [{ "step": "Reveal: the deleted-source-row hazard" }] },
+        { "item": "WHEN NOT MATCHED BY SOURCE names the clause that detects a target row with no matching source row.", "at": [{ "step": "Reveal: the deleted-source-row hazard" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A deleted source row is invisible to a plain incremental extract unless the design is told to look for one.", "at": [{ "step": "Reveal: the deleted-source-row hazard" }] },
+      { "item": "A changed row merges by a stated unique key, or it silently becomes a duplicate.", "at": [{ "step": "Reveal: SCD policy and the merge" }] },
+      { "item": "The crossover is a number, computed from the shop's own constants, not a feeling about which approach sounds more modern.", "at": [{ "step": "Reveal: the full-versus-incremental crossover" }] },
+      { "item": "A slow incremental load produces staleness that eventually catches up; a deleted-row gap never closes on its own.", "at": [{ "step": "Predict: which risk did the design not name?" }] },
+      { "item": "A table already past its own crossover needs the crossover recomputed from its current numbers, not a switch made by feel.", "at": [{ "step": "Prove it: a table well past its own crossover" }] },
+      { "item": "A fact landing before its dimension gets an inferred placeholder key, backfilled once the real dimension arrives, rather than being dropped.", "at": [{ "step": "Reveal: the late-arriving dimension" }] },
+      { "item": "This topic leaves out dimensional-modelling mechanics, SCD implementations, merge syntax, dbt incremental models, CDC itself, the semantic-layer products, and orchestration of the loads.", "at": [{ "deep": "Internals" }] },
+      { "item": "Grain-first dimensional modelling and incremental merge loads are established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its warehouse design; the next design is CDC from the transactional database into the lakehouse, the cleanest source of changed rows.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "Not every requested mart earns its keep, and revenue is defined once in a semantic layer rather than recomputed per mart.", "at": [{ "step": "Reveal: marts and the semantic layer" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

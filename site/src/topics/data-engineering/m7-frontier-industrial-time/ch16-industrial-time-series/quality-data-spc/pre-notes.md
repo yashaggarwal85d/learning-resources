@@ -1,0 +1,6 @@
+- **Mean**: the average of a set of numbers. *Where you meet it:* the centre line of every control chart in this topic.
+- **Standard deviation**: a measure of how spread out a set of numbers is around its mean, from this course's statistics foundations. *Where you meet it:* the sigma bands the WECO zone rules are defined against.
+- **Normal distribution**: the bell-shaped curve many real measurement processes follow. *Where you meet it:* the simulated noise this topic's false-alarm rates are measured against.
+- **Lot**: a tracked batch of material with its own identity, from the previous topic. *Where you meet it:* the inspection, non-conformance and CAPA records this topic keys to a lot.
+- **Run**: one execution of a recipe on a piece of equipment, from the previous topic. *Where you meet it:* an inspection's recipe version, tool and shift all come from the run it belongs to.
+- **Foreign key**: a column that references another table's primary key, from this course's modelling foundations. *Where you meet it:* the non-conformance and CAPA tables, each keyed to the record before it.

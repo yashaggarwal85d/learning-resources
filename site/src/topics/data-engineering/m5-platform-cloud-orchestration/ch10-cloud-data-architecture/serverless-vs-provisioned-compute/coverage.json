@@ -1,0 +1,111 @@
+{
+  "topic": "de.serverless-vs-provisioned-compute",
+  "syllabus": [
+    {
+      "clause": "billing units and their granularity (Glue DPU-hours, EMR Serverless vCPU/GB-seconds, Dataproc Serverless DCUs, Databricks serverless DBUs, BigQuery slot-ms)",
+      "at": [
+        { "step": "Five vendors, five different billing units" },
+        { "step": "BigQuery's unit isn't a billing unit at all" },
+        { "step": "The same job, converted into two real units" }
+      ]
+    },
+    {
+      "clause": "cold start, autoscaling lag, noisy neighbours and version lag",
+      "at": [
+        { "step": "Four costs serverless hides by billing per second" }
+      ]
+    },
+    {
+      "clause": "escape hatches",
+      "at": [
+        { "step": "Every one of these has a documented way out" }
+      ]
+    },
+    {
+      "clause": "break-even utilisation vs reserved clusters",
+      "at": [
+        { "step": "The move that was supposed to save money nearly doubled the bill" },
+        { "step": "Which job is more likely to get cheaper on serverless?" },
+        { "step": "Where the two lines actually cross" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "Glue job bookmarks vs table-format incremental reads for idempotent re-runs",
+      "at": [
+        { "step": "Two honest answers to the same re-run problem" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "AWS Glue pricing",
+      "items": [
+        { "item": "A single DPU is 4 vCPU + 16 GB memory, billed per second with a 1-minute minimum, at $0.44/DPU-hour", "at": [{ "step": "Five vendors, five different billing units" }] }
+      ]
+    },
+    {
+      "source": "AWS: Tracking processed data using job bookmarks",
+      "items": [
+        { "item": "A job bookmark persists state from a previous run so AWS Glue doesn't reprocess already-handled data on a scheduled re-run", "at": [{ "step": "Two honest answers to the same re-run problem" }] }
+      ]
+    },
+    {
+      "source": "AWS: Configuring job properties for Spark jobs in AWS Glue",
+      "items": [
+        { "item": "A fixed worker type and count can be set explicitly instead of relying on Glue's default auto-scaling", "at": [{ "step": "Every one of these has a documented way out" }] }
+      ]
+    },
+    {
+      "source": "AWS EMR Serverless pricing",
+      "items": [
+        { "item": "EMR Serverless bills by vCPU, memory and storage actually consumed, rounded to the second with a 1-minute minimum", "at": [{ "step": "Five vendors, five different billing units" }] }
+      ]
+    },
+    {
+      "source": "AWS: Configuring an application when working with EMR Serverless",
+      "items": [
+        { "item": "Pre-initialized capacity keeps an application's driver and workers ready to respond instead of cold-starting on demand", "at": [{ "step": "Every one of these has a documented way out" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Managed Service for Apache Spark (Dataproc) pricing",
+      "items": [
+        { "item": "DCUs are billed per second with a documented 12-DCU floor per serverless batch or session, standard rate $0.06/DCU-hour, confirmed from Google's own worked example", "at": [{ "step": "Five vendors, five different billing units" }, { "step": "The same job, converted into two real units" }] }
+      ]
+    },
+    {
+      "source": "Databricks pricing",
+      "items": [
+        { "item": "A DBU is a normalized unit driven by processing metrics (compute resources and data processed), not a fixed hardware ratio", "at": [{ "step": "Five vendors, five different billing units" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Understand slots",
+      "items": [
+        { "item": "On-demand BigQuery billing is by TiB scanned; slot-time billing exists only under the separate capacity-based model, which charges for scaled slots allocated, not slots used", "at": [{ "step": "BigQuery's unit isn't a billing unit at all" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that 'serverless' and 'cheaper' are not synonyms; a learner who concludes serverless is always the economical default has drawn the wrong lesson from this topic", "at": [{ "step": "The move that was supposed to save money nearly doubled the bill" }] },
+      { "item": "The predict step's correct answer turns on utilisation, not on which service is 'better'; a learner should be able to state why the short job wins without reference to either vendor's feature list", "at": [{ "step": "Which job is more likely to get cheaper on serverless?" }] },
+      { "item": "The five billing units are deliberately not flattened into one abstraction; a learner who thinks 'a DPU is basically a DCU' has missed that Databricks' DBU isn't even a fixed hardware ratio like the other three", "at": [{ "step": "Five vendors, five different billing units" }] },
+      { "item": "The BigQuery slot-ms disclosure is the topic's own correction of an imprecise syllabus phrase, not a vendor criticism; a learner should come away able to state BigQuery's two real billing models, not just 'slot-ms isn't real'", "at": [{ "step": "BigQuery's unit isn't a billing unit at all" }] },
+      { "item": "The four hidden costs are presented as genuinely different failure shapes (a one-time delay, a lag, a shared-tenancy risk, a vendor-schedule risk), not as four synonyms for 'serverless is unpredictable'", "at": [{ "step": "Four costs serverless hides by billing per second" }] },
+      { "item": "Each escape hatch is sourced from that specific vendor's own documentation page, not inferred by analogy from another vendor's feature", "at": [{ "step": "Every one of these has a documented way out" }] },
+      { "item": "The break-even formula is solved numerically in examples.py and the hook's own numbers are asserted to land on the correct side of that line, not merely illustrated", "at": [{ "step": "Where the two lines actually cross" }] },
+      { "item": "Job bookmarks and incremental reads are presented as a portability trade-off (vendor-specific vs table-format-native), not as one being strictly better; a learner should be able to state when each is the right choice", "at": [{ "step": "Two honest answers to the same re-run problem" }] },
+      { "item": "The recap's three lines are not independent trivia; a learner who can name all five vendors' units but can't compute a break-even point for a new workload has learned vocabulary, not the lesson", "at": [{ "step": "In one breath" }] },
+      { "item": "The prove-it question reuses this topic's own computed break-even number rather than inventing a new scenario, so the answer follows from work already shown, not from a fresh unexplained fact", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

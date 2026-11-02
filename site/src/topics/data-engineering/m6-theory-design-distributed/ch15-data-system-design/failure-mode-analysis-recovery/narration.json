@@ -1,0 +1,83 @@
+{
+  "topic": "de.failure-mode-analysis-recovery",
+  "steps": [
+    {
+      "lines": [
+        "One partition of a pipeline gets stuck on a single bad record, in the middle of the night, and keeps failing the exact same way on every retry.",
+        "Every other partition keeps humming along fine. A dashboard that averages across all of them together reports the whole thing as healthy.",
+        "So the system looks fine from one angle, and is actually stuck from another. Which angle is telling the truth?"
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Nothing about the bad record changes between attempts, and nothing about the pipeline's own logic changes either. So what actually breaks that cycle?",
+        "Is there something inside the retry itself that eventually gives up, or does ending this depend on something watching from outside?"
+      ],
+      "answer": [
+        "Not the retry itself. A deterministic failure keeps failing identically, forever, with nothing inside the loop to break it.",
+        "What actually ends it is somebody watching a narrower signal than the averaged view, noticing the one partition that's stuck, and stepping in by hand.",
+        "Until that narrower signal exists, or a separate path for the bad record exists, the loop has no reason to stop on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Enumerating failures starts with naming six things about each one, side by side: what failed, how far the damage spread, how it got noticed, how it recovers, what got lost, and how long recovery actually took.",
+        "Filling that in for a real failure, one column at a time, turns a vague worry into something checkable."
+      ]
+    },
+    {
+      "lines": [
+        "An averaged view can make damage disappear just by diluting it across everything that's still working.",
+        "The honest scope of a failure is whatever actually shares its failure path, not whatever happens to share a chart.",
+        "One stuck partition's worth of delayed work is the real size of this failure, however small it looks once it's averaged against four healthy ones."
+      ]
+    },
+    {
+      "lines": [
+        "With nothing built to catch it, that one column, recovery, simply has nothing written in it. That empty cell is itself the finding.",
+        "Give the bad record somewhere else to go instead of back into the same queue, and that same column stops being empty: the rest of the partition carries on immediately."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate questions hide inside what sounds like one promise about recovering from anything.",
+        "How much of this data's history can disappear and still be acceptable? And separately, how long can this data be completely unavailable and still be acceptable?",
+        "Those are two different numbers, each with its own engineering cost, and tightening one does nothing at all to tighten the other for free."
+      ]
+    },
+    {
+      "lines": [
+        "Not every class of data deserves the same answer to either question.",
+        "Something that gets audited later can't tolerate losing almost any of its history. Something that's merely a record of clicks can tolerate losing a good chunk of an hour and nobody notices.",
+        "Pricing one target for an entire system, instead of one target per class, means paying the audit log's price for the clickstream too."
+      ]
+    },
+    {
+      "lines": [
+        "Facing overload, a system has to choose what to protect and what to let slip, and naming that choice up front beats discovering it by accident.",
+        "One option holds onto every single record, but lets the broken ones sit a while longer before they're handled.",
+        "A different option keeps answering requests the whole time, but starts answering with something slightly out of date."
+      ]
+    },
+    {
+      "lines": [
+        "A table with six honest columns is what actually finds a missing recovery path before it matters at two in the morning.",
+        "Two separate numbers, priced separately, for each class of data, replace one expensive blanket promise.",
+        "And naming, in advance, exactly what a system gives up under strain beats discovering it by accident while it's happening.",
+        "What a lasting disaster-recovery plan looks like once a failure has actually happened belongs to its own, later discussion."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a completely different pipeline loses its entire message broker outright, not merely one stuck partition.",
+        "Does the exact same six-column approach from before still find whatever's missing here, or does a failure this different need to be reasoned about completely from scratch?"
+      ],
+      "answer": [
+        "The same six columns still apply, because none of them were ever specific to one kind of failure in the first place.",
+        "Naming the failure, its spread, how it's noticed, how it recovers, what's lost, and how long it takes works the exact same way here.",
+        "Filling those columns in for a lost broker surfaces whatever's actually missing, the same way it did for one stuck partition."
+      ]
+    }
+  ]
+}

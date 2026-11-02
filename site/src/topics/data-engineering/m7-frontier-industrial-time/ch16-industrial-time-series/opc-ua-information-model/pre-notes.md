@@ -1,0 +1,7 @@
+- **Node**: a typed element in an address space (an Object, a Variable, a Method, a Type). *Where you meet it:* every box this topic's address space is built from.
+- **Reference**: a typed link between two nodes, naming its own source and target. *Where you meet it:* how one node connects to the next when you browse.
+- **Address space**: the whole graph of nodes and references a server exposes. *Where you meet it:* the structure a client browses instead of reading a flat tag list.
+- **Subscription**: a client's standing request to be notified when a value changes. *Where you meet it:* the monitored item and its deadband.
+- **Deadband**: a threshold a value has to cross before a change is reported. *Where you meet it:* the absolute-deadband notification count.
+- **Publish-subscribe**: a pattern where a publisher sends to a broker, decoupled from whoever's listening. *Where you meet it:* PubSub's fan-out, contrasted with client/server's sessions.
+- **Certificate**: a credential two parties exchange and trust to secure a channel. *Where you meet it:* the security-mode finding.

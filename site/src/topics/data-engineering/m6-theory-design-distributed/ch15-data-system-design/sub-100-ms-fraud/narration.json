@@ -1,0 +1,82 @@
+{
+  "topic": "de.sub-100-ms-fraud",
+  "steps": [
+    {
+      "lines": [
+        "The fraud model's own average score time sits comfortably inside the checkout's budget, no problem there at all.",
+        "The checkout's actual ninety-ninth percentile, though, blows straight past the timeout.",
+        "The fallback on timeout here is simply \"approve\" — and the fraud loss this model was bought to prevent concentrates in exactly those payments."
+      ]
+    },
+    {
+      "lines": [
+        "The average was genuinely never the number that mattered here.",
+        "So where did that percentile actually go, and what should the fallback have been instead?"
+      ],
+      "answer": [
+        "The average score time was already comfortable, so a faster model would be attacking entirely the wrong number.",
+        "The real problem lives in one hop's own tail, and the fallback itself deserves a recorded decision, never just a default."
+      ]
+    },
+    {
+      "lines": [
+        "An event arrives, and streaming features update incrementally from it.",
+        "The request path then looks those exact features up, a model scores them, and a decision returns.",
+        "A boundary separates the stream job's own eventually-consistent features from the request path's read of whatever the store happens to hold right now."
+      ]
+    },
+    {
+      "lines": [
+        "A hundred-millisecond budget splits across hops — network in, feature lookup, model inference, rules, network out.",
+        "Each one gets measured at its own ninety-ninth percentile, never its average.",
+        "One single hop's own tail overflows its share.",
+        "A budget built from averages hides exactly the hop that genuinely blows the deadline, which is why it has to be built at that percentile instead, hop by hop."
+      ]
+    },
+    {
+      "lines": [
+        "Adding up every single hop's own ninety-ninth percentile gives you a ceiling the design can plan against, nothing more.",
+        "The chain's own actually measured percentile sits below that ceiling, because the hops' latencies simply aren't independent of each other."
+      ]
+    },
+    {
+      "lines": [
+        "Per-card windowed aggregates get sized by card count and by window length.",
+        "They're kept in the stream engine's own keyed state, and mirrored straight into the online store the request path reads from.",
+        "Past a certain point, that state simply stops fitting in memory alone."
+      ]
+    },
+    {
+      "lines": [
+        "Three fallback options exist on timeout here: approve, decline, or route to a slower path entirely.",
+        "Each one carries its own error cost — a false approve weighed against a false decline.",
+        "That choice gets decided and recorded as an ADR, never just defaulted to whichever branch happens to be easiest to code.",
+        "A timeout fallback is genuinely a business decision with a recorded cost, never just whichever branch happens to be easiest to implement."
+      ]
+    },
+    {
+      "lines": [
+        "The exact features and the exact decision live at scoring time get written straight to a log.",
+        "Weeks later, when a chargeback label finally arrives, that logged record — never today's feature values — is what actually trains the next model.",
+        "Logging the features and decision live at scoring time is genuinely what lets a label arriving weeks later train on what the model actually saw."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually closed the gap between a comfortable average and a budget-blowing tail: building the budget at that steep percentile instead of the mean, treating the fallback as a priced decision instead of a default.",
+        "And logging what the model saw instead of trusting tomorrow's features to still match it."
+      ]
+    },
+    {
+      "lines": [
+        "The payment rate here grows a full tenfold.",
+        "The per-hop percentiles themselves barely move, but the feature-state size and the online store's own load both grow right along with it.",
+        "So what's actually the next bottleneck?"
+      ],
+      "answer": [
+        "Raising the timeout doesn't fix a hop that's genuinely slow — it just makes checkout wait longer before reaching that exact same fallback anyway.",
+        "The real next bottleneck here is the feature-state size and the load sitting on the store that actually holds it."
+      ]
+    }
+  ]
+}

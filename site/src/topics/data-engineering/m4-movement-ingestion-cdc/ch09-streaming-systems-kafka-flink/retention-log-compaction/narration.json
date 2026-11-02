@@ -1,0 +1,85 @@
+{
+  "topic": "de.retention-log-compaction",
+  "steps": [
+    {
+      "lines": [
+        "A team sets up a compacted topic expecting the old value for a key to vanish the instant the new one lands.",
+        "A full day goes by, and someone notices the old value is still sitting right there, perfectly readable.",
+        "That's not a bug slipping through — it's exactly what the settings they configured actually promise, once you read them closely."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the same strip of data this chapter has been building all along.",
+        "Now put two completely different rules on top of it for deciding what gets to stay.",
+        "One throws away whatever's old enough. The other keeps only the newest value for each key, no matter how old it is."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Time-based retention eventually throws old data away. The question is what unit it actually operates on.",
+        "Does it ever reach in and remove one specific record the moment that record ages out, or does it always act on something bigger?"
+      ],
+      "answer": [
+        "It always acts on something bigger: a whole segment, never a single record plucked out of the middle of one.",
+        "A segment only gets deleted once every record inside it, down to the newest one, has aged past the retention window.",
+        "That's a direct consequence of how a segment lives on disk in the first place — you can't quietly carve one record out of a file without rewriting the whole thing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that rule, measured on three real segments.",
+        "One whose newest record is still fresh enough survives completely untouched.",
+        "One whose newest record has aged past the window gets deleted in its entirety — not trimmed, not partially cleaned, just gone, all at once."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "Compaction exists to drop records once a newer value for the same key shows up.",
+        "Does the cleaner rewrite the log the instant that happens, or does it hold off for some condition first?"
+      ],
+      "answer": [
+        "It holds off.",
+        "Rewriting an entire log every single time one record gets superseded would mean constant, wasteful work for almost no benefit.",
+        "So the cleaner waits until enough of the log has gone stale — crossing a configured fraction — before it bothers doing any work at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact gauge, measured in both states.",
+        "Below the configured threshold, the cleaner simply does nothing. It's not lazy — it's waiting on purpose.",
+        "Cross that threshold, and a cleaning pass actually fires."
+      ]
+    },
+    {
+      "lines": [
+        "That threshold isn't the only thing in play, though — there's also a floor and a ceiling on timing.",
+        "A record that's too fresh stays protected no matter how dirty the log has gotten around it.",
+        "A record that's old enough gets forced into eligibility regardless of that same ratio — only the stretch in between actually depends on it."
+      ]
+    },
+    {
+      "lines": [
+        "A delete itself doesn't last forever either — it has its own built-in expiration.",
+        "A consumer that catches up to the front of the log quickly enough sees that delete marker and knows the key is gone.",
+        "A consumer that's still lagging once that marker's own window closes can miss the deletion completely — the key just quietly stops showing up as deleted at all."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel so far came from one real run of this topic's own toy retention and compaction model, happening just now.",
+        "The segment check, deciding exactly what got kept and what got dropped whole.",
+        "The dirty-ratio gate, the lag window's floor and ceiling, and both tombstone outcomes, side by side."
+      ]
+    },
+    {
+      "lines": [
+        "So: deletion by age always acts on a whole segment, never a single record.",
+        "Compaction waits for a dirty-ratio gate, bounded underneath by a floor and above by a ceiling.",
+        "And a tombstone runs on its own clock entirely — which is exactly what makes calling a compacted topic a changelog a precise claim, not just a loose comparison."
+      ]
+    }
+  ]
+}

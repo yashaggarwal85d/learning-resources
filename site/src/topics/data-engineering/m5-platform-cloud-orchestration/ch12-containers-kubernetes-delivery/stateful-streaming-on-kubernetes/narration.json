@@ -1,0 +1,112 @@
+{
+  "topic": "de.stateful-streaming-on-kubernetes",
+  "steps": [
+    {
+      "lines": [
+        "A routine maintenance task on a cluster can quietly line up a worse problem than the task itself: draining a node for patching also drains whatever was running on it.",
+        "Here, two machines being drained at the same time happen to each be holding a copy of the exact same piece of data, out of only three copies total."
+      ]
+    },
+    {
+      "lines": [
+        "If both of those machines are taken away at once, what happens to someone still trying to write new data that needs enough copies confirmed before it's considered safe?",
+        { "beat": 0.4 },
+        "Does writing simply stop for a while, does something already written get lost, or does neither of those happen at all?"
+      ],
+      "answer": [
+        "Nothing already written is lost. But writing absolutely can stop, briefly, and that's actually the point.",
+        "Something in this system is watching that count of copies, and it holds the second machine back from leaving at all until the first one has rejoined — so the drain simply pauses there instead of risking anything."
+      ]
+    },
+    {
+      "lines": [
+        "A worker running someone else's batch job can disappear and come back with a clean slate; nothing about it needed to persist.",
+        "A machine holding its own slice of a running system's actual data is a different animal entirely: it has to keep the same name and the same storage, every time it comes back, or whatever depends on it breaks."
+      ]
+    },
+    {
+      "lines": [
+        "Giving each one of these machines its own dedicated storage, tied to that machine's identity rather than to whichever physical node it happens to land on, is what lets it come back with everything intact.",
+        "What's left open is a choice: if that machine is removed on purpose, does its storage get wiped along with it, or does it stick around in case someone wants it back?"
+      ]
+    },
+    {
+      "lines": [
+        "The general pattern of naming each copy and giving it its own storage turns out not to be enough on its own for a system like this one: some of what it needs — mismatched storage sizes between copies, for instance — doesn't fit that pattern cleanly.",
+        "So the people building this particular platform wrote two resource types of their own, built on the same underlying idea but shaped to its actual needs, rather than forcing the generic pattern to do something it wasn't built for."
+      ]
+    },
+    {
+      "lines": [
+        "Spreading those copies across separate physical areas, rather than letting them cluster together by accident, means one area failing outright doesn't take every copy down with it.",
+        "The price for that safety is paid continuously: those copies now have to talk to each other across whatever separates those areas, every single time, not just during a failure."
+      ]
+    },
+    {
+      "lines": [
+        "Before restarting any one of these machines on purpose, whatever's in charge of the restart checks something very specific first: would taking this one down right now leave too few healthy copies behind for a write to still count as safely confirmed?",
+        "If the answer is yes, it simply refuses to restart that one yet, and waits."
+      ]
+    },
+    {
+      "lines": [
+        "That same refusal applies even when someone outside the system — not the system's own restart logic — tries to remove a machine for an unrelated reason, like clearing a node for maintenance.",
+        "A separate piece catches that outside removal attempt first and hands it over to the very same safety check, instead of letting it happen unchecked. A second, Kubernetes-native guard enforces the identical promise from its own side."
+      ]
+    },
+    {
+      "lines": [
+        "The platform this system runs on has recently finished removing an older coordination mechanism entirely, in favor of a newer one built into the system itself.",
+        "One consequence: a cluster still running the old mechanism can't jump straight to this newer release. It has to switch coordination mechanisms first, on an earlier release, before it can take this upgrade at all."
+      ]
+    },
+    {
+      "lines": [
+        "A separate streaming system, running its own long-lived job, can be handed to its own purpose-built controller instead of being started by hand.",
+        "Describe what that job should be doing, and the controller keeps making it true, continuously, the same reconciling idea seen earlier applied to a job instead of a workload shape."
+      ]
+    },
+    {
+      "lines": [
+        "Changing that description triggers an upgrade, and exactly how much survives the restart depends on which of three approaches is chosen.",
+        "One approach starts over with nothing. Another reuses whatever recovery information already exists, without requiring the job to be healthy first. The third takes a brand new recovery point specifically for this upgrade, which needs the job actually running to do it."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose the job needing that upgrade isn't healthy right now, and the chosen approach is the one that needs a fresh recovery point taken on the spot.",
+        { "beat": 0.4 },
+        "Does it get that fresh point anyway, fall back to something older, or does the whole upgrade just refuse to happen?"
+      ],
+      "answer": [
+        "It falls back. Taking a brand new recovery point needs the job actually running, so an unhealthy job gets whatever recovery information already exists instead.",
+        "Only if even that doesn't exist does the upgrade give up entirely — the failure is a last resort, not the first response."
+      ]
+    },
+    {
+      "lines": [
+        "Two kinds of recovery point exist here, and the difference is entirely about who's responsible for deleting them.",
+        "One kind belongs to the system itself: it creates them routinely and cleans them up on its own once they're no longer needed.",
+        "The other kind belongs to whoever asked for it; the system will never delete that one by itself, which is exactly why it's safe to keep around as a fallback."
+      ]
+    },
+    {
+      "lines": [
+        "Pointing that automatic recovery point somewhere outside the machine itself means losing the machine doesn't mean losing the recovery point too.",
+        "But the data the job is actually working with, moment to moment, still mostly lives on that machine's own local storage. The recovery point is a copy taken from there — it was never meant to replace having fast storage close to the job in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Handling every bit of this yourself means someone has to keep watching that copy count, deciding when a restart is safe, and picking the right upgrade approach every time.",
+        "A service that runs all of this on your behalf takes that watching off your plate entirely — in exchange for depending more heavily on however that particular service chooses to do it."
+      ]
+    },
+    {
+      "lines": [
+        "A disposable worker loses nothing of lasting value when it disappears; whatever it was doing simply happens again.",
+        "A machine holding real, hard-won data and a job holding state that took real time to build are not disposable in that same way at all."
+      ]
+    }
+  ]
+}

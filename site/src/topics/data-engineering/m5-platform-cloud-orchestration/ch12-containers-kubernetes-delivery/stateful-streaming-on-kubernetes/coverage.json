@@ -1,0 +1,152 @@
+{
+  "topic": "de.stateful-streaming-on-kubernetes",
+  "syllabus": [
+    {
+      "clause": "stable identities and PVC-per-broker",
+      "at": [
+        { "step": "What a broker needs that an executor didn't" },
+        { "step": "A template, not a pod" }
+      ]
+    },
+    {
+      "clause": "zone/rack awareness",
+      "at": [
+        { "step": "Rack awareness, and its cost" }
+      ]
+    },
+    {
+      "clause": "ISR-safe rolling restarts",
+      "at": [
+        { "step": "Stall, lose data, or neither?" },
+        { "step": "The roller's own rule" },
+        { "step": "Drain Cleaner and the budget's half" }
+      ]
+    },
+    {
+      "clause": "Strimzi (KRaft-only since 0.46)",
+      "at": [
+        { "step": "Strimzi's own resources" },
+        { "step": "KRaft only, now" }
+      ]
+    },
+    {
+      "clause": "the Flink Kubernetes Operator (savepoint-based upgrades, autoscaler)",
+      "at": [
+        { "step": "A Flink job as a declared resource" },
+        { "step": "Three upgrade modes" }
+      ]
+    },
+    {
+      "clause": "checkpoints on object storage",
+      "at": [
+        { "step": "Checkpoints on object storage" }
+      ]
+    },
+    {
+      "clause": "when a managed service is the better trade",
+      "at": [
+        { "step": "Managed vs. self-run" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Kubernetes documentation, StatefulSets",
+      "items": [
+        { "item": "a StatefulSet maintains a sticky, persistent identity for each Pod across rescheduling", "at": [{ "step": "What a broker needs that an executor didn't" }] },
+        { "item": "volumeClaimTemplates provides stable, per-Pod storage", "at": [{ "step": "A template, not a pod" }] },
+        { "item": "persistentVolumeClaimRetentionPolicy's whenDeleted and whenScaled policies, each Delete or Retain", "at": [{ "step": "A template, not a pod" }] }
+      ]
+    },
+    {
+      "source": "Strimzi proposal 031, StatefulSet removal",
+      "items": [
+        { "item": "Strimzi used workarounds for StatefulSet limitations such as asymmetric storage configuration", "at": [{ "step": "Strimzi's own resources" }] },
+        { "item": "Pods managed by a single StatefulSet always exist only on a single Kubernetes cluster", "at": [{ "step": "Strimzi's own resources" }] }
+      ]
+    },
+    {
+      "source": "Strimzi, deploying and managing documentation (1.3.0)",
+      "items": [
+        { "item": "StrimziPodSet is used internally by the Cluster Operator; users must not create, update, or delete it", "at": [{ "step": "Strimzi's own resources" }] },
+        { "item": "a KRaft-mode Kafka cluster requires Kafka and KafkaNodePool custom resources", "at": [{ "step": "Strimzi's own resources" }] },
+        { "item": "rack.topologyKey (e.g. topology.kubernetes.io/zone) enables rack-aware broker assignment to improve fault tolerance, within one location", "at": [{ "step": "Rack awareness, and its cost" }] },
+        { "item": "deleteClaim controls whether a node pool's PVCs are deleted automatically", "at": [{ "deep": "A little deeper" }] }
+      ]
+    },
+    {
+      "source": "Strimzi 0.46.0 release notes (mirrored copy)",
+      "items": [
+        { "item": "support for ZooKeeper-based Apache Kafka clusters and for KRaft migration has been removed", "at": [{ "step": "KRaft only, now" }] },
+        { "item": "clusters must already be using KRaft before upgrading", "at": [{ "step": "KRaft only, now" }] }
+      ]
+    },
+    {
+      "source": "Strimzi source, KafkaRoller.java",
+      "items": [
+        { "item": "rolling should happen without impacting any topic's min.isr", "at": [{ "step": "The roller's own rule" }] }
+      ]
+    },
+    {
+      "source": "Strimzi source, KafkaAvailability.java",
+      "items": [
+        { "item": "determines whether a broker can be rolled without affecting acks=all producers on topics with min.insync.replicas set", "at": [{ "step": "The roller's own rule" }] },
+        { "item": "the logged decision when a roll would remove a broker from the ISR, stalling acks=all producers", "at": [{ "step": "Stall, lose data, or neither?" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink Kubernetes Operator documentation, Job Management",
+      "items": [
+        { "item": "three supported upgrade modes: stateless, last-state, savepoint", "at": [{ "step": "Three upgrade modes" }] },
+        { "item": "savepoint mode provides maximal safety and the possibility to serve as a backup or fork point; needs a running job, falls back to the last checkpoint if unhealthy", "at": [{ "step": "Three upgrade modes" }] },
+        { "item": "last-state mode works in any application state and does not require a healthy job", "at": [{ "step": "Three upgrade modes" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink Kubernetes Operator documentation, Autoscaler",
+      "items": [
+        { "item": "the operator's built-in autoscaler adjusts parallelism per vertex based on observed load, not per job", "at": [{ "deep": "A little deeper" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink documentation, Checkpoints vs. Savepoints",
+      "items": [
+        { "item": "a checkpoint's lifecycle is managed by Flink: created, owned, and released without user interaction, deleted automatically unless configured otherwise", "at": [{ "step": "Who owns the lifecycle" }] },
+        { "item": "a savepoint is created, owned and deleted solely by the user; Flink never deletes it", "at": [{ "step": "Who owns the lifecycle" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink documentation, Checkpoints (storage)",
+      "items": [
+        { "item": "FileSystemCheckpointStorage is configured with a filesystem URL and persists checkpoint snapshots there", "at": [{ "step": "Checkpoints on object storage" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink documentation, State Backends",
+      "items": [
+        { "item": "EmbeddedRocksDBStateBackend holds in-flight data on the TaskManager's local data directories by default", "at": [{ "step": "Checkpoints on object storage" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "the native Kubernetes persistentVolumeClaimRetentionPolicy field applies to StatefulSet-managed Pods specifically; a Strimzi-managed Kafka cluster's brokers run under StrimziPodSet, not a native StatefulSet, so Strimzi's own deleteClaim field — not the native retention policy — is the mechanism that actually governs broker PVC deletion in practice", "at": [{ "deep": "A little deeper" }] },
+      { "item": "KafkaAvailability's check is per-partition: a broker hosting many topics is blocked from rolling if removing it would hurt even one of them, regardless of how safe the others are — the same all-or-nothing logic examples.py models directly", "at": [{ "step": "The roller's own rule" }] },
+      { "item": "a PodDisruptionBudget alone does not know about Kafka's ISR; it only limits how many Pods matching its selector can be unavailable at once. The actual ISR-awareness comes from KafkaAvailability inside the operator refusing its own roll — the PDB and Drain Cleaner together redirect an external eviction into that same operator-owned check, rather than the PDB itself understanding replication", "at": [{ "step": "Drain Cleaner and the budget's half" }] },
+      { "item": "last-state upgrade mode's reliance on 'the latest checkpoint information' means its safety is only as good as how recently a checkpoint was actually taken — the operator's own max-allowed-checkpoint-age setting exists specifically because a stale checkpoint under last-state can silently fall back to savepoint behavior instead", "at": [{ "deep": "A little deeper" }] },
+      { "item": "the relationship between Kafka's KRaft controller quorum and general consensus theory (Raft/Paxos) is real but this topic does not teach the quorum algorithm itself — it is declared knowledge here, the same way de.linearizability declares it, because no Data Engineering topic introduces it yet", "at": [{ "out": "a declared cross-chapter gap; see OUTLINE.md" }] },
+      { "item": "object storage for Flink checkpoints and local disk for RocksDB's live state are not interchangeable roles even though both involve the word 'state': swapping them (trying to run RocksDB directly on object storage, or treating the checkpoint directory as the only copy needed for low-latency access) defeats the reason each exists", "at": [{ "step": "Checkpoints on object storage" }] },
+      { "item": "a StrimziPodSet depends on the Strimzi operator itself to recreate a deleted Pod, unlike a native StatefulSet where the Kubernetes controller manager does that recreation on its own — a Strimzi deployment running with only one operator replica therefore has a single point of failure for that specific recovery path that a plain StatefulSet-based workload wouldn't have", "at": [{ "step": "Strimzi's own resources" }] },
+      { "item": "rack awareness as Strimzi configures it is explicitly scoped to a single location (the doc's own words: 'not across regions') — it spreads replicas across zones within one region's worth of latency, not across geographically separate regions, which would need a different design entirely", "at": [{ "step": "Rack awareness, and its cost" }] },
+      { "item": "stateless upgrade mode discards all state by design and is explicitly not the mode a production stateful job should use for a routine upgrade — its presence in the three-mode list is for the case where starting over really is acceptable, not a shortcut around the other two", "at": [{ "step": "Three upgrade modes" }] },
+      { "item": "the Flink autoscaler's metrics-only mode (observe and recommend without acting) is the documented way to build confidence in its recommendations before letting it actually resize a production job — skipping straight to live scaling is a choice the docs themselves steer away from", "at": [{ "deep": "A little deeper" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

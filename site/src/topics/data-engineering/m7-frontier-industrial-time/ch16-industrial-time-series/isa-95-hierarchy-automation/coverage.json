@@ -1,0 +1,121 @@
+{
+  "topic": "de.isa-95-hierarchy-automation",
+  "syllabus": [
+    {
+      "clause": "enterprise → site → area → line/cell → equipment → sensor; levels 0–4 (sensors, PLC/SCADA, MES, ERP) and which system owns which data",
+      "at": [
+        { "step": "Reveal: the five ISA-95 levels, by time horizon not by job title" },
+        { "step": "Reveal: the SCADA naming trap" }
+      ]
+    },
+    {
+      "clause": "the equipment hierarchy as the dimension every telemetry fact joins to",
+      "at": [{ "step": "Reveal: the hierarchy as a type-2 SCD, keyed durably" }]
+    },
+    {
+      "clause": "and how it changes over time (re-tooling, moved assets)",
+      "at": [
+        { "step": "Hook: a line's own performance number looks solid, until a machine moves" },
+        { "step": "Predict: does today's hierarchy answer a question about last quarter?" },
+        { "step": "Reveal: the measured join bug" },
+        { "step": "Reveal: why equipment_id or a tag name can't carry this alone" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ISA-95 Standard: Enterprise-Control System Integration",
+      "items": [
+        {
+          "item": "the five levels (0-4), each with its own systems of record (physical process, sensors/valves, PLCs/DCSs, MES/SCADA, ERP)",
+          "at": [{ "step": "Reveal: the five ISA-95 levels, by time horizon not by job title" }]
+        },
+        {
+          "item": "the standard primarily deals with the interface between levels 3 and 4",
+          "at": [{ "step": "Reveal: the five ISA-95 levels, by time horizon not by job title" }]
+        },
+        {
+          "item": "SCADA is placed at level 3 alongside MES on ISA's own page",
+          "at": [{ "step": "Reveal: the SCADA naming trap" }]
+        }
+      ]
+    },
+    {
+      "source": "Beyond the Pyramid: Using ISA95 for Industry 4.0 and Smart Manufacturing",
+      "items": [
+        {
+          "item": "the five levels are divided by the time horizon of the functionalities, without regard to which systems implement them",
+          "at": [{ "step": "Reveal: the five ISA-95 levels, by time horizon not by job title" }]
+        },
+        {
+          "item": "the pyramid is a traditional implementation choice, not an ISA-95 requirement; a network-structured architecture can stay compliant",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "NIST SP 800-82 Rev. 3: Guide to Operational Technology (OT) Security",
+      "items": [
+        {
+          "item": "ISA-95 grew from the Purdue Enterprise Reference Architecture",
+          "at": [{ "step": "Reveal: the five ISA-95 levels, by time horizon not by job title" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      {
+        "item": "ISA-95's levels are a functional model sorted by time horizon, not an org chart or a network diagram — the same function can in principle run on different hardware at different plants and still sit at the same level.",
+        "at": [{ "step": "Reveal: the five ISA-95 levels, by time horizon not by job title" }]
+      },
+      {
+        "item": "The standard's own page is explicit that it \"primarily deals with the interface between levels 3 and 4\" — the levels below that boundary are named but not the standard's main subject matter.",
+        "at": [{ "step": "Reveal: the five ISA-95 levels, by time horizon not by job title" }]
+      },
+      {
+        "item": "The SCADA-at-level-2-vs-level-3 disagreement is exactly the kind of surface disagreement that collapses once you ask the right question: not 'which box is SCADA' but 'what time horizon does this activity operate on'.",
+        "at": [{ "step": "Reveal: the SCADA naming trap" }]
+      },
+      {
+        "item": "A hierarchy dimension's grain has to be (equipment, time), not just (equipment) — treating it as a pure lookup table with no valid-time window is the single most common SCD mistake, and it is invisible until something actually moves.",
+        "at": [{ "step": "Reveal: the hierarchy as a type-2 SCD, keyed durably" }]
+      },
+      {
+        "item": "A type-2 SCD row's surrogate key identifies a version of the equipment's state, not the equipment itself — two rows for the same physical machine is the model working correctly, not a duplicate to be deduplicated.",
+        "at": [{ "step": "Reveal: the hierarchy as a type-2 SCD, keyed durably" }]
+      },
+      {
+        "item": "The join bug this topic measures doesn't require a stale table at all — even a hierarchy table updated the instant a machine moves will mis-answer any historical question unless the join itself carries the event's own timestamp into the lookup.",
+        "at": [{ "step": "Reveal: the measured join bug" }]
+      },
+      {
+        "item": "The understatement on one line and the overstatement on the other are the same number by construction: the join bug doesn't destroy or create output, it only relocates one equipment's entire pre-move total onto the wrong line.",
+        "at": [{ "step": "Reveal: the measured join bug" }]
+      },
+      {
+        "item": "A surrogate key existing per SCD row (not per physical machine) is a feature, not an accident: it's what lets the dimension carry two different, mutually exclusive 'truths' about the same equipment_id without contradiction.",
+        "at": [{ "step": "Reveal: why equipment_id or a tag name can't carry this alone" }]
+      },
+      {
+        "item": "A tag name or equipment_id answers 'which machine', never 'which machine, as of when' — the second question is exactly what a line or location attribute can't answer by itself once that attribute can change.",
+        "at": [{ "step": "Reveal: why equipment_id or a tag name can't carry this alone" }]
+      },
+      {
+        "item": "Every later topic in this chapter that joins to 'the hierarchy' (production entities, quality, OEE, energy) inherits this exact as-of requirement; topic 1's bug is the chapter's recurring failure mode, not a one-off.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "A 'current state' cache (the Prove-it scenario) reintroduces the identical bug in a new disguise: refreshing it faster narrows the window where it's wrong, but never closes the window to zero unless the lookup itself carries event time.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

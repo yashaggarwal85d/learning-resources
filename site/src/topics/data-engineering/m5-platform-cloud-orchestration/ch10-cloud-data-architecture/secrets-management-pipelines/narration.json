@@ -1,0 +1,71 @@
+{
+  "topic": "de.secrets-management-pipelines",
+  "steps": [
+    {
+      "lines": [
+        "Picture a password rotation that does the obvious thing: write the new value, and kill the old one in the same breath.",
+        { "beat": 0.3 },
+        "Every pipeline run that was holding that old password mid-request has no warning at all. It just starts failing, seconds later, scattered across whatever batch happened to be in flight at that exact moment."
+      ]
+    },
+    {
+      "lines": [
+        "Pause and think about this before I answer it. That script did two separate things back to back: mint a new credential, then kill the old one.",
+        "Which one of those two steps is actually the problem, and what single change removes it without giving up rotation altogether?"
+      ],
+      "answer": [
+        "Killing the old credential the instant the new one exists is the problem, not rotation itself.",
+        "Let both stay valid at once for a while. Nothing in flight on the old one ever has to notice a rotation happened, and the old one only gets cut once nothing is using it anymore."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what you're actually paying for when you use a managed secret store instead of an environment variable. It's not the string itself — a config file can hold a string for free.",
+        "You're paying for three things a config file can never give you: a log of exactly who read that value and when, a way to roll a leaked value back to the last good one, and a gate that decides who gets to read it at all."
+      ]
+    },
+    {
+      "lines": [
+        "Think of the naive rotation as replacing a lock on a door while someone's key is already in it mid-turn. There was only ever one lock, so the moment it changes, that key stops working, no matter where it happened to be in its turn.",
+        { "beat": 0.3 },
+        "The fix adds a second lock instead, sitting right next to the first, that opens the same door. Both locks work at once. The old one only comes off the door once you've actually checked that nobody's still turning that key."
+      ]
+    },
+    {
+      "lines": [
+        "A dynamic credential doesn't need anyone to remember it exists. It's handed a clock the moment it's born, and that clock is the only thing deciding when it stops working.",
+        "Nobody has to notice it, nobody has to log in and revoke it, nobody has to be on call for it. The same connection attempt that worked a minute ago just quietly stops succeeding, because its own lease ran out underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "An orchestrator's metastore is not a vault. It's an ordinary database, and whoever can query that database can read whatever got typed into a connection string there, in plain sight.",
+        "A secrets backend fixes this by changing when the lookup happens, not just where the secret is stored. The real store gets asked fresh at the moment a task actually runs, and that lookup happens before the metastore is even allowed to answer."
+      ]
+    },
+    {
+      "lines": [
+        "These three mistakes look alike, but they don't fail alike, which is exactly why one fix for one of them doesn't cover the others.",
+        "Bake a secret into an image layer, and it ships to every machine that ever pulls that image, forever. Paste it into a notebook cell, and it rides out in that cell's own saved output, not the code.",
+        "Write it straight into a pipeline's code, and it's still sitting in that code's history long after the line itself gets deleted."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it. A secret store earns its keep on access control, an audit trail, and the ability to roll back — never on being a fancier place to type a string.",
+        { "beat": 0.3 },
+        "Rotate by adding, never by overwriting. Let a credential's own clock do the revoking when it can. And remember a secret doesn't go away just because you deleted the one line you noticed — it can still be riding along on a surface you weren't looking at."
+      ]
+    },
+    {
+      "lines": [
+        "One more to work out yourself. A rotation script creates the second role, waits a fixed amount of time, then kills the first role's login — and one long-running batch job that was still mid-run on the old role gets cut off right in the middle.",
+        "Did the dual-credential idea itself just fail, or did something else go wrong?"
+      ],
+      "answer": [
+        "The idea didn't fail — the window was measured wrong.",
+        "\"Overlap until everything has moved\" means checking that the old credential actually has zero active connections left, not guessing a delay and hoping it was long enough to outlast every job that might still be running on it."
+      ]
+    }
+  ]
+}

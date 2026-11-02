@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the sources this topic ties together
+
+<ul class="resources">
+  <Resource kind="reel" title="Database extraction without hurting production" domain="data-engineering" host="de.database-extraction-without-hurting" by="Chapter 8, §8.1" />
+  <Resource kind="reel" title="Incremental extraction with high-watermark cursors" domain="data-engineering" host="de.incremental-extraction-high-watermark" by="Chapter 8, §8.1" />
+  <Resource kind="reel" title="API ingestion: pagination, limits and retries" domain="data-engineering" host="de.api-ingestion-pagination-limits" by="Chapter 8, §8.1" />
+  <Resource kind="reel" title="File ingestion and landing zones" domain="data-engineering" host="de.file-ingestion-landing-zones" by="Chapter 8, §8.1" />
+  <Resource kind="reel" title="Resilient clients: timeouts, retries, idempotency" domain="data-engineering" host="de.resilient-clients-timeouts-retries" by="Chapter 4, §4.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Structured Streaming Programming Guide: foreachBatch" href="https://spark.apache.org/docs/latest/streaming/apis-on-dataframes-and-datasets.html" by="Apache Spark docs">The at-least-once-plus-batchId recipe this topic's own measurements reproduce directly.</Resource>
+  <Resource kind="reading" title="INSERT" href="https://www.postgresql.org/docs/current/sql-insert.html" by="PostgreSQL docs">The ON CONFLICT mechanism this topic's own keyed, idempotent write stands in for.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,85 @@
+{
+  "topic": "de.schema-evolution-rules-across",
+  "steps": [
+    {
+      "lines": [
+        "Picture a record that was written back before anybody thought to track which currency an amount was even in.",
+        "Months later, the schema grows a new field for exactly that, and a reader built against the new schema opens this old record anyway.",
+        "Nothing dramatic happens. The field simply wasn't there, so the reader falls back to whatever default the schema gave it."
+      ]
+    },
+    {
+      "lines": [
+        "That default just rescued a missing field without any ceremony at all, which makes it tempting to assume every missing field gets rescued the same way.",
+        "Here's a second field the newer schema also wants, something like a discount amount, and this time there's no fallback value written into the schema for it.",
+        "Does the reader still get something back here, the way it just did a moment ago, or does the lack of a fallback change everything?"
+      ],
+      "answer": [
+        "It changes everything, and the difference is exactly the fallback value itself.",
+        "A default gives the reader somewhere to land when the field simply isn't there. Take that away and there's nothing left to land on.",
+        "So the specification doesn't guess, and it doesn't quietly fill in a blank. It treats this as a hard error."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what actually happens: the field isn't in the old record, and the newer schema gives the reader no fallback for it either.",
+        "This isn't read as empty, or as some placeholder value invented on the spot. The specification's own words are blunt about it: this is an error.",
+        "So adding a field safely isn't really about adding the field at all. It's specifically about remembering to give it a default."
+      ]
+    },
+    {
+      "lines": [
+        "Every single thing this topic has shown you up to this point has worked by matching a field to its name.",
+        "Here's a format that throws that whole idea out. On the wire, a field isn't identified by what it's called at all.",
+        "It's identified purely by a number, and that one difference is about to matter a great deal."
+      ]
+    },
+    {
+      "lines": [
+        "Somebody deletes a field, a string holding a customer's name, and nobody bothers to mark its number as off limits.",
+        "Later, an entirely different field, this time holding a number, gets handed that very same number purely by coincidence.",
+        "So here's the real question: when an old record's bytes for that number get decoded under the brand new definition, what actually happens?"
+      ],
+      "answer": [
+        "Nothing fails. That's the uncomfortable part.",
+        "The format has absolutely no way to tell these two definitions apart from each other. It just takes whatever bytes are sitting at that position and decodes them as whatever type the current definition says they are.",
+        "A name's own bytes, read back as a completely different kind of value, and it succeeds. Wrongly, but successfully."
+      ]
+    },
+    {
+      "lines": [
+        "Take an ordinary name, the bytes it's actually made of, and read those same exact bytes back as a number instead of text.",
+        "There's no crash here, no error message, nothing that would ever draw anyone's attention to a problem.",
+        "Just an ordinary looking number, sitting in a field, quietly wrong, and nothing about reserving that number up front would have cost anyone anything."
+      ]
+    },
+    {
+      "lines": [
+        "Here's one single schema change, a column renamed and a brand new one slipped in right in the middle of the others.",
+        "Now read that same change back three separate ways: matching columns purely by their name, purely by their position, and purely by a stable identifier.",
+        "Three different strategies, one real change behind all of them — and they are not about to agree with each other."
+      ]
+    },
+    {
+      "lines": [
+        "Slip one new column in anywhere but the very end, and every column after it quietly shifts over by one slot.",
+        "A reader matching purely by position has no idea this happened. It just reads whatever used to live in that slot and hands it back with total confidence.",
+        "So the brand new column ends up holding somebody else's old number, and the column after that holds yet another value that isn't its own."
+      ]
+    },
+    {
+      "lines": [
+        "Now match that exact same renamed, reordered change against a stable identifier instead of a name or a slot number.",
+        "Every column that genuinely still exists lands exactly where it should, regardless of what it's called now or where it happens to sit.",
+        "Only the column that's truly brand new comes back empty, which is the one case where that's actually the correct answer."
+      ]
+    },
+    {
+      "lines": [
+        "Three formats, and underneath all of them the exact same requirement shows up in three different costumes.",
+        "One trusts a name completely. One matches purely by number, and has to go out of its way to guard that number once a field is gone. One can carry a stable identifier that survives a rename or a reorder without flinching.",
+        "Whichever one you're reading, the real question is always the same: what, exactly, is this reader trusting to still mean the same thing it meant when the data was written?"
+      ]
+    }
+  ]
+}

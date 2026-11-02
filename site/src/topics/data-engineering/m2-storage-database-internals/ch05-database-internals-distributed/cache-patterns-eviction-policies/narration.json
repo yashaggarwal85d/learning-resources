@@ -1,0 +1,78 @@
+{
+  "topic": "de.cache-patterns-eviction-policies",
+  "steps": [
+    {
+      "lines": [
+        "Here's a kind of failure that looks like it shouldn't be possible.",
+        "A cache tells an application its write is done, long before that write has actually reached anywhere durable, purely to make the whole system feel faster.",
+        "That trade is fine right up until the moment something dies in the gap between the promise and the truth."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before settling on an answer.",
+        "The temptation is to blame the hardware, as if a sturdier machine would have been enough.",
+        "But nothing about hardware reliability explains a cache promising something before it's actually true — so what kind of fix would actually close that gap?"
+      ],
+      "answer": [
+        "The fix was never about the machine at all.",
+        "Trading away that early promise, and waiting until the durable copy is confirmed before telling the application anything, removes the gap completely.",
+        "That's a strictly slower choice, which is exactly why the faster, riskier one gets picked instead when speed matters more."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the simplest shape this caching idea can take.",
+        "The thing asking for data checks the cache itself, and only goes looking elsewhere when the cache comes up empty.",
+        "Nobody ever goes back and tells the cache the underlying answer changed, which is exactly where this simple shape quietly breaks."
+      ]
+    },
+    {
+      "lines": [
+        "Move that exact same responsibility one layer down and the behavior looks different from the outside, even though the underlying problem hasn't gone anywhere.",
+        "Now the cache itself goes and fetches the missing answer, instead of leaving that job to whoever asked for it.",
+        "Whoever's asking never even has to know there was a miss at all."
+      ]
+    },
+    {
+      "lines": [
+        "Two more ways to handle saving an answer, and they trade off in opposite directions.",
+        "One of them refuses to say it's finished until the slow, durable copy is actually confirmed, which is honest but costs real time on every single save.",
+        "The other says it's finished immediately and catches up on the durable copy later — which is exactly the promise that broke, back at the very start of this topic."
+      ]
+    },
+    {
+      "lines": [
+        "One more idea, much smaller than it sounds.",
+        "Giving a cached answer an expiration doesn't make that answer correct in the meantime.",
+        "All it does is put a limit on how long a wrong answer is allowed to keep being handed out before anyone's forced to check again."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where this topic stops describing and actually goes and measures something.",
+        "Two different rules for deciding what to throw away, run against the exact same lopsided pattern of requests, where a handful of answers get asked for constantly and most answers get asked for only once.",
+        "The rule that also pays attention to how often something gets asked for, not just how recently, comes out ahead for real, not by assumption."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Two shapes for handling a miss, differing only in who goes and fetches the missing answer.",
+        "Two shapes for handling a save, trading time now against the risk this topic opened with. An expiration that limits how long a wrong answer survives, without ever making it right. And a real, measured edge for paying attention to frequency, not just recency."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A team changes which rule their cache uses to decide what to throw away, expecting a real improvement, and the result barely moves at all.",
+        "If changing that rule barely helped, what's actually still broken underneath it?"
+      ],
+      "answer": [
+        "The rule for throwing things away was never the real problem here.",
+        "If every single answer gets let into the cache in the first place, no matter how rarely it ever gets asked for again, then changing how things get thrown out later can't undo the damage already done at the door.",
+        "Deciding what gets let in matters just as much as deciding what gets thrown out, and this scenario is exactly what happens when only one of those two decisions gets attention."
+      ]
+    }
+  ]
+}

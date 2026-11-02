@@ -1,0 +1,78 @@
+{
+  "topic": "de.data-slis-slos-error",
+  "syllabus": [
+    {
+      "clause": "the quality dimensions (freshness, completeness, validity, uniqueness, consistency, accuracy) turned into measurable SLIs at the consumer's read point",
+      "at": [
+        { "step": "Reveal: the quality dimensions, recapped" },
+        { "step": "Predict: where should freshness actually be measured?" },
+        { "step": "Reveal: the consumer's read point" }
+      ]
+    },
+    {
+      "clause": "SLO targets per data tier",
+      "at": [
+        { "step": "Predict: does every table deserve the same target?" },
+        { "step": "Reveal: SLO targets per tier, and the error budget" }
+      ]
+    },
+    {
+      "clause": "error budgets that gate risky changes and backfills",
+      "at": [
+        { "step": "Reveal: SLO targets per tier, and the error budget" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "the dimensions themselves are refresher material",
+      "at": [
+        { "step": "Reveal: the quality dimensions, recapped" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Implementing SLOs (Google SRE Workbook, Chapter 2)",
+      "items": [
+        { "item": "an error budget is 100% minus the SLO target", "at": [{ "step": "Reveal: SLO targets per tier, and the error budget" }] },
+        { "item": "an error budget needs a policy for what to do once it is exhausted", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Monitoring and Alerting on SLOs (Google SRE Workbook, Chapter 5)",
+      "items": [
+        { "item": "burn rate measures how fast, relative to the SLO, a service consumes its error budget", "at": [{ "step": "Reveal: the burn-rate alert, sourced" }, { "deep": "Internals" }] },
+        { "item": "multiple burn rates and time windows catch both a fast, sharp failure and a slower but still significant one", "at": [{ "step": "Reveal: the burn-rate alert, sourced" }, { "deep": "Internals" }] },
+        { "item": "the recommended thresholds: 2% budget in one hour and 5% in six hours page, 10% in three days tickets", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real thirty-day pipeline run (SQLite, in-process)",
+      "items": [
+        { "item": "finish-time freshness measured a perfect month while the consumer's own read point was stale for six real days", "at": [{ "step": "Prove it" }] },
+        { "item": "the six-day outage alone consumed many times a tier-one monthly error budget, and the SRE Workbook's own ticket-alert rule fired exactly during it", "at": [{ "step": "Prove it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's dashboard is not a strawman of bad monitoring -- a pipeline SLA genuinely is useful information, just a different one than freshness-at-read. The point isn't that finish-time monitoring is worthless, it's that it answers a narrower question than the one a consumer-facing SLO needs answered.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume 'consumer's read point' means instrumenting every dashboard and API individually, which doesn't scale. In practice, teams approximate it by measuring the final materialized artifact's own last-successful-refresh timestamp -- close enough to the true read point as long as nothing caches that artifact further downstream, a caveat worth naming rather than leaving implicit.", "at": [{ "step": "Reveal: the consumer's read point" }] },
+      { "item": "Tiering isn't just 'customer-facing gets a tighter number' -- the SRE Workbook's own framing ties the tier to what an error budget policy actually commits an organization to doing once it's exhausted; a tier with no real policy behind it is just a label, not a working SLO.", "at": [{ "step": "Reveal: SLO targets per tier, and the error budget" }] },
+      { "item": "The error budget's arithmetic depends entirely on the measurement window chosen (a day, a week, a rolling thirty days) -- the same SLO percentage buys a very different number of allowed-late hours depending on the window, which is why this topic states the window explicitly rather than leaving 'the SLO' as a bare percentage.", "at": [{ "deep": "Internals" }] },
+      { "item": "The SRE Workbook's multi-burn-rate table is itself a tradeoff, not a universal constant -- its own text names the alternative (a single fixed window) as trading precision against recall; the specific percentages (2%, 5%, 10%) are the Workbook's own recommended starting point for a request-based SLI, adapted here to a once-a-day freshness check's natural granularity rather than applied unchanged.", "at": [{ "step": "Reveal: the burn-rate alert, sourced" }] },
+      { "item": "A reader carrying forward topic 3's backfill vocabulary might assume 'spending the budget on purpose' means a backfill is free as long as budget remains -- it still costs real budget, the difference is only that the cost was anticipated and approved beforehand rather than discovered after the fact in an incident review.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The real lab's finish-time SLI staying at a perfect score the entire month isn't a contrived result to make the point land -- it is the realistic failure mode this topic exists to warn about: a pipeline-level SLA can be contractually met in full while a consumer-facing promise is broken, with no contradiction in the data at all.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic deliberately reuses the shop's own `fct_orders` table (seen already in the course) rather than introducing a new example, so the freshness-at-read-point distinction lands on a table the learner already has a mental model of, instead of competing for attention with a new domain.", "at": [{ "step": "Hook" }] },
+      { "item": "The topic's own thirty-day window and the SRE Workbook's own thirty-day example window are the same length by deliberate choice, not coincidence -- it lets the Workbook's percentage-based thresholds (2%, 5%, 10% of budget) carry over to this topic's own numbers without rescaling, which the Internals deep dive calls out explicitly rather than leaving it to be noticed.", "at": [{ "deep": "Internals" }] },
+      { "item": "A reader might read 'tier' as a property of a table fixed forever at creation time; in practice a table's tier can change as its consumers change (an internal exploration table that later gets wired into a customer-facing product needs its SLO re-set, not inherited from its old tier).", "at": [{ "step": "Predict: does every table deserve the same target?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,6 @@
+- **Percentile**: the value below which a stated percentage of observations fall (p99 is the value that 99% of requests were at or below).
+- **Histogram**: a bucketed count of how many observations fell into each value range, mergeable with another histogram bucket by bucket.
+- **Closed-loop generator**: a load generator that sends its next request only after the previous one's response arrives.
+- **Constant-rate (open-loop) generator**: a load generator that keeps a fixed, scheduled send rate regardless of how long responses take.
+- **Fan-out**: a single request that depends on responses from many parallel sub-requests, finishing only once the slowest one does.
+- **Coordinated Omission**: the effect by which a closed-loop generator's own pacing quietly skips measuring exactly the slow requests that matter most.

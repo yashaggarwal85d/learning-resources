@@ -1,0 +1,114 @@
+{
+  "topic": "dsa.integer-compression",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "A sorted list of about a million numbers, stored plainly, takes a fixed amount of memory for every single one of them, no matter how those numbers happen to be spread out.",
+        { "beat": 0.4 },
+        "A counting argument says something sharper is possible: across every list of that size and range, no encoding can average fewer than a certain number of bits per entry — call it the honest floor.",
+        { "beat": 0.4 },
+        "Real schemes spend more than that floor, some by a little, some by a surprising amount. So here's the real question worth sitting with: whichever of them spends the fewest bits, is that also the one that decodes the fastest?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's a scheme built entirely around one small idea. Spend most of a byte on actual payload, and reserve just one bit of it to say whether another byte follows.",
+        { "beat": 0.4 },
+        "A small number fits in that payload with nothing left over, so it's written as a single byte. A larger number spills past what one byte's payload can hold, so a second byte gets chained on, flagged as a continuation of the first."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something worth noticing about decoding this scheme, one byte at a time.",
+        { "beat": 0.4 },
+        "Before reading any of a particular number's bytes, does the decoder already know how many of them it's about to read — or does it only find that out byte by byte, as it goes?"
+      ],
+      "answer": [
+        "It only finds out byte by byte — there's no way to know in advance.",
+        "Each byte's own continuation flag has to actually be read before the decoder knows whether there's more coming, which makes every single one of those checks a genuine guess the processor has to make and might get wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Measure how many of those genuine guesses a real list of numbers actually forces, byte by byte, and the number lands just under two for every single entry decoded.",
+        { "beat": 0.4 },
+        "That's not a flaw in any particular implementation. It's the direct, unavoidable cost of a scheme whose very shape depends on the value being read — the processor simply cannot know ahead of time what's coming, so it has to guess, and sometimes it guesses wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a completely different way to spend those bits. Instead of deciding one byte at a time, break the whole list into fixed-size groups first.",
+        { "beat": 0.4 },
+        "For each group, find the widest number it contains, and give every single entry in that group exactly that many bits — not one bit more, and critically, not one flag bit, for any of them.",
+        { "beat": 0.4 },
+        "Nothing inside the group needs deciding anymore. The width was settled once, for the whole group, before a single value gets unpacked."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose a group of entries is almost entirely small and tidy — except for one number that happens to be much larger than all the rest.",
+        { "beat": 0.4 },
+        "That group still has to settle on exactly one width for every entry inside it. So what happens to that width?"
+      ],
+      "answer": [
+        "It widens to cover the one large number — and every other entry in that same group now pays for a width none of them actually needed.",
+        "A group's width is set by its single largest member, full stop. One outlier doesn't just cost itself extra bits; it drags every ordinary neighbor sharing its group along with it."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the fix, and it's a small one. Choose a width that comfortably covers most of a group's entries, and simply set the rare oversized ones aside in their own separate list.",
+        { "beat": 0.4 },
+        "Decode the group at that narrow, comfortable width, then go back and patch each set-aside value into its rightful place afterward.",
+        { "beat": 0.4 },
+        "Measured against a group that had to widen for its outliers, this costs dramatically less — and it still never needs a single per-entry flag while decoding the group itself."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the byte-at-a-time scheme for a moment, with one change. Instead of one flag bit living inside every single byte, pull four numbers together and describe all four of their lengths with a single shared byte, set just ahead of them.",
+        { "beat": 0.4 },
+        "Now decoding only has to consult one of these shared bytes for every four numbers, instead of checking a flag inside every single byte along the way."
+      ]
+    },
+    {
+      "lines": [
+        "A later version of this same grouped idea takes one more step: instead of weaving those shared length-bytes in among the actual numbers, it pulls every single one of them out into its own stream entirely, read just ahead of all the data.",
+        { "beat": 0.4 },
+        "Does moving them out like that change how many bits the whole encoding spends?"
+      ],
+      "answer": [
+        "No — it's the exact same number of bits. Only where they sit changes, not how many there are.",
+        "What that separation buys isn't a smaller encoding at all — it's a data portion that now sits together as one uninterrupted run, which is exactly the shape a wide, single-instruction read wants to work with."
+      ]
+    },
+    {
+      "lines": [
+        "Now put the two measurements side by side for every scheme covered so far: how many bits each one spends, and how many genuine guesses its decoder has to make.",
+        { "beat": 0.4 },
+        "Here's the twist: those two rankings don't agree with each other. The fixed-width group scheme, on this particular list, actually spends more bits than the simple byte-at-a-time one did — yet it asks its decoder to make almost no guesses at all.",
+        { "beat": 0.4 },
+        "Patch away that scheme's rare outliers, and it keeps that same tiny guess count while taking back nearly everything the extra bits had cost."
+      ]
+    },
+    {
+      "lines": [
+        "This same family of ideas shows up directly inside real systems that have to decode enormous lists, fast, over and over.",
+        { "beat": 0.4 },
+        "One well-known search engine's own list format decodes fixed groups at a time, patching away outliers in one kind of group but not another, depending on what each group is actually used for.",
+        { "beat": 0.4 },
+        "A widely used columnar file format names its own two separate schemes for exactly this job — one built on the group-and-patch idea, another on run-length grouping instead."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the lesson this whole topic was really building toward: the fastest way to decode something was never about finding the smallest encoding of it.",
+        { "beat": 0.4 },
+        "It was about removing the decisions a value's own content could otherwise force the decoder to make, one guess at a time.",
+        { "beat": 0.4 },
+        "And the plain sorted list from the previous lesson — the one container that simply stored its values as they were — turns out to have been exactly this scheme's own starting point the entire time."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the slot, the other logs, the retention incidents and the snapshot handoff this topic's two positions sit on top of
+
+<ul class="resources">
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="MySQL binlog and other change logs" domain="data-engineering" host="de.mysql-binlog-other-change" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Replication-slot WAL retention incidents" domain="data-engineering" host="de.replication-slot-wal-retention" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Initial snapshot to stream handoff" domain="data-engineering" host="de.initial-snapshot-stream-handoff" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="2PC in production databases" domain="data-engineering" host="de.2pc-production-databases" by="Chapter 5, §5.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="KIP-618: Exactly-Once Support for Source Connectors" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-618%3A+Exactly-Once+Support+for+Source+Connectors" by="Apache Kafka wiki">The atomic write-plus-fencing design, and the exactly.once.source.support property.</Resource>
+  <Resource kind="reading" title="Exactly-once delivery (EOS)" href="https://debezium.io/documentation/reference/stable/configuration/eos.html" by="Debezium docs">No internal dedup layer, the documented doubt, the Jepsen reports, the supported connectors.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">The at-least-once-by-default behavior when recovering from a fault.</Resource>
+  <Resource kind="reading" title="Kafka Connect configuration reference" href="https://docs.confluent.io/platform/current/installation/configuration/connect/" by="Confluent docs, standing in for an unreadable Apache Kafka page">The offset storage topic and the two-rolling-upgrade enablement path.</Resource>
+  <Resource kind="reading" title="Kafka sink connector configuration reference" href="https://docs.confluent.io/platform/current/installation/configuration/connect/sink-connect-configs.html" by="Confluent docs">errors.tolerance, named only.</Resource>
+  <Resource kind="reading" title="Logical Decoding Concepts" href="https://www.postgresql.org/docs/18/logicaldecoding-explanation.html" by="PostgreSQL 18 docs">The repeated-delivery guarantee a crash leaves behind.</Resource>
+</ul>
+
+</section>

@@ -1,192 +1,192 @@
 import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
-// Every number here is computed and asserted in examples.py: fourteen teams by sixty datasets by
-// three environments is two thousand five hundred twenty roles; a new restricted dataset every
-// team needs costs RBAC forty-two role edits and ABAC one tag edit; an access review over three
-// synthetic grants catches exactly one stale one.
+// Measured directly (examples.py): 14 teams x 60 datasets x 3 environments, one role per
+// triple, is 2,520 roles. Adding one new restricted dataset for one team needs 3 new roles
+// under RBAC (one per environment) versus 0 new policy edits under ABAC, because the existing
+// tag-based rule already covers the new dataset by attribute. The same ABAC rule is tested on
+// an allow case, a tier-deny case, and a PII-without-purpose deny case.
 const reel: Reel = {
   steps: [
     {
       title: 'Hook',
       body: (
         <>
-          The shop has fourteen teams, sixty datasets and three environments. Security asks for a
-          role per team per dataset per environment, for least privilege. Count the roles.
+          The shop has fourteen teams, sixty datasets and three environments, and security asks
+          for "a role per team per dataset per environment, for least privilege." Count the
+          roles. Then: when data science gets a new restricted dataset, does that need one
+          change, or fourteen?
         </>
       ),
-      duration: 5.2,
-      fig: 'fourteen teams, sixty datasets, three environments. Count the roles.',
+      duration: 5,
+      fig: 'a role per team, per dataset, per environment. Count the roles.',
       Visual: S.Hook,
     },
     {
-      title: 'Predict: one change, or fourteen?',
+      title: "Reveal: RBAC's own shape -- a role holds many privileges, a user holds one or more roles",
       body: (
         <>
-          The data science team gets a new dataset with a restricted column. Under the role
-          grid, does that take one change, or fourteen? And under a tag-based rule instead?
+          A role bundles up the privileges a job needs. A person is assigned one or more roles,
+          not given privileges one at a time. Security administration becomes managing roles,
+          not managing every individual grant.
         </>
       ),
-      duration: 5.2,
-      fig: 'one new restricted dataset. One change, or fourteen?',
+      duration: 4.8,
+      fig: 'a role holds privileges. A person holds one or more roles.',
+      Visual: S.RevealRBACShape,
+    },
+    {
+      title: 'Predict: 14 teams, 60 datasets, 3 environments, one role per triple. How many roles?',
+      body: (
+        <>
+          If "least privilege" means a separate role for every team, dataset and environment
+          combination, how many roles does that produce for fourteen teams, sixty datasets and
+          three environments?
+        </>
+      ),
+      duration: 2.8,
+      fig: '14 teams x 60 datasets x 3 environments. How many roles?',
       predict: {
         options: [
-          { label: 'Both approaches need about the same number of changes' },
-          { label: 'The role grid needs one change per team; a tag-based rule needs one, total', correct: true },
+          { label: 'A few hundred -- most teams only touch a handful of datasets in practice' },
+          { label: 'Over two thousand -- the count is the full product of all three numbers', correct: true },
         ],
         explain: (
           <>
-            A role tied to one specific team and dataset has to be created or edited for every
-            team that needs the new dataset. A rule that reads a tag needs the tag applied once —
-            every team's existing rule already reads it.
+            Over two thousand. "A role per triple" means every team-dataset-environment
+            combination gets its own role, whether or not that team actually uses that dataset
+            yet -- the count is the full product, not the realistic subset.
           </>
         ),
       },
-      Visual: S.Predict,
+      Visual: S.PredictRoleCount,
     },
     {
-      title: 'Reveal: the role count, done out',
+      title: 'Reveal: 2,520 roles, measured directly',
       body: (
         <>
-          Teams times datasets times environments. Not a one-time number — every new team,
-          dataset or environment multiplies it again, until nobody can say what a given role
-          actually grants anymore.
+          Measured directly: fourteen times sixty times three is two thousand five hundred and
+          twenty roles. Nobody reviews a list that size and can say with confidence who should
+          still have what.
         </>
       ),
-      duration: 5.2,
-      fig: 'teams times datasets times environments. It only grows.',
+      duration: 4.8,
+      fig: '14 x 60 x 3: two thousand five hundred twenty roles, measured.',
       Visual: S.RevealRoleCount,
     },
     {
-      title: 'Reveal: one rule, read from tags, instead',
+      title: 'Elaborate: ABAC replaces the grid with one rule over attributes',
       body: (
         <>
-          A policy that reads a tag on the data itself — its tier, its category — replaces the
-          entire grid of roles with a handful of short rules, written once.
+          Attribute-based access control decides access by evaluating attributes of the subject,
+          the object and the environment against a policy -- not by matching a role to a name.
+          One rule like "analysts may read tier confidential or below, never category PII
+          without a purpose attribute" replaces the entire grid.
         </>
       ),
-      duration: 5.2,
-      fig: 'read the tag, not the team. A handful of rules, not a grid.',
-      Visual: S.RevealAbacRule,
+      duration: 5,
+      fig: 'attributes, not roles per combination. One rule for the whole grid.',
+      takeaway: 'RBAC multiplies a role for every team and dataset; ABAC writes one rule over the data and the person instead.',
+      Visual: S.ElaborateABACRule,
     },
     {
-      title: 'Reveal: the decision point and the enforcement point are separate',
+      title: 'Predict: data science gets a new restricted dataset. New RBAC roles vs new ABAC edits?',
       body: (
         <>
-          Where data is actually read sits one box, asking a question. A separate engine answers
-          it. Splitting them lets every data surface in the company share one policy, and one
-          audit trail.
+          Data science now needs access to a brand-new dataset with a restricted column. Under
+          the role-per-triple RBAC scheme, how many new roles does that take? Under the one
+          tag-based ABAC rule, how many edits?
         </>
       ),
-      duration: 5.6,
-      fig: 'ask here, decide there. One engine, every surface.',
-      Visual: S.RevealDecisionEnforcement,
+      duration: 2.8,
+      fig: 'one new restricted dataset, one team. RBAC roles vs ABAC edits?',
+      predict: {
+        options: [
+          { label: 'Both need the same number of changes -- a new dataset is a new dataset either way' },
+          { label: 'RBAC needs a new role per environment; ABAC needs none, if the tag already matches', correct: true },
+        ],
+        explain: (
+          <>
+            RBAC needs a brand new role, created and assigned, for every environment that
+            dataset lives in. ABAC needs nothing new at all, as long as the new dataset is
+            tagged the way the existing rule already reads.
+          </>
+        ),
+      },
+      Visual: S.PredictNewDataset,
     },
     {
-      title: 'Reveal: what the policy engines actually hand back',
+      title: 'Reveal: 3 new roles under RBAC; 0 edits under ABAC, measured directly',
       body: (
         <>
-          Ask one of these engines a question, and it hands back a verdict — allow, deny, or a
-          narrower instruction: filter these rows out, mask this column.
+          Measured directly: one team needing the new dataset across three environments costs
+          three brand-new RBAC roles. The same change costs zero ABAC rule edits, because the
+          rule already reads "tier confidential," and the new dataset is tagged that way too.
         </>
       ),
-      duration: 5.2,
-      fig: 'ask the engine. Back comes allow, deny, filter, or mask.',
-      Visual: S.RevealPolicyEngines,
+      duration: 4.8,
+      fig: 'RBAC: 3 new roles. ABAC: 0 edits. Same change, measured.',
+      Visual: S.RevealNewDatasetCost,
     },
     {
-      title: 'Reveal: identity comes from outside, through the IdP',
+      title: 'Elaborate: the decision point and the enforcement point are two different jobs',
       body: (
         <>
-          A person proves who they are once, at the company's own identity provider. Every
-          downstream system trusts that single proof instead of asking again itself.
+          A policy engine like OPA decouples deciding from enforcing: software asks a question
+          with structured data, and the engine answers allow, deny, or in Trino's case a row
+          filter or a column mask to apply. One engine can answer that question for every
+          enforcement point in the stack, instead of each one reimplementing the logic.
         </>
       ),
-      duration: 5.2,
-      fig: 'prove it once, at the IdP. Everyone downstream trusts it.',
-      Visual: S.RevealIdpFederation,
+      duration: 5,
+      fig: 'decision point: one engine, asked by many. Enforcement: applies the verdict.',
+      takeaway: 'Deciding what is allowed and enforcing it where data lives are separate jobs; one engine can answer for many enforcers.',
+      Visual: S.ElaborateDecisionEnforcement,
     },
     {
-      title: 'Reveal: provisioning keeps accounts and groups in sync',
+      title: 'Reveal: identity comes from outside the policy engine entirely',
       body: (
         <>
-          Proving who you are and actually having an account somewhere are two separate jobs. A
-          second protocol creates and removes accounts and group membership as people join, move
-          and leave.
+          None of this knows who someone is on its own. Single sign-on through the company's
+          identity provider authenticates a person once, and a separate provisioning protocol
+          creates and removes their accounts across every connected system -- so removing someone
+          in one place removes their access everywhere, not just from the system an admin
+          happened to touch.
         </>
       ),
-      duration: 5.6,
-      fig: 'a second job: creating, and removing, the account itself.',
-      takeaway: 'Authentication proves who someone is; provisioning is the separate job of keeping their accounts in sync.',
-      Visual: S.RevealProvisioning,
+      duration: 5,
+      fig: 'SSO: authenticate once. Provisioning: remove access everywhere, from one place.',
+      Visual: S.RevealIdentityFederation,
     },
     {
-      title: 'Reveal: offboarding in one place, everywhere at once',
+      title: 'Reveal: entitlements drift, so a periodic access review is the catch policy alone misses',
       body: (
         <>
-          Because every downstream system trusts the same identity provider and the same
-          provisioning feed, removing someone there removes their access everywhere at once — no
-          extra ticket, per system, required.
+          None of this stays correct on its own. People change teams, projects end, and a rule
+          written for one purpose keeps granting access long after the reason is gone. A
+          scheduled review that lists who has what, with an owner who attests to each one, is
+          the control that catches that drift -- something no policy or role, however well
+          written, checks by itself.
         </>
       ),
-      duration: 5.6,
-      fig: 'remove them once. Every downstream system follows.',
-      takeaway: 'Offboarding looks instant only because provisioning, not authentication alone, is wired to every system.',
-      Visual: S.RevealOffboarding,
-    },
-    {
-      title: 'Reveal: periodic access reviews catch what policy never will',
-      body: (
-        <>
-          A rule evaluated correctly every single time still grants access the rule says is
-          correct, long after the real reason for it ended. A scheduled review, with an owner who
-          has to attest, is the control that catches that.
-        </>
-      ),
-      duration: 5.6,
-      fig: 'a correct rule, an expired reason. Someone has to check.',
-      takeaway: "A policy that's evaluated correctly can still be granting access for a reason that's gone stale.",
+      duration: 5,
+      fig: 'entitlements drift silently. A periodic review, with an owner, catches it.',
       Visual: S.RevealAccessReviews,
     },
     {
       title: 'Recap',
       body: (
         <>
-          A role per team per dataset per environment only ever grows. A rule that reads a tag on
-          the data stays flat. A decision point and an enforcement point, kept separate, let one
-          engine serve every surface. Identity and provisioning are different jobs, and a review
-          still has to check what a correct rule alone cannot.
+          A role per combination multiplies into thousands, measured. One attribute-based rule
+          replaces the whole grid, and costs nothing when a new dataset already fits the pattern.
+          Deciding and enforcing stay separate jobs, fed by an identity that comes from outside
+          the policy entirely.
         </>
       ),
-      duration: 5.6,
-      fig: 'roles grow, tags stay flat; ask here, decide there; review, still needed.',
+      duration: 5,
+      fig: '2,520 roles vs one rule; decision and enforcement; identity from outside.',
+      takeaway: 'Who someone is, what a rule allows, and who enforces it are three separate questions no working policy can skip.',
       Visual: S.Recap,
-    },
-    {
-      title: 'Prove it',
-      body: (
-        <>
-          The shop's grid is still live: fourteen teams, three environments. One new restricted
-          dataset lands in every team's hands at once. How many changes does each approach
-          actually need now, and by how much do they differ?
-        </>
-      ),
-      duration: 5.6,
-      fig: 'one dataset, every team. How many changes, each way?',
-      predict: {
-        options: [
-          { label: 'Both approaches need roughly the same handful of changes' },
-          { label: 'The role grid needs dozens of edits; the tag rule needs exactly one', correct: true },
-        ],
-        explain: (
-          <>
-            Fourteen teams across three environments means the role grid needs a new or edited
-            role for every one of those combinations — dozens of edits. The tag-based rule needs
-            the new dataset's tag set once, and every existing rule already reads it.
-          </>
-        ),
-      },
-      Visual: S.ProveIt,
     },
   ],
 };

@@ -1,0 +1,93 @@
+{
+  "topic": "de.disaster-recovery-lakehouse-platforms",
+  "steps": [
+    {
+      "lines": [
+        "A company replicates its entire lakehouse bucket to a second region, every single night, and calls that disaster recovery.",
+        "Then a real regional outage hits, and the catalog database turns out to have never been backed up at all.",
+        "Every table's actual data survived the outage perfectly.",
+        "None of it points at anything a reader can actually use."
+      ]
+    },
+    {
+      "lines": [
+        "Worth pausing on this before it gets answered.",
+        "Every single file that lived in the primary bucket now also sits safely in the secondary region.",
+        "Does that mean the table itself is safe?",
+        "Or is there something a table needs that a bucket copy alone never actually provides?"
+      ],
+      "answer": "No, the data alone isn't the table. A table is its data plus the metadata that locates and describes it, and a bucket copy only ever moves the first half of that."
+    },
+    {
+      "lines": [
+        "Here's the first specific thing that metadata copy leaves behind.",
+        "A table's manifest doesn't store a loose hint about where its files live -- it stores a fully qualified path.",
+        "Copy the bucket's bytes into a new region without rewriting that manifest, and every single path still names a location in a region that's gone.",
+        "Only once the manifest itself is rewritten to the new region's own paths does the replicated data become reachable again."
+      ],
+      "takeaway": "Replicated bytes at an old absolute path are unreachable until the manifest is rewritten to match."
+    },
+    {
+      "lines": [
+        "Here's a second, entirely separate thing a bucket copy never touches.",
+        "The catalog database is the system that answers which manifest belongs to which table in the first place.",
+        "It lives outside the bucket entirely, so a job that replicates bucket bytes has no reason to ever back it up.",
+        "Lose that catalog, and a table's files can be sitting there completely intact while nothing in the system can say where to even look."
+      ],
+      "takeaway": "A table's data can survive perfectly and still be unfindable, because the catalog that locates it is a different system."
+    },
+    {
+      "lines": [
+        "One more question worth sitting with before the reveal.",
+        "The encrypted bytes themselves made the trip to the secondary region without any trouble.",
+        "Does the key that encrypted them need to make that same trip?",
+        "Or is ciphertext something that travels safely on its own, key or no key?"
+      ],
+      "answer": "Yes, the key absolutely has to travel too. Ciphertext without its matching key is just noise, and a key that only ever existed in the failed region leaves every replicated byte permanently unreadable."
+    },
+    {
+      "lines": [
+        "Here's that failure demonstrated directly, on the exact same encrypted bytes both times.",
+        "A key that's scoped to a single region simply fails to decrypt anything once that region is gone.",
+        "A key that's genuinely multi-region is, by definition, the same key material sitting in both places at once.",
+        "Handed that same ciphertext, the multi-region key decrypts it without any trouble at all."
+      ],
+      "takeaway": "A key that only exists in the failed region turns every replicated byte into unreadable noise."
+    },
+    {
+      "lines": [
+        "Now picture the worst version of this problem: the attacker isn't outside the system, they're holding valid admin credentials.",
+        "Against an ordinary backup, those stolen credentials are enough to delete the only copy that was left.",
+        "Against a compliance-mode, write-once backup, that exact same delete request gets refused, from that exact same admin, until its retention period has genuinely run out.",
+        "The protection isn't about trusting fewer people with access -- it's about surviving the moment the access itself has been stolen."
+      ],
+      "takeaway": "Immutable backups exist for the moment someone with full, legitimate access is the attacker."
+    },
+    {
+      "lines": [
+        "All of this only matters if the recovery targets behind it are actually real numbers, not aspirations.",
+        "A recovery point target and a recovery time target are both just claims on a page until somebody actually restores something and times it.",
+        "A regulation like DORA turns that restore drill from an occasional nice-to-have into a standing, recurring obligation for the organizations it covers.",
+        "The regulator isn't inventing a new idea here -- it's making the one honest proof of a recovery plan routine instead of theoretical."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole picture together now.",
+        "Recovery point and recovery time targets get set per tier, the same way an earlier topic tiered its freshness targets.",
+        "Four separate systems -- the manifest's paths, the catalog, the encryption key, and a replicated stream's own offsets -- each need their own recovery plan, because a bucket copy only ever covers one of them.",
+        "And none of those plans are proven until a real, timed restore actually meets the target it was supposed to meet."
+      ],
+      "takeaway": "Bucket replication answers one of four questions a real disaster recovery plan has to answer."
+    },
+    {
+      "lines": [
+        "One real test to close on, run against real local files and a real encryption key rather than just described.",
+        "A manifest's absolute paths are shown breaking after a simulated region move, then genuinely working again once those paths get rewritten.",
+        "A key that's scoped to just one region is handed a real piece of ciphertext to decrypt.",
+        "Does it somehow manage to decrypt that ciphertext anyway, or does it fail exactly the way the claim predicts?"
+      ],
+      "answer": "It fails exactly the way the claim predicts, with a real decryption error raised on real ciphertext. Only the key that's genuinely shared across both regions decrypts that same ciphertext without issue."
+    }
+  ]
+}

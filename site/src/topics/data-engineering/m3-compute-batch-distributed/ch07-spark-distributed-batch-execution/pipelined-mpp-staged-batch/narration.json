@@ -1,0 +1,68 @@
+{
+  "topic": "de.pipelined-mpp-staged-batch",
+  "steps": [
+    {
+      "lines": [
+        "Every topic in this chapter so far has assumed one way of running a distributed job.",
+        "Cut the work at every shuffle, write each piece's output down before moving on, and recover from a failure by redoing just the piece that failed. This closing topic steps outside that habit, to say plainly what it isn't."
+      ]
+    },
+    {
+      "lines": [
+        "That habit is a trade, not a given.",
+        "Writing every piece's output down before continuing is what makes recovering from a failure cheap. An engine that never stops to write anything down can move faster, but it gives something up to do it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the answer comes.",
+        "Take the exact same per-row computation. Run it as one big batch at a time, versus one row at a time, in a plain loop. Which comes out faster, per row?"
+      ],
+      "answer": "The batched version. Doing many rows in one call beats paying a loop's own overhead on every single row."
+    },
+    {
+      "lines": [
+        "Faster in large batches, and by a real margin, measured directly rather than assumed.",
+        "The same per-row work, done many rows at a time, comes out meaningfully faster per row than the identical work done one row at a time in a loop."
+      ]
+    },
+    {
+      "lines": [
+        "That speed has a cost, and it's the same cost this whole chapter has been quietly paying to avoid.",
+        "An engine that never stops to write a piece down has nothing to retry from if a single piece fails. One system that defaults to exactly this behavior says so plainly: by default, one failed piece of work fails the whole job."
+      ]
+    },
+    {
+      "lines": [
+        "A different question, same shape.",
+        "One pipeline uses each row's result the moment it's produced, then throws it away. The other keeps every row's result around until the very end. As the number of rows climbs, whose memory use actually grows?"
+      ],
+      "answer": "The one that keeps every result around. Using a result immediately and discarding it costs almost nothing extra as the row count climbs; holding on to all of them does."
+    },
+    {
+      "lines": [
+        "That's exactly what measuring it directly shows.",
+        "Across a huge jump in row count, the pipeline that keeps every result in memory grows right along with it. The one that uses each result immediately and moves on barely grows at all."
+      ]
+    },
+    {
+      "lines": [
+        "There's a way to buy back some of what the fast, write-nothing-down approach gives up, without going back to writing everything down constantly.",
+        "One system built on that fast approach added an option that, on purpose, spools its in-flight data to storage anyway -- so a failed piece of work can be retried from what's already been saved, instead of failing the whole job."
+      ]
+    },
+    {
+      "lines": [
+        "Three real systems, three different places to pay the same underlying cost.",
+        "One writes every piece down for recoverability, and pays for that in speed. Another keeps everything moving for speed, and risks the whole job on one failure.",
+        "A third moves data through step by step, bounding how much it ever has to hold onto, without ever writing entire pieces down the way the first one does."
+      ]
+    },
+    {
+      "lines": [
+        "One chapter spent on a single way of running a distributed job.",
+        "Now it has two neighbors, each built around giving up something different to get what it gets."
+      ]
+    }
+  ]
+}

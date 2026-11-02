@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Kafka Streams and the KStream/KTable duality
+
+This topic answers the previous one's handoff — every engine in this chapter eventually has to
+put its output somewhere a person or another system can query. This is the first of the two
+destinations. See
+[Kafka Streams and the KStream/KTable duality](../kafka-streams-ktable-duality/) first if any of
+that isn't familiar.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Tableflow in Confluent Cloud" href="https://docs.confluent.io/cloud/current/topics/tableflow/overview.html" by="Confluent">Automated topic-to-Iceberg/Delta materialisation.</Resource>
+  <Resource kind="reading" title="About Iceberg Topics" href="https://docs.redpanda.com/current/manage/iceberg/about-iceberg-topics" by="Redpanda Streaming">Broker-native Iceberg materialisation.</Resource>
+  <Resource kind="reading" title="Flink Writes" href="https://iceberg.apache.org/docs/latest/flink-writes/" by="Apache Iceberg">The hand-built Flink sink's exactly-once commit.</Resource>
+  <Resource kind="reading" title="Primary-Key Table" href="https://paimon.apache.org/docs/master/primary-key-table/" by="Apache Paimon">The LSM-tree storage model.</Resource>
+</ul>
+
+</section>

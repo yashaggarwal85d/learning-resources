@@ -1,0 +1,73 @@
+{
+  "topic": "de.bi-serving-layer-performance",
+  "steps": [
+    {
+      "lines": [
+        "A dashboard has run fast all quarter, without a single complaint.",
+        "Then, every Monday morning, out of nowhere, that exact same dashboard starts queueing for half a minute at a time.",
+        "Nothing about the dashboard's own query ever changed."
+      ]
+    },
+    {
+      "lines": [
+        "Two numbers, both completely outside the query itself, actually explain what's happening here.",
+        "Given that, which single lever would actually fix this: making the query faster, or something else entirely."
+      ],
+      "answer": [
+        "A sudden spike in Monday morning usage runs straight into a fixed ceiling on how many queries can run at once.",
+        "Once that ceiling is full, every additional query simply queues, no matter how fast it would have run on its own. Only a bigger reservation, or spreading that load out, actually fixes a ceiling problem like this one."
+      ]
+    },
+    {
+      "lines": [
+        "The oldest lever here is almost embarrassingly simple.",
+        "Compute the expensive aggregation exactly once, on a schedule, and let every single dashboard query that small, already computed result instead of the enormous source table underneath it.",
+        "Every dashboard pays a tiny cost instead of all of them paying the full cost, over and over again."
+      ]
+    },
+    {
+      "lines": [
+        "A second lever works at a different layer entirely.",
+        "Cache a query's exact result, so that an identical or nearly identical query later on can simply reuse it instead of running all over again.",
+        "But a cached result is only ever as fresh as whatever its invalidation policy actually accounts for."
+      ]
+    },
+    {
+      "lines": [
+        "One real engine does exactly this, by its own vendor's own description.",
+        "It's a fast, in memory service that caches a reserved set of preferred tables, and it can accelerate a large table joined against a small handful of smaller ones.",
+        "Anything it genuinely can't accelerate doesn't fail. It just quietly falls back to running the normal way instead."
+      ]
+    },
+    {
+      "lines": [
+        "A comparable engine, on a different platform, takes a noticeably different approach.",
+        "The very first time it reads a piece of remote data, it automatically keeps a local copy nearby, so every read after that one runs locally, and runs significantly faster.",
+        "The moment any of that underlying data actually changes, the stale copy gets invalidated automatically, with nobody needing to step in and clear it by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Every single one of these engines, underneath all of it, has a hard ceiling on how many queries it can run concurrently.",
+        "Cross that ceiling, and queries start queueing, or start failing outright, no matter how fast any one of those individual queries actually is."
+      ]
+    },
+    {
+      "lines": [
+        "Bringing all of this together now.",
+        "Rollups, materialized views, and result caching are really the same underlying lever, just applied at different granularities, chosen by how often the data actually changes versus how often the exact same query gets asked again.",
+        "The two named engines each come with their own documented limits. And a concurrency ceiling, once it's full, queues everything behind it, completely independent of how fast any individual query runs."
+      ]
+    },
+    {
+      "lines": [
+        "A team decides to double how often their dashboard refreshes, and queries suddenly start queueing, even though every individual query is still exactly as fast as it was before.",
+        "Given everything just covered, what actually changed here."
+      ],
+      "answer": [
+        "Not one individual query's own speed. Not even slightly.",
+        "Doubling the refresh frequency simply doubled how many queries now arrive at that same shared ceiling at once. That's the exact same concurrency problem from the very start of this topic, just triggered by a scheduling change this time instead of a sudden spike in usage."
+      ]
+    }
+  ]
+}

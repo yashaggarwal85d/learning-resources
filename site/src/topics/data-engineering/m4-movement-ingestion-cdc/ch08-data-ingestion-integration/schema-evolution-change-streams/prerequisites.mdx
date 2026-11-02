@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: how DDL reaches a binlog, and the snapshot this topic's own re-snapshot leans on
+
+<ul class="resources">
+  <Resource kind="reel" title="MySQL binlog and other change logs" domain="data-engineering" host="de.mysql-binlog-other-change" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Incremental snapshots with watermark windows" domain="data-engineering" host="de.incremental-snapshots-watermark-windows" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">Logical decoding carries no DDL event; the incremental-snapshot schema-change limitation.</Resource>
+  <Resource kind="reading" title="Debezium connector for MySQL" href="https://debezium.io/documentation/reference/stable/connectors/mysql.html" by="Debezium docs">The schema history topic, named for contrast with PostgreSQL's own silence on DDL.</Resource>
+  <Resource kind="reading" title="Debezium JDBC sink connector" href="https://debezium.io/documentation/reference/stable/connectors/jdbc.html" by="Debezium docs">schema.evolution: basic, and the dialects that reject some combinations.</Resource>
+  <Resource kind="reading" title="Schema Evolution" href="https://nightlies.apache.org/flink/flink-cdc-docs-master/docs/core-concept/schema-evolution/" by="Flink CDC docs">The configurable Exception/Evolve/TryEvolve/Lenient/Ignore schema-change behaviors, named only.</Resource>
+  <Resource kind="reading" title="Schema evolution" href="https://dlthub.com/docs/general-usage/schema-evolution" by="dlt docs">The variant-column strategy for a retyped field, named only.</Resource>
+</ul>
+
+</section>

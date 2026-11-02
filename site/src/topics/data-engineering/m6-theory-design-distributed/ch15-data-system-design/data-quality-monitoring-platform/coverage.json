@@ -1,0 +1,59 @@
+{
+  "topic": "de.data-quality-monitoring-platform",
+  "syllabus": [
+    {
+      "clause": "check execution (rules, statistical/anomaly checks on freshness, volume, schema, distribution)",
+      "at": [{ "step": "Reveal: two layers of checks, each costed and placed" }]
+    },
+    {
+      "clause": "lineage-aware blast radius and alert routing",
+      "at": [{ "step": "Reveal: lineage-aware routing collapses the blast radius" }]
+    },
+    {
+      "clause": "suppression to fight alert fatigue",
+      "at": [{ "step": "Reveal: the suppression controls" }, { "step": "Reveal: the feedback loop that tunes the checks" }]
+    },
+    {
+      "clause": "incident workflow (§11.3, §13.3)",
+      "at": [{ "step": "Reveal: the incident workflow as a state machine" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "dbt Labs documentation, \"Data tests\"",
+      "items": [
+        { "item": "Data tests are assertions compiled to a query that returns its failing rows, passing when that query returns zero rows.", "at": [{ "step": "Reveal: two layers of checks, each costed and placed" }] },
+        { "item": "dbt ships four generic data tests out of the box: unique, not_null, accepted_values, and relationships.", "at": [{ "step": "Reveal: two layers of checks, each costed and placed" }] }
+      ]
+    },
+    {
+      "source": "Google, \"Site Reliability Engineering\" (the SRE book), \"Monitoring Distributed Systems\"",
+      "items": [
+        { "item": "Every page should be actionable.", "at": [{ "step": "Predict: what did the design fail to treat as its own requirement?" }, { "step": "Reveal: alert precision as the platform's own SLO" }] },
+        { "item": "An alert is a notification read by a human, classified as a ticket, an email alert, or a page.", "at": [{ "step": "Reveal: the incident workflow as a state machine" }] },
+        { "item": "Email alerts are of limited value and tend to become overrun with noise.", "at": [{ "step": "Hook: the checks were right, the team stopped listening" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A failure's blast radius is who it reaches downstream; the alert belongs to the table that caused it.", "at": [{ "step": "Reveal: lineage-aware routing collapses the blast radius" }] },
+      { "item": "A mute button fights alert fatigue for a week; a feedback loop that tunes the check survives later failures too.", "at": [{ "step": "Reveal: the feedback loop that tunes the checks" }] },
+      { "item": "Alert precision is the platform's own SLO; a monitor with no number for its own usefulness is flying blind.", "at": [{ "step": "Reveal: alert precision as the platform's own SLO" }] },
+      { "item": "Fewer checks trades away detection and still gives no number distinguishing a precise alert from a noisy one.", "at": [{ "step": "Predict: what did the design fail to treat as its own requirement?" }] },
+      { "item": "Grouping by lineage collapses an alert flood to one alert per root cause at any table count, including ten times the current size.", "at": [{ "step": "Prove it: ten times the tables" }] },
+      { "item": "The next bottleneck at ten times the table count is whether lineage computation itself scales, not another alert flood.", "at": [{ "step": "Prove it: ten times the tables" }] },
+      { "item": "This topic leaves out the quality-framework mechanics, the lineage model and impact analysis, burn-rate alerting, and the incident-response process itself.", "at": [{ "deep": "Internals" }] },
+      { "item": "Declarative and statistical data-quality checks, lineage-based alert routing, and suppression-and-feedback design are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop a monitoring platform for its data; the next section puts a model's decision on a customer payment's critical path.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A platform that runs thousands of checks and floods its own team with alerts trains people to ignore the channel, including the alert that matters.", "at": [{ "step": "Hook: the checks were right, the team stopped listening" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

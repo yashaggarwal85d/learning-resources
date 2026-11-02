@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Container resource limits: cgroups and OOM" domain="data-engineering" host="de.container-resource-limits-cgroups" by="the memory-limit arithmetic this topic applies to an executor pod, not re-derives" />
+  <Resource kind="reel" title="Requests, limits, QoS and eviction" domain="data-engineering" host="de.requests-limits-qos-eviction" by="the eviction and preemption an executor pod can be subject to" />
+  <Resource kind="reel" title="Jobs and CronJobs for batch pipelines" domain="data-engineering" host="de.jobs-cronjobs-batch-pipelines" by="the fixed-pod-set contrast this topic opens against" />
+  <Resource kind="reel" title="Driver, executors and the task hierarchy" domain="data-engineering" host="de.driver-executors-task-hierarchy" by="the driver/executor vocabulary this topic runs on Kubernetes" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="resources">
+
+### <span class="n">02</span> Spark on Kubernetes, decommissioning, and the operators
+
+<ul class="resources">
+  <Resource kind="reading" title="Running Spark on Kubernetes" href="https://spark.apache.org/docs/4.2.0/running-on-kubernetes.html" by="Apache Spark documentation" length="25 min">The driver-creates-executors mechanism, OwnerReference cleanup, and pod templates.</Resource>
+  <Resource kind="reading" title="Configuration" href="https://spark.apache.org/docs/4.2.0/configuration.html" by="Apache Spark documentation" length="10 min">Shuffle tracking and executor decommissioning's exact configuration properties.</Resource>
+  <Resource kind="reading" title="Spot Instance interruption notices" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html" by="AWS documentation" length="10 min">The two-minute warning this topic's hook and predicts are built around.</Resource>
+  <Resource kind="reading" title="What is Amazon EMR on EKS?" href="https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/emr-eks.html" by="AWS documentation" length="5 min">One of the two managed offerings this topic compares against self-run Spark.</Resource>
+  <Resource kind="reading" title="Managed Service for Apache Spark on GKE overview" href="https://docs.cloud.google.com/managed-spark/docs/concepts/gke-overview" by="Google Cloud documentation" length="10 min">The other managed offering, and its node-pools-inside-GKE architecture.</Resource>
+</ul>
+
+</section>

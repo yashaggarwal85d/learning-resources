@@ -1,0 +1,85 @@
+{
+  "topic": "de.triggers-lateness-retractions",
+  "steps": [
+    {
+      "lines": [
+        "Somebody downstream is adding up every single number this thing sends them.",
+        "They're assuming each new number replaces the one before it. It doesn't.",
+        "So their running total just keeps climbing, further and further past the truth."
+      ]
+    },
+    {
+      "lines": [
+        "A chunk of the stream now has a shape, a size, a boundary of its own.",
+        "But a shape that never says anything out loud isn't useful to anyone downstream yet.",
+        "So: when does it actually open its mouth, and what does it say each time?"
+      ]
+    },
+    {
+      "lines": [
+        "Turns out there isn't just one moment it can speak. There are three.",
+        "Early, with a rough, partial answer, well before it's really sure.",
+        "On time, once it's sure. And late, correcting itself, after that."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "There's a deadline on how long corrections get accepted after the fact.",
+        "Once that deadline has clearly passed, what happens to a correction that still shows up?"
+      ],
+      "answer": [
+        "It just gets thrown away, flat out.",
+        "By then, whatever was keeping track of this has already let go of it completely.",
+        "There's nothing left for that late correction to even attach itself to."
+      ]
+    },
+    {
+      "lines": [
+        "Not queued somewhere for later. Not retried. Simply gone, the moment the deadline passes.",
+        "That's not a bug slipping through the cracks. Someone chose that trade-off on purpose.",
+        "Keep every correction forever, or draw a line somewhere. This is where the line gets drawn."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "Somebody downstream just adds together every single number this thing ever sends them.",
+        "Does doing that always land on the right answer, no matter how it's configured?"
+      ],
+      "answer": [
+        "No, not always, and that's exactly the trap.",
+        "Some setups really do hand you numbers you can safely add straight together.",
+        "Others hand you numbers that double count, triple count, unless you know which kind you've got."
+      ]
+    },
+    {
+      "lines": [
+        "One setup only ever tells you what's new since last time. Add those up, you're fine.",
+        "Another setup tells you the whole running total, over and over again, every single time.",
+        "Add that one up blindly, the same way, and the answer comes out badly wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fix for that second one: take back what you said before, out loud.",
+        "Send an actual negative entry, undoing the old number, right before sending the new one.",
+        "Add everything up now, undo included, and the very same blind addition works again."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The three separate moments one single thing really spoke, back to back.",
+        "The exact point where a late correction really got thrown away, nothing hidden."
+      ]
+    },
+    {
+      "lines": [
+        "So: the same underlying thing can honestly speak three different ways, at three different times.",
+        "A deadline on corrections isn't sloppiness. It's a line drawn on purpose, somewhere.",
+        "And which kind of number you're being handed is never a detail you can skip."
+      ]
+    }
+  ]
+}

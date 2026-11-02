@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: CAP/PACELC, and consistent hashing's own algorithm
+
+<ul class="resources">
+  <Resource kind="reel" title="CAP and PACELC in practice" domain="data-engineering" host="de.cap-pacelc-practice" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Consistent hashing rings" domain="data-structures-and-algorithms" host="dsa.consistent-hashing-rings" by="the ring algorithm this topic assumes rather than re-teaches" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Distribution Layer" href="https://www.cockroachlabs.com/docs/stable/architecture/distribution-layer" by="CockroachDB documentation">Range partitioning as CockroachDB actually implements it, including when a range splits.</Resource>
+  <Resource kind="reading" title="Dynamo" href="https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html" by="Apache Cassandra documentation">Consistent hashing via a token ring, and why naive modulo hashing remaps almost everything.</Resource>
+  <Resource kind="reading" title="Consistent Hashing and Random Trees" href="https://www.cs.princeton.edu/courses/archive/fall09/cos518/papers/chash.pdf" by="Karger et al., STOC 1997">The original consistent-hashing paper's own definition of minimal remapping.</Resource>
+  <Resource kind="reading" title="Rendezvous hashing" href="https://en.wikipedia.org/wiki/Rendezvous_hashing" by="Wikipedia, restating Thaler & Ravishankar">HRW hashing's own definition: no shared ring state, computed independently per client.</Resource>
+</ul>
+
+</section>

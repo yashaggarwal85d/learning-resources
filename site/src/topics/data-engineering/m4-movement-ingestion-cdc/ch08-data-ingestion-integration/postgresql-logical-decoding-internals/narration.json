@@ -1,0 +1,82 @@
+{
+  "topic": "de.postgresql-logical-decoding-internals",
+  "steps": [
+    {
+      "lines": [
+        "The identical update statement, run three separate times, with one setting changed in between each run.",
+        "What changes is REPLICA IDENTITY, the thing that decides how much of the old row gets logged alongside the new one.",
+        "Under one setting the before-image fills in completely. Under another it shrinks to a single column. Under the third, it's empty."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what the slot actually does, answer this.",
+        "I read the same slot twice, with a function that only peeks, never confirms anything was received.",
+        "Does the second peek come back empty, since the slot already showed me that change once, or does it come back identical to the first?"
+      ],
+      "answer": [
+        "Saying it comes back empty assumes the slot is keeping score of what it's shown you, just from the act of reading.",
+        "But a slot's position only moves when a read explicitly confirms it. Peeking confirms nothing, so nothing has changed from the slot's point of view."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what decoding is actually doing underneath both of those readings.",
+        "The write-ahead log already records every change a transaction makes, in the order each transaction finishes, not the order each one starts.",
+        "Decoding just turns those storage-level records back into a readable insert, update, or delete, in that same finishing order."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that three-setting comparison against this sandbox's own real database, not a mock of REPLICA IDENTITY's behavior.",
+        "Under the setting that logs only the primary key, the before-image shows just that one column, nothing else about the row.",
+        "Under the setting that logs everything, the identical update's before-image carries every column the row had, whether or not that column actually changed."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's why a slot can ever show you the same change twice in the first place.",
+        "A slot's own position is written to disk only when the server checkpoints, not after every single change it hands out.",
+        "Between two checkpoints, whatever the slot thinks it has already delivered only exists in memory, not anywhere durable yet."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that exact unconfirmed peek twice against the real slot, back to back.",
+        "Both reads came back with the identical decoded change, down to the byte, because neither one ever told the slot the change was received.",
+        "That's not a bug in the slot. That's the whole reason a consumer has to be able to handle seeing the same change again."
+      ]
+    },
+    {
+      "lines": [
+        "A slot actually tracks two separate positions, and they protect two separate things.",
+        "The restart position is the oldest point in the log the server still can't throw away, because this slot might still need it.",
+        "The confirmed flush position is simply how far the consumer has actually acknowledged reading to. One is a promise kept; the other is a promise made."
+      ]
+    },
+    {
+      "lines": [
+        "I measured both of those positions directly, before and after a real confirmed read on this sandbox's own slot.",
+        "After the read, the confirmed flush position had moved forward, exactly as far as the consumer had actually acknowledged.",
+        "The restart position hadn't moved at all. The gap between the two of them is log the server is still keeping, on this slot's behalf, for no reason yet."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and everything shown so far is really one server's own private bookkeeping.",
+        "What REPLICA IDENTITY logs, whether a read repeats, and where the two positions sit are all facts about this one PostgreSQL server, and only this one.",
+        "None of that bookkeeping travels anywhere on its own. It stays exactly where it was created."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what a single server's own bookkeeping doesn't cover.",
+        "Everything shown so far lives on one PostgreSQL server. What does a consumer actually need so it keeps working if that one server fails over to another?"
+      ],
+      "answer": [
+        "Saying a slot already survives its own crash is true, but a crash isn't the same thing as a failover to a different machine entirely.",
+        "A slot lives only on the server that made it, so a standby needs to be told to track it, or the primary needs to keep a synchronized copy there in advance."
+      ]
+    }
+  ]
+}

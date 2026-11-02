@@ -1,0 +1,76 @@
+{
+  "topic": "de.analytical-benchmark-suites",
+  "steps": [
+    {
+      "lines": [
+        "A database vendor publishes a benchmark report showing their engine beating a competitor's by a wide margin.",
+        "Every single number in that report is independently reproducible, and every one of them is true.",
+        "A customer who goes on to adopt that engine purely on the strength of this report still finds it running slower than the competitor, on their own real workload."
+      ]
+    },
+    {
+      "lines": [
+        "So how exactly can every published number be true, and the overall comparison still manage to mislead someone reading it.",
+        "And what, sitting inside several vendors' own actual licence terms, would have stopped that competitor from publishing their own correction."
+      ],
+      "answer": [
+        "Nothing in that report actually needs to be false.",
+        "Choosing carefully which true queries to publish, and which ones to quietly leave out, is benchmarketing, not fabrication.",
+        "And a licence term, named after one particular researcher, can genuinely forbid a competitor from publishing any benchmark result at all without the original vendor's own prior approval."
+      ]
+    },
+    {
+      "lines": [
+        "Here is what two of the big industry suites each actually stress.",
+        "One has its own eight separate tables and twenty two queries, stressing broad, ad hoc analytical questions over a comparatively simple schema.",
+        "The other extends that same idea much further, to a far larger, deliberately skewed schema and ninety nine separate queries, closer to a real retail warehouse."
+      ]
+    },
+    {
+      "lines": [
+        "One single wide table. Forty three queries. No joins anywhere at all.",
+        "That makes it fast to run and remarkably easy to compare across many different engines.",
+        "The cost, stated plainly by the benchmark's own documentation, is that it tests absolutely nothing about join performance or multi table schema design."
+      ]
+    },
+    {
+      "lines": [
+        "This next benchmark is built on a real, correlated movie dataset, and quite deliberately so.",
+        "Cardinality estimates computed on simplifying assumptions like uniformity and independence turn out to be frequently wrong once you're looking at genuinely real data.",
+        "That is the exact same failure this very chapter already demonstrated once before, now scaled all the way up to a named, peer reviewed industry benchmark."
+      ]
+    },
+    {
+      "lines": [
+        "One particular industry specification was, by its own stated purpose, aimed squarely at data integration workloads rather than query execution.",
+        "That specification now sits listed, by the standards body's own current page, under its own table of obsolete workloads."
+      ]
+    },
+    {
+      "lines": [
+        "Benchmarketing means a vendor carefully choosing which true queries, which subset, or which particular configuration gets published, so that every number shown stays accurate while the overall comparison still quietly misleads.",
+        "A licence clause named for one specific researcher is a documented term that can forbid publishing any unsanctioned benchmark result at all.",
+        "An independently reproducible harness and baseline still matters even when a vendor's own number might genuinely be true, simply because it's the one thing neither of those two tricks can block."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling this together now.",
+        "Each of those industry suites stresses something genuinely real, and quietly skips something else just as real.",
+        "Benchmarketing, and a licence clause that can silence a correction, are exactly the trap this entire chapter's own method exists to resist."
+      ]
+    },
+    {
+      "lines": [
+        "This chapter's own lab closes right here.",
+        "An honest load generator, a seeded data generator, and this very topic's own small, openly disclosed baseline, all published together and re-run end to end from one single command.",
+        "So what does a bundle like that actually prove."
+      ],
+      "answer": [
+        "Not a sixth industry suite, comparable to the big five.",
+        "This bundle is small on purpose, and it says so plainly.",
+        "What it actually proves is the method itself: a properly warmed up target, honest load generation, genuinely representative data, and a result anyone else can re-run and check for themselves."
+      ]
+    }
+  ]
+}

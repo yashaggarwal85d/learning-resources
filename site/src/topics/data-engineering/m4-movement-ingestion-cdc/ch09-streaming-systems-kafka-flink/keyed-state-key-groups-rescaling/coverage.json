@@ -1,0 +1,156 @@
+{
+  "topic": "de.keyed-state-key-groups-rescaling",
+  "syllabus": [
+    {
+      "clause": "state backends (heap, RocksDB, ForSt)",
+      "at": [{ "step": "Reveal: heap and RocksDB trade speed for capacity" }]
+    },
+    {
+      "clause": "key groups and max parallelism as the unit of redistribution",
+      "at": [
+        { "step": "Predict: when a job rescales, what actually moves?" },
+        { "step": "Reveal: every key hashes into a fixed key group" },
+        { "step": "Reveal: rescaling moves whole key groups, never splitting one" }
+      ]
+    },
+    {
+      "clause": "state TTL and schema evolution",
+      "at": [{ "step": "Reveal: TTL expires idle state; schema evolution has real limits" }]
+    },
+    {
+      "clause": "why 1.x state is not compatible with 2.x",
+      "at": [{ "step": "Reveal: an older savepoint doesn't carry into the newest major version" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "State Backends (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "the HashMapStateBackend holds data internally as objects on the Java heap",
+          "at": [{ "step": "Reveal: heap and RocksDB trade speed for capacity" }]
+        },
+        {
+          "item": "the EmbeddedRocksDBStateBackend holds in-flight data in a RocksDB database stored in the TaskManager local data directories by default",
+          "at": [{ "step": "Reveal: heap and RocksDB trade speed for capacity" }]
+        },
+        {
+          "item": "HashMapStateBackend is fast but memory-limited; RocksDB scales with disk space and is the only backend supporting incremental snapshots",
+          "at": [{ "step": "Reveal: heap and RocksDB trade speed for capacity" }]
+        }
+      ]
+    },
+    {
+      "source": "Parallel Execution (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "max parallelism specifies an upper bound because Flink internally partitions state into key-groups",
+          "at": [{ "step": "Reveal: every key hashes into a fixed key group" }]
+        },
+        {
+          "item": "key-groups are the internal implementation mechanism for rescalable state",
+          "at": [{ "step": "Reveal: rescaling moves whole key groups, never splitting one" }]
+        },
+        {
+          "item": "changing max parallelism explicitly when recovering from the original job leads to state incompatibility",
+          "at": [{ "step": "Reveal: every key hashes into a fixed key group" }]
+        }
+      ]
+    },
+    {
+      "source": "Working with State (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "a TTL can be assigned to keyed state of any type; an expired value is cleaned up on a best-effort basis",
+          "at": [{ "step": "Reveal: TTL expires idle state; schema evolution has real limits" }]
+        },
+        {
+          "item": "expired values are explicitly removed on read and periodically garbage collected in the background if the state backend supports it",
+          "at": [{ "step": "Reveal: TTL expires idle state; schema evolution has real limits" }]
+        }
+      ]
+    },
+    {
+      "source": "State Schema Evolution (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "fields can be removed; new fields can be added with default values; declared field types cannot change",
+          "at": [{ "step": "Reveal: TTL expires idle state; schema evolution has real limits" }]
+        },
+        {
+          "item": "schema evolution of keys is not supported",
+          "at": [{ "step": "Reveal: TTL expires idle state; schema evolution has real limits" }]
+        }
+      ]
+    },
+    {
+      "source": "Upgrading Applications and Flink Versions (Apache Flink, 2.0 docs)",
+      "items": [
+        {
+          "item": "the savepoint compatibility table lists only Flink's own recent minor releases as resume targets",
+          "at": [{ "step": "Reveal: an older savepoint doesn't carry into the newest major version" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink 2.0 release notes",
+      "items": [
+        {
+          "item": "Flink 2.0 introduces more efficient built-in collection serializers and upgrades Kryo to version 5.6",
+          "at": [{ "step": "Reveal: an older savepoint doesn't carry into the newest major version" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Key groups existing as a layer between individual keys and operator instances is what makes rescaling tractable at all — without it, every rescale would require recomputing a hash assignment for every single key rather than moving a small, fixed number of pre-sorted blocks.",
+        "at": [{ "step": "Reveal: every key hashes into a fixed key group" }]
+      },
+      {
+        "item": "Max parallelism being fixed at job-creation time, not adjustable without a full state migration, is the direct consequence of key groups being the unit of redistribution — the number of groups has to be decided before any key is ever assigned to one.",
+        "at": [{ "step": "Reveal: rescaling moves whole key groups, never splitting one" }]
+      },
+      {
+        "item": "RocksDB's slower per-access cost isn't a tuning problem to optimize away — it's the direct, necessary cost of state that physically lives on disk rather than in memory, the same trade this chapter's object-storage topics make for durability elsewhere.",
+        "at": [{ "step": "Reveal: heap and RocksDB trade speed for capacity" }]
+      },
+      {
+        "item": "Recovery time being driven purely by state size, not job complexity, means a capacity-planning exercise that budgets recovery time by counting operators is measuring the wrong variable entirely — the right question is how much state a single instance is allowed to accumulate.",
+        "at": [{ "step": "Reveal: recovery time tracks state, not the job's shape" }]
+      },
+      {
+        "item": "State TTL and schema evolution both look like generic flexibility features from their names alone, but each is scoped narrowly on purpose — TTL only promises best-effort, not guaranteed-instant cleanup, and schema evolution explicitly excludes key structure and Kryo-serialized types.",
+        "at": [{ "step": "Reveal: TTL expires idle state; schema evolution has real limits" }]
+      },
+      {
+        "item": "Presenting the one-x-to-two-oh incompatibility as 'not covered by the current compatibility table' rather than a single quoted sentence saying 'incompatible' reflects what the sources actually say — the gap is structural (the table's own column list), not a direct claim this topic could quote word for word.",
+        "at": [{ "step": "Reveal: an older savepoint doesn't carry into the newest major version" }]
+      },
+      {
+        "item": "This topic's hook (recovery time tracking state, not job shape) and the state-driven recovery-time reveal later in the reel are the same finding, demonstrated first as an unexplained observation and then derived from the key-group mechanism that causes it.",
+        "at": [{ "step": "Hook: recovery time tracks the state a worker held, not the job's shape" }]
+      },
+      {
+        "item": "The toy rescale, recovery-time, and access-cost models are deliberately simplified standalone demonstrations, not ports of Flink's actual KeyGroupRange or state-backend internals, and every figure shown is this run's own measured output, not a cited Flink benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic uses the checkpoint-vs-savepoint distinction and the barrier mechanism from the previous topic directly — a savepoint's portability promise is exactly what the version-compatibility gap in this topic's final reveal tests against its real, documented limit.",
+        "at": [{ "step": "Setup: what is a snapshot actually a snapshot of?" }]
+      },
+      {
+        "item": "This topic deliberately leaves the ForSt backend's own architecture unexplored beyond naming it — what it changes about where state's primary copy lives, and what that buys for checkpoint cost, is large enough to need the next topic's full treatment on its own.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

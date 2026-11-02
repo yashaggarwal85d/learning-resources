@@ -1,0 +1,96 @@
+{
+  "topic": "de.it-ot-boundary-data",
+  "steps": [
+    {
+      "lines": [
+        "Someone wants a dashboard, so they point a script straight at the controller's own tags and start asking for a few thousand of them every second.",
+        "Not long after, the controller's own loop starts running behind, and a conveyor on the line faults.",
+        "Nothing was ever written to that controller. The asking itself was enough."
+      ]
+    },
+    {
+      "lines": [
+        "That's not an accident of one careless script. The floor is built this way on purpose.",
+        "A plant's network is split into levels, with a buffer zone standing between the office network and the one that actually runs production.",
+        "Any path a data platform takes to pull a reading off that floor has to cross that boundary somewhere, and where it crosses is a real decision, not a formality."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question worth sitting with before the next reveal answers it.",
+        "That script never once wrote a value back to the controller. It only asked for readings.",
+        "Can a request that never writes anything still disturb the process being controlled?"
+      ],
+      "answer": [
+        "It can, and that's the whole surprise.",
+        "A controller's own loop has to answer every outside request on top of running its actual control logic.",
+        "Ask it for enough at once, and the answering itself starts eating into the time that loop needed for the job it was actually built to do."
+      ]
+    },
+    {
+      "lines": [
+        "Put a real number on it.",
+        "Asking a controller rated to handle a few hundred such requests each second for several thousand, once a second, is several times more than it was ever budgeted to carry.",
+        "That gap shows up before a single reading has even changed."
+      ]
+    },
+    {
+      "lines": [
+        "The obvious next move is to stop asking for everything on a fixed clock and only ask to be told when a value actually changes.",
+        "That one change cuts the load by more than half.",
+        "And it still doesn't fit inside this plant's own stated budget. The obvious fix wasn't enough on its own."
+      ]
+    },
+    {
+      "lines": [
+        "So change what's being asked, not how often.",
+        "Read the same values from whatever already keeps its own running archive of them, or from a copy built for exactly this purpose, instead of going back to the controller at all.",
+        "The controller's own share of the load drops to nothing it has to carry. The fix was never about asking less often. It was about asking something else entirely."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece has to hold even once the reading is flowing somewhere safe to ask.",
+        "Put a bounded holding area between whatever is pulling those readings and whatever consumes them downstream, and let that holding area fill up.",
+        "Once it's full, it quietly lets go of its own oldest item to make room for the newest one. The side doing the asking never once gets told to wait."
+      ]
+    },
+    {
+      "lines": [
+        "None of this works unless everyone agrees on who's actually in charge of which copy of the data.",
+        "The controller's own value, the running archive, and the production system's own record all belong to the engineering side that keeps the floor running.",
+        "The copy that ends up stored for analysis belongs to a different team entirely.",
+        "Here's the part that's easy to miss: the meaning of a field, not just its bytes, still belongs to whoever owned it on the floor, no matter which team's system the bytes end up living in."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch what happens when something on the floor changes without anyone downstream being told.",
+        "A sensor gets re-scaled after a firmware update, and its name on the floor changes along with it.",
+        "A reader that only ever knew the old name quietly stops seeing anything new at all, while a reader that was told in advance to expect both names keeps reading straight through the change without missing a single value."
+      ]
+    },
+    {
+      "lines": [
+        "A floor that's segmented on purpose, not by accident.",
+        "A request that never writes anything can still cost more than it was ever budgeted to cost.",
+        "The actual fix is asking something built to carry that load, not asking the controller less often.",
+        "A holding area protects the side doing the asking, never the other way around.",
+        "Who owns a copy of the data, and who owns what a field even means, are two separate questions with two separate, assigned answers.",
+        "And a name change on the floor only breaks the reader nobody warned in advance."
+      ]
+    },
+    {
+      "lines": [
+        "One more case to reason through before moving on.",
+        "A new consumer wants to be told about tag changes straight from the controller's own interface, the moment they happen, rather than going through anything built to carry that load.",
+        "Is that the same risk as the earlier script that just asked for everything on a fixed clock?"
+      ],
+      "answer": [
+        "It is, even though it feels much lighter than the earlier script.",
+        "The controller still has to do the work of deciding whether each value actually changed before it can tell anyone about it.",
+        "That work is exactly what was costing time in the first place, so the same budget question still applies, with a smaller number in it, not a different question entirely."
+      ]
+    }
+  ]
+}

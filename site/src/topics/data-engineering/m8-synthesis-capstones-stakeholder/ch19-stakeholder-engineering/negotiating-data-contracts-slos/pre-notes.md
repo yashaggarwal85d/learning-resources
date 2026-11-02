@@ -1,0 +1,5 @@
+- **Data contract**: an upfront, written set of guarantees a producer makes to a consumer about a dataset's shape and freshness.
+- **SLO (service level objective)**: a stated target for how reliably or freshly a service must perform.
+- **Error budget**: a jointly defined, quarterly allowance for how far a service may fall short of its SLO before action is required.
+- **Non-goal**: something a contract or design explicitly does not promise, stated as plainly as what it does promise.
+- **Breach owner**: the specific role or person responsible for responding when an SLO is violated.

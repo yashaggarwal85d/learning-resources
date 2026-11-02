@@ -1,0 +1,85 @@
+{
+  "topic": "de.processing-serving-choices",
+  "steps": [
+    {
+      "lines": [
+        "One query, on the dashboard everyone actually watches, takes so long it feels broken.",
+        "One team wants to move it onto a brand-new, purpose-built store. Another wants to pre-build the answer overnight. A third just wants to add one small index and leave everything else alone.",
+        "Three fixes, one slow query. Which one actually wins?"
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The purpose-built store sounds like obviously the right tool for exactly this job. Does that make it the cheapest choice too?",
+        "Or is there a smaller fix that costs less, and still holds up once the question itself changes?"
+      ],
+      "answer": [
+        "Reaching for the newest tool isn't the same as reaching for the cheapest one.",
+        "The purpose-built store turns out to be the heaviest and most expensive of the three to actually run day to day.",
+        "The small fix answers fastest for the least cost today. The pre-built answer is fastest of all right now, but it's the one that breaks the instant the question changes shape."
+      ]
+    },
+    {
+      "lines": [
+        "Picking a processing engine for real comes down to three honest questions, not a gut feeling.",
+        "Does its own running state fit comfortably in memory, or does it need something heavier underneath? How fast does the chosen shape already require results to show up? And can the people actually on call fix this thing when it breaks at an inconvenient hour?"
+      ]
+    },
+    {
+      "lines": [
+        "That third question deserves to be treated as a real number, not an afterthought tacked on at the end.",
+        "A tool nobody on call can actually debug costs something real, measured right alongside speed and compute — not forgiven just because it benchmarked well on a slide once."
+      ]
+    },
+    {
+      "lines": [
+        "Where an answer gets stored should follow what's actually being asked, never what the raw data happens to look like.",
+        "Looking something up by its own id wants one kind of store. Slicing and summing across a pile of rows wants a different kind. Searching free text wants another. Finding similar items wants yet another again."
+      ]
+    },
+    {
+      "lines": [
+        "One shop's own order data gets served three completely different ways, all from that same underlying data, all at once.",
+        "Every single one of those three is clearly derived. None of them is the one real record everything else ultimately comes from."
+      ]
+    },
+    {
+      "lines": [
+        "The same question can be answered in two very different ways.",
+        "Build the answer ahead of time, and it comes back instantly — but it's only as fresh as whenever it was last built, and it's locked into one fixed shape.",
+        "Or compute it fresh on every single ask, and it's always current and flexible — but now every ask costs something, every time, instead of once."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how to actually compare these options honestly: not by how much data they start with, but by how much data actually ends up getting moved.",
+        "Start from what's logically there. Multiply by however many copies get kept. Multiply again by whatever gets rewritten or cleaned up along the way. What comes out the far end is the real, physical cost — not the number anyone started with."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the twist worth sitting with: the smallest-looking option on paper isn't always the cheapest one once it's actually counted this way.",
+        "A tiny, pre-built answer table still has to be completely rebuilt from the full underlying data, every single night.",
+        "Counted honestly, that tiny table's real cost can dwarf its own apparent size by a wide margin."
+      ]
+    },
+    {
+      "lines": [
+        "Three honest questions pick the engine. The question being asked picks where the answer actually lives.",
+        "How often it's asked, and how fresh it needs to be, picks whether to build the answer ahead of time or compute it fresh.",
+        "And one honest ledger, counted in real bytes moved rather than bytes anyone started with, prices every single option fairly."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: tomorrow, leadership asks for a brand-new way to slice this same data.",
+        "Which of the earlier fixes keeps working without any changes at all, and which one has to start completely over?"
+      ],
+      "answer": [
+        "The small index fix keeps working exactly as it was — it computes whatever's asked, fresh, at the same cost already counted for it.",
+        "The pre-built answer table usually needs an entirely new grouping to handle a genuinely new question, which means rebuilding it completely from scratch — not simply tacking one more column onto what's already there."
+      ]
+    }
+  ]
+}

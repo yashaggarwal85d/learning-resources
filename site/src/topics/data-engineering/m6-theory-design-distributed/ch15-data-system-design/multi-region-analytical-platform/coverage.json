@@ -1,0 +1,69 @@
+{
+  "topic": "de.multi-region-analytical-platform",
+  "syllabus": [
+    {
+      "clause": "residency-constrained data placement",
+      "at": [{ "step": "Reveal: the placement decision" }]
+    },
+    {
+      "clause": "replication vs federation of queries",
+      "at": [{ "step": "Reveal: replicate vs federate, priced" }, { "step": "Reveal: the aggregates-only compromise" }]
+    },
+    {
+      "clause": "egress cost",
+      "at": [{ "step": "Reveal: replicate vs federate, priced" }]
+    },
+    {
+      "clause": "regional failover of pipelines and catalogs",
+      "at": [{ "step": "Reveal: failover beyond bucket replication" }, { "step": "Reveal: RPO and RTO per data class" }]
+    },
+    {
+      "clause": "consistent global metrics",
+      "at": [{ "step": "Reveal: one consistent global number" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "GDPR (Regulation (EU) 2016/679), Articles 5, 25 and 44",
+      "items": [
+        { "item": "Personal data must be kept in a form permitting identification for no longer than necessary.", "at": [{ "step": "Reveal: the placement decision" }] },
+        { "item": "The controller must be responsible for, and able to demonstrate compliance with, the Article 5(1) principles.", "at": [{ "deep": "Where this goes next" }] },
+        { "item": "The controller must implement appropriate technical and organisational measures, such as pseudonymisation, by design and by default.", "at": [{ "step": "Reveal: the aggregates-only compromise" }] },
+        { "item": "A transfer of personal data to a third country is permitted only if the conditions in GDPR Chapter V are met.", "at": [{ "step": "Reveal: the placement decision" }] }
+      ]
+    },
+    {
+      "source": "AWS, \"Meeting compliance requirements with S3 Replication Time Control\"",
+      "items": [
+        { "item": "S3 RTC replicates most objects in seconds, and 99.9 percent within 15 minutes.", "at": [{ "step": "Reveal: the aggregates-only compromise" }] }
+      ]
+    },
+    {
+      "source": "AWS, \"Amazon S3 pricing\"",
+      "items": [
+        { "item": "The Europe (Ireland) data-transfer-out-to-internet rate is $0.09 per GB, as of the date this topic was researched.", "at": [{ "step": "Reveal: replicate vs federate, priced" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "Replication and federation are each a computed cost and a computed risk, not a default choice made out of habit.", "at": [{ "step": "Reveal: replicate vs federate, priced" }] },
+      { "item": "Replicating only a de-identified aggregate can satisfy both the privacy officer's question and the dashboard's performance need at once.", "at": [{ "step": "Reveal: the aggregates-only compromise" }] },
+      { "item": "Bucket replication alone is not failover; the catalog, the keys and the pipeline state each need their own, separate plan.", "at": [{ "step": "Reveal: failover beyond bucket replication" }] },
+      { "item": "A global figure is only as fresh as its single stalest region, and a cross-region strongly consistent counter costs a real round trip.", "at": [{ "step": "Reveal: one consistent global number" }] },
+      { "item": "A faster replication tool does not fix a residency violation; the violation is about which rows are allowed to move at all.", "at": [{ "step": "Predict: which two decisions would have prevented both?" }] },
+      { "item": "Excluding a still-backfilling region from a global figure, and saying so, is more honest than blending its partial numbers in unmarked.", "at": [{ "step": "Prove it: a third region, mid-backfill" }] },
+      { "item": "This topic leaves out the cloud regions and residency regulations themselves, replication and DR mechanics, consistency theory, and tenant isolation.", "at": [{ "deep": "Internals" }] },
+      { "item": "Residency-constrained placement, replicate-versus-federate decisions, and cross-region consistency tradeoffs are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its two-region design; the next design must isolate and charge businesses that are themselves the platform's tenants.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A weekend replication done for performance, with nobody checking which data it was allowed to move, is exactly how a residency violation happens unnoticed.", "at": [{ "step": "Hook: a weekend replication crosses a border" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

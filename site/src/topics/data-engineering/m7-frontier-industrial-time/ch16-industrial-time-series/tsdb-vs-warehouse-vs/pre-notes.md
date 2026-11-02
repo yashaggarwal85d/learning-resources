@@ -1,0 +1,6 @@
+- **Write rate**: how many points a system must accept per second. *Where you meet it:* the first axis the decision matrix sorts engines by.
+- **Access path**: the shape of a query — last value, range scan, aggregation, join. *Where you meet it:* the matrix's own rows.
+- **Retention**: how long a system keeps data queryable before it ages out or moves. *Where you meet it:* the capacity-and-cost chain's second input.
+- **Object storage**: durable, cheap, high-latency storage addressed by key rather than by file path. *Where you meet it:* what the lakehouse tier's cost is priced against.
+- **Table format over object storage (Iceberg/Delta)**: a transactional layer that lets many engines query the same files. *Where you meet it:* what stands in for "the lakehouse" in this topic's join measurement.
+- **Tiering**: routing data to a hot store while it's recent and a cold store once it ages, on some lag. *Where you meet it:* the boundary-failure simulation.

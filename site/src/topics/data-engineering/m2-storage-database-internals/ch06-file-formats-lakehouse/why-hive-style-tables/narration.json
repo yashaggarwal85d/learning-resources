@@ -1,0 +1,73 @@
+{
+  "topic": "de.why-hive-style-tables",
+  "steps": [
+    {
+      "lines": [
+        "Think about what a query engine actually does when you ask it for a Hive table. It doesn't open a ledger and read a committed version number.",
+        "It walks a folder tree and asks the file system, what's here right now? Whatever answer comes back, that's the table. This topic shows exactly where that habit breaks."
+      ]
+    },
+    {
+      "lines": [
+        "Picture someone running an insert. Before Hive can put that row anywhere, it needs to know which sub-folder it belongs in.",
+        "Who decides that folder — does the engine work it out from the data itself, or does a human just type it in and hope?"
+      ],
+      "answer": [
+        "The human types it in, and Hive takes their word for it. There's no cross-check against the row.",
+        "Type the date in the wrong format, or pull it from the wrong column, and nothing fails. You just get a quietly wrong answer later."
+      ]
+    },
+    {
+      "lines": [
+        "This comes straight from Hive's own documentation, almost unchanged in decades. One table, two partition columns, and the storage layout is the column values themselves, folded into a file path.",
+        "There's no translation layer, no lookup — the path on disk and the partition key are the same string."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that surprises people: Hive's catalog of tables doesn't watch the file system. It has no idea when a file shows up or disappears underneath it.",
+        "So the catalog and the disk can simply disagree, for as long as nobody runs the command that forces them back in sync."
+      ]
+    },
+    {
+      "lines": [
+        "Now imagine a write that needs to touch two of these folders at once — today's data and yesterday's correction, say.",
+        "If someone reads the table halfway through that write, do they see a consistent picture, or can they catch it between folders?"
+      ],
+      "answer": [
+        "They can absolutely catch it between folders. Before Hive had real transactions, a guarantee of atomicity never crossed a partition boundary.",
+        "Two folders in one logical write were always two separate, unrelated events as far as the storage was concerned."
+      ]
+    },
+    {
+      "lines": [
+        "So this topic built that exact scenario and caught it happening. One folder finishes first, completely.",
+        "Then, right as the second folder is only halfway populated, a listing of the whole table is taken — and it comes back showing precisely that: one finished, one half done."
+      ]
+    },
+    {
+      "lines": [
+        "That isn't a contrived edge case either. It's the very reason Hive's own project added transactional support in the first place.",
+        "Tools streaming data in continuously were handing readers exactly this kind of half-finished view, and burying the file-tracking service under a mountain of tiny files besides."
+      ]
+    },
+    {
+      "lines": [
+        "There's a second cost hiding in all this, separate from correctness: just asking what files exist gets slower as there are more of them.",
+        "Time a real listing call at a small file count, then a much larger one, and the gap is obvious — and a full catalog resync pays that same tax, at table scale."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and every one of these — the untrusted partition value, the catalog going stale, the missing atomicity, the slowing listing — comes from a single design decision.",
+        "Nobody ever wrote down what the table's state actually was. The table's state was defined as whatever a directory listing happened to say."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of the whole problem, pulled together. Partitions are just named folders, trusted without question.",
+        "A multi-folder write is never one atomic event. And listing gets more expensive the bigger the table gets. Every modern format exists to replace that listing with something explicit instead."
+      ]
+    }
+  ]
+}

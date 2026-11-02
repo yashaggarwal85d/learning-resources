@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: models, Raft and the quorum this topic replicates through
+
+<ul class="resources">
+  <Resource kind="reel" title="Timing and failure models" domain="data-engineering" host="de.timing-failure-models" by="Chapter 14, topic 1" />
+  <Resource kind="reel" title="Raft at the conceptual level" domain="data-engineering" host="de.raft-at-conceptual-level" by="Chapter 14, topic 9" />
+  <Resource kind="reel" title="Coordination services and replicated logs in data systems" domain="data-engineering" host="de.coordination-services-replicated-logs" by="Chapter 14, topic 11" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes directly
+
+<ul class="resources">
+  <Resource kind="reading" title="Consensus on Transaction Commit" href="https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf" by="Jim Gray and Leslie Lamport, ACM TODS 2006">Paxos Commit, the F + 1 and 2F + 1 statements, the 2PC special case, and the multiple-coordinators inconsistency sentence, in the paper's own words.</Resource>
+  <Resource kind="reading" title="Spanner: Google's Globally-Distributed Database" href="https://research.google.com/archive/spanner-osdi2012.pdf" by="Google, OSDI 2012">The transaction manager's state stored in its underlying Paxos group, in the paper's own words.</Resource>
+  <Resource kind="reading" title="Parallel Commits: An atomic commit protocol for globally distributed transactions" href="https://www.cockroachlabs.com/blog/parallel-commits/" by="Cockroach Labs engineering blog, 2019">The STAGING transaction-record state and the latency the new protocol halves, in the post's own words.</Resource>
+</ul>
+
+</section>

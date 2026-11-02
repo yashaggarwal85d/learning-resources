@@ -1,0 +1,91 @@
+{
+  "topic": "de.testing-pyramid-transformations",
+  "steps": [
+    {
+      "lines": [
+        "A model's unit test passes every single time it runs in CI.",
+        "On a colleague's own machine, though, that exact same test fails every so often, with no code having changed at all.",
+        "The actual cause turns out to be a group-by whose row order the assertion was quietly depending on the whole time.",
+        "The test wasn't lying when it passed. It was just checking something that was never guaranteed to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Worth asking before the reveal settles this.",
+        "That exact test had been passing, over and over, long before anyone noticed trouble happening somewhere else.",
+        "Does a test passing, again and again, actually prove the transform underneath it is correct?",
+        "Or can a test keep passing for reasons that have nothing to do with correctness at all?"
+      ],
+      "answer": "No, passing doesn't prove correctness on its own. A test can pass for the wrong reason just as easily as the right one, and that ordering bug had been sitting there the entire time, hidden behind an assertion that simply happened to line up."
+    },
+    {
+      "lines": [
+        "Here's the pyramid's own bottom rung, the one this whole hook started from.",
+        "Take a static, mocked input, a fixed expected output, and never actually materialize a full model to get there.",
+        "That's the exact shape a dbt unit test takes, and it's also the shape a pytest test against a real local Spark session takes.",
+        "Both check one small, isolated piece of logic, fast, without needing a real production-scale run behind them."
+      ]
+    },
+    {
+      "lines": [
+        "One rung up from there, something more general gets checked.",
+        "State a rule once, something like a merge never being allowed to make a total go down.",
+        "Then check that single rule against a large number of genuinely different, randomly generated inputs, not just one handpicked example.",
+        "Doing exactly that turns up a real, concrete case where a buggy merge actually breaks that very rule."
+      ],
+      "takeaway": "One example only proves a transform survived that one example."
+    },
+    {
+      "lines": [
+        "One more question worth sitting with before it gets answered.",
+        "A narrow unit test, checking one specific input, keeps passing today, exactly as it's supposed to.",
+        "Does that same test also catch a regression that gets introduced tomorrow?",
+        "Or is there a real gap between what that one test checks and everything else that could go wrong?"
+      ],
+      "answer": "No, it doesn't automatically catch tomorrow's regression. A narrow test only ever checks what its own assertion actually names, and a change that lands anywhere outside that one specific value walks straight past it, completely untouched."
+    },
+    {
+      "lines": [
+        "Here's the rung built specifically to close that exact gap.",
+        "Take a known-good output, the whole thing, and freeze it as a baseline rather than checking just one value from it.",
+        "Diff the current output against that entire frozen baseline on every single change, not only on the one value a narrow test happened to pick.",
+        "That whole-output comparison catches a regression that a narrow unit test's single assertion would have walked right past."
+      ]
+    },
+    {
+      "lines": [
+        "Now the very top of this pyramid, named directly.",
+        "An in-pipeline expectation test doesn't run in CI at all. It runs inside the live pipeline itself, against real data flowing through it.",
+        "That's exactly what lets it catch a violation sitting in actual production data, the kind no pre-merge test ever gets a chance to even look at.",
+        "Every rung below this one is checking a guess about what production will look like. This rung checks production directly."
+      ],
+      "takeaway": "The top rung exists because production data finds violations a pre-merge test never gets to see."
+    },
+    {
+      "lines": [
+        "Three real, specific causes behind a test that goes flaky, demonstrated one at a time rather than just named.",
+        "Ordering: comparing an unordered result position by position genuinely fails on some runs and not others.",
+        "Time: baking today's exact clock reading into tomorrow's expected value genuinely fails the moment the clock moves on.",
+        "Floating point: adding the very same numbers in a different order genuinely lands on a measurably different total."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole shape together now.",
+        "Fast and narrow sits at the bottom of this pyramid. Slow and broad sits at the top.",
+        "In between, a property stated once and a whole frozen output both catch things a narrow single assertion simply can't.",
+        "And underneath all four rungs sit the same three nameable causes whenever a test turns out to be flaky."
+      ],
+      "takeaway": "A flaky test is not random -- it is always one of a short, nameable list of causes."
+    },
+    {
+      "lines": [
+        "One real test to close on, run for real rather than just described.",
+        "Take the exact same three numbers and add them together in one order, then add those same three numbers again in the reverse order.",
+        "Plain addition, nothing exotic, on a plain running total exactly like a transform would actually keep.",
+        "Does the order they're added in change the final total, or does it land on the same number either way?"
+      ],
+      "answer": "It genuinely changes the total. The same three numbers, added in reverse order, land on a measurably different floating-point result -- a real, reproducible fact about how floating-point addition actually works, not a hypothetical."
+    }
+  ]
+}

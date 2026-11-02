@@ -1,0 +1,67 @@
+{
+  "topic": "de.lakehouse-platform-choice-storage",
+  "steps": [
+    {
+      "lines": [
+        "Watch the gap between these two boxes. Day one, this choice looks purely operational — less to manage, someone else runs the storage.",
+        "Later is where the real cost shows up, and notice it was never about performance. It was always about whose bucket this was."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, think about what actually makes data hard to move. It isn't the vendor's name on the bill.",
+        "Of these four setups, which one leaves you with bytes that nothing else can read, sitting somewhere you never controlled?"
+      ],
+      "answer": [
+        "The vendor's own storage, holding the vendor's own format — that combination is the trap.",
+        "Notice it's not either one alone. A vendor's bucket with an open format inside it is still fine. It's both together that costs you."
+      ]
+    },
+    {
+      "lines": [
+        "Four platforms, four honest answers to the same question. Watch which word changes each time: yours, theirs, theirs again, yours.",
+        "That single word is doing more work than anything else in this whole comparison."
+      ]
+    },
+    {
+      "lines": [
+        "Don't let the word open do the work here — look at what's actually written to disk by default.",
+        "One copy of the same files, read two different ways, is a genuinely open format. A table that only opens up once you ask it to is something else."
+      ]
+    },
+    {
+      "lines": [
+        "Resist grouping these four into one feature. A pointer that moves nothing and a copy that moves everything are not the same mechanism wearing two names.",
+        "Ask, for each one: did any byte actually move, or did only the ability to see it move?"
+      ]
+    },
+    {
+      "lines": [
+        "Same job, run four times, priced four honestly different ways. Watch which lever would actually lower each bar — they're not the same lever.",
+        "Shrinking a job's run time helps directly here, does almost nothing there, because the meter underneath isn't counting the same thing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with: nothing changed about the data itself between these two bars. Only where it already lived, and in what shape.",
+        "One of these numbers is zero because the hard part was already done, months before anyone asked to leave."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: the owner of the storage is the fact everything else in this comparison quietly depends on.",
+        "Open format is a property of the bytes, zero-copy is four different mechanisms, and the meter you're billed under decides which lever actually helps."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice what this team actually cares about: not today's bill, not how easily they can share data. Specifically, the day they leave.",
+        "Out of everything covered, which single fact decides that day?"
+      ],
+      "answer": [
+        "Storage ownership and open format, together — not the pricing model, not the sharing mechanism.",
+        "Those other two matter while you stay. Only ownership and format decide what happens the day you actually go."
+      ]
+    }
+  ]
+}

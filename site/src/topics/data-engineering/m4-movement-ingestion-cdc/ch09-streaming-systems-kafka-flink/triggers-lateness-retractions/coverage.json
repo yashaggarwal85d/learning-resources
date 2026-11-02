@@ -1,0 +1,127 @@
+{
+  "topic": "de.triggers-lateness-retractions",
+  "syllabus": [
+    {
+      "clause": "early/on-time/late firings",
+      "at": [{ "step": "Reveal: the same window, three different moments to speak" }]
+    },
+    {
+      "clause": "allowed lateness vs dropping",
+      "at": [
+        { "step": "Predict: once the allowed-lateness window closes, what happens to a later record?" },
+        { "step": "Reveal: dropped, not queued, not retried" }
+      ]
+    },
+    {
+      "clause": "accumulation modes (discarding, accumulating, accumulating-and-retracting)",
+      "at": [
+        { "step": "Reveal: discarding and accumulating report completely different things" },
+        { "step": "Reveal: a retraction is how accumulating gets fixed" }
+      ]
+    },
+    {
+      "clause": "changelog/retraction streams that downstream operators and sinks must handle",
+      "at": [{ "step": "Reveal: a retraction is how accumulating gets fixed" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "The Dataflow Model (Akidau et al., 2015, VLDB)",
+      "items": [
+        {
+          "item": "discarding mode discards window contents upon triggering, so later results bear no relation to previous ones",
+          "at": [{ "step": "Reveal: discarding and accumulating report completely different things" }]
+        },
+        {
+          "item": "accumulating mode leaves window contents intact, so later results become a refinement of previous ones",
+          "at": [{ "step": "Reveal: discarding and accumulating report completely different things" }]
+        },
+        {
+          "item": "accumulating-and-retracting emits a retraction of the previous value before the new value on each re-trigger",
+          "at": [{ "step": "Reveal: a retraction is how accumulating gets fixed" }]
+        },
+        {
+          "item": "the watermark trigger fires when the watermark passes the end of the window, and refires immediately for late data",
+          "at": [{ "step": "Reveal: the same window, three different moments to speak" }]
+        }
+      ]
+    },
+    {
+      "source": "Windows (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "by default, late elements are dropped once the watermark is past the end of the window",
+          "at": [{ "step": "Reveal: dropped, not queued, not retried" }]
+        },
+        {
+          "item": "a late but not dropped element may cause the window to fire again, called a late firing in contrast to the main firing",
+          "at": [{ "step": "Reveal: the same window, three different moments to speak" }]
+        }
+      ]
+    },
+    {
+      "source": "Beam Programming Guide — Triggers (Apache Beam docs)",
+      "items": [
+        {
+          "item": "speculative firings precede the watermark passing the end of the window, for faster processing of partial results",
+          "at": [{ "step": "Reveal: the same window, three different moments to speak" }]
+        },
+        {
+          "item": "if allowed lateness is set, the default trigger emits new results immediately whenever late data arrives",
+          "at": [{ "step": "Predict: once the allowed-lateness window closes, what happens to a later record?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "An early firing isn't a lesser or buggy version of the on-time answer — it's a deliberate, labeled trade of certainty for latency, and a consumer that treats it as final is making an error the system never promised to prevent.",
+        "at": [{ "step": "Reveal: the same window, three different moments to speak" }]
+      },
+      {
+        "item": "Allowed lateness being bounded rather than infinite isn't a limitation to work around — it's the only thing that keeps a windowed job's state from growing forever, which is exactly why the prior topic's pane-cleanup mechanics depend on it.",
+        "at": [{ "step": "Reveal: dropped, not queued, not retried" }]
+      },
+      {
+        "item": "Calling a sum-of-sums consumer 'naive' under accumulating mode isn't a criticism of the consumer's code — the consumer is doing exactly what summing means; the mismatch is entirely about which contract the upstream job actually promised.",
+        "at": [{ "step": "Reveal: discarding and accumulating report completely different things" }]
+      },
+      {
+        "item": "A retraction fixing a naive downstream sum isn't a coincidence of this topic's toy model — it's the general mechanism changelog-stream systems (Flink SQL's dynamic tables among them) use to let a simple consumer stay simple while the upstream mode gets more sophisticated.",
+        "at": [{ "step": "Reveal: a retraction is how accumulating gets fixed" }]
+      },
+      {
+        "item": "This topic's hook (a dashboard silently over-counting under a mode mismatch) and its middle reveals are the same cause and effect the Dataflow Model paper itself motivates with its own video-session use case, demonstrated here on a toy model instead.",
+        "at": [{ "step": "Hook: a dashboard that silently lies about its own total" }]
+      },
+      {
+        "item": "The toy firing, lateness, and accumulation-mode models are deliberately simplified standalone demonstrations, not ports of any real engine's trigger-composition machinery, and every figure shown is this run's own measured output, not a cited constant.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Treating accumulation mode as 'never a detail' in the recap is a direct consequence of this topic's own measurement: identical input, identical window, three different downstream-correct answers depending on nothing but which mode is configured.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Citing Beam for firing terminology while citing Flink only for allowed-lateness mechanics isn't an inconsistency — it reflects a real difference in what each system's public API actually names and exposes, disclosed explicitly in SOURCES.md.",
+        "at": [{ "step": "Setup: a window has a shape. Now it has to say something" }]
+      },
+      {
+        "item": "The dropped-record boundary this topic measures is deliberately exact (a record one tick past the allowed-lateness close is dropped, one tick before is applied) because the whole point of teaching 'bounded, not infinite' is showing that the boundary is a hard line, not a fuzzy one.",
+        "at": [{ "step": "Reveal: dropped, not queued, not retried" }]
+      },
+      {
+        "item": "This topic contributes no reel step of its own to the 9.2 chapter lab; the lab's ground-truth aggregation baseline that a kill-mid-commit measurement compares against is hosted properly in an earlier topic, per CHAPTER.md's own lab note.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

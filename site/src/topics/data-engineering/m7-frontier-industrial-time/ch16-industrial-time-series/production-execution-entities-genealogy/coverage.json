@@ -1,0 +1,114 @@
+{
+  "topic": "de.production-execution-entities-genealogy",
+  "syllabus": [
+    {
+      "clause": "work orders, production runs, batches and recipes (ISA-88 procedural model), material lots",
+      "at": [
+        { "step": "Reveal: the objects a lot actually moves through" },
+        { "step": "Reveal: two standards, two models, named separately" }
+      ]
+    },
+    {
+      "clause": "forward/backward lot genealogy for recalls and traceability as a graph-shaped problem (§17.4)",
+      "at": [
+        { "step": "Hook: a recall query answers, but it doesn't say it's wrong" },
+        { "step": "Predict: does an unprotected loop in the data ever stop a recursive query on its own?" },
+        { "step": "Reveal: run it for real, capped, and watch it never stop short of the cap" },
+        { "step": "Reveal: the real recall list, traced forward from one contaminated lot" },
+        { "step": "Reveal: one missing edge, and the exact lots a recall would miss" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ISA-88: The Framework for Smarter Batch Process Control",
+      "items": [
+        {
+          "item": "Part 1 establishes a consistent set of models and terminology for batch control, technology-agnostic",
+          "at": [{ "step": "Reveal: two standards, two models, named separately" }]
+        },
+        {
+          "item": "Part 3 expands the recipe structure into general and site-level recipe models for consistency across plants",
+          "at": [{ "step": "Reveal: the objects a lot actually moves through" }]
+        }
+      ]
+    },
+    {
+      "source": "ISA-88 (Wikipedia)",
+      "items": [
+        {
+          "item": "the physical model nests enterprise through control module, with the unit level never excluded",
+          "at": [{ "step": "Reveal: two standards, two models, named separately" }]
+        },
+        {
+          "item": "the procedural model nests recipe procedure through phase",
+          "at": [{ "step": "Reveal: two standards, two models, named separately" }]
+        }
+      ]
+    },
+    {
+      "source": "7.8. WITH Queries (Common Table Expressions)",
+      "items": [
+        {
+          "item": "a recursive query's recursive term can loop indefinitely if it never returns no tuples",
+          "at": [{ "step": "Predict: does an unprotected loop in the data ever stop a recursive query on its own?" }]
+        },
+        {
+          "item": "the built-in CYCLE clause tracks visited values, a detected-cycle column, and a path column",
+          "at": [{ "step": "Reveal: run it for real, capped, and watch it never stop short of the cap" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A run pointing at a recipe version rather than a recipe is the same idea as topic 1's SCD rows: the thing that changes over time needs a stable reference to the exact version in force, not to a name that silently drifts underneath it.",
+        "at": [{ "step": "Reveal: the objects a lot actually moves through" }]
+      },
+      {
+        "item": "ISA-88's physical model and ISA-95's equipment hierarchy both nest physical plant structure, but they are different standards built for different purposes (batch control procedure vs. enterprise/control data ownership) and neither publicly states a level-for-level mapping between them.",
+        "at": [{ "step": "Reveal: two standards, two models, named separately" }]
+      },
+      {
+        "item": "A rework loop is not a modelling mistake to be designed away — real production genuinely reworks rejected material — which is exactly why the query layer, not the schema, has to be the thing that guarantees termination.",
+        "at": [{ "step": "Predict: does an unprotected loop in the data ever stop a recursive query on its own?" }]
+      },
+      {
+        "item": "Filling an artificial depth cap rather than stopping short of it is the only way to demonstrate non-termination in a bounded test; the executed run here hits exactly the row count the cap allows, every single time, which is itself the evidence.",
+        "at": [{ "step": "Reveal: run it for real, capped, and watch it never stop short of the cap" }]
+      },
+      {
+        "item": "A reachability query is only as complete as its edge table — there is no way for the query itself to know an edge is missing, because a missing edge looks identical to a true absence of a relationship.",
+        "at": [{ "step": "Reveal: one missing edge, and the exact lots a recall would miss" }]
+      },
+      {
+        "item": "A query over an edge table scales linearly in this sandbox's small example, but the syllabus's own pointer to a dedicated graph database (§17.4, skipped in this course) exists precisely because a recursive CTE's per-step join cost stops being free once the graph and the recall depth both grow large.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Every later topic in this chapter that references 'the lot' or 'the run' (quality, OEE) treats these entities as already-modelled facts; this topic is where their actual table shapes and join keys get decided.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "Backward genealogy (finding every raw-material ancestor) and forward genealogy (finding every downstream exposure) are the same recursive mechanism run in opposite directions over the same edge table, not two different algorithms.",
+        "at": [{ "step": "Reveal: the real recall list, traced forward from one contaminated lot" }]
+      },
+      {
+        "item": "A lot's consume/produce edges are naturally a DAG for straight-through production, but a real rework loop (reject material folded back into an earlier stage) breaks that assumption in practice, which is exactly why the course treats the graph as DAG-shaped with one named exception rather than purely acyclic.",
+        "at": [{ "step": "Predict: does an unprotected loop in the data ever stop a recursive query on its own?" }]
+      },
+      {
+        "item": "ISA-88's own standard is explicit that a run's recipe reference is to a specific recipe version with its own formula and procedure, which is the production-floor reason a work order can't simply point at a product name and expect reproducibility.",
+        "at": [{ "step": "Reveal: the objects a lot actually moves through" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

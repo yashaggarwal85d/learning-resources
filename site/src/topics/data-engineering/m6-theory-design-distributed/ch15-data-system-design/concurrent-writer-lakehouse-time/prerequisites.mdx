@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the concurrency concepts this design applies to a table
+
+<ul class="resources">
+  <Resource kind="reel" title="Optimistic vs pessimistic concurrency control" domain="data-engineering" host="de.concurrent-writer-lakehouse-time">The choice this topic's atomic-swap commit protocol is a worked case of.</Resource>
+  <Resource kind="reel" title="Snapshot isolation and write skew" domain="data-engineering" host="de.concurrent-writer-lakehouse-time">The isolation level this topic's readers get from reading a fixed snapshot.</Resource>
+  <Resource kind="reel" title="CDC from OLTP into a lakehouse" domain="data-engineering" host="de.concurrent-writer-lakehouse-time">One of the writers this topic now has to share the table with.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg Specification">The atomic-swap commit protocol this topic's whole design rests on.</Resource>
+  <Resource kind="reading" title="Branching and Tagging" href="https://iceberg.apache.org/docs/latest/branching/" by="Apache Iceberg documentation">The legal-hold tag this topic's retention-and-audit reveal is built on.</Resource>
+  <Resource kind="reading" title="Concurrency control" href="https://docs.delta.io/latest/concurrency-control.html" by="Delta Lake documentation">The conflict exceptions and the disjoint-partitioning advice behind this topic's own design decision.</Resource>
+</ul>
+
+</section>

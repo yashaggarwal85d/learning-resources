@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the log mechanics and the cursor this topic compares against
+
+<ul class="resources">
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.write-ahead-logging-fsync" by="Chapter 5, §5.1" />
+  <Resource kind="reel" title="Physical vs logical replication" domain="data-engineering" host="de.physical-vs-logical-replication" by="Chapter 5, §5.3" />
+  <Resource kind="reel" title="Incremental extraction with high-watermark cursors" domain="data-engineering" host="de.incremental-extraction-high-watermark" by="Chapter 8, §8.1" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Logical Decoding Concepts" href="https://www.postgresql.org/docs/current/logicaldecoding-explanation.html" by="PostgreSQL docs">The mechanism this topic's own logical-replication-slot measurements read directly.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">The WAL-retention cost this topic names as "operationally coupled to the source."</Resource>
+</ul>
+
+</section>

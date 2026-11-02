@@ -1,0 +1,74 @@
+{
+  "topic": "de.latency-percentiles-histogram-aggregation",
+  "steps": [
+    {
+      "lines": [
+        "A load test comes back reporting a perfectly respectable average latency.",
+        "And in that very same run, one real shopper sat there waiting a full several seconds for their page to load.",
+        "One tidy average. One real person who waited far, far longer than that average ever suggested."
+      ]
+    },
+    {
+      "lines": [
+        "So which numbers would have actually surfaced that gap, the one the average quietly buried.",
+        "And just as importantly, which way of generating the test's own load would have even caught that slow request in the first place."
+      ],
+      "answer": [
+        "The full ladder of percentiles catches it, especially out near its far tail.",
+        "But only if the load generator itself paces its requests on a steady, constant schedule. A generator that waits politely for each response before sending the next one would have simply never sent a request during that slow stretch, so nothing about it ever gets measured at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why an average so easily hides a tail like that.",
+        "One rare, genuinely large stall gets diluted across every other ordinary request sitting around it in the same batch.",
+        "Spread thin enough across a big enough pile of ordinary numbers, that one outlier barely nudges the average at all."
+      ]
+    },
+    {
+      "lines": [
+        "Picture five distinct points sitting along that same one distribution.",
+        "Each one is honestly answering a genuinely different real question. The typical request. A somewhat unlucky user. A genuinely very unlucky one. Something rare enough that it only shows up once you have real volume. And finally, the single worst request this entire run ever saw."
+      ]
+    },
+    {
+      "lines": [
+        "Take two separate hosts, each reporting its own tail percentile honestly.",
+        "Average those two numbers together, and that average quietly disagrees with the true tail percentile of their actual combined traffic.",
+        "Histograms themselves add together cleanly. Percentiles computed from them never do."
+      ]
+    },
+    {
+      "lines": [
+        "On its own, one single server's own rare tail moment is genuinely unlikely.",
+        "Now fan that same request out across a great many such servers running in parallel.",
+        "The odds flip hard, because the single slowest one among all of them is what actually sets the whole request's latency."
+      ]
+    },
+    {
+      "lines": [
+        "Run two different load generators side by side, at the exact same offered load, with the exact same stall dropped into both.",
+        "One generator politely waits for each response before sending its next request. The other keeps marching along on a fixed, steady schedule no matter what.",
+        "The polite one's own reported tail stays looking calm and healthy. The steady one honestly reports the entire backlog that stall actually caused."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling this together now.",
+        "An average genuinely hides a tail. The full percentile ladder answers five separate real questions, never just one. Histograms merge cleanly together. Percentiles computed from them simply do not average that same way.",
+        "And fanning a request out across many servers multiplies tail risk, rather than smoothing it away."
+      ]
+    },
+    {
+      "lines": [
+        "A whole fleet of ten separate hosts each independently reports its own tail percentile as exactly the same number.",
+        "Does that mean the fleet's own combined tail percentile is automatically that same number too."
+      ],
+      "answer": [
+        "Not necessarily, no.",
+        "Ten hosts quietly agreeing on their own separate numbers tells you remarkably little about the real shape of their combined traffic once it's all merged together.",
+        "The only honest way to know the fleet's true combined number is to actually merge all ten histograms and read the real percentile straight off of that merge."
+      ]
+    }
+  ]
+}

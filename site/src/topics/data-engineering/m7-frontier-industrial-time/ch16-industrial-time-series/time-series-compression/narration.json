@@ -1,0 +1,76 @@
+{
+  "topic": "de.time-series-compression",
+  "steps": [
+    {
+      "lines": [
+        "A colleague tells you Gorilla's encoder will shrink this plant's storage bill by a factor of twelve.",
+        "Two weeks later, measured on this plant's own readings, the real reduction is barely better than one.",
+        "Nothing is broken. The same algorithm, the same code, just a different kind of data underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "Gorilla's first trick is on the timestamps: instead of storing each one, it stores how much the gap between readings changed from the gap before it.",
+        "Its second trick is on the values: it compares each float's bit pattern against the one before it using exclusive-or, which leaves mostly zeros when the two are close.",
+        "Reproduce the paper's own two worked examples by hand, bit for bit, and they land exactly where the paper says they land."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "Run that exact same encoder on a signal that changes constantly and carries far more precision than the one Gorilla was built around.",
+        "Does it still compress nearly as well?"
+      ],
+      "answer": [
+        "It doesn't.",
+        "Both tricks only pay off when successive readings stay close together — a signal that jumps around with no pattern breaks that assumption completely."
+      ]
+    },
+    {
+      "lines": [
+        "Put three very different signals through the identical, unmodified encoder.",
+        "On a slow, barely-changing signal, it shrinks the data by a huge amount.",
+        "On a noisy, high-precision signal, the very same code barely helps at all. The ratio was never a property of the algorithm alone."
+      ]
+    },
+    {
+      "lines": [
+        "A later refinement called Chimp notices that a short run of trailing zeros isn't worth spending bits to describe separately, so below a certain length it just keeps them.",
+        "A further version compares each new reading against many earlier readings instead of only the one right before it.",
+        "That wider comparison wins specifically when a signal keeps repeating a pattern it saw a while ago."
+      ]
+    },
+    {
+      "lines": [
+        "A sensor reporting a reading with two decimal places is storing a floating-point number whose very lowest bits are really just measurement noise.",
+        "A newer codec treats that same reading as a small, exact whole number instead, with no bit-pattern guessing involved at all.",
+        "This is the approach one popular embedded database actually uses as its own default choice for floating-point columns."
+      ]
+    },
+    {
+      "lines": [
+        "Separately from the readings themselves, every row also carries a label: which piece of equipment, which signal.",
+        "Those labels repeat across an enormous number of rows, drawn from a tiny set of distinct strings.",
+        "A lookup table for the distinct strings, plus counting how many times each one repeats in a row, collapses that column to almost nothing — so whatever size is left over belongs almost entirely to the readings themselves."
+      ]
+    },
+    {
+      "lines": [
+        "Timestamps that change gently and values that barely move favor the first two tricks this topic covered.",
+        "A signal that keeps repeating a pattern favors comparing against many earlier readings instead of just one.",
+        "A signal that's fundamentally decimal favors treating it as an exact small integer instead of guessing at its bit pattern — and a lossy option exists too, but only if it states exactly how far it's allowed to drift."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "A vendor claims their compression codec beats every other codec, on every kind of workload, without exception.",
+        "Given everything just measured across three different signals, should a claim like that survive contact with this plant's own readings?"
+      ],
+      "answer": [
+        "It shouldn't.",
+        "Every single codec measured here won clearly on one kind of signal and lost clearly on another — a compression ratio is a claim about the shape of the data, never a universal ranking of one codec over all the rest."
+      ]
+    }
+  ]
+}

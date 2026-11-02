@@ -2,91 +2,140 @@
   "topic": "de.row-column-security-dynamic",
   "syllabus": [
     {
-      "clause": "enforce in the query engine, not the application",
-      "at": [{ "step": "Reveal: the engine enforces it, not the application" }]
-    },
-    {
-      "clause": "row filters, column masks and dynamic masking",
-      "at": [{ "step": "Reveal: the engine enforces it, not the application" }, { "step": "Reveal: a row policy, mechanically" }]
-    },
-    {
-      "clause": "Snowflake masking/row-access policies, Unity Catalog ABAC, BigQuery row-level security and policy tags, Lake Formation, Trino with Ranger/OPA",
-      "at": [{ "step": "Reveal: five engines, one shared idea" }]
-    },
-    {
-      "clause": "the impact on pruning and caching",
-      "at": [{ "step": "Reveal: what it costs the plan" }]
-    },
-    {
-      "clause": "bypass paths (direct file reads, extracts, unprotected materialized views)",
+      "clause": "enforce in the query engine, not the application: row filters, column masks and dynamic masking (Snowflake masking/row-access policies, Unity Catalog ABAC, BigQuery row-level security and policy tags, Lake Formation, Trino with Ranger/OPA), the impact on pruning and caching, and bypass paths (direct file reads, extracts, unprotected materialized views).",
       "at": [
-        { "step": "Reveal: the derived table nobody masked" },
-        { "step": "Reveal: the extract that already left" },
-        { "step": "Reveal: the direct file read" }
+        { "step": "Reveal: a policy enforced in the engine applies to every query; an application filter only applies to requests that go through that application" },
+        { "step": "Reveal: all 3,000 rows, measured directly -- nothing stops the query yet" },
+        { "step": "Elaborate: a row-security policy is an expression evaluated before the user's own query conditions" },
+        { "step": "Reveal: exactly 1,000 rows, measured directly -- the policy, not the query, decided" },
+        { "step": "Elaborate: the plan itself changes -- EXPLAIN shows no Filter node before the policy, one after it" },
+        { "step": "Reveal: a superuser bypasses the policy entirely, and so does anyone with the file's path" }
       ]
     }
   ],
   "sources": [
     {
-      "source": "PostgreSQL — Row Security Policies",
+      "source": "PostgreSQL documentation -- 5.9. Row Security Policies",
       "items": [
-        { "item": "Row security policies restrict, per user, which rows normal queries can return.", "at": [{ "step": "Reveal: a row policy, mechanically" }] },
-        { "item": "Superusers, BYPASSRLS roles, and normally the table owner, bypass row security.", "at": [{ "step": "Reveal: a row policy, mechanically" }] },
-        { "item": "A row policy's expression runs for every row before the user's own conditions, except leakproof functions.", "at": [{ "step": "Reveal: a row policy, mechanically" }] }
+        {
+          "item": "a policy expression is evaluated for each row prior to any conditions from the user's query, except for leakproof functions the optimizer may run early",
+          "at": [{ "step": "Elaborate: a row-security policy is an expression evaluated before the user's own query conditions" }]
+        },
+        {
+          "item": "superusers and roles with BYPASSRLS always bypass row security; table owners normally bypass it too unless FORCE ROW LEVEL SECURITY is set",
+          "at": [{ "step": "Reveal: a superuser bypasses the policy entirely, and so does anyone with the file's path" }]
+        }
       ]
     },
     {
-      "source": "Snowflake — Understanding column-level security",
+      "source": "Snowflake Documentation -- Understanding Dynamic Data Masking",
       "items": [
-        { "item": "Masking policies are schema-level objects, applied to the column at every location it appears, at query runtime.", "at": [{ "step": "Reveal: five engines, one shared idea" }] }
+        {
+          "item": "Dynamic Data Masking is a Column-level Security feature that masks plain-text data in table and view columns at query time",
+          "at": [{ "step": "Reveal: a policy enforced in the engine applies to every query; an application filter only applies to requests that go through that application" }]
+        }
       ]
     },
     {
-      "source": "Snowflake — Understanding row access policies",
+      "source": "Snowflake Documentation -- Understanding row access policies",
       "items": [
-        { "item": "A row access policy determines whether a given row can be viewed; query output includes only rows the policy evaluates to TRUE.", "at": [{ "step": "Reveal: five engines, one shared idea" }] }
+        {
+          "item": "a row access policy is a schema-level object that determines whether a given row in a table or view can be viewed",
+          "at": [{ "step": "Reveal: a policy enforced in the engine applies to every query; an application filter only applies to requests that go through that application" }]
+        }
       ]
     },
     {
-      "source": "Google BigQuery — Introduction to row-level security",
+      "source": "Databricks documentation -- Row filters and column masks",
       "items": [
-        { "item": "BigQuery's row-level security filter functions like a WHERE clause; callers not on the allowed list are denied.", "at": [{ "step": "Reveal: five engines, one shared idea" }] }
+        {
+          "item": "when the query engine must choose between optimization and protecting against information leakage, it always makes the secure choice, which can affect query performance",
+          "at": [{ "step": "Elaborate: the plan itself changes -- EXPLAIN shows no Filter node before the policy, one after it" }]
+        }
       ]
     },
     {
-      "source": "AWS Lake Formation — Data filtering and cell-level security",
+      "source": "BigQuery documentation -- Introduction to BigQuery row-level security",
       "items": [
-        { "item": "Lake Formation's data filters give column-, row- and cell-level security, scoped to read operations only.", "at": [{ "step": "Reveal: five engines, one shared idea" }] }
+        {
+          "item": "row-level security filters data and enables access to specific rows based on qualifying user conditions, extending least privilege to a subset of data",
+          "at": [{ "step": "Reveal: a policy enforced in the engine applies to every query; an application filter only applies to requests that go through that application" }]
+        }
       ]
     },
     {
-      "source": "Databricks — Create and manage row filter and column mask policies",
+      "source": "AWS Lake Formation documentation -- Data filtering and cell-level security in Lake Formation",
       "items": [
-        { "item": "Unity Catalog's row filter and column mask policies are UDF-backed; rows where the UDF returns FALSE are excluded.", "at": [{ "step": "Reveal: five engines, one shared idea" }] }
+        {
+          "item": "cell-level security combines row filtering and column filtering for a highly flexible permissions model",
+          "at": [{ "step": "Reveal: a policy enforced in the engine applies to every query; an application filter only applies to requests that go through that application" }]
+        }
       ]
     },
     {
-      "source": "Trino — Open Policy Agent access control",
+      "source": "This course's own measurement (examples.py)",
       "items": [
-        { "item": "Trino's OPA integration retrieves row-filter definitions and column masks from configured OPA endpoints.", "at": [{ "step": "Reveal: five engines, one shared idea" }] }
+        {
+          "item": "a restricted role sees all 3,000 rows of a real local PostgreSQL table before any row policy, exactly 1,000 after a policy restricting to one region; EXPLAIN shows no Filter node before the policy and an explicit one after it; a superuser bypasses the policy entirely",
+          "at": [
+            { "step": "Reveal: all 3,000 rows, measured directly -- nothing stops the query yet" },
+            { "step": "Reveal: exactly 1,000 rows, measured directly -- the policy, not the query, decided" },
+            { "step": "Elaborate: the plan itself changes -- EXPLAIN shows no Filter node before the policy, one after it" },
+            { "step": "Reveal: a superuser bypasses the policy entirely, and so does anyone with the file's path" }
+          ]
+        }
       ]
     }
   ],
   "expert": {
     "by": "self-review",
-    "date": "2026-10-30",
+    "date": "2026-11-01",
     "items": [
-      { "item": "An engine-side policy is strictly stronger than an application-side one because it is checked at the point a row or column is read, regardless of which application sent the query — an application-side check only ever covers requests that pass through that one application's own code.", "at": [{ "step": "Reveal: the engine enforces it, not the application" }] },
-      { "item": "A pushed-down row policy changes the number of rows the engine ever examines, not just the number returned; the cost difference is visible in a plan's own rows-examined counter, which Chapter 2's triage order already teaches how to read.", "at": [{ "step": "Reveal: what it costs the plan" }] },
-      { "item": "A materialized view, an export, and a direct file read all fail for the same underlying reason: none of them re-run the policy's evaluation, because none of them send a new query against the live, policy-attached table.", "at": [{ "step": "Reveal: the derived table nobody masked" }] },
-      { "item": "Topic 5's file-level encryption is the only one of this topic's own controls that actually reaches a direct file read, because it protects the bytes themselves rather than relying on a query ever being asked.", "at": [{ "topic": "Envelope encryption, KMS and key rotation", "quote": "key deletion as crypto-shredding", "domain": "data-engineering" }] },
-      { "item": "The policy this topic enforces mechanically is the same one topic 7 designed in the abstract — the decision/enforcement split topic 7 introduces is what lets one engine-side check serve row filtering, column masking, and more, all through the same evaluated rule.", "at": [{ "topic": "Access-control models: RBAC, ABAC, policy-as-code", "quote": "policy decision vs enforcement points", "domain": "data-engineering" }] },
-      { "item": "A mask or filter is always written against a tag or tier already applied at classification time; without that earlier classification step, there is no attribute for a row or column policy to read in the first place.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "classification schemes", "domain": "data-engineering" }] },
-      { "item": "Reading a plan's rows-examined counter before and after adding a policy is the same triage skill Chapter 2 teaches generally, applied here to one specific question: did the filter get pushed down.", "at": [{ "topic": "Reading EXPLAIN across engines", "quote": "a fixed triage order", "domain": "data-engineering" }] },
-      { "item": "The five engines named in the syllabus clause differ in vocabulary (masking policy, row filter, data filter, OPA endpoint) but not in the underlying guarantee each one's own documentation states: the rule is evaluated by the engine, against the live table, at the moment of the read.", "at": [{ "step": "Reveal: five engines, one shared idea" }] },
-      { "item": "A cache populated before a mask existed is a bypass path of exactly the same shape as a stale materialized view — both serve a result computed before the policy applied, without re-running the policy's own evaluation.", "at": [{ "step": "Reveal: what it costs the plan" }] },
-      { "item": "The predict question's two scenarios (an old export vs. a table refreshed the day before the mask) test whether the reader has generalised the bypass claim to timing specifically — what matters is whether the data's own last computation predates the policy, not how recent that computation otherwise was.", "at": [{ "step": "Prove it" }] }
+      {
+        "item": "Trino's OPA integration documents row filtering and column masking as access decisions a policy engine returns, the same decision/enforcement split taught in the previous topic, applied here at the point the engine actually carries the decision out rather than merely deciding it.",
+        "at": [{ "out": "Trino's own OPA-driven row filter and column mask named only as the enforcement-side counterpart to the previous topic's decision-point model; this topic's own measurement runs against PostgreSQL, not Trino" }]
+      },
+      {
+        "item": "Unity Catalog's ABAC policies (the previous topic's own subject) are the attribute-based rules that this topic's row filters and column masks actually enforce in the engine; the two topics describe the same governed-tag mechanism from the decision side and the enforcement side respectively.",
+        "at": [{ "out": "Unity Catalog ABAC's own tag-based policy named only as the decision-side counterpart already covered; this topic's own reel teaches enforcement, not the attribute model itself" }]
+      },
+      {
+        "item": "Classification and tags (the data-classification topic) supply the object attributes a row filter or column mask condition reads; without a classification pipeline upstream, a row-security policy has nothing but hard-coded literal values to condition on, which does not scale past a handful of rules.",
+        "at": [{ "out": "the classification pipeline's own role as the upstream input named only; this topic's own measurement uses a literal region condition, not a tag-driven one, to isolate the enforcement mechanism" }]
+      },
+      {
+        "item": "File encryption (an earlier topic) is the actual defence against the direct-file-read bypass this topic names: an engine policy cannot stop someone with the storage bucket's path from reading the raw Parquet file, but if that file is encrypted and the reader has no key, the bypass gains nothing readable.",
+        "at": [{ "out": "envelope encryption's own role as the defence against the direct-read bypass named only; this topic's own measurement demonstrates the bypass exists (a superuser query, not a raw file read), not the encryption that defends against it" }]
+      },
+      {
+        "item": "A materialized view or any derived/exported copy of masked or filtered data carries whatever values were visible to the role that created it; if that role saw unmasked data, the copy permanently holds unmasked data regardless of what policy later changes on the source table.",
+        "at": [{ "out": "the materialized-view and extract bypass paths named explicitly in the syllabus line but not separately measured; this topic's own measurement covers the superuser bypass as the representative case" }]
+      },
+      {
+        "item": "PostgreSQL's row-security feature evaluates independent USING (for visibility) and WITH CHECK (for inserts/updates) expressions, and RESTRICTIVE policies additionally AND together with PERMISSIVE ones rather than OR -- a richer policy-combination model than the single allow/deny condition this topic's own single-policy measurement shows.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "BigQuery's column-level access control (policy tags, named alongside row-level security in the same syllabus clause) is a separate mechanism from row-level security: a policy tag restricts which columns a principal can select at all, while a row-level access policy restricts which rows come back, and the two compose on the same table.",
+        "at": [{ "out": "BigQuery's policy-tag column mechanism named only as the column-level half of the same named-engines clause; this topic's own measurement demonstrates row-level filtering, not column-level tagging" }]
+      },
+      {
+        "item": "Snowflake's masking policies and row access policies are documented as two separate schema-level object types (Dynamic Data Masking for columns, row access policies for rows), not one unified policy object -- a distinction this topic's own PostgreSQL measurement collapses into a single CREATE POLICY mechanism that covers rows only, since column masking in PostgreSQL itself is conventionally done through a view rather than a first-class policy object.",
+        "at": [{ "out": "Snowflake's own two-object model (masking policy vs row access policy) named only; this topic's own measurement runs PostgreSQL's row-security feature, which has no equivalently named column-masking object" }]
+      },
+      {
+        "item": "Trino's OPA-driven batch column masking (named in the previous topic's own sources, distinct from single-column masking) lets one policy response mask several columns at once in a single round trip to the policy engine, reducing the per-query overhead of asking about each masked column separately.",
+        "at": [{ "out": "Trino's batch-column-masking optimisation named only; this topic's own measurement concerns a single row policy's plan cost, not a multi-column masking round trip" }]
+      },
+      {
+        "item": "A row-security policy's own cost is not fixed: PostgreSQL's planner can still push a leakproof function ahead of the row-security check specifically because it is proven not to leak, so a policy expression's performance depends on whether its own functions qualify for that exception, not just on whether a policy exists at all.",
+        "at": [{ "out": "the leakproof-function exception's own performance implication named only; this topic's own `EXPLAIN` measurement uses a simple equality condition, which is not itself a leakproof-function case" }]
+      }
     ]
   },
-  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
 }

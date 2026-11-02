@@ -1,0 +1,68 @@
+{
+  "topic": "de.adaptive-query-execution-aqe",
+  "steps": [
+    {
+      "lines": [
+        "A big table is about to join the result of grouping another big table down to a tiny number of rows.",
+        "Before a single task runs, what does the planner even commit to?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the measured plan, captured before any shuffle has run.",
+        "Both sides get sorted, then merged. That's the planner's own default for two large tables joined on equality.",
+        "But notice what it doesn't know yet: the real size of that grouped result. All it has is the size of the table going into the grouping, which is large."
+      ]
+    },
+    {
+      "lines": [
+        "That grouping still has to shuffle its own rows to finish counting them.",
+        "The moment it does, Spark has a real number for how many rows came out.",
+        "Does the join sitting above it, which hasn't run yet, get a second look with that number in hand?"
+      ],
+      "answer": "It does. A shuffle boundary is the one moment every partition's real size exists before the next step runs, and Spark takes that moment to reconsider."
+    },
+    {
+      "lines": [
+        "Here's the plan after that reconsideration.",
+        "The sort-merge strategy is gone completely. The now-known-tiny side gets broadcast instead, and the other side reads its own shuffle output locally rather than sorting and merging anything.",
+        "Same query, same data, a different strategy chosen only once the truth about one side's size existed."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing about the join operator itself changed between those two plans.",
+        "What changed is that a number existed which simply didn't exist before: the grouped side's real, tiny size.",
+        "That's the number the broadcast threshold is checked against, and it only existed once the grouping had actually run."
+      ]
+    },
+    {
+      "lines": [
+        "Switch to a different query entirely. This one is configured with two hundred shuffle partitions from the start, the way a lot of real queries are.",
+        "Nobody sized that number to the data; it's just a session-wide default somebody set once.",
+        "If the real work barely needs a handful of partitions, does Spark still run two hundred separate tasks anyway?"
+      ],
+      "answer": "No. The same reconsideration that can swap a join's strategy can also merge small partitions together once their real sizes are known."
+    },
+    {
+      "lines": [
+        "Look at the two plans side by side.",
+        "The version captured before any shuffle has nothing resembling a merge step for those partitions. It simply commits to the configured count.",
+        "Only the version captured after the shuffle shows the small partitions actually combined before whatever reads them next."
+      ]
+    },
+    {
+      "lines": [
+        "That configured count of two hundred was never actually sized to this data; nobody tuned it for this particular query.",
+        "The number that ended up running came from somewhere else entirely: the shuffle's own real output, measured after the fact.",
+        "Nobody has to guess a shuffle-partition count correctly up front anymore for this to work."
+      ]
+    },
+    {
+      "lines": [
+        "Both of today's examples share the same shape. Something runs, a shuffle boundary is crossed, and only then does Spark get to rewrite what comes next.",
+        "That also marks the edge of what this can touch: whatever already happened before that first boundary, the scan, the filter, the initial projection, is already done. No amount of reconsidering later changes it."
+      ]
+    }
+  ]
+}

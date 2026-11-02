@@ -2,107 +2,153 @@
   "topic": "de.access-control-models-rbac",
   "syllabus": [
     {
-      "clause": "role explosion in RBAC",
-      "at": [{ "step": "Reveal: the role count, done out" }]
-    },
-    {
-      "clause": "attribute/tag-based policies",
-      "at": [{ "step": "Reveal: one rule, read from tags, instead" }]
-    },
-    {
-      "clause": "policy decision vs enforcement points",
-      "at": [{ "step": "Reveal: the decision point and the enforcement point are separate" }]
-    },
-    {
-      "clause": "policy engines (OPA, Cedar)",
-      "at": [{ "step": "Reveal: what the policy engines actually hand back" }]
-    },
-    {
-      "clause": "federation with the enterprise IdP (SAML/OIDC, SCIM provisioning)",
+      "clause": "role explosion in RBAC, attribute/tag-based policies, policy decision vs enforcement points, policy engines (OPA, Cedar), federation with the enterprise IdP (SAML/OIDC, SCIM provisioning), periodic access reviews.",
       "at": [
-        { "step": "Reveal: identity comes from outside, through the IdP" },
-        { "step": "Reveal: provisioning keeps accounts and groups in sync" },
-        { "step": "Reveal: offboarding in one place, everywhere at once" }
+        { "step": "Reveal: RBAC's own shape -- a role holds many privileges, a user holds one or more roles" },
+        { "step": "Reveal: 2,520 roles, measured directly" },
+        { "step": "Elaborate: ABAC replaces the grid with one rule over attributes" },
+        { "step": "Reveal: 3 new roles under RBAC; 0 edits under ABAC, measured directly" },
+        { "step": "Elaborate: the decision point and the enforcement point are two different jobs" },
+        { "step": "Reveal: identity comes from outside the policy engine entirely" },
+        { "step": "Reveal: entitlements drift, so a periodic access review is the catch policy alone misses" }
       ]
-    },
-    {
-      "clause": "periodic access reviews.",
-      "at": [{ "step": "Reveal: periodic access reviews catch what policy never will" }]
     }
   ],
   "sources": [
     {
-      "source": "NIST — Role Based Access Control (project page)",
+      "source": "Role Based Access Control (NIST, Computer Security Resource Center)",
       "items": [
-        { "item": "The RBAC reference model's own vocabulary: users, roles, permissions, operations and objects.", "at": [{ "step": "Reveal: the role count, done out" }] }
+        {
+          "item": "security is managed at a level that corresponds to the organization's structure: each user is assigned one or more roles, each role is assigned privileges",
+          "at": [{ "step": "Reveal: RBAC's own shape -- a role holds many privileges, a user holds one or more roles" }]
+        }
       ]
     },
     {
-      "source": "NIST SP 800-162 — Guide to Attribute Based Access Control (ABAC)",
+      "source": "NIST Special Publication 800-162 -- Guide to Attribute Based Access Control (ABAC)",
       "items": [
-        { "item": "ABAC authorizes an operation by evaluating attributes of the subject, object, operation and environment against policy.", "at": [{ "step": "Reveal: one rule, read from tags, instead" }] }
+        {
+          "item": "authorization is determined by evaluating attributes of the subject, object, requested operations, and environment conditions against policy",
+          "at": [{ "step": "Elaborate: ABAC replaces the grid with one rule over attributes" }]
+        }
       ]
     },
     {
-      "source": "Open Policy Agent — Philosophy",
+      "source": "Open Policy Agent documentation",
       "items": [
-        { "item": "OPA's own stated purpose: decoupling policy from the service it governs.", "at": [{ "step": "Reveal: the decision point and the enforcement point are separate" }] },
-        { "item": "Services offload policy decisions to OPA by executing queries.", "at": [{ "step": "Reveal: the decision point and the enforcement point are separate" }] }
+        {
+          "item": "OPA decouples policy decision-making from policy enforcement; software queries OPA with structured data to get a decision",
+          "at": [{ "step": "Elaborate: the decision point and the enforcement point are two different jobs" }]
+        }
       ]
     },
     {
-      "source": "Cedar Policy Language — Terms & concepts",
+      "source": "Cedar Policy Language Reference Guide -- Terms & concepts",
       "items": [
-        { "item": "Cedar policies describe which principals may perform which actions on which resources, in context.", "at": [{ "step": "Reveal: what the policy engines actually hand back" }] },
-        { "item": "Cedar's own ABAC support: attributes attached to the principal and resource.", "at": [{ "step": "Reveal: what the policy engines actually hand back" }] }
+        {
+          "item": "Cedar policies describe which principals may perform which actions on which resources, and support both RBAC (roles) and ABAC (attributes) as policy styles",
+          "at": [{ "step": "Elaborate: the decision point and the enforcement point are two different jobs" }]
+        }
       ]
     },
     {
-      "source": "Trino — Open Policy Agent access control",
+      "source": "Trino documentation -- Open Policy Agent access control",
       "items": [
-        { "item": "Trino's OPA integration retrieves row-filter definitions from a configured OPA endpoint.", "at": [{ "step": "Reveal: what the policy engines actually hand back" }] }
+        {
+          "item": "row filtering removes rows before returning them, and column masking obscures column data for specific users, both configured as OPA policy responses",
+          "at": [{ "step": "Elaborate: the decision point and the enforcement point are two different jobs" }]
+        }
       ]
     },
     {
-      "source": "Databricks — Attribute-based access control in Unity Catalog",
+      "source": "Databricks documentation -- Attribute-based access control (ABAC) in Unity Catalog",
       "items": [
-        { "item": "Unity Catalog's ABAC determines access from attributes represented through governed tags.", "at": [{ "step": "Reveal: one rule, read from tags, instead" }] }
+        {
+          "item": "access is determined by evaluating attributes represented through governed tags in policy conditions, the same ABAC shape as a real, shipped product feature",
+          "at": [{ "step": "Elaborate: ABAC replaces the grid with one rule over attributes" }]
+        }
       ]
     },
     {
-      "source": "OpenID Foundation — OpenID Connect Core 1.0",
+      "source": "OpenID Connect Core 1.0",
       "items": [
-        { "item": "OIDC is an identity layer on top of OAuth 2.0, verifying the end-user's authentication.", "at": [{ "step": "Reveal: identity comes from outside, through the IdP" }] }
+        {
+          "item": "OIDC is an identity layer on top of OAuth 2.0 that lets a client verify a user's identity based on authentication by an authorization server",
+          "at": [{ "step": "Reveal: identity comes from outside the policy engine entirely" }]
+        }
       ]
     },
     {
-      "source": "IETF — RFC 7644, System for Cross-domain Identity Management: Protocol",
+      "source": "RFC 7644 -- System for Cross-domain Identity Management: Protocol (SCIM)",
       "items": [
-        { "item": "SCIM is an HTTP protocol for provisioning identity data in enterprise-to-cloud, cross-domain scenarios.", "at": [{ "step": "Reveal: provisioning keeps accounts and groups in sync" }] }
+        {
+          "item": "SCIM is an application-level HTTP protocol for provisioning and managing identity data across domains such as enterprise-to-cloud providers",
+          "at": [{ "step": "Reveal: identity comes from outside the policy engine entirely" }]
+        }
       ]
     },
     {
-      "source": "OASIS — Security Assertion Markup Language (SAML) V2.0, Assertions and Protocols",
+      "source": "This course's own measurement (examples.py)",
       "items": [
-        { "item": "SAML's own scope: XML-encoded assertions about authentication, attributes and authorization, and the protocols carrying them.", "at": [{ "step": "Reveal: identity comes from outside, through the IdP" }] }
+        {
+          "item": "14 teams x 60 datasets x 3 environments, one role per triple, is 2,520 roles; adding one restricted dataset for one team costs 3 new RBAC roles versus 0 ABAC edits; one ABAC rule tested correctly on an allow case and two distinct deny cases",
+          "at": [
+            { "step": "Reveal: 2,520 roles, measured directly" },
+            { "step": "Reveal: 3 new roles under RBAC; 0 edits under ABAC, measured directly" }
+          ]
+        }
       ]
     }
   ],
   "expert": {
     "by": "self-review",
-    "date": "2026-10-30",
+    "date": "2026-11-01",
     "items": [
-      { "item": "RBAC's role count grows multiplicatively with teams, datasets and environments; ABAC's rule count grows only with the number of distinct attribute combinations a policy needs to distinguish, which is why a new dataset costs one tag, not one role per team.", "at": [{ "step": "Reveal: one rule, read from tags, instead" }] },
-      { "item": "Separating the decision point from the enforcement point is what lets many different data-access surfaces (a warehouse, a query engine, an API) share one policy engine and one audited policy, instead of each implementing its own access logic.", "at": [{ "step": "Reveal: the decision point and the enforcement point are separate" }] },
-      { "item": "OPA and Cedar both evaluate the same shape of question (is this principal allowed this action on this resource) but Cedar's language is purpose-built for authorization while Rego is a general-purpose policy language also used for non-authorization checks.", "at": [{ "step": "Reveal: what the policy engines actually hand back" }] },
-      { "item": "SAML and OIDC both authenticate a person once at the IdP, but SCIM is a separate, independent protocol for keeping the downstream account and group records themselves in sync — authentication and provisioning are two different problems solved by different protocols.", "at": [{ "step": "Reveal: provisioning keeps accounts and groups in sync" }] },
-      { "item": "Offboarding appears automatic only because SCIM provisioning is wired to the IdP's own group membership; a downstream system not wired to SCIM would keep a removed employee's access until someone manually revokes it.", "at": [{ "step": "Reveal: offboarding in one place, everywhere at once" }] },
-      { "item": "A periodic access review exists because a policy evaluated correctly every time still grants access the policy's own rule says is correct, even when the underlying reason for that grant (a finished project, a changed role) no longer holds; the review catches drift in intent, not errors in evaluation.", "at": [{ "step": "Reveal: periodic access reviews catch what policy never will" }] },
-      { "item": "Topic 4's classification tags are what makes ABAC's 'tier confidential or below' rule possible at all; without a tag already applied at classification time, an ABAC rule has no attribute to read.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "classification schemes", "domain": "data-engineering" }] },
-      { "item": "Chapter 10's workload-identity and catalog-credential-vending topics are cited by CHAPTER.md as uses but are unresolvable (Chapter 10's two built topics are both cloud-foundations topics introducing no identity or catalog id), so declared rather than used, consistent with topics 4-6's own finding of similar gaps.", "at": [{ "out": "Chapter 10's built topics introduce no identity/catalog-credential id; declared per CHAPTER.md's cross-chapter-id rule" }] },
-      { "item": "The audit-logging *(skipped)* syllabus topic is named here only, as the fuller treatment of the decision-point logs a periodic access review draws its input from.", "at": [{ "deep": "Where this goes next" }] },
-      { "item": "The predict question's two-part structure (one change or fourteen; which model) tests whether the reader has internalised that RBAC's multiplicative cost and ABAC's flat cost are a property of how each model's rules are scoped, not an accident of this particular example.", "at": [{ "step": "Prove it" }] }
+      {
+        "item": "SAML 2.0 (OASIS) is the older, XML-based federated single-sign-on protocol that OIDC was designed to simplify on top of OAuth 2.0; this topic names SAML by its role rather than quoting its core specification directly, since the OASIS document is not reachable as fetchable static text in this sandbox.",
+        "at": [{ "out": "SAML 2.0 named only as OIDC's XML-based predecessor serving the same SSO role; this topic's own reel quotes OIDC Core directly, not SAML" }]
+      },
+      {
+        "item": "Cloud IAM mechanics (users, groups, policies attached to cloud resources) and catalog-enforced access with credential vending are a separate, more cloud-specific layer this topic builds on per CHAPTER.md, distinct from the engine-agnostic RBAC/ABAC/policy-engine models taught here.",
+        "at": [{ "out": "cloud IAM and credential vending named only as the layer this topic builds on; this topic's own reel teaches the access-control models themselves, not a specific cloud's IAM console" }]
+      },
+      {
+        "item": "The Unix permission model (read/write/execute for owner, group, other) is the simplest access-control list a reader has likely already seen, and RBAC's own motivation is explicitly to avoid managing access at that same per-user, per-resource granularity at a much larger scale.",
+        "at": [{ "out": "Unix file permissions named only as the simplest prior access-control model this topic's RBAC motivation contrasts with; this topic's own measurement concerns RBAC and ABAC at organisation scale, not file permissions" }]
+      },
+      {
+        "item": "Row/column security and dynamic masking (the next topic) is the engine-side enforcement that actually applies a policy's verdict at query time; this topic teaches only the models and the decision point, not how a query engine applies a row filter or a column mask.",
+        "at": [{ "out": "engine-level enforcement named only as the next topic's own subject; this topic's own reel stops at the decision point, before any specific engine applies the verdict" }]
+      },
+      {
+        "item": "Policy engines like OPA and Cedar are general-purpose and can express both RBAC-style role policies and ABAC-style attribute policies over the same evaluation engine, so adopting a policy engine is not itself a choice between RBAC and ABAC -- it is a choice of where decisions are evaluated and how they are expressed.",
+        "at": [{ "out": "the engine-vs-model distinction named only; this topic's own reel presents RBAC and ABAC primarily as data models, with OPA and Cedar as the engines that can express either" }]
+      },
+      {
+        "item": "Role explosion is sometimes mitigated within RBAC itself, short of moving to ABAC, through role hierarchies (senior roles inheriting junior roles' permissions) and mutually exclusive role constraints, both named directly in the ANSI/INCITS 359 RBAC standard that NIST's own RBAC project page cites.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "A periodic access review's own input -- who holds what entitlement, and the decision-point logs behind each grant -- is exactly the data an audit-logging system records; this topic names access reviews as the control, leaving the logging mechanism itself to the skipped syllabus topic on audit logging and tamper evidence.",
+        "at": [{ "out": "audit logging named only as the skipped topic that would supply a review's own evidence trail; this topic's own reel presents the review as a scheduled control, not the logging system behind it" }]
+      },
+      {
+        "item": "SCIM's provisioning events are themselves a lifecycle, not a one-time setup: RFC 7644 defines create, read, update, delete and bulk operations on identity resources, so an offboarding event is one DELETE (or deactivation PATCH) call that every connected system's SCIM endpoint applies, rather than an administrator manually removing access system by system.",
+        "at": [{ "out": "SCIM's own CRUD/bulk operation model named only; this topic's own reel states SCIM's provisioning role in one sentence, not its individual HTTP operations" }]
+      },
+      {
+        "item": "Policy-as-code (storing authorization policies as versioned text, reviewed and tested like application code, rather than as rows in an admin console) is the practice this topic's own title names third, distinct from RBAC and ABAC as data models -- OPA's Rego and Cedar's policy language are both designed to be written, diffed and tested this way.",
+        "at": [{ "out": "policy-as-code as a software-engineering practice (version control, review, testing) named only; this topic's own reel teaches the RBAC/ABAC models and the decision/enforcement split, not a policy's own CI pipeline" }]
+      },
+      {
+        "item": "NIST's RBAC research itself was estimated, in a 2010 RTI International economic study NIST's own project page cites, to have saved industry roughly $1.1 billion through reduced employee downtime and more efficient provisioning and policy administration -- RBAC's value case is not purely theoretical.",
+        "at": [{ "out": "the RTI International economic study named only as the real-world cost justification for RBAC adoption; this topic's own measurement concerns role count and edit count, not an organisation's total cost of administration" }]
+      }
     ]
   },
-  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
 }

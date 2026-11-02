@@ -1,0 +1,87 @@
+{
+  "topic": "de.edge-buffering-store-forward",
+  "steps": [
+    {
+      "lines": [
+        "An edge gateway just spent a long WAN outage buffering everything a plant floor kept producing, and now the link has finally come back up.",
+        "The replay that follows shows some readings arriving twice, a handful out of their original order, and brand new live data showing up noticeably late.",
+        "None of that happened because the buffer failed to hold the data. The buffer did its one job perfectly."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "Every single reading that happened during that outage genuinely made it into the buffer intact, so nothing was ever actually lost along the way here.",
+        "Given that the data itself survived just fine, what was actually missing from how that replay got carried out, and what should have limited how fast it ran?"
+      ],
+      "answer": [
+        "A key per point, plus a speed limit on catching up.",
+        "Each buffered point needed its own idempotent key so a resend could never be double counted, and the replay itself needed a throttle so catching up never ran faster than the platform downstream could actually absorb."
+      ]
+    },
+    {
+      "lines": [
+        "Underneath all of this sits one simple mechanical guarantee worth taking seriously.",
+        "Every single write to this buffer gets flushed all the way down to disk before the gateway ever tells its own source that write succeeded.",
+        "Kill that process entirely and start a brand new one reading the very same file, and it recovers every single point the earlier process had written, with nothing missing.",
+        "That same arithmetic also tells you up front exactly how much disk a given outage is going to cost: a longer outage at the same steady rate simply needs proportionally more room."
+      ]
+    },
+    {
+      "lines": [
+        "Now turn to the actual numbering scheme riding along inside each of those buffered points.",
+        "The sequence number built into Sparkplug itself only has room to count up to a few hundred before it wraps back around to the start again.",
+        "That's nowhere near wide enough to safely dedupe a replay that might be carrying tens of thousands of buffered points all at once.",
+        "A gateway that instead tags each point with its own source, its own device timestamp, and a counter wide enough to never wrap can catch a duplicate resend, spot a genuine gap, and straighten out a reordering, all in that same single pass."
+      ]
+    },
+    {
+      "lines": [
+        "Catching up after an outage is its own separate problem worth thinking through carefully.",
+        "A backlog only actually drains at whatever rate the replay runs minus whatever rate live traffic keeps adding on top of it, since that live traffic never actually stops arriving.",
+        "Reserve some headroom off the top for that live traffic, hand the rest of the available capacity to the replay, and the backlog still finishes draining in a perfectly bounded stretch of time."
+      ]
+    },
+    {
+      "lines": [
+        "Eventually a buffer that kept filling during a long outage simply runs out of room, and something has to give.",
+        "Drop whichever point is oldest, or drop whichever point just arrived, and you're treating every single point exactly the same regardless of what it actually represents.",
+        "Rank by priority instead, and a safety alarm buried anywhere in that backlog survives every single time, while only the routine readings around it get sacrificed.",
+        "Either way, the gateway's own write into that buffer never actually fails. Refusing a write back to a live controller is the one outcome none of this is ever allowed to produce."
+      ]
+    },
+    {
+      "lines": [
+        "There's a cleaner way to stretch that same fixed buffer even further before it ever has to start dropping anything at all.",
+        "Instead of storing every single raw reading that comes in, roll many of them together into one aggregate record per short interval.",
+        "The very same outage that would otherwise demand a huge number of raw points fits comfortably into a tiny fraction that many rolled-up records instead, inside that identical buffer."
+      ]
+    },
+    {
+      "lines": [
+        "One more property this gateway has to get right, and it has nothing to do with the buffer at all.",
+        "A device clock can quietly drift behind the gateway's own clock for an entire outage without ever announcing that it's happening.",
+        "Once the link comes back and both clocks can finally be compared side by side again, that steady gap becomes a single number: the offset.",
+        "Apply that one estimated offset across the whole drifted batch, and every one of those timestamps lands back exactly where the gateway's own clock would have placed it."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole picture together now.",
+        "The buffer itself is durable and sized correctly, its sequence key is wide enough to survive its own eventual replay, and that replay is throttled by simple arithmetic rather than left to run flat out.",
+        "A full buffer drops by priority rather than by sheer age, a local rollup buys it far more runway, and a drifted clock gets quietly corrected the moment the link finally returns."
+      ]
+    },
+    {
+      "lines": [
+        "One last case worth reasoning through before moving on.",
+        "The WAN stayed down for this entire outage, start to finish, with absolutely no connection back to the platform the whole time.",
+        "Meanwhile, out on the plant floor itself, did the actual control loop keep taking its own readings on schedule, completely independent of whatever the gateway's uplink happened to be doing?"
+      ],
+      "answer": [
+        "Yes, every single one of those local readings still happened right on schedule.",
+        "Local autonomy was never a property the gateway's buffer handed out in the first place. It belongs entirely to the plant's own control loop, and the buffer only ever decides what happens to a reading after that loop has already taken it."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "topic": "de.streaming-into-lakehouse",
+  "syllabus": [
+    {
+      "clause": "topic-to-table materialisation (Confluent Tableflow to Iceberg/Delta, Redpanda Iceberg topics)",
+      "at": [{ "step": "Reveal: automated materialisation or a hand-built sink" }]
+    },
+    {
+      "clause": "Flink/Spark sinks to Iceberg/Delta/Paimon",
+      "at": [
+        { "step": "Reveal: automated materialisation or a hand-built sink" },
+        { "step": "Reveal: a sink's commit rides on the processor's checkpoint" }
+      ]
+    },
+    {
+      "clause": "commit frequency vs small files vs freshness",
+      "at": [
+        { "step": "Reveal: commit cadence sets file count" },
+        { "step": "Reveal: no free setting" }
+      ]
+    },
+    {
+      "clause": "Paimon and Fluss as streaming-first storage for Flink",
+      "at": [{ "step": "Reveal: streaming-first storage" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Tableflow in Confluent Cloud (Confluent, current docs)",
+      "items": [
+        {
+          "item": "Tableflow materializes Apache Kafka topics as Apache Iceberg or Delta Lake tables, eliminating custom data pipelines",
+          "at": [{ "step": "Reveal: automated materialisation or a hand-built sink" }]
+        },
+        {
+          "item": "Tableflow transforms incoming Kafka data into structured Parquet files, which are then materialized as Iceberg or Delta Lake tables",
+          "at": [{ "step": "Reveal: automated materialisation or a hand-built sink" }]
+        }
+      ]
+    },
+    {
+      "source": "About Iceberg Topics (Redpanda Streaming, current docs)",
+      "items": [
+        {
+          "item": "enabling the Iceberg integration makes Redpanda brokers store streaming data as Iceberg-compatible Parquet files directly in object storage",
+          "at": [{ "step": "Reveal: automated materialisation or a hand-built sink" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink Writes (Apache Iceberg, latest docs)",
+      "items": [
+        {
+          "item": "the Flink Iceberg sink guarantees exactly-once semantics",
+          "at": [{ "step": "Reveal: a sink's commit rides on the processor's checkpoint" }]
+        },
+        {
+          "item": "the expected Iceberg commit interval equals the stream processor's own checkpoint interval",
+          "at": [{ "step": "Reveal: a sink's commit rides on the processor's checkpoint" }]
+        }
+      ]
+    },
+    {
+      "source": "Primary-Key Table (Apache Paimon, master docs)",
+      "items": [
+        {
+          "item": "Paimon stores primary-key data in an LSM tree, buffering and flushing writes and merging files on compaction",
+          "at": [{ "step": "Reveal: streaming-first storage" }]
+        }
+      ]
+    },
+    {
+      "source": "Introduction (Apache Fluss, docs, version 1.0)",
+      "items": [
+        {
+          "item": "Fluss is a lakehouse-native streaming storage system integrating with Apache Flink for sub-second streaming reads and writes",
+          "at": [{ "step": "Reveal: streaming-first storage" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Opening on the measured commit-cadence/file-count relationship rather than naming the destinations first means the trade-off itself, not any particular product, is what the whole topic organizes around.",
+        "at": [{ "step": "Hook: commit more often, pay in files" }]
+      },
+      {
+        "item": "Presenting automated materialisation and a hand-built sink as reaching the identical destination, rather than as competing approaches, is deliberate — the real choice is who operates the pipeline, not which destination format results.",
+        "at": [{ "step": "Reveal: automated materialisation or a hand-built sink" }]
+      },
+      {
+        "item": "Tying the checkpoint interval directly to the commit interval, rather than treating them as two independent knobs, is this topic's bridge from Flink's own runtime mechanics (covered earlier in the chapter) to this topic's trade-off.",
+        "at": [{ "step": "Reveal: a sink's commit rides on the processor's checkpoint" }]
+      },
+      {
+        "item": "Framing Paimon and Fluss as two different places to absorb the same trade-off (one inside the table format, one as separate storage in front of the stream processor) rather than as interchangeable alternatives reflects their genuinely different positions in the pipeline.",
+        "at": [{ "step": "Reveal: streaming-first storage" }]
+      },
+      {
+        "item": "The recap's claim that nothing removes the trade-off, only relocates where it's paid, is this topic's one real idea — everything else (Tableflow, Redpanda, Flink/Spark sinks, Paimon, Fluss) is a concrete instance of where that relocation happens.",
+        "at": [{ "step": "Reveal: no free setting" }]
+      },
+      {
+        "item": "The toy LSM-buffering model deliberately reuses the exact same commit cadence from the first toy model rather than a different one, so the only variable that changes between the two reveals is whether compaction runs, isolating what compaction specifically buys.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic's hook (committing more often costs files) and its recap (nothing removes that cost) are the same observation stated twice — first as a measured surprise, then as the settled rule everything in between built toward.",
+        "at": [{ "step": "Hook: commit more often, pay in files" }]
+      },
+      {
+        "item": "The toy commit-cadence and LSM-buffering models are deliberately simplified standalone demonstrations, not ports of any real Iceberg writer or Paimon compaction scheduler, and every figure shown is this run's own measured output, not a cited vendor benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic reuses topic 24's changelog-mode vocabulary (append/upsert/retract) implicitly through the upsert writes an Iceberg v2 table accepts, rather than reopening what a changelog mode is.",
+        "at": [{ "step": "Reveal: a sink's commit rides on the processor's checkpoint" }]
+      },
+      {
+        "item": "This topic deliberately leaves the real-time OLAP destination unexplored beyond naming it as what's next — a lakehouse table and a millisecond-latency OLAP store solve different query problems, and conflating them here would blur both.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

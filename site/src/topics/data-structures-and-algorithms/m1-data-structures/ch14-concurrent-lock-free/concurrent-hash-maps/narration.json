@@ -1,0 +1,107 @@
+{
+  "topic": "dsa.concurrent-hash-maps",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Picture a map from a request's own id to a running count, with sixteen separate threads all updating it at once.",
+        { "beat": 0.3 },
+        "Wrap the whole thing in one lock, and every one of those sixteen threads is correct, and every one of them is also waiting on everyone else.",
+        { "beat": 0.4 },
+        "Split that single lock into several independent locks, one per stripe of the table, and that waiting mostly goes away. Mostly, because the table still has to grow."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question growth raises. The table a thread is searching has to become a bigger table, while other threads are still reading and writing it.",
+        { "beat": 0.4 },
+        "So what does a reading thread do in the middle of that? Does it wait for the whole move to finish, does it check two tables itself, or is there something else going on?"
+      ],
+      "answer": [
+        "It follows a note. The bin it lands on, once that bin has already been moved, has its very first entry replaced by a marker that simply says where the real data went.",
+        "No waiting, no searching two places by hand — a reader that meets that marker just follows it straight to the new table."
+      ]
+    },
+    {
+      "lines": [
+        "A single lock around the whole table serializes every thread, no matter which keys they're actually touching.",
+        { "beat": 0.3 },
+        "Splitting that table into several independently locked stripes buys back a lot of that — two threads on two different stripes never even meet.",
+        { "beat": 0.4 },
+        "What it costs is that any operation needing the whole table, like a resize, still has to take every single one of those locks before it can start."
+      ]
+    },
+    {
+      "lines": [
+        "Now look at the smallest possible update: inserting the very first entry into a bin that's completely empty.",
+        { "beat": 0.3 },
+        "That doesn't need a lock at all. One compare-and-swap either lands that entry, or tells the thread someone else got there first — and under an even spread of keys, this is by far the most common case."
+      ]
+    },
+    {
+      "lines": [
+        "Once a bin already holds something, inserting into it does take a lock — but not a separate lock object sitting off to the side.",
+        { "beat": 0.4 },
+        "The bin's own first entry is used as the lock. No separate lock object anywhere means an empty bin is free to guard, and nothing happening in this one bin touches any other bin at all."
+      ]
+    },
+    {
+      "lines": [
+        "A plain lookup never takes that lock in the first place. It just reads whatever's already sitting there.",
+        { "beat": 0.4 },
+        "Which means a lookup can run at exactly the same moment an update is working its way through that very same bin, and neither one has to wait on the other."
+      ]
+    },
+    {
+      "lines": [
+        "Keys land in bins through a hash function. Under a fair, honest hash, how long does one bin's own chain of entries plausibly grow?"
+      ],
+      "answer": [
+        "It falls off sharply. Each additional entry in one bin is roughly four times less likely than the one before it, purely by chance.",
+        "Which means a genuinely long chain almost never happens from an honest hash alone — it's a sign of a bad or even a hostile set of keys."
+      ]
+    },
+    {
+      "lines": [
+        "The map's own source states exactly how sharp that fall-off is, as a short table of probabilities, one for each possible bin length.",
+        { "beat": 0.4 },
+        "Computing those same nine numbers independently and checking them against the source's own figures confirms it: a bin with eight entries, by chance alone, is something like a one in many-million event."
+      ]
+    },
+    {
+      "lines": [
+        "So once a chain does reach that threshold, and the table itself is already large enough, the bin stops being a straight chain and becomes a small, balanced tree instead — bounding how long a search through it can possibly take.",
+        { "beat": 0.4 },
+        "If the table isn't yet large enough for that to be worth doing, it resizes instead. Either way, a defence against hostile keys is built directly into the structure."
+      ]
+    },
+    {
+      "lines": [
+        "Growing the table doesn't happen all at once. Bins are moved over one range at a time, and every bin that's already been moved has its head replaced with a note, a forwarding marker.",
+        { "beat": 0.4 },
+        "A thread that meets that note follows it straight to the new table. And a second thread doesn't have to wait its turn either — it can simply take the next unmoved range for itself."
+      ]
+    },
+    {
+      "lines": [
+        "There's a completely different way to build this with no lock anywhere. Keep every single item in one list, ordered not by its key directly, but by the bits of its hash reversed end to end.",
+        { "beat": 0.4 },
+        "Dummy markers sit in that list wherever a bucket is supposed to begin. Doubling the number of buckets only threads in new dummy markers — it never has to move one single real item."
+      ]
+    },
+    {
+      "lines": [
+        "A language without this map built in reaches for the same idea in a different shape: an array of shards, each one its own small table with its own lock.",
+        { "beat": 0.4 },
+        "The shard a key lands in comes straight from bits of its own hash. Two threads landing on two different shards run fully in parallel. Two threads landing on the same shard simply take turns."
+      ]
+    },
+    {
+      "lines": [
+        "Three structures, three very different answers to the same question this whole chapter has been asking. What does a thread that stalls cost everyone else?",
+        { "beat": 0.4 },
+        "Striped locks make a resize wait behind every lock they hold. Compare-and-swap on bins is lock-free on its common path, and only blocks where it actually locks. A list ordered by reversed bits is lock-free the whole way through, at the price of a short walk inside every bucket."
+      ]
+    }
+  ]
+}

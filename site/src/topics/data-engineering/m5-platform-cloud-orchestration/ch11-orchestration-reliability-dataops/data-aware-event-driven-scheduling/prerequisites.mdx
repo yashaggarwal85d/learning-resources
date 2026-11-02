@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: waiting without a worker
+
+<ul class="resources">
+  <Resource kind="reel" title="Deferrable tasks and the triggerer" domain="data-engineering" host="de.deferrable-tasks-triggerer" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Asset-Aware Scheduling" href="https://airflow.apache.org/docs/apache-airflow/3.3.2/authoring-and-scheduling/asset-scheduling.html" by="Apache Airflow 3.3.2 documentation">Multi-asset schedules and push/pull event-driven scheduling — the fan-out measured directly in this topic's own lab.</Resource>
+  <Resource kind="reading" title="Asset Definitions" href="https://airflow.apache.org/docs/apache-airflow/3.3.2/authoring-and-scheduling/assets.html" by="Apache Airflow 3.3.2 documentation">The Dataset-to-Asset rename and partition mappers, run live against four real timestamps.</Resource>
+  <Resource kind="reading" title="Event-driven scheduling" href="https://airflow.apache.org/docs/apache-airflow/3.3.2/authoring-and-scheduling/event-scheduling.html" by="Apache Airflow 3.3.2 documentation">AssetWatchers and the triggerer-restart failure modes behind a missed asset event.</Resource>
+  <Resource kind="reading" title="Declarative Automation" href="https://docs.dagster.io/guides/automate/declarative-automation/" by="Dagster Docs">Automation conditions, sourced and compared directly against Airflow's asset-triggered model.</Resource>
+  <Resource kind="reading" title="Asset freshness policies" href="https://docs.dagster.io/guides/observe/asset-freshness-policies" by="Dagster Docs">A staleness contract, separate from what triggers an asset to update.</Resource>
+</ul>
+
+</section>

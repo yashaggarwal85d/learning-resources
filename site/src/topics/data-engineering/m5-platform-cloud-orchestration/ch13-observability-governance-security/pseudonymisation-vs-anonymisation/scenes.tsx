@@ -2,7 +2,6 @@ import { C, Svg, T } from '../../../../../reels/kit';
 import { easeOut, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
-/** A label-left / value-right row, stacked vertically with generous gaps (DESIGN.md, phone text scaling). */
 function Row({ y, label, value, valueColor = C.crema, o = 1 }: { y: number; label: string; value: string; valueColor?: string; o?: number }) {
   return (
     <g opacity={o}>
@@ -18,106 +17,91 @@ function Row({ y, label, value, valueColor = C.crema, o = 1 }: { y: number; labe
 
 export function Hook({ t }: StepCtx) {
   return (
-    <Svg label="&quot;hashed, so it's anonymous.&quot; Nine of ten, matched." h={200}>
-      <Row y={70} label="email table" value="hashed, plain" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="known emails" value="nine of ten" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="hashed, so it's anonymous? ten minutes and a known email list says otherwise" h={200}>
+      <Row y={70} label="hashed emails" value="called anonymous" o={easeOut(seg(t, 0, 0.6))} />
+      <Row y={130} label="known email list" value="matches most back" valueColor={C.focus} o={easeOut(seg(t, 0.4, 1))} />
     </Svg>
   );
 }
 
-export function Predict({ t }: StepCtx) {
+export function RevealStillPersonalForKeyHolder({ t }: StepCtx) {
   return (
-    <Svg label="one change stops it. Anonymous, or pseudonymised?" h={200}>
-      <Row y={70} label="HMAC, keyed" value="stops the attack" />
-      <Row y={130} label="result" value="not yet revealed" valueColor={C.focus} />
+    <Svg label="pseudonymised data is still personal data for whoever holds the key or the dictionary" h={200}>
+      <Row y={70} label="encryption, hashing" value="protect, not change" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="key holder" value="still personal data" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealLegalLine({ t }: StepCtx) {
+export function PredictDictionaryAttack({ t }: StepCtx) {
   return (
-    <Svg label="attribution, with the key. Still personal data." h={260}>
-      <Row y={50} label="pseudonymised data" value="attributable, with key" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="the key holder" value="can still attribute" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="for them" value="still personal data" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="hash a candidate email list with the same plain function used on a pseudonymised table. Recovers most of it?" h={200}>
+      <Row y={70} label="same plain hash" value="on known emails" />
+      <Row y={130} label="recovers most?" value="not yet revealed" valueColor={C.focus} />
     </Svg>
   );
 }
 
-export function RevealDictionaryAttack({ t }: StepCtx) {
+export function RevealDictionaryRecovers({ t }: StepCtx) {
   return (
-    <Svg label="same function, every candidate. Matches, recovered." h={260}>
-      <Row y={50} label="plain hash" value="deterministic, public" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="candidate list" value="hashed, same way" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="matches" value="recovered emails" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="measured: the dictionary attack recovers the large majority of the table" h={200}>
+      <Row y={70} label="plain hash" value="deterministic, public" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="dictionary attack" value="recovers most, measured" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealHmacResists({ t }: StepCtx) {
+export function ElaborateHMACNeedsSecret({ t }: StepCtx) {
   return (
-    <Svg label="same dictionary, no key. Nothing matches." h={200}>
-      <Row y={70} label="HMAC, keyed" value="different, without key" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="attacker's guesses" value="zero matches" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="a keyed hash needs a secret the attacker never has; the same attack recovers nothing" h={200}>
+      <Row y={70} label="HMAC" value="needs the key" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="same attack" value="recovers nothing" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealRelativeApproach({ t }: StepCtx) {
+export function PredictLinkageAttack({ t }: StepCtx) {
   return (
-    <Svg label="not personal data, for everyone. It depends." h={260}>
-      <Row y={50} label="EDPS v SRB" value="the CJEU's ruling" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="means to re-identify" value="personal, for them" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="no such means" value="may not be" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="no names, just quasi-identifiers, joined to an outside list that has names. Anyone re-identified?" h={200}>
+      <Row y={70} label="no names" value="just quasi-ids" />
+      <Row y={130} label="re-identified?" value="not yet revealed" valueColor={C.focus} />
     </Svg>
   );
 }
 
-export function RevealControllerDuty({ t }: StepCtx) {
+export function RevealLinkageReidentifies({ t }: StepCtx) {
   return (
-    <Svg label="the controller's own side, at collection." h={260}>
-      <Row y={50} label="duty to inform" value="judged at collection" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="whose perspective" value="the controller's own" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="recipient's blind spot" value="no excuse" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="measured: a real, measurable fraction gets re-identified, key never compromised" h={200}>
+      <Row y={70} label="key" value="never compromised" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="quasi-identifiers" value="still re-identify" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealDigitalOmnibus({ t }: StepCtx) {
+export function ElaborateRelativeIdentifiability({ t }: StepCtx) {
   return (
-    <Svg label="written into the law, by proposal. Not law yet." h={260}>
-      <Row y={50} label="Digital Omnibus" value="a pending proposal" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="relative approach" value="written into GDPR" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="EDPB and EDPS" value="object to this" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="EDPS v SRB: pseudonymised data isn't personal data in all cases, for every person" h={200}>
+      <Row y={70} label="not personal data" value="for every person" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="judged by" value="recipient's own means" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealLinkageAttacks({ t }: StepCtx) {
+export function RevealDigitalOmnibusPending({ t }: StepCtx) {
   return (
-    <Svg label="quasi-identifiers, joined outside. No key needed." h={260}>
-      <Row y={50} label="keyed pseudonym" value="resists the dictionary" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="quasi-identifiers" value="joined, outside list" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="two in three" value="matched, no key" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="the Digital Omnibus would write this relative approach into law -- not yet adopted" h={200}>
+      <Row y={70} label="relative approach" value="proposed, not law" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="EDPB, EDPS" value="urged against it" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
 export function Recap({ t }: StepCtx) {
   return (
-    <Svg label="key holder, relative approach, pending law." h={260}>
-      <Row y={50} label="pseudonymised" value="still personal data" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="relative approach" value="depends on recipient" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="dictionary vs linkage" value="HMAC stops one" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
-    </Svg>
-  );
-}
-
-export function ProveIt({ t }: StepCtx) {
-  return (
-    <Svg label="key destroyed, quasi-identifiers intact. Still attackable?" h={200}>
-      <Row y={70} label="the key" value="destroyed" o={easeOut(seg(t, 0, 0.4))} />
-      <Row y={130} label="quasi-identifiers" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.65))} />
+    <Svg label="plain hash falls to dictionaries, HMAC holds, quasi-identifiers still re-identify" h={280}>
+      <Row y={50} label="plain hash" value="falls, measured" o={easeOut(seg(t, 0, 0.3))} />
+      <Row y={100} label="HMAC" value="holds, measured" o={easeOut(seg(t, 0.15, 0.45))} />
+      <Row y={150} label="quasi-identifiers" value="still re-identify" valueColor={C.focus} o={easeOut(seg(t, 0.4, 0.75))} />
     </Svg>
   );
 }

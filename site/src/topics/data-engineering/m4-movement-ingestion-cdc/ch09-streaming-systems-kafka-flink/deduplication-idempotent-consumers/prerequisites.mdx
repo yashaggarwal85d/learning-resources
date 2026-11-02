@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: idempotence, exactly-once sinks, and probabilistic structures
+
+This topic generalizes single-producer idempotence and the sink-level patterns from the two
+previous topics to any consumer, and leans on Chapter 5's own Bloom-filter material by name. If
+those are unfamiliar, start with
+[Idempotent producer](../idempotent-producer/),
+[End-to-end exactly-once with external sinks](../end-to-end-exactly-once-sinks/), and Chapter
+5's probabilistic and streaming data structures section (§5.6) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Idempotent Receiver" href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html" by="Gregor Hohpe & Bobby Woolf, Enterprise Integration Patterns">The canonical pattern this topic generalizes from a single sink to any consumer.</Resource>
+  <Resource kind="reading" title="Exactly-once delivery" href="https://cloud.google.com/pubsub/docs/exactly-once-delivery" by="Google Cloud Pub/Sub docs">A production system's own message-id-based redelivery recognition.</Resource>
+  <Resource kind="reading" title="Idempotent requests" href="https://docs.stripe.com/api/idempotent_requests" by="Stripe API reference">A production TTL-bounded idempotency-key store, 24 hours.</Resource>
+</ul>
+
+</section>

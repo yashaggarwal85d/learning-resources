@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: ordering, schema evolution, the event card, and the transaction guarantee this pattern leans on
+
+<ul class="resources">
+  <Resource kind="reel" title="Ordering and transaction boundaries" domain="data-engineering" host="de.ordering-transaction-boundaries" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Schema evolution in change streams" domain="data-engineering" host="de.schema-evolution-change-streams" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Debezium architecture and event model" domain="data-engineering" host="de.debezium-architecture-event-model" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="Snapshot isolation and write skew" domain="data-engineering" host="de.snapshot-isolation-write-skew" by="Chapter 5, §5.2" />
+  <Resource kind="reel" title="2PC in production databases" domain="data-engineering" host="de.2pc-production-databases" by="Chapter 5, §5.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Outbox Event Router" href="https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html" by="Debezium docs">The default columns, id-based dedup, aggregatetype routing, and DELETE filtering.</Resource>
+  <Resource kind="reading" title="Debezium connector for PostgreSQL" href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html" by="Debezium docs">Logical decoding message events, named only.</Resource>
+  <Resource kind="reading" title="System Administration Functions" href="https://www.postgresql.org/docs/18/functions-admin.html" by="PostgreSQL 18 docs">pg_logical_emit_message, named only.</Resource>
+  <Resource kind="reading" title="Outbox Quarkus Extension" href="https://debezium.io/documentation/reference/stable/integrations/outbox.html" by="Debezium docs">The Quarkus-native way to write to an outbox, named only.</Resource>
+</ul>
+
+</section>

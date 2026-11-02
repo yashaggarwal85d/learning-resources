@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: producer batching, compression and acks
+
+This topic opens with `acks=all` waiting for "every in-sync replica" without re-teaching what an
+in-sync replica is yet — that's what this topic answers. If `acks`, batching or compression are
+unfamiliar, start with
+[Producer batching, compression and acks](../producer-batching-compression-acks/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Kafka design documentation" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka docs">The ISR commitment rule, the f+1 durability bound, and the exact "last replica standing" risk passage this topic's hook and reveals quote directly.</Resource>
+  <Resource kind="reading" title="KIP-101: Alter Replication Protocol to use Leader Epoch rather than High Watermark for Truncation" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-101+-+Alter+Replication+Protocol+to+use+Leader+Epoch+rather+than+High+Watermark+for+Truncation" by="Apache Kafka wiki">The leader-epoch truncation protocol and its own worked example this topic's truncation reveal reimplements.</Resource>
+  <Resource kind="reading" title="KIP-966: Eligible Leader Replicas" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-966%3A+Eligible+Leader+Replicas" by="Apache Kafka wiki">The "last replica standing" scenario and the proposed high-watermark-advancement gate this topic's last reveal models.</Resource>
+</ul>
+
+</section>

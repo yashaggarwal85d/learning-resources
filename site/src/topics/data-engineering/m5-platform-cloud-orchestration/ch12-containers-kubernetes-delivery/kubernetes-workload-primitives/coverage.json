@@ -1,0 +1,126 @@
+{
+  "topic": "de.kubernetes-workload-primitives",
+  "syllabus": [
+    {
+      "clause": "Pods, Deployments, StatefulSets",
+      "at": [
+        { "step": "Pod, Deployment, StatefulSet" },
+        { "step": "Who replaces the deleted pod?" },
+        { "deep": "The control loop, everywhere" }
+      ]
+    },
+    {
+      "clause": "Services and DNS",
+      "at": [
+        { "step": "A name that outlives the pod behind it" }
+      ]
+    },
+    {
+      "clause": "ConfigMaps and Secrets",
+      "at": [
+        { "step": "A Secret isn't encryption" },
+        { "deep": "Secrets aren't encryption" }
+      ]
+    },
+    {
+      "clause": "PersistentVolumes/Claims and StorageClasses (CSI)",
+      "at": [
+        { "step": "Storage, requested and supplied" }
+      ]
+    },
+    {
+      "clause": "node pools, taints/tolerations and affinity",
+      "at": [
+        { "step": "Repelled, allowed, preferred" },
+        { "deep": "Node pools and restart policies" },
+        { "deep": "Taints repel, tolerations allow, affinity prefers" }
+      ]
+    },
+    {
+      "clause": "restart policies",
+      "at": [
+        { "deep": "Node pools and restart policies" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Kubernetes documentation, Controllers",
+      "items": [
+        { "item": "a controller is a control loop narrowing actual state toward desired state", "at": [{ "step": "The loop that never stops watching" }] },
+        { "item": "a controller tracks at least one resource type whose spec represents the desired state", "at": [{ "deep": "The control loop, everywhere" }] },
+        { "item": "the thermostat analogy for a control loop", "at": [{ "out": "an illustrative analogy already carried by this refresher's own control-loop figure; restating it in prose would read the figure aloud" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, StatefulSets",
+      "items": [
+        { "item": "a StatefulSet gives each pod a sticky, non-interchangeable identity across rescheduling", "at": [{ "step": "Pod, Deployment, StatefulSet" }] },
+        { "item": "ordinal index, stable network identity, stable storage as the three parts of that identity", "at": [{ "out": "the three-part breakdown is deeper than a five-minute refresher needs; the single idea (not interchangeable) is what carries forward to topic 7" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Service",
+      "items": [
+        { "item": "a Service's name resolves consistently inside the cluster regardless of which pod backs it", "at": [{ "step": "A name that outlives the pod behind it" }] },
+        { "item": "ExternalName's specific CNAME-redirection mechanism", "at": [{ "out": "a specific Service type's own routing detail, not needed for this refresher's single claim that the name stays stable" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Secrets",
+      "items": [
+        { "item": "Secrets are stored unencrypted in etcd by default; anyone with API access to the namespace can read one", "at": [{ "step": "A Secret isn't encryption" }] },
+        { "item": "base64 obscures but does not secure a Secret's value", "at": [{ "step": "A Secret isn't encryption" }] },
+        { "item": "encryption at rest and RBAC as the documented mitigations", "at": [{ "deep": "Secrets aren't encryption" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Persistent Volumes",
+      "items": [
+        { "item": "a PersistentVolume is storage the cluster already has; a PersistentVolumeClaim is a request for some", "at": [{ "step": "Storage, requested and supplied" }] },
+        { "item": "a StorageClass is what enables dynamic provisioning of a PV to match a PVC", "at": [{ "step": "Storage, requested and supplied" }] },
+        { "item": "static vs dynamic provisioning lifecycle detail", "at": [{ "out": "the full provisioning lifecycle (binding, reclaiming, expanding) is beyond a refresher's scope; the three-object relationship is the outcome this topic needs" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Taints and Tolerations",
+      "items": [
+        { "item": "a taint repels a set of pods from a node", "at": [{ "step": "Repelled, allowed, preferred" }] },
+        { "item": "a toleration allows but does not guarantee scheduling onto a tainted node", "at": [{ "step": "Repelled, allowed, preferred" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Assigning Pods to Nodes",
+      "items": [
+        { "item": "nodeSelector as the simplest node-selection constraint, contrasted with the richer affinity", "at": [{ "deep": "Taints repel, tolerations allow, affinity prefers" }] }
+      ]
+    },
+    {
+      "source": "etcd documentation",
+      "items": [
+        { "item": "etcd replicates the cluster's declared state through Raft within a single consistent replication group", "at": [{ "out": "declared, not used, per CHAPTER.md's cross-chapter-id rule — no DE chapter 5 topic currently introduces a consensus/Raft concept id to link to; see OUTLINE.md" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "a ReplicaSet, not the Deployment object itself, is what actually creates and replaces pods; a Deployment manages a ReplicaSet which manages the pods", "at": [{ "deep": "The control loop, everywhere" }] },
+      { "item": "a StatefulSet's PVC-per-pod (volumeClaimTemplates) is what makes its storage follow a specific ordinal pod across rescheduling, not a shared volume", "at": [{ "step": "Pod, Deployment, StatefulSet" }] },
+      { "item": "a headless Service (ClusterIP: None) gives DNS records for each individual pod rather than one virtual IP, which is what a StatefulSet actually uses for stable per-pod addressing", "at": [{ "out": "a Service-type detail beyond a refresher's one claim about name stability; named for a future topic's seam, not taught here" }] },
+      { "item": "a ConfigMap has the same 'anyone who can create a Pod in the namespace can read it' exposure as a Secret — the difference is only that a Secret's base64 encoding and its name signal sensitivity, not that it is actually protected differently by default", "at": [{ "step": "A Secret isn't encryption" }] },
+      { "item": "a CSI (Container Storage Interface) driver is what actually implements dynamic provisioning for a given StorageClass; the StorageClass object itself just names which driver and parameters to use", "at": [{ "step": "Storage, requested and supplied" }] },
+      { "item": "multiple taints and tolerations on the same node require every taint to have a matching toleration before a pod may schedule there (unless a taint's effect is NoSchedule vs PreferNoSchedule, which differ in strictness)", "at": [{ "deep": "Taints repel, tolerations allow, affinity prefers" }] },
+      { "item": "node affinity (pod-to-node) is a different mechanism from pod affinity/anti-affinity (pod-to-pod), both covered by the same general 'preference or hard requirement' idea stated in this topic", "at": [{ "deep": "Taints repel, tolerations allow, affinity prefers" }] },
+      { "item": "a Job's pods default to restartPolicy OnFailure or Never (never Always), which is why a Job can actually reach a Completed state instead of restarting forever", "at": [{ "deep": "Node pools and restart policies" }] },
+      { "item": "etcd's Raft-based replication is what makes the API server's own writes durable across a control-plane node failure, which is why 'the declared state' survives a master restart", "at": [{ "out": "declared, not used — see the etcd source's own 'out' entry above and OUTLINE.md's cross-chapter-id gap note" }] },
+      { "item": "a node pool's taint is frequently paired with a matching toleration added automatically by that pool's own admission/webhook tooling in managed Kubernetes offerings, rather than written by hand on every pod", "at": [{ "deep": "Node pools and restart policies" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

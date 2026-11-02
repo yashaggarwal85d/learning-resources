@@ -1,0 +1,90 @@
+{
+  "topic": "de.catalyst-unresolved-physical-plan",
+  "steps": [
+    {
+      "lines": [
+        "Write a query once. Underneath, Spark is quietly carrying around four completely different versions of it before a single task ever runs.",
+        "So here's the real question. What actually changes, from the very first version to the very last one it executes?",
+        "Let's pull all four apart and look, rather than take it on faith."
+      ]
+    },
+    {
+      "lines": [
+        "I pulled the first two versions directly from a real session.",
+        "The parsed plan marks every single node with a leading tick mark. That tick is Catalyst's own way of saying, out loud, this hasn't been checked against anything yet.",
+        "Analysis is exactly that check. It resolves every name against the catalog, and the moment it does, that tick mark is gone for good."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "The query I wrote selects two columns, then filters on one of them, in that order. Does the optimizer actually run it in the order I wrote it, or does it quietly move things around first?",
+        "Think about what the optimizer actually cares about here, not what looks natural to a person reading the code."
+      ],
+      "answer": [
+        "It's tempting to assume the optimizer respects the order you wrote, since that's usually the convention.",
+        "But Catalyst has a specific rule for exactly this: push the filter down, as close to the raw scan as it can get, so fewer rows ever reach anything downstream.",
+        "The order on the page was never a plan. It was just one way to write a query that means something else underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the prediction holds exactly.",
+        "The analyzed plan keeps the filter sitting on top, precisely as written.",
+        "The optimized plan puts the select on top instead, with the filter pushed down below it, right next to the scan."
+      ]
+    },
+    {
+      "lines": [
+        "Same optimization pass, a completely different trick worth knowing.",
+        "Write a literal one plus two anywhere in an expression, and the optimizer doesn't wait until runtime to add them.",
+        "It folds that addition into a plain three while it's still planning, so no task anywhere ever actually computes one plus two."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, and this one has real teeth.",
+        "Picture a genuinely lopsided join: one side with six figures of rows, the other with barely a handful. Every single wide operation measured in this chapter so far has shuffled. Does this one too?",
+        "Resist pattern-matching on everything you've seen so far in this chapter. This case is different on purpose."
+      ],
+      "answer": [
+        "The obvious pull is to say yes, a join is a wide dependency, and every wide dependency so far has shuffled.",
+        "But below a certain size, copying the tiny side to every single task, once, is dramatically cheaper than shuffling the huge side across the network at all.",
+        "The planner picks whichever strategy actually costs less. It doesn't apply the same rule just because every earlier example happened to."
+      ]
+    },
+    {
+      "lines": [
+        "Measured: the physical plan picks a broadcast hash join.",
+        "The tiny side gets copied out to every task that needs it.",
+        "And the huge side just gets read straight off disk. No shuffle Exchange touches it anywhere in this plan."
+      ]
+    },
+    {
+      "lines": [
+        "Last commitment, and it's the cleanest test of whether this choice is actually a choice.",
+        "Same two tables, same join, same exact shape, but I disable broadcasting by hand this time. Does the chosen strategy change, or does Spark find some other way around the shuffle?",
+        "If broadcasting was really the only shortcut here, taking it away should hurt."
+      ],
+      "answer": [
+        "It's easy to assume there's some other trick lying around, since the data itself hasn't changed at all.",
+        "But there isn't one. Once broadcasting is off the table, both sides genuinely have to be redistributed by key before they can be matched up.",
+        "Taking away the one shortcut should force the expensive path, and that's exactly the test."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly that forced fallback.",
+        "With broadcasting disabled, the identical join plans as a sort merge join instead.",
+        "And a real shuffle Exchange shows up on both sides now, in exactly the two places there was nothing at all a moment ago."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the full pipeline, named precisely.",
+        "Parse extracts an unresolved plan. Analysis resolves it against the catalog. Optimization applies rules like pushdown and folding. Physical planning picks a strategy by cost, the way this join just proved.",
+        "Every one of those four stages is a real plan you can read yourself, with explain formatted. And one more lever sits past all of this: once real table statistics exist from analyze table, the planner can reorder joins by cost too, not just pick a join's own strategy."
+      ]
+    }
+  ]
+}

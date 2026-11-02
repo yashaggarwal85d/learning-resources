@@ -1,0 +1,116 @@
+{
+  "topic": "de.orchestrator-landscape-selection",
+  "syllabus": [
+    {
+      "clause": "compact comparison",
+      "at": [
+        { "step": "Reveal: the grid, named" }
+      ]
+    },
+    {
+      "clause": "Airflow 3 (self-run, MWAA incl. MWAA Serverless, Cloud Composer, Astronomer)",
+      "at": [
+        { "step": "Hook" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "Dagster, Prefect 3, Kestra, Netflix Maestro, Lakeflow Jobs (formerly Databricks Workflows), Azure/Fabric Data Factory",
+      "at": [
+        { "step": "Reveal: the rest of the field, named" }
+      ]
+    },
+    {
+      "clause": "serverless state machines (AWS Step Functions standard vs express, Distributed Map, retry/catch; Google Workflows)",
+      "at": [
+        { "step": "Reveal: Standard vs. Express, with real numbers" },
+        { "step": "Predict: does a serverless state machine have its own fan-out primitive?" },
+        { "step": "Reveal: Distributed Map, sourced" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "choose by data-awareness, operational burden, ecosystem and cloud coupling",
+      "at": [
+        { "step": "Reveal: the grid, named" },
+        { "step": "Predict: which axis does the hook's team get wrong?" },
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Choosing workflow type in Step Functions (AWS Step Functions Developer Guide)",
+      "items": [
+        { "item": "Standard Workflows run up to a year with exactly-once semantics, billed by state transitions", "at": [{ "step": "Reveal: Standard vs. Express, with real numbers" }] },
+        { "item": "Express Workflows run up to five minutes with at-least-once semantics, billed by execution count, duration and memory", "at": [{ "step": "Reveal: Standard vs. Express, with real numbers" }] }
+      ]
+    },
+    {
+      "source": "Handling errors in Step Functions workflows (AWS Step Functions Developer Guide)",
+      "items": [
+        { "item": "Step Functions scans Retry's retriers in array order, matching the error against each one's ErrorEquals field", "at": [{ "deep": "Internals" }] },
+        { "item": "BackoffRate defaults to doubling the retry interval after each attempt", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Using Map state in Distributed mode for large-scale parallel workloads in Step Functions (AWS Step Functions Developer Guide)",
+      "items": [
+        { "item": "Distributed Map defaults to 10,000 parallel child workflow executions", "at": [{ "step": "Reveal: Distributed Map, sourced" }] },
+        { "item": "each child workflow execution has its own, separate execution history from the parent's", "at": [{ "step": "Reveal: Distributed Map, sourced" }] }
+      ]
+    },
+    {
+      "source": "Workflows overview (Google Cloud Documentation)",
+      "items": [
+        { "item": "Google Workflows is a fully managed, serverless orchestration platform with no idle charges", "at": [{ "step": "Reveal: the rest of the field, named" }] }
+      ]
+    },
+    {
+      "source": "Announcing the General Availability of Databricks Lakeflow (Databricks Blog)",
+      "items": [
+        { "item": "Databricks Workflows was renamed Lakeflow Jobs at Lakeflow's GA, running over 110 million jobs a week", "at": [{ "step": "Reveal: the rest of the field, named" }] }
+      ]
+    },
+    {
+      "source": "README (Netflix/maestro)",
+      "items": [
+        { "item": "Maestro is a fully managed workflow-as-a-service scheduling hundreds of thousands of workflows and millions of jobs daily", "at": [{ "step": "Reveal: the rest of the field, named" }] }
+      ]
+    },
+    {
+      "source": "Introduction (Prefect Docs)",
+      "items": [
+        { "item": "Prefect turns Python functions into production-grade pipelines in pure Python, no DSLs", "at": [{ "step": "Reveal: the rest of the field, named" }] },
+        { "item": "Prefect 3.0 open-sourced an events and automations backend for native event-driven workflows", "at": [{ "step": "Reveal: the rest of the field, named" }] }
+      ]
+    },
+    {
+      "source": "Frequently Asked Questions (Kestra Docs)",
+      "items": [
+        { "item": "Kestra is a declarative orchestrator using YAML, where you state the desired end state rather than the exact steps", "at": [{ "step": "Reveal: the rest of the field, named" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's team isn't making an irrational choice in isolation -- 'everyone uses it' is a real, if incomplete, proxy for ecosystem size, one of the four legitimate axes. The error is treating that one axis as sufficient on its own, when operational burden for a self-run deployment of their scale was the axis that actually bit them.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume the four axes trade off independently, but cloud coupling and ecosystem are correlated in practice: a deeper ecosystem (more managed integrations) often comes bundled with the same vendor's own state-machine primitives, so choosing for ecosystem richness quietly increases coupling at the same time, even when nobody explicitly decided to accept that trade.", "at": [{ "step": "Reveal: the grid, named" }] },
+      { "item": "Standard's exactly-once guarantee is not free of its own failure mode -- it means a state that starts an irreversible side effect (like launching a cluster) and then crashes before recording success could, under specific recovery paths, still need idempotency at the task level; 'exactly-once' describes Step Functions' own execution bookkeeping, not an automatic guarantee about every downstream system it calls.", "at": [{ "step": "Reveal: Standard vs. Express, with real numbers" }] },
+      { "item": "Express's at-least-once model is why AWS's own docs steer it toward actions like 'transforming input data to store in Amazon DynamoDB using a PUT action' -- a PUT is naturally idempotent (overwriting with the same value twice is harmless), which is exactly the property Express's own guarantee requires of whatever it calls.", "at": [{ "step": "Reveal: Standard vs. Express, with real numbers" }] },
+      { "item": "Distributed Map's isolation (separate execution history per child) is what makes 10,000-way parallelism operationally tractable at all -- without it, a single shared history across that many concurrent children would itself become the bottleneck the fan-out was meant to avoid.", "at": [{ "step": "Reveal: Distributed Map, sourced" }] },
+      { "item": "Naming Maestro from its own README rather than running it isn't a lesser form of coverage -- CHAPTER.md is explicit that it 'is not independently runnable' in this context, and the project's own standing rule for such sources is to name and sourced-quote rather than fabricate a local installation that wouldn't reflect Netflix's actual internal deployment anyway.", "at": [{ "step": "Reveal: the rest of the field, named" }] },
+      { "item": "The Lakeflow rename is a useful reminder that a vendor's own naming is not a technical claim -- the underlying orchestrator mechanism inside Databricks didn't change at the rename; what changed was its position in the vendor's own product story (unified under 'Lakeflow' rather than standing alone as 'Workflows').", "at": [{ "step": "Reveal: the rest of the field, named" }] },
+      { "item": "A reader carrying forward Prefect's 'dynamic flows' framing from topic 4's dynamic task mapping might assume the two are the same mechanism under different names. They're closer in spirit than in implementation -- Prefect's task mapping and events backend are native to its own Python runtime, where Airflow's dynamic task mapping expands a DAG's static graph at a fixed point before execution.", "at": [{ "step": "Reveal: the rest of the field, named" }] },
+      { "item": "The 'prove it' step's second workload is deliberately the mirror image of the hook's first one on three of the four traits (short vs. long-running, high-volume vs. not, no custom operators vs. needing them) so the grid's answer changes for a traceable reason, not because the scenario was simply swapped for an unrelated one.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's own four-axis grid is itself a judgment call, not a sourced taxonomy -- a different writer could reasonably split 'ecosystem' into connector breadth and community size, or fold cloud coupling into operational burden. The four chosen here are the ones CHAPTER.md names explicitly, kept as four because each maps to a distinct, previously-taught or clearly-statable concept.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

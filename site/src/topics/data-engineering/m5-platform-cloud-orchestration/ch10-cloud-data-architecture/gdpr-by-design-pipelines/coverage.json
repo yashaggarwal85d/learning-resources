@@ -1,0 +1,107 @@
+{
+  "topic": "de.gdpr-by-design-pipelines",
+  "syllabus": [
+    {
+      "clause": "purpose limitation as machine-readable purpose tags",
+      "at": [
+        { "step": "Before the mechanism: which principle actually governs reusing data for a new purpose?" },
+        { "step": "A tag stamped at ingestion, checked before every later query" }
+      ]
+    },
+    {
+      "clause": "minimisation at ingestion",
+      "at": [
+        { "step": "Dropping the field before it is ever stored" }
+      ]
+    },
+    {
+      "clause": "storage limitation enforced by retention jobs",
+      "at": [
+        { "step": "A job that actually deletes, on the tag's own schedule" }
+      ]
+    },
+    {
+      "clause": "Art. 30 records of processing generated from lineage",
+      "at": [
+        { "step": "The record assembles itself, instead of being written by hand" }
+      ]
+    },
+    {
+      "clause": "DPIA triggers",
+      "at": [
+        { "step": "Three named triggers, not \"do one for everything\"" }
+      ]
+    },
+    {
+      "clause": "72-hour breach notification and the logs it requires",
+      "at": [
+        { "step": "The clock starts at awareness, not at the breach itself" }
+      ]
+    },
+    {
+      "clause": "erasure mechanics are §13.2",
+      "at": [
+        { "topic": "Right to erasure in immutable lakehouses", "domain": "data-engineering", "quote": "deletes vs time travel" }
+      ]
+    },
+    {
+      "clause": "pseudonymisation law is §13.2.",
+      "at": [
+        { "topic": "Pseudonymisation vs anonymisation", "domain": "data-engineering", "quote": "the legal and technical line" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "GDPR: Art. 5",
+      "items": [
+        { "item": "Purpose limitation requires data collected for specified purposes only, not further processed in an incompatible manner; the controller is accountable for demonstrating compliance", "at": [{ "step": "A tag stamped at ingestion, checked before every later query" }] }
+      ]
+    },
+    {
+      "source": "GDPR: Art. 30",
+      "items": [
+        { "item": "A controller must maintain a written record of processing activities, containing the purposes, data categories, and envisaged erasure time limits, available to a supervisory authority on request", "at": [{ "step": "The record assembles itself, instead of being written by hand" }] }
+      ]
+    },
+    {
+      "source": "GDPR: Art. 33",
+      "items": [
+        { "item": "A breach must be notified without undue delay and, where feasible, not later than 72 hours after awareness, with the controller required to document the breach's facts, effects and remedial action", "at": [{ "step": "The clock starts at awareness, not at the breach itself" }] }
+      ]
+    },
+    {
+      "source": "GDPR: Art. 35",
+      "items": [
+        { "item": "A DPIA is required specifically for large-scale automated profiling with legal effect, large-scale special-category data, or large-scale public-area monitoring", "at": [{ "step": "Three named triggers, not \"do one for everything\"" }] }
+      ]
+    },
+    {
+      "source": "OpenLineage: Object Model",
+      "items": [
+        { "item": "A pipeline is represented as Jobs and Datasets connected by Run events, with facets like sourceCodeLocation and lifecycleStateChange that can source an automatically generated record", "at": [{ "step": "The record assembles itself, instead of being written by hand" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point is that a record generated from current lineage is trustworthy precisely because it's regenerated on demand, not that a slide deck is inherently a bad record format; a learner should name what made the slide deck fail (staleness), not just that it was the wrong medium", "at": [{ "step": "A regulator asks for the record, five days to produce it" }] },
+      { "item": "The predict step's correct answer is structural (which principle governs reuse), not a vague sense that 'it's probably not allowed'; a learner should be able to name purpose limitation specifically and distinguish it from minimisation and storage limitation", "at": [{ "step": "Before the mechanism: which principle actually governs reusing data for a new purpose?" }] },
+      { "item": "The purpose-tag step's point is that the check runs before the query executes, not as an audit afterward; a learner who thinks a purpose tag is just metadata for later reporting has missed that it's reproduced here as an enforced block", "at": [{ "step": "A tag stamped at ingestion, checked before every later query" }] },
+      { "item": "The minimisation step is explicit that this is an ingestion-time decision, not a retrofit scrub of already-stored data — a learner should be able to say when the decision happens, not just that fewer fields is better", "at": [{ "step": "Dropping the field before it is ever stored" }] },
+      { "item": "The retention step's point is that the job actually deletes, verified against a synthetic record set with records both inside and outside the window — a learner who thinks a retention 'policy' alone satisfies storage limitation has missed the entire point of this step", "at": [{ "step": "A job that actually deletes, on the tag's own schedule" }] },
+      { "item": "The Art. 30 step is careful to say the record's completeness depends on lineage coverage, not just on the generation mechanism being correct — an expert reviewer should expect that caveat stated, not an implied claim that automatic generation is infallible", "at": [{ "deep": "Internals" }] },
+      { "item": "The DPIA step names Article 35's three triggering categories precisely (large-scale profiling with legal effect, large-scale special-category data, large-scale public monitoring), not a generic 'do a DPIA whenever something feels risky'", "at": [{ "step": "Three named triggers, not \"do one for everything\"" }] },
+      { "item": "The breach-notification step's point is that the clock starts at awareness, not at the breach event itself, and that readiness (logs, the Art. 30 record) has to exist before the clock starts, not be built during the window", "at": [{ "step": "The clock starts at awareness, not at the breach itself" }] },
+      { "item": "The final predict step's correct answer names purpose limitation specifically, since the scenario's age and field-count are both red herrings; a learner who picks storage limitation or minimisation has conflated the wrong GDPR principle with this specific violation", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic cannot query a real regulator, production pipeline or OpenLineage-integrated system in this sandbox; an expert reviewer should expect examples.py's disclosed structural simulation against synthetic data, not a live compliance platform", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

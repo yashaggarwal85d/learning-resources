@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: replication, ISR and the high watermark
+
+This topic reuses the pull-based fetch and heartbeat-fencing pattern without re-teaching what a
+replica fetch or a leader epoch is — that's what the previous topic answers. If ISR, the high
+watermark, or leader epochs are unfamiliar, start with
+[Replication, ISR and the high watermark](../replication-isr-high-watermark/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="KIP-500: Replace ZooKeeper with a Self-Managed Metadata Quorum" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-500%3A+Replace+ZooKeeper+with+a+Self-Managed+Metadata+Quorum" by="Apache Kafka wiki">The controller quorum, the pull-based MetadataFetch API, and the heartbeat-fencing rule this topic's hook and first reveal quote directly.</Resource>
+  <Resource kind="reading" title="KIP-996: Pre-Vote" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-996%3A+Pre-Vote" by="Apache Kafka wiki">The canvassing mechanism this topic's second predict/reveal pair reimplements and measures.</Resource>
+  <Resource kind="reading" title="KIP-853: KRaft Controller Membership Changes" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-853%3A+KRaft+Controller+Membership+Changes" by="Apache Kafka wiki">The one-voter-change-at-a-time rule this topic's last reveal models.</Resource>
+</ul>
+
+</section>

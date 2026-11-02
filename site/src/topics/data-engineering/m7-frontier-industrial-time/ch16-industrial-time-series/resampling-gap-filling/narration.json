@@ -1,0 +1,76 @@
+{
+  "topic": "de.resampling-gap-filling",
+  "steps": [
+    {
+      "lines": [
+        "An oven's dashboard shows one flat, steady line through a long network outage.",
+        "The sensor was silent the entire time. The line isn't a measurement from those hours at all.",
+        "It's the last real reading, repeated, standing in for data that was never collected."
+      ]
+    },
+    {
+      "lines": [
+        "Not every reading is the same kind of number.",
+        "A temperature drifts smoothly. A machine state jumps between a small set of codes. A meter only ever counts up.",
+        "Averaging, carrying forward, and summing a difference each belong to exactly one of those three, never to the others."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "One bucket on the grid happens to catch a reading of one state code and then another.",
+        "Averaged the same way a temperature would be, what does that bucket report back?"
+      ],
+      "answer": [
+        "A number that was never a real state at all.",
+        "A machine state is a label, not a quantity, so there's nothing meaningful halfway between two of its codes."
+      ]
+    },
+    {
+      "lines": [
+        "Put it to the test directly.",
+        "Two state codes land in the very same bucket, and the ordinary average of the two comes back as a number between them.",
+        "No machine anywhere was ever actually in that in-between state."
+      ]
+    },
+    {
+      "lines": [
+        "A smoothly varying reading gets a mean over its bucket. A state code gets whichever value was most recently true. A running counter gets the gap between where it ended and where it started.",
+        "Three different kinds of signal, three different operations, chosen by what the number actually represents.",
+        "Apply a mean to all three anyway, and only one of them comes out meaning anything at all."
+      ]
+    },
+    {
+      "lines": [
+        "A genuine swing in temperature happens precisely during the outage, while nothing at all was being recorded.",
+        "Repeating the last known reading straight through the gap erases that swing completely.",
+        "A smooth path drawn between the point before and the point after erases it too, just by assuming the opposite: that nothing unusual happened at all."
+      ]
+    },
+    {
+      "lines": [
+        "Agree in advance on how long a gap is allowed to be before it gets filled at all.",
+        "Inside that limit, carry the last value forward and say plainly that it was filled, not observed.",
+        "Beyond that limit, report the point as missing instead of inventing a number for it, and let any later summary count observed and filled points separately."
+      ]
+    },
+    {
+      "lines": [
+        "What a signal is decides how it gets aggregated, not the other way around.",
+        "Averaging a machine's state codes produces a state that was never real.",
+        "A value that was filled in is a claim about what probably happened, bounded by a stated limit and marked as exactly what it is."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "A dashboard's line has never once shown a single gap, for any sensor, across an entire year of readings.",
+        "Does that unbroken line count as evidence that none of those sensors ever actually went offline?"
+      ],
+      "answer": [
+        "It doesn't. Sensors and networks fail regularly, that's simply the nature of hardware in the field.",
+        "A line with no visible break anywhere in a year is evidence that every single gap already got filled before it ever reached the chart."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "topic": "de.partitioning-schemes-range-hash",
+  "steps": [
+    {
+      "lines": [
+        "Take the exact same stream of events, and the exact same set of nodes to put them on.",
+        "Split that stream up one particular way, and one single node ends up doing almost all the work.",
+        "Split the identical stream a different way, and that problem just doesn't happen."
+      ]
+    },
+    {
+      "lines": [
+        "Commit to an answer before I show you.",
+        "These events arrive in order, newest timestamp last, under a scheme that keeps keys sorted by value.",
+        "Where does that newest event always end up going?"
+      ],
+      "answer": [
+        "It's tempting to think a busy system would naturally spread new writes around to wherever there's room.",
+        "But sorting by key means there's exactly one place the highest key can live. And the newest event always has the highest key, by definition.",
+        "So it goes to one specific place, every single time, no matter how many other nodes are sitting there idle."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that ordering actually buys you.",
+        "Because everything stays sorted, scanning across a range of keys means sweeping through data that's already sitting together, in order.",
+        "The cost of that convenience is exactly what you just predicted: every new write lands on whichever partition currently owns the far end of that sorted range."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this happen on a real, measured run, not a hypothetical.",
+        "Ten thousand writes total, spread across ten of these ordered partitions.",
+        "Now look specifically at the five hundred most recent writes out of all of them. Every single one landed on exactly one partition."
+      ]
+    },
+    {
+      "lines": [
+        "Now run the identical stream of events through a completely different scheme.",
+        "Instead of sorting by key, hash each key first, and throw away any notion of order entirely.",
+        "Watch the same recent writes that all piled onto one partition a moment ago. They're spread across nearly every single partition now."
+      ]
+    },
+    {
+      "lines": [
+        "One more prediction before the next reveal.",
+        "A ten node cluster is using the simplest possible hashing, just taking each key's hash and dividing by the node count.",
+        "One more node joins, making it eleven. Roughly what fraction of all the existing keys now have to move to a different node?"
+      ],
+      "answer": [
+        "It's tempting to assume only the keys that would naturally belong to that new node have to move.",
+        "But the node count itself is baked directly into the formula for every single key's placement. Change that count, and almost every key's answer changes right along with it.",
+        "So the real number isn't small. It's nearly everything, just from adding one single node."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how two different, real techniques actually solve that exact problem.",
+        "Plain division-based hashing just measured remapping almost every key, the moment the node count changed.",
+        "A ring-based consistent hash, and a completely different technique called rendezvous hashing, both move only about the new node's own fair share of keys, and nothing more."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece has to fit into this picture.",
+        "However you've split the data up, a request still has to find exactly which node actually owns that piece.",
+        "That routing step, whether it's handled by the client itself, by a proxy, or by whichever node happens to answer first, is a completely separate question from how many copies of that data exist."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "Ordering your keys buys you fast scans, at the cost of a tail that gets hammered. Hashing buys you an even spread, at the cost of that order.",
+        "Simple hashing falls apart the moment your cluster resizes. The smarter versions were built specifically so it wouldn't. And partitioning your data and replicating it are two entirely separate decisions."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. A table is partitioned by range, keyed on a plain auto-incrementing order number.",
+        "A flash sale just pushed the write rate to a hundred times its normal level.",
+        "Given everything you just watched measured here: does simply adding more nodes to that cluster actually fix this?"
+      ],
+      "answer": [
+        "It's tempting to assume more nodes just means more capacity to absorb the extra load.",
+        "But every one of those new nodes gets its own slice of the key range. The newest order number still only ever belongs to exactly one of those slices.",
+        "So no. You'd just end up with more partitions sitting there doing nothing, while that same one partition keeps taking every single write."
+      ]
+    }
+  ]
+}

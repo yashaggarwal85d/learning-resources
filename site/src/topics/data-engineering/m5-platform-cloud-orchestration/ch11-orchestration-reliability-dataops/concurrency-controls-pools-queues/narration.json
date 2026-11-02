@@ -1,0 +1,81 @@
+{
+  "topic": "de.concurrency-controls-pools-queues",
+  "steps": [
+    {
+      "lines": [
+        "The shop's extractor that talks to its production database has no protection on it at all.",
+        "One particular hour, a backfill and a dynamic fan-out both happen to land at the same time.",
+        "Forty separate extraction tasks hit that same database within seconds of each other, and it simply falls over under the load.",
+        "Nothing was wrong with any single task. The problem was letting all forty touch the source at once."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fix, and it's worth seeing run for real rather than just described.",
+        "A named bucket with exactly two slots, sitting in front of that same fragile source.",
+        "Ten separate tasks are set up to compete for that bucket in one single run.",
+        "Reading the real metadata database the whole way through: at no point, ever, are more than two of them running at the same time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth pausing on before the next reveal.",
+        "Two of those ten tasks are explicitly marked as more important than the other eight.",
+        "When a slot in that two-slot bucket opens up, does it go to whichever task has simply been sitting there the longest, or does it go to the one marked more important?",
+        "Decide which one sounds like the more useful design before I say."
+      ],
+      "answer": "It goes to whichever waiting task is marked more important, every single time a slot opens up. Arrival order plays no role at all once there's a tie to break for a scarce resource."
+    },
+    {
+      "lines": [
+        "Now watch that play out with exact timing, not just the rule stated.",
+        "Both of the more important tasks start within about a second of the run beginning, and both finish within roughly five seconds.",
+        "Not one single task from the other eight even starts until after both of those have already finished.",
+        "That ordering wasn't a coincidence of how the list happened to be written. It's the scheduler actively choosing who goes first, every time."
+      ],
+      "takeaway": "A freed slot doesn't go to whoever waited longest. It goes to whoever matters more."
+    },
+    {
+      "lines": [
+        "There's a second, completely different lever worth naming here, even without running it ourselves.",
+        "Instead of limiting how many tasks run at once, this one decides which specific machine a given task is even allowed to land on.",
+        "Tasks get labeled with a name, and a worker only picks up labeled work matching whatever names it's been told to listen for.",
+        "This only exists in setups with more than one kind of worker to choose between, which is why this particular sandbox, running on a single process, has nothing to demonstrate it against directly."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario worth thinking through carefully.",
+        "Picture more important work landing in that same two-slot bucket, over and over, without ever letting up.",
+        "What happens to the less important tasks that were already sitting there, patiently waiting their turn?",
+        "Take a moment and think about whether patience alone is ever enough."
+      ],
+      "answer": "It isn't enough. If nothing bounds how long a less important task can be passed over, it can end up waiting forever while more important work keeps cutting in front of it. Nothing in the mechanism itself guarantees it ever gets a turn."
+    },
+    {
+      "lines": [
+        "That's worth sitting with, because it's not a flaw suddenly appearing in a mechanism that was working fine a moment ago.",
+        "It's the exact same rule that correctly let the more important tasks go first earlier in this very example.",
+        "Give that rule no ceiling at all, and the fairness it produced turns directly into the opposite of fairness.",
+        "What actually bounds it is a separate policy, layered deliberately on top: a reservation, or a round robin that guarantees everyone eventually gets a turn."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling all of that together.",
+        "A named bucket of slots caps how much work touches a fragile system at once, and that cap has nothing to do with how many workers exist.",
+        "When that bucket is full, importance decides who gets in next, not who arrived first.",
+        "And running multiple separate teams through one shared setup, kept apart from each other, is a real but still quite new capability."
+      ]
+    },
+    {
+      "lines": [
+        "Back to where this started.",
+        "The fragile source now has its two-slot bucket in place. The exact same backfill and the exact same fan-out land on the same hour again.",
+        "Forty tasks still show up wanting to run, same as before.",
+        "Does the source go down again this time?"
+      ],
+      "answer": "No. All forty tasks still get created, exactly as before, but they can no longer all reach the source at once. The bucket lets exactly two through at a time, and the rest simply wait their turn — harmlessly, this time."
+    }
+  ]
+}

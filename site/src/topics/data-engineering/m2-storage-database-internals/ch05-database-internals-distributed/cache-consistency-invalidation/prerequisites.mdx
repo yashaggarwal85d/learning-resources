@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the patterns this topic's race runs against
+
+<ul class="resources">
+  <Resource kind="reel" title="Cache patterns and eviction policies" domain="data-engineering" host="de.cache-patterns-eviction-policies" by="the cache-aside layer this topic's own race is reproduced against" />
+  <Resource kind="reel" title="Physical vs logical replication" domain="data-engineering" host="de.physical-vs-logical-replication" by="the replication mechanics CDC-driven invalidation builds on" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Scaling Memcache at Facebook" href="https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170.pdf" by="Nishtala et al., NSDI '13">Delete-not-update, leases, and CDC-driven invalidation, in the engine's own words.</Resource>
+  <Resource kind="reading" title="TAO: Facebook's Distributed Data Store for the Social Graph" href="https://www.usenix.org/system/files/conference/atc13/atc13-bronson.pdf" by="Bronson et al., USENIX ATC '13">The per-field "critical read" staleness case study.</Resource>
+</ul>
+
+</section>

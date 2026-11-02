@@ -1,0 +1,72 @@
+{
+  "topic": "de.global-manufacturing-telemetry-platform",
+  "syllabus": [
+    {
+      "clause": "100k+ sensor events/s from many plants",
+      "at": [{ "step": "Reveal: the capacity and cardinality estimate" }]
+    },
+    {
+      "clause": "edge gateways with store-and-forward",
+      "at": [{ "step": "Reveal: the edge gateway's buffer, sized from the outage" }]
+    },
+    {
+      "clause": "MQTT/OPC UA ingestion into a log",
+      "at": [{ "step": "Reveal: the protocol boundary and the delivery level" }]
+    },
+    {
+      "clause": "hot TSDB plus lakehouse history",
+      "at": [{ "step": "Reveal: two stores, a cardinality limit, and where the asset joins in" }]
+    },
+    {
+      "clause": "asset-hierarchy context joined at ingest",
+      "at": [{ "step": "Reveal: two stores, a cardinality limit, and where the asset joins in" }]
+    },
+    {
+      "clause": "plant-local autonomy during WAN loss",
+      "at": [{ "step": "Reveal: plant-local autonomy, and residency per site" }]
+    },
+    {
+      "clause": "residency per site (Ch.16, §10.5)",
+      "at": [{ "step": "Reveal: plant-local autonomy, and residency per site" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Pelkonen et al., \"Gorilla: A Fast, Scalable, In-Memory Time Series Database\"",
+      "items": [
+        { "item": "Facebook's monitoring systems generated more than two billion unique time series of counters, with about twelve million data points added per second, as of spring 2015.", "at": [{ "step": "Reveal: the capacity and cardinality estimate" }] },
+        { "item": "At sixteen bytes per point, the resulting storage volume would be too resource-intensive for practical deployment.", "at": [{ "step": "Reveal: the capacity and cardinality estimate" }] },
+        { "item": "A two-hour block let Gorilla achieve a compression ratio of 1.37 bytes per data point, about a twelve-times reduction.", "at": [{ "step": "Reveal: the capacity and cardinality estimate" }] }
+      ]
+    },
+    {
+      "source": "Prometheus documentation, \"Metric and label naming\"",
+      "items": [
+        { "item": "Labels differentiate the characteristics of the thing being measured.", "at": [{ "step": "Reveal: two stores, a cardinality limit, and where the asset joins in" }] },
+        { "item": "Every unique combination of key-value label pairs represents a new time series.", "at": [{ "step": "Reveal: two stores, a cardinality limit, and where the asset joins in" }] },
+        { "item": "High-cardinality labels, such as unbounded identifier sets, are warned against.", "at": [{ "step": "Prove it: ten times the sensors" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A cloud-only pipeline that treats the WAN link as always available blanks every plant's dashboard on the first real outage.", "at": [{ "step": "Hook: a WAN outage blanks the plants, then floods them" }] },
+      { "item": "The edge buffer's own size is a straight multiplication: an outage's length times the rate it has to hold.", "at": [{ "step": "Reveal: the edge gateway's buffer, sized from the outage" }] },
+      { "item": "A durable log decouples every plant from every consumer regardless of which delivery level a given signal class is held to.", "at": [{ "step": "Reveal: the protocol boundary and the delivery level" }] },
+      { "item": "Joining the asset context early costs storage on every event; joining it late costs a lookup on every query.", "at": [{ "step": "Reveal: two stores, a cardinality limit, and where the asset joins in" }] },
+      { "item": "Plant-local autonomy during an outage is a degraded mode with its own recovery target per signal class, not an afterthought.", "at": [{ "step": "Reveal: plant-local autonomy, and residency per site" }] },
+      { "item": "A catch-up with no throttle just moves the outage's own damage from the outage to the moment the link returns.", "at": [{ "step": "Reveal: the throttled, idempotent catch-up" }] },
+      { "item": "At ten times the sensor count, the next bottleneck is the hot store's own cardinality, not the WAN link.", "at": [{ "step": "Prove it: ten times the sensors" }] },
+      { "item": "This topic leaves out the industrial data model, OPC UA, MQTT, Sparkplug, historians, time-series storage engines, and edge buffering as later-chapter forward pointers.", "at": [{ "deep": "Internals" }] },
+      { "item": "Store-and-forward edge buffering, per-signal delivery levels, and throttled idempotent catch-up are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A platform that collects the readings is half the system; the other half decides, as they arrive, whether a line is drifting out of spec.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

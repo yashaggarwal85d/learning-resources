@@ -1,0 +1,126 @@
+{
+  "topic": "de.opc-ua-information-model",
+  "syllabus": [
+    {
+      "clause": "address space of nodes and references,",
+      "at": [{ "step": "Reveal: typed references browsed down to one variable’s value, unit and type" }]
+    },
+    {
+      "clause": "companion specifications as typed models (e.g. for machine tools),",
+      "at": [{ "step": "Reveal: a companion specification makes that path the same everywhere" }]
+    },
+    {
+      "clause": "client/server subscriptions with monitored items and deadbands vs OPC UA PubSub over MQTT/UDP;",
+      "at": [
+        { "step": "Reveal: a deadband reports far fewer notifications than polling" },
+        { "step": "Reveal: PubSub’s message count doesn’t scale with its subscribers" }
+      ]
+    },
+    {
+      "clause": "security modes and certificates;",
+      "at": [{ "step": "Reveal: security mode None is a finding, not a default" }]
+    },
+    {
+      "clause": "why browsing the model gives you semantics that raw tags lack.",
+      "at": [{ "step": "Predict: what did the typed model carry that the tag list didn’t?" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OPC UA Part 3: References (4.4.4)",
+      "items": [
+        {
+          "item": "References are used to relate Nodes to each other; the containing Node is the SourceNode and the referenced Node is the TargetNode",
+          "at": [{ "step": "Reveal: typed references browsed down to one variable’s value, unit and type" }]
+        }
+      ]
+    },
+    {
+      "source": "OPC UA for Machine Tools, Part 1",
+      "items": [
+        {
+          "item": "Document OPC 40501-1, Release Version 1.02.0, Publication Date 2024-11-01",
+          "at": [{ "step": "Reveal: a companion specification makes that path the same everywhere" }]
+        }
+      ]
+    },
+    {
+      "source": "OPC UA Part 4: DataChangeFilter / Deadband (7.22.2)",
+      "items": [
+        {
+          "item": "the DataChangeFilter's Deadband generates a Notification if the absolute value of (last cached value - current value) exceeds the AbsoluteDeadband",
+          "at": [{ "step": "Reveal: a deadband reports far fewer notifications than polling" }]
+        }
+      ]
+    },
+    {
+      "source": "OPC UA Part 14: PubSub, General (5.1)",
+      "items": [
+        {
+          "item": "Publishers and Subscribers are loosely coupled and often don't even know each other",
+          "at": [{ "step": "Reveal: PubSub’s message count doesn’t scale with its subscribers" }]
+        }
+      ]
+    },
+    {
+      "source": "OPC UA Part 4: MessageSecurityMode (7.20)",
+      "items": [
+        {
+          "item": "MessageSecurityMode's values are INVALID (the default, to avoid an accidental choice of no security), NONE, SIGN, SIGNANDENCRYPT",
+          "at": [{ "step": "Reveal: security mode None is a finding, not a default" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Months versus days isn't a staffing difference between two plants — it's the cost of a person having to supply, by hand, exactly the semantics a typed model would have supplied for free.",
+        "at": [{ "step": "Hook: the same machine, two plants, months apart to onboard" }]
+      },
+      {
+        "item": "The honest prediction isn't a faster network or a better integrator — it's that the model itself already carried the names, types, units and hierarchy a tag list leaves for someone else to maintain.",
+        "at": [{ "step": "Predict: what did the typed model carry that the tag list didn’t?" }]
+      },
+      {
+        "item": "A reference that names its own SourceNode and TargetNode isn't decoration on top of a tag — it's the one thing a flat address never had: a stated relationship to something else.",
+        "at": [{ "step": "Reveal: typed references browsed down to one variable’s value, unit and type" }]
+      },
+      {
+        "item": "Two plants buying the identical machine and ending up months apart on onboarding time is proof the gap was never about the machine at all — it was entirely about what the integration carried alongside it.",
+        "at": [{ "step": "Hook: the same machine, two plants, months apart to onboard" }]
+      },
+      {
+        "item": "A companion specification standardizing one path across every vendor's machine tool is what turns 'read this sensor' from a per-site integration project into a single, reusable read.",
+        "at": [{ "step": "Reveal: a companion specification makes that path the same everywhere" }]
+      },
+      {
+        "item": "A deadband isn't a lossy shortcut — it's a stated promise about exactly how much a value has to move before anyone needs to hear about it again.",
+        "at": [{ "step": "Reveal: a deadband reports far fewer notifications than polling" }]
+      },
+      {
+        "item": "Client/server and PubSub aren't a slow option and a fast one — they're two different places to put the cost of fan-out: in a session per listener, or in a broker that owns it instead.",
+        "at": [{ "step": "Reveal: PubSub’s message count doesn’t scale with its subscribers" }]
+      },
+      {
+        "item": "A specification that makes its own default an invalid value, just so no security can never be chosen without someone noticing, is telling you exactly how seriously to treat finding it set anyway.",
+        "at": [{ "step": "Reveal: security mode None is a finding, not a default" }]
+      },
+      {
+        "item": "Every piece of this topic reduces to the same move: push information that used to live in someone's head, or someone's spreadsheet, into a structure a machine can read directly.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A hierarchy a person used to maintain by hand is only safely gone once you can point to the exact field that replaced it.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

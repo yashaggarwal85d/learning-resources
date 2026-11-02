@@ -1,0 +1,65 @@
+{
+  "topic": "de.cdc-from-oltp-into",
+  "syllabus": [
+    {
+      "clause": "Postgres/Oracle log-based CDC → Kafka → MERGE into Iceberg/Delta with exactly-once effect",
+      "at": [{ "step": "Reveal: the pipeline strip and its correctness boundary" }]
+    },
+    {
+      "clause": "snapshot + stream handover",
+      "at": [{ "step": "Reveal: snapshot and stream, handed over without a gap" }]
+    },
+    {
+      "clause": "deletes",
+      "at": [{ "step": "Reveal: deletes and schema change" }]
+    },
+    {
+      "clause": "schema change",
+      "at": [{ "step": "Reveal: deletes and schema change" }]
+    },
+    {
+      "clause": "replication-slot safety",
+      "at": [{ "step": "Reveal: the slot's guarantee is the hazard" }, { "step": "Reveal: the cap and its cost" }]
+    },
+    {
+      "clause": "compaction of MOR tables (§8.2, §6.3)",
+      "at": [{ "step": "Reveal: compaction stalls, and the slot grows with it" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL documentation — \"19.6. Replication\" (Server Configuration)",
+      "items": [
+        { "item": "max_slot_wal_keep_size caps the WAL a replication slot may retain; past the cap, a slot that has fallen too far behind can no longer continue replication.", "at": [{ "step": "Reveal: the cap and its cost" }] }
+      ]
+    },
+    {
+      "source": "Debezium documentation — \"Debezium connector for PostgreSQL\"",
+      "items": [
+        { "item": "Replication slots are guaranteed to retain all WAL entries a connector like Debezium needs, even during an outage.", "at": [{ "step": "Reveal: the slot's guarantee is the hazard" }] },
+        { "item": "A heartbeat event, set via heartbeat.interval.ms, advances a slot's position on a table with few relevant updates.", "at": [{ "step": "Reveal: the cap and its cost" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The guarantee that protects the pipeline from data loss is the same guarantee that fills the disk once the pipeline stops.", "at": [{ "step": "Reveal: the slot's guarantee is the hazard" }] },
+      { "item": "A cap bounds the slot's growth at the cost of a forced re-snapshot once crossed, not a free fix.", "at": [{ "step": "Reveal: the cap and its cost" }] },
+      { "item": "A new consumer needs the table's state and then every change after it, without a gap or an overlap between the two.", "at": [{ "step": "Reveal: snapshot and stream, handed over without a gap" }] },
+      { "item": "A deleted row and a schema change are each events the merge must be told how to apply, not events it can infer.", "at": [{ "step": "Reveal: deletes and schema change" }] },
+      { "item": "A stalled compaction stalls the merge, which stalls the slot, which grows the source's own log — the interaction this design itself creates.", "at": [{ "step": "Reveal: compaction stalls, and the slot grows with it" }] },
+      { "item": "A code leak in the connector wouldn't track as cleanly with exactly when the connector stopped and resumed as slot retention does.", "at": [{ "step": "Predict: what did the design fail to say about the slot?" }] },
+      { "item": "Raising the cap doesn't remove the trade this design names; it only delays the choice between the source's disk and a forced re-snapshot.", "at": [{ "step": "Prove it: a second slot, already most of the way to its cap" }] },
+      { "item": "This topic leaves out logical decoding, replication-slot and WAL internals, Debezium and Kafka Connect mechanics, table-format MOR internals, and the exactly-once argument itself.", "at": [{ "deep": "Internals" }] },
+      { "item": "Log-based CDC and watermark-based incremental snapshots are established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its CDC design; the next design is a lakehouse with concurrent writers and time travel, once several writers touch the same table.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "topic": "de.e-commerce-warehouse-incremental",
+  "steps": [
+    {
+      "lines": [
+        "This shop's nightly warehouse rebuild runs long enough, and costs enough, that finance has started asking pointed questions about it.",
+        "The team switches that whole rebuild over to an incremental approach instead.",
+        "Weeks later, the warehouse's own order count comes up short against the source, because every cancelled order quietly never reappeared anywhere in that incremental extract."
+      ]
+    },
+    {
+      "lines": [
+        "Incremental loads genuinely have more than one way to go wrong, each in its own distinct fashion.",
+        "Only one of those failure modes produces a permanent, silent gap, rather than ordinary staleness that eventually catches back up on its own. Which one is it?"
+      ],
+      "answer": [
+        "A load that simply runs slower produces staleness: a count sitting behind, but one that eventually catches back up once the backlog clears.",
+        "A deleted row produces a gap that never closes by itself, because the extract was only ever built to pull rows that are changed or new, never to notice something quietly missing."
+      ]
+    },
+    {
+      "lines": [
+        "One fact tracking each order line, another tracking a daily snapshot of inventory, surrounded by conformed customer, product, and date dimensions.",
+        "A decision card weighs three real alternatives side by side: a wide denormalised table, a Data Vault, and this dimensional model.",
+        "Each one gets priced specifically for this exact workload, not for some generic, average one."
+      ]
+    },
+    {
+      "lines": [
+        "A cancelled order's row simply vanishes at the source, with nothing left behind to mark that it ever happened.",
+        "The incremental extract, built only ever to pull rows that are changed or brand new, never once asks what's actually missing.",
+        "So that row sits in the warehouse forever, completely unless this design deliberately adds a clause that goes looking for it."
+      ]
+    },
+    {
+      "lines": [
+        "An order-line fact lands before its own customer dimension has even arrived yet.",
+        "Rather than drop that fact outright, or block the whole load waiting on it, it gets an inferred, placeholder dimension key instead.",
+        "That placeholder gets backfilled properly the moment the real dimension row actually shows up."
+      ]
+    },
+    {
+      "lines": [
+        "A customer's address change becomes a brand new row under the SCD policy that keeps its own full history intact.",
+        "A simple phone-number correction, by contrast, just overwrites the existing row under the policy that keeps no history of the old number at all.",
+        "Both of these merge by one stated unique key. Without that key, the load degrades quietly into pure append, and silently duplicates instead."
+      ]
+    },
+    {
+      "lines": [
+        "A genuinely small handful of derived marts serve this shop's own dominant queries. Not every mart somebody requests actually earns its own keep.",
+        "Revenue itself gets defined exactly once, inside one shared semantic layer.",
+        "That way it's never quietly recomputed slightly differently inside each separate mart that happens to need it."
+      ]
+    },
+    {
+      "lines": [
+        "A full refresh's own cost rises quite steeply as table size grows larger.",
+        "An incremental refresh's cost rises far more slowly, but it carries its own fixed overhead that a full refresh simply never pays.",
+        "Those two lines cross at one specific table size, computed directly from this shop's own real numbers."
+      ]
+    },
+    {
+      "lines": [
+        "Grain gets decided first, and only then does a model get chosen from three real alternatives.",
+        "A deleted row and a late-arriving dimension each get their own clearly named guard.",
+        "An SCD policy decides exactly what history gets kept; a unique key decides what merges cleanly instead of silently duplicating. And the full-versus-incremental crossover is one computed number, never simply a guess."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a completely different table has been running incremental for well over a year now.",
+        "It sits well past the point where a full refresh would actually be cheaper, because nobody ever once recomputed that crossover as the table kept growing larger.",
+        "What's genuinely the right first move here?"
+      ],
+      "answer": [
+        "Incremental has failed is only ever a feeling, never an actual measurement of anything.",
+        "The crossover formula takes this exact table's own current size and change rate and states, quite directly, which side of that line it genuinely sits on right now.",
+        "That side may not even match whatever side the original symptom seemed to suggest."
+      ]
+    }
+  ]
+}

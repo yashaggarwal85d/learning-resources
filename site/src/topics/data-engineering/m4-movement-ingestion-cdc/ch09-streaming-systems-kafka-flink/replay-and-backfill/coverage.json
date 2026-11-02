@@ -1,0 +1,111 @@
+{
+  "topic": "de.replay-and-backfill",
+  "syllabus": [
+    {
+      "clause": "resetting offsets by timestamp",
+      "at": [{ "step": "Setup: resetting offsets by timestamp" }]
+    },
+    {
+      "clause": "replaying one partition or time range",
+      "at": [
+        { "step": "Predict: scope the replay" },
+        { "step": "Reveal: scoped, not whole-topic" }
+      ]
+    },
+    {
+      "clause": "backfilling from tiered storage or the lakehouse instead of the hot log",
+      "at": [{ "step": "Reveal: where the data actually comes from" }]
+    },
+    {
+      "clause": "making replays safe (idempotent sinks, versioned outputs, suppressed side effects)",
+      "at": [
+        { "step": "Predict: overwrite or version the output?" },
+        { "step": "Reveal: the original is gone" },
+        { "step": "Reveal: versioned output, side effects suppressed" }
+      ]
+    },
+    {
+      "clause": "(Lambda vs Kappa in Ch.3.3)",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "KafkaConsumer (Apache Kafka 4.4.0 API, Javadoc)",
+      "items": [
+        {
+          "item": "offsetsForTimes returns, for each partition, the earliest offset whose timestamp is greater than or equal to the target timestamp",
+          "at": [{ "step": "Setup: resetting offsets by timestamp" }]
+        },
+        {
+          "item": "seek overrides the fetch offsets the consumer uses on the next poll, and repeated calls for the same partition use the latest",
+          "at": [{ "step": "Setup: resetting offsets by timestamp" }]
+        }
+      ]
+    },
+    {
+      "source": "Idempotent requests (Stripe API Reference)",
+      "items": [
+        {
+          "item": "the API supports idempotency for safely retrying requests without accidentally performing the same operation twice",
+          "at": [{ "step": "Reveal: versioned output, side effects suppressed" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "offsetsForTimes and seek are two separate steps of the same operation, not one mechanism — looking up a position by time, then actually applying it — and conflating them would misstate the real Kafka consumer API this topic draws on.",
+        "at": [{ "step": "Setup: resetting offsets by timestamp" }]
+      },
+      {
+        "item": "Scoping a replay to a partition or time range isn't just an optimization — it's what keeps a replay's blast radius equal to the bug's actual blast radius, rather than always equal to the whole topic's history.",
+        "at": [{ "step": "Reveal: scoped, not whole-topic" }]
+      },
+      {
+        "item": "The hot-log/tiered-storage/lakehouse choice this topic names is the same three-tier shape topic 8 already built for ordinary reads — replay doesn't invent a new storage hierarchy, it just reuses the existing one as a backfill source.",
+        "at": [{ "step": "Reveal: where the data actually comes from" }]
+      },
+      {
+        "item": "An overwritten replay output isn't just inconvenient to debug — it destroys the only evidence that could ever prove whether the replay helped, which is why versioning the output is a correctness requirement here, not a nice-to-have.",
+        "at": [{ "step": "Reveal: the original is gone" }]
+      },
+      {
+        "item": "Versioned output and suppressed side effects solve two different halves of replay safety — one protects the data a replay produces, the other protects the outside world from a replay's downstream consequences — and a replay missing either half is only half safe.",
+        "at": [{ "step": "Reveal: versioned output, side effects suppressed" }]
+      },
+      {
+        "item": "This topic's safety mechanisms aren't new inventions — the idempotent-sink and dedup machinery from topics 12 and 13 are exactly what a versioned, side-effect-suppressing replay sink is built from, reused rather than reinvented.",
+        "at": [{ "step": "Reveal: versioned output, side effects suppressed" }]
+      },
+      {
+        "item": "The toy OffsetTimeIndex, ScopedReplay, BackfillSourceChooser, and overwrite/versioned sinks are deliberately simplified standalone models, not ports of any production replay tooling, and every figure shown is this run's own output, not a cited constant.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "A replay being 'safe to repeat' means something stronger than 'safe to run once' — the whole point of this topic's safety machinery is that the exact same replay could be run again, by mistake or on purpose, with no different outcome.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A replay and a backfill are the same mechanism pointed at two different reasons: a replay corrects something that was processed wrong, a backfill supplies something that was never processed at all — and both draw from the same hot-log/tiered-storage/lakehouse sources.",
+        "at": [{ "step": "Reveal: where the data actually comes from" }]
+      },
+      {
+        "item": "Treating this topic's replay-safety guidance as a generic cross-system pattern, sourced from Stripe's API docs rather than Kafka's own, is a deliberate choice — Kafka itself has no built-in replay-safety API, so the safety burden sits entirely on how the sink and consumer are designed.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "This topic's 'Lambda vs Kappa' pointer names a broader architectural choice (reprocess via a parallel batch layer versus reprocess the same streaming layer) that replay is one concrete instance of, without this topic itself teaching that comparison.",
+        "at": [{ "deep": "Frontier" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

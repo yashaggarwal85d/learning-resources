@@ -1,0 +1,118 @@
+{
+  "topic": "de.ansi-mode-3x-4x-migration",
+  "syllabus": [
+    {
+      "clause": "ANSI SQL on by default in 4.0: overflow, invalid casts and division by zero now raise errors instead of returning NULL; try_ functions and store-assignment rules; Java 17/Scala 2.13 baseline, removed Mesos; a migration method (run suites in both modes, diff outputs, audit implicit casts).",
+      "at": [
+        { "step": "Reveal: ANSI mode flips the default answer to a bad value" },
+        { "step": "Predict: an int overflow, ANSI mode on. Raises an error, or wraps to negative?" },
+        { "step": "Reveal: raises an error -- ANSI off wraps to negative, measured" },
+        { "step": "Elaborate: store assignment is its own separate knob" },
+        { "step": "Predict: casting 'a' to INT, ANSI mode on. Raises an error, or returns NULL?" },
+        { "step": "Reveal: raises an error -- ANSI off returns NULL, measured" },
+        { "step": "Elaborate: try_cast and try_add bring NULL-on-error back on purpose" },
+        { "step": "Reveal: porting an older job means finding every changed expression" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"ANSI Compliance\" docs",
+      "items": [
+        {
+          "item": "by default, spark.sql.ansi.enabled is true and Spark SQL uses an ANSI compliant dialect, throwing an exception at runtime instead of returning null results if the inputs to a SQL operator/function are invalid",
+          "at": [{ "step": "Reveal: ANSI mode flips the default answer to a bad value" }]
+        },
+        {
+          "item": "Spark throws an arithmetic exception at runtime for both interval and numeric type overflows by default; with ANSI off, numeric types behave like the corresponding Java/Scala operation (e.g. the sum of two ints above the max representable value becomes negative)",
+          "at": [{ "step": "Predict: an int overflow, ANSI mode on. Raises an error, or wraps to negative?" }, { "step": "Reveal: raises an error -- ANSI off wraps to negative, measured" }]
+        },
+        {
+          "item": "with ANSI mode on, explicit casting by CAST syntax throws a runtime exception for illegal cast patterns defined in the standard, such as casting a string to an integer",
+          "at": [{ "step": "Predict: casting 'a' to INT, ANSI mode on. Raises an error, or returns NULL?" }, { "step": "Reveal: raises an error -- ANSI off returns NULL, measured" }]
+        },
+        {
+          "item": "spark.sql.storeAssignmentPolicy is an independent option, defaulting to ANSI, that governs implicit casting behaviour when inserting rows into a table -- separate from spark.sql.ansi.enabled",
+          "at": [{ "step": "Elaborate: store assignment is its own separate knob" }]
+        },
+        {
+          "item": "try_cast is identical to CAST except that it returns NULL instead of throwing an exception on a runtime error; try_add is identical to the add operator except that it returns NULL instead of throwing on integral overflow; try_divide does the same for division by zero",
+          "at": [{ "step": "Elaborate: try_cast and try_add bring NULL-on-error back on purpose" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark SQL migration guide, \"Upgrading from Spark SQL 3.5 to 4.0\"",
+      "items": [
+        {
+          "item": "since Spark 4.0, spark.sql.ansi.enabled is on by default; the previous behavior can be restored by setting spark.sql.ansi.enabled to false or SPARK_ANSI_SQL_MODE to false",
+          "at": [{ "step": "Reveal: ANSI mode flips the default answer to a bad value" }]
+        }
+      ]
+    },
+    {
+      "source": "\"Spark Release 4.0.0\" notes",
+      "items": [
+        {
+          "item": "[SPARK-44444] Use ANSI SQL mode by default",
+          "at": [{ "step": "Reveal: ANSI mode flips the default answer to a bad value" }]
+        },
+        {
+          "item": "[SPARK-45314] Drop Scala 2.12 and make Scala 2.13 the default; [SPARK-45315] Drop JDK 8/11 and make JDK 17 the default; [SPARK-44442] Drop mesos support",
+          "at": [{ "step": "Reveal: porting an older job means finding every changed expression" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "spark.sql.ansi.enabled can also be set via the SPARK_ANSI_SQL_MODE environment variable at cluster-startup time, not just as a per-session SQL config -- a way to pin the setting for an entire cluster rather than toggling it from inside a query or session.",
+        "at": [{ "out": "the environment-variable form of the setting named only; this topic's own examples.py toggles the config only through spark.conf.set within a single session" }]
+      },
+      {
+        "item": "The ANSI store-assignment policy has a third value beyond ANSI and LEGACY -- STRICT -- which disallows even reasonable precision-losing implicit casts (e.g. double to float) that the ANSI policy itself still permits.",
+        "at": [{ "out": "the STRICT store-assignment policy and how it differs from ANSI named only; this topic's own examples.py measures only the ANSI-vs-LEGACY contrast" }]
+      },
+      {
+        "item": "Decimal-type overflow is a documented exception to the general ANSI-raises-an-error rule: one Spark docs revision notes Spark SQL returns NULL for decimal overflows even with ANSI mode on, rather than raising -- a carve-out the integer and cast cases in this topic's own examples.py don't hit.",
+        "at": [{ "out": "the decimal-overflow carve-out from the general ANSI error-raising rule named only; this topic's own examples.py measures integer overflow and string-to-INT casts, not decimal arithmetic" }]
+      },
+      {
+        "item": "ANSI mode also changes type-coercion rules for resolving conflicts among mismatched data types in an expression, consistently based on data-type precedence, as a second effect of spark.sql.ansi.enabled distinct from the runtime-exception behaviour this topic measures.",
+        "at": [{ "out": "ANSI mode's type-coercion-precedence effect named only, as distinct from its runtime-exception effect; this topic's own examples.py measures only the exception-vs-NULL behaviour, not type coercion between mismatched types" }]
+      },
+      {
+        "item": "try_to_timestamp, try_parse_url, try_make_timestamp, and several other try_* functions extend the same NULL-on-error pattern to timestamp parsing, URL parsing, and timestamp construction, beyond the arithmetic and cast functions this topic measures directly.",
+        "at": [{ "out": "the broader family of try_* functions beyond try_cast/try_add/try_divide named only; this topic's own examples.py measures try_cast and try_add directly" }]
+      },
+      {
+        "item": "ANSI mode also disallows certain type conversions entirely regardless of try_* availability -- for example Numeric to/from Binary, and Date to/from Boolean -- conversions that are permitted when ANSI mode is off but have no try_* escape hatch because they're disallowed, not merely error-prone.",
+        "at": [{ "out": "the distinction between a disallowed conversion (no try_* escape) and an error-prone one (try_* available) named only; this topic's own examples.py measures only the error-prone overflow and cast cases" }]
+      },
+      {
+        "item": "Rounding behaviour under CAST changed too: when casting a decimal with a fractional part to an interval type ending in SECOND, Spark rounds to the nearest neighbor, rounding up when both neighbors are equidistant -- a documented rounding-rule change alongside the error-raising changes this topic focuses on.",
+        "at": [{ "out": "the interval-rounding rule change named only; this topic's own examples.py doesn't exercise interval casting" }]
+      },
+      {
+        "item": "CREATE TABLE without USING or STORED AS changed its default table provider in 4.0 to spark.sql.sources.default instead of Hive -- an unrelated 4.0 default change in the same migration-guide section as the ANSI default flip, restorable via spark.sql.legacy.createHiveTableByDefault.",
+        "at": [{ "out": "the CREATE TABLE default-provider change named only, as a separate unrelated 4.0 default flip; this topic's own examples.py uses an explicit USING parquet clause throughout, so it never exercises the old Hive-default path" }]
+      },
+      {
+        "item": "Spark 4.0 also removed several legacy datetime-rebasing SQL configs with the spark.sql.legacy prefix, replacing them with non-legacy equivalents (e.g. spark.sql.parquet.datetimeRebaseModeInWrite) -- part of the same 3.5-to-4.0 migration-guide section as the ANSI default flip, but unrelated to ANSI mode itself.",
+        "at": [{ "out": "the datetime-rebase config renames named only, as unrelated migration-guide changes alongside the ANSI flip; this topic's own examples.py doesn't read or write datetime-encoded Parquet/Avro data" }]
+      },
+      {
+        "item": "A real 3.5-to-4.0 migration audit, beyond this topic's own diff-and-audit method sketch, would also need to re-run any job that relies on encode()/decode() with a non-UTF charset, since 4.0 narrowed the supported charset list and changed unmappable-character handling from silent mojibake substitution to a raised MALFORMED_CHARACTER_CODING error.",
+        "at": [{ "out": "the encode/decode charset-handling change as a concrete item a real migration audit would need to check, named only; this topic's own examples.py doesn't call encode() or decode()" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

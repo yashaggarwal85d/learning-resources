@@ -1,0 +1,133 @@
+{
+  "topic": "de.deletes-tombstones",
+  "syllabus": [
+    {
+      "clause": "delete events with before-images vs Kafka tombstones (null value) that let log compaction drop the key",
+      "at": [
+        { "step": "Predict: kept by compaction" },
+        { "step": "Reveal: the before-image follows the identity" },
+        { "step": "Reveal: the before-image, measured" }
+      ]
+    },
+    {
+      "clause": "soft vs hard deletes",
+      "at": [
+        { "step": "Reveal: soft against hard" },
+        { "step": "Reveal: soft against hard, measured" }
+      ]
+    },
+    {
+      "clause": "carrying deletes into table formats via MERGE/delete files",
+      "at": [{ "step": "Reveal: carried by MERGE, measured" }]
+    },
+    {
+      "clause": "the delete-retention window race",
+      "at": [{ "step": "Hook" }, { "step": "Reveal: the retention race, measured" }, { "step": "Prove it" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Debezium docs: event flattening (New Record State Extraction)",
+      "items": [
+        {
+          "item": "A database DELETE operation causes Debezium to generate two Kafka records: a record with op: d, the before row data; and a tombstone record with the same key and a null value, which is a marker for Apache Kafka indicating that log compaction can remove all records for that key",
+          "at": [{ "step": "Predict: kept by compaction" }]
+        },
+        {
+          "item": "The drop mode removes both the DELETE event and the tombstone from the stream; the rewrite mode edits the record to add a __deleted: true field instead of dropping it",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Confluent docs: Kafka log compaction (standing in for an unreadable Apache Kafka page)",
+      "items": [
+        {
+          "item": "A message with a key and a null payload will be treated as a delete from the log",
+          "at": [{ "step": "Predict: kept by compaction" }]
+        },
+        {
+          "item": "All delete markers for deleted records will be seen, provided the consumer reaches the head of the log in a time period less than the topic's delete.retention.ms setting (the default is 24 hours)",
+          "at": [{ "step": "Hook" }, { "step": "Reveal: the retention race, measured" }]
+        },
+        {
+          "item": "Since the removal of delete markers happens concurrently with reads, it is possible for a consumer to miss delete markers if it lags by more than delete.retention.ms",
+          "at": [{ "step": "Reveal: the retention race, measured" }, { "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: JDBC sink connector",
+      "items": [
+        {
+          "item": "delete.enabled specifies whether the connector processes DELETE or tombstone events and removes the corresponding row from the database",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: PostgreSQL connector",
+      "items": [
+        {
+          "item": "A delete event's before field contains only the primary key column when the table's REPLICA IDENTITY setting is DEFAULT",
+          "at": [{ "step": "Reveal: the before-image follows the identity" }, { "step": "Reveal: the before-image, measured" }]
+        },
+        {
+          "item": "tombstones.on.delete controls whether a delete event is followed by a tombstone event",
+          "at": [{ "out": "named only, per SOURCES.md" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The before-image measurement runs the identical DELETE statement against the same table before and after an ALTER TABLE ... REPLICA IDENTITY change, isolating the identity setting as the only variable, rather than comparing two separately constructed tables that might differ in other ways too.",
+        "at": [{ "step": "Reveal: the before-image, measured" }]
+      },
+      {
+        "item": "The soft-versus-hard measurement uses one single cursor query, run once, against a table holding both a soft-deleted and a hard-deleted row side by side, so the contrast is the same query's own two different outcomes rather than two separately worded queries that might behave differently for unrelated reasons.",
+        "at": [{ "step": "Reveal: soft against hard, measured" }]
+      },
+      {
+        "item": "The MERGE measurement applies one statement that simultaneously inserts, updates and deletes different rows in the same batch, confirming the delete clause doesn't accidentally touch the insert or update clauses' own rows, not merely that a delete-only batch works.",
+        "at": [{ "step": "Reveal: carried by MERGE, measured" }]
+      },
+      {
+        "item": "The compaction model's own _compact function is exercised twice against the identical input records, varying only the current time relative to the retention window, isolating timing as the sole variable between the correct and the resurrecting outcome.",
+        "at": [{ "step": "Reveal: the retention race, measured" }]
+      },
+      {
+        "item": "The resurrection proof asserts the lagging consumer's own final state still contains the deleted key with its pre-delete value, not merely that the compacted log lacks a tombstone, which is the sharper, more specific claim CHAPTER.md's own hook requires.",
+        "at": [{ "step": "Reveal: the retention race, measured" }]
+      },
+      {
+        "item": "The wrong option in the first predict question — that compaction keeps both of a delete's two records — is ruled out by definition: compaction's own rule, reproduced in _compact, keeps only the single latest offset per key, so the earlier record is structurally excluded regardless of retention timing.",
+        "at": [{ "step": "Predict: kept by compaction" }]
+      },
+      {
+        "item": "The wrong option in the final predict question — that a source's own log retention is the number to size a sink's lag against — is ruled out by the measured retention-race proof itself: once a delete is already a tombstone in Kafka, the source's own retention no longer governs anything about that key.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Every scratch table, slot and temp table this topic creates is confirmed dropped inside the same function that created it, verified by three successive clean runs of examples.py, and the shared orders table (50001 rows) is never touched by any of this topic's four functions.",
+        "at": [{ "out": "verified directly before writing any content, per REVIEW.md" }]
+      },
+      {
+        "item": "The Confluent log-compaction page is used explicitly as a disclosed substitute for the unreadable Apache Kafka 4.4 Design page, confirmed unreachable the same way an earlier topic in this chapter confirmed it, rather than silently passing off a different source as the one CHAPTER.md names.",
+        "at": [{ "out": "disclosed source substitution, per SOURCES.md" }]
+      },
+      {
+        "item": "The log cleaner's own mechanics and min.compaction.lag.ms, the delete-file formats and deletion vectors, erasure as a legal duty, and how a landing table applies the merge are each named in CHAPTER.md's own 'Leaves out' line and none of them appear anywhere in this topic's reel, narration or examples.py.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

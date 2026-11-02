@@ -2,74 +2,60 @@
 
 | # | Claim | Source | Status |
 |---|---|---|---|
-| 1 | GDPR Article 4(5): pseudonymisation is processing that leaves data no longer attributable to a specific subject without additional information, kept separate and protected. | GDPR, Article 4 | Confirmed, quoted verbatim. |
-| 2 | GDPR Recital 26: pseudonymised data attributable to a person by additional information is still "information on an identifiable natural person." | GDPR, Recital 26 | Confirmed, quoted verbatim. |
-| 3 | GDPR Recital 26: identifiability is assessed against "all objective factors," including cost and time, given available technology. | GDPR, Recital 26 | Confirmed, quoted verbatim. |
-| 4 | GDPR Recital 26: anonymous information is outside the Regulation's scope entirely. | GDPR, Recital 26 | Confirmed, quoted verbatim. |
-| 5 | GDPR Article 32 names "the pseudonymisation and encryption of personal data" as an appropriate security measure. | GDPR, Article 32 | Confirmed, quoted verbatim. |
-| 6 | CJEU, *EDPS v SRB* (C-413/23 P): pseudonymised data "must not be regarded as constituting, in all cases and for every person, personal data." | CJEU Press Release No 107/25 | Confirmed, quoted verbatim. |
-| 7 | Same judgment: pseudonymisation may "effectively prevent persons other than the controller from identifying the data subject." | CJEU Press Release No 107/25 | Confirmed, quoted verbatim. |
-| 8 | Same judgment: the controller's transparency duty is assessed "at the time of collection of the data and from the point of view of the controller." | CJEU Press Release No 107/25 | Confirmed, quoted verbatim. |
-| 9 | The judgment is decided under Regulation (EU) 2018/1725, not the GDPR directly; the press release does not discuss GDPR Article 4(1) by name. | CJEU Press Release No 107/25, footnote 1 | Confirmed by reading the full press release text; no GDPR Article 4(1) reference found anywhere in it. |
-| 10 | EDPB Guidelines 01/2025: a pseudonymisation secret needs sufficient entropy to limit brute-force/dictionary searching. | EDPB Guidelines 01/2025 | Confirmed, quoted verbatim. |
-| 11 | EDPB Guidelines 01/2025's own worked example: hashing every candidate name with the same (unkeyed) function and matching against the pseudonymised dataset is a real dictionary attack. | EDPB Guidelines 01/2025, footnote 23 | Confirmed, quoted verbatim. |
-| 12 | EDPB Guidelines 01/2025 recommends keyed, pre-image-resistant one-way functions (HMACs) as a suitable building block. | EDPB Guidelines 01/2025 | Confirmed, quoted verbatim. |
-| 13 | The Digital Omnibus proposal (COM(2025) 837 final) would write the relative approach into the GDPR's recitals: additional information enabling identification does not, by itself, make pseudonymised data personal data "in all cases and for every person or entity." | COM(2025) 837 final, via Council doc 15698/25 | Confirmed, quoted verbatim. |
-| 14 | The same proposal adds Article 41a, empowering the Commission to specify by implementing act when pseudonymised data stops being personal data for certain entities. | COM(2025) 837 final, via Council doc 15698/25 | Confirmed, quoted verbatim. |
-| 15 | EDPB-EDPS Joint Opinion 2/2026: an implementing act under Article 41a "could de facto affect the material scope of EU data protection law." | EDPB-EDPS Joint Opinion 2/2026 | Confirmed, quoted verbatim. |
-| 16 | The same opinion recommends "deleting proposed Article 41a GDPR from the Proposal." | EDPB-EDPS Joint Opinion 2/2026 | Confirmed, quoted verbatim. |
-| 17 | EP Legislative Train tracker (updated 20/09/2026): the co-rapporteurs left the personal-data definition to later committee negotiation. | EP Legislative Train, "The Digital Omnibus Regulation Proposal" | Confirmed, quoted verbatim. |
-| 18 | Same tracker: the Council's negotiating-mandate vote (scheduled 26 June) was cancelled; work continues under the Irish Council Presidency. | EP Legislative Train, "The Digital Omnibus Regulation Proposal" | Confirmed, quoted verbatim. |
+| 1 | Pseudonymisation means personal data can no longer be attributed to a data subject without additional information, kept separately and protected. | GDPR Art. 4(5) | Confirmed, quoted verbatim. |
+| 2 | Pseudonymised data attributable by additional information should be considered information on an identifiable natural person; identifiability is judged by all means reasonably likely to be used. | GDPR Recital 26 | Confirmed, quoted verbatim. |
+| 3 | Pseudonymisation and encryption are both named as security-of-processing measures. | GDPR Art. 32 | Confirmed, quoted verbatim. |
+| 4 | The Court of Justice confirmed that pseudonymised data must not be regarded as personal data in all cases and for every person; pseudonymisation may effectively prevent identification by someone other than the controller. | CJEU Press Release No 107/25, C-413/23 P | Confirmed, quoted verbatim. |
+| 5 | The identifiable nature of the data subject is assessed at the time of collection, from the controller's point of view, for the controller's own transparency duty. | CJEU Press Release No 107/25, C-413/23 P | Confirmed, quoted verbatim. |
+| 6 | Hashing all known candidate names with the same (known) plain hash function and matching outputs recovers the pseudonymised dataset. | EDPB Guidelines 01/2025 on Pseudonymisation | Confirmed, quoted verbatim. |
+| 7 | The secret parameters or keys in a cryptographic algorithm are the pseudonymisation secrets; one-way functions are preferred even when the secret parameters are known. | EDPB Guidelines 01/2025 on Pseudonymisation | Confirmed, quoted verbatim. |
+| 8 | The Digital Omnibus proposal would add a paragraph to Article 4(1) GDPR making information not personal for an entity that cannot identify the natural person by means reasonably likely to be used by that entity. | EDPB-EDPS Joint Opinion 2/2026 | Confirmed, quoted verbatim. |
+| 9 | A proposed Article 41a would let the Commission specify by implementing act the means and criteria for when pseudonymised data stops being personal data for certain entities. | EDPB-EDPS Joint Opinion 2/2026 | Confirmed, quoted verbatim. |
+| 10 | The EDPB and EDPS strongly urge the co-legislators not to adopt the proposed changes to the definition of personal data. | EDPB-EDPS Joint Opinion 2/2026 | Confirmed, quoted verbatim. |
+| 11 | A dictionary attack hashing a known candidate email list with the same plain function recovers the large majority of a synthetic pseudonymised table. | This course's own measurement (`examples.py`) | Confirmed, assert passes. |
+| 12 | The identical attack against the same emails under keyed HMAC, without the secret key, recovers none of them. | This course's own measurement (`examples.py`) | Confirmed, assert passes. |
+| 13 | A linkage attack joining quasi-identifiers from a pseudonymised release against an outside reference list re-identifies a real, measurable fraction of individuals never named in the release. | This course's own measurement (`examples.py`) | Confirmed, assert passes. |
 
-## Red-team: the predict question (step 2)
+## Note on the judgment's actual outcome
 
-**Question:** a list of ten million known email addresses, hashed with the same function as a
-table of "hashed, so it's anonymous" customer emails, matches 90 percent of the table back to
-named people. What single change would have made that attack fail — and would the result then be
-anonymous, or only pseudonymised?
+The CJEU's judgment in C-413/23 P was a mixed result, not a clean win for either side: hearing
+the EDPS's appeal, the Court **set aside** the General Court's judgment overall, on a separate
+point about whether personal opinions expressed in free-text comments "relate to" their author.
+What the Court specifically **confirmed as correct** was the General Court's own
+relative-identifiability reasoning — the one holding this topic measures and teaches. The reel
+presents only the confirmed holding; it does not claim the Court upheld the General Court's
+ruling as a whole, and `SOURCES.md` documents this distinction explicitly. The case was also
+decided under Regulation (EU) 2018/1725 (the EU institutions' own data-protection regulation),
+not the GDPR directly — named in `coverage.json`'s `expert` items, since the Court's own press
+release and the Digital Omnibus's own explanatory memorandum both treat the reasoning as
+applicable to the GDPR's structurally identical Article 4(1).
 
-**Attack 1 — "a hash is a hash; SHA-256 is cryptographically strong, so this shouldn't work."**
-The strength of the hash function is not the vulnerability — determinism and a small, guessable
-input space are. The EDPB's own guidelines give exactly this attack as the worked example (footnote
-23: "if you know the transformation is merely a SHA256 hash of a name, you could apply this to all
-names you have elsewhere"). `examples.py`'s `dictionary_attack_on_plain_hash` makes this concrete:
-the same unkeyed SHA-256, applied to a candidate list, reproduces the pseudonymised table's hashes
-exactly, with no brute-forcing of the hash function itself required.
+## Red-team: the predict questions (steps 3 and 6)
 
-**Attack 2 — "so HMAC fixes it, and the data is now anonymous."** HMAC fixes the dictionary
-attack (`hmac_resists_without_the_key` shows zero matches without the secret), but the result is
-still pseudonymisation, not anonymisation: Article 4(5)'s own test is attribution *without
-additional information*, and the HMAC key is exactly that additional information — kept
-separately, not destroyed. The data is still personal data for whoever holds the key. Only
-destroying the key (or never generating a reversible structure at all) crosses into anonymisation,
-and even then only if no other means of re-identification remains reasonably likely — which the
-topic's own linkage-attack reveal (step 9) shows is a separate, further question.
+**Question 1 (step 3):** given a pseudonymised table built from a plain hash, does hashing a
+known candidate list with the same function recover most of the table?
 
-**Attack 3 — "if HMAC resists the dictionary attack, the data can't be re-identified at all."**
-False, and the topic's own linkage-attack reveal and `examples.py`'s
-`linkage_attack_on_quasi_identifiers` demonstrate it directly: a perfectly keyed pseudonym gives up
-nothing to a dictionary attack, but quasi-identifiers (postcode, birth date, product mix) carried
-alongside the pseudonym can be joined to an outside list and re-identify a measurable fraction of
-the table without the key ever being used or needed.
+**Attack — "a hash output looks random, so there shouldn't be a matching candidate."** This
+confuses a hash's *output appearance* with its *determinism*. A plain hash gives the identical
+output for the identical input every time, so anyone who can guess or already knows the
+candidate values gets the exact same hashes the table holds. `examples.py`'s own measurement
+recovers the large majority of a 5,000-entry synthetic table this way, confirming the EDPB's own
+stated mechanism rather than just restating it.
 
-## Red-team: the legal claims (steps 6–8)
+**Question 2 (step 6):** does a release with no direct identifiers, only quasi-identifiers,
+stay anonymous once joined against an outside list?
 
-**Claim — "*EDPS v SRB* means pseudonymised data is never personal data for a third party."**
-Overstated. The Court's own language is conditional: data "must not be regarded as constituting,
-in all cases and for every person, personal data" — meaning the opposite extreme (always personal
-data for everyone) is wrong, not that pseudonymised data is categorically non-personal for anyone
-without the key. The recipient's *actual* means of re-identification remain a question of fact in
-each case, which `OUTLINE.md`'s clause 2 and the reel's own step 6 both state explicitly.
+**Attack — "no names were released, so nobody can be re-identified."** The linkage-attack
+measurement directly refutes this: a real, measurable fraction of individuals get matched back
+to a name purely from the combination of quasi-identifiers (postcode, birth year, product
+category), without the key or a dictionary ever being touched. Removing direct identifiers
+reduces identifiability; it does not, by itself, produce anonymisation.
 
-**Claim — "the judgment settles this under GDPR too."** The judgment is decided under Regulation
-(EU) 2018/1725 — the EU institutions' own data-protection regulation — and its press release does
-not cite GDPR Article 4(1) anywhere in its text (confirmed by reading the full 6322-character
-release). The topic states this caveat directly rather than silently assuming the holding
-transfers, consistent with `CHAPTER.md`'s explicit instruction to check how far the Court ties its
-own reasoning to the GDPR before claiming it carries over.
+## Abandoned approaches
 
-**Claim — "the Digital Omnibus has already changed the law."** It has not: as of the EP
-Legislative Train's own 20/09/2026 update, the Council's negotiating-mandate vote was cancelled
-and the personal-data definition was left to committee negotiation — a proposal under active,
-contested negotiation, not an adopted change. The topic states the proposal's date and status and
-builds no reveal that assumes it is law.
+Measuring the linkage attack against an irregular, partially-overlapping outside list (closer to
+a real-world attacker's list) was considered, but produces a re-identification rate that depends
+heavily on the exact overlap chosen rather than illustrating the mechanism cleanly; the clean,
+fully-overlapping outside list used instead isolates the mechanism, with the generalisation
+caveat recorded explicitly in `coverage.json`'s `{"deep": "Frontier"}` item and in
+`post-notes.md`.

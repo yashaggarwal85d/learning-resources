@@ -1,0 +1,6 @@
+- **Data drift**: the input feature's own distribution moving over time.
+- **Concept drift**: the relationship between inputs and the label moving, even when the inputs look unchanged.
+- **PSI**: Population Stability Index — a binned, weighted comparison of two windows of the same feature.
+- **KS test**: Kolmogorov-Smirnov — compares two samples' full cumulative distributions directly, without binning.
+- **Jensen-Shannon divergence**: a bounded, symmetric measure of difference between two distributions.
+- **Proxy metric**: a signal watched as a stand-in for a true label that has not arrived yet.

@@ -1,0 +1,122 @@
+{
+  "topic": "de.quality-data-spc",
+  "syllabus": [
+    {
+      "clause": "inspection measurements, specification limits, control charts and Western Electric/Nelson rules, Cp/Cpk",
+      "at": [
+        { "step": "Reveal: control limits vs. specification limits" },
+        { "step": "Reveal: in control and out of spec, at once" },
+        { "step": "Reveal: the measured price, matching NIST" },
+        { "step": "Reveal: the eighth rule's own, separate cost" },
+        { "step": "Reveal: Cp and Cpk, the centring trap" }
+      ]
+    },
+    {
+      "clause": "non-conformance and CAPA records",
+      "at": [{ "step": "Reveal: non-conformances and CAPAs, keyed to context" }]
+    },
+    {
+      "clause": "why quality facts must carry the exact process context (recipe version, tool, shift) to be analyzable.",
+      "at": [
+        { "step": "Reveal: one chart, split by tool, becomes two" },
+        { "step": "Reveal: non-conformances and CAPAs, keyed to context" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "6.3.2. What are Variables Control Charts? (NIST/SEMATECH e-Handbook)",
+      "items": [
+        {
+          "item": "control limits determine statistical control; specification limits determine whether the product functions as intended",
+          "at": [{ "step": "Reveal: control limits vs. specification limits" }]
+        },
+        {
+          "item": "WECO stands for Western Electric Company Rules, and the zone/trend rule shapes",
+          "at": [{ "step": "Reveal: the measured price, matching NIST" }]
+        },
+        {
+          "item": "the false-alarm figures: every 371 points for the 3-sigma rule alone, about every 91.75 once the WECO rules are added (Champ and Woodall, 1987)",
+          "at": [{ "step": "Reveal: the measured price, matching NIST" }]
+        }
+      ]
+    },
+    {
+      "source": "6.1.6. What is Process Capability? (NIST/SEMATECH e-Handbook)",
+      "items": [
+        {
+          "item": "the Cp and Cpk formulas, and that Cpk is always at most Cp",
+          "at": [{ "step": "Reveal: Cp and Cpk, the centring trap" }]
+        }
+      ]
+    },
+    {
+      "source": "Nelson's eight rules (bibliographic fact, primary paper paywalled)",
+      "items": [
+        {
+          "item": "a named eight-rule superset of the WECO zone-and-trend tests exists, codified by Lloyd S. Nelson in 1984, cited here without a verbatim quote",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Control limits and specification limits answer two genuinely independent questions about the same number; a process can pass one and fail the other in either direction.",
+        "at": [{ "step": "Reveal: control limits vs. specification limits" }]
+      },
+      {
+        "item": "A measurement inside its own process's control band but outside the customer's spec band is not a contradiction, and not a bug in either limit — it's the two questions disagreeing, which is exactly what each is built to be able to do.",
+        "at": [{ "step": "Reveal: in control and out of spec, at once" }]
+      },
+      {
+        "item": "Every extra rule added to a chart is, mechanically, one more independent chance for ordinary noise to trip something — there is no sensitivity gain available without some matching cost in false alarms, in principle, before any simulation confirms the size of it.",
+        "at": [{ "step": "Predict: does adding more zone rules ever cost anything?" }]
+      },
+      {
+        "item": "NIST's own cited 91.75 figure is not an abstract property of 'the WECO rules' as a monolith — it is specifically what you get from combining rules 1, 2 and 3, and the number moves again the moment a fourth rule joins.",
+        "at": [{ "step": "Reveal: the measured price, matching NIST" }]
+      },
+      {
+        "item": "A commonly cited false-alarm number is only as meaningful as the exact rule set it was measured under; reusing someone else's headline figure after changing which rules are active is a silent, easy mistake.",
+        "at": [{ "step": "Reveal: the eighth rule's own, separate cost" }]
+      },
+      {
+        "item": "Cp measures whether the process's spread fits inside the tolerance at all; Cpk additionally measures whether the process is sitting where it should inside that tolerance — two processes can share the first number and differ sharply on the second.",
+        "at": [{ "step": "Reveal: Cp and Cpk, the centring trap" }]
+      },
+      {
+        "item": "A high Cp paired with a low Cpk is diagnostic, not just descriptive: it tells an engineer to go look for a centring problem (a biased setpoint, a miscalibrated gauge) rather than a variability problem (worn tooling, inconsistent material).",
+        "at": [{ "step": "Reveal: Cp and Cpk, the centring trap" }]
+      },
+      {
+        "item": "A control chart that looks unstable is sometimes measuring two stable processes layered on top of each other; the fix is a missing column in the data model (which tool, which shift), not a smarter statistical rule.",
+        "at": [{ "step": "Reveal: one chart, split by tool, becomes two" }]
+      },
+      {
+        "item": "Stratification can only happen after the fact if the attribute to stratify by was captured at the time of measurement — a quality system that records thickness without recording which tool made it has already thrown away the ability to ever find this bug.",
+        "at": [{ "step": "Reveal: one chart, split by tool, becomes two" }]
+      },
+      {
+        "item": "A non-conformance record and a CAPA record are, structurally, just more facts that reference other facts by key — the quality discipline's own vocabulary (cause, action, owner, due date, verification) maps directly onto the same keyed-reference pattern used everywhere else in this course.",
+        "at": [{ "step": "Reveal: non-conformances and CAPAs, keyed to context" }]
+      },
+      {
+        "item": "A CAPA's 'verified' flag starting false is itself a data-quality discipline: the record exists the moment the problem is found, before anyone has checked whether the fix actually worked, so the two states can never be silently conflated.",
+        "at": [{ "step": "Reveal: non-conformances and CAPAs, keyed to context" }]
+      },
+      {
+        "item": "Turning off a chart's extra rules because they 'cry wolf' changes nothing about the one remaining rule's own, independent false-alarm rate — a common but confused response to alert fatigue that treats the whole chart as one dial rather than several independent ones.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

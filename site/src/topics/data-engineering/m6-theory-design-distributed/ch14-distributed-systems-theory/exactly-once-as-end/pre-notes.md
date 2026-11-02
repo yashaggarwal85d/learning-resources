@@ -1,0 +1,8 @@
+- **Fair-loss link**: a link that may drop messages, but a message sent infinitely often eventually arrives. *Where you meet it:* the model under every retry this topic reasons about.
+- **At-least-once**: a delivery strategy that keeps retrying until it gets an acknowledgement, which can deliver a message more than once. *Where you meet it:* the best any pipeline can promise about delivery alone.
+- **At-most-once**: the choice never to retry, risking a message being lost instead of duplicated. *Where you meet it:* the other option on a lossy link, never a third way to avoid both risks.
+- **Idempotent write**: an operation whose effect is the same whether it's applied once or many times. *Where you meet it:* what turns a harmless duplicate into exactly-once, in effect.
+- **Idempotency key**: a value sent with a request so the receiver can recognize a retry as the same request, not a new one. *Where you meet it:* the single value that would have saved the shop's customer a second charge.
+- **Checkpoint**: a consistent snapshot of a streaming job's state and its position in the input, taken on an interval. *Where you meet it:* what Flink's sink pre-commits against and commits once it succeeds.
+- **Atomic commit**: a step that either fully happens or fully doesn't, with no observable state in between. *Where you meet it:* what makes "consume, produce, record the offset" one unbreakable unit.
+- **Side effect**: a change made outside the system doing the committing, such as sending an email or charging a card through another company. *Where you meet it:* the one place none of this topic's fixes can reach.

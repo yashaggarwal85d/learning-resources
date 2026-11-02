@@ -1,0 +1,6 @@
+- **Cost per freshness tier**: a priced SLO tier's own cost restated in the terms a decision-maker weighs (dollars, risk) rather than the terms that built it (compute, storage, pipelines).
+- **Dominant cost lever**: the single factor that accounts for most of a cost difference, named explicitly instead of buried in a list of equally weighted contributing factors.
+- **Bottom-line-up-front (BLUF)**: writing a document's conclusion first, so a reader who stops at the first line still gets the right answer.
+- **Executive summary vs. deep dive**: a short, conclusion-first document for a room that must decide quickly, paired with a separate, longer document for the review that checks the reasoning behind it.
+- **SLO tier**: a priced freshness or availability option a consumer can choose, introduced in this chapter's previous topic.
+- **Data contract**: the written agreement an SLO tier is one term of, introduced in this chapter's previous topic.

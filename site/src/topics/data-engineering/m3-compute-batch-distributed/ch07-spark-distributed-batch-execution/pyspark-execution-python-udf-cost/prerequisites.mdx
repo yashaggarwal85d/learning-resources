@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Tungsten and whole-stage code generation
+
+<ul class="resources">
+  <Resource kind="reel" title="Tungsten and whole-stage code generation" domain="data-engineering" host="de.tungsten-whole-stage-codegen" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="BatchEvalPythonExec.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/python/BatchEvalPythonExec.scala" by="Apache Spark source, GitHub">The pickled UDF's own execution path: every row pickled individually to cross into Python.</Resource>
+  <Resource kind="reading" title="pandas_udf (pyspark.sql.pandas.functions)" href="https://github.com/apache/spark/blob/v4.0.0/python/pyspark/sql/pandas/functions.py" by="Apache Spark source, GitHub">The Arrow-based alternative's own docstring: vectorised, batch-at-a-time transfer.</Resource>
+</ul>
+
+</section>

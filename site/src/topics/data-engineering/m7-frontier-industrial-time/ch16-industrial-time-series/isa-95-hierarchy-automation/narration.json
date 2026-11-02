@@ -1,0 +1,85 @@
+{
+  "topic": "de.isa-95-hierarchy-automation",
+  "steps": [
+    {
+      "lines": [
+        "Here's a trap worth knowing before you ever touch a line of code.",
+        "A total can pass every sanity check you'd think to run, and still be wrong, because the mistake isn't in the arithmetic at all.",
+        "It's in a question nobody asked: has every machine that fed this total actually stayed where the report assumes it was?"
+      ]
+    },
+    {
+      "lines": [
+        "A plant's systems split into five levels, and the split has nothing to do with org charts.",
+        "At the bottom sits the physical process itself, and above it the devices that sense and touch it directly.",
+        "Above that, the controllers that supervise in real time, then the systems that manage a shift's worth of operations, then business planning at the top.",
+        "What actually separates these levels is how fast each one has to react, from a fraction of a second at the bottom to weeks at the top."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real disagreement worth sitting with, not smoothing over.",
+        "The standard's own page places supervisory control and data acquisition at the manufacturing-operations level, right next to the systems that schedule production.",
+        "Plenty of practitioner diagrams draw that exact same system one level lower, next to the controllers it actually talks to.",
+        "Both can't be the one official placement, so what's left standing once you set the disagreement aside?",
+        "What's left is the idea neither side disputes: a level is a time horizon, not a specific box, and that's the part worth keeping."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Imagine the record of every machine's location is flawless: never late, never out of date, right down to the second.",
+        "Someone now asks a question not about this second, but about months ago.",
+        "Does a flawless record of the present have any business answering a question about the past?"
+      ],
+      "answer": [
+        "It doesn't, and that holds even with a table that's never a moment out of date.",
+        "A table that only remembers where a machine is right now has no way to answer where it was earlier.",
+        "Unless the lookup itself carries that earlier time into the join, the current row is simply the wrong row to ask."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how that time actually gets carried.",
+        "One physical press ends up with two separate rows in the hierarchy table.",
+        "One row for its time on the first line, one for its time on the second, each with its own window of validity and its own generated key.",
+        "The move itself isn't an edit to the old row at all. It's a brand new row, sitting right alongside it."
+      ]
+    },
+    {
+      "lines": [
+        "Time to settle it with an actual run, not just an argument.",
+        "Take one honest join that respects the reading's own moment, and one careless join that doesn't bother asking when anything happened.",
+        "Point both of them at the identical pile of readings, nothing else changed.",
+        "What comes out the other side is two different answers for the same two lines, and the gap between them is the entire cost of skipping that one question."
+      ]
+    },
+    {
+      "lines": [
+        "So what was actually doing the work in that correct join?",
+        "The machine's own identifier is identical no matter which of its two hierarchy rows you look at.",
+        "What tells the join which row answers for which reading is the generated key paired with that row's own window of validity.",
+        "The identity by itself was never going to be enough to carry that information."
+      ]
+    },
+    {
+      "lines": [
+        "Five levels split by how fast each one has to react, not by which department owns it.",
+        "A real disagreement about where supervisory control sits, settled by the one idea both sides share.",
+        "A hierarchy that writes itself a new row every time a machine moves, rather than editing the old one in place.",
+        "And a measured join bug that silently moves real output from one line to another without touching a single reading."
+      ]
+    },
+    {
+      "lines": [
+        "A new dashboard caches each machine's current line once a day, and joins every incoming reading against that cache, however old the reading is.",
+        "Is a reading from a few days back, from before today's refresh, guaranteed to land on the right line?"
+      ],
+      "answer": [
+        "It isn't, and the cache being only a day old doesn't rescue it.",
+        "The cache answers where a machine is right now, which is exactly the wrong question for a reading from before the move it just learned about.",
+        "That cache needs the same thing the join needed from the very start: the reading's own timestamp, carried into the lookup."
+      ]
+    }
+  ]
+}

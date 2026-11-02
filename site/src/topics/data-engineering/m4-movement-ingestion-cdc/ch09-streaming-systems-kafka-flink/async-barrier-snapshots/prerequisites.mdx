@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Flink runtime architecture
+
+This topic builds directly on the runtime from the previous topic: the JobManager that
+coordinates a job, the TaskManagers that run it, and the credit-based backpressure that slows a
+channel down under load — the exact mechanism an aligned checkpoint's stall interacts with. See
+[Flink runtime architecture](../flink-runtime-architecture/) first if any of that isn't familiar.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="State Management in Apache Flink" href="https://www.vldb.org/pvldb/vol10/p1718-carbone.pdf" by="Carbone et al., 2017 VLDB">The Chandy-Lamport-derived barrier/marker mechanism and alignment.</Resource>
+  <Resource kind="reading" title="Checkpointing" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/dev/datastream/fault-tolerance/checkpointing/" by="Apache Flink, 1.20 docs">Exactly-once vs at-least-once mode and incremental checkpoints.</Resource>
+  <Resource kind="reading" title="Checkpointing under backpressure" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/ops/state/checkpointing_under_backpressure/" by="Apache Flink, 1.20 docs">Aligned vs unaligned checkpoint mechanics and trade-offs.</Resource>
+  <Resource kind="reading" title="Checkpoints vs. Savepoints" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/ops/state/checkpoints_vs_savepoints/" by="Apache Flink, 1.20 docs">Ownership, ownership lifecycle, and portability differences.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: segments, and offsets as just another log
+
+This topic reuses the partition-strip model directly and treats a consumer group's offset topic
+as one more example of a compacted log, without re-teaching either. If segments or consumer-group
+offsets are unfamiliar, start with
+[Partitioned logs, segments and indexes](../partitioned-log-segments-indexes/) and
+[Consumer groups and rebalance protocols](../consumer-groups-rebalance-protocols/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache Kafka 4.4 topic configuration reference" href="https://kafka.apache.org/44/generated/topic_config.html" by="Apache Kafka docs">`cleanup.policy`'s segment-granularity delete behavior, `delete.retention.ms`, the compaction-lag configs, and the default dirty-ratio threshold this topic's predict/reveal pairs quote directly.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 design documentation: Log Compaction" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka docs">The at-least-last-value guarantee, the tombstone-visibility guarantee, and the log cleaner's order-preserving mechanism this topic's reveals and recap cite.</Resource>
+</ul>
+
+</section>

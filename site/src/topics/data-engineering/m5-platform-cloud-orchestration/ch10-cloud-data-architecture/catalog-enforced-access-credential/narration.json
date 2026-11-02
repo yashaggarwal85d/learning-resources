@@ -1,0 +1,63 @@
+{
+  "topic": "de.catalog-enforced-access-credential",
+  "steps": [
+    {
+      "lines": [
+        "Watch where the credential actually comes from, not what the engine is doing with it. Most teams only ever hand out scoped, temporary credentials through the catalog, so every mask just works, invisibly.",
+        "The moment one engine gets handed the underlying storage role directly, it stops asking the catalog anything. It was never told the mask exists, so there's nothing for it to disobey."
+      ]
+    },
+    {
+      "lines": [
+        "Before I tell you, notice what's actually constant here: the files, the table, the query. The only thing that changes between an engine that obeys the mask and one that doesn't is which door it walked through to reach the bytes."
+      ],
+      "answer": [
+        "The masked engines went through the catalog and got a credential scoped to this query. The one that skipped it is holding a bucket-wide key that predates the catalog entirely.",
+        "A policy enforced by the catalog can only bind a read that actually passes through the catalog. That's not a bug anyone can patch — it's what 'enforced by the catalog' means."
+      ]
+    },
+    {
+      "lines": [
+        "Don't memorize five product names. Memorize the shape underneath them: ask, check, hand back something scoped, never a master key. Once you can draw that from memory, every vendor's own catalog is just a relabeling exercise.",
+        "Lake Formation calls this flow by that exact phrase, which is the tell that every other vendor copied the same idea rather than inventing a competing one."
+      ]
+    },
+    {
+      "lines": [
+        "A row filter never touches the query you wrote — it rewrites what the database actually runs underneath it, silently narrowing the rows before your code ever sees them.",
+        "A column mask works one layer later: the row already came back, and the value gets swapped for nothing right before it reaches you. Building both against a real database here, not faking the output."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with: this isn't a proprietary feature bolted onto one vendor's catalog. It's written into an open specification that any catalog can implement, Iceberg's own REST protocol.",
+        "So the same credential-scoping idea you just saw inside one vendor's product also exists as a documented field any client can check for, before it ever asks for anything else."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what breaks if you grant permissions table by table instead: every new table someone creates needs a human to remember to re-grant it. Tag the table once, and a policy against that tag keeps applying, with nobody doing anything on the day the new table shows up.",
+        "That convenience cuts both ways — mistag a table, and it silently inherits every grant that tag carries."
+      ]
+    },
+    {
+      "lines": [
+        "This is the moment to trust the numbers over the argument: the same table, the same policy, two real connections. One sees two rows with salary blanked out. The other sees all four rows, salaries included, because nothing it holds was ever checked by the catalog at all."
+      ]
+    },
+    {
+      "lines": [
+        "If you remember one sentence from this: the mechanism is older than any of its five names, and expect to meet a sixth one eventually. The policy lives in the catalog, not the files — which is exactly why a credential that skips the catalog skips the policy too."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, ask yourself what the team actually changed. They removed one identity. Did they remove the thing that let any identity skip the catalog in the first place, or just the one example that happened to get noticed?"
+      ],
+      "answer": [
+        "Just the example. Nothing about deleting that account touches the actual defect, which is that some credential existed that never had to go through the catalog's check at all.",
+        "The next engineer who needs broad access for an unrelated reason can recreate the identical gap, with a different name attached to it, the very next day."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "topic": "de.real-time-olap-ingestion",
+  "steps": [
+    {
+      "lines": [
+        "Ask for a particular order's current status, and the answer comes back fully up to date.",
+        "The piece holding that order's very first value was sealed shut a while ago, untouched since.",
+        "That newer answer came from somewhere else entirely, not from touching that sealed piece at all."
+      ]
+    },
+    {
+      "lines": [
+        "One kind of destination for a stream gets read by something built for batch-style questions.",
+        "A completely different kind of destination answers a question in a tiny fraction of a second.",
+        "It does that against data that only just arrived, moments before the question was even asked."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A single incoming partition feeds this fast destination directly, nothing table-shaped sitting in between.",
+        "What actually builds the basic piece this destination queries, and whose job is building it?"
+      ],
+      "answer": [
+        "Its very own dedicated piece of the work, and here's exactly why.",
+        "Each incoming partition gets handed its own dedicated piece of work to build.",
+        "That piece builds its own queryable unit straight from that one partition alone."
+      ]
+    },
+    {
+      "lines": [
+        "Each incoming partition gets its own dedicated piece of work, handling only that partition.",
+        "That piece builds its own queryable unit straight out of that one partition alone.",
+        "That same basic building block showed up once already, right at the very start of this chapter."
+      ]
+    },
+    {
+      "lines": [
+        "A piece only ever counts as truly finished once one particular thing happens alongside it.",
+        "Exactly how far it got reading the incoming partition gets written down in that very same instant.",
+        "Both of those get written together, as one single action, or neither one gets written at all."
+      ]
+    },
+    {
+      "lines": [
+        "Write down how far a read got first, then build the piece behind it only afterward instead.",
+        "Something interrupts right between those two separate steps, right as that gap opens up.",
+        "What was written down now claims progress that the actual, finished piece behind it never backs up."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "A later update for the very same original value arrives, well after its original piece was sealed shut.",
+        "Does answering with that newer value actually require reopening that already-sealed piece at all?"
+      ],
+      "answer": [
+        "It doesn't, and here's exactly why not.",
+        "Something separate carries that newer value, checked first the moment any question comes in.",
+        "The already-sealed piece underneath it never gets reopened, let alone rewritten, at all."
+      ]
+    },
+    {
+      "lines": [
+        "A later update for a value doesn't touch the already-sealed piece holding that value's original version.",
+        "Something separate carries that update instead, checked first the moment any question comes in.",
+        "An answer comes back fully current, with the sealed piece underneath never reopened."
+      ]
+    },
+    {
+      "lines": [
+        "Run a particular connector yourself, in-process, operating every part of it on your own.",
+        "Pay a separate, fully managed service to run that exact same connector on your behalf instead.",
+        "That's the identical choice this syllabus already walked through once before, just now, in a new setting."
+      ]
+    },
+    {
+      "lines": [
+        "Three very different destinations were just walked through, one right after the other, in turn.",
+        "Every single one of them builds its own piece per partition, and commits exactly once.",
+        "What actually differs between them is far narrower than it first seemed going in."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "Separate partitions that really did build their own pieces, each one fully on its own.",
+        "A commit that really did stay in step, right where a careless version genuinely fell out of it."
+      ]
+    },
+    {
+      "lines": [
+        "So: that same basic building block, again, from right at the very start of this chapter.",
+        "Committing exactly once, again. Answering with a newer value, again, without reopening anything sealed.",
+        "Every idea here was already earned earlier. One whole, sprawling question is now fully closed out."
+      ]
+    }
+  ]
+}

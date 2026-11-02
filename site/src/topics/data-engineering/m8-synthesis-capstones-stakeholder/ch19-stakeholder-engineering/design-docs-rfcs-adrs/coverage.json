@@ -1,0 +1,74 @@
+{
+  "topic": "de.design-docs-rfcs-adrs",
+  "syllabus": [
+    {
+      "clause": "design-doc structure (context, goals/non-goals, alternatives, estimates, risks)",
+      "at": [
+        { "step": "Reveal: the design doc's five sections" },
+        { "step": "Reveal: a non-goal is not a negated goal" }
+      ]
+    },
+    {
+      "clause": "cross-team RFC review",
+      "at": [
+        { "step": "Reveal: what cross-team RFC review adds" }
+      ]
+    },
+    {
+      "clause": "Nygard-style ADRs (context, decision, status, consequences)",
+      "at": [
+        { "step": "Reveal: the Nygard-style ADR" }
+      ]
+    },
+    {
+      "clause": "stored with the code, with superseded decisions marked rather than deleted (§18.2 rubric point 1)",
+      "at": [
+        { "step": "Reveal: superseded, not deleted" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Michael Nygard — \"Documenting Architecture Decisions\" (2011)",
+      "items": [
+        { "item": "an ADR uses a few parts (context, decision, status, consequences) so each document is easy to digest", "at": [{ "step": "Reveal: the Nygard-style ADR" }] },
+        { "item": "a reversed decision is marked deprecated or superseded, with a reference to its replacement, rather than removed", "at": [{ "step": "Reveal: superseded, not deleted" }] }
+      ]
+    },
+    {
+      "source": "Malte Ubl — \"Design Docs at Google\"",
+      "items": [
+        { "item": "a design doc's sections include context and scope, goals and non-goals, the design, and alternatives considered", "at": [{ "step": "Reveal: the design doc's five sections" }] },
+        { "item": "a non-goal is not a negated goal, but something that could reasonably be a goal and is deliberately chosen not to be one", "at": [{ "step": "Reveal: a non-goal is not a negated goal" }] }
+      ]
+    },
+    {
+      "source": "rust-lang/rfcs — README",
+      "items": [
+        { "item": "the RFC process exists so all stakeholders can be confident about the direction of the project", "at": [{ "step": "Reveal: what cross-team RFC review adds" }] },
+        { "item": "all members of the relevant subteam must sign off before the final comment period starts, which itself lasts ten calendar days", "at": [{ "step": "Reveal: what cross-team RFC review adds" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately frames the missing document, not the decision itself, as the actual failure, so the lesson is that the medium tier may have been entirely correct and the problem is purely that nothing written down says why.", "at": [{ "step": "Hook" }] },
+      { "item": "The design doc's estimates and risks sections are explicit, in FACT-CHECK.md's own red team, as this course's own addition beyond the cited source's own named sections, so a viewer does not come away believing Google's own practice names those two sections by those words.", "at": [{ "step": "Reveal: the design doc's five sections" }] },
+      { "item": "The non-goal example (ACID compliance) is reproduced directly from the cited source's own illustration rather than invented for this chapter's fictional dashboard system, which has no database-consistency requirement of its own under discussion.", "at": [{ "step": "Reveal: a non-goal is not a negated goal" }] },
+      { "item": "The Rust RFC process is cited specifically for the general mechanism (a time-boxed, advertised review every relevant team signs off on), not for Rust's own specific sub-team organization, which this topic's own worked example does not reproduce.", "at": [{ "step": "Reveal: what cross-team RFC review adds" }] },
+      { "item": "The worked ADR is written in the source's own stated style, as a conversation with a future developer, in active voice (\"We will...\"), not as a bureaucratic form filled with passive-voice justifications.", "at": [{ "step": "Reveal: the Nygard-style ADR" }] },
+      { "item": "The superseded demonstration in examples.py checks mechanically (the old ADR's own status string, not just its continued presence in a list) that the convention is followed, rather than merely asserting the old record wasn't deleted.", "at": [{ "step": "Reveal: superseded, not deleted" }] },
+      { "item": "The Prove It step's wrong answer (deleting a superseded ADR because the old decision is now wrong) is designed to be plausible precisely because the old decision really was superseded, so the failure is specifically about losing the record that the trade-off was considered, not about the decision's own correctness.", "at": [{ "step": "Prove it" }] },
+      { "item": "The topic's own four introduced ids (design-doc-structure, cross-team-rfc-review, adr-context-decision-consequences, superseded-decision-marking) are each given their own dedicated reveal step, and its own uses (slo-tiering, cost-per-freshness-tier, dominant-cost-lever) are all drawn from topics 1-2, consistent with being the chapter's third topic.", "at": [{ "deep": "Internals" }] },
+      { "item": "examples.py computes its own check results (missing-section lists, the old ADR's post-supersede status string) from the model's own logic rather than hardcoding a pass, so the assertions actually test that the design doc and ADR objects meet their own stated structural requirements.", "at": [{ "deep": "Lab" }] },
+      { "item": "The topic's own 'Leaves out' line states plainly that stakeholder mapping and team topology are assumed to have already happened before the RFC review this topic describes, so a viewer does not come away believing this topic covers who decides to be in the room.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

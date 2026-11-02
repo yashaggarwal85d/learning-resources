@@ -1,0 +1,54 @@
+{
+  "topic": "de.clickstream-ad-click-analytics",
+  "syllabus": [
+    {
+      "clause": "client SDK → collector → log → lake → warehouse → dashboards",
+      "at": [{ "step": "Reveal: the pipeline strip and its alternatives" }]
+    },
+    {
+      "clause": "sessionization, bot filtering, late events",
+      "at": [{ "step": "Reveal: a session is a gap, not a clock" }, { "step": "Reveal: the correction window and the late-event sliver" }]
+    },
+    {
+      "clause": "exactly-once-effect streaming aggregation with a batch reconciliation path for billing-grade counts",
+      "at": [{ "step": "Reveal: the stream is for speed, the batch is for record" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Flink documentation — \"Windows\" (DataStream API)",
+      "items": [
+        { "item": "A session window closes on a gap of inactivity, not a fixed clock boundary.", "at": [{ "step": "Reveal: a session is a gap, not a clock" }] },
+        { "item": "A late event is dropped once the watermark has passed the window's end, unless the design states an explicit allowed lateness.", "at": [{ "step": "Reveal: the correction window and the late-event sliver" }] }
+      ]
+    },
+    {
+      "source": "Jay Kreps — \"Questioning the Lambda Architecture\" (O'Reilly Radar, 2014)",
+      "items": [
+        { "item": "Maintaining the same transformation in two complex distributed systems carries a real, unfixable maintenance cost.", "at": [{ "step": "Reveal: two paths cost something — dual-logic drift" }] },
+        { "item": "A streaming path's weaker guarantee is a property of today's tooling, not a law of streaming itself.", "at": [{ "step": "Reveal: the stream is for speed, the batch is for record" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The stream is for speed; the reconciled batch is the number of record.", "at": [{ "step": "Reveal: the stream is for speed, the batch is for record" }] },
+      { "item": "A session is defined by a gap in activity, not by a fixed clock window.", "at": [{ "step": "Reveal: a session is a gap, not a clock" }] },
+      { "item": "Running two logic paths costs drift, budgeted for, never fully eliminated.", "at": [{ "step": "Reveal: two paths cost something — dual-logic drift" }] },
+      { "item": "A duplicate pushes a count up, never down, so it can't explain a streaming count that comes out smaller than the batch recount.", "at": [{ "step": "Predict: which cause explains the gap, and which side is right?" }] },
+      { "item": "A count disagreeing is a symptom, not a diagnosis — the same symptom traced to a late-event sliver once and a retry-storm timing collision the next.", "at": [{ "step": "Prove it: a second dispute, a different cause" }] },
+      { "item": "Each hop of the pipeline strip carries its own three-alternative decision card, reusing this chapter's own decision-card method.", "at": [{ "step": "Reveal: the pipeline strip and its alternatives" }] },
+      { "item": "This topic leaves out the named mechanisms (Kafka, Flink, Spark streaming, sessionisation SQL, bot-detection models, the table format) as choices pointing to their home chapters, and the Lambda-versus-Kappa debate as such, left to topic 17.", "at": [{ "deep": "Internals" }] },
+      { "item": "Streaming-plus-batch reconciliation is established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its first worked design; the next design is the warehouse that holds mutable business entities like orders.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The estimate sheet and the failure table are computed from the shop's own stated constants, not asserted from memory.", "at": [{ "step": "Reveal: the estimate, the cost lever, and the failure table" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

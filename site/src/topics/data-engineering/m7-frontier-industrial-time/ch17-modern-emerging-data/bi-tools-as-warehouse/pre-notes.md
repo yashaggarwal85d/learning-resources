@@ -1,0 +1,5 @@
+- **Modeling layer**: a layer with its own language for defining metrics and relationships, compiled into SQL for whichever tool asks.
+- **Extract (import)**: a BI tool's own full copy of the data, kept fast by querying that copy instead of the warehouse.
+- **Live query**: a BI tool querying the warehouse directly on every interaction, trading warehouse load for perfect freshness.
+- **Transcoding**: Direct Lake's own term for loading a Delta table's columns into memory on demand, the first time each is queried.
+- **Headless BI**: any BI tool reading the same compiled metric definition, instead of each tool recomputing its own version.

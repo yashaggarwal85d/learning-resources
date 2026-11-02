@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: §7.1's own stage-boundary topic
+
+<ul class="resources">
+  <Resource kind="reel" title="DAG scheduling and stage boundaries" domain="data-engineering" host="de.dag-scheduling-stage-boundaries" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="RDD Programming Guide — Shuffle operations" href="https://spark.apache.org/docs/latest/rdd-programming-guide.html#shuffle-operations" by="Apache Spark documentation">Map-side buffering and sorting into one file; reduce-side reads of the relevant sorted blocks.</Resource>
+  <Resource kind="reading" title="IndexShuffleBlockResolver.scala" href="https://raw.githubusercontent.com/apache/spark/v4.0.0/core/src/main/scala/org/apache/spark/shuffle/IndexShuffleBlockResolver.scala" by="Apache Spark project, GitHub, tag v4.0.0">The exact one-data-file, one-index-file-per-map-task convention, quoted directly from source.</Resource>
+</ul>
+
+</section>

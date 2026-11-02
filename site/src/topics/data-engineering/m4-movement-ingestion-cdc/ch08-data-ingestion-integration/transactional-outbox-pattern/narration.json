@@ -1,0 +1,83 @@
+{
+  "topic": "de.transactional-outbox-pattern",
+  "steps": [
+    {
+      "lines": [
+        "An order service finishes committing its own order to its own database, right before it was supposed to tell anyone else about it.",
+        "The step that was supposed to announce the order never actually runs, because the service crashes at exactly that moment.",
+        "The warehouse never learns the order exists at all, and the only place that order lives from now on is inside that one database."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what actually happened to that order, think through this with me.",
+        "Committing the order succeeded completely. The separate step meant to tell anyone else about it never got the chance to run at all.",
+        "Is that missing announcement something the system can still recover somehow, or is it simply gone for good?"
+      ],
+      "answer": [
+        "The database only ever recorded that an order exists. It never recorded that telling anyone else about it was still owed.",
+        "It's gone completely, because nothing anywhere ever wrote down that a second step was supposed to follow the first one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fix underneath everything this lesson is actually about.",
+        "Instead of announcing a change as a separate step afterward, a service writes that announcement into its own database, in the exact same transaction as the change itself.",
+        "From that point forward, something reading the database's own log, not the application, is the one responsible for actually sending that announcement onward."
+      ]
+    },
+    {
+      "lines": [
+        "I confirmed both halves of that directly, against this sandbox's own real database.",
+        "Committing an order and then crashing before a separate announcement step left nothing at all behind for a decoding read to find.",
+        "Writing that same announcement into the database as part of the order's own transaction meant a decoding read could always find it, every single time, because the two writes were never actually separate."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what the piece that reads this announcement table actually does with each row.",
+        "It names a destination for each row based on what kind of aggregate the row is about, and it treats that row's own unique identifier as a way for a downstream reader to avoid double-counting it.",
+        "If somebody later deletes a row from this same announcement table, that deletion itself never gets forwarded as a fake announcement."
+      ]
+    },
+    {
+      "lines": [
+        "I measured that routing and that deduplication directly, against two real rows decoded from this sandbox's own database.",
+        "One row, about an order, landed at one destination, while a second row, about a shipment, landed at a completely different one.",
+        "Each of those two rows still carried its own unique identifier along with it, ready for whatever reads it downstream to use for deduplication."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's something worth confirming about order, since several aggregates can share the same announcement table at once.",
+        "I wrote four rows for two completely different aggregates, deliberately interleaving them rather than writing each aggregate's own rows together.",
+        "Once I separated them back out by which aggregate each row actually belonged to, each one's own sequence came out in exactly the order it was actually written."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part of today's lesson that decides whether a routine bit of table maintenance is ever actually dangerous.",
+        "I let the decoding read capture a row first, and only afterward did I delete that same row from the announcement table.",
+        "That later deletion produced no announcement at all, confirming that maintenance is both invisible downstream and already safe once a row has already been captured."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put together everything today's lesson actually showed, because four separate pieces all lean on one idea.",
+        "Writing an announcement as part of the original transaction, rather than as a separate step, turns a risky second act into a single guaranteed one.",
+        "Routing, deduplication and staying correctly ordered are each a direct consequence of that one same guarantee, and routine table maintenance only stays safe because of exactly that same guarantee too."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, because a team might assume filtering out stray deletions covers every risk by itself.",
+        "Say a team deletes old rows from this announcement table the moment they're written, without ever confirming a decoding read already captured them.",
+        "Is that kind of immediate table maintenance still safe to run?"
+      ],
+      "answer": [
+        "Filtering a deletion out only stops that deletion itself from being forwarded as a fake announcement to begin with.",
+        "It does nothing at all to protect a row that gets removed before a decoding read ever got the chance to see the insert that actually mattered."
+      ]
+    }
+  ]
+}

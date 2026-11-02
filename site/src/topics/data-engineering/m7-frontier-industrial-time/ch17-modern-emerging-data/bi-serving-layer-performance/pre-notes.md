@@ -1,0 +1,6 @@
+- **Rollup table**: an aggregation computed once, on a schedule, so dashboards query a small result instead of the large source.
+- **Materialized view**: a stored, precomputed query result, kept up to date rather than recomputed on every read.
+- **Cache invalidation**: deciding when a cached result stops being trustworthy and must be recomputed.
+- **Reservation**: a fixed allocation of capacity (memory, compute) a warehouse or acceleration engine reserves for a workload.
+- **Concurrency limit**: the fixed number of queries a reservation can run at once before the rest must queue.
+- **Queueing**: waiting for a slot to free up, as opposed to running slowly.

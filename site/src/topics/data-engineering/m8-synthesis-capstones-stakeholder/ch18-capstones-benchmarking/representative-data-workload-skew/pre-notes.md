@@ -1,0 +1,6 @@
+- **Zipfian distribution**: a power-law shape where a small number of items are dramatically more popular than the rest, the pattern YCSB's own standard workloads use for key popularity.
+- **Hot key**: a single key (here, one customer id) that receives a hugely disproportionate share of all requests.
+- **Cardinality estimate**: a query planner's own guess at how many rows a condition will match, used to choose a query plan.
+- **Column correlation**: when one column's value is predictable from another's, breaking a planner's assumption that columns vary independently.
+- **Scale factor**: a stated multiple used to declare a benchmark dataset's own size explicitly, following the convention industry benchmark standards (such as TPC-H) use.
+- **Seeded generator**: a data-generating function that, given the same seed, reproduces byte-identical output on every run.

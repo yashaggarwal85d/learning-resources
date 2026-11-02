@@ -1,0 +1,67 @@
+{
+  "topic": "de.rocksdb-state-store-checkpointing",
+  "steps": [
+    {
+      "lines": [
+        "That correctness guarantee from last time leans on one thing surviving a restart: the place that actually holds a running total between triggers.",
+        "Here's what that place is, and when the obvious choice for it stops being enough."
+      ]
+    },
+    {
+      "lines": [
+        "By default, that place is a plain object, sitting in the same memory the rest of the program uses.",
+        "One object per key being tracked. A handful of keys, nothing to notice. Millions of keys, millions of those objects, all living in the one spot the garbage collector has to walk."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the answer comes.",
+        "Grow that key count toward a million, still on the default place. Does the time spent collecting garbage stay flat, or does it climb along with the key count?"
+      ],
+      "answer": "It climbs. More live objects for the collector to walk, every single pass."
+    },
+    {
+      "lines": [
+        "Climbs, and measured directly.",
+        "The default place pays real, climbing collection time as the key count grows. Hand the identical workload to the other option, and that cost barely moves."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why one option stays flat where the other doesn't.",
+        "It keeps those millions of entries somewhere else entirely -- not program memory, but space the collector was never built to look at in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of question.",
+        "Every time progress gets saved, does the whole running state get written out again from scratch, or is there a cheaper way that writes less than everything?"
+      ],
+      "answer": "There's a cheaper way. Only what changed gets written, not the whole thing again."
+    },
+    {
+      "lines": [
+        "There's a cheaper way, and it's measured, not assumed.",
+        "Turn that option on, and the amount written per save collapses -- same workload, same data, a fraction of the bytes."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that doesn't go away.",
+        "The expensive full write still happens eventually, in the background. The cheaper option only puts it off -- it never skips it for good."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a fact worth sitting with on the way out.",
+        "Every single example run in this entire chapter stayed nowhere near the point where any of this actually mattered."
+      ]
+    },
+    {
+      "lines": [
+        "Two ways of holding the same running state, and one real question between them.",
+        "Does a growing key count ever become the collector's own problem, or does it never reach that far at all?"
+      ]
+    }
+  ]
+}

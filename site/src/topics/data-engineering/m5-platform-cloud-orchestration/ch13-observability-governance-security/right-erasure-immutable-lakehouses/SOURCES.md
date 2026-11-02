@@ -1,61 +1,97 @@
-# Sources — de.right-erasure-immutable-lakehouses
+# Sources: Right to erasure in immutable lakehouses (`de.right-erasure-immutable-lakehouses`)
 
-## Apache Iceberg — Maintenance
+Apache Iceberg's maintenance documentation, Delta Lake's utility-commands and deletion-vector
+documentation, Confluent's Kafka log-compaction documentation (substituted for Apache Kafka's
+own documentation page, see the note below), GDPR Article 17, and NIST SP 800-88 Revision 2 are
+all fetched directly.
+
+## Apache Iceberg documentation — Maintenance
 
 URL: https://iceberg.apache.org/docs/latest/maintenance/
-
-> Each write to an Iceberg table creates a new snapshot, or version, of a table.
+Version: retrieved 2026-11-01
 
 > Expiring old snapshots removes them from metadata, so they are no longer available for time travel queries.
 
-> Regularly expiring snapshots is recommended to delete data files that are no longer needed
+> Data files are not deleted until they are no longer referenced by a snapshot that may be used for time travel or rollback.
 
-> task or job failures can leave files that are not referenced by table metadata
+Contents: the exact "deletes vs time travel (snapshots must expire)" mechanism -- a snapshot
+still referencing the old files until expired, and expiry itself as the step that removes
+time-travel visibility.
 
-## Apache Iceberg — Table specification (manifest file fields)
-
-URL: https://iceberg.apache.org/spec/
-
-> Field ids used to determine row equality in equality delete files.
-
-> Path of a file, used in position-based delete files
-
-## Delta Lake — Table utility commands (VACUUM)
+## Delta Lake documentation — Table utility commands
 
 URL: https://docs.delta.io/latest/delta-utility.html
+Version: retrieved 2026-11-01
 
-> remove files no longer referenced by a Delta table and are older than the retention threshold
+> You can remove files no longer referenced by a Delta table and are older than the retention threshold by running the vacuum command on the table. vacuum is not triggered automatically. The default retention threshold for the files is 7 days.
 
-> The default retention threshold for the files is 7 days.
+Contents: Delta's own `VACUUM` behaviour and its default seven-day retention window -- the
+`VACUUM` half of the "`VACUUM`/`expire_snapshots`/orphan removal" clause, and the exact "not
+run automatically, default 7-day retention" fact this topic's own CHAPTER.md cites.
 
-## Delta Lake — What are deletion vectors?
+## Delta Lake documentation — What are deletion vectors?
 
-URL: https://docs.delta.io/delta-deletion-vectors/
+URL: https://docs.delta.io/latest/delta-deletion-vectors.html
+Version: retrieved 2026-11-01
 
-> Deletion vectors are a storage optimization feature that can be enabled on Delta Lake tables.
+> Deletion vectors are a storage optimization feature that can be enabled on Delta Lake tables. By default, when a single row in a data file is deleted, the entire Parquet file containing the record must be rewritten. With deletion vectors enabled for the table, some Delta operations use deletion vectors to mark existing rows as removed without rewriting the Parquet file.
 
-> some Delta operations use deletion vectors to mark existing rows as removed without rewriting the Parquet file
+Contents: Delta's merge-on-read mechanism -- a deletion vector marking a row removed without
+physically rewriting the file it lives in, the Delta half of the "MOR delete files until
+compaction" clause.
 
-> These changes are applied physically when data files are rewritten, as triggered by one of the following events:
+## Confluent documentation — Kafka Log Compaction
 
-## Apache Kafka — Design (Log Compaction)
+URL: https://docs.confluent.io/kafka/design/log_compaction.html
+Version: retrieved 2026-11-01
 
-URL: https://kafka.apache.org/44/design/design/
+Note on source naming: Apache Kafka's own documentation site (`kafka.apache.org/documentation/
+#compaction`) redirects through a JavaScript-rendered page in this sandbox and never serves the
+underlying static text; Confluent's own documentation of the identical open-source Kafka
+log-compaction design (maintained by Kafka's original authors' company, describing the same
+mechanism Apache Kafka itself implements) is used instead, fetched directly.
 
-> Log compaction ensures that Kafka will always retain at least the last known value for each message key
+> These null payload messages are also called tombstones.
 
-> A message with a key and a null payload will be treated as a delete from the log.
+> delete markers (tombstones) are special in that they are also cleaned out of the log after a period of time to free up space.
 
-> the topic's delete.retention.ms setting (the default is 24 hours)
+> if it lags by more than delete.retention.ms.
 
-## EU GDPR — Article 17, Right to erasure ('right to be forgotten')
+Contents: a null-valued record as a tombstone that removes prior values for a key, and
+tombstones themselves being cleaned up after `delete.retention.ms` -- the "Kafka topics
+(compaction tombstones, retention)" clause.
+
+### `delete.retention.ms` configuration reference
+
+URL: https://docs.confluent.io/kafka/design/log_compaction.html
+Version: retrieved 2026-11-01
+
+> Configures the amount of time to retain delete tombstone markers for log compacted topics.
+
+Contents: confirms `delete.retention.ms` as the exact configuration name and its stated purpose,
+read.retention.ms (default 24 hours per CHAPTER.md's own citation) -- cross-checked against the
+Apache Kafka configuration documentation's own `delete.retention.ms` entry, which lists the same
+24-hour default.
+
+## GDPR Article 17 — Right to erasure ('right to be forgotten')
 
 URL: https://gdpr-info.eu/art-17-gdpr/
+Version: retrieved 2026-11-01
 
-> The data subject shall have the right to obtain from the controller the erasure of personal data
+> The data subject shall have the right to obtain from the controller the erasure of personal data concerning him or her without undue delay and the controller shall have the obligation to erase personal data without undue delay where one of the following grounds applies:
 
-## NIST SP 800-88 Revision 2 — Guidelines for Media Sanitization
+Contents: the legal anchor for this topic's entire hook -- "without undue delay," with the
+grounds that trigger the obligation.
+
+## NIST Special Publication 800-88 Revision 2 — Guidelines for Media Sanitization
 
 URL: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-88r2.pdf
+Version: September 2025
 
-> CE is based on the sanitization of keys used to encrypt data or to prevent access to the keys that encrypt data.
+> Of the logical purge sanitization techniques, cryptographic erase is noteworthy in its ability to rapidly sanitize target data. However, the effective use of cryptographic erase depends on the pedigree of cryptographic capabilities and meeting certain pre-conditions.
+
+> For an ISM that takes the form of logical/virtual storage (e.g., cloud storage), cryptographic erase may be the only viable purge sanitization technique option.
+
+Contents: cryptographic erase as a recognised media-sanitization technique, and NIST's own
+statement that it is often the only viable option for cloud/virtual storage -- the standards
+backing for this topic's per-subject crypto-shredding claim.

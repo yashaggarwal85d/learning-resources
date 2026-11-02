@@ -1,0 +1,66 @@
+{
+  "topic": "de.blameless-postmortems-incident-communication",
+  "syllabus": [
+    {
+      "clause": "timeline",
+      "at": [
+        { "step": "Reveal: the timeline" }
+      ]
+    },
+    {
+      "clause": "impact quantified in data terms (stale or wrong rows, affected consumers and decisions)",
+      "at": [
+        { "step": "Reveal: impact in data terms" }
+      ]
+    },
+    {
+      "clause": "contributing factors rather than blame, tracked action items",
+      "at": [
+        { "step": "Reveal: contributing factors, not blame" },
+        { "step": "Reveal: tracked, owned action items" }
+      ]
+    },
+    {
+      "clause": "stakeholder updates during a data incident (incident command in §11.3)",
+      "at": [
+        { "step": "Reveal: the live update isn't the post-mortem" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Daniel Schauenberg — \"Practical Postmortems at Etsy\" (InfoQ)",
+      "items": [
+        { "item": "the process focuses on the conditions and context that influenced decisions and actions, not on the action itself as the apparent cause", "at": [{ "step": "Reveal: contributing factors, not blame" }] }
+      ]
+    },
+    {
+      "source": "Google — Site Reliability Engineering (the SRE book), \"Postmortem Culture\"",
+      "items": [
+        { "item": "writing a postmortem is a learning opportunity, not punishment", "at": [{ "step": "Reveal: contributing factors, not blame" }] },
+        { "item": "a blameless postmortem identifies contributing causes without indicting any individual or team, assuming everyone involved had good intentions", "at": [{ "step": "Reveal: contributing factors, not blame" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately holds the incident itself identical across both companies, so the lesson is specifically that naming a person versus naming conditions is what determined whether the fix held, not that one company was more careful or skilled.", "at": [{ "step": "Hook" }] },
+      { "item": "The impact figure (stale rows, affected plant decisions) is computed directly from the incident's own stated parameters in examples.py rather than asserted, and is explicit that it is a simulated incident for this chapter's own fictional scenario, not real data.", "at": [{ "step": "Reveal: impact in data terms" }] },
+      { "item": "The originating-source substitution (InfoQ's account of Etsy's own process in place of the original Code as Craft post, blocked in this sandbox) is documented plainly in FACT-CHECK.md's own Problem Solving section, with the substitute confirmed to be a real Etsy engineer's own documented account of the same practice.", "at": [{ "step": "Reveal: contributing factors, not blame" }] },
+      { "item": "The check_blameless function's own two-factor-minimum rule is explicit, in FACT-CHECK.md's own red team, as this chapter's own teaching heuristic rather than a universal law asserted to hold for every real incident.", "at": [{ "step": "Reveal: tracked, owned action items" }] },
+      { "item": "The topic's own 'Leaves out' line and this clause's own Internals coverage state plainly that incident-command staffing itself (Chapter 11's material) is named but not taught here, so a viewer does not come away believing this topic covers who runs a live incident bridge.", "at": [{ "step": "Reveal: the live update isn't the post-mortem" }] },
+      { "item": "The Prove It step's wrong post-mortem (one factor, a named person, a retrain action item) is designed to be plausible precisely because the stated fact (a bad config was deployed) is true, so the failure is specifically about stopping the investigation there, not about the fact itself being wrong.", "at": [{ "step": "Prove it" }] },
+      { "item": "examples.py's BLAMING_POSTMORTEM is checked to fail check_blameless on multiple independent grounds (factor count, a person-naming factor, a person-targeted action item) rather than on just one, so the demonstration shows the convention catching more than a single narrow pattern.", "at": [{ "deep": "Lab" }] },
+      { "item": "This topic's own four introduced ids (blameless-postmortem-structure, impact-in-data-terms, contributing-factor-vs-blame, incident-communication-cadence) are each given their own dedicated reveal step, and its own uses (data-contract, error-budget-ownership, slo-tiering) are all drawn from topic 1, specifically the tier that breaches.", "at": [{ "deep": "Internals" }] },
+      { "item": "The action-item owners reused in examples.py (platform on-call engineer, data platform team) are the same role names topic 1's own examples.py already established for this fictional shop, kept consistent across the chapter rather than invented anew for this topic.", "at": [{ "deep": "Lab" }] },
+      { "item": "The handoff states plainly that this closes the course's own technical arc, naming every prior milestone's own subject (schema, query, model, pipeline, benchmark, contract, trade-off, decision, incident) rather than treating this topic as a stand-alone closer disconnected from what came before it.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

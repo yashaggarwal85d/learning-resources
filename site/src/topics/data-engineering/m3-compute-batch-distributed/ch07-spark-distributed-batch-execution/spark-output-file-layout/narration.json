@@ -1,0 +1,73 @@
+{
+  "topic": "de.spark-output-file-layout",
+  "steps": [
+    {
+      "lines": [
+        "Take the exact same table, written out to the exact same place, split by the exact same column.",
+        "Change nothing else at all except how many parallel workers did the writing.",
+        "The question worth sitting with is how many separate pieces land on disk at the end."
+      ]
+    },
+    {
+      "lines": [
+        "Run that write at a few different worker counts and watch what happens to the piece count each time.",
+        "It scales in perfect lockstep: double the workers, and the piece count doubles right along with it.",
+        "The rule underneath it is plain: the number of pieces written is however many workers ran, multiplied by however many distinct values of that column each one touched."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose the real complaint isn't too many pieces, but pieces that are each too large on their own.",
+        "Is there a way to put a ceiling directly on one piece's own size, without touching how many workers did the writing at all?"
+      ],
+      "answer": "There is. A write-time setting lets you cap how many rows go into any single piece, completely separately from the worker count."
+    },
+    {
+      "lines": [
+        "Turn that cap on, leave the worker count exactly where it was, and run the same write again.",
+        "The piece count jumps up on its own, with no change to parallelism behind it at all.",
+        "Read every single piece back afterward, and not one of them ever goes over the ceiling that was set."
+      ]
+    },
+    {
+      "lines": [
+        "Sit with what actually happened there for a moment.",
+        "The job still ran with exactly the same number of workers as before; nothing about how the work got divided up changed.",
+        "The cap only steps in afterward, deciding how many separate pieces one worker's own share gets split across on its way to disk."
+      ]
+    },
+    {
+      "lines": [
+        "Now flip to the opposite complaint: a write that produced far too many small pieces, and a hint that promises to fix it.",
+        "Leave the engine's own runtime re-optimization turned off, and apply that hint anyway."
+      ],
+      "answer": "Nothing changes. That hint only means something once the engine's runtime re-optimization is actually switched on to carry it out."
+    },
+    {
+      "lines": [
+        "Measure it directly: the piece count comes out identical whether the hint is present or missing entirely.",
+        "Without that runtime machinery switched on, the hint has nowhere to act and simply gets ignored."
+      ]
+    },
+    {
+      "lines": [
+        "Switch that runtime re-optimization on, and the exact same hint suddenly has real teeth.",
+        "On its own, it folds the write's workers down to a far smaller number before anything ever touches disk.",
+        "Name the split column inside the hint itself, and it goes one step further, landing on exactly one piece for every distinct value of that column."
+      ]
+    },
+    {
+      "lines": [
+        "Line all three versions of the same write up side by side.",
+        "No hint at all gives the largest piece count. The plain hint, with the right engine setting on, cuts it down sharply. Naming the column inside the hint cuts it down again, further still.",
+        "Same table, same job, same data — three very different outcomes, decided entirely by a hint and one switch."
+      ]
+    },
+    {
+      "lines": [
+        "So the piece count a write produces isn't arbitrary: by default, it's simply however many workers ran, multiplied by however many distinct values of the split column got touched.",
+        "Two separate levers exist to override that default on purpose: one caps a single piece's own size and never touches the worker count at all, and the other reshapes the worker count itself, but only once the engine's runtime re-optimization is there to carry it out."
+      ]
+    }
+  ]
+}

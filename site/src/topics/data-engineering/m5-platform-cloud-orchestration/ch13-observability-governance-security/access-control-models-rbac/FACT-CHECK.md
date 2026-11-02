@@ -2,52 +2,43 @@
 
 | # | Claim | Source | Status |
 |---|---|---|---|
-| 1 | NIST's RBAC standard defines its reference model over users, roles, permissions, operations and objects. | NIST, INCITS 359-2012 (RBAC project page) | Confirmed, quoted verbatim. |
-| 2 | NIST SP 800-162: ABAC authorizes operations by evaluating attributes of the subject, object, operation and environment against policy. | NIST SP 800-162 | Confirmed, quoted verbatim. |
-| 3 | OPA's own stated purpose: decoupling policy from the service it governs. | OPA Philosophy docs | Confirmed, quoted verbatim. |
-| 4 | OPA: services offload policy decisions to OPA by executing queries — the decision-point call. | OPA Philosophy docs | Confirmed, quoted verbatim. |
-| 5 | Cedar: policies describe which principals may perform which actions on which resources, in context. | Cedar Policy Language, Terms & concepts | Confirmed, quoted verbatim. |
-| 6 | Cedar supports ABAC using attributes attached to the principal and resource. | Cedar Policy Language, Terms & concepts | Confirmed, quoted verbatim. |
-| 7 | Trino's OPA integration retrieves row-filter definitions from a configured OPA endpoint. | Trino OPA access control docs | Confirmed, quoted verbatim. |
-| 8 | Unity Catalog's ABAC determines access by evaluating attributes represented through governed tags. | Databricks Unity Catalog ABAC docs | Confirmed, quoted verbatim. |
-| 9 | OIDC: a simple identity layer on top of OAuth 2.0, verifying end-user authentication. | OpenID Connect Core 1.0 | Confirmed, quoted verbatim. |
-| 10 | SCIM (RFC 7644): an HTTP protocol for provisioning identity data in enterprise-to-cloud, cross-domain scenarios. | RFC 7644 | Confirmed, quoted verbatim. |
-| 11 | SAML 2.0: XML-encoded assertions about authentication, attributes and authorization, and the protocols carrying them. | OASIS SAML Core 2.0 | Confirmed, quoted verbatim. |
+| 1 | RBAC manages security at the level of roles: each user is assigned one or more roles, each role is assigned privileges. | NIST, Role Based Access Control project page | Confirmed, quoted verbatim. |
+| 2 | ABAC authorization is determined by evaluating attributes of the subject, object, requested operations, and environment conditions against policy. | NIST SP 800-162 | Confirmed, quoted verbatim. |
+| 3 | OPA decouples policy decision-making from policy enforcement; software queries OPA with structured data to get a decision. | Open Policy Agent documentation | Confirmed, quoted verbatim. |
+| 4 | Cedar policies describe which principals may perform which actions on which resources, supporting both RBAC (via groups/roles) and ABAC (via attributes). | Cedar Policy Language Reference Guide | Confirmed, quoted verbatim. |
+| 5 | Trino's OPA integration supports row filtering (removing rows) and column masking (obscuring column data), both fetched from OPA as policy responses. | Trino documentation | Confirmed, quoted verbatim. |
+| 6 | Unity Catalog ABAC determines access by evaluating attributes represented through governed tags. | Databricks documentation | Confirmed, quoted verbatim. |
+| 7 | OIDC is a simple identity layer on top of OAuth 2.0 that lets a client verify a user's identity based on authentication by an authorization server. | OpenID Connect Core 1.0 | Confirmed, quoted verbatim. |
+| 8 | SCIM is an application-level HTTP-based protocol for provisioning and managing identity data across domains such as enterprise-to-cloud providers. | RFC 7644 | Confirmed, quoted verbatim. |
+| 9 | 14 teams x 60 datasets x 3 environments, one role per combination, is 2,520 roles. | This course's own measurement (`examples.py`) | Confirmed, assert passes. |
+| 10 | Adding one new restricted dataset for one team costs 3 new RBAC roles (one per environment) versus 0 ABAC rule edits, when the dataset is already tagged the way the existing rule reads. | This course's own measurement (`examples.py`) | Confirmed, assert passes. |
+| 11 | A single ABAC predicate correctly allows an analyst reading confidential non-PII data, denies a read above the confidential tier, denies PII without a purpose attribute, and allows PII with one. | This course's own measurement (`examples.py`) | Confirmed, assert passes. |
 
-## Red-team: the predict question (step 2)
+## Red-team: the predict questions (steps 3 and 6)
 
-**Question:** the data science team gets a new dataset with a restricted column. Under RBAC, does
-this need one change, or fourteen (one per team)? Under tag-based ABAC, which is it?
+**Question 1 (step 3):** given 14 teams, 60 datasets, 3 environments and one role per
+combination, how many roles result?
 
-**Attack 1 — "RBAC can just add one role for the new dataset, so it's one change too."** This
-misses what "a role per team per dataset per environment" actually means: a new dataset needs a
-new role *for every team* that should reach it, not one role shared across teams (RBAC's own
-model, per NIST's reference model, ties a role to a specific set of permissions, not an open
-attribute match). `examples.py`'s `abac_edit_count_for_new_dataset` makes this concrete by
-counting the actual edits each model needs for the same change.
+**Attack — "most teams only touch a handful of datasets, so the real number is much smaller."**
+This confuses the stated policy ("a role per team per dataset per environment, for least
+privilege") with a realistic subset of actual usage. The policy as stated creates a role for
+every combination whether or not a team uses it yet; `examples.py`'s own measurement
+(2,520 roles) is the literal count the stated policy produces, not an estimate of real usage.
 
-**Attack 2 — "ABAC needs the rule rewritten for every new dataset too, since the rule has to name
-it."** False, and this is the entire point of attribute-based policy: the rule reads a tag
-("tier", "category"), not a dataset name. A new dataset only needs the tag applied to it once —
-done at classification time, topic 4's own mechanism — and every existing rule that reads that tag
-already covers it, with zero rule edits.
+**Question 2 (step 6):** when data science gets a new restricted dataset, how many new roles
+does RBAC need, versus how many new ABAC edits?
 
-**Attack 3 — "if ABAC is strictly better, why does RBAC still exist?"** RBAC's role model is
-simpler to audit for a small, stable set of roles, and many systems (including Cedar's own
-documented RBAC support via groups) implement RBAC as a special case of the same policy engine
-used for ABAC — the topic does not claim RBAC is obsolete, only that its role count grows
-multiplicatively while ABAC's rule count does not.
+**Attack — "a new dataset always costs the same number of changes, no matter the model."** This
+assumes RBAC's grants are role-blind to tags, which is exactly the property ABAC removes. The
+measurement shows RBAC genuinely needing 3 new roles (one per environment) while ABAC needs 0,
+because the existing rule reads a tag the new dataset already carries — the two models are not
+equally expensive to extend by construction, not just in this one example.
 
-## Red-team: the federation claims (steps 7–9)
+## Abandoned approaches
 
-**Claim — "SAML and OIDC are the same thing, just two names for one protocol."** They are
-different protocols with different formats (SAML's assertions are XML; OIDC is a JSON/REST
-identity layer on OAuth 2.0, per its own abstract), named separately in the topic precisely
-because a reader may encounter either depending on the IdP, not interchangeably as one mechanism.
-
-**Claim — "turning off someone's IdP account instantly removes their data access everywhere."**
-Overstated without SCIM: the IdP authenticates, but a downstream system's own accounts and group
-memberships still need to be provisioned or de-provisioned to reflect that, which is exactly
-SCIM's stated job (RFC 7644: "provisioning and managing identity data ... in cross-domain
-environments"). The topic's reveal (step 9) states the mechanism as SCIM-driven, not automatic
-from authentication alone.
+Measuring role explosion with a role hierarchy (senior roles inheriting junior roles'
+permissions) was considered, since the ANSI/INCITS 359 standard names this as a real mitigation
+within RBAC itself. It was left out of `examples.py` because it would understate the worst-case
+arithmetic the hook's own scenario describes ("a role per team per dataset per environment");
+the hierarchy mitigation is instead named explicitly in `coverage.json`'s `{"deep": "Frontier"}`
+item and `post-notes.md`, rather than silently baked into the measured claim.

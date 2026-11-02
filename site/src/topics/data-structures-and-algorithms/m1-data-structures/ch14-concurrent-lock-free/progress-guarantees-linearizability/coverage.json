@@ -1,0 +1,193 @@
+{
+  "topic": "dsa.progress-guarantees-linearizability",
+  "syllabus": [
+    {
+      "clause": "blocking vs obstruction-, lock- and wait-free progress",
+      "at": [
+        { "step": "The lock, and its new failure" },
+        { "step": "Compare-and-swap" },
+        { "step": "Does the system still move?" },
+        { "step": "Lock-free, not wait-free" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "linearizability as the correctness criterion (Herlihy & Wing, TOPLAS 1990)",
+      "at": [
+        { "step": "What does \"correct\" mean, overlapping?" },
+        { "step": "Could a sequential queue do this?" },
+        { "step": "Linearizable, and not" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "and why it composes",
+      "at": [
+        { "step": "Why it composes" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "→ Rust Systems Engineering Ch.7",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Herlihy and Wing, \"Linearizability: a correctness condition for concurrent objects\" (TOPLAS 1990)",
+      "items": [
+        {
+          "item": "The L1/L2 definition: extend H to H′ such that complete(H′) is equivalent to a legal sequential history S, and H's real-time precedence order is contained in S's",
+          "at": [
+            { "step": "Linearizable, and not" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Locality: a system is linearizable if each individual object is linearizable",
+          "at": [
+            { "step": "Why it composes" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Nonblocking: processes invoking totally-defined operations are never forced to wait",
+          "at": [
+            { "step": "Why it composes" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Linearizability as a special case of strict serializability restricted to single-operation, single-object transactions; serializability is not local",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Herlihy, \"Wait-Free Synchronization\" (TOPLAS 1991)",
+      "items": [
+        {
+          "item": "Wait-free: any process can complete any operation in a finite number of steps, regardless of the execution speeds of the other processes",
+          "at": [
+            { "step": "Lock-free, not wait-free" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Bounded wait-free: a fixed bound N on another process's own steps any invocation can remain pending across",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Herlihy, Luchangco and Moir, \"Obstruction-Free Synchronization\" (ICDCS 2003)",
+      "items": [
+        {
+          "item": "Lock-free: ensures only that some thread always makes progress",
+          "at": [
+            { "step": "Does the system still move?" },
+            { "step": "Lock-free, not wait-free" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "Obstruction-free: guarantees progress for any thread that eventually executes in isolation, and its own livelock remark: no progress requirement when any interference is detected",
+          "at": [
+            { "step": "Lock-free, not wait-free" },
+            { "deep": "Internals" },
+            { "deep": "Frontier" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Gibbons and Korach, \"Testing Shared Memories\" (SIAM J. Comput. 1997, citation only)",
+      "items": [
+        {
+          "item": "Checking linearizability in general is NP-complete",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "Why exactly eighteen of twenty interleavings lose the update: the rule (a read falling inside the other's own read-to-write span) picks out precisely those eighteen, not a rough majority",
+        "at": [
+          { "step": "The lost update, counted" }
+        ]
+      },
+      {
+        "item": "Why a lock turns every interleaving correct but trades that for an unbounded wait behind a suspended holder — the two failures are not the same failure, and fixing one does not fix the other",
+        "at": [
+          { "step": "The lock, and its new failure" }
+        ]
+      },
+      {
+        "item": "Why compare-and-swap's own retry loop can let one thread starve completely while the system as a whole keeps moving — lock-freedom is a system-wide guarantee, not a per-thread one",
+        "at": [
+          { "step": "Does the system still move?" },
+          { "step": "Lock-free, not wait-free" }
+        ]
+      },
+      {
+        "item": "Why an atomic hardware add sits at the top of the ladder: it finishes in one step regardless of any other thread, which no retry loop, however short, can promise",
+        "at": [
+          { "step": "Lock-free, not wait-free" }
+        ]
+      },
+      {
+        "item": "Why obstruction-freedom is named but not built in this topic: the chapter's own counter only demonstrates blocking, lock-free and wait-free directly, per CHAPTER.md's scope",
+        "at": [
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "Why two operations whose intervals overlap in real time have no inherent 'first' — linearizability's whole point is that correctness cannot be read off the clock alone",
+        "at": [
+          { "step": "What does \"correct\" mean, overlapping?" }
+        ]
+      },
+      {
+        "item": "Why a dequeue returning empty right after a completed enqueue has no legal sequential retelling at all, while an overlapping enqueue/dequeue pair can still have one — the difference is exactly what the L1/L2 definition tests for",
+        "at": [
+          { "step": "Linearizable, and not" }
+        ]
+      },
+      {
+        "item": "Why linearizability composes (locality) while serializability does not: a queue and a map in the same program can be checked one at a time only because of that specific theorem, not as a general property of correctness criteria",
+        "at": [
+          { "step": "Why it composes" }
+        ]
+      },
+      {
+        "item": "That the brute-force checker in examples.py is a research tool at the scale this topic uses it at, not a solution to the general NP-complete problem it is named alongside",
+        "at": [
+          { "deep": "Internals" }
+        ]
+      },
+      {
+        "item": "Why no claim here says lock-free is always faster than a lock: the only measured example is a scheduling trace, not a contention benchmark, and the post-notes say so explicitly",
+        "at": [
+          { "deep": "Internals" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

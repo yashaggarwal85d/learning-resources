@@ -1,0 +1,85 @@
+{
+  "topic": "de.kafka-transactions-read-committed",
+  "steps": [
+    {
+      "lines": [
+        "That earlier guarantee covered one sender, one lane, one session — nothing wider.",
+        "Now picture a step that reads one thing and writes several things in response.",
+        "All of those writes need to land together, or none of them should land at all."
+      ]
+    },
+    {
+      "lines": [
+        "From here on, a sender can carry a fixed identity that survives being restarted.",
+        "A separate, dedicated role somewhere else keeps track of every one of these all-or-nothing steps.",
+        "It remembers exactly where each one stands, independent of the data itself."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A sender restarts under that same fixed identity, but its old copy is still writing somewhere.",
+        "What happens to whatever that old, forgotten copy is still trying to send?"
+      ],
+      "answer": [
+        "It gets turned away outright, every single time.",
+        "The restart hands out a fresh marker that outranks the old one completely.",
+        "Anything still arriving under that stale marker is recognized and rejected on the spot."
+      ]
+    },
+    {
+      "lines": [
+        "The restart itself is what triggers a brand new, higher marker to take over.",
+        "Nothing under the old marker ever gets folded in or merged with the new one.",
+        "An old copy that hasn't noticed the restart yet simply loses, every time."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before this reveal settles it too.",
+        "One of these all-or-nothing steps gets called off partway through, but its writes are still sitting right there.",
+        "Does an ordinary reader coming along afterward see those called-off writes?"
+      ],
+      "answer": [
+        "That depends entirely on which reading mode got picked.",
+        "Nothing ever actually gets erased because of the call-off, not a single byte.",
+        "One mode shows everything regardless; the other quietly screens out whatever got called off."
+      ]
+    },
+    {
+      "lines": [
+        "One reading mode just shows everything, called off or not, with no screening at all.",
+        "The stricter mode only hands back writes from steps that actually went through to completion.",
+        "It does that screening up to a tracked boundary, not by deleting anything upstream."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where this closes a gap named much earlier in this chapter.",
+        "Marking what was read and writing what comes out of it now happen as one single step.",
+        "Either both of those land together, or neither one does, no exceptions."
+      ]
+    },
+    {
+      "lines": [
+        "One newer safeguard stops a step that gets stuck half-finished from blocking every strict reader behind it forever.",
+        "A separate, newer addition lets something entirely outside this system join one of these all-or-nothing steps too.",
+        "Named here, not built here — no second real system is running in this sandbox to demonstrate it against."
+      ]
+    },
+    {
+      "lines": [
+        "Every figure shown so far came from one real run, happening just now, of this topic's own toy model.",
+        "The old copy getting turned away, right on cue.",
+        "And the called-off write showing up under one reading mode while staying hidden under the other."
+      ]
+    },
+    {
+      "lines": [
+        "So: a fixed identity survives a restart, and a separate role tracks every all-or-nothing step.",
+        "One reading mode screens out what got called off; the other shows everything regardless.",
+        "And marking what was read now rides inside that very same all-or-nothing step."
+      ]
+    }
+  ]
+}

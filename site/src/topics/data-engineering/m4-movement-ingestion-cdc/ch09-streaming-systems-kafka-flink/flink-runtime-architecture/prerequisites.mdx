@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: this chapter's 9.2 material, in general
+
+This topic doesn't lean on any one earlier topic's specific mechanism — it's the first topic of a
+new sub-cluster, built fresh on general distributed-systems vocabulary (tasks, parallelism,
+network exchange). General familiarity with this chapter's 9.2 material (windows, triggers,
+watermarks) helps frame why a runtime like this exists, but nothing here is declared as a direct
+dependency. If you'd like the most recent of that material first, see
+[Triggers, allowed lateness and retractions](../triggers-lateness-retractions/).
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Flink Architecture" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/concepts/flink-architecture/" by="Apache Flink, 1.20 docs">The JobManager/TaskManager/slot relationship, operator chaining, and application mode.</Resource>
+  <Resource kind="reading" title="Flink 2.0 release notes" href="https://apache.googlesource.com/flink/+show/master/docs/content/release-notes/flink-2.0.md" by="Apache Flink docs repository">The per-job-mode-removal claim this topic cites.</Resource>
+  <Resource kind="reading" title="A Deep-Dive into Flink's Network Stack" href="https://flink.apache.org/2019/06/05/a-deep-dive-into-flinks-network-stack/" by="Apache Flink blog, 2019">Credit-based flow control and backpressure, the concrete mechanism.</Resource>
+  <Resource kind="reading" title="Elastic Scaling" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/elastic_scaling/" by="Apache Flink, 1.20 docs">The Adaptive Batch Scheduler this topic cites.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,134 @@
+{
+  "topic": "de.initial-snapshot-stream-handoff",
+  "syllabus": [
+    {
+      "clause": "exporting a consistent snapshot at a known log position (exported snapshot or brief lock), then streaming from exactly that position so there is no gap and no overlap",
+      "at": [
+        { "step": "Reveal: the exported snapshot, measured" },
+        { "step": "Reveal: no gap and no overlap, by construction" },
+        { "step": "Reveal: no gap and no overlap, measured" },
+        { "step": "Reveal: the restart, measured" }
+      ]
+    },
+    {
+      "clause": "snapshot modes (initial, no_data, when_needed, …) and what each does on restart",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: resume or restart" },
+        { "step": "Reveal: completion is recorded only at the end" },
+        { "step": "Recap" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Logical Decoding Concepts (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "A slot created through the replication protocol exports a snapshot showing exactly the state of the database after which all changes will be included in the change stream, usable via SET TRANSACTION SNAPSHOT",
+          "at": [{ "step": "Reveal: the exported snapshot, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Server Programming Interface (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "pg_export_snapshot exports a session's own snapshot, valid only until that session's transaction ends — the plain-SQL counterpart named for contrast with a slot's own export",
+          "at": [{ "step": "Reveal: the exported snapshot, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Streaming Replication Protocol (PostgreSQL docs)",
+      "items": [
+        {
+          "item": "The snapshot_name returned by CREATE_REPLICATION_SLOT is valid only until a new command is executed on that connection or the connection is closed",
+          "at": [{ "step": "Reveal: the exported snapshot, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for PostgreSQL",
+      "items": [
+        {
+          "item": "If the connector fails, is rebalanced, or stops after Step 1 begins but before Step 5 completes, upon restart the connector begins a new snapshot",
+          "at": [{ "step": "Reveal: completion is recorded only at the end" }]
+        },
+        {
+          "item": "initial_only, no_data and when_needed snapshot modes, alongside initial and always, decide whether and when a connector snapshots at all",
+          "at": [{ "step": "Prove it" }]
+        },
+        {
+          "item": "serializable (default) blocks concurrent DDL and index creation across the whole database; repeatable_read allows a snapshot-captured row to appear again in the stream, tolerable only for mirroring",
+          "at": [{ "step": "Recap" }]
+        },
+        {
+          "item": "Chunk-based parallel snapshotting (snapshot.max.threads) is incubating in Debezium 3.7",
+          "at": [{ "out": "named only, per post-notes.md Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for MySQL",
+      "items": [
+        {
+          "item": "Hosted options such as RDS and Aurora do not permit global read locks, so the connector uses table-level locks instead",
+          "at": [{ "out": "named only, no MySQL server in this sandbox, per SOURCES.md" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The snapshot-export mechanism was confirmed empirically before any topic content was written: a plain SQL pg_create_logical_replication_slot() call does not behave like the replication protocol's own CREATE_REPLICATION_SLOT ... EXPORT_SNAPSHOT, and the snapshot's own lifetime rule (valid only until the exporting connection issues another command or closes) was discovered by direct experiment, matching protocol-replication.html's own stated rule exactly.",
+        "at": [{ "step": "Reveal: the exported snapshot, measured" }]
+      },
+      {
+        "item": "The no-gap-and-no-overlap proof is built as two independent measurements, not one: absence from the snapshot dump is checked separately from presence-exactly-once in the decoded stream, so neither half is assumed from the other.",
+        "at": [{ "step": "Reveal: no gap and no overlap, measured" }]
+      },
+      {
+        "item": "The kill-mid-snapshot lab uses a genuinely raised exception mid-copy, not a flag or a mocked failure, and the restart logic independently confirms zero completed-attempt rows in its own metadata table before discarding the partial target — mirroring a connector's own offsets-topic check rather than assuming the kill's effect.",
+        "at": [{ "step": "Reveal: the restart, measured" }]
+      },
+      {
+        "item": "The final diff checks three distinct failure shapes separately — rows missing from the target (a gap), rows present in the target but not the source (a phantom overlap), and duplicate rows sharing one id (a counted overlap) — rather than a single equality check that could mask any one of them.",
+        "at": [{ "step": "Reveal: the restart, measured" }]
+      },
+      {
+        "item": "Rows written both during the discarded first attempt and during the successful second attempt are both confirmed present in the final target, so the proof covers writes made both before and during the snapshot that actually completes, not only writes made entirely before any snapshot began.",
+        "at": [{ "step": "Reveal: the restart, measured" }]
+      },
+      {
+        "item": "The wrong half of the first predict question — that a mostly-complete snapshot would resume rather than restart — is ruled out directly by Debezium's own documented workflow, which the measurement in this topic reproduces mechanically rather than merely quoting.",
+        "at": [{ "step": "Predict: resume or restart" }]
+      },
+      {
+        "item": "The wrong half of the final predict question — that initial_only fits a connector needing only fresh rows — is ruled out by its own documented behaviour (it still performs a full snapshot before stopping), distinguishing it from no_data, which skips the snapshot outright.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The MySQL global-read-lock alternative and the RDS table-level-lock fallback are disclosed explicitly as sourced-only, since this sandbox has no MySQL server (confirmed absent in topic 11) and no RDS instance to exercise either variant against.",
+        "at": [{ "out": "disclosed environment limit, per SOURCES.md" }]
+      },
+      {
+        "item": "Chunk-based parallel snapshotting is named only from Debezium's own incubating-feature documentation and explicitly not built here, since the chunking algorithm itself (DBLog's watermark windows) is topic 14's own subject, matching CHAPTER.md's own 'Leaves out' line.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "This topic hosts the kill-mid-snapshot leg of the 8.2 lab directly, per CHAPTER.md's own instruction, while the incremental-snapshot leg (chunked, interleaved with the live log) is explicitly left to topic 14, not attempted here.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "topic": "de.pyspark-execution-python-udf-cost",
+  "syllabus": [
+    {
+      "clause": "row-at-a-time pickled Python UDFs cross the JVM↔Python worker boundary and are opaque to Catalyst (cross-ref §2.1)",
+      "at": [
+        { "step": "Predict: can codegen fuse it?" },
+        { "step": "Reveal: opaque, and pickled one row at a time" }
+      ]
+    },
+    {
+      "clause": "Arrow-based fixes: pandas UDFs, mapInArrow, Arrow-optimised Python UDFs (default-on since Spark 4.2) and @arrow_udf (4.1)",
+      "at": [
+        { "step": "Predict: why Arrow still wins" },
+        { "step": "Reveal: once per batch, versus once per row" },
+        { "deep": "mapInArrow and @arrow_udf, the siblings not measured here" }
+      ]
+    },
+    {
+      "clause": "rule of thumb: built-in SQL expressions first, Arrow UDFs second, pickled UDFs never on hot paths",
+      "at": [{ "step": "Recap" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "BatchEvalPythonExec.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "input rows are grouped into batches to send to Python, but added to the queue for pickling one row at a time",
+          "at": [{ "step": "Reveal: opaque, and pickled one row at a time" }]
+        }
+      ]
+    },
+    {
+      "source": "pandas/functions.py — pandas_udf docstring (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "a pandas UDF is executed by Spark using Arrow to transfer data and Pandas to work with it, allowing vectorized operations",
+          "at": [{ "step": "Reveal: once per batch, versus once per row" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "mapInArrow and @arrow_udf (Spark 4.1) are two further Arrow-based entry points alongside the pandas UDF this topic measures — named in the syllabus clause directly but not independently timed, since the same batch-vs-row mechanism this topic already measures via pandas_udf applies to both.",
+        "at": [{ "out": "mapInArrow and @arrow_udf named only in the syllabus mapping; not independently measured" }]
+      },
+      {
+        "item": "The §2.1 cross-reference the syllabus clause names is this project's own earlier single-node topic on UDF optimizer opacity (scalar/table/aggregate UDFs blocking pushdown, costing and parallelism) — this topic is that same opacity cost, now specifically on a cluster crossing a process boundary rather than just blocking single-node rewrites.",
+        "at": [{ "out": "the §2.1 cross-reference named only; that topic's own single-node opacity cost assumed, not re-taught" }]
+      },
+      {
+        "item": "Arrow-optimised Python UDFs becoming default-on in Spark 4.2 (named in the syllabus clause) means a plain @udf-decorated scalar function can itself switch to Arrow transfer without being rewritten as a pandas UDF, on a recent enough Spark version — this topic's own examples.py targets 4.0.1, so its pickled measurement reflects the pre-4.2 default path deliberately, disclosed here rather than left ambiguous.",
+        "at": [{ "out": "the Spark 4.2 default-on timeline named only; examples.py measures the pre-4.2 pickled default on 4.0.1" }]
+      },
+      {
+        "item": "The pickled UDF path's per-row pickling cost (Pickler/Unpickler, net.razorvine.pickle) is a general-purpose Java object serialization library, not Spark's own Tungsten binary format — a second, separate overhead source layered on top of the process-boundary crossing itself, beyond what this topic's timing alone isolates.",
+        "at": [{ "step": "Reveal: opaque, and pickled one row at a time" }]
+      },
+      {
+        "item": "PYTHON_UDF_MAX_RECORDS_PER_BATCH, read directly in BatchEvalPythonExec.scala, controls how many rows Spark groups into one network round-trip to the Python worker even on the pickled path — the batching this topic's own Reveal step distinguishes is specifically the unit of work the Python-side loop processes (a row versus a whole Arrow batch), not the separate question of how many rows travel in one network message either way.",
+        "at": [{ "out": "PYTHON_UDF_MAX_RECORDS_PER_BATCH named only; the per-row-vs-per-batch distinction this topic measures is about processing unit, not wire batching" }]
+      },
+      {
+        "item": "A Python table-valued UDF (a Python UDTF, syllabus-named via the 'Python User-defined Table Functions' doc, one row in → many rows out) is a separate API shape from the scalar UDFs this topic measures, sharing the same opaque-to-Catalyst cost but not independently timed here.",
+        "at": [{ "out": "Python UDTFs named via the source list; not independently measured, a separate API shape from the scalar UDFs this topic times" }]
+      },
+      {
+        "item": "This topic's own measurement uses wall-clock timing (median of three repeated runs per path) rather than reading a cost from EXPLAIN FORMATTED's own plan text, unlike most of this chapter's other topics — necessary because the three-way speed gap is a runtime fact a static plan string can't show directly.",
+        "at": [{ "step": "Reveal: the same computation, three real speeds" }]
+      },
+      {
+        "item": "A UDF registered through spark.udf.register for use in raw SQL strings follows the identical pickled-or-Arrow cost model this topic measures for a DataFrame-API UDF — the registration mechanism changes how the function is invoked, not the serialization cost once it runs.",
+        "at": [{ "out": "SQL-registered UDFs named only; the same cost model applies regardless of invocation mechanism" }]
+      },
+      {
+        "item": "PYSPARK_PYTHON must point at an interpreter with pandas and pyarrow installed for the Arrow UDF path to run at all, independently of whichever interpreter launched the driver session — this topic's own examples.py disclosed this environment requirement directly, since the Python worker subprocess resolves its own interpreter separately from the driver's.",
+        "at": [{ "out": "PYSPARK_PYTHON's own interpreter resolution named as a methodology note; not a syllabus claim" }]
+      },
+      {
+        "item": "A pandas UDF's own batch size is governed by spark.sql.execution.arrow.maxRecordsPerBatch (10,000 by default) — a separate config from the pickled path's PYTHON_UDF_MAX_RECORDS_PER_BATCH, so the two paths' own batching behaviour, while structurally similar, are tuned independently and don't share one config knob.",
+        "at": [{ "out": "spark.sql.execution.arrow.maxRecordsPerBatch named only; not independently measured or tuned here" }]
+      },
+      {
+        "item": "Grouped-map and grouped-aggregate pandas UDFs (applyInPandas, a GROUPED_AGG pandas_udf) extend the same Arrow-batch mechanism this topic measures to a whole group of rows per key, rather than one flat column at a time — a different API shape built on the identical batch-crossing cost model, not independently measured here since this topic's own examples.py uses a plain SCALAR pandas UDF.",
+        "at": [{ "out": "grouped-map/grouped-aggregate pandas UDFs named only; this topic measures the plain SCALAR case" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

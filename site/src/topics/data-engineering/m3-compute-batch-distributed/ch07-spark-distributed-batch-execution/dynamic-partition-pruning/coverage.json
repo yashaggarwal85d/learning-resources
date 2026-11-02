@@ -1,0 +1,91 @@
+{
+  "topic": "de.dynamic-partition-pruning",
+  "syllabus": [
+    {
+      "clause": "using the dimension-side filter result at runtime as a subquery/broadcast filter to prune fact-table partitions in a star join; preconditions (partitioned fact table, selective dimension filter) and how to see it in the plan.",
+      "at": [
+        { "step": "Reveal: the baseline, DPP forced off" },
+        { "step": "Reveal: no — the join has to be a broadcast hash join" },
+        { "step": "Elaborate: the plan reuses the join's own broadcast" },
+        { "step": "Reveal: no partitions, nothing to prune" },
+        { "step": "Elaborate: the Subqueries section names the duplicate filter" },
+        { "deep": "When DPP falls back to a subquery duplicate" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PlanDynamicPruningFilters.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "the rule rewrites pruning predicates to reuse the results of an existing broadcast; for a join that isn't planned as a broadcast hash join it falls back to a subquery duplicate instead",
+          "at": [{ "step": "Elaborate: the plan reuses the join's own broadcast" }]
+        },
+        {
+          "item": "the broadcast adaptor is placed to reuse the broadcast results on the probe side",
+          "at": [{ "step": "Elaborate: the plan reuses the join's own broadcast" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark configuration docs",
+      "items": [
+        {
+          "item": "the config generates a predicate for the partition column specifically when it's used as the join key",
+          "at": [{ "step": "Reveal: no partitions, nothing to prune" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "When the dimension-side subquery would cost more to execute than the pruning could ever save, PlanDynamicPruningFilters's own onlyInBroadcast bailout falls back to a true literal instead of running the subquery at all — DPP is not unconditionally applied even when a precondition is met.",
+        "at": [{ "out": "the onlyInBroadcast bailout named and sourced only; this topic's own examples.py measures a case where the subquery is always worth running, not this bailout" }]
+      },
+      {
+        "item": "For a join Spark did not plan as a broadcast hash join (both sides too large to broadcast), the rule's own fallback path runs the dimension-side filter as a genuinely separate subquery rather than reusing any broadcast — strictly more expensive than the measured reuse case, since nothing is shared with the join's own execution.",
+        "at": [{ "out": "the plain subquery-duplicate fallback for a non-broadcast join named only; this topic's own examples.py measures only the broadcast-reuse case" }]
+      },
+      {
+        "item": "DPP composes with bucketing (chapter 6.3/7.2's own earlier topic): a fact table bucketed but not partitioned by the join column gets no DPP at all, since the pruning filter only ever targets partition metadata, never a bucket id.",
+        "at": [{ "out": "the bucketing-vs-partitioning distinction named only; this topic's own examples.py measures a partitioned, unbucketed fact table" }]
+      },
+      {
+        "item": "A star join with more than one dimension table can get DPP on several fact-table columns independently, one dynamic pruning subquery per qualifying dimension side, each reusing its own broadcast separately.",
+        "at": [{ "out": "the multi-dimension case named only; this topic's own examples.py measures a single dimension table" }]
+      },
+      {
+        "item": "DPP's own subquery, even when it falls back to running separately rather than reusing a broadcast, is itself planned with the same cost-based optimizer as any other subquery — a dimension-side filter that itself requires a large scan can make the subquery's own cost exceed what pruning could save, which is exactly what the onlyInBroadcast bailout is checking for.",
+        "at": [{ "out": "the cost comparison behind the bailout, named only, connecting to the earlier expert item; this topic's own examples.py uses a trivially cheap dimension filter" }]
+      },
+      {
+        "item": "`spark.sql.optimizer.dynamicPartitionPruning.reuseBroadcastOnly` (default true) restricts DPP to only the broadcast-reuse path, never the plain subquery-duplicate fallback — a config this topic's own measured default run already satisfies, but one that would eliminate claim 2's non-broadcast fallback case entirely if ever turned off deliberately in the other direction.",
+        "at": [{ "out": "the reuseBroadcastOnly config named only; this topic's own examples.py leaves it at its default" }]
+      },
+      {
+        "item": "DPP's own partition-pruning decision happens at physical planning time, before any task runs — unlike AQE's skew-join splitting or partition coalescing (two topics back), which only happen once a shuffle has already materialized. DPP removes work before the first shuffle; AQE only ever rearranges work after one.",
+        "at": [{ "out": "the planning-time-vs-runtime-reoptimization distinction from AQE, named only, cross-referencing this chapter's own AQE topic; this topic's own examples.py measures DPP alone" }]
+      },
+      {
+        "item": "A fact table partitioned by a column that is NOT the join key gets no DPP either, even though it is technically 'a partitioned fact table' — the precondition is specifically that the partition column and the join column are the same column, which this topic's own examples.py's unpartitioned-fact negative case does not by itself distinguish from a wrong-column-partitioned case.",
+        "at": [{ "out": "the partition-column-must-equal-join-column precision, named only; this topic's own examples.py tests unpartitioned vs. correctly-partitioned, not wrong-column-partitioned" }]
+      },
+      {
+        "item": "The dynamic pruning subquery's own result is cached and shared across every task of the pruned scan within one query execution — it broadcasts once, not once per fact-table partition, which is what makes the technique cheap even though it duplicates a scan of the dimension side.",
+        "at": [{ "out": "the single-broadcast, shared-across-tasks cost model named only; this topic's own examples.py measures the resulting file/partition counts, not the broadcast's own reuse-count" }]
+      },
+      {
+        "item": "A fact table partitioned by the right column but with the join written against a differently-cased or aliased column reference can silently fail to pattern-match the join key the pruning rule looks for, even though the semantics are identical — a practical gotcha distinct from the clean preconditions this topic's own examples.py measures directly.",
+        "at": [{ "out": "the column-reference-matching gotcha named only; this topic's own examples.py uses one consistent column name end to end" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

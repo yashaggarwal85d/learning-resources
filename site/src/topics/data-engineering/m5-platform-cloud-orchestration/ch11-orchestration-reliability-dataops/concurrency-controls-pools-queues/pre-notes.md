@@ -1,0 +1,6 @@
+- **Pool**: a named bucket of a fixed number of slots; a task assigned to it can't run unless a slot is free. *Where you meet it:* capping concurrency against a fragile source, independent of how many workers exist.
+- **Slot**: one unit of a pool's capacity; a task occupies one (or more, via `pool_slots`) while it runs. *Where you meet it:* the thing that actually runs out.
+- **Priority weight**: an integer that breaks ties for a freed slot — higher runs first. *Where you meet it:* deciding which of several waiting tasks gets in next.
+- **Queue**: a named routing target for a task, picked up only by workers listening to that queue. *Where you meet it:* sending GPU-bound tasks to GPU workers specifically.
+- **Starvation**: a task that never gets a resource because something else keeps winning it instead. *Where you meet it:* priority weight with nothing bounding how long low-priority work can wait.
+- **Fairness policy**: a rule (reservation, round-robin weighting) that bounds starvation by guaranteeing lower-priority work eventually gets a turn.

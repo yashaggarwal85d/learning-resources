@@ -1,0 +1,8 @@
+- **Event loop, from Chapter 4's asyncio material**: a single thread that keeps picking up and running the next ready piece of work instead of blocking on any one of them. *Where you meet it:* the event-loop reveal, named directly against that earlier model.
+- **I/O thread**: a thread used only to move bytes to and from a socket, never to execute application logic itself. *Where you meet it:* the event-loop reveal's own opt-in extra.
+- **Point-in-time snapshot**: a full copy of a dataset taken at one moment, with nothing captured about what happens after. *Where you meet it:* the RDB-vs-AOF reveal.
+- **Write-ahead log**: a durable, append-only record of every change, written before (or instead of) updating the main copy, so it can be replayed to rebuild state. *Where you meet it:* the RDB-vs-AOF reveal's own write-by-write alternative.
+- **Asynchronous replication**: a replica that applies a write after the primary has already acknowledged it, rather than before. *Where you meet it:* the async-replication reveal and its own real, measured loss window.
+- **Failover**: promoting a replica to primary after the original primary becomes unavailable. *Where you meet it:* the async-replication reveal's own named risk.
+- **Hash partitioning, from an earlier topic**: mapping a key space into a fixed set of partitions by a hash function, so each key always lands in the same partition. *Where you meet it:* the cluster-slots reveal, as one concrete, fixed-size instance of it.
+- **Cache-aside, from the last two topics**: the application owns the miss path, checking the cache first and loading from the backing store on a miss. *Where you meet it:* this topic's own real lab, hosting the chapter's hot-key-expiry measurement.

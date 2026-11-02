@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">The Ω(n log n) comparison-sort bound this topic quotes rather than re-proves.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">Best and worst case, the vocabulary every comparison and move count in this topic is framed with.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">Branch misprediction, the one-frame reason a branch-free sorting network helps.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="List of sorting networks" href="https://bertdobbelaere.github.io/sorting_networks.html" by="Bert Dobbelaere">The size and depth bounds for small sorting networks, citing Knuth's TAOCP vol. 3.</Resource>
+  <Resource kind="reading" title="smallsort.rs" href="https://raw.githubusercontent.com/rust-lang/rust/1.81.0/library/core/src/slice/sort/shared/smallsort.rs" by="Rust, tag 1.81.0">The fixed sorting networks and insertion sort a real standard library uses below a size cutoff.</Resource>
+  <Resource kind="reading" title="stl_algo.h" href="https://raw.githubusercontent.com/gcc-mirror/gcc/master/libstdc%2B%2B-v3/include/bits/stl_algo.h" by="GCC libstdc++">The exact threshold (sixteen elements) where libstdc++'s introsort hands off to insertion sort.</Resource>
+</ul>
+
+</section>

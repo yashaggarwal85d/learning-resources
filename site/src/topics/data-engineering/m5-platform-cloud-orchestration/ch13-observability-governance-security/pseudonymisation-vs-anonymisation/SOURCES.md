@@ -1,116 +1,113 @@
-## GDPR, Article 4 — Definitions
+# Sources: Pseudonymisation vs anonymisation (`de.pseudonymisation-vs-anonymisation`)
+
+GDPR's own text (Article 4, Recital 26, Article 32), the CJEU's press release for case
+C-413/23 P (the official full judgment text is not reachable as static text in this sandbox;
+the press release is the Court's own official summary, exactly as CHAPTER.md's own naming
+allows), the EDPB's Guidelines 01/2025 on Pseudonymisation, and the EDPB-EDPS Joint Opinion
+2/2026 on the Digital Omnibus proposal are all fetched directly.
+
+## Art. 4 GDPR — Definitions (gdpr-info.eu)
 
 URL: https://gdpr-info.eu/art-4-gdpr/
-Version: General Data Protection Regulation, Article 4(5) (fetched 2026-10-30)
+Version: retrieved 2026-11-01
 
-> ‘pseudonymisation’ means the processing of personal data in such a manner that the personal data can no longer be attributed to a specific data subject without the use of additional information, provided that such additional information is kept separately and is subject to technical and organisational measures to ensure that the personal data are not attributed to an identified or identifiable natural person;
+> 'pseudonymisation' means the processing of personal data in such a manner that the personal data can no longer be attributed to a specific data subject without the use of additional information, provided that such additional information is kept separately and is subject to technical and organisational measures to ensure that the personal data are not attributed to an identified or identifiable natural person;
 
-Contents:
-1. The Article 4(5) legal definition of pseudonymisation, verbatim: the test is attribution without additional information, and that additional information must be kept separate and protected.
+Contents: the Article 4(5) definition of pseudonymisation itself -- the "legal and technical
+line" clause of this topic's own scope line, word for word from the Regulation's own text.
 
-## GDPR, Recital 26 — Not Applicable to Anonymous Data
+## Recital 26 — Not Applicable to Anonymous Data (gdpr-info.eu)
 
 URL: https://gdpr-info.eu/recitals/no-26/
-Version: General Data Protection Regulation, Recital 26 (fetched 2026-10-30)
+Version: retrieved 2026-11-01
 
 > Personal data which have undergone pseudonymisation, which could be attributed to a natural person by the use of additional information should be considered to be information on an identifiable natural person.
 
-> To ascertain whether means are reasonably likely to be used to identify the natural person, account should be taken of all objective factors, such as the costs of and the amount of time required for identification, taking into consideration the available technology at the time of the processing and technological developments.
+> To determine whether a natural person is identifiable, account should be taken of all the means reasonably likely to be used, such as singling out, either by the controller or by another person to identify the natural person directly or indirectly.
 
 > The principles of data protection should therefore not apply to anonymous information, namely information which does not relate to an identified or identifiable natural person or to personal data rendered anonymous in such a manner that the data subject is not or no longer identifiable.
 
-Contents:
-1. The recital's own statement that pseudonymised data remains personal data for whoever can attribute it with additional information.
-2. The "reasonably likely" identifiability test, including the cost-and-time factors that make it a case-by-case, not absolute, question.
-3. The boundary: anonymous information (truly non-identifiable) falls outside the Regulation entirely.
+Contents: pseudonymised data remains identifiable information unless anonymised outright, and
+the "all the means reasonably likely to be used" identifiability test -- the same test the
+CJEU later applies relative to a given recipient in C-413/23 P.
 
-## GDPR, Article 32 — Security of Processing
+## Art. 32 GDPR — Security of processing (gdpr-info.eu)
 
 URL: https://gdpr-info.eu/art-32-gdpr/
-Version: General Data Protection Regulation, Article 32 (fetched 2026-10-30)
+Version: retrieved 2026-11-01
 
 > the pseudonymisation and encryption of personal data;
 
-Contents:
-1. Pseudonymisation named, alongside encryption, as an example of an appropriate technical measure under the Article 32 security obligation — the engineering consequence of pseudonymised data still being personal data.
+Contents: pseudonymisation named as one of GDPR's own listed technical security measures,
+distinct from encryption -- grounding why this topic treats pseudonymisation as a security
+control that does not, by itself, change a dataset's legal status.
 
-## Court of Justice of the European Union — Press Release No 107/25 (Case C-413/23 P, EDPS v SRB)
+## Press Release No 107/25 — Judgment in Case C-413/23 P, EDPS v SRB (Court of Justice of the EU)
 
-URL: https://curia.europa.eu/jcms/upload/docs/application/pdf/2025-09/cp250107en.pdf
-Version: Press Release No 107/25, Luxembourg, 4 September 2025 (fetched 2026-10-30)
+URL: https://curia.europa.eu/site/upload/docs/application/pdf/2025-09/cp250107en.pdf
+Version: 4 September 2025
 
-> the Court of Justice has confirmed that the General Court was correct in so far as it held that pseudonymised data must not be regarded as constituting, in all cases and for every person, personal data for the purposes of the application of Regulation 2018/1725.
+Note on source naming: the full judgment text (ECLI:EU:C:2025:645) is not reachable as static,
+fetchable text in this sandbox (EUR-Lex and InfoCuria both serve it as JavaScript-rendered
+pages here); CHAPTER.md's own instruction allows the Court's press release as "the official
+summary" in this case, and this is that press release, the Court's own official account of
+what it decided.
 
-> pseudonymisation may, depending on the circumstances of the case, effectively prevent persons other than the controller from identifying the data subject in such a way that, for them, the data subject is not or is no longer identifiable.
+> the Court of Justice has confirmed that the General Court was correct in so far as it held that pseudonymised data must not be regarded as constituting, in all cases and for every person, personal data for the purposes of the application of Regulation 2018/1725. It follows from the provisions of that regulation as interpreted in case-law that pseudonymisation may, depending on the circumstances of the case, effectively prevent persons other than the controller from identifying the data subject in such a way that, for them, the data subject is not or is no longer identifiable.
 
-> the relevant perspective for assessing the identifiable nature of the data subject depends, in essence, on the circumstances of the processing of the data in each individual case.
+> the relevant perspective for assessing the identifiable nature of the data subject depends, in essence, on the circumstances of the processing of the data in each individual case. With regard to that obligation to provide information, the Court of Justice notes that that obligation is part of the legal relationship between the data subject and the controller and, therefore, it concerns the information in relation to that data subject as it was transmitted to that controller, thus before any potential transfer to a third party. Accordingly, the Court of Justice has found that the identifiable nature of the data subject must be assessed at the time of collection of the data and from the point of view of the controller.
 
-> that obligation is part of the legal relationship between the data subject and the controller and, therefore, it concerns the information in relation to that data subject as it was transmitted to that controller, thus before any potential transfer to a third party.
+> Hearing an appeal brought by the EDPS, the Court of Justice has set aside the judgment of the General Court and referred the case back to it.
 
-> the Court of Justice has found that the identifiable nature of the data subject must be assessed at the time of collection of the data and from the point of view of the controller.
+Contents: the relative (recipient-dependent) approach to identifiability the CJEU confirmed,
+and the controller's transparency duty being judged from the controller's own position at
+collection time, not the recipient's -- the full "CJEU's relative approach" clause of this
+topic's own scope line. Note on the case's actual outcome, confirmed by reading the press
+release itself rather than secondary commentary: the Court set aside the General Court's
+judgment overall (on a separate point, about whether personal opinions "relate to" their
+author), while specifically confirming the General Court's own relative-identifiability
+reasoning as correct -- a case decided under Regulation (EU) 2018/1725 (the EU institutions'
+own data-protection regulation), not the GDPR directly, as CHAPTER.md's own scope notes.
 
-Contents:
-1. The Court's own statement of the "relative approach" holding: pseudonymised data is not personal data in all cases for every person.
-2. The mechanism: pseudonymisation can make a data subject non-identifiable for a recipient who lacks the means to re-identify.
-3. The companion holding this topic must also carry: the controller's transparency duty is judged from the controller's own position at the time of collection, not the recipient's, so pseudonymising data for a third party does not retroactively excuse the controller's own information duty.
-4. **Caveat the topic states explicitly:** this judgment is decided under Regulation (EU) 2018/1725 (the EU institutions' own data-protection regulation), not the GDPR directly; the press release does not discuss GDPR Article 4(1) by name, so the topic treats the holding as persuasive for the GDPR's identical "identifiable natural person" wording rather than as a GDPR ruling itself.
-
-## EDPB — Guidelines 01/2025 on Pseudonymisation (version for public consultation)
+## Guidelines 01/2025 on Pseudonymisation (EDPB, version for public consultation)
 
 URL: https://www.edpb.europa.eu/system/files/2025-01/edpb_guidelines_202501_pseudonymisation_en.pdf
-Version: Adopted 16 January 2025, version for public consultation (fetched 2026-10-30)
+Version: adopted 16 January 2025, version for public consultation
 
-> Only possession of the secret information should enable the computation of the pseudonym given the identifier. In order to limit the likelihood of a successful guess or brute-force searching, the secrets should have sufficient entropy.
+> It should not be possible within the pseudonymisation domain to attribute pseudonymised data relating to a data subject whose identifiers are known. This could be done by applying the pseudonymisation transformation to those identifiers, obtaining the pseudonym, and locating the pseudonymised data attached to that pseudonym.
 
 > For instance, if you know the transformation is merely a SHA256 hash of a name, you could apply this to all names you have elsewhere and then see which hashes match in the pseudonymised dataset.
 
-> For pseudonymisation to be effective, it must not be possible with reasonable effort to reverse the chosen pseudonymising transformation based on its output alone.
+> The secret parameter(s) or key(s) involved in the cryptographic algorithms will be the pseudonymisation secrets.
 
-> When using cryptographic algorithms, suitable building blocks include (keyed) pre-image
+> Preference should generally be given to one-way functions due to the difficulty of their reversal even when the secret parameters are known.
 
-Contents:
-1. The guidelines' own requirement that a pseudonymisation secret have sufficient entropy, framed directly against brute-force/dictionary searching.
-2. The guidelines' own worked example of a dictionary-style attack on a plain, unkeyed hash — matching this topic's hook almost verbatim.
-3. The guidelines' recommendation of keyed constructions (HMACs) as the building block that resists reversal, versus an unkeyed one-way function.
+Contents: the exact mechanism of a dictionary attack against a plain hash (computing the same
+hash over a known candidate list and matching), and the pseudonymisation secret (key) as what
+makes a keyed one-way function resistant to that same attack -- the "keyed hashing (HMAC) vs
+plain hashing (dictionary attacks...)" clause of this topic's own scope line.
 
-## Council of the European Union — Proposal for a Regulation Simplifying the Digital Legislative Framework (Digital Omnibus), COM(2025) 837 final
-
-URL: https://data.consilium.europa.eu/doc/document/ST-15698-2025-INIT/en/pdf
-Version: Council document 15698/25, transmitting COM(2025) 837 final of 19 November 2025 (fetched 2026-10-30)
-
-> The existence of additional information enabling the data subject to be identified does not, in itself, mean that pseudonymised data must be regarded as constituting, in all cases and for every person or entity, personal data for the purposes of the application of Regulation (EU) 2016/679. In particular, it should be clarified that information is not to be considered personal data for a given entity where that entity does not have means reasonably likely to be used to identify the natural person to whom the information relates.
-
-> The Commission may adopt implementing acts to specify means and criteria to determine whether data resulting from pseudonymisation no longer constitutes personal data for certain entities.
-
-Contents:
-1. The proposal's own recital language codifying the relative approach — tracing directly to the *EDPS v SRB* holding — into the GDPR's definition of personal data.
-2. The new Article 41a this proposal would add, empowering the Commission to specify by implementing act when pseudonymised data stops being personal data for certain entities. **Status, stated in the topic:** a proposal, not law, dated 19 November 2025.
-
-## EDPB-EDPS — Joint Opinion 2/2026 on the Proposal for a Regulation (Digital Omnibus)
+## EDPB-EDPS Joint Opinion 2/2026 on the Digital Omnibus proposal
 
 URL: https://www.edpb.europa.eu/system/files/documents/2026-02/edpb_edps_jointopinion_202602_digitalomnibus_en.pdf
-Version: Joint Opinion 2/2026, dated 10 February 2026 (fetched 2026-10-30)
+Version: adopted 10 February 2026
 
-> An implementing act as proposed could de facto affect the material scope of EU data protection law, effectively redefining the scope of when and for whom information is considered personal data. The EDPB and the EDPS consider that it should be the competence of supervisory authorities, under the control of the competent courts, to apply the definitions of the GDPR in an independent manner
+Note on source naming: CHAPTER.md names this opinion's EUR-Lex reference for the underlying
+Digital Omnibus proposal as "52025PC0837"; this document itself, quoting the proposal directly
+in its own footnotes, consistently cites it as "COM(2025) 836 final" -- this topic uses the
+number this primary document itself gives, not CHAPTER.md's.
 
-> For all the above reasons, the EDPB and the EDPS therefore suggest deleting proposed Article 41a GDPR from the Proposal.
+> The Proposal would add a new paragraph under Article 4(1) GDPR and Article 3(1) EUDPR to the definition of personal data as follows: 'Information relating to a natural person is not necessarily personal data for every other person or entity, merely because another entity can identify that natural person. Information shall not be personal for a given entity where that entity cannot identify the natural person to whom the information relates, taking into account the means reasonably likely to be used by that entity. Such information does not become personal for that entity merely because a potential subsequent recipient has means reasonably likely to be used to identify the natural person to whom the information relates'
 
-Contents:
-1. The two regulators' own stated objection to Article 41a: an implementing act deciding the scope of "personal data" risks sitting with the Commission rather than supervisory authorities and courts.
-2. Their explicit recommendation: delete Article 41a from the proposal.
+> The proposed amendments 'seek to codify interpretations of the Court of Justice of the European Union (CJEU), such as with regard to pseudonymisation of personal data'
 
-## European Parliament — Legislative Train Schedule, "The Digital Omnibus Regulation Proposal"
+> the EDPB and the EDPS strongly urge the co-legislators to not adopt the proposed changes to the definition of personal data.
 
-URL: https://www.europarl.europa.eu/legislative-train/theme-a-new-plan-for-europe-s-sustainable-prosperity-and-competitiveness/file-digital-package
-Version: Information updated as of 20/09/2026 (fetched 2026-10-30)
+> A newly proposed Article 41a GDPR would empower the Commission to adopt implementing acts to specify means and criteria to determine whether data resulting from pseudonymisation no longer constitute personal data for certain entities
 
-> Redefining "personal data" to allow AI companies greater flexibility in using such data. Pseudonymised data would not be considered personal data for an entity that does not have the means to re-identify the natural person to whom the information relates.
-
-> The co-rapporteurs didn't propose key amendments on the GDPR and ePrivacy Directive (e.g. personal data definition or provisions on cookies), leaving them for committees' negotiations.
-
-> The vote in COREPER II to approve the Council negotiating mandate prepared by the Cypriot Council Presidency, which was scheduled for 26 June was ultimately cancelled after agreement on some open issues could not be found. Work in the Council will now continue under the Irish Council Presidency.
-
-Contents:
-1. The tracker's own summary of the personal-data redefinition, confirming the topic's description of the proposal's effect.
-2. Confirmation that the Parliament's own co-rapporteurs left the personal-data definition for later committee negotiation — the point is still open, not settled.
-3. The specific status this topic states with its date: the Council's negotiating mandate vote was cancelled, not merely delayed to a later date without explanation.
+Contents: the Digital Omnibus's own proposed text (a new Article 4(1) paragraph making
+personal-data status relative to a given recipient's own means, and a new Article 41a letting
+the Commission specify by implementing act when pseudonymised data stops being personal data
+for certain entities), presented as a pending proposal with the EDPB/EDPS's own recommendation
+against it -- the "pending GDPR changes in the Digital Omnibus" clause of this topic's own
+scope line, with its actual legislative status as of this opinion's own adoption date.

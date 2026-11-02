@@ -1,0 +1,4 @@
+- **Whole-stage code generation**: the previous topic's own fused generated loop, covering Spark's own operators end to end inside the JVM. *Where you meet it:* the exact loop this topic's own Python function cannot join.
+- **User-defined function (UDF)**: a function a user writes, registered to run inside a query rather than one of Spark's own built-in expressions. *Where you meet it:* the thing this topic's timing measures three different versions of.
+- **Serialization**: converting an in-memory value into bytes to send it somewhere else (a network, a separate process). *Where you meet it:* the cost a pickled UDF pays once per row.
+- **Process boundary**: the line between two separate running programs, here the JVM driver/executor and a Python worker, that data has to cross through serialization rather than a direct function call. *Where you meet it:* the boundary this entire topic is about crossing cheaply or expensively.

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: delivery semantics vocabulary
+
+This topic leans on the delivery-semantics vocabulary already built — at-least/at-most/exactly-
+once as statements about effects, not deliveries — since a watermark's own "no more data before
+T" claim is the same kind of honest, named statement applied to completeness instead of delivery.
+If that's unfamiliar, start with
+[Delivery semantics and where duplicates arise](../delivery-semantics-duplicates/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="The Dataflow Model" href="https://www.vldb.org/pvldb/vol8/p1792-Akidau.pdf" by="Akidau, Chernyak &amp; Lax, 2015, VLDB">The watermark-as-heuristic framing this topic's reveal cites.</Resource>
+  <Resource kind="reading" title="Generating Watermarks" href="https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/dev/datastream/event-time/generating_watermarks/" by="Apache Flink, 1.20 docs">Idle-source detection and watermark alignment, the concrete current implementation.</Resource>
+</ul>
+
+</section>

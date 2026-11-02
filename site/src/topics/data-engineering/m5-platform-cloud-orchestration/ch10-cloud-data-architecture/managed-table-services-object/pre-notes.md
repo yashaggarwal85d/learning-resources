@@ -1,0 +1,6 @@
+- **Table bucket**: an S3 storage type purpose-built for Iceberg tables, distinct from a general-purpose bucket. *Where you meet it:* Amazon S3 Tables.
+- **Managed compaction**: a vendor's own background process combining small table files into fewer, larger ones. *Where you meet it:* S3 Tables, BigLake Iceberg tables, Snowflake-managed Iceberg.
+- **Orphan-file removal**: deleting storage objects no table snapshot references anymore. *Where you meet it:* S3 Tables' "unreferenced file removal."
+- **Spec version**: the version number of the table-format specification (Iceberg, Delta) a table's metadata declares. *Where you meet it:* Iceberg's format-version field.
+- **Engine skew**: the gap between what a table's writer supports and what one of its readers still supports, after the writer moves to a newer spec version. *Where you meet it:* Amazon Athena and Iceberg V3.
+- **Per-request premium**: a fee charged per object or per byte processed by a managed service, separate from ordinary storage and request pricing. *Where you meet it:* S3 Tables' monitoring and compaction fees.

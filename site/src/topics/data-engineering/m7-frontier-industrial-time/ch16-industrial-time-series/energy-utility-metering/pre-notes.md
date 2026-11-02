@@ -1,0 +1,6 @@
+- **Meter register**: a cumulative counter inside a meter that only ever increases, from this topic's own subject. *Where you meet it:* every section of this topic.
+- **Kilowatt**: a unit of power, a rate. *Where you meet it:* the power series this topic integrates into energy.
+- **Kilowatt-hour**: a unit of energy, power sustained for an hour. *Where you meet it:* the register's own unit, and the output of the integration this topic computes.
+- **Integral**: the area under a curve, from basic calculus. *Where you meet it:* turning a power series into an energy total by the trapezoid rule.
+- **Rollover**: a fixed-width counter wrapping back to zero after its maximum value, from this course's integer-overflow topic. *Where you meet it:* this topic's first counter failure.
+- **Sub-meter**: a smaller meter installed downstream of a larger, shared one. *Where you meet it:* one of the two allocation rules this topic compares.

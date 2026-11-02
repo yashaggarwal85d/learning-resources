@@ -1,0 +1,178 @@
+{
+  "topic": "dsa.bounded-mpmc-ring-queues",
+  "syllabus": [
+    {
+      "clause": "per-slot sequence numbers (Vyukov's bounded queue)",
+      "at": [
+        { "step": "What does the consumer see?" },
+        { "step": "The ring, two counters, and a lap number" },
+        { "step": "Equal, less, greater" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "the LMAX Disruptor's sequence barriers",
+      "at": [
+        { "step": "Does dividing the labor differently change this?" },
+        { "step": "Same lap counter, different place" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "false-sharing-aware padding",
+      "at": [
+        { "step": "False sharing, measured" },
+        { "deep": "Internals" },
+        { "deep": "Lab" }
+      ]
+    },
+    {
+      "clause": "→ Rust Systems Engineering Ch.7, Ch.29",
+      "at": [
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Vyukov's bounded MPMC queue, via two vendored copies (spdlog, Rust old libsync)",
+      "items": [
+        {
+          "item": "A power-of-two ring of cells, each with a sequence number starting at its own index; two shared counters (enqueue_pos, dequeue_pos); 64-byte padding around the buffer and each counter",
+          "at": [
+            { "step": "The ring, two counters, and a lap number" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "queue size must be power of two",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "crossbeam-rs, array_queue.rs",
+      "items": [
+        {
+          "item": "The implementation is based on Dmitry Vyukov's bounded MPMC queue",
+          "at": [
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "LMAX Disruptor technical paper",
+      "items": [
+        {
+          "item": "Cache lines are typically 32-256 bytes, most commonly 64; two variables sharing one cost as much write contention as a single variable",
+          "at": [
+            { "step": "False sharing, measured" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "LMAX Disruptor user guide",
+      "items": [
+        {
+          "item": "The Sequencer is the real core of the Disruptor; the Sequence Barrier holds references to the published Sequence and dependent consumers' own Sequences",
+          "at": [
+            { "step": "Does dividing the labor differently change this?" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "A two-phase approach to message publication: claim the slot, then publish the available data",
+          "at": [
+            { "step": "Does dividing the labor differently change this?" },
+            { "step": "Same lap counter, different place" },
+            { "deep": "Internals" }
+          ]
+        },
+        {
+          "item": "A claimed-but-unpublished slot results in the consumers stalling, unable to recover without a restart",
+          "at": [
+            { "step": "Same lap counter, different place" },
+            { "deep": "Internals" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer this session; see REVIEW.md)",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "Why a cell's own sequence number, not any other cell's state, is the only thing a dequeue call ever consults — which is exactly why a later, published slot cannot rescue a consumer stuck on an earlier, unpublished one",
+        "at": [
+          { "step": "Empty, not the message, not a wait" }
+        ]
+      },
+      {
+        "item": "Why 'no lock' and 'lock-free' are different promises: Vyukov's queue has no mutex anywhere in it and is still blocking by the strict definition, because a single suspended producer can hold up a specific consumer forever",
+        "at": [
+          { "step": "One compare-and-swap, still blocking" }
+        ]
+      },
+      {
+        "item": "Why the recorded stalled-producer history has no legal sequential order at all, while the overlapping version of the same two operations does — the difference is exactly the real-time precedence the linearizability definition tests for, not a property of the queue's implementation",
+        "at": [
+          { "step": "Checked against the definition, not just read off the code" }
+        ]
+      },
+      {
+        "item": "Why the Disruptor's own division of labor (Sequence, Sequencer, Sequence Barrier) does not remove the stall risk, only relocates which structure's documentation has to say so — the guide's own warning about an unpublished slot stalling consumers is the same failure Vyukov's queue has, independently derived",
+        "at": [
+          { "step": "Does dividing the labor differently change this?" }
+        ]
+      },
+      {
+        "item": "Why padding fixes false sharing without changing what either thread computes: the cost being removed is purely about which cache line each counter's writes invalidate, never about the counters' own values",
+        "at": [
+          { "step": "False sharing, measured" }
+        ]
+      },
+      {
+        "item": "Why this topic's own measured queue-throughput table (Vyukov's queue losing ground to a mutex as thread count rises on this specific machine) is not evidence that lock-free designs are slower in general — it is one honest result from one oversubscribed, four-core cloud sandbox, with a plausible mechanism (busy-spin vs. a backing-off mutex) named rather than asserted",
+        "at": [
+          { "deep": "Lab" },
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "Why the sequence comparison's three outcomes (equal, less, greater) are jointly exhaustive and mutually exclusive for both enqueue and dequeue — there is no fourth case the algorithm has to handle separately",
+        "at": [
+          { "step": "Equal, less, greater" }
+        ]
+      },
+      {
+        "item": "That the same per-slot lap-counter idea appears in two independently designed systems (Vyukov's sequence number, the Disruptor's per-slot availability tracking) solving the identical coordination problem in a different place in the design, not by coincidence but because any bounded ring shared by many writers needs some per-slot way to say whose turn it is",
+        "at": [
+          { "step": "Same lap counter, different place" }
+        ]
+      },
+      {
+        "item": "Why Michael-Scott queues (unbounded, linked, lock-free with helping) are a genuinely different design point than this topic's bounded, array-based, blocking one, not a strictly better alternative — the two solve for different constraints (fixed memory and backpressure vs. unbounded growth)",
+        "at": [
+          { "deep": "Frontier" }
+        ]
+      },
+      {
+        "item": "Why this topic's examples.c is the right place for every throughput and false-sharing number, and examples.py is the right place for every exact, asserted trace and linearizability verdict — conflating the two would either make an unverifiable timing claim look asserted, or make a deterministic logical claim look like it depended on a specific machine",
+        "at": [
+          { "deep": "Lab" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

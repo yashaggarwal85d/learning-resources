@@ -1,0 +1,7 @@
+- **Resource request**: what the scheduler reserves for a container when deciding which node it fits on. *Where you meet it:* every step.
+- **Resource limit**: the ceiling the kubelet and kernel enforce on a running container. *Where you meet it:* every step.
+- **Node pressure**: a node running low on a resource (memory, disk, PIDs), which triggers the kubelet's own eviction logic. *Where you meet it:* the hook and eviction steps.
+- **Eviction**: the kubelet terminating a pod to relieve node pressure. *Where you meet it:* the two-rankings step.
+- **Preemption**: the scheduler removing a lower-priority pod so a higher-priority pending pod can be scheduled. *Where you meet it:* the priority/resize step.
+- **Graceful termination**: giving a pod its configured time to shut down cleanly before a forced kill. *Where you meet it:* the PDB and preemption steps.
+- **Voluntary vs. involuntary disruption**: a disruption someone chose to cause (a drain, a delete) versus one caused by failure or resource exhaustion. *Where you meet it:* the PDB-scope step.

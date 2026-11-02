@@ -1,0 +1,4 @@
+- **Logical plan**: a description of what a query computes, before any decision about how to run it. *Where you meet it:* the first three of this reel's four plan stages all share this shape.
+- **Catalog**: Spark's own registry of table and column names and types, consulted during analysis. *Where you meet it:* the thing a parsed plan's unresolved references get checked against.
+- **Physical plan**: the concrete, executable version of a logical plan, with an actual strategy chosen for every operator. *Where you meet it:* the fourth and final stage this reel measures.
+- **Query optimizer plans (single-node)**: Chapter 2's own introduction to a rule-based optimizer choosing a plan shape before execution. *Where you meet it:* assumed, extended here to a cluster: the same kind of rules, now also choosing join strategies across machines.

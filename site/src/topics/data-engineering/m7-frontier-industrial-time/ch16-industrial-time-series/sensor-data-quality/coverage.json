@@ -1,0 +1,117 @@
+{
+  "topic": "de.sensor-data-quality",
+  "syllabus": [
+    {
+      "clause": "stuck/flatlined values,",
+      "at": [{ "step": "Reveal: a windowed variance check catches what a spike rule can’t" }]
+    },
+    {
+      "clause": "spikes, out-of-range and physically impossible readings,",
+      "at": [{ "step": "Reveal: a range check and a spike detector catch two more fault shapes" }]
+    },
+    {
+      "clause": "unit or scaling changes after a firmware update,",
+      "at": [{ "step": "Reveal: a firmware update shifts the whole level, not one point" }]
+    },
+    {
+      "clause": "duplicate and back-filled batches from gateways;",
+      "at": [{ "step": "Reveal: a replay dedupes by its key; a backfill and a clock fault don’t look alike" }]
+    },
+    {
+      "clause": "rule-based and statistical validation at ingest with quarantine rather than deletion.",
+      "at": [
+        { "step": "Reveal: every flagged point gets a flag and a seat in quarantine" },
+        { "step": "Reveal: measured precision, recall, and cost at the plant’s own rate" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OPC UA Part 4: StatusCode (7.38)",
+      "items": [
+        {
+          "item": "a StatusCode reports the outcome of an operation; results with a bad/failed status shall never be used, and uncertain/warning results shall be used with care",
+          "at": [{ "step": "Reveal: every flagged point gets a flag and a seat in quarantine" }]
+        }
+      ]
+    },
+    {
+      "source": "OPC UA Part 4: DataValue (7.11)",
+      "items": [
+        {
+          "item": "a DataValue pairs a value with a StatusCode; if the StatusCode indicates an error the value is to be ignored",
+          "at": [{ "step": "Reveal: every flagged point gets a flag and a seat in quarantine" }]
+        }
+      ]
+    },
+    {
+      "source": "OPC UA Part 8: EURange (5.3)",
+      "items": [
+        {
+          "item": "EURange defines the value range likely to be obtained in normal operation; sensor or instrument failure can return a value outside of it",
+          "at": [{ "step": "Reveal: a range check and a spike detector catch two more fault shapes" }]
+        }
+      ]
+    },
+    {
+      "source": "NIST: Kelvin",
+      "items": [
+        {
+          "item": "0 K equals -273.15 degrees C",
+          "at": [{ "step": "Reveal: a range check and a spike detector catch two more fault shapes" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Every dashboard agreeing a reading is stable is a claim about the dashboard's own rules, not about the sensor — a check nobody wrote yet can't call anything stable or broken.",
+        "at": [{ "step": "Hook: one exact reading for hours, and every chart calls it stable" }]
+      },
+      {
+        "item": "A value can be perfectly plausible and still be wrong — the tell isn't what the value is, it's that the value stopped doing the one thing a real signal always does.",
+        "at": [{ "step": "Reveal: a windowed variance check catches what a spike rule can’t" }]
+      },
+      {
+        "item": "A spike detector that isn't robust to the spike itself is checking the wrong neighborhood — exclude the candidate point before you compute what's normal around it.",
+        "at": [{ "step": "Reveal: a range check and a spike detector catch two more fault shapes" }]
+      },
+      {
+        "item": "The honest answer isn't that a flagged point is always safe to discard or always worth keeping — it's that you can't know which, until someone needs the record it would have been.",
+        "at": [{ "step": "Predict: does deleting a flagged point ever cost a post-mortem evidence?" }]
+      },
+      {
+        "item": "A rule built to catch one point at a time will never catch a fault that moves every point by the same amount — the fix isn't a stricter version of the same rule, it's a different question.",
+        "at": [{ "step": "Reveal: a firmware update shifts the whole level, not one point" }]
+      },
+      {
+        "item": "Two timestamps that should never disagree are worth more than one that's merely late — the disagreement, not the lateness, is what tells a backfill from a broken clock.",
+        "at": [{ "step": "Reveal: a replay dedupes by its key; a backfill and a clock fault don’t look alike" }]
+      },
+      {
+        "item": "A quarantine table isn't a softer delete — it's a second, separate claim about a point that leaves the original claim completely intact.",
+        "at": [{ "step": "Reveal: every flagged point gets a flag and a seat in quarantine" }]
+      },
+      {
+        "item": "A detection system that's merely accurate isn't done — it also has to run faster than the data it's checking arrives, or accuracy never gets the chance to matter.",
+        "at": [{ "step": "Reveal: measured precision, recall, and cost at the plant’s own rate" }]
+      },
+      {
+        "item": "No single rule in this topic could have stood in for any of the others — each fault shape needed its own specific question asked of the data.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Naming exactly which property a rule checks is what lets you predict, before you ever run it, which faults it will and won't catch.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

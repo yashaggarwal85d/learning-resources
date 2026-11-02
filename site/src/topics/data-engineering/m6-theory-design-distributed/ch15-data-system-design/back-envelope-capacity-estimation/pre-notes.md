@@ -1,0 +1,6 @@
+- **Throughput**: how much work a system handles per unit time (events a second, bytes a second). *Where you meet it:* the estimate chain and the reference-numbers reveal.
+- **Peak-to-average ratio**: how many times higher the busiest moment's rate is than the average rate over a longer window. *Where you meet it:* the dedicated reveal on what it actually changes.
+- **Replication factor**: how many copies of the same data a system keeps for fault tolerance. *Where you meet it:* the estimate chain's storage row, and the Kafka benchmark's own replication test.
+- **In-flight**: work that has started but not yet finished — events sitting in a queue, requests being processed. *Where you meet it:* Little's Law's own reveal.
+- **Order of magnitude**: a power-of-ten scale of a number, used to sanity-check an estimate is roughly right rather than off by a factor of ten or more. *Where you meet it:* the predict step, naming the gap the laptop estimate left.
+- **Connection pool**: a fixed, reused set of open connections a service draws from rather than opening a new one per request. *Where you meet it:* the consumer-sizing reveal.

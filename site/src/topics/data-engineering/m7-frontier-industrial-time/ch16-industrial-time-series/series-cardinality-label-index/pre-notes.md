@@ -1,0 +1,7 @@
+- **Label**: a key-value pair attached to a metric name that distinguishes one instance of it from another. *Where you meet it:* the thing whose exact combination defines a series.
+- **Series**: one metric name plus one specific, complete set of label values. *Where you meet it:* this topic's own central object, and its identity rule.
+- **Cardinality**: how many distinct values a label (or a whole series set) can take on. *Where you meet it:* the worst-case-vs-actual count, and the unbounded-label blowup.
+- **Inverted index**: a structure mapping a value back to the things that contain it, instead of the other way around. *Where you meet it:* the postings index, which maps a label value to the series that carry it.
+- **Postings list**: the sorted list of series IDs that share one label value. *Where you meet it:* what a multi-label query intersects.
+- **Regex matcher**: a query condition matched by pattern rather than exact value. *Where you meet it:* the case a postings index can't shortcut.
+- **High-cardinality**: a label whose distinct-value count is large or unbounded. *Where you meet it:* the hook's batch label, and why Prometheus's own documentation warns against it.

@@ -1,0 +1,124 @@
+{
+  "topic": "de.sort-based-shuffle-mechanics",
+  "syllabus": [
+    {
+      "clause": "map side partitions, sorts and spills records into one data file plus an index file per map task",
+      "at": [
+        { "step": "Reveal: one pair per map task" },
+        { "step": "Reveal: eight map tasks, eight pairs" }
+      ]
+    },
+    {
+      "clause": "the MapOutputTracker tells reducers where blocks live",
+      "at": [{ "step": "Reveal: how a reducer finds its blocks" }]
+    },
+    {
+      "clause": "reducers fetch over the network with bounded in-flight requests",
+      "at": [
+        { "step": "Reveal: how a reducer finds its blocks" },
+        { "deep": "Bounded in-flight fetch requests" }
+      ]
+    },
+    {
+      "clause": "why shuffle (disk + network + serialisation + O(M×R) small blocks) is the dominant cost of most jobs",
+      "at": [
+        { "step": "Reveal: blocks scale as M times R" },
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "RDD Programming Guide — Shuffle operations (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "the shuffle as an all-to-all, costly operation involving disk I/O, serialisation and network I/O",
+          "at": [{ "step": "Recap" }]
+        },
+        {
+          "item": "map-side results are buffered, sorted by target partition, then written to a single file",
+          "at": [{ "step": "Reveal: one pair per map task" }]
+        },
+        {
+          "item": "reduce-side tasks read the relevant sorted blocks from those files",
+          "at": [{ "step": "Reveal: how a reducer finds its blocks" }]
+        },
+        {
+          "item": "shuffle files persist on disk until their RDDs are garbage collected",
+          "at": [{ "out": "disk-lifecycle/cleanup is not this topic's own scope; named only as a sourced fact, not dramatised" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark source: IndexShuffleBlockResolver.scala (Apache Spark project, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "data of shuffle blocks from the same map task are stored in a single consolidated data file",
+          "at": [{ "step": "Reveal: one pair per map task" }]
+        },
+        {
+          "item": "the offsets of the data blocks in the data file are stored in a separate index file",
+          "at": [{ "step": "Reveal: one pair per map task" }]
+        },
+        {
+          "item": "the on-disk filename convention for a shuffle block's data file",
+          "at": [{ "out": "exact filename format named in SOURCES.md only; not independently dramatised beyond the quoted fact" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A map task's single data file is produced by the sort-based shuffle writer: records are buffered, sorted by target reduce partition (spilling to disk if memory runs out), then written once as one sorted, consolidated file.",
+        "at": [{ "step": "Reveal: one pair per map task" }]
+      },
+      {
+        "item": "The index file's size depends only on the number of reduce partitions (one offset entry each), never on data volume — this is why index bytes stay small relative to data bytes at every scale this topic measures.",
+        "at": [{ "out": "measured directly in examples.py (total_index_bytes < total_data_bytes); not separately dramatised as its own reel step" }]
+      },
+      {
+        "item": "The MapOutputTracker lives on the driver and is itself just a registry: map task ID to (executor, offsets-within-file) for every shuffle; a reducer's very first action before any fetch is a request to this registry, not a blind guess at executor addresses.",
+        "at": [{ "step": "Reveal: how a reducer finds its blocks" }]
+      },
+      {
+        "item": "A reducer's ShuffleBlockFetcherIterator bounds how many blocks it requests concurrently (spark.reducer.maxReqsInFlight-style limits) precisely because an unbounded fan-out of small block requests, M times R of them, would itself overwhelm a map-side executor's connections.",
+        "at": [{ "deep": "Bounded in-flight fetch requests" }]
+      },
+      {
+        "item": "Logical block count is exactly M times R (every map task's file has one span for every reduce partition), which is why both disk I/O and network fetch overhead grow multiplicatively, not additively, as either dimension scales — the chapter's recurring 'small blocks' cost driver.",
+        "at": [
+          { "step": "Reveal: blocks scale as M times R" },
+          { "step": "Recap" }
+        ]
+      },
+      {
+        "item": "Serialisation cost is paid twice per block that crosses the network: once on the map side writing it, once on the reduce side reading it back — named in the recap's cost list but not separately measured by this topic's own examples.py.",
+        "at": [{ "out": "serialisation cost is named, not independently benchmarked; deferred to this chapter's own later performance-tuning topic if one exists" }]
+      },
+      {
+        "item": "Spark 3+'s shuffle service and the push-based shuffle feature (server-side merge of small blocks before fetch) directly target the O(M×R) small-block cost this topic names, by reducing the number of distinct network requests a reducer must issue — a forward pointer, not built here.",
+        "at": [{ "out": "shuffle service / push-based shuffle is a named frontier, this chapter's own later topic or out of scope entirely" }]
+      },
+      {
+        "item": "Deleting and recreating a local shuffle directory mid-session (rather than letting Spark's BlockManager keep using the one it already initialised) crashes the next shuffle write with a FileNotFoundException — a real debugging finding from this topic's own examples.py, not a documented Spark behaviour, kept as a disclosed methodology note rather than a syllabus claim.",
+        "at": [{ "out": "methodology-only; disclosed in FACT-CHECK.md, not a syllabus clause" }]
+      },
+      {
+        "item": "A sort-based shuffle writer differs from the older hash-based shuffle writer (removed in Spark 2.0) precisely in writing one consolidated sorted file per map task instead of one file per (map task, reduce partition) pair — the historical reason the current scheme avoids an O(M×R) file-count explosion even though block count itself is still O(M×R).",
+        "at": [{ "out": "named only as historical contrast; hash-based shuffle predates Spark 4.x and is not independently sourced here" }]
+      },
+      {
+        "item": "Spill thresholds (spark.shuffle.spill, the memory fraction before a map task's sort buffer writes partial output to disk) determine how many intermediate spill files one map task produces before its final merge pass — the merge is what collapses those spills back into the single consolidated data file this topic names, not a separate persistent cost.",
+        "at": [{ "out": "spill-threshold tuning is named only as a mechanism detail; not independently measured by this topic's own examples.py" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,7 @@
+- **Pipelined (MPP) exchange** -- an execution model, used by Trino, where data flows directly from one stage to the next in memory, with nothing written to durable storage in between.
+- **Staged, materialised-shuffle execution** -- Spark's own model: each stage's output is written to shuffle files before the next stage starts, at the cost of latency.
+- **Fault-tolerant execution** -- an optional Trino mode (off by default) that spools exchange data to storage, letting an individual failed task retry from what's already saved instead of failing the whole query.
+- **`TASK` retry policy** -- Trino's per-task fault-tolerant execution mode, requiring a configured exchange manager to hold spooled data.
+- **Operator-level streaming** -- Ray Data's execution model: each physical operator reads and writes a stream of blocks through its own out queue, rather than materialising a whole dataset between steps.
+- **Out queue** -- the per-operator buffer Ray Data's executor moves an operator's output blocks into, used to decide which operator runs next and to apply backpressure.
+- **Backpressure** -- Ray Data stopping new tasks once enough unconsumed data is already buffered, bounding memory use without a Spark-style materialised stage boundary.

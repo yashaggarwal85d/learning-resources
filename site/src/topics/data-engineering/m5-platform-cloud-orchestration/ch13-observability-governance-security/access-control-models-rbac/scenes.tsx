@@ -2,7 +2,6 @@ import { C, Svg, T } from '../../../../../reels/kit';
 import { easeOut, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
-/** A label-left / value-right row, stacked vertically with generous gaps (DESIGN.md, phone text scaling). */
 function Row({ y, label, value, valueColor = C.crema, o = 1 }: { y: number; label: string; value: string; valueColor?: string; o?: number }) {
   return (
     <g opacity={o}>
@@ -18,115 +17,100 @@ function Row({ y, label, value, valueColor = C.crema, o = 1 }: { y: number; labe
 
 export function Hook({ t }: StepCtx) {
   return (
-    <Svg label="fourteen teams, sixty datasets, three environments." h={200}>
-      <Row y={70} label="a role per cell" value="least privilege, they say" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="total roles" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="14 teams, 60 datasets, 3 environments: one role per triple, for least privilege" h={200}>
+      <Row y={70} label="teams x datasets x envs" value="one role each" o={easeOut(seg(t, 0, 0.6))} />
+      <Row y={130} label="new dataset" value="one change, or many?" valueColor={C.focus} o={easeOut(seg(t, 0.4, 1))} />
     </Svg>
   );
 }
 
-export function Predict({ t }: StepCtx) {
+export function RevealRBACShape({ t }: StepCtx) {
   return (
-    <Svg label="one new dataset. One change, or fourteen?" h={200}>
-      <Row y={70} label="role grid" value="one change?" />
-      <Row y={130} label="tag rule" value="not yet revealed" valueColor={C.focus} />
+    <Svg label="a role holds many privileges; a user holds one or more roles" h={200}>
+      <Row y={70} label="role" value="holds privileges" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="user" value="assigned roles" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    </Svg>
+  );
+}
+
+export function PredictRoleCount({ t }: StepCtx) {
+  return (
+    <Svg label="14 teams, 60 datasets, 3 environments, one role per triple. How many roles?" h={200}>
+      <Row y={70} label="14 x 60 x 3" value="one role per triple" />
+      <Row y={130} label="total roles?" value="not yet revealed" valueColor={C.focus} />
     </Svg>
   );
 }
 
 export function RevealRoleCount({ t }: StepCtx) {
   return (
-    <Svg label="teams times datasets times environments." h={260}>
-      <Row y={50} label="fourteen teams" value="times sixty datasets" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="times three" value="environments" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="total roles" value="unreviewable" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="measured: 2,520 roles for this one shop" h={200}>
+      <Row y={70} label="14 x 60 x 3" value="2,520 roles" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="reviewable?" value="no longer, measured" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealAbacRule({ t }: StepCtx) {
+export function ElaborateABACRule({ t }: StepCtx) {
   return (
-    <Svg label="read the tag, not the team." h={260}>
-      <Row y={50} label="tier, category" value="tags on the data" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="one short rule" value="reads the tags" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="the whole grid" value="replaced" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="ABAC: one rule over subject, object and environment attributes" h={200}>
+      <Row y={70} label="subject, object, env" value="attributes, not names" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="one rule" value="replaces the grid" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealDecisionEnforcement({ t }: StepCtx) {
+export function PredictNewDataset({ t }: StepCtx) {
   return (
-    <Svg label="ask here, decide there." h={260}>
-      <Row y={50} label="enforcement point" value="in the data path" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="decision point" value="answers the question" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="many surfaces" value="one shared engine" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="data science gets a new restricted dataset. New RBAC roles vs new ABAC edits?" h={200}>
+      <Row y={70} label="new restricted dataset" value="access for 1 team" />
+      <Row y={130} label="RBAC vs ABAC changes?" value="not yet revealed" valueColor={C.focus} />
     </Svg>
   );
 }
 
-export function RevealPolicyEngines({ t }: StepCtx) {
+export function RevealNewDatasetCost({ t }: StepCtx) {
   return (
-    <Svg label="ask the engine. Back comes a verdict." h={260}>
-      <Row y={50} label="OPA, Cedar" value="policy engines" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="ask a question" value="allow or deny" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="or narrower" value="filter rows, mask" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="measured: 3 new roles under RBAC, 0 edits under ABAC" h={200}>
+      <Row y={70} label="RBAC" value="3 new roles" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="ABAC" value="0 edits, tag already matches" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealIdpFederation({ t }: StepCtx) {
+export function ElaborateDecisionEnforcement({ t }: StepCtx) {
   return (
-    <Svg label="prove it once, at the IdP." h={200}>
-      <Row y={70} label="SAML, OIDC" value="prove identity once" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="every system" value="trusts that proof" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="the decision point and the enforcement point are two different jobs" h={200}>
+      <Row y={70} label="decision point" value="one engine, many askers" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="enforcement point" value="applies the verdict" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealProvisioning({ t }: StepCtx) {
+export function RevealIdentityFederation({ t }: StepCtx) {
   return (
-    <Svg label="a second job: the account itself." h={260}>
-      <Row y={50} label="proving who you are" value="one job" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="having an account" value="a separate job" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="SCIM" value="does the second" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
-    </Svg>
-  );
-}
-
-export function RevealOffboarding({ t }: StepCtx) {
-  return (
-    <Svg label="remove them once. Every system follows." h={200}>
-      <Row y={70} label="remove at the IdP" value="one action" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="downstream systems" value="all follow, too" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="identity comes from outside the policy engine: SSO authenticates, SCIM provisions" h={200}>
+      <Row y={70} label="SSO (SAML, OIDC)" value="authenticates once" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="SCIM" value="removes access everywhere" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
 export function RevealAccessReviews({ t }: StepCtx) {
   return (
-    <Svg label="a correct rule, an expired reason." h={260}>
-      <Row y={50} label="rule evaluated" value="correctly, every time" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="the reason" value="can go stale anyway" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="a periodic review" value="catches it" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="entitlements drift over time; a periodic review is the catch policy alone misses" h={200}>
+      <Row y={70} label="entitlements" value="drift, silently" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="periodic review" value="an owner attests" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
 export function Recap({ t }: StepCtx) {
   return (
-    <Svg label="roles grow, tags stay flat." h={260}>
-      <Row y={50} label="roles" value="grow with every cell" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="tags" value="one rule, stays flat" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="review" value="still needed, always" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
-    </Svg>
-  );
-}
-
-export function ProveIt({ t }: StepCtx) {
-  return (
-    <Svg label="one dataset, every team. How many changes?" h={200}>
-      <Row y={70} label="role grid" value="fourteen times three" o={easeOut(seg(t, 0, 0.4))} />
-      <Row y={130} label="tag rule" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.65))} />
+    <Svg label="RBAC multiplies into a grid; ABAC is one rule; a policy still needs a place to run" h={280}>
+      <Row y={50} label="RBAC" value="2,520 roles, measured" o={easeOut(seg(t, 0, 0.3))} />
+      <Row y={100} label="ABAC" value="one rule, 0 new edits" o={easeOut(seg(t, 0.15, 0.45))} />
+      <Row y={150} label="decision vs enforcement" value="two separate jobs" valueColor={C.focus} o={easeOut(seg(t, 0.4, 0.75))} />
     </Svg>
   );
 }

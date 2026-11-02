@@ -1,0 +1,104 @@
+{
+  "topic": "de.spark-on-kubernetes-internals",
+  "steps": [
+    {
+      "lines": [
+        "A cheaper class of machine comes with a catch: it can be taken back on short notice, with only a brief warning first.",
+        "One of those machines, running part of a nightly job overnight, is about to be reclaimed."
+      ]
+    },
+    {
+      "lines": [
+        "Before anything is done to soften the blow, what actually gets lost when that machine disappears mid-job?",
+        { "beat": 0.4 },
+        "Just the one piece of work that happened to be running right then, or something bigger than that?"
+      ],
+      "answer": [
+        "Something bigger. The piece of work in flight isn't the only casualty — everything that produced the data sitting on that machine has to be redone too, because that data goes with it.",
+        "That's a whole phase of the job repeated, not one task."
+      ]
+    },
+    {
+      "lines": [
+        "Submitting work normally means handing it to a cluster manager that already exists, standing by before you ever show up.",
+        "Here there's no such thing waiting. One process starts, and that process itself turns around and asks the platform to create every worker it needs, then connects to them once they exist.",
+        { "beat": 0.3 },
+        "The coordinator builds its own workforce, on the spot, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Once the work is done, every worker it created shuts down and disappears.",
+        "The coordinator doesn't. It sticks around afterward, marked finished, holding none of the machine's resources at all — kept purely so whoever runs this later can still read what happened."
+      ]
+    },
+    {
+      "lines": [
+        "What actually removes every worker when the coordinator itself is finally deleted is one explicit tie, pointing from each worker back to it by name.",
+        "Get that name wrong, and deleting the real coordinator leaves its workers behind, running, doing nothing, billed anyway."
+      ]
+    },
+    {
+      "lines": [
+        "Letting the number of workers shrink and grow on its own runs into a problem this particular platform doesn't solve for you: there's no separate, standing place to hand off data that's still needed once the worker holding it goes idle.",
+        "So shrinking has to ask first: is this particular idle worker still the only copy of something another phase needs? If so, it has to stay, even while it's doing nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Left to its own defaults, that question never gets a hard deadline. A worker holding onto needed data can simply sit there indefinitely, waiting for the data itself to eventually be cleaned up naturally rather than on any fixed schedule.",
+        { "beat": 0.3 },
+        "Which is exactly the resource cost of that convenience: nothing ever forces the question."
+      ]
+    },
+    {
+      "lines": [
+        "Killed outright, a worker takes whatever it was holding with it, and all of that has to be produced again from scratch.",
+        "Given the chance to leave gracefully instead, it can move everything it's holding over to its neighbors first, before it actually goes — so nothing downstream even notices it left."
+      ]
+    },
+    {
+      "lines": [
+        "Graceful departure is switched on now. The warning before the machine actually disappears is short, but fixed.",
+        { "beat": 0.4 },
+        "Does any of that earlier phase still have to be redone?"
+      ],
+      "answer": [
+        "Not if everything finishes moving before the warning runs out. Nothing has to be redone at all in that case.",
+        "The entire question comes down to a race: does the handoff finish inside the window, whatever caused that window to open in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "One more way to sidestep the whole problem: never let that in-between data live on a worker in the first place.",
+        "Hand it instead to a separate service built only to hold it. Lose a worker after that, and there's nothing left on it to lose — you've just added one more thing that has to be run and kept healthy."
+      ]
+    },
+    {
+      "lines": [
+        "Anything the usual configuration knobs can't express — a toleration, a sidecar, a security setting — can still be written directly into a template for the pod itself.",
+        "But wherever that template and the usual configuration disagree on the same value, the usual configuration always wins. The template only ever fills in the gaps it leaves open."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate, real projects both do roughly the same thing here: turn \"run this application\" into a resource the platform itself watches and reconciles, the same loop from earlier in this chapter, pointed at a different kind of job.",
+        "They are not the same project wearing two names, and not interchangeable — each defines its own resource, under its own name."
+      ]
+    },
+    {
+      "lines": [
+        "One managed option runs this workload on infrastructure you still operate yourself, just with someone else handling the application layer on top.",
+        "Another skips that infrastructure layer entirely, carving out its own slice of compute inside a platform you didn't have to build.",
+        { "beat": 0.3 },
+        "Less to run yourself, either way, in exchange for depending more on whichever one you pick."
+      ]
+    },
+    {
+      "lines": [
+        "A worker here is meant to be thrown away: lose it, and whatever it was doing simply happens again somewhere else.",
+        "Not everything running on the same platform can be treated that way."
+      ]
+    }
+  ]
+}

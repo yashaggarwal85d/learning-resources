@@ -1,0 +1,81 @@
+{
+  "topic": "de.embedding-pipelines-at-scale",
+  "steps": [
+    {
+      "lines": [
+        "A support desk's search tool turns every ticket into a vector every single night, the entire collection, start to finish.",
+        "Most of those tickets closed weeks ago and haven't changed a single word since.",
+        "And yet the bill for doing this keeps climbing right alongside the size of the collection."
+      ]
+    },
+    {
+      "lines": [
+        "So what one change would actually bring that bill down the most, without putting correctness at risk at all?",
+        "Would shrinking the model to something cheaper and a little less accurate do it?",
+        "Or is there a way to skip almost all of that nightly work outright, for free."
+      ],
+      "answer": [
+        "Swapping in a weaker model trades away quality everywhere, on every single ticket, just to save money.",
+        "The better move is noticing that an edit touches one chunk of text, so only that one chunk actually needs redoing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the mechanism underneath that idea, stated plainly.",
+        "Take a fingerprint of each small chunk of text on its own, never the whole document at once, and keep that fingerprint stored alongside its vector.",
+        "The next night, compare the fresh fingerprint against the stored one. Match, skip it entirely. Different, redo just that one chunk."
+      ]
+    },
+    {
+      "lines": [
+        "Now, how fast can any of this actually run, and what does running it cost.",
+        "A published study states its own method honestly: one fixed length of text per item, the largest batch size its hardware could hold, and a stated rental price for that hardware.",
+        "Rerunning that same method on far smaller hardware, and saying so plainly, is reading a study for its approach, not borrowing its headline number and pretending it's yours."
+      ]
+    },
+    {
+      "lines": [
+        "There's a second kind of ceiling worth naming separately, though.",
+        "A service reached over the open internet instead of run on your own hardware caps how much text it will process in a given stretch of time, no matter how much spare computing power sits idle elsewhere.",
+        "So the exact same backlog of text can be limited by raw computing power in one setup, and limited by that service's own allowance in the other."
+      ]
+    },
+    {
+      "lines": [
+        "Deleting the source document can't stop there.",
+        "Its vector has to go too, marked as gone, or search keeps happily returning something that was supposed to have disappeared.",
+        "That's not tidying up after the fact. That's the actual definition of deleting something correctly."
+      ]
+    },
+    {
+      "lines": [
+        "Switching which model produces the vectors is a bigger deal than it first sounds.",
+        "Two different models, pointed at the exact same piece of text, land on two vectors that simply don't live in the same space as each other.",
+        "So there's no honest way to compare one model's output against the other's, and that single fact shapes everything about how a switch has to happen."
+      ]
+    },
+    {
+      "lines": [
+        "Given that, here's how the switch actually gets made without anything breaking.",
+        "The old model keeps answering every single search that comes in, uninterrupted, while a complete second collection gets built from scratch using the new model.",
+        "Only once that second collection is entirely finished does anything get pointed toward it. Nothing switches over early, and nothing goes unanswered in between."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole thing together now.",
+        "Read a published study for its approach, never for a number lifted out of context. Fingerprint small chunks so an edit only redoes what actually changed. Mark a deletion as gone everywhere, not just at the source. And never point queries at a replacement collection until it's completely ready."
+      ]
+    },
+    {
+      "lines": [
+        "A team currently paying an outside service by the token decides to run the very same model on hardware they own instead.",
+        "Out of everything covered here, fingerprinting changed chunks, marking deletions as gone, and building a second collection before switching to it, which of those actually has to change because of that move?"
+      ],
+      "answer": [
+        "None of those three actually care which kind of ceiling happens to be limiting things at any given moment.",
+        "The only thing that genuinely changes is which ceiling applies at all: owned hardware gets limited by its own raw computing power instead of by someone else's allowance."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "topic": "de.event-time-watermarks-late-data",
+  "syllabus": [
+    {
+      "clause": "withWatermark as max-observed-event-time minus delay; global watermark across multiple inputs (min by default, configurable max); records behind the watermark dropped; how the watermark bounds state and when each output mode emits (cross-ref §9.2 for the general theory).",
+      "at": [
+        { "step": "Reveal: the watermark, computed by hand" },
+        { "step": "Predict: an event arrives late, inside the delay. Counted?" },
+        { "step": "Reveal: counted -- its window hasn't been evicted yet" },
+        { "step": "Elaborate: lateness alone isn't the test" },
+        { "step": "Predict: same lateness, one trigger later. Counted this time?" },
+        { "step": "Reveal: dropped -- never counted, anywhere" },
+        { "step": "Elaborate: a window dies exactly when the watermark passes its end" },
+        { "step": "Reveal: global watermark across multiple inputs" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"Structured Streaming: APIs on DataFrames and Datasets\" docs",
+      "items": [
+        {
+          "item": "the watermark is defined on a column's value plus a threshold for how late data is allowed to be",
+          "at": [{ "step": "Reveal: the watermark, computed by hand" }]
+        },
+        {
+          "item": "the watermark is set as (max event time - delay) at the beginning of every trigger",
+          "at": [{ "step": "Reveal: the watermark, computed by hand" }]
+        },
+        {
+          "item": "once the watermark advances past a window, that window's intermediate state is cleared and all subsequent data for it is considered too late and ignored",
+          "at": [{ "step": "Elaborate: a window dies exactly when the watermark passes its end" }]
+        },
+        {
+          "item": "with multiple input streams, Structured Streaming tracks each stream's own maximum event time separately and chooses a single global watermark from them, the minimum by default",
+          "at": [{ "step": "Reveal: global watermark across multiple inputs" }]
+        },
+        {
+          "item": "the multiple watermark policy can be set to max instead of the default min via spark.sql.streaming.multipleWatermarkPolicy",
+          "at": [{ "step": "Reveal: global watermark across multiple inputs" }]
+        }
+      ]
+    },
+    {
+      "source": "EventTimeWatermarkExec.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "the watermark is calculated from the maximum observed event time and a user-specified delay, after which the engine assumes no more late records for that period",
+          "at": [{ "step": "Reveal: the watermark, computed by hand" }]
+        },
+        {
+          "item": "a child node emitting rows older than the global watermark causes the engine to throw a query execution error and fail the query",
+          "at": [{ "step": "Elaborate: a window dies exactly when the watermark passes its end" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The eviction rule this topic measures (a window's state clears once the watermark passes that window's own end) is a stricter, later-firing condition than the naive 'event time older than watermark' rule the docs' own prose illustration suggests at first read -- an event can be later than the watermark by its own timestamp and still be correctly counted, as long as its window's end hasn't yet fallen behind the watermark.",
+        "at": [{ "out": "the precise distinction between raw-event-time comparison and window-end eviction named only; this topic's own examples.py measures exactly this distinction directly, through two probes that would have produced the same (wrong) result under the naive rule" }]
+      },
+      {
+        "item": "spark.sql.streaming.multipleWatermarkPolicy's max setting trades the min default's safety (no stream's late data is ever dropped sooner than that stream's own watermark would allow) for lower latency, since the global watermark then advances at the fastest stream's pace regardless of how far behind a slower stream's own clock still is.",
+        "at": [{ "out": "the max policy's own latency-versus-correctness tradeoff reasoning named only; this topic's own examples.py uses a single input stream, so the multi-stream policy itself is never exercised live" }]
+      },
+      {
+        "item": "A query that emits rows behind the global watermark doesn't silently drop them at the aggregation operator the way a late input row does -- EventTimeWatermarkExec enforces this as a hard query execution error further downstream, meaning a developer mixing stateful operators with mismatched watermark assumptions gets a crash, not quietly wrong output.",
+        "at": [{ "out": "the hard-failure guarantee for a query-internal watermark violation, as distinct from an input row simply being dropped, named only; this topic's own examples.py never constructs a query shape that would trigger this internal check" }]
+      },
+      {
+        "item": "The watermark's own one-trigger lag (this topic's measured finding, that the watermark reported for batch N reflects the maximum event time seen through batch N-1) means a single very early batch with no prior watermark at all is unconstrained -- the first batch can never have any of its own data classified as late, since no watermark yet exists to compare against.",
+        "at": [{ "out": "the first-batch special case, following from the measured one-trigger lag, named only; this topic's own examples.py doesn't isolate or assert on the first batch specifically" }]
+      },
+      {
+        "item": "Append output mode (not directly probed here, cross-referenced to the next topic) only emits a windowed aggregation's final row once the watermark has passed that window's end -- the same eviction instant this topic measures is, under append mode, also the emission instant, tying this topic's own bound directly to the next topic's output-mode semantics.",
+        "at": [{ "out": "the coincidence of eviction instant and append-mode emission instant named only, as the bridge to the next topic's own scope; this topic's own examples.py uses update mode throughout, never append" }]
+      },
+      {
+        "item": "A watermark computed from a column other than the one used in windowed aggregation (withWatermark on one timestamp column, groupBy(window(...)) on a different one) is rejected by Spark's analyzer -- the watermark column and the windowing column are required to agree, a constraint this topic's own single-timestamp-column examples.py never has occasion to violate.",
+        "at": [{ "out": "the watermark-column-must-match-windowing-column analyzer constraint named only; this topic's own examples.py uses the same ts column for both, so the constraint is never exercised" }]
+      },
+      {
+        "item": "Spark's UI reports the watermark and the maximum event time per batch through the same StreamingQueryProgress.eventTime map this topic's own examples.py reads directly via recentProgress -- the identical fields a developer would inspect live, in production, to debug exactly the drop this topic demonstrates deliberately.",
+        "at": [{ "out": "the production-debugging path through the same fields this topic measures programmatically named only; this topic's own examples.py reads recentProgress directly rather than through the UI" }]
+      },
+      {
+        "item": "dropDuplicatesWithinWatermark (covered by name only in the next topic's own scope) reuses the identical watermark-bounds-state mechanism this topic measures, but for deduplication state rather than aggregation state -- the same eviction rule, a different kind of state being evicted.",
+        "at": [{ "out": "the watermark mechanism's reuse for deduplication, as a preview of the next topic's own scope, named only; this topic's own examples.py uses only a windowed aggregation, never deduplication" }]
+      },
+      {
+        "item": "A watermark's delay threshold interacts with the chosen trigger interval: a delay shorter than the trigger interval still only advances once per trigger (this topic's own one-trigger-lag finding), so a very short delay configured against a long trigger interval buys far less responsiveness to late data than the delay value alone would suggest.",
+        "at": [{ "out": "the delay-versus-trigger-interval interaction and its effect on real responsiveness named only; this topic's own examples.py uses a fixed delay and a fixed short trigger interval, not a sweep across different delay-to-interval ratios" }]
+      },
+      {
+        "item": "Static (non-streaming) joins and filters placed before withWatermark in a streaming query's plan don't themselves participate in watermark tracking -- only the column named in withWatermark, and only after it's applied, feeds the maximum-event-time calculation this topic measures, so watermark placement in the query itself matters, not only the delay value.",
+        "at": [{ "out": "watermark placement within the query plan, and its effect on what feeds the maximum-event-time calculation, named only; this topic's own examples.py applies withWatermark immediately after reading the stream, with no intervening transformation" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

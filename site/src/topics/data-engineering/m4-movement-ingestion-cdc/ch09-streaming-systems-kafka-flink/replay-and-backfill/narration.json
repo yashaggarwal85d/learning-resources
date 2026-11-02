@@ -1,0 +1,85 @@
+{
+  "topic": "de.replay-and-backfill",
+  "steps": [
+    {
+      "lines": [
+        "Somebody finds a number that's been wrong for a while, long after it first went wrong.",
+        "The fix isn't retrying one record. It's running a whole stretch of history back through again.",
+        "And the very first question is where that second run's output should actually land."
+      ]
+    },
+    {
+      "lines": [
+        "One earlier fix handled a single stuck record, picked out on its own.",
+        "This is the same basic move, stretched across a whole slice of time instead.",
+        "And the starting point for that slice is simply a moment on a clock."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Say the fix means running everything back through, from the very first record this topic ever held.",
+        "Is that actually what has to happen, or is there a narrower way to do it?"
+      ],
+      "answer": [
+        "There's a narrower way, and it's usually the right one.",
+        "Only the specific slice that was actually wrong needs touching at all.",
+        "Everything outside that slice never needed fixing in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Narrow it down to one lane, if that's the only one that was ever wrong.",
+        "Or narrow it down to a stretch of time, bounded on both ends.",
+        "Either way, nothing outside that boundary gets touched at all."
+      ]
+    },
+    {
+      "lines": [
+        "Sometimes that stretch of history isn't sitting in the fast, local copy anymore.",
+        "If it's still within how long the slower, cheaper copy sticks around, it's pulled from there instead.",
+        "Past that, it has to be put back together from wherever it already landed downstream."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "Picture a second run of a fix landing its output right on top of the first, original numbers.",
+        "What does that quietly cost, once it's done?"
+      ],
+      "answer": [
+        "It costs the one thing anyone actually needed afterward.",
+        "The original numbers are simply gone, overwritten by the fix.",
+        "And without them, there's nothing left to check the fix actually worked."
+      ]
+    },
+    {
+      "lines": [
+        "Land the fix right on top of the original, and the original stops existing.",
+        "There's no before to compare against anymore, only the after.",
+        "Whether the fix actually helped becomes a question nobody can answer."
+      ]
+    },
+    {
+      "lines": [
+        "Land it somewhere new instead, clearly marked apart from the original, and both survive.",
+        "Now the two can be set side by side, and walked back if the fix turns out wrong.",
+        "And anything that run would normally trigger out in the world gets told, plainly, not to fire again."
+      ]
+    },
+    {
+      "lines": [
+        "Every figure in this reel came from one real run, happening just now, of this topic's own toy models.",
+        "The jump straight to the right starting point, clean.",
+        "And the side-by-side proof: one run that erased its own history, and one that didn't."
+      ]
+    },
+    {
+      "lines": [
+        "So: start from a point in time, not a raw position nobody can reason about.",
+        "Touch only the slice that was actually wrong, never more than that.",
+        "And land the result somewhere new, with its side effects switched off, so fixing one mistake never risks making another."
+      ]
+    }
+  ]
+}

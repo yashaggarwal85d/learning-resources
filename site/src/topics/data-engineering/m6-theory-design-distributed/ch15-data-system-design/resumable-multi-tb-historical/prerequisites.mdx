@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the resilience and concurrency concepts this backfill applies
+
+<ul class="resources">
+  <Resource kind="reel" title="Resilient clients: timeouts, retries, idempotency" domain="data-engineering" host="de.resumable-multi-tb-historical">The retry and idempotency patterns this topic's chunk design reuses at historical scale.</Resource>
+  <Resource kind="reel" title="Connection pooling and database clients" domain="data-engineering" host="de.resumable-multi-tb-historical">The pool-sizing arithmetic this topic's throttle leaves headroom against.</Resource>
+  <Resource kind="reel" title="Concurrent-writer lakehouse with time travel" domain="data-engineering" host="de.resumable-multi-tb-historical">The writer this backfill becomes once it starts committing to the same table.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Backfilling data" href="https://docs.dagster.io/concepts/partitions-schedules-sensors/backfills" by="Dagster documentation">The per-partition backfill mechanism this topic's chunking decision is built on.</Resource>
+  <Resource kind="reading" title="Branching and Tagging" href="https://iceberg.apache.org/docs/latest/branching/" by="Apache Iceberg documentation">The audit-branch-then-fast-forward mechanism this topic's shadow-and-swap plan is built on.</Resource>
+</ul>
+
+</section>

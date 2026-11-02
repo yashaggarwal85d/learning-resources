@@ -1,0 +1,106 @@
+{
+  "topic": "de.shuffle-joins-sort-merge-hash",
+  "syllabus": [
+    {
+      "clause": "sort-merge join as the default for large-large equi-joins (sort both sides, stream merge, spill-friendly) vs shuffled hash join (build a per-partition hash table, no sort, OOM-prone if the build side is skewed)",
+      "at": [
+        { "step": "Reveal: sort-merge join, a real Sort step on each side before the merge" },
+        { "step": "Predict: a hint tells Spark to use the other strategy on one side" },
+        { "step": "Reveal: a shuffled hash join, with zero Sort steps anywhere in the plan" },
+        { "step": "Predict: the build side of that hash join is made artificially huge" },
+        { "step": "Reveal: the planner's own comment names the real risk directly; sort-merge has no equivalent" }
+      ]
+    },
+    {
+      "clause": "how the planner chooses and when to override with hints",
+      "at": [
+        { "step": "Reveal: sort-merge join, a real Sort step on each side before the merge" },
+        { "step": "Reveal: a shuffled hash join, with zero Sort steps anywhere in the plan" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "SparkStrategies.scala — JoinSelection (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "building the hash map in memory can OOM when the build side is big",
+          "at": [{ "step": "Reveal: the planner's own comment names the real risk directly; sort-merge has no equivalent" }]
+        },
+        {
+          "item": "the planner only picks shuffled hash when one side is small enough AND spark.sql.join.preferSortMergeJoin is false",
+          "at": [{ "step": "Reveal: sort-merge join, a real Sort step on each side before the merge" }]
+        }
+      ]
+    },
+    {
+      "source": "SortMergeJoinExec.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "SortMergeJoinExec performs a sort merge join of two child relations",
+          "at": [{ "step": "Reveal: sort-merge join, a real Sort step on each side before the merge" }]
+        }
+      ]
+    },
+    {
+      "source": "ShuffledHashJoinExec.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "ShuffledHashJoinExec performs a hash join by first shuffling the data on the join keys",
+          "at": [{ "step": "Reveal: a shuffled hash join, with zero Sort steps anywhere in the plan" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The planner's own documented hint-priority order (broadcast over sort-merge over shuffle-hash over shuffle-replicate-NL) means a `SHUFFLE_HASH` hint can still be overridden by a `BROADCAST` hint on the other side — this topic's own examples.py applies exactly one hint at a time and never exercises the priority order itself.",
+        "at": [{ "out": "the hint priority order named only; this topic's own measurement applies one hint in isolation" }]
+      },
+      {
+        "item": "`spark.sql.join.preferSortMergeJoin` (default true) is the single config this topic's own examples.py leaves untouched throughout — flipping it to false would let the planner pick shuffled hash automatically for a small-enough side even without an explicit hint, a different route to the same physical operator this topic's own claim 2 reaches via a hint instead.",
+        "at": [{ "out": "preferSortMergeJoin's own config-based route to a shuffled hash join, without any hint, named only" }]
+      },
+      {
+        "item": "When both sides of a join carry conflicting strategy hints (one side hinted SHUFFLE_HASH, the other BROADCAST), Spark resolves the conflict by the documented priority order rather than by a tie-break on table size — a case this topic's own examples.py never constructs, since only one side ever carries a hint.",
+        "at": [{ "out": "conflicting-hint resolution named only; this topic's own examples.py hints exactly one side at a time" }]
+      },
+      {
+        "item": "Broadcast nested-loop join is named in the planner's own source comment as 'the final solution' once no other strategy applies, explicitly acknowledging it 'may OOM but we don't have other choice' — a third, more extreme failure mode than shuffled hash's own OOM risk, reached only when a join is non-equi and neither side is small enough to broadcast cheaply.",
+        "at": [{ "out": "broadcast nested-loop join as the planner's own last-resort fallback, named only; this topic's own examples.py measures only equi-joins between two large tables" }]
+      },
+      {
+        "item": "Shuffle-and-replicate nested loop join (cartesian product join) is the planner's own true last resort beyond even broadcast nested-loop, reached only for a non-equi, inner-like join where neither side can be broadcast at all — a fourth strategy this topic names from the planner's own source comment but does not construct.",
+        "at": [{ "out": "the cartesian product join as the absolute last resort named only; this topic's own measurement never reaches a non-equi case" }]
+      },
+      {
+        "item": "A sort-merge join's own external sort, inherited from the general spill mechanism this chapter covers elsewhere, is precisely why it degrades gracefully: a sort that doesn't fit in memory spills sorted runs to disk and merges them, slower but still correct, where a shuffled hash join's single in-memory hash table has no equivalent fallback once it's too big to fit.",
+        "at": [{ "out": "the specific mechanism (external sort spill) behind sort-merge's own graceful degradation, connecting this topic to the chapter's own spill topic, named only" }]
+      },
+      {
+        "item": "`ShuffledHashJoinExec`'s own build side is chosen by the planner based on relative table statistics, the same build-side-selection logic the broadcast-join topic's own expert list named as independent of left/right call order — the two join strategies share this detail even though one shuffles and the other broadcasts.",
+        "at": [{ "out": "shared build-side-selection logic between broadcast and shuffled hash joins, named only, connecting back to the previous topic's own expert list" }]
+      },
+      {
+        "item": "AQE's own runtime mechanism, covered as this chapter's own next-but-one topic, can convert a statically-planned sort-merge join into a shuffled hash join (or a broadcast join) once real post-shuffle statistics show one side is small — a later-stage override of the exact static choice this topic's own two claims measure.",
+        "at": [{ "out": "AQE's own runtime conversion of a sort-merge join named only; this topic's own examples.py disables AQE to isolate the static planner's choice" }]
+      },
+      {
+        "item": "Both `SortMergeJoinExec` and `ShuffledHashJoinExec` require the SAME upstream `Exchange hashpartitioning` shuffle on both sides before either strategy can run — the two strategies differ only in what happens to that already-shuffled data next (a sort-then-merge vs. a hash table build), not in how the data gets redistributed in the first place.",
+        "at": [{ "out": "the shared upstream hash-partitioning shuffle both strategies depend on, named only; this topic's own examples.py measures the downstream Sort-node difference, not the shared Exchange step" }]
+      },
+      {
+        "item": "A `SHUFFLE_HASH` hint applied to BOTH sides of a join (rather than one, as this topic's own examples.py does) is resolved by the planner choosing the smaller side as the build side based on statistics, the same tie-break rule the broadcast hint uses when both sides request it — a case this topic names from the source's own comment but does not construct.",
+        "at": [{ "out": "the both-sides-hinted tie-break rule named only; this topic's own examples.py hints exactly one side" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

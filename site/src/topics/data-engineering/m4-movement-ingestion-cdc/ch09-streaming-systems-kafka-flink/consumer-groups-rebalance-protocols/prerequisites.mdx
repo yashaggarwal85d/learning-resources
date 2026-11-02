@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: partitioned logs and the controller quorum
+
+This topic treats `__consumer_offsets` as just another compacted partition, and reuses the
+controller quorum's own broker-driven, pull-based shape for how a group coordinator pushes
+assignments. If segments, offsets, or the controller quorum are unfamiliar, start with
+[Partitioned logs, segments and indexes](../partitioned-log-segments-indexes/) and
+[KRaft: metadata as a replicated log](../kraft-metadata-replicated-log/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="KIP-848: The Next Generation of the Consumer Rebalance Protocol" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-848%3A+The+Next+Generation+of+the+Consumer+Rebalance+Protocol" by="Apache Kafka wiki">The classic protocol's synchronization barrier, eager-versus-cooperative revocation, and the offset-storage model this topic's setup and first reveal quote directly.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 operations documentation: Consumer Rebalance Protocol" href="https://kafka.apache.org/44/operations/consumer-rebalance-protocol/" by="Apache Kafka docs">KIP-848's GA status, its removal of the global barrier, and classic's own phase-out timeline this topic's last reveal cites.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 Streams developer guide: Streams Rebalance Protocol" href="https://kafka.apache.org/44/streams/developer-guide/streams-rebalance-protocol/" by="Apache Kafka docs">KIP-1071's default-on status and stated limited feature set this topic's last reveal and Frontier section cite.</Resource>
+</ul>
+
+</section>

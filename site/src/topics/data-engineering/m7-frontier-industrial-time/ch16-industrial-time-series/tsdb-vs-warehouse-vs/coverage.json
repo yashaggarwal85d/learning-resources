@@ -1,0 +1,126 @@
+{
+  "topic": "de.tsdb-vs-warehouse-vs",
+  "syllabus": [
+    {
+      "clause": "choose by write rate, query shape (last value, range scan, cross-series aggregation), retention and cost:",
+      "at": [
+        { "step": "Reveal: the decision matrix, measured on the same data" },
+        { "step": "Reveal: a capacity-and-cost chain, priced at a dated unit cost" }
+      ]
+    },
+    {
+      "clause": "Prometheus-style for operational metrics,",
+      "at": [{ "step": "Reveal: Prometheus-style wins the metrics row, and where it stops" }]
+    },
+    {
+      "clause": "TimescaleDB/InfluxDB/QuestDB/ClickHouse for high-rate analytics,",
+      "at": [{ "step": "Reveal: three high-rate engines, each with its own shortcut" }]
+    },
+    {
+      "clause": "Iceberg/Delta for long-term history joined with business data;",
+      "at": [{ "step": "Reveal: the join is the lakehouse’s own case to make" }]
+    },
+    {
+      "clause": "tiering between them.",
+      "at": [{ "step": "Reveal: tiering duplicates points, and a late reading can miss a tier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Prometheus: Storage (local-storage limitation)",
+      "items": [
+        {
+          "item": "a limitation of local storage is that it is not clustered or replicated, and so is not arbitrarily scalable or durable against drive or node outages",
+          "at": [{ "step": "Reveal: Prometheus-style wins the metrics row, and where it stops" }]
+        }
+      ]
+    },
+    {
+      "source": "ClickHouse: MergeTree table engine",
+      "items": [
+        {
+          "item": "MergeTree-family table engines are designed for high data ingest rates and huge data volumes, with a primary key referencing 8192-row granules kept small enough for memory, and partition pruning that omits partitions from reading",
+          "at": [{ "step": "Reveal: three high-rate engines, each with its own shortcut" }]
+        }
+      ]
+    },
+    {
+      "source": "QuestDB: Architecture overview",
+      "items": [
+        {
+          "item": "QuestDB stores data in a three-tier architecture (streaming WAL, local binary storage, local/remote Parquet), time-ordered and de-duplicated into a native, time-partitioned columnar format",
+          "at": [{ "step": "Reveal: three high-rate engines, each with its own shortcut" }]
+        }
+      ]
+    },
+    {
+      "source": "InfluxData: Create a Last Value Cache",
+      "items": [
+        {
+          "item": "the Last Value Cache is stored in memory, so its size and persistence matter",
+          "at": [{ "step": "Reveal: three high-rate engines, each with its own shortcut" }]
+        }
+      ]
+    },
+    {
+      "source": "Thanos: Design document (object storage cost)",
+      "items": [
+        {
+          "item": "typical object storage prices are about $0.02/GB",
+          "at": [{ "step": "Reveal: a capacity-and-cost chain, priced at a dated unit cost" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A vendor demo showing one engine do everything is a demo's workload, not the plant's — the plant's own traffic splits into access paths no single query shape covers.",
+        "at": [{ "step": "Hook: a vendor demo does everything; the plant’s own traffic doesn’t" }]
+      },
+      {
+        "item": "A matrix that's actually measured, even by a stand-in engine, tells you something a matrix assembled from four vendors' marketing claims never can: whether the rows are even comparable.",
+        "at": [{ "step": "Reveal: the decision matrix, measured on the same data" }]
+      },
+      {
+        "item": "Prometheus's own documentation naming its limitation up front is more useful than a competitor's claim about it — a system that tells you exactly where it stops is one you can plan around.",
+        "at": [{ "step": "Reveal: Prometheus-style wins the metrics row, and where it stops" }]
+      },
+      {
+        "item": "The honest prediction isn't that a join gets uniformly cheaper or uniformly pricier as history grows — it's that the engine best at the join changes underneath the question.",
+        "at": [{ "step": "Predict: does the join get cheaper or pricier as history grows?" }]
+      },
+      {
+        "item": "Three engines solving the same last-value problem with three different names for the same idea — a cache, a sparse index, a tiered file layout — is a sign the shortcut is load-bearing, not cosmetic.",
+        "at": [{ "step": "Reveal: three high-rate engines, each with its own shortcut" }]
+      },
+      {
+        "item": "A join to business data isn't a TSDB feature gap to work around — it's the one row of the matrix a table format over object storage was built to win.",
+        "at": [{ "step": "Reveal: the join is the lakehouse’s own case to make" }]
+      },
+      {
+        "item": "Pricing two retention windows at the identical per-GB rate and still getting two different monthly numbers is what makes a capacity chain a forecast instead of a guess.",
+        "at": [{ "step": "Reveal: a capacity-and-cost chain, priced at a dated unit cost" }]
+      },
+      {
+        "item": "A tiering boundary doesn't fail loudly — it fails as a point that silently exists twice, or a point that silently never leaves the tier it landed in first.",
+        "at": [{ "step": "Reveal: tiering duplicates points, and a late reading can miss a tier" }]
+      },
+      {
+        "item": "There's no single best time-series engine, only a best engine for a named access path at a named retention — the matrix is the answer, not any one row of it.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "Naming which specific access path and retention window a workload needs is what turns 'which engine should we use' from an opinion into a row lookup.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

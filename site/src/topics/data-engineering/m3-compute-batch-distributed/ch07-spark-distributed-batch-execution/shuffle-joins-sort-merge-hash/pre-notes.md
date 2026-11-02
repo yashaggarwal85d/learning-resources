@@ -1,0 +1,4 @@
+- **Equi-join**: a join condition built entirely from equality comparisons. *Where you meet it:* the requirement both strategies this topic measures share — neither applies to a non-equi condition.
+- **Build side**: the join input a strategy collects into a lookup structure before matching the other side against it. *Where you meet it:* the side whose own memory this topic's danger clause names directly.
+- **Shuffle Exchange**: the physical plan node marking a real shuffle boundary, covered in this chapter's own earlier topics. *Where you meet it:* the step both strategies this topic measures still pay for, even though they differ after it.
+- **External sort**: a sort that spills partially-sorted runs to disk when the data doesn't fit in memory, merging them afterward. *Where you meet it:* the fallback this topic's own danger clause credits sort-merge join with, and says the hash-based strategy lacks.

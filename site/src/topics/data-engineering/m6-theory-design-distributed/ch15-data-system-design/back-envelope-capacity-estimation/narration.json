@@ -1,0 +1,80 @@
+{
+  "topic": "de.back-envelope-capacity-estimation",
+  "steps": [
+    {
+      "lines": [
+        "The shop gets told one sentence: about two million orders a day, with some clicks.",
+        "One engineer hears a mean rate a laptop could handle. Another hears clicks, a busy peak, and replication, and reaches for a real cluster.",
+        "Same sentence, two completely different machines. Which reading is actually right?"
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The laptop estimate did divide correctly by the number of seconds in a day. That part isn't the problem.",
+        "Something else is still missing from it, and it's big enough to move the final answer by more than a factor of ten. What is it?"
+      ],
+      "answer": [
+        "Not a mistake in the division. A gap in what got multiplied in at all.",
+        "Orders aren't the only thing happening — each one carries its own clicks. On top of that sits a real peak, well above the daily average, and a replication factor that multiplies storage and network load together.",
+        "None of those are rounding errors. Each is its own real multiplication the first estimate simply never performed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the full chain, built one multiplication at a time rather than guessed at once.",
+        "Orders a day. Times how many events each order actually carries. Divide by seconds in a day for the mean rate.",
+        "Multiply by the peak ratio for the design rate. Multiply by the size of one event for a daily byte count. Multiply by retention and replication for the storage that actually has to be bought."
+      ]
+    },
+    {
+      "lines": [
+        "Run that identical chain twice: once at the mean rate, once at the design rate.",
+        "The gap between the two isn't an academic footnote. It's the literal difference between a system that survives an ordinary busy afternoon and one that quietly falls over."
+      ]
+    },
+    {
+      "lines": [
+        "One more quantity worth naming precisely: how much work is in flight at any single instant.",
+        "Take the design rate, multiply it by how long one event actually spends being processed, and what comes out is a real count — not an abstraction. It's buffer memory. It's open connections. It's live consumer slots, all at once."
+      ]
+    },
+    {
+      "lines": [
+        "Take that in-flight count and divide it by what a single consumer, or a single pooled connection, can actually hold.",
+        "What comes out the other side is the real number to go provision — not a round number chosen because it felt safe."
+      ]
+    },
+    {
+      "lines": [
+        "Three numbers worth carrying around, each one dated and each one tagged with exactly what it is not.",
+        "A single-producer Kafka benchmark from a decade ago, on specific, now-old hardware. Today's object-store request floor, per prefix. And a warehouse scan rate, measured directly, right here, on this very machine, rather than borrowed from anyone else's claim."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that same benchmark number used two different ways.",
+        "Claiming a brand-new cluster will hit that decade-old number is a claim this evidence has no right to make.",
+        "Saying one partition alone won't bottleneck a design rate that sits far below it is the actual, narrow claim that same number genuinely supports."
+      ]
+    },
+    {
+      "lines": [
+        "One chain carries orders all the way to storage, a single row at a time.",
+        "The peak ratio decides what actually gets provisioned, not just what's expected on an average day.",
+        "One old, well-proven formula tells you how many consumers, pools or queue slots to actually buy. And three dated numbers, each one honestly labeled, round out the rest."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a second business has roughly the same order volume, but every order now needs three separate approval calls before it ships.",
+        "Does that change require inventing a new kind of arithmetic, or does it fit inside the chain already built?"
+      ],
+      "answer": [
+        "It fits the existing chain exactly.",
+        "Three approval calls per order are simply three more events per order — precisely the multiplier this chain already has a slot for.",
+        "Nothing about calling something an approval instead of a click changes which arithmetic applies; the chain never cared what an event represented, only how many there are and how large each one is."
+      ]
+    }
+  ]
+}

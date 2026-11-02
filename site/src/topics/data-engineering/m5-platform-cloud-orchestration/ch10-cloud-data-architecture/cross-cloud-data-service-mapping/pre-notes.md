@@ -1,0 +1,4 @@
+- **AWS**: S3 (object storage), IAM (identity), Lake Formation (catalog), Glue/EMR (Spark), Redshift (warehouse), Kinesis (streaming). *Where you meet it:* a job posting, a migration plan.
+- **Azure**: Blob Storage, Entra ID, Unity Catalog/Purview, Fabric Spark/Azure Databricks, Fabric Warehouse/Synapse, Event Hubs. *Where you meet it:* the same seven jobs, Microsoft's own names.
+- **GCP**: Cloud Storage, Cloud IAM, BigLake + Knowledge Catalog, Dataproc, BigQuery, Pub/Sub. *Where you meet it:* the same seven jobs again, Google's own names.
+- **Lock-in**: the part of a system that can't be exported to another vendor without rebuilding it from scratch. *Where you meet it:* a catalog's policy model, an identity system's role graph.

@@ -1,0 +1,4 @@
+- **Physical plan**: the concrete, executable plan Catalyst's physical planning stage chose — the previous topic's own final stage. *Where you meet it:* the thing this topic's generated code actually runs.
+- **JVM object overhead**: a normal Java/Scala object's per-instance cost (a header, pointers, boxed fields) beyond the raw data it holds. *Where you meet it:* the cost this topic's binary row layout is built to avoid.
+- **Virtual function call**: a method dispatch resolved at runtime rather than compiled in directly, one extra indirection per call. *Where you meet it:* the per-row cost of the older iterator model this topic's fused loop replaces.
+- **Parquet/columnar storage**: data for one column laid out contiguously rather than row by row (covered in this chapter's own storage topics). *Where you meet it:* the vectorised reader this topic treats as codegen's one exception.

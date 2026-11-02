@@ -1,0 +1,97 @@
+{
+  "topic": "de.data-skew-diagnosis-remedies",
+  "steps": [
+    {
+      "lines": [
+        "Picture a thousand keys sharing a shuffle. Nine hundred ninety-nine of them split ten million rows between them.",
+        "One key alone carries twenty million, more than all the rest put together.",
+        "Whichever task lands that one key is not going to finish at the same time as everyone else."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how you'd actually catch that, without ever opening the raw data.",
+        "Line up every task in that stage by how many bytes it read off the shuffle, and by how long it ran. One task sits far above the rest on both counts: twelve times the typical bytes, about four times the typical duration.",
+        "That's the whole diagnosis. One stage, one straggler, two ratios."
+      ]
+    },
+    {
+      "lines": [
+        "Spark already has a feature built for exactly this: splitting a skewed shuffle partition into smaller pieces once it knows the partition is too big.",
+        "So turn it on, leave every setting at its default, and watch what happens to that twelve-times gap.",
+        "Does it close?"
+      ],
+      "answer": "It doesn't move at all. The feature decides 'skewed' against a size it was given once, and this partition never crosses that line."
+    },
+    {
+      "lines": [
+        "Here's the number it's actually checking against: two hundred fifty-six megabytes, out of the box.",
+        "This partition, measured directly, comes in under that at roughly a hundred fifty-five.",
+        "By the rule's own arithmetic, nothing here qualifies as skewed, no matter how lopsided the row counts actually are."
+      ]
+    },
+    {
+      "lines": [
+        "Nudge that same number down to match the scale of this particular job, and the picture flips.",
+        "Now the partition does clear the bar, and the same splitting logic cuts it into pieces that run side by side instead of one task carrying the whole thing.",
+        "The twelve-times gap on bytes comes down to something close to even."
+      ]
+    },
+    {
+      "lines": [
+        "Set that config aside entirely and reach for something cruder: just hand every task its own full copy of the small table.",
+        "No shuffle, no matching partition to balance. Does that get rid of the skew just as well?"
+      ],
+      "answer": "Yes, and for a more basic reason than tuning a threshold: a shuffle is what skew lives in, and this plan simply doesn't have one on the big table's side anymore."
+    },
+    {
+      "lines": [
+        "Check the actual plan, and there's no sort-merge join, no shuffled hash join, no exchange on the big side at all.",
+        "A broadcast hash join is the only strategy left in it.",
+        "You can't have an uneven shuffle partition when there's no shuffle to be uneven."
+      ]
+    },
+    {
+      "lines": [
+        "That trick has one requirement: the whole small table has to fit in memory, everywhere.",
+        "When it doesn't, you can still get the same win for just the rows that matter: pull out only the ones matching your hot keys, broadcast that tiny slice, and shuffle everything else exactly as before.",
+        "The expensive part never had to be the whole table to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Salting is the older version of this idea, and it's worth being honest about what it costs.",
+        "It does cut the gap, down to about three times instead of twelve. But that's worse than what the tuned split managed, and the price is that the small table now gets copied several times over, so the total bytes moving across the network actually go up.",
+        "It's a real improvement, not a free one."
+      ]
+    },
+    {
+      "lines": [
+        "Now change the question entirely. Stop joining anything, and just group that same lopsided key by a plain sum.",
+        "Look at what each task actually hands off to the shuffle. The task holding the hot key writes next to nothing, fifty-nine bytes. A task juggling hundreds of ordinary keys writes over twelve thousand.",
+        "The key everyone would've guessed was the problem turns out to be the cheap one."
+      ]
+    },
+    {
+      "lines": [
+        "Swap that sum for something that can't collapse early the same way, a running list of every value instead.",
+        "Now the hot key's full twenty million rows land in a single task, and that task takes well over ten times as long as a typical one.",
+        "And here's the catch: go look at the rule doing the splitting from earlier, and it only ever matches a sort-merge or shuffled-hash join. An aggregation was never something it could reach, by its own source code's own pattern match."
+      ]
+    },
+    {
+      "lines": [
+        "The fix reuses the same salting idea, but for a different reason this time: not to shrink an oversized partition, but to stop one task from ever holding an entire key's worth of rows.",
+        "Tag the key with a random salt, do a first pass that only has to handle one salted slice at a time, then do a second pass that drops the salt and finishes the real grouping.",
+        "That well-over-ten-times gap comes down to around two and a half."
+      ]
+    },
+    {
+      "lines": [
+        "Two ratios tell you something's wrong before you ever look at a single row of data.",
+        "For a join, there's an order worth trying: let the split rule handle it if it can, broadcast if the small side fits, isolate the hot rows if it doesn't, and only reach for salting last, knowing what it costs.",
+        "For anything that was never a join to begin with, none of that ladder's first step was ever going to apply — that's not a gap in the ladder, it's just not what the ladder was built for."
+      ]
+    }
+  ]
+}

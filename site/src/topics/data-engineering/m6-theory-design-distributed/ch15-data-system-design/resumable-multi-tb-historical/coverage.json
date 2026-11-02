@@ -1,0 +1,62 @@
+{
+  "topic": "de.resumable-multi-tb-historical",
+  "syllabus": [
+    {
+      "clause": "reprocess five years without harming production",
+      "at": [{ "step": "Hook: one job, one crash, nothing saved" }]
+    },
+    {
+      "clause": "chunked, idempotent and checkpointed partitions",
+      "at": [{ "step": "Reveal: chunk the history into independent pieces" }, { "step": "Reveal: idempotent chunks, a durable checkpoint" }]
+    },
+    {
+      "clause": "throttling against shared resources",
+      "at": [{ "step": "Reveal: throttle against shared resources" }, { "step": "Reveal: the throttle reacts to production, not a number" }]
+    },
+    {
+      "clause": "write-to-shadow then atomic swap",
+      "at": [{ "step": "Reveal: write to a shadow, then one atomic swap" }]
+    },
+    {
+      "clause": "validation by data diff",
+      "at": [{ "step": "Reveal: validate with a data diff before the swap" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dagster documentation — \"Backfilling data\"",
+      "items": [
+        { "item": "Backfilling is the process of running partitions for assets, supported for each partition or a subset of partitions.", "at": [{ "step": "Reveal: chunk the history into independent pieces" }] },
+        { "item": "By default, a backfill covering N partitions launches N separate runs, one per partition.", "at": [{ "step": "Reveal: chunk the history into independent pieces" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg documentation — \"Branching and Tagging\"",
+      "items": [
+        { "item": "Writes are performed on a separate audit-branch independent from the main table history.", "at": [{ "step": "Reveal: write to a shadow, then one atomic swap" }] },
+        { "item": "The main branch can be fast-forwarded to the head of the audit branch to update the main table state.", "at": [{ "step": "Reveal: write to a shadow, then one atomic swap" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A checkpoint resumes at the first incomplete chunk, not the start — the whole point of an idempotent chunk.", "at": [{ "step": "Reveal: idempotent chunks, a durable checkpoint" }] },
+      { "item": "A throttle's signal is production's own latency, not a fixed concurrency number chosen once and left alone.", "at": [{ "step": "Reveal: the throttle reacts to production, not a number" }] },
+      { "item": "The diff must show only the intended change, or the swap doesn't happen at all.", "at": [{ "step": "Reveal: validate with a data diff before the swap" }] },
+      { "item": "A bigger single job still dies as one unit and still contends with production the same way, just for longer.", "at": [{ "step": "Predict: what four decisions prevent this?" }] },
+      { "item": "A throttle's whole job is to react to production's live latency continuously, not to act only as a gate before the run starts.", "at": [{ "step": "Prove it: a throttle someone switched off" }] },
+      { "item": "A failed backfill run is discarded, never repaired in place, because promotion is a single atomic swap that either happens or doesn't.", "at": [{ "step": "Reveal: write to a shadow, then one atomic swap" }] },
+      { "item": "This topic leaves out the orchestrator's backfill mechanics, write-audit-publish and data-diff internals, the table-format branch-and-swap mechanics, idempotent writes, and concurrent-writer conflicts with live ingest.", "at": [{ "deep": "Internals" }] },
+      { "item": "Chunked idempotent backfills and shadow-then-swap validation are established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its backfill design; the next design asks whether the pipeline needed two pieces of logic in the first place, building it both ways as Kappa and Lambda.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The real design question for a throttle isn't how many workers the budget allows, but what signal tells it to slow down.", "at": [{ "step": "Reveal: throttle against shared resources" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

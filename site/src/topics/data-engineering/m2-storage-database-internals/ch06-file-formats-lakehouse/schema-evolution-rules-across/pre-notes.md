@@ -1,0 +1,4 @@
+- **A schema**: the declared shape of a record — its fields and their types — background from any prior exposure to structured data. *Where you meet it:* the writer's schema and the reader's schema this topic compares directly, field by field.
+- **A default value**: the value a field falls back to when no explicit value is present, general programming background. *Where you meet it:* the single thing that decides whether a missing Avro field resolves quietly or raises an error.
+- **Serialization / wire format**: the actual bytes a record is turned into for storage or transmission, background from Chapter 1's byte-level material. *Where you meet it:* the Protobuf bytes this topic reinterprets under a reused field number.
+- **A column (in a columnar file)**: one named, typed slice of a table, background from topic 2 (row vs columnar layouts). *Where you meet it:* the column this topic renames and re-matches three different ways in Parquet.

@@ -2,39 +2,27 @@
 
 ## Outcomes
 
-Erase one subject from a Delta table with `DELETE` and show a time-travel query still returning
-them; then vacuum and show the files physically gone; erase the same subject by deleting a
-per-subject key and show every copy unreadable; state exactly where the subject can still
-survive (replica, backup, Kafka topic, an untouched plaintext copy) and what closes each; produce
-the evidence an auditor would ask for.
+Show on a real snapshot model that time travel still returns a "deleted" row until snapshots
+are expired and the file is compacted; show on a compacted log that a tombstone hides a value
+immediately but is itself retained for a separate window; show crypto-shredding making every
+copy of one subject's data unreadable at once while an untouched subject's data in the same
+copies stays readable; name what each of a table, a replica, a backup and a Kafka topic
+actually needs to be truly erased, and what evidence proves it to an auditor.
 
 </section>
 
-<section data-section="internals">
+<section data-section="measuring-the-compaction-boundary">
 
-## Internals
+## Measuring the compaction boundary
 
-`examples.py`'s table leg runs against a real Delta Lake table (`deltalake` + `pyarrow`), not a
-simulation: `erase_from_table_with_sql` genuinely calls `DeltaTable.delete`, reads an older
-version by `DeltaTable(table_dir, version=...)`, then calls `.vacuum(retention_hours=0, ...)` and
-shows the same version read now raising. The Kafka-topic and backup legs are documented
-stand-ins — `CompactedLog` reproduces Kafka's own tombstone-and-`delete.retention.ms` behaviour
-without a broker, and the backup leg is a plain `shutil.copytree`, taken before the erasure runs,
-exactly as `CHAPTER.md` specifies for a machine with no backup tool available.
-`crypto_shred_across_all_three_copies` reuses topic 5's toy-KMS XOR pattern, applied here across
-three separate "copies" of one ciphertext to show a single key deletion reaching all of them at
-once, with zero bytes in any of the three artefacts actually touched.
-
-</section>
-
-<section data-section="lab">
-
-## Lab: the whole §13.2 lab
-
-This topic hosts the full chapter lab, run directly in `examples.py` (see Internals): the table
-leg is real and runnable; the Kafka-topic and backup legs are disclosed, documented stand-ins
-for a broker and a backup tool this environment doesn't have; the crypto-shredding leg reuses
-topic 5's own mechanism across all three. Running it needs `pip install deltalake pyarrow`.
+`examples.py` keeps the exact snapshot and delete-marker shape Iceberg's own documentation
+describes: a `DELETE` writes a new snapshot whose visible-row set excludes the subject, while
+the data file itself is untouched. `time_travel_read` against the pre-delete snapshot id
+confirms the subject is still physically present. Only after `expire_snapshots()` removes the
+old snapshot from metadata and `compact()` rewrites the data file does the subject actually
+disappear from `table.data_file` — the same two-step boundary Delta's own `VACUUM` command
+sits behind, defaulting to a seven-day retention window before it will even consider a file
+safe to remove.
 
 </section>
 
@@ -42,14 +30,16 @@ topic 5's own mechanism across all three. Running it needs `pip install deltalak
 
 ## Production failures this topic warns about
 
-**Treating `DELETE` as the end of the job.** A `DELETE` that's never followed by snapshot expiry
-and vacuuming leaves the erased subject fully readable by anyone with a time-travel query — which
-is exactly the auditor's own discovery in the Hook.
+**Treating a `DELETE` as finished.** The Hook's own scenario — a row gone from every query, yet
+still readable a month later by time travel — is what a `DELETE` alone actually buys: hidden
+from new reads, not erased. Only expiring old snapshots and compacting removes the physical
+copy, and neither step runs on its own schedule.
 
-**Shortening a retention window without checking who's still reading.** `expire_snapshots`,
-`VACUUM` and orphan-file removal all trade a shorter window for less storage and faster
-compliance, but a reader mid-query against a snapshot that window just expired breaks outright —
-the safety trade-off this topic's own maintenance reveal names directly.
+**Trusting a Kafka tombstone to also erase the evidence of deletion.** `examples.py`'s own
+measurement shows a tombstone hiding the value immediately while the tombstone record itself
+survives until `delete.retention.ms` elapses — a lagging consumer that catches up after that
+window sees no value and no sign a deletion ever happened, which is exactly how an
+already-taken backup or a slow reader can keep quietly holding what was supposedly erased.
 
 </section>
 
@@ -57,22 +47,11 @@ the safety trade-off this topic's own maintenance reveal names directly.
 
 ## Frontier
 
-Format-level deletion-vector adoption (Delta's own default since 3.1.0; Iceberg's v3 spec
-deprecating position delete files in favour of deletion vectors for new tables) changes exactly
-how a merge-on-read delete is represented on disk, not whether a compaction or purge is still
-needed to free the bytes — the claim this topic makes holds under either representation. No
-declared cross-chapter gap: the concepts this topic needs (snapshots, delete files, compaction,
-log retention) are explained here from primary sources directly, and topic 5's
-`dek-kek-envelope-hierarchy` and its own crypto-shredding framing are both built and live.
-
-</section>
-
-<section data-section="where-this-goes-next">
-
-## Where this goes next
-
-Erasure, masking and access all depended on knowing where a column lives and where it flows. That
-knowledge has to live somewhere other than people's heads. The next topic opens the governance
-tooling, starting with the place metadata is kept: the catalog.
+Per-subject crypto-shredding closes every copy at once in this topic's own two-subject
+measurement, but a real deployment multiplies that by every subject who has ever exercised
+erasure: a key per subject multiplies key-storage volume, requires a key lookup on every single
+read rather than only at write time, and drives up the call rate against whatever key-management
+service holds the keys — a cost this topic is too small to demonstrate but that any real
+key-per-subject scheme has to budget for.
 
 </section>

@@ -1,0 +1,124 @@
+{
+  "topic": "de.catalyst-unresolved-physical-plan",
+  "syllabus": [
+    {
+      "clause": "parse → analysis (resolution against the catalog) → rule-based logical optimisation (predicate/projection pushdown, constant folding, subquery rewrites) → physical planning with join/aggregate strategy selection → cost-based reordering only when statistics exist",
+      "at": [
+        { "step": "Reveal: unresolved, then resolved" },
+        { "step": "Reveal: pushed down, as predicted" },
+        { "step": "Reveal: constant folding, the same pass" },
+        { "step": "Reveal: broadcast, no shuffle at all" },
+        { "step": "Reveal: SortMergeJoin, both sides shuffle" },
+        { "deep": "Cost-based reordering, from real table statistics" }
+      ]
+    },
+    {
+      "clause": "reading EXPLAIN FORMATTED and Exchange nodes (builds on §2.3)",
+      "at": [
+        { "step": "Recap" },
+        { "deep": "Reading EXPLAIN FORMATTED" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark SQL Reference — EXPLAIN (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "EXPLAIN EXTENDED names the four-stage pipeline: parsed, analyzed, optimized, physical",
+          "at": [
+            { "step": "Reveal: unresolved, then resolved" },
+            { "step": "Recap" }
+          ]
+        },
+        {
+          "item": "the parsed plan is unresolved, extracted from the query with no catalog lookup yet",
+          "at": [{ "step": "Reveal: unresolved, then resolved" }]
+        },
+        {
+          "item": "analysis translates unresolved attributes and relations into fully typed, resolved objects",
+          "at": [{ "step": "Reveal: unresolved, then resolved" }]
+        },
+        {
+          "item": "EXPLAIN FORMATTED generates a physical plan outline plus per-node detail",
+          "at": [{ "deep": "Reading EXPLAIN FORMATTED" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark SQL Performance Tuning docs — spark.sql.autoBroadcastJoinThreshold (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "the threshold configures the maximum broadcastable table size, default 10MB, and -1 disables broadcasting",
+          "at": [
+            { "step": "Reveal: broadcast, no shuffle at all" },
+            { "step": "Reveal: SortMergeJoin, both sides shuffle" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Spark SQL Reference — ANALYZE TABLE (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "ANALYZE TABLE collects statistics the query optimizer uses to find a better execution plan, stored in the catalog",
+          "at": [{ "deep": "Cost-based reordering, from real table statistics" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The leading tick (') on an unresolved node is Catalyst's own textual convention in its tree-string representation (toString()), not a separate marker type — it appears on UnresolvedAttribute, UnresolvedRelation and any expression/operator still containing one, and disappears the instant analysis resolves every reference underneath it.",
+        "at": [{ "step": "Reveal: unresolved, then resolved" }]
+      },
+      {
+        "item": "Subquery rewrites (named in the syllabus clause alongside pushdown and constant folding) are a separate optimizer rule family (e.g. decorrelating a correlated subquery into a join) not independently measured here — this topic's own examples.py covers the two simplest, most universally applicable rules (pushdown, folding) as representative, disclosing the rest as named only.",
+        "at": [{ "out": "subquery rewrites named only in the syllabus mapping; not independently measured or sourced beyond the clause itself" }]
+      },
+      {
+        "item": "Projection pushdown (reading only the columns a query actually needs from a columnar source) is the sibling rule to predicate pushdown this topic measures — both share the same motivation (do less work, as early as possible) but act on different parts of a plan; this topic's own measured example is predicate pushdown specifically.",
+        "at": [{ "step": "Reveal: pushed down, as predicted" }]
+      },
+      {
+        "item": "BroadcastHashJoin's cost model compares the smaller side's estimated size (from the catalog, or a runtime size check for an already-materialized small relation) against spark.sql.autoBroadcastJoinThreshold — not row count directly, which is why a differently-shaped small table could cross the threshold even with few rows if its rows are wide.",
+        "at": [{ "step": "Reveal: broadcast, no shuffle at all" }]
+      },
+      {
+        "item": "SortMergeJoin's own name describes its two-part mechanism directly: both shuffled sides are sorted by the join key before being merged in a single linear pass — the sort is why this strategy, unlike a hash join, tolerates a join key too large to fit in memory on either side.",
+        "at": [{ "step": "Reveal: SortMergeJoin, both sides shuffle" }]
+      },
+      {
+        "item": "A ShuffleHashJoin (distinct from both BroadcastHashJoin and SortMergeJoin) exists as a third strategy — shuffling both sides but skipping the sort, hash-probing instead — chosen when one shuffled side is still small enough to build an in-memory hash table from but too large to broadcast; named only, not independently measured, since forcing it reliably needs an explicit join hint this topic's own examples.py doesn't exercise.",
+        "at": [{ "out": "ShuffleHashJoin named as the third strategy in the family; not independently measured" }]
+      },
+      {
+        "item": "Cost-based join reordering (choosing which of several tables to join first in a multi-way join, not just which strategy to use for one join) requires spark.sql.cbo.enabled plus ANALYZE TABLE statistics on every table involved — a stricter requirement than strategy selection alone, which Catalyst does by default using size estimates even without ANALYZE TABLE having run.",
+        "at": [{ "deep": "Cost-based reordering, from real table statistics" }]
+      },
+      {
+        "item": "EXPLAIN FORMATTED's per-node 'Input' and 'Arguments' detail sections (not shown in this topic's own simpler string-matching measurements) are what an engineer actually reads line by line when diagnosing a specific operator's behaviour in production, beyond just confirming which stage produced which node.",
+        "at": [{ "deep": "Reading EXPLAIN FORMATTED" }]
+      },
+      {
+        "item": "AQE (disabled throughout this topic's own examples.py to keep Catalyst's up-front decisions legible) can override a join strategy Catalyst originally chose — specifically, converting an already-planned SortMergeJoin into a broadcast join at runtime if actual shuffle statistics turn out smaller than expected — the mirror case to this topic's own forced-SortMergeJoin demonstration, deferred to this chapter's own later AQE topic.",
+        "at": [{ "out": "AQE's own runtime strategy conversion is this chapter's own later topic; named only as a methodology disclosure here" }]
+      },
+      {
+        "item": "Constant folding and predicate pushdown both run inside the same named optimizer batch in Catalyst's rule executor (applied repeatedly until the plan stops changing, up to a fixed iteration limit) — this topic's two separate measured examples are two rules from that one pass, not two separate passes.",
+        "at": [
+          { "step": "Reveal: pushed down, as predicted" },
+          { "step": "Reveal: constant folding, the same pass" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

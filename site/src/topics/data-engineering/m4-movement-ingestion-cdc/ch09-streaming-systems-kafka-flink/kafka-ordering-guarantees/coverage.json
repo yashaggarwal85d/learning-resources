@@ -1,0 +1,129 @@
+{
+  "topic": "de.kafka-ordering-guarantees",
+  "syllabus": [
+    {
+      "clause": "total order only within a partition",
+      "at": [
+        { "step": "Setup: lanes with no line between them" },
+        { "step": "Predict: any order between two different keys?" },
+        { "step": "Reveal: order ends at the partition boundary" }
+      ]
+    },
+    {
+      "clause": "idempotent producers preserve order with up to 5 in-flight requests",
+      "at": [
+        { "step": "Predict: can a retry put records out of order?" },
+        { "step": "Reveal: idempotence, measured" },
+        { "step": "Reveal: five in flight, by documented limit" }
+      ]
+    },
+    {
+      "clause": "key-to-partition stability breaks when partition counts change",
+      "at": [
+        { "step": "Reveal: a key that moves, and one that stays" }
+      ]
+    },
+    {
+      "clause": "designing keys so the order you need is the order you get",
+      "at": [
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Kafka 4.4 producer configuration reference",
+      "items": [
+        {
+          "item": "idempotence requires max.in.flight.requests.per.connection to be at most 5, with ordering preserved for any allowable value",
+          "at": [{ "step": "Reveal: five in flight, by documented limit" }]
+        },
+        {
+          "item": "the broker only retains at most 5 batches per producer, which is why the in-flight ceiling is exactly 5",
+          "at": [{ "step": "Reveal: five in flight, by documented limit" }]
+        },
+        {
+          "item": "allowing retries with idempotence off and more than one in-flight request can change record order: a retried first batch can be delivered after a later, successful one",
+          "at": [{ "step": "Reveal: idempotence, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 design documentation",
+      "items": [
+        {
+          "item": "a topic is divided into a set of totally ordered partitions",
+          "at": [{ "step": "Reveal: order ends at the partition boundary" }]
+        },
+        {
+          "item": "the default partitioner hashes a record's key to choose its partition",
+          "at": [{ "step": "Reveal: a key that moves, and one that stays" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 operations documentation, \"Basic Kafka Operations\"",
+      "items": [
+        {
+          "item": "increasing the partition count changes the default partitioner's mapping, so a key already in use can be routed to a different partition after the change",
+          "at": [{ "step": "Reveal: a key that moves, and one that stays" }]
+        },
+        {
+          "item": "Kafka will not automatically redistribute existing data when partitions are added",
+          "at": [{ "step": "Hook: a cancellation seen before its own creation" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The ordering guarantee is scoped to a single partition, not a single producer or a single topic — sharing either of the latter two creates no relationship at all.",
+        "at": [{ "step": "Predict: any order between two different keys?" }]
+      },
+      {
+        "item": "A retry only threatens order when a second, independent batch to the same partition can complete while the first is still pending — a single in-flight request at a time can never be reordered by a retry, with or without idempotence.",
+        "at": [{ "step": "Predict: can a retry put records out of order?" }]
+      },
+      {
+        "item": "Idempotence converts the broker's deduplication bookkeeping into an ordering guarantee as a side effect, not as its stated purpose — it exists to prevent duplicate writes.",
+        "at": [{ "step": "Reveal: idempotence, measured" }]
+      },
+      {
+        "item": "The five-in-flight ceiling is a consequence of a fixed-size broker-side tracking structure, not an arbitrary configuration default.",
+        "at": [{ "step": "Reveal: five in flight, by documented limit" }]
+      },
+      {
+        "item": "A key moving to a new partition after repartitioning is a silent, retroactive change in behavior: no error, no warning, just a different downstream partition from that moment on.",
+        "at": [{ "step": "Reveal: a key that moves, and one that stays" }]
+      },
+      {
+        "item": "A small fraction of keys landing on their original partition after a partition-count change is coincidence from the hash arithmetic, not any preserved guarantee.",
+        "at": [{ "step": "Reveal: a key that moves, and one that stays" }]
+      },
+      {
+        "item": "Designing keys for stable ordering means choosing a key granularity wide enough that the records needing relative order always share one key, since Kafka itself offers no cross-partition ordering to fall back on.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "This topic's repartition findings compose directly with the previous topic's consumer-group rebalance mechanics: a partition count change forces both a rebalance and a possible key remapping at once.",
+        "at": [{ "step": "Setup: lanes with no line between them" }]
+      },
+      {
+        "item": "The toy idempotence comparison isolates exactly one variable — the idempotence flag — holding batch timing and retry behavior fixed, so the measured reordering is attributable to that flag alone.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Tiered storage, the next topic, changes where bytes physically live but never touches any ordering guarantee this topic establishes.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

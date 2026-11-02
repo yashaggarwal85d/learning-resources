@@ -1,0 +1,80 @@
+{
+  "topic": "de.data-diff-regression-testing",
+  "syllabus": [
+    {
+      "clause": "comparing old vs new pipeline outputs on identical input",
+      "at": [{ "step": "Hook" }]
+    },
+    {
+      "clause": "full join-diff vs checksum bisection across systems (hash key ranges, recurse into mismatching segments)",
+      "at": [
+        { "step": "Reveal: the full join-diff" },
+        { "step": "Reveal: checksum bisection" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "tolerances for floats and timestamps",
+      "at": [{ "step": "Reveal: tolerance in practice" }]
+    },
+    {
+      "clause": "column-level change summaries",
+      "at": [{ "step": "Reveal: column-level change summary" }]
+    },
+    {
+      "clause": "and the cost of diffing TB-scale tables",
+      "at": [
+        { "step": "Reveal: the cost curve" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Technical explanation (datafold/data-diff)",
+      "items": [
+        { "item": "a same-database diff uses an outer-join to diff the rows as efficiently and accurately as possible", "at": [{ "step": "Reveal: the full join-diff" }] },
+        { "item": "a cross-database diff employs a divide and conquer algorithm based on hashing, optimized for few changes", "at": [{ "step": "Reveal: checksum bisection" }] },
+        { "item": "data-diff splits the table into smaller segments, then checksums each segment in both databases, recursing into mismatching segments until it reaches the differing rows", "at": [{ "step": "Reveal: checksum bisection" }] },
+        { "item": "this approach has performance within an order of magnitude of count(*) when there are few or no changes", "at": [{ "step": "Reveal: the cost curve" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation (Numeric Types; Date/Time Types)",
+      "items": [
+        { "item": "real and double precision are inexact, variable-precision numeric types, and comparing two floating-point values for equality might not always work as expected", "at": [{ "step": "Reveal: tolerance in practice" }] },
+        { "item": "timestamp precision accepts an optional value from 0 to 6 fractional digits in the seconds field", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real diff experiments",
+      "items": [
+        { "item": "a full join-diff and a checksum-bisection diff, run against the same old/new fct_orders with a single planted column regression, find exactly the same mismatches while scanning very different numbers of rows", "at": [{ "step": "Reveal: the full join-diff" }, { "step": "Reveal: checksum bisection" }, { "step": "Prove it" }] },
+        { "item": "a tolerance band lets a harmless float-summation-order difference pass while still catching a real planted regression on the same comparison", "at": [{ "step": "Reveal: tolerance in practice" }] },
+        { "item": "a column-level summary built from the planted bug names the one changed column, how many rows it touched, and the size of the move", "at": [{ "step": "Reveal: column-level change summary" }] },
+        { "item": "holding the number of real changes fixed while growing the table shows join-diff's cost scaling exactly with table size while bisection's relative advantage widens", "at": [{ "step": "Reveal: the cost curve" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's real lesson is that a diff's own report format is itself a design choice with consequences -- a technically correct row count can be a worse deliverable than a slightly less complete but reviewable column summary.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume checksum bisection trades correctness for speed -- it doesn't: a matching checksum is just as exact a proof of no-change as reading every row would be, assuming no hash collision, which is why this is a real optimization and not an approximation.", "at": [{ "step": "Reveal: checksum bisection" }] },
+      { "item": "The choice between join-diff and bisection isn't really about table size alone -- it's about table size relative to the expected number of real changes; a table with almost every row changed gains little from bisection, since nearly every segment ends up mismatching anyway.", "at": [{ "deep": "Internals" }] },
+      { "item": "A tolerance band is itself a claim that needs its own justification, the same way the time-flakiness fix in the prior topic did -- too wide a band hides a real regression that happens to be small, too narrow a band flags harmless noise forever.", "at": [{ "step": "Reveal: tolerance in practice" }] },
+      { "item": "A column-level summary's real value isn't compression of the report -- it's that it turns an un-actionable fact ('something changed') into an actionable one ('this column, by this much'), which is what actually lets a human decide whether the change was intended.", "at": [{ "step": "Reveal: column-level change summary" }] },
+      { "item": "This topic's cost curve holds the absolute number of real changes fixed on purpose, not the rate -- a fixed rate would make the number of changes grow with the table too, which would hide bisection's actual advantage rather than reveal it.", "at": [{ "deep": "Internals" }] },
+      { "item": "Running this technique on a plain schema copy instead of a true zero-copy clone or branch is a real simplification, not a cosmetic one -- a schema copy can drift from production between when it's taken and when the diff runs, a gap a true zero-copy branch closes.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The cost curve's real-world unit isn't rows scanned at all -- it's bytes read and compute-seconds billed, which this topic's own run approximates with a row count because a real warehouse's exact byte/dollar cost model is sourced differently per vendor.", "at": [{ "step": "Reveal: the cost curve" }] },
+      { "item": "Two checksum implementations that hash different column serializations of the same logical row would disagree even when the data is identical -- the checksum's own definition has to be fixed and shared between the old and new side, or the whole technique produces false positives.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's join-diff and bisection diff are deliberately the same baseline the chapter-lab scorecard (topic 17) measures against -- the specific planted bug and table shape chosen here are the fixed, known case that scorecard will later ask how selectively it gets run.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

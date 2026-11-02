@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: groups, duplicates, and idempotence
+
+This topic builds on consumer-group mechanics, the vocabulary for delivery guarantees, and
+single-partition idempotence, without re-teaching any of them. If those are unfamiliar, start
+with <Resource title="Consumer groups and rebalance protocols" href="../consumer-groups-rebalance-protocols/" by="this course">Consumer groups and rebalance protocols</Resource>,
+<Resource title="Delivery semantics and where duplicates arise" href="../delivery-semantics-duplicates/" by="this course">Delivery semantics and where duplicates arise</Resource>, and
+<Resource title="Idempotent producer" href="../idempotent-producer/" by="this course">Idempotent producer</Resource> first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="KIP-98: Exactly Once Delivery and Transactional Messaging" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-98+-+Exactly+Once+Delivery+and+Transactional+Messaging" by="Apache Kafka wiki">The transaction coordinator, the internal Transaction Log, and control markers.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 design documentation" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka docs">The read_committed/read_uncommitted isolation-level definitions.</Resource>
+  <Resource kind="reading" title="KIP-890: Transactions Server-Side Defense" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-890%3A+Transactions+Server-Side+Defense" by="Apache Kafka wiki">The hanging-transaction problem and the last stable offset.</Resource>
+  <Resource kind="reading" title="KIP-939: Support Participation in 2PC" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-939%3A+Support+Participation+in+2PC" by="Apache Kafka wiki">Kafka's internal two-phase commit and external participation.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,83 @@
+{
+  "topic": "de.hash-range-partitioning-pruning",
+  "steps": [
+    {
+      "lines": [
+        "Count how many pieces of work an engine has, and you still haven't said anything about which row lands in which piece.",
+        "So here's the real question. When grouping and sorting each decide that, do they use the same rule, or two genuinely different ones?",
+        "Don't take that on faith. A real plan names the rule it actually used, so let's go read it there instead of guessing."
+      ]
+    },
+    {
+      "lines": [
+        "I pulled both of these straight from a real session's own plan text.",
+        "A grouping step's own shuffle carries one specific tag, naming exactly how it decides where each row goes.",
+        "A sorting step's own shuffle, sitting right next to it, carries a completely different tag. Two separate mechanisms, not one mechanism wearing two names."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "Two separate steps run one after another, each one needing the data split by the exact same key. Does the second step still pay for its own shuffle, on top of the first one?",
+        "Think about what the planner actually checks before it decides to add anything new."
+      ],
+      "answer": [
+        "It's tempting to assume each step pays its own way, since each one technically asks for a split.",
+        "But the planner checks what's already true before adding anything. If the data already sits split exactly the way the second step needs, there's nothing left to do.",
+        "Asking for something you already have costs nothing at all."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and the prediction holds exactly.",
+        "One single shuffle covers both steps completely.",
+        "The second step's own requirement was already satisfied by the first one, so nothing new gets added underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, and this one tests whether that sharing was a real decision or just automatic.",
+        "Same two steps, same shape, but this time each one needs the data split by a genuinely different key. Does the same sharing still happen?",
+        "Think about what's actually different this time, not just what looks the same on the surface."
+      ],
+      "answer": [
+        "It's easy to assume the planner just reuses shuffles out of habit, regardless of the key.",
+        "But reuse only ever happens when the requirement is already satisfied. A different key is a genuinely different requirement, with nothing left over to reuse.",
+        "What looked automatic a moment ago was never automatic. It was conditional the whole time."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly that genuine difference.",
+        "This version carries two separate, real splits, one for each key.",
+        "The sharing from a moment ago wasn't a free pass. It only happens when the condition for it is actually met."
+      ]
+    },
+    {
+      "lines": [
+        "Last commitment, and this one moves from shuffling in memory to reading from disk.",
+        "The data itself sits in separate directories, one per value of a column, the way a Hive-style table lays itself out. Filtering on that exact column: does it skip whole directories, or does it still read everything and filter row by row afterward?",
+        "Think about what the directory names themselves already tell the engine, before it opens a single file."
+      ],
+      "answer": [
+        "It's reasonable to assume the engine still has to read everything, then filter afterward.",
+        "But the directory names themselves already encode the value being filtered on. There's no reason to open a directory the filter can already rule out before touching a single file inside it.",
+        "The structure on disk does part of the filtering before a single row is ever read."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly that skip, named directly in the plan.",
+        "The scan's own plan names the precise directory filter it applied.",
+        "The identical filter against data laid out flatly, with no such directories, has nothing at all to name there. There's simply no structure to prune against."
+      ]
+    },
+    {
+      "lines": [
+        "So here's everything this topic actually showed you, named precisely.",
+        "Grouping splits data by a hash. Sorting splits it by a genuine global ordering. A later step reuses an earlier split for free, but only when its own requirement is already met.",
+        "And a Hive-style directory layout lets a filter skip entire directories before a single file inside them is ever opened."
+      ]
+    }
+  ]
+}

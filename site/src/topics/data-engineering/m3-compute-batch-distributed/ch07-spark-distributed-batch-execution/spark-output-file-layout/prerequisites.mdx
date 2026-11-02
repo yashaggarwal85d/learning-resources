@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: dynamic partition pruning
+
+<ul class="resources">
+  <Resource kind="reel" title="Dynamic partition pruning (DPP)" domain="data-engineering" host="de.dynamic-partition-pruning" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="basicLogicalOperators.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/plans/logical/basicLogicalOperators.scala" by="Apache Spark source, GitHub">The RebalancePartitions operator's own doc comment: rebalance by partition expressions, split skewed partitions, only meaningful with AQE on.</Resource>
+  <Resource kind="reading" title="Hints" href="https://spark.apache.org/docs/4.0.0/sql-ref-syntax-qry-select-hints.html" by="Apache Spark documentation">The REBALANCE hint's own user-facing description, including that it is ignored without AQE.</Resource>
+  <Resource kind="reading" title="Configuration" href="https://spark.apache.org/docs/4.0.0/configuration.html" by="Apache Spark documentation">spark.sql.files.maxRecordsPerFile's own default and one-line description.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,77 @@
+{
+  "topic": "de.drift-label-delay-monitoring",
+  "syllabus": [
+    {
+      "clause": "data drift vs concept drift",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Reveal: data drift vs. concept drift" }
+      ]
+    },
+    {
+      "clause": "PSI, KS and Jensen–Shannon tests per feature",
+      "at": [
+        { "step": "Reveal: PSI, KS and Jensen-Shannon agree" },
+        { "step": "Reveal: a case where they disagree" }
+      ]
+    },
+    {
+      "clause": "schema and null-rate drift that silently corrupt features",
+      "at": [
+        { "step": "Reveal: null-rate creep, the silent corruption" }
+      ]
+    },
+    {
+      "clause": "proxy metrics while labels arrive days or weeks later",
+      "at": [
+        { "step": "Reveal: proxy metrics during label delay" },
+        { "step": "Reveal: what a proxy does not prove" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Evidently AI documentation — Customize Data Drift",
+      "items": [
+        { "item": "the KS test's default threshold is p_value < 0.05, the default method for numerical data at small sample sizes", "at": [{ "step": "Reveal: PSI, KS and Jensen-Shannon agree" }] },
+        { "item": "PSI flags drift at psi_value ≥ its default threshold of 0.1", "at": [{ "step": "Reveal: PSI, KS and Jensen-Shannon agree" }] },
+        { "item": "Jensen-Shannon distance flags drift at distance ≥ its default threshold of 0.1, and is the default method for categorical data above 1000 objects", "at": [{ "step": "Reveal: PSI, KS and Jensen-Shannon agree" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — Jensen–Shannon divergence",
+      "items": [
+        { "item": "Jensen-Shannon divergence is a symmetrized, smoothed version of the Kullback-Leibler divergence", "at": [{ "deep": "Internals" }] },
+        { "item": "it is bounded by 1 for two discrete distributions using the base-2 logarithm", "at": [{ "deep": "Internals" }] },
+        { "item": "its square root is itself a metric, the Jensen-Shannon distance", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — Kolmogorov–Smirnov test",
+      "items": [
+        { "item": "the two-sample K-S test compares two samples' empirical CDFs directly without binning, sensitive to both location and shape", "at": [{ "step": "Reveal: a case where they disagree" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook's scenario (flat PSI, collapsing precision) is not a corner case but the structural blind spot every per-feature distribution test shares: none of PSI, KS or Jensen-Shannon ever look at the label, so none can see a relationship between feature and label moving while the feature's own distribution holds still.", "at": [{ "step": "Hook" }] },
+      { "item": "PSI, KS and Jensen-Shannon disagreeing on the identical data is not a sign that one of them is broken — they are different functions of the same two samples (a binned log-ratio sum, a full-resolution CDF gap, a symmetrized divergence), so a shift shaped to exploit one test's blind spot (coarse binning, for PSI) will read differently to a test with a different blind spot.", "at": [{ "step": "Reveal: a case where they disagree" }] },
+      { "item": "Mean-imputation is a second, independent failure riding on top of the null-rate creep it was meant to paper over: it doesn't just hide missingness from a human reading the column, it can specifically hide missingness from the exact automated check (a distributional test) a team might be relying on to catch exactly this kind of problem.", "at": [{ "step": "Reveal: null-rate creep, the silent corruption" }] },
+      { "item": "Calling a signal a 'proxy' is a commitment, not a formality: once a team starts treating a proxy's stability as equivalent to the model's real health, they have quietly undone the entire reason for naming it a proxy in the first place.", "at": [{ "step": "Reveal: proxy metrics during label delay" }] },
+      { "item": "A proxy's silence and a proxy's movement are asymmetric kinds of evidence: a moving proxy is at least a reason to look closer, while a quiet proxy proves nothing at all about concept drift, which is precisely the failure mode this topic's own concept-drift experiment is built to make vivid rather than asserted.", "at": [{ "step": "Reveal: what a proxy does not prove" }] },
+      { "item": "This topic's own engineered PSI-vs-KS disagreement generalizes beyond the specific shift shape used here: any test built on fixed bins (PSI) has some shift shape small and localized enough to hide between bin edges, which is a structural property of binning itself, not a tuning mistake in a particular PSI implementation.", "at": [{ "deep": "Internals" }] },
+      { "item": "Evidently's own choice to make Jensen-Shannon distance (not divergence or raw KL) its default method for larger categorical datasets is itself informative: JS handles zero-probability bins gracefully where KL divergence is undefined, which matters more as a categorical feature's cardinality grows and sparse categories become common.", "at": [{ "deep": "Internals" }] },
+      { "item": "The retraining-policy question CHAPTER.md explicitly leaves open (when should a drift alert actually trigger a retrain) is a genuinely separate decision from detection: this topic only teaches how to notice that something moved and how confidently, not what action that notice should automatically cause, because the right action depends on a cost trade-off this topic does not have the information to resolve.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A null-rate check and a distributional test are not redundant even though both can sometimes catch the same underlying problem: the null-rate check is comparing a single summary number against a threshold (fast, cheap, unambiguous), while PSI/KS/JS are comparing entire distributions (richer, but blind to exactly the kind of imputation-smoothed corruption this topic reproduces) — a mature monitoring setup runs both, not one in place of the other.", "at": [{ "deep": "Internals" }] },
+      { "item": "The concept-drift experiment's complete label-rule inversion is a deliberately extreme illustration of a real, much subtler failure mode: a partial, gradual concept shift (the usual real-world case) produces the identical structural signature — quiet PSI, degrading real-world performance — just with a smaller and noisier gap, which is why the experiment's extremity clarifies the mechanism rather than exaggerating the risk.", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

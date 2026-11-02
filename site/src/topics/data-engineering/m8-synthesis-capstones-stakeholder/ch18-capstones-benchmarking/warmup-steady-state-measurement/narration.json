@@ -1,0 +1,71 @@
+{
+  "topic": "de.warmup-steady-state-measurement",
+  "steps": [
+    {
+      "lines": [
+        "Two engineers sit down to benchmark the exact same query, on the exact same database.",
+        "They come back with numbers that are twice as far apart as the real gap between an ordinary day and a genuinely bad one.",
+        "One of them started measuring the instant the service came up. The other one waited a few minutes before touching anything."
+      ]
+    },
+    {
+      "lines": [
+        "So who actually got closer to the truth here, and what changed in those few quiet minutes of waiting.",
+        "Think about everything a freshly started service hasn't done yet."
+      ],
+      "answer": [
+        "The one who waited was closer, and nothing about the first engineer's method was carelessly wrong.",
+        "An empty buffer pool and an empty cache were still quietly absorbing most of those early, slow requests. Waiting let both of them fill in before anything got measured for real."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the honest list of reasons the first few minutes of almost any benchmark lie to you.",
+        "A compiler still warming itself up, a buffer pool and a page cache starting out completely empty, caches that haven't been asked a single question yet, background cleanup work piling up unseen, and small files that haven't had time to accumulate.",
+        "This sandbox's own database happens to reproduce exactly two of those five causes for real."
+      ]
+    },
+    {
+      "lines": [
+        "Restarting the database empties both its own buffer pool and the operating system's cache sitting underneath it.",
+        "Run the shop's ordinary order lookup immediately after that restart, and the very first handful of requests come back measurably slower than anything that follows."
+      ]
+    },
+    {
+      "lines": [
+        "Watch a sliding window of recent request times, and compare its average to the window that came right before it.",
+        "Once that change settles down and stays small for several windows running, steady state gets declared, not guessed at."
+      ]
+    },
+    {
+      "lines": [
+        "A single steady state run still carries real sampling noise hiding inside it.",
+        "Repeat that same run several separate times, and report a confidence interval around the result, so a reader can actually tell a true difference apart from ordinary noise."
+      ]
+    },
+    {
+      "lines": [
+        "That same query's cold start number and its steady state number are honestly answering two different real questions.",
+        "One is what a service that restarts constantly actually sees. The other is what a service that stays up for days sees. Blending the two together into one average answers neither question anyone actually asked."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling this together now.",
+        "The first minutes of a benchmark lie for named, reproducible reasons. Steady state gets detected from the data, never just assumed. Repeated runs earn themselves a confidence interval instead of a single lonely number.",
+        "And cold cache and hot cache stay two separate, honestly labeled results, never folded into one blended figure."
+      ]
+    },
+    {
+      "lines": [
+        "A vendor hands you a single benchmark number, with no mention anywhere of warm up or how many times it was run.",
+        "What would you actually ask before trusting that number at all."
+      ],
+      "answer": [
+        "Ask plainly whether warm up was ever discarded, and whether the run was repeated more than once.",
+        "Without both of those, that number is very likely still measuring the system waking up, not the system actually running.",
+        "An accurate number from a run like that still isn't telling you what you think it's telling you."
+      ]
+    }
+  ]
+}

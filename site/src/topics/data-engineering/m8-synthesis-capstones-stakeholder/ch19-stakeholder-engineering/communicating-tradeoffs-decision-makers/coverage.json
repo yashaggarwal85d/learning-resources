@@ -1,0 +1,67 @@
+{
+  "topic": "de.communicating-tradeoffs-decision-makers",
+  "syllabus": [
+    {
+      "clause": "translating cost/latency/correctness trade-offs into business terms (cost per freshness tier, the price of a wrong number)",
+      "at": [
+        { "step": "Reveal: cost in business terms" }
+      ]
+    },
+    {
+      "clause": "naming the dominant cost lever",
+      "at": [
+        { "step": "Reveal: the one dominant cost lever" }
+      ]
+    },
+    {
+      "clause": "justifying \"boring\" choices",
+      "at": [
+        { "step": "Reveal: justifying the boring choice" }
+      ]
+    },
+    {
+      "clause": "bottom-line-up-front executive summaries vs engineering deep-dives for the same decision",
+      "at": [
+        { "step": "Reveal: bottom-line-up-front vs. the deep dive" },
+        { "step": "Reveal: what belongs in each document" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Amazon.com, Inc. — 2017 Letter to Shareholders",
+      "items": [
+        { "item": "Amazon does not use slide-oriented presentations; it writes narratively structured six-page memos instead", "at": [{ "step": "Reveal: bottom-line-up-front vs. the deep dive" }] },
+        { "item": "the memo is read silently at the start of each meeting, in a kind of study hall, before any discussion starts", "at": [{ "step": "Reveal: bottom-line-up-front vs. the deep dive" }] }
+      ]
+    },
+    {
+      "source": "Dan McKinley — \"Choose Boring Technology\"",
+      "items": [
+        { "item": "a boring choice's capabilities, and more importantly its failure modes, are well understood", "at": [{ "step": "Reveal: justifying the boring choice" }] },
+        { "item": "the long-term cost of keeping a system working reliably vastly exceeds any inconvenience encountered while building it", "at": [{ "step": "Reveal: justifying the boring choice" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately holds the recommendation and the underlying facts fixed across both documents, so the lesson is that the document's own length and shape decided the outcome, not that one version contained better reasoning than the other.", "at": [{ "step": "Hook" }] },
+      { "item": "The business-terms restatement in examples.py is computed directly from topic 1's own cost model (reused, not re-derived), so this topic's own claim is specifically about re-expressing an existing number in a different vocabulary, not about computing a new one.", "at": [{ "step": "Reveal: cost in business terms" }] },
+      { "item": "The dominant-lever computation is checked mechanically (share_of_total_gap > 0.5) rather than asserted, and the result (100% of the fast/medium gap) follows directly from topic 1's own two-term cost model having only one lever that varies by tier.", "at": [{ "step": "Reveal: the one dominant cost lever" }] },
+      { "item": "Recommending the medium tier as the 'boring choice' is explicit, in FACT-CHECK.md's own red team, as this course's own editorial framing for the shop's fictional scenario, not a claim sourced to any real organization's actual tier decision.", "at": [{ "step": "Reveal: justifying the boring choice" }] },
+      { "item": "Amazon's own narrative-memo practice is cited specifically for the shape of the split (short, conclusion-first, paired with a longer document), explicit in SOURCES.md and FACT-CHECK.md that this topic's own one-pager does not reproduce Amazon's six-page length or its silent-reading ritual.", "at": [{ "step": "Reveal: bottom-line-up-front vs. the deep dive" }] },
+      { "item": "The one-pager and the deep dive are checked in examples.py to recommend the identical tier (summary[0] == deep_dive[0]) and to differ only in length, so the worked example cannot silently drift into two documents that disagree.", "at": [{ "step": "Reveal: what belongs in each document" }] },
+      { "item": "The Prove It step is designed so the plausible-sounding wrong answer (a stakeholder who reads only the bottom line and picks the fastest tier) fails for a reason the lab already checks mechanically: the one-pager itself must still name the recommended tier and the dominant lever, which examples.py's own assertions confirm are present.", "at": [{ "step": "Prove it" }] },
+      { "item": "The topic's own 'Leaves out' line states plainly that proving data-platform value through usage telemetry is a separate, later conversation from recommending one tier for one specific request, so a viewer does not come away believing this topic covers how value gets proven after the fact.", "at": [{ "deep": "Internals" }] },
+      { "item": "examples.py computes every number it prints from topic 1's own reproduced cost model rather than hardcoding business-terms figures as literals, so the assertions (fast costs more than medium; the dominant lever's share exceeds half the gap) actually test the model's own logic.", "at": [{ "deep": "Lab" }] },
+      { "item": "This topic's three introduced ids (cost-per-freshness-tier, dominant-cost-lever, executive-summary-vs-deep-dive) are each given their own dedicated reveal step, and the topic's own uses (slo-tiering, data-contract) are both drawn from topic 1, consistent with it being the chapter's second topic rather than an independent entry point.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

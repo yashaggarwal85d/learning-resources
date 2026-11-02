@@ -1,0 +1,72 @@
+{
+  "topic": "de.failure-mode-analysis-recovery",
+  "syllabus": [
+    {
+      "clause": "enumerate component failures (source outage, broker loss, poison record, bad deploy, region loss)",
+      "at": [
+        { "step": "Hook: the dashboard says fine, the partition says otherwise" },
+        { "step": "Predict: what actually ends the crash loop?" },
+        { "step": "Reveal: a failure, named, radius, detection, recovery, loss, time" },
+        { "step": "Prove it: a different failure, the same table" }
+      ]
+    },
+    {
+      "clause": "and their blast radius",
+      "at": [{ "step": "Reveal: blast radius is a failure domain, not a dashboard" }]
+    },
+    {
+      "clause": "RPO/RTO per data class",
+      "at": [
+        { "step": "Reveal: RPO and RTO are two different numbers" },
+        { "step": "Reveal: RPO and RTO are set per data class" }
+      ]
+    },
+    {
+      "clause": "degraded modes",
+      "at": [{ "step": "Reveal: two degraded modes, two different trades" }]
+    },
+    {
+      "clause": "DR mechanics live in §11.3",
+      "at": [{ "step": "Recap" }, { "deep": "Internals" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google — Site Reliability Engineering, Chapter 22, Addressing Cascading Failures",
+      "items": [
+        { "item": "A cascading failure is a failure that grows over time as a result of positive feedback, occurring when one portion of a system failing increases the probability other portions fail.", "at": [{ "step": "Hook: the dashboard says fine, the partition says otherwise" }] },
+        { "item": "The most common cause of cascading failures is overload.", "at": [{ "step": "Reveal: a failure, named, radius, detection, recovery, loss, time" }] },
+        { "item": "Queued requests consume memory and increase latency.", "at": [{ "step": "Reveal: a failure, named, radius, detection, recovery, loss, time" }] },
+        { "item": "Always use randomized exponential backoff when scheduling retries.", "at": [{ "step": "Predict: what actually ends the crash loop?" }] }
+      ]
+    },
+    {
+      "source": "Marc Brooker — Exponential Backoff and Jitter (AWS Architecture Blog, 2015)",
+      "items": [
+        { "item": "N clients compete in the first round, N-1 in the second round, and so on, under contention.", "at": [{ "step": "Predict: what actually ends the crash loop?" }] },
+        { "item": "Capped exponential backoff means clients multiply their backoff by a constant after each attempt, up to some maximum value.", "at": [{ "step": "Predict: what actually ends the crash loop?" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A failure table's six columns (failure, blast radius, detection, recovery, data lost, time to recover) turn a vague worry into something checkable, one row at a time.", "at": [{ "step": "Reveal: a failure, named, radius, detection, recovery, loss, time" }] },
+      { "item": "Blast radius is scoped to what shares a failure domain, not to what shares a dashboard — an averaged metric can bury a real, narrower failure.", "at": [{ "step": "Reveal: blast radius is a failure domain, not a dashboard" }] },
+      { "item": "An empty recovery cell is itself the finding, not a detail to fill in on faith.", "at": [{ "step": "Reveal: an empty recovery cell is the finding" }] },
+      { "item": "RPO and RTO are two different numbers, each priced separately — tightening one doesn't tighten the other for free.", "at": [{ "step": "Reveal: RPO and RTO are two different numbers" }] },
+      { "item": "RPO and RTO are set per data class, not once for a whole system — a system-wide target overpays for data that can tolerate loss.", "at": [{ "step": "Reveal: RPO and RTO are set per data class" }] },
+      { "item": "A degraded mode is a designed trade that names, up front, exactly what it gives up — not an accident of what happened to keep working.", "at": [{ "step": "Reveal: two degraded modes, two different trades" }] },
+      { "item": "The failure table's five columns don't depend on what kind of failure it is — applying them to a new failure finds whatever gap exists the same way.", "at": [{ "step": "Prove it: a different failure, the same table" }] },
+      { "item": "This topic leaves out disaster-recovery mechanics, game days, incident response, and the replication/consensus mechanics that set an achievable RPO deliberately — it teaches the design response, not the mechanics.", "at": [{ "deep": "Internals" }] },
+      { "item": "Failure-mode enumeration via a failure table and RPO/RTO budgeting per data class are established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop a failure table, a priced RPO/RTO budget per data class, and two degraded modes, which the next topic (cost model and dominant cost lever) assumes already exist before pricing the whole design.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "topic": "de.adaptive-query-execution-aqe",
+  "syllabus": [
+    {
+      "clause": "re-optimising at query-stage boundaries using real shuffle statistics: coalescing small post-shuffle partitions, demoting sort-merge to broadcast or shuffled hash join, splitting skewed partitions; default-on since 3.2; why AQE cannot fix what happens before the first exchange.",
+      "at": [
+        { "step": "Reveal: the Initial Plan sorts both sides" },
+        { "step": "Reveal: the Final Plan is a broadcast hash join, with zero sort steps" },
+        { "step": "Reveal: the Final Plan coalesces the shuffle read; the Initial Plan never does" },
+        { "deep": "Why a reoptimization needs a shuffle boundary" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Performance Tuning docs — Adaptive Query Execution (Apache Spark documentation)",
+      "items": [
+        {
+          "item": "AQE re-optimizes the query plan in the middle of query execution, based on accurate runtime statistics",
+          "at": [{ "step": "Reveal: the Initial Plan sorts both sides" }]
+        },
+        {
+          "item": "AQE converts sort-merge join to broadcast hash join when the runtime statistics of any join side are smaller than the adaptive broadcast hash join threshold",
+          "at": [{ "step": "Reveal: the Final Plan is a broadcast hash join, with zero sort steps" }]
+        },
+        {
+          "item": "this feature coalesces the post shuffle partitions based on the map output statistics",
+          "at": [{ "step": "Reveal: the Final Plan coalesces the shuffle read; the Initial Plan never does" }]
+        }
+      ]
+    },
+    {
+      "source": "Databricks engineering blog — Adaptive Query Execution: Speeding Up Spark SQL at Runtime",
+      "items": [
+        {
+          "item": "a shuffle or broadcast exchange breaks the pipeline; these materialization points bound the query stages a reoptimization happens between",
+          "at": [{ "deep": "Why a reoptimization needs a shuffle boundary" }]
+        },
+        {
+          "item": "a very selective filter, or the join relation being a series of complex operators other than just a scan, is what makes the static size estimate wrong",
+          "at": [{ "step": "Reveal: the Initial Plan sorts both sides" }]
+        }
+      ]
+    },
+    {
+      "source": "AdaptiveSparkPlanExec.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "when one query stage finishes materialization, the rest query is re-optimized and planned based on the latest statistics provided by all materialized stages",
+          "at": [{ "deep": "Why a reoptimization needs a shuffle boundary" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "AQE converts sort-merge to shuffled hash join too, not only to broadcast, when every post-shuffle partition is smaller than spark.sql.adaptive.maxShuffledHashJoinLocalMapThreshold — a third conversion this topic's own examples.py does not separately construct, since the broadcast-demotion case already shows the same underlying reoptimization mechanism.",
+        "at": [{ "out": "the shuffled-hash conversion route named only; this topic's own measurement constructs the broadcast route instead" }]
+      },
+      {
+        "item": "spark.sql.adaptive.localShuffleReader.enabled (default true) is what lets the non-broadcast side read its own shuffle output locally once the join becomes a broadcast join, avoiding a second real shuffle.",
+        "at": [{ "out": "the local-shuffle-read config named only; visible in this topic's own Final Plan as the absence of any Exchange on the non-broadcast side" }]
+      },
+      {
+        "item": "spark.sql.adaptive.coalescePartitions.initialPartitionNum, not spark.sql.shuffle.partitions, is the real starting partition count AQE coalesces down from when it's explicitly set; otherwise it falls back to spark.sql.shuffle.partitions, which is what this topic's own second example relies on.",
+        "at": [{ "out": "the initialPartitionNum fallback chain named only; this topic's own examples.py leaves it unset and relies on the shuffle.partitions fallback" }]
+      },
+      {
+        "item": "spark.sql.adaptive.advisoryPartitionSizeInBytes (default 64 MB) is the target byte size AQE coalesces toward, not a fixed partition count — a dataset far below that target gets merged into very few partitions regardless of how many were configured.",
+        "at": [{ "out": "the advisory-size target named only; this topic's own examples.py measures the resulting coalesced-vs-not plan text, not the target byte size itself" }]
+      },
+      {
+        "item": "spark.sql.adaptive.coalescePartitions.minPartitionSize guards against merging away all parallelism when the advisory size is ignored for parallelism-first coalescing, which is the default coalescing mode.",
+        "at": [{ "out": "the parallelism-first default and its own minimum-size guard, named only" }]
+      },
+      {
+        "item": "The reoptimization only ever rewrites the plan at and above an unmaterialized shuffle or broadcast boundary — AdaptiveSparkPlanExec's own bottom-up traversal only creates a new query stage once every child stage below it has already finished, which is the exact mechanism behind this topic's own 'nothing before the first exchange changes' claim.",
+        "at": [{ "out": "the bottom-up, stage-by-stage traversal named and quoted; this topic's own examples.py measures its consequence (identical leaf scans) rather than the traversal algorithm itself" }]
+      },
+      {
+        "item": "Skew-join splitting (spark.sql.adaptive.skewJoin.enabled) is a third, separate AQE feature from the two measured here — it rewrites one skewed partition into several balanced ones rather than demoting a strategy or merging partitions, and is this topic's own handoff to the next.",
+        "at": [{ "out": "skew-join splitting named only; deferred by this topic's own handoff to the next topic's lab" }]
+      },
+      {
+        "item": "AQE's broadcast-demotion threshold, spark.sql.adaptive.autoBroadcastJoinThreshold, defaults to the same value as the static spark.sql.autoBroadcastJoinThreshold but is tracked as a separate config — raising the static threshold alone does not change what AQE is willing to broadcast at runtime, and vice versa.",
+        "at": [{ "out": "the two separately-tracked broadcast thresholds named only; this topic's own examples.py leaves both at their shared default" }]
+      },
+      {
+        "item": "A cost-based optimizer with real table statistics (ANALYZE TABLE) can sometimes give the static planner an accurate-enough estimate that AQE never needs to intervene at all — AQE is specifically valuable when statistics are missing, stale, or the true selectivity only emerges from an operator the static estimator cannot see through.",
+        "at": [{ "out": "the case where AQE has nothing to do, named only; this topic's own examples.py uses no table statistics at all, which is why its own static estimates are wrong in the way the Databricks blog describes" }]
+      },
+      {
+        "item": "Each AQE reoptimization attempt is only adopted if the new plan's estimated cost is equal to or lower than the current one, per AdaptiveSparkPlanExec's own comment on reOptimize — a reoptimization is never applied blindly, even when it fires.",
+        "at": [{ "out": "the cost-gated adoption of a reoptimized plan, named and sourced only; this topic's own examples.py observes the adopted Final Plan, not the rejected alternatives a cost check might discard" }]
+      },
+      {
+        "item": "Whole-stage codegen, covered earlier in this chapter, is recomputed for each newly created query stage after a reoptimization, since the physical operators themselves changed — the generated code for a Final Plan's BroadcastHashJoin is not simply a patched version of the Initial Plan's SortMergeJoin codegen.",
+        "at": [{ "out": "codegen regeneration after a reoptimization, named only, connecting back to this chapter's own codegen topic; this topic's own examples.py inspects plan text, not generated code" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

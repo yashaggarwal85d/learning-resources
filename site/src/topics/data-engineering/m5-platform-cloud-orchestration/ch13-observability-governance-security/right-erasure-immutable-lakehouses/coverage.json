@@ -2,97 +2,143 @@
   "topic": "de.right-erasure-immutable-lakehouses",
   "syllabus": [
     {
-      "clause": "deletes vs time travel (snapshots must expire)",
-      "at": [{ "step": "Reveal: a delete writes a snapshot, not an erasure" }]
-    },
-    {
-      "clause": "MOR delete files until compaction",
-      "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }]
-    },
-    {
-      "clause": "VACUUM/expire_snapshots/orphan removal",
-      "at": [{ "step": "Reveal: what actually frees the bytes" }]
-    },
-    {
-      "clause": "replicas, backups and Kafka topics (compaction tombstones, retention)",
-      "at": [{ "step": "Reveal: three more places it survives" }]
-    },
-    {
-      "clause": "per-subject key crypto-shredding and its key-management cost",
+      "clause": "deletes vs time travel (snapshots must expire), MOR delete files until compaction, VACUUM/expire_snapshots/orphan removal, replicas, backups and Kafka topics (compaction tombstones, retention), per-subject key crypto-shredding and its key-management cost, proving deletion to an auditor; retention policies as code.",
       "at": [
-        { "step": "Reveal: one key, every copy at once" },
-        { "step": "Reveal: what that costs at scale" }
+        { "step": "Reveal: a DELETE writes a new snapshot; the old snapshot still references the old data file, untouched" },
+        { "step": "Reveal: yes, measured directly -- the current read hides them, the old snapshot does not" },
+        { "step": "Elaborate: expiring the old snapshots and compacting physically removes the row" },
+        { "step": "Reveal: not immediately -- the tombstone itself only disappears after delete.retention.ms, measured directly" },
+        { "step": "Elaborate: a lagging consumer can miss the delete marker entirely" },
+        { "step": "Reveal: crypto-shredding -- deleting one subject's key makes every copy unreadable at once, measured directly; an untouched subject stays fully readable" },
+        { "step": "Reveal: proving deletion to an auditor; retention policies as code" }
       ]
-    },
-    {
-      "clause": "proving deletion to an auditor",
-      "at": [{ "step": "Reveal: proving it to an auditor" }]
-    },
-    {
-      "clause": "retention policies as code",
-      "at": [{ "step": "Reveal: retention, written down as code" }]
     }
   ],
   "sources": [
     {
-      "source": "Apache Iceberg — Maintenance",
+      "source": "Apache Iceberg documentation -- Maintenance",
       "items": [
-        { "item": "Each write creates a new snapshot; expiring old snapshots removes them from metadata, so they're no longer available for time travel.", "at": [{ "step": "Reveal: a delete writes a snapshot, not an erasure" }] },
-        { "item": "Regularly expiring snapshots is recommended to delete data files no longer needed; task or job failures can leave orphan files not referenced by table metadata.", "at": [{ "step": "Reveal: what actually frees the bytes" }] }
+        {
+          "item": "expiring old snapshots removes them from metadata so they are no longer available for time travel; data files are not deleted until no longer referenced by any snapshot",
+          "at": [
+            { "step": "Reveal: a DELETE writes a new snapshot; the old snapshot still references the old data file, untouched" },
+            { "step": "Elaborate: expiring the old snapshots and compacting physically removes the row" }
+          ]
+        }
       ]
     },
     {
-      "source": "Apache Iceberg — Table specification",
+      "source": "Delta Lake documentation -- Table utility commands",
       "items": [
-        { "item": "Equality delete files use field ids to determine row equality; position delete files identify rows by file path.", "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }] }
+        {
+          "item": "VACUUM removes files older than the retention threshold and is not triggered automatically; the default retention threshold is 7 days",
+          "at": [{ "step": "Elaborate: expiring the old snapshots and compacting physically removes the row" }]
+        }
       ]
     },
     {
-      "source": "Delta Lake — Table utility commands",
+      "source": "Delta Lake documentation -- What are deletion vectors?",
       "items": [
-        { "item": "VACUUM removes files no longer referenced by the table and older than the retention threshold, which defaults to seven days.", "at": [{ "step": "Reveal: what actually frees the bytes" }] }
+        {
+          "item": "deletion vectors mark existing rows as removed without rewriting the Parquet file, so a deleted row can remain physically present until the file is rewritten",
+          "at": [{ "step": "Elaborate: expiring the old snapshots and compacting physically removes the row" }]
+        }
       ]
     },
     {
-      "source": "Delta Lake — What are deletion vectors?",
+      "source": "Confluent documentation -- Kafka Log Compaction",
       "items": [
-        { "item": "Deletion vectors mark existing rows as removed without rewriting the Parquet file; the change is applied physically only when files are later rewritten.", "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }] }
+        {
+          "item": "a null-payload message is a tombstone that deletes the prior value for a key, and tombstones are themselves cleaned out of the log after a configured period to free up space",
+          "at": [
+            { "step": "Reveal: not immediately -- the tombstone itself only disappears after delete.retention.ms, measured directly" },
+            { "step": "Elaborate: a lagging consumer can miss the delete marker entirely" }
+          ]
+        }
       ]
     },
     {
-      "source": "Apache Kafka — Design (Log Compaction)",
+      "source": "GDPR Article 17 -- Right to erasure ('right to be forgotten')",
       "items": [
-        { "item": "Log compaction retains at least the last known value per key; a null-valued message is a tombstone, removed only after delete.retention.ms (24 hours by default).", "at": [{ "step": "Reveal: three more places it survives" }] }
+        {
+          "item": "the data subject has the right to obtain erasure of their personal data without undue delay where one of the stated grounds applies",
+          "at": [{ "step": "Reveal: proving deletion to an auditor; retention policies as code" }]
+        }
       ]
     },
     {
-      "source": "EU GDPR — Article 17",
+      "source": "NIST Special Publication 800-88 Revision 2",
       "items": [
-        { "item": "The data subject has the right to obtain erasure of personal data from the controller.", "at": [{ "step": "Hook" }] }
+        {
+          "item": "cryptographic erase is a recognised purge sanitization technique, and for logical/virtual storage such as cloud storage it may be the only viable purge option",
+          "at": [{ "step": "Reveal: crypto-shredding -- deleting one subject's key makes every copy unreadable at once, measured directly; an untouched subject stays fully readable" }]
+        }
       ]
     },
     {
-      "source": "NIST SP 800-88 Revision 2",
+      "source": "This course's own measurement (examples.py)",
       "items": [
-        { "item": "Cryptographic erase sanitizes the keys used to encrypt data, or prevents access to the keys that encrypt data.", "at": [{ "step": "Reveal: one key, every copy at once" }] }
+        {
+          "item": "a time-travel read at a pre-delete snapshot still returns the subject; expiring snapshots and compacting removes them from the physical data file; a Kafka-style tombstone hides the value immediately but the tombstone record itself persists until its own retention window elapses; deleting one subject's encryption key makes every copy (table, log, backup) unreadable at once while an untouched subject's data in the same copies stays readable",
+          "at": [
+            { "step": "Reveal: yes, measured directly -- the current read hides them, the old snapshot does not" },
+            { "step": "Elaborate: expiring the old snapshots and compacting physically removes the row" },
+            { "step": "Reveal: not immediately -- the tombstone itself only disappears after delete.retention.ms, measured directly" },
+            { "step": "Reveal: crypto-shredding -- deleting one subject's key makes every copy unreadable at once, measured directly; an untouched subject stays fully readable" }
+          ]
+        }
       ]
     }
   ],
   "expert": {
     "by": "self-review",
-    "date": "2026-10-30",
+    "date": "2026-11-01",
     "items": [
-      { "item": "A time-travel query and an auditor's own query are the same mechanism: both read an older snapshot, which is exactly why the subject is still visible to either one until that snapshot expires.", "at": [{ "step": "Reveal: a delete writes a snapshot, not an erasure" }] },
-      { "item": "A table can look fully erased to every normal reader (merge-on-read hides the row) long before the data is actually freed (compaction rewrites it away) — the gap between those two moments is exactly where an over-confident compliance claim goes wrong.", "at": [{ "step": "Reveal: hidden from queries before it’s gone from disk" }] },
-      { "item": "Shortening a retention window trades compliance speed for reader safety: a snapshot or file removed too soon can break a query that started before the window closed but is still running when it does.", "at": [{ "step": "Reveal: what actually frees the bytes" }] },
-      { "item": "A replica, a backup and a Kafka topic are not edge cases of the table's own erasure — they are architecturally separate stores that no table-level operation was ever designed to reach, which is why each needs its own closing mechanism.", "at": [{ "step": "Reveal: three more places it survives" }] },
-      { "item": "Topic 5's crypto-shredding mechanism (introduced there only as a consequence of deleting a key) becomes this topic's main erasure tool precisely because it is indifferent to where a copy of the ciphertext physically sits — the table, the topic, and the backup are all just storage to it.", "at": [{ "topic": "Envelope encryption, KMS and key rotation", "quote": "key deletion as crypto-shredding", "domain": "data-engineering" }] },
-      { "item": "The classification step that tags a column as personal data in the first place is what makes crypto-shredding's own scope question answerable: without knowing which rows belong to a subject, there's no way to say which key should have encrypted them.", "at": [{ "topic": "Data classification and sensitive-data discovery", "quote": "classification schemes", "domain": "data-engineering" }] },
-      { "item": "Masking a column (topic 8) and erasing a subject's data (this topic) solve different problems: a mask hides a value from an unauthorised reader while the value still exists; erasure is removing the value, or making it permanently unreadable, for everyone.", "at": [{ "topic": "Row/column security and dynamic masking in-engine", "quote": "bypass paths (direct file reads, extracts, unprotected materialized views)", "domain": "data-engineering" }] },
-      { "item": "Writing retention and crypto-shredding decisions as code is the same policy-as-code idea topic 7 applied to who may read a row, applied here to how long a row is allowed to exist at all.", "at": [{ "topic": "Access-control models: RBAC, ABAC, policy-as-code", "quote": "policy decision vs enforcement points", "domain": "data-engineering" }] },
-      { "item": "Proof of erasure has two independent parts that must both hold: the table's own metadata (no live snapshot references the subject's files) and the key store's own record (exactly when a key was destroyed) — neither one alone is sufficient, since a table could still be vacuumed while a key survives, or vice versa.", "at": [{ "step": "Reveal: proving it to an auditor" }] },
-      { "item": "The predict question's second scenario (a key shredded with no table DELETE ever run) tests whether the reader has separated the two mechanisms entirely: crypto-shredding changes what a stored value decrypts to, never whether a row exists in the table at all.", "at": [{ "step": "Prove it" }] }
+      {
+        "item": "A real Iceberg table under merge-on-read can use either position delete files (listing specific row positions to hide) or equality delete files (listing a value to hide wherever it appears), and Delta's deletion vectors are a third, file-local variant of the same idea -- all three share the property this topic measures (the data file itself is untouched until compaction), but differ in exactly how the hidden rows are identified.",
+        "at": [{ "out": "the specific delete-file encodings (position vs equality vs deletion vector) named only; this topic's own toy model collapses all three into one delete-marker abstraction to isolate the shared mechanism" }]
+      },
+      {
+        "item": "Orphan file removal (named in the syllabus clause alongside expire_snapshots) finds files that no snapshot references at all -- typically from a failed or aborted write -- and is a separate maintenance operation from expiring snapshots, which only removes metadata entries for snapshots that do still exist and are simply old.",
+        "at": [{ "out": "orphan-file removal's own distinct purpose (cleaning up failed-write debris, not expiring old-but-valid snapshots) named only; this topic's own measurement models snapshot expiry and compaction, not an orphaned file from a failed write" }]
+      },
+      {
+        "item": "Replicas (named in the syllabus clause alongside backups and Kafka topics) are a live, continuously-updated copy of a database, typically used for read scaling or failover, distinct from a point-in-time backup snapshot -- a DELETE that reaches the primary will eventually reach a replica through normal replication, but a replica paused or lagging behind the primary at the moment of deletion can hold the subject exactly as long as a stale backup would.",
+        "at": [{ "out": "the replica case named only, as a variant of the same lagging-copy problem the backup and Kafka-consumer-lag measurements already demonstrate; this topic's own measurement covers a backup and a Kafka log, not a database replica specifically" }]
+      },
+      {
+        "item": "The key-management cost side of per-subject crypto-shredding, named explicitly in the syllabus clause, is real at scale: a key per subject multiplies key-storage volume, requires a key lookup on every single read (not just at write time), and drives up the call rate against whatever key-management service holds the keys -- a cost this topic's own toy model, with two subjects, is far too small to demonstrate.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "Crypto-shredding only erases what was actually encrypted under the deleted key; a plaintext copy made before encryption was ever applied -- an early extract, a log line, a debugging dump -- is completely untouched by deleting any key, which is why this topic's own CHAPTER.md explicitly leaves classification and discovery (an earlier topic) as the control that finds such copies in the first place.",
+        "at": [{ "out": "the plaintext-copy limitation of crypto-shredding named only; this topic's own measurement encrypts all three copies from the start, so none of them is the untouched-plaintext case being warned about" }]
+      },
+      {
+        "item": "Chapter 15's own 'GDPR erasure across lakehouse and backups' topic builds directly on this one, extending the single-table, single-topic, single-backup erasure this topic measures into a cross-system design problem requiring lineage lookup (finding every place a subject's data landed) and a unified proof across all of them.",
+        "at": [{ "out": "Chapter 15's own cross-system extension named only as forward-pointing context; this topic's own scope is deliberately narrower, one table, one topic, one backup" }]
+      },
+      {
+        "item": "Audit logging and tamper evidence, the skipped syllabus topic this topic's own CHAPTER.md names as what 'proving deletion from audit logs' would otherwise rely on, is replaced here by proving completion directly from the table's own metadata and the key store's deletion record -- a narrower but directly verifiable form of evidence that does not require a separate audit-logging system to exist.",
+        "at": [{ "out": "audit logging's own would-be role in proving deletion named only; this topic's own evidence model uses the table and key store's own records instead, precisely because the audit-logging topic itself is not built" }]
+      },
+      {
+        "item": "REORG TABLE ... APPLY (PURGE), named in this topic's CHAPTER.md as one real compaction mechanism, and Delta's OPTIMIZE with a subsequent VACUUM are two vendor-specific commands that both perform the same underlying operation this topic's toy model calls 'compact': rewriting a data file to physically remove rows no longer referenced by any retained snapshot.",
+        "at": [{ "out": "the specific vendor commands (REORG ... PURGE, OPTIMIZE plus VACUUM) named only; this topic's own `ToyTable.compact()` models the shared operation both commands perform, not either command's own syntax" }]
+      },
+      {
+        "item": "GDPR Article 17's own exceptions (the right to erasure does not apply unconditionally -- for example, data needed for legal claims may be retained) mean that proving a system's technical capability to erase a subject is necessary but not sufficient; a real erasure request still requires a legal determination of which ground applies and whether an exception overrides it, a decision outside what any table-maintenance or key-deletion operation can make on its own.",
+        "at": [{ "out": "GDPR Article 17's own stated exceptions named only; this topic's own measurement demonstrates the technical mechanism of erasure, not the legal decision of when erasure is actually required versus exempted" }]
+      },
+      {
+        "item": "Retention policies written as versioned configuration -- a retention class per dataset, consumed by the same scheduled job that runs expire_snapshots/VACUUM/compaction -- turn a once-manual, easy-to-forget maintenance step into something a reviewer can read as code and a CI check can assert still matches what the table actually does, which is what separates 'we delete after some number of days' as a policy document from retention as an enforced, checkable property of the pipeline.",
+        "at": [{ "out": "retention-as-code's own tie to the scheduled maintenance job named only; this topic's own measurement runs expire_snapshots and compact directly rather than through a scheduled retention-policy runner" }]
+      }
     ]
   },
-  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
 }

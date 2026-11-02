@@ -1,0 +1,92 @@
+{
+  "topic": "de.data-diff-regression-testing",
+  "steps": [
+    {
+      "lines": [
+        "A one-line currency-rounding fix goes out, and a naive equality check between old and new output comes back with an enormous pile of rows reported as changed.",
+        "That report is technically true. It's also completely useless, because nobody can review a pile that size row by row.",
+        "A column-level summary of the exact same change says something very different: one column moved, by a known amount, and every other column stayed untouched.",
+        "Same underlying change. One report blocks review. The other one actually enables it."
+      ]
+    },
+    {
+      "lines": [
+        "Worth sitting with this before the reveal answers it directly.",
+        "A full join-diff compares old and new output column by column, and it genuinely is exact, missing nothing.",
+        "Does being exact mean a diff has to physically read every single row to get there?",
+        "Or is there a way to stay exact without reading everything?"
+      ],
+      "answer": "No, exactness doesn't require reading every row. A checksum computed over an entire range of rows is itself an exact comparison -- if it matches on both sides, nothing in that range changed, and it never had to be read row by row at all."
+    },
+    {
+      "lines": [
+        "Here's the first of the two real strategies, the straightforward one.",
+        "Join the old output and the new output together on their shared key.",
+        "Compare every single column for every single joined row, side by side.",
+        "Exact and complete, yes -- but it reads every row on both sides, every time, whether anything in that row actually changed or not."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the second strategy, built specifically to avoid that full read.",
+        "Take a range of keys and compute one checksum over that whole range, on both sides.",
+        "If the two checksums match, skip the entire range -- nothing in it changed, and none of it gets read row by row.",
+        "If they don't match, split that same range into smaller ranges and check each one the same way, recursing down until the actual differing rows are found."
+      ],
+      "takeaway": "A matching checksum proves a whole range is unchanged without reading it."
+    },
+    {
+      "lines": [
+        "One more question worth predicting before it gets answered for real.",
+        "Take the exact same underlying total, computed by summing the exact same pieces, just in a different order.",
+        "That can land on a measurably different floating-point value, not just in theory but in an actual run.",
+        "Does a diff that notices that difference have found a real regression worth reporting?"
+      ],
+      "answer": "No, not automatically. Floating-point addition is not associative, so a harmless reordering inside a pipeline's own aggregation can shift the last few digits of a total with absolutely nothing having gone wrong."
+    },
+    {
+      "lines": [
+        "Here's that exact situation, run for real, side by side with an actual bug.",
+        "One harmless reordering, changing nothing real, and one genuine planted regression -- both go through the very same diff.",
+        "An exact, zero-tolerance comparison flags both of them as changed, with no way to tell them apart.",
+        "A tolerance band set around a defensible size lets the harmless reordering pass clean, while the real regression still gets caught, because it's simply too large to fit inside that same band."
+      ]
+    },
+    {
+      "lines": [
+        "Back to that same planted bug now, read a completely different way.",
+        "Rather than reporting a raw count of rows that differ, this summary names the single column where the real change actually lives.",
+        "It states how many rows that one column touched, and the size of the move in that column alone.",
+        "Every other column in the table gets reported as genuinely untouched, which a raw row count could never say on its own."
+      ],
+      "takeaway": "A usable diff report names the column, not just the row count."
+    },
+    {
+      "lines": [
+        "Now the cost of each strategy, measured directly rather than assumed.",
+        "Hold the actual number of real changes fixed, and grow the size of the table underneath them.",
+        "A full join-diff's cost grows right alongside the table, because it always reads the entire thing regardless of how much of it changed.",
+        "Checksum bisection's cost barely grows at all under the same conditions, so its advantage over the full join-diff keeps widening as the table gets bigger."
+      ],
+      "takeaway": "Bisection's advantage over a full join-diff grows with the table, not with the bug count."
+    },
+    {
+      "lines": [
+        "Pulling the two strategies and the two extra tools together now.",
+        "Both strategies are genuinely exact, and the choice between them is a cost tradeoff, not a correctness one.",
+        "A tolerance band separates harmless floating-point noise from an actual regression, so neither gets mistaken for the other.",
+        "And a column-level summary turns an unreviewable row count into a report a person could actually act on."
+      ],
+      "takeaway": "An exact diff can still choose how much of the table it actually has to read."
+    },
+    {
+      "lines": [
+        "One real run to close on, the same table and the same planted bug through both strategies at once.",
+        "Run the full join-diff against it, and separately run checksum bisection against the identical table and the identical bug.",
+        "Both strategies have to land on exactly the same set of changed rows for either one to be trustworthy at all.",
+        "Does the full join-diff end up reading roughly the same number of rows as checksum bisection, or does one of them read dramatically fewer?"
+      ],
+      "answer": "Bisection reads dramatically fewer rows. Both strategies find exactly the same changed rows, but the full join-diff reads the entire table every time, while bisection only ever reads the specific ranges whose checksum actually came back mismatched."
+    }
+  ]
+}

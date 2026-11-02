@@ -1,0 +1,83 @@
+{
+  "topic": "de.deletes-tombstones",
+  "steps": [
+    {
+      "lines": [
+        "A brand-new analytics sink starts reading a compacted topic from the very beginning, days after a particular customer was actually deleted.",
+        "By the time that sink gets around to reading it, the one marker that ever proved the delete happened has already been cleaned up.",
+        "So that customer, gone from the real database for days now, shows right back up in the sink as though nothing ever happened."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what compaction actually keeps, work through this with me.",
+        "A single delete produces two separate records sharing the exact same key, written one right after the other.",
+        "Does a rule that only ever keeps the newest record for a key hang onto both of those, or only the newer one?"
+      ],
+      "answer": [
+        "Keeping both would mean the rule somehow understands what a delete record means, which isn't how this works at all.",
+        "Only the newer record survives, because that keep-the-latest rule never once looks at what a record actually says."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a detail about deletes that connects straight back to something I showed you earlier in this chapter.",
+        "A delete's own before value isn't governed by some separate rule just for deletes.",
+        "It follows the exact same table-level setting that decides how much of a row an update's own before value carries."
+      ]
+    },
+    {
+      "lines": [
+        "I confirmed that directly, against the real database, rather than just assuming it carries over.",
+        "I ran the identical delete twice: once against a table left at its usual setting, and once against the same table switched to capture full rows.",
+        "The first time, only the row's own key came through; the second time, the entire row came through instead."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's why soft and hard deletes end up behaving so differently downstream.",
+        "Marking a row deleted without removing it is really just another update, so anything watching for recent changes catches it the same way it catches any other edit.",
+        "Actually removing the row leaves nothing behind in the table at all, so that same kind of watcher has nothing left to find."
+      ]
+    },
+    {
+      "lines": [
+        "I measured both of those side by side, using one identical query against the real database.",
+        "That query caught the row that was only marked deleted, exactly the way it would catch any ordinary edit.",
+        "Against the row that was actually removed, that same query came back with absolutely nothing, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "I also tested how a delete actually lands once it reaches a table meant to hold the current state.",
+        "I applied one single statement that inserted a new row, updated an existing one, and removed a third, all in the same pass.",
+        "Only the row meant to disappear actually disappeared, and neither of the other two rows was touched at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now for the part that actually explains today's hook, measured the exact same careful way.",
+        "I modeled the broker's own keep-the-latest rule by hand, since I don't have a real broker in this sandbox to run it against.",
+        "A consumer that came back before its window closed still found the marker and removed the row correctly; one that came back after that window found nothing there at all, and kept treating the row as though it still existed."
+      ]
+    },
+    {
+      "lines": [
+        "Put everything from today side by side, and here's the one thread tying all of it together.",
+        "A delete's own before value, whether a cursor notices it, how it lands in a table, and whether a late consumer still sees it — every one of those depends entirely on timing or on a setting made somewhere else.",
+        "None of it is a single rule; it's four separate windows, and only one of them is ever actually closing on you."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, because today's incident was entirely avoidable.",
+        "Nothing stops a team from staying ahead of this race instead of losing it.",
+        "What's the one number that a sink's own maximum allowed lag actually needs to stay under?"
+      ],
+      "answer": [
+        "How long the source database itself keeps old changes around decides how far back a brand-new read can start from, which is a different question entirely.",
+        "Once a delete has already become a marker sitting in a compacted topic, the only clock still running against it is that topic's own tombstone retention window."
+      ]
+    }
+  ]
+}

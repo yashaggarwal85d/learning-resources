@@ -1,0 +1,99 @@
+{
+  "topic": "de.flink-sql-dynamic-tables",
+  "steps": [
+    {
+      "lines": [
+        "Everything up to here treated a flow of events as just that: a flow, one event after another.",
+        "There's a completely different, equally valid way of looking at that same exact thing.",
+        "What does seeing it that other way actually end up buying anyone?"
+      ]
+    },
+    {
+      "lines": [
+        "Everything covered so far sat underneath whatever particular way someone happened to be interacting with it.",
+        "This part is the layer most people actually spend their time working in directly.",
+        "Describing what should happen, declaratively, over something that keeps on changing."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A flow of new things and changed things gets read as one single changing table instead.",
+        "If that had to turn back into a flow of changes again, how many genuinely different ways could one single change get written down?"
+      ],
+      "answer": [
+        "A handful of genuinely different ways, each with its own real trade-offs.",
+        "One way only ever adds. Another one replaces, by some fixed identity. A third one pairs an undo with a redo.",
+        "None of them is simply the correct one. Each one trades something away for something else."
+      ]
+    },
+    {
+      "lines": [
+        "One way only ever adds something new, never replacing or undoing anything that came before.",
+        "A different way replaces whatever already carried the same identity, outright.",
+        "A third way writes down an explicit undo of the old thing, paired with a redo of the new one."
+      ]
+    },
+    {
+      "lines": [
+        "Replacing by identity needs that identity to actually exist and be unique in the first place.",
+        "Pairing an undo with a redo needs no such identity at all, but it isn't free either.",
+        "One single change costs twice as much to write down, every single time, under that second approach."
+      ]
+    },
+    {
+      "lines": [
+        "One way of matching two flows against each other assumes absolutely anything could still match absolutely anything else, later.",
+        "Because of that assumption, it has to hang onto everything it has ever seen from both sides.",
+        "Nothing it's holding onto ever gets to be safely thrown away, not ever."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "Suppose matching two flows only ever needs things that showed up close together in time.",
+        "What happens, then, to everything that approach has to keep hanging onto?"
+      ],
+      "answer": [
+        "What gets kept hanging onto stops growing without limit, and here's why.",
+        "The moment something falls outside that close window, it simply can't ever match anything again.",
+        "So it becomes safe to just let it go, unlike the version that assumed anything could match anything."
+      ]
+    },
+    {
+      "lines": [
+        "One way of bounding what gets kept uses an actual window of real time on both sides.",
+        "A different way bounds it in a completely different manner altogether.",
+        "It matches against whichever version was current back then, and keeps no window at all, just that one current version."
+      ]
+    },
+    {
+      "lines": [
+        "One further way skips keeping its own side at all, and instead reaches outward every single time.",
+        "An even newer way goes one step further than that, reusing what the source already holds directly.",
+        "Instead of duplicating any of it into something kept separately on the side."
+      ]
+    },
+    {
+      "lines": [
+        "A separate kind of table defines its own refresh, driven entirely by how fresh it was asked to stay.",
+        "Ask for something close to fresh, and a continuously running process keeps it that way.",
+        "Ask for something far looser, and a process that only triggers now and then is enough instead."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The handful of ways of writing down a change that really did cost genuinely different amounts.",
+        "One matching approach that really did keep growing, right beside another one that really did level off."
+      ]
+    },
+    {
+      "lines": [
+        "So: the same exact changing thing, written down in more than one genuinely different way.",
+        "Every single way of matching two flows is really just a different answer to one question.",
+        "How much does it actually have to hang onto. Everything layered on top sits above all of that, never underneath it."
+      ]
+    }
+  ]
+}

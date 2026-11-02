@@ -1,0 +1,61 @@
+{
+  "topic": "de.nested-data-repetition-definition",
+  "syllabus": [
+    { "clause": "the Dremel record-shredding model: how optional, repeated and nested fields become flat columns plus level streams, and how readers reassemble records", "at": [{ "step": "Hook" }, { "step": "Predict: the sku column, 5 rows from 3 orders?" }, { "step": "Reveal: a repetition level per value, not per row" }, { "step": "Reveal: a NULL still needs a definition level" }, { "step": "Predict: how many definition levels does note need?" }, { "step": "Reveal: definition level 2 vs 1 vs 0" }, { "step": "Reveal: reassembly walks both streams in lock-step" }] },
+    { "clause": "comparison with Arrow's offsets/validity and ORC's length/present streams", "at": [{ "step": "Reveal: Arrow's answer — offsets, not levels" }, { "step": "Reveal: ORC's answer — present and length" }, { "deep": "Three places to put the same structural fact" }] },
+    { "clause": "cost of deep nesting", "at": [{ "step": "Recap" }, { "deep": "Lab: an empty list that still costs something" }] }
+  ],
+  "sources": [
+    {
+      "source": "Dremel (Melnik et al., VLDB 2010)",
+      "items": [
+        { "item": "a repetition level tells a reader at what repeated field in a value's path the value has repeated; level 0 starts a new record", "at": [{ "step": "Reveal: a repetition level per value, not per row" }] },
+        { "item": "a definition level is carried on every value, including NULLs, specifying how many optional/repeated fields in the path are present", "at": [{ "step": "Reveal: a NULL still needs a definition level" }, { "step": "Reveal: definition level 2 vs 1 vs 0" }] },
+        { "item": "integer definition levels (not is-null bits) let a leaf field's stream carry its ancestors' presence too", "at": [{ "deep": "Three places to put the same structural fact" }] },
+        { "item": "NULLs need no explicit storage: a definition level smaller than the path's optional/repeated field count denotes a NULL", "at": [{ "step": "Reveal: a NULL still needs a definition level" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet Format, README.md",
+      "items": [
+        { "item": "Parquet uses the Dremel encoding with definition and repetition levels directly", "at": [{ "step": "Hook" }] },
+        { "item": "a non-nested column's path has no repeated field, so repetition levels are never encoded for it", "at": [{ "deep": "Three places to put the same structural fact" }] }
+      ]
+    },
+    {
+      "source": "Apache Arrow Columnar Format specification",
+      "items": [
+        { "item": "the List layout is a validity bitmap plus an offsets buffer plus a child array", "at": [{ "step": "Reveal: Arrow's answer — offsets, not levels" }] },
+        { "item": "a struct array carries its own validity bitmap, independent of its children's", "at": [{ "deep": "Three places to put the same structural fact" }] }
+      ]
+    },
+    {
+      "source": "Apache ORC v1 spec",
+      "items": [
+        { "item": "ORC lists use a present stream plus a length stream (item count per row) with one child column for elements", "at": [{ "step": "Reveal: ORC's answer — present and length" }] },
+        { "item": "ORC structs delegate everything to child columns except their own present stream", "at": [{ "deep": "Three places to put the same structural fact" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A repetition level is attached to every value in a repeated field's path, not just to the field that repeated — this topic's sku and note columns both carry repetition levels even though only item itself repeats.", "at": [{ "step": "Reveal: a repetition level per value, not per row" }] },
+      { "item": "The maximum definition level for a leaf field equals the count of optional-or-repeated fields in its path, not the total path depth — sku (required, one repeated ancestor) tops out at 1, note (optional, one repeated ancestor) tops out at 2.", "at": [{ "step": "Predict: how many definition levels does note need?" }, { "step": "Reveal: definition level 2 vs 1 vs 0" }] },
+      { "item": "An empty list and a genuinely absent record are different facts that a flat column must be able to distinguish — this topic's own reassembly code would silently merge adjacent records without the definition-level-0 marker row.", "at": [{ "step": "Reveal: a NULL still needs a definition level" }] },
+      { "item": "Reassembly needs only the current record's worth of repetition/definition levels in memory at a time, not the whole column, since a fresh repetition level of 0 is a self-contained signal to close the current record.", "at": [{ "step": "Reveal: reassembly walks both streams in lock-step" }] },
+      { "item": "Arrow's offsets buffer is a running (cumulative) sum of item counts, while ORC's length stream stores each record's count directly — this topic's own code derives Arrow's per-record counts by subtracting consecutive offsets and asserts the result equals ORC's length stream exactly.", "at": [{ "step": "Reveal: Arrow's answer — offsets, not levels" }, { "step": "Reveal: ORC's answer — present and length" }] },
+      { "item": "Arrow's list validity bitmap answers a different question than its offsets buffer: whether the list itself is null (not present at all) versus how many items it holds (which can legitimately be zero for a non-null, empty list).", "at": [{ "step": "Reveal: Arrow's answer — offsets, not levels" }] },
+      { "item": "The per-record overhead measured in this topic's synthetic dataset (179 level entries for 159 actual items) comes entirely from records with empty lists, not from any per-value cost on records that do have items — the overhead is fixed per record, not proportional to nesting depth of the data itself.", "at": [{ "deep": "Lab: an empty list that still costs something" }] },
+      { "item": "This topic's schema (one repeated field, one optional field inside it) is a shallower case of Dremel's own two-repeated-field worked example; the same level-counting rules apply at any depth, only the number of distinct values grows.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Dremel's own reassembly algorithm for deeper schemas needs a finite-state machine to pick the next field reader; this topic's single-repeated-field case needs no such machine because there is only one possible 'next reader' at any point.", "at": [{ "deep": "Frontier" }] },
+      { "item": "All three formats in this topic are checked, not just described, to encode equivalent structural information for the same data: the worked example's Dremel reassembly, Arrow's derived item counts, and ORC's length stream are all asserted against each other or against the original records directly in examples.py.", "at": [{ "deep": "Three places to put the same structural fact" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

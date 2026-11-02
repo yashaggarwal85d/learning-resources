@@ -1,0 +1,85 @@
+{
+  "topic": "de.windowing-tumbling-sliding-session",
+  "steps": [
+    {
+      "lines": [
+        "Nothing about the incoming data changes at all, not one bit.",
+        "Just change the shape of the bucket you're pouring it into, and watch what happens.",
+        "Suddenly there's far more state sitting around, and two separate groups quietly become one."
+      ]
+    },
+    {
+      "lines": [
+        "A completeness claim needs something concrete to actually apply to.",
+        "That something is a chunk, a span carved out of the stream, holding whichever records belong to it.",
+        "This is the handful of real shapes that chunk is allowed to take."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Same incoming data, same chunk size, only the shape of the chunk changes.",
+        "Does changing just the shape cost anything extra to hold onto, or is a chunk a chunk?"
+      ],
+      "answer": [
+        "It costs plenty, and right away.",
+        "One shape hands each record to exactly one chunk. The other hands the same record to every chunk it happens to fall inside.",
+        "However many chunks a record lands in, that's how many copies of it now sit in memory."
+      ]
+    },
+    {
+      "lines": [
+        "One shape never overlaps itself, so every record gets exactly one home.",
+        "The other shape overlaps on purpose, so a single record can end up living in several homes at once.",
+        "The more those homes overlap, the more copies of the same record are sitting around."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a shape that isn't fixed at all, and can genuinely change its own mind later.",
+        "It just keeps stretching forward as long as something keeps showing up before it goes quiet too long.",
+        "Let something late slip in at just the right moment, and two of these that looked done quietly become one."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "Picture a chunk with no edges whatsoever, stretching across the entire stream from start to end.",
+        "Left on its own, with nothing extra told to it, does a chunk shaped like that ever actually say anything back?"
+      ],
+      "answer": [
+        "No, never, not on its own.",
+        "The usual rule for speaking up is simple: once a certain point in time has clearly passed, say something.",
+        "A chunk with no edge at all never reaches that point, so left alone it just stays silent forever."
+      ]
+    },
+    {
+      "lines": [
+        "Left to that same old rule, a chunk shaped like this just sits there, silent, forever.",
+        "It isn't broken. It's simply waiting on a signal that was never going to arrive on its own.",
+        "Hand it a different, explicit signal instead, built just for it, and only then does it finally speak up."
+      ]
+    },
+    {
+      "lines": [
+        "Every chunk, for every single thing it's tracking, is quietly holding onto its own little pile of state.",
+        "That pile has to be thrown away eventually, the moment nothing new can possibly still belong to it.",
+        "Stop handing it anything new at all, and sooner or later, every single pile it was holding has to go."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel came from one real run, happening just now, of this topic's own toy model.",
+        "The extra cost that really showed up, and the two separate groups that really became one.",
+        "The silence that really never broke on its own, and the pile of state that really hit zero."
+      ]
+    },
+    {
+      "lines": [
+        "So: four very different shapes, each with its own idea of when it's actually done.",
+        "Overlap more, and you're quietly paying for it in however much state sits around.",
+        "And no matter the shape chosen, every single pile it was holding eventually has to go."
+      ]
+    }
+  ]
+}

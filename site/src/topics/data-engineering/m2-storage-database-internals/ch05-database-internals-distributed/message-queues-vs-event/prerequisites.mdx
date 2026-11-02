@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the append-only idea this topic reuses one layer up
+
+<ul class="resources">
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.write-ahead-logging-fsync" by="the same append-only, offset-addressed idea a log reuses one layer up" />
+  <Resource kind="reel" title="Analytical serving layers" domain="data-engineering" host="de.analytical-serving-layers" by="the read-side pattern this topic answers by turning to the write side instead" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Consumer Acknowledgements and Publisher Confirms" href="https://www.rabbitmq.com/docs/confirms" by="RabbitMQ documentation">Acknowledge-and-delete, and negative-acknowledgement redelivery.</Resource>
+  <Resource kind="reading" title="Design" href="https://kafka.apache.org/44/design/design/" by="Apache Kafka documentation">The offset's own rewindable, permanent position.</Resource>
+  <Resource kind="reading" title="Queues for Kafka" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-932%3A+Queues+for+Kafka" by="KIP-932, Apache Kafka wiki">Share groups' own cooperative, per-record consumption on regular topics.</Resource>
+</ul>
+
+</section>

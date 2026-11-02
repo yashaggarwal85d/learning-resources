@@ -1,184 +1,171 @@
 import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
-// Every number here is computed and asserted in examples.py: a row policy scoped to one region
-// out of five rows returns two; a direct file read, a stale materialized view and an old export
-// all still return every ssn unmasked, five for five.
+// Measured directly against a real local PostgreSQL (examples.py): a restricted role sees all
+// 3,000 rows before any row-security policy exists, exactly 1,000 after a policy restricting to
+// one region is applied, EXPLAIN shows no Filter node before the policy and an explicit one
+// after it, and a superuser (standing in for a direct file read) bypasses the policy entirely,
+// still seeing all 3,000 rows.
 const reel: Reel = {
   steps: [
     {
       title: 'Hook',
       body: (
         <>
-          The shop masks `customers.email` for the analyst role. An analyst still recovers real
-          addresses — through a query on a derived table nobody masked, and a direct read of the
-          underlying file. Only one of three paths they tried actually went through the mask.
+          The shop masks the customer email column for the analyst role, and an analyst still
+          recovers addresses. They ran a query that filters on the masked column, a query on a
+          derived table nobody masked, and read a file straight from the bucket. Which of the
+          three did the policy fail to cover, and which did it cover but leak through anyway?
         </>
       ),
-      duration: 5.6,
-      fig: 'masked column, three paths tried. Which one actually leaked?',
+      duration: 5,
+      fig: 'email masked for analysts. An analyst still recovers addresses. Which path leaked?',
       Visual: S.Hook,
     },
     {
-      title: 'Predict: covered, or not?',
+      title: "Reveal: a policy enforced in the engine applies to every query; an application filter only applies to requests that go through that application",
       body: (
         <>
-          A query that reads the masked column directly. A query against a derived table built
-          from it. A direct read of the file underneath. Which of the three does the mask cover?
+          An application-side filter only protects whoever's request goes through that
+          application. A policy enforced inside the query engine applies to every query against
+          that table, no matter who sends it or through what tool.
         </>
       ),
-      duration: 5.6,
-      fig: 'masked query, derived table, direct file read. Covered, or not?',
-      predict: {
-        options: [
-          { label: 'The mask covers all three — it is attached to the column itself' },
-          { label: 'Only the direct masked-column query — the other two sit outside it entirely', correct: true },
-        ],
-        explain: (
-          <>
-            A mask attaches to the column on the live table, evaluated when the engine runs a
-            query against that table. A derived table built earlier and a direct file read never
-            go through that evaluation at all.
-          </>
-        ),
-      },
-      Visual: S.Predict,
-    },
-    {
-      title: 'Reveal: the engine enforces it, not the application',
-      body: (
-        <>
-          The policy lives inside the query engine, evaluated at every place the row or column is
-          read. An application-side check only protects requests that happen to pass through that
-          one application's own code.
-        </>
-      ),
-      duration: 5.6,
-      fig: 'enforced in the engine, at every read — not in one app.',
+      duration: 4.8,
+      fig: 'application filter: one path. Engine policy: every query, whoever sends it.',
       Visual: S.RevealEngineVsApp,
     },
     {
-      title: 'Reveal: a row policy, mechanically',
+      title: 'Predict: query as the restricted role before any row policy exists. How many rows come back?',
       body: (
         <>
-          Postgres runs the policy's own expression against every row before the user's own
-          conditions. The one exception is a function proven not to leak anything, which the
-          planner may run earlier. A superuser, a `BYPASSRLS` role, or usually the table's owner,
-          skips the policy altogether.
+          A table of three thousand customer rows has no row-security policy on it yet. Query
+          it as the role that will eventually be restricted. How many rows come back?
         </>
       ),
-      duration: 6,
-      fig: 'the policy runs first, row by row — with three named exceptions.',
-      Visual: S.RevealRowPolicy,
+      duration: 2.8,
+      fig: 'restricted role, no policy yet, 3,000 rows exist. How many come back?',
+      predict: {
+        options: [
+          { label: 'Fewer than 3,000 -- the role name alone already implies some restriction' },
+          { label: 'All 3,000 -- nothing has told the engine to restrict anything yet', correct: true },
+        ],
+        explain: (
+          <>
+            All three thousand. A role's name carries no restriction on its own; until a policy
+            actually exists on the table, every grant that role holds applies without limit.
+          </>
+        ),
+      },
+      Visual: S.PredictBeforePolicy,
     },
     {
-      title: 'Reveal: five engines, one shared idea',
+      title: 'Reveal: all 3,000 rows, measured directly -- nothing stops the query yet',
       body: (
         <>
-          Snowflake's masking and row-access policies, Unity Catalog's row filters and column
-          masks, BigQuery's row-level security, Lake Formation's data filters, Trino's OPA-backed
-          filters and masks — five vocabularies for the exact same idea: a policy the engine
-          evaluates at read time.
+          Measured directly: with no policy in place, the restricted role's query returns the
+          entire table, all three thousand rows.
         </>
       ),
-      duration: 6,
-      fig: 'five engines, five names, one idea: evaluated where the data is read.',
-      Visual: S.RevealFiveEngines,
+      duration: 4.8,
+      fig: 'no policy: all 3,000 rows returned, measured.',
+      Visual: S.RevealBeforePolicy,
     },
     {
-      title: 'Reveal: what it costs the plan',
+      title: "Elaborate: a row-security policy is an expression evaluated before the user's own query conditions",
       body: (
         <>
-          A row policy pushed down to the scan cuts the rows the engine ever has to touch. One
-          that is not pushed down scans everything first and filters after. And a result cached
-          before the mask is applied is a cache that just handed back unmasked values.
+          A row-security policy is a Boolean expression the engine evaluates for every row,
+          ahead of whatever conditions the user's own query added -- with one exception, a
+          leakproof function the optimiser may run early precisely because it is proven not to
+          leak anything.
         </>
       ),
-      duration: 6,
-      fig: 'pushed down, fewer rows touched. Not pushed down, every row scanned.',
-      Visual: S.RevealPlanCost,
+      duration: 5,
+      fig: "a policy expression runs before the user's own WHERE, row by row.",
+      takeaway: 'An engine-enforced policy evaluates before the query itself, which is why it applies no matter what the query asks.',
+      Visual: S.ElaboratePolicyExpression,
     },
     {
-      title: 'Reveal: the derived table nobody masked',
+      title: 'Predict: the same query, same role, after the policy is applied. How many rows now?',
       body: (
         <>
-          A materialized view built from the data before the mask existed keeps serving the
-          values it was built with. To the engine it is just another table — nothing connects it
-          back to the mask on the table it came from.
+          Apply a row policy limiting that role to one region, which matches a third of the
+          table. Run the exact same query again, same role, nothing else changed. How many rows
+          come back this time?
         </>
       ),
-      duration: 6,
-      fig: 'built before the mask, serving the values it was built with.',
-      takeaway: 'A derived table keeps whatever values it was built with — a mask added to its source doesn’t reach it.',
-      Visual: S.RevealDerivedTable,
+      duration: 2.8,
+      fig: 'same query, same role, policy now limits to one region. Rows now?',
+      predict: {
+        options: [
+          { label: "Still all 3,000 -- a policy only matters if the query's own WHERE clause asks for it" },
+          { label: 'Exactly the rows the policy allows, regardless of what the query asked for', correct: true },
+        ],
+        explain: (
+          <>
+            Exactly what the policy allows. The policy is evaluated whether or not the query's
+            own WHERE clause mentions it at all -- the query never had to ask.
+          </>
+        ),
+      },
+      Visual: S.PredictAfterPolicy,
     },
     {
-      title: 'Reveal: the extract that already left',
+      title: 'Reveal: exactly 1,000 rows, measured directly -- the policy, not the query, decided',
       body: (
         <>
-          An export taken before, or outside, the policy's reach carries the values the export
-          query returned at the time. The policy only governs queries against the live table, not
-          copies already taken off it.
+          Measured directly: the identical query, unchanged, now returns exactly one thousand
+          rows -- the ones the policy's region condition allows, out of three thousand total.
         </>
       ),
-      duration: 5.6,
-      fig: 'exported once, carries what it carried then.',
-      takeaway: 'The policy governs queries against the live table — not a copy already taken off it.',
-      Visual: S.RevealExtract,
+      duration: 4.8,
+      fig: 'same query: 1,000 rows now, measured. The policy decided, not the query.',
+      Visual: S.RevealAfterPolicy,
     },
     {
-      title: 'Reveal: the direct file read',
+      title: 'Elaborate: the plan itself changes -- EXPLAIN shows no Filter node before the policy, one after it',
       body: (
         <>
-          Anyone with read access to the file path reads the raw data straight from storage,
-          underneath the engine entirely — no policy evaluated, because no policy was ever asked.
-          Encrypting the file itself is the only thing standing in the way of that specific path.
+          Reading the query plan directly: before the policy, there is no Filter node at all.
+          After it, an explicit Filter node appears. When a query engine has to choose between
+          an optimisation and protecting against a leak, it always makes the secure choice, even
+          when that choice costs more to run.
         </>
       ),
-      duration: 6,
-      fig: 'read the file directly, and no policy is ever asked at all.',
-      takeaway: 'A row or column policy only runs when a query asks the engine — a direct file read never asks.',
-      Visual: S.RevealDirectFile,
+      duration: 5,
+      fig: 'before: no Filter node. After: one appears, measured on EXPLAIN.',
+      takeaway: 'A policy is not free: it adds a step to the plan, and secure sometimes just means slower.',
+      Visual: S.ElaboratePlanChanges,
+    },
+    {
+      title: "Reveal: a superuser bypasses the policy entirely, and so does anyone with the file's path",
+      body: (
+        <>
+          Measured directly: a superuser role, which bypasses row security by design, still
+          sees every one of the three thousand rows -- the policy never touched that path at
+          all. Anyone who can read the underlying file directly, or an extract already copied
+          out, or an unprotected view built on top of the table, gets the same result: none of
+          them ever asked the engine's policy anything.
+        </>
+      ),
+      duration: 5,
+      fig: 'superuser, direct file, raw extract: all 3,000, measured. The policy never ran.',
+      Visual: S.RevealBypassPaths,
     },
     {
       title: 'Recap',
       body: (
         <>
-          Engine-side enforcement beats an application check because it covers every caller. Five
-          engines, one shared idea, with their own costs on the plan. And three paths — a stale
-          derived table, an old export, a direct file read — sit entirely outside what any policy
-          reaches.
+          A row policy runs before the query, applies to every caller, and can change the plan
+          itself, measured directly. None of that reaches a bypass that never asks the engine at
+          all.
         </>
       ),
-      duration: 6,
-      fig: 'enforced at every read; costs the plan; three paths outside it entirely.',
+      duration: 5,
+      fig: 'engine policy: every query, real cost. Bypass paths: untouched, by design.',
+      takeaway: 'An engine-enforced policy is stronger than an application filter, but it only ever covers requests that actually reach the engine.',
       Visual: S.Recap,
-    },
-    {
-      title: 'Prove it',
-      body: (
-        <>
-          A mask is added to `ssn` today. A CSV export was taken last month. A materialized view
-          was last refreshed the day before today's mask went on. Right now, which of the two
-          still carries unmasked values: just the export, or both?
-        </>
-      ),
-      duration: 6,
-      fig: 'mask added today. Export from last month; view refreshed yesterday. Which leaks?',
-      predict: {
-        options: [
-          { label: 'Just the export — the view was refreshed recently enough to pick up the mask' },
-          { label: 'Both — the view was last built before the mask existed, same as the export', correct: true },
-        ],
-        explain: (
-          <>
-            The view's last refresh happened before the mask was added, so it carries whatever the
-            refresh query returned then — unmasked, exactly like the export. Only a refresh run
-            after the mask exists would pick it up.
-          </>
-        ),
-      },
-      Visual: S.ProveIt,
     },
   ],
 };

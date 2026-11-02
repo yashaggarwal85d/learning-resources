@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: gap filling, lossless compression, OPC UA and the Unified Namespace
+
+<ul class="resources">
+  <Resource kind="reel" title="Resampling and gap filling" domain="data-engineering" host="de.resampling-gap-filling" by="this chapter, for the filled-value-is-a-claim convention a recorded/interpolated flag follows directly" />
+  <Resource kind="reel" title="Time-series compression" domain="data-engineering" host="de.time-series-compression" by="this chapter, for the lossless-codec contrast: swinging-door is lossy by design, within a stated band" />
+  <Resource kind="reel" title="OPC UA information model and transport" domain="data-engineering" host="de.opc-ua-information-model" by="this chapter, for the deadband idea at its source (a monitored item's own absolute deadband)" />
+  <Resource kind="reel" title="MQTT, Sparkplug and the Unified Namespace" domain="data-engineering" host="de.mqtt-sparkplug-unified-namespace" by="this chapter, for the broker that carries only the current value, which this topic's store complements with the past" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Exception, Compression, and their Impacts on PI System Performance" href="https://cdn.osisoft.com/osi/presentations/2023-AVEVA-San-Francisco/UC23NA-3PGK04-AVEVA_Bregenzer_Brent-Exception-Compression-and-their-Impacts-On-PI-System-Performance.pdf" by="AVEVA, 2023 conference deck">The exception and compression definitions, and the CompDev/ExcDev recommendation, this topic follows directly.</Resource>
+  <Resource kind="reading" title="Data compression for display and storage" href="https://patents.google.com/patent/US4669097A/en" by="Edgar H. Bristol, US Patent 4,669,097">The swinging-door mechanics (doors, pivots, slopes, knee) this topic's `examples.py` implements.</Resource>
+  <Resource kind="reading" title="PI DataLink: Basics" href="https://osicdn.blob.core.windows.net/learningcontent/Online%20Course%20Workbooks/PI%20DataLink%20Basics.pdf" by="AVEVA Learning (training workbook)">The Compressed Data (recorded) versus Sampled Data (interpolated) retrieval distinction.</Resource>
+  <Resource kind="reading" title="Calculations and Asset Analytics" href="https://osicdn.blob.core.windows.net/learningcontent/Online%20Course%20Workbooks/Calculations%20and%20Asset%20Analytics.pdf" by="AVEVA Learning (training workbook)">The time-weighted average as PI's own distinct By Time Range summary option.</Resource>
+</ul>
+
+</section>

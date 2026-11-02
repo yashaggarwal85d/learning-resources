@@ -1,0 +1,4 @@
+- **Physical vs logical replication**: topic 18's own content. *Where you meet it:* background only — this topic doesn't care which mechanism shipped the WAL, only how far behind the receiving side has replayed it.
+- **Synchronous, asynchronous and semi-synchronous acknowledgement**: topic 17's own content. *Where you meet it:* background — this topic's own standby is an asynchronous one; the lag it measures is exactly what an asynchronous standby can fall behind by.
+- **A real streaming-replication primary/standby pair, this topic's own**: built new for this topic — a second, genuinely separate Postgres data directory and postmaster this topic's own setup created. *Where you meet it:* every measured experiment in `examples.py`.
+- **Session guarantees (read-your-writes, monotonic reads, consistent-prefix reads)**: this topic's own new content, built from nothing prior. *Where you meet it:* defined and measured throughout.

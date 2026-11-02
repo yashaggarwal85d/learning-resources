@@ -1,0 +1,121 @@
+{
+  "topic": "de.cross-cloud-data-service-mapping",
+  "syllabus": [
+    {
+      "clause": "one compact table across AWS / Azure / GCP",
+      "at": [
+        { "step": "A job posting that looks unrelated to everything you know" }
+      ]
+    },
+    {
+      "clause": "object storage (S3 · ADLS Gen2 + OneLake · GCS)",
+      "at": [
+        { "step": "Object storage and identity, three names for the same job" }
+      ]
+    },
+    {
+      "clause": "catalog/governance (Glue Data Catalog + Lake Formation · Unity Catalog, Purview, OneLake catalog · BigLake metastore + Dataplex Universal Catalog)",
+      "at": [
+        { "step": "Catalog and governance: the layer that just renamed itself" }
+      ]
+    },
+    {
+      "clause": "Spark (Glue, EMR · Fabric Spark, Azure Databricks · Dataproc)",
+      "at": [
+        { "step": "Compute, warehouse and streaming, named across all three" }
+      ]
+    },
+    {
+      "clause": "streaming (Kinesis, MSK · Event Hubs, Fabric Eventstreams · Pub/Sub, Managed Service for Apache Kafka)",
+      "at": [
+        { "step": "Compute, warehouse and streaming, named across all three" }
+      ]
+    },
+    {
+      "clause": "warehouse (Redshift · Fabric Warehouse; Synapse dedicated pools are maintained but new investment goes to Fabric · BigQuery)",
+      "at": [
+        { "step": "Compute, warehouse and streaming, named across all three" }
+      ]
+    },
+    {
+      "clause": "orchestration (MWAA incl. Serverless, Step Functions · Data Factory · Cloud Composer)",
+      "at": [
+        { "step": "Compute, warehouse and streaming, named across all three" }
+      ]
+    },
+    {
+      "clause": "identity (IAM · Entra ID · Cloud IAM)",
+      "at": [
+        { "step": "Object storage and identity, three names for the same job" }
+      ]
+    },
+    {
+      "clause": "lock-in lives in the catalog and identity layers, not the compute",
+      "at": [
+        { "step": "Which layer actually carries the switching cost?" },
+        { "step": "In one breath" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Google Cloud: Compare AWS and Azure services to Google Cloud",
+      "items": [
+        { "item": "Cloud Storage / S3 / Blob Storage named as equivalents for object storage", "at": [{ "step": "Object storage and identity, three names for the same job" }] },
+        { "item": "Pub/Sub / Kinesis Data Streams / Event Hubs for stream ingest; Dataflow / Kinesis-with-Flink / Stream Analytics for stream processing", "at": [{ "step": "Compute, warehouse and streaming, named across all three" }] },
+        { "item": "GCP's own workflow-orchestration product is currently named Managed Service for Apache Airflow, built on the same open-source Airflow as AWS's MWAA", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn: Azure for AWS Professionals — Services",
+      "items": [
+        { "item": "Microsoft's own mapping independently names Blob Storage against S3 and Synapse/Fabric against Redshift", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn: What is Microsoft Fabric",
+      "items": [
+        { "item": "OneLake (storage), OneLake Catalog + Purview (governance), Fabric Spark (compute) all named as parts of one SaaS platform", "at": [{ "step": "Catalog and governance: the layer that just renamed itself" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Knowledge Catalog overview",
+      "items": [
+        { "item": "Dataplex Universal Catalog renamed to Knowledge Catalog, April 10, 2026", "at": [{ "step": "Catalog and governance: the layer that just renamed itself" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud: Introduction to BigLake tables",
+      "items": [
+        { "item": "BigLake moves access control from files to tables, the same job as Lake Formation and Unity Catalog", "at": [{ "step": "Catalog and governance: the layer that just renamed itself" }] }
+      ]
+    },
+    {
+      "source": "Databricks: What is Unity Catalog?",
+      "items": [
+        { "item": "Unity Catalog is Databricks' own cross-cloud governance layer, not tied to one vendor", "at": [{ "step": "Catalog and governance: the layer that just renamed itself" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (make-topic session, builds every stage itself; see PROJECT_PLAN.md 'No subagents')",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's point only lands if the learner already half-recognizes one side of the translation (AWS); a learner with no cloud background at all gets a vocabulary list, not an 'aha' — the hook is written for the former audience deliberately", "at": [{ "step": "A job posting that looks unrelated to everything you know" }] },
+      { "item": "The lock-in claim is structural (open format vs. non-exportable policy state), not a popularity or vendor-bias claim — a learner who reads it as 'AWS is better' has misread the argument", "at": [{ "step": "Which layer actually carries the switching cost?" }] },
+      { "item": "Object storage and identity are genuinely swappable at the API-compatibility level for many workloads (S3-compatible APIs exist on other vendors), which is a stronger claim than 'the concept is similar' — it is why they're grouped with compute rather than with catalog/identity's policy problem", "at": [{ "step": "Object storage and identity, three names for the same job" }] },
+      { "item": "A vendor renaming a product (Dataplex Universal Catalog → Knowledge Catalog, and GCP's own orchestration service's current name) does not change the underlying mechanism or this topic's table structure — the row survives the rename because the row names a job, not a product", "at": [{ "step": "Catalog and governance: the layer that just renamed itself" }] },
+      { "item": "Fabric's bundling of three rows (storage, governance, compute) into one SaaS product is a packaging decision, not evidence that the three jobs have merged into one mechanism — OneLake, OneLake Catalog and Fabric Spark remain three separate services under one subscription", "at": [{ "deep": "Internals" }] },
+      { "item": "Synapse dedicated pools being 'maintained but not where new investment goes' is a roadmap signal worth teaching alongside the name, not a detail to drop — a learner planning a multi-year architecture needs to know which product in a cell is the one actually being invested in", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic deliberately does not reproduce any mechanism locally (per CHAPTER.md's own scope); an expert reviewer should not expect or demand a code example here the way other full topics in this chapter provide one", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The table's seven rows are not independent facts to memorize separately; grouping them by swap difficulty (compute/storage/identity vs. catalog/identity-policy) is the actual teaching content, and a learner who can recite all 21 product names but not which group each belongs to has not learned the topic's point", "at": [{ "step": "In one breath" }] },
+      { "item": "Unity Catalog being cross-cloud (one product spanning AWS- and Azure-hosted Databricks) is the one exception to the per-vendor table structure, and it is worth calling out as an exception rather than silently fitting it into a single vendor's column", "at": [{ "step": "Catalog and governance: the layer that just renamed itself" }] },
+      { "item": "Every product name quoted here is current as of this chapter's own research date; a reader encountering this topic even a year later should expect at least one more rename, which is the chapter's own disclosed experience writing it", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review (no independent reviewer ran this session; see PROJECT_PLAN.md 'No subagents')",
+    "open": []
+  }
+}

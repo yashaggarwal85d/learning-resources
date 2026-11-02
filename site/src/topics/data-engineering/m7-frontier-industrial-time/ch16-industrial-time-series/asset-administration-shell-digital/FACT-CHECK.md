@@ -1,0 +1,27 @@
+# Fact check
+
+| # | Claim | Source | Status |
+|---|---|---|---|
+| 1 | IEC 63278-1:2023 defines the structure of a standardized digital representation of an asset (the AAS), giving uniform access to information and services. | IEC 63278-1:2023 (IEC webstore) | Confirmed verbatim |
+| 2 | Type assets and instance assets are distinguished by the attribute `AssetInformation/assetKind`. | IDTA Part 1: Metamodel | Confirmed verbatim |
+| 3 | Every submodel element needs a semantic definition (`semanticId` in `HasSemantics`); it may refer directly to an external reference (e.g. ECLASS or IEC CDD) or indirectly via a concept description. | IDTA Part 1: Metamodel | Confirmed verbatim |
+| 4 | The Part 2 specification document specifies the interfaces and APIs, in selected technologies, for the Asset Administration Shells and their submodels. | IDTA Part 2: APIs | Confirmed verbatim |
+| 5 | Part 5 (AASX package format) is at version 3.0, per Part 2's own cross-reference. | IDTA Part 2: APIs | Confirmed verbatim |
+| 6 | The AASX package format document focuses on the exchange file format for transporting information from one value-chain partner to the next. | IDTA Part 5: AASX Package Format | Confirmed verbatim |
+| 7 | The Digital Nameplate for Industrial Equipment submodel (IDTA 02006) is published at version 3.0.1 at research time, with version 4.0 listed as "In Development." | IDTA submodel catalogue | Confirmed verbatim (version/status fields) |
+| 8 | The Digital Battery Passport consists of seven parts (Nameplate, Handover Documentation, Product Carbon Footprint, Technical Data, Product Condition, Material Composition, Circularity), not the four CHAPTER.md's planning text guessed. | IDTA submodel catalogue | Confirmed verbatim |
+| 9 | Catena-X's own page describes participants exchanging data for use cases including PCF tracking, Digital Product Passports and Quality Management. | Catena-X | Confirmed verbatim |
+| 10 | Catena-X names an industry joint test preparing automotive and battery enterprises for the EU Battery Passport requirement effective 18 February 2027. | Catena-X | Confirmed verbatim |
+| 11 | The Digital Product Passport is part of the Ecodesign for Sustainable Products Regulation (ESPR), and gathers data such as composition, ecological footprint and repair/recycling information, consultable via a QR code. | GS1 Belgium & Luxembourg | Confirmed verbatim |
+| 12 | One type shell and two instance shells, distinguished by `assetKind` and linked by `derived_from`, each keep their own serial number while sharing the type's own technical data defined once. | `examples.py` (`build_type_and_instances`) | Computed and asserted |
+| 13 | A submodel read through a mock REST endpoint and the same submodel unpacked from a mock AASX package return identical content. | `examples.py` (`mock_rest_get_submodel`, `mock_aasx_extract_submodel`) | Computed and asserted |
+| 14 | A semantic ID resolves the same property across two suppliers who gave it two different local names ("Weight" vs. "Mass_kg"). | `examples.py` (`resolve_by_semantic_id`) | Computed and asserted |
+| 15 | A validation gate rejects a property with no semantic ID and a submodel missing a required one, while a structurally complete, correctly tagged submodel with a deliberately wrong value still passes. | `examples.py` (`validate_submodel_against_template`) | Computed and asserted |
+
+## Red team
+
+- **Is quoting the IDTA's own PDF specifications, rather than ISO's or a secondary summary, a fair primary source for the AAS's own definitions (assetKind, semantic ID)?** Yes — the IDTA is the standards body that publishes the AAS specification series under Plattform Industrie 4.0's authority, and IEC 63278-1 itself defines only the structure at a high level; the IDTA's own Part 1 document is the actual metamodel specification these claims come from, fetched directly rather than characterized secondhand.
+- **Does disclosing the Battery Passport's real seven parts (instead of silently matching CHAPTER.md's planning guess of four) overstate a discrepancy that doesn't matter?** It's disclosed precisely because CHAPTER.md itself instructs stating submodel names "as the IDTA catalogue lists them at research time," not asserting unread contents — silently keeping the planning-time guess would have been the actual error; the real count is a small, directly checkable fact, not a judgment call.
+- **Is GS1 Belgium & Luxembourg's own page a fair substitute for ISO's unreachable explainer, or does it overstate what ISO itself says?** The substitution is disclosed directly in `SOURCES.md`, nothing is attributed to ISO that was not fetched from ISO, and GS1's own description (a digital record tied to a physical product, reachable via a QR code) matches the same claim CHAPTER.md's planning text attributes to ISO's own page, independently corroborated by the Ecodesign regulation's own stated purpose as described by GS1.
+- **Is `examples.py`'s final assertion (a wrong value passing a structurally valid submodel) a contrived edge case, or a real risk CHAPTER.md actually claims?** It's the hook's own explicit prediction, made executable: CHAPTER.md's hook states directly that a shared shape "says nothing about the quality of the value," and the assertion demonstrates exactly that claim rather than merely arguing it in prose.
+- **Checked `reel.tsx`, `scenes.tsx`, `narration.json` for leaked exact phrasing from the quoted sources** — none found.

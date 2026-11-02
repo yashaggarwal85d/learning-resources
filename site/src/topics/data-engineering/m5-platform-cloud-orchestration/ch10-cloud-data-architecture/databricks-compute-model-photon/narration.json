@@ -1,0 +1,73 @@
+{
+  "topic": "de.databricks-compute-model-photon",
+  "steps": [
+    {
+      "lines": [
+        "Notice what I held fixed on purpose: the cluster size, the data, the query text. Only the finishing time changed.",
+        "When everything obvious is held constant and the result still differs, the explanation has to be in how the work gets executed, not what hardware it's sitting on."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, think back to the vectorization lesson you've already seen. One engine handles a row, finishes it, moves to the next. The other handles a whole batch of rows at once.",
+        "Which approach do you think modern hardware actually rewards?"
+      ],
+      "answer": [
+        "Vectorized batches. Modern processors are built to chew through many similar operations at once, and row-at-a-time execution leaves most of that capability unused.",
+        "This isn't a new idea — it's the same lesson from earlier in the course, now with a name, a vendor, and a native implementation behind it."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the urge to sort these into 'fast' and 'slow.' The real difference is what happens to each one between jobs.",
+        "One sits and waits for the next job to show up. One disappears the second its job ends. One never touches your own cloud account at all."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the two totals diverge even though both ran the exact same four jobs. The job-compute total only counts work. The all-purpose total counts the waiting, too.",
+        "Forty-five minutes of difference, on four short jobs in one day — and nothing about the jobs themselves explains it."
+      ]
+    },
+    {
+      "lines": [
+        "This number didn't come from a demo cherry-picked to look good. It's the vendor's own published benchmark, on a standard industry test, compared against its own prior runtime.",
+        "And notice the range below it: real customers, on their own workloads, seeing even more."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the nuance worth catching: the pool saves you time, and it saves you the platform's own unit charge — but the underlying machine is still rented from somewhere, and that meter doesn't stop.",
+        "A pool moves cost around. It doesn't make idle time free."
+      ]
+    },
+    {
+      "lines": [
+        "Think about why the driver specifically never goes on spot pricing. Lose a worker, and the cluster just has less capacity for a moment. Lose the driver, and the whole cluster is gone.",
+        "That's not a cost rule. That's a reliability rule wearing a pricing label."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: there is no such thing as 'the DBU rate.' There's a published list, and it has a different number on every row.",
+        "Asking 'how many DBUs' without naming which compute type is like asking the price of 'a seat' without saying which airline."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: four compute types means four different bills for the exact same job, and the difference is never about raw speed.",
+        "Photon proves the vectorization lesson shipped as real code. The DBU proves 'one price' was never true to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, notice what makes this job hard to plan around: it's short, it's rare, and nobody knows exactly when it'll run.",
+        "Which compute type punishes unpredictability the least?"
+      ],
+      "answer": [
+        "Job compute. It doesn't care when the job shows up, because it's created fresh for that one run and torn down the second it's done.",
+        "All-purpose compute would need someone babysitting a schedule just to avoid paying for days of silence between runs — exactly the cost this topic already measured."
+      ]
+    }
+  ]
+}

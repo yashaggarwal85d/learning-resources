@@ -1,0 +1,111 @@
+{
+  "topic": "de.event-time-watermarks-completeness",
+  "syllabus": [
+    {
+      "clause": "event vs processing time",
+      "at": [{ "step": "Setup: two needles, one axis" }]
+    },
+    {
+      "clause": "watermarks as a heuristic (or perfect) assertion of input completeness",
+      "at": [
+        { "step": "Predict: is a watermark a guarantee?" },
+        { "step": "Reveal: a heuristic claim, generated per partition" }
+      ]
+    },
+    {
+      "clause": "per-partition watermark generation, idle sources",
+      "at": [
+        { "step": "Reveal: a heuristic claim, generated per partition" },
+        { "step": "Predict: does the idle partition's silence fix itself?" },
+        { "step": "Reveal: idle-source detection unfreezes it" }
+      ]
+    },
+    {
+      "clause": "watermark alignment to stop fast sources racing ahead",
+      "at": [{ "step": "Reveal: alignment bounds the opposite problem" }]
+    },
+    {
+      "clause": "the latency vs completeness trade-off",
+      "at": [{ "step": "Reveal: the trade-off, measured" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "The Dataflow Model (Akidau et al., 2015, VLDB)",
+      "items": [
+        {
+          "item": "most watermarks must be heuristically defined based on limited knowledge available",
+          "at": [{ "step": "Reveal: a heuristic claim, generated per partition" }]
+        },
+        {
+          "item": "watermarks have two major shortcomings with respect to correctness, including that late data can arrive behind the watermark",
+          "at": [{ "step": "Predict: is a watermark a guarantee?" }]
+        }
+      ]
+    },
+    {
+      "source": "Generating Watermarks (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "an idle source stops the WatermarkGenerator from getting new information, and the overall watermark is held back since it is computed as the minimum over all parallel watermarks",
+          "at": [{ "step": "Predict: does the idle partition's silence fix itself?" }]
+        },
+        {
+          "item": "watermark alignment ensures no sources, splits, shards, or partitions increase their watermarks too far ahead of the rest",
+          "at": [{ "step": "Reveal: alignment bounds the opposite problem" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Event time and processing time drifting apart isn't a bug to be fixed — it's an inherent property of any distributed system with communication delay, which is exactly why a mechanism like a watermark is needed at all.",
+        "at": [{ "step": "Setup: two needles, one axis" }]
+      },
+      {
+        "item": "A watermark being a heuristic rather than a guarantee isn't a weaker version of the same idea — it's a deliberate acceptance that 100% correctness is intractable for most real sources, in exchange for a usable, if imperfect, completeness signal.",
+        "at": [{ "step": "Reveal: a heuristic claim, generated per partition" }]
+      },
+      {
+        "item": "Generating a watermark per partition rather than globally isn't an implementation detail — it's the direct cause of the idle-source problem, since a global minimum across partitions is only as current as its least-current member.",
+        "at": [{ "step": "Reveal: a heuristic claim, generated per partition" }]
+      },
+      {
+        "item": "Idle-source detection and watermark alignment are solving opposite-signed versions of the exact same underlying issue — one partition lagging behind the group, one partition racing ahead of it — which is why both are bound-based fixes rather than unrelated mechanisms.",
+        "at": [{ "step": "Reveal: alignment bounds the opposite problem" }]
+      },
+      {
+        "item": "The latency-completeness trade-off isn't specific to watermarks — it's a specific instance of a trade-off that recurs throughout this chapter whenever a system has to decide how long to wait before declaring something done.",
+        "at": [{ "step": "Reveal: the trade-off, measured" }]
+      },
+      {
+        "item": "This topic's hook (one silent partition freezing the whole pipeline) and its fix (an explicit idle timeout) are the same cause and remedy the Flink documentation itself describes, demonstrated here on a toy model rather than a real Flink cluster.",
+        "at": [{ "step": "Hook: one silent partition freezes everything" }]
+      },
+      {
+        "item": "The toy synthetic stream, watermark calculator, idle-source model, and alignment model are deliberately simplified standalone demonstrations, not ports of Flink's actual internals, and every figure shown is this run's own measured output, not a cited constant.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Calling idle-source handling and watermark alignment 'necessary refinements, not edge cases' is a direct consequence of how common both conditions are in real pipelines — an idle partition and an uneven-rate source are the normal case, not the rare one.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A tighter watermark bound isn't simply 'wrong more often' — the events it marks late aren't lost, they're correctly identified as needing a later revision, which is exactly the handling the next cluster of topics covers.",
+        "at": [{ "step": "Reveal: the trade-off, measured" }]
+      },
+      {
+        "item": "This topic's synthetic stream generator is reused verbatim by this chapter's own lab exercise, so the specific late and duplicate fractions chosen here aren't arbitrary flavor — they're load-bearing for a later measurement this same chapter depends on.",
+        "at": [{ "deep": "Lab" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

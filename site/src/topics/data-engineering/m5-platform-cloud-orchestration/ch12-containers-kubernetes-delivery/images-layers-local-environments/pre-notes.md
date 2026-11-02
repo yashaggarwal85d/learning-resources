@@ -1,0 +1,9 @@
+- **Image**: a frozen, read-only filesystem plus metadata (entrypoint, environment) that a container runtime starts as a process. *Where you meet it:* every step of this refresher.
+- **Layer**: one ordered changeset in an image, produced by one build instruction. *Where you meet it:* the layer stack in every step.
+- **Container**: a running instance of an image, with one thin writable layer on top. *Where you meet it:* the writable-layer and volumes steps.
+- **Registry**: a server that stores and serves images by name and tag (e.g. Docker Hub, `gcr.io`). *Where you meet it:* the multi-stage step's base-image reference.
+- **Tag vs digest**: a tag (`:latest`, `:3.13-slim`) is a mutable pointer; a digest (`@sha256:...`) is the content's fixed hash. *Where you meet it:* mentioned in passing when a base image is named.
+- **Volume**: storage Docker manages, outside any container's writable layer, that survives the container. *Where you meet it:* the volumes-and-networks step.
+- **Bind mount**: a host path mounted straight into a container, as opposed to a volume Docker manages itself. *Where you meet it:* the same step, contrasted with a volume.
+- **Bridge network**: a private network Docker creates so containers on it can resolve each other by service name. *Where you meet it:* the volumes-and-networks and Compose steps.
+- **Compose service**: one entry in a `compose.yaml` file, describing a container to run as part of a multi-service stack. *Where you meet it:* the Compose step.

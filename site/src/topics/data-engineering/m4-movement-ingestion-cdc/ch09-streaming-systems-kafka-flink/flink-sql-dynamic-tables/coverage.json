@@ -1,0 +1,201 @@
+{
+  "topic": "de.flink-sql-dynamic-tables",
+  "syllabus": [
+    {
+      "clause": "streams as changelogs of dynamic tables (append, upsert, retract)",
+      "at": [
+        { "step": "Reveal: append, upsert, and retract" },
+        { "step": "Reveal: upsert and retract agree on the table, not the cost" }
+      ]
+    },
+    {
+      "clause": "regular joins with unbounded state vs interval, temporal and lookup joins",
+      "at": [
+        { "step": "Reveal: a regular join keeps every row forever" },
+        { "step": "Reveal: interval and temporal joins each bound state differently" },
+        { "step": "Reveal: lookup and delta joins trade state for a different cost" }
+      ]
+    },
+    {
+      "clause": "delta joins and multi-way joins that cut state",
+      "at": [{ "step": "Reveal: lookup and delta joins trade state for a different cost" }]
+    },
+    {
+      "clause": "materialised tables",
+      "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+    },
+    {
+      "clause": "process table functions",
+      "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+    },
+    {
+      "clause": "FROM_CHANGELOG/TO_CHANGELOG (2.3)",
+      "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+    },
+    {
+      "clause": "model inference with ML_PREDICT (2.1+)",
+      "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dynamic Tables (Apache Flink, 2.3 docs)",
+      "items": [
+        {
+          "item": "a database table results from a stream of INSERT, UPDATE, and DELETE DML statements, often called a changelog stream",
+          "at": [{ "step": "Reveal: append, upsert, and retract" }]
+        },
+        {
+          "item": "an append-only stream converts a dynamic table by emitting only the inserted rows",
+          "at": [{ "step": "Reveal: append, upsert, and retract" }]
+        },
+        {
+          "item": "a retract stream encodes an INSERT as an add message, a DELETE as a retract message, and an UPDATE as a retract of the old row plus an add of the new row",
+          "at": [{ "step": "Reveal: upsert and retract agree on the table, not the cost" }]
+        },
+        {
+          "item": "an upsert stream requires a unique key, encoding INSERT and UPDATE as upsert messages and DELETE as delete messages, with updates needing only a single message",
+          "at": [{ "step": "Reveal: upsert and retract agree on the table, not the cost" }]
+        }
+      ]
+    },
+    {
+      "source": "Joins (Apache Flink, 2.3 docs)",
+      "items": [
+        {
+          "item": "regular joins require keeping both sides of the join input in Flink state forever",
+          "at": [{ "step": "Reveal: a regular join keeps every row forever" }]
+        },
+        {
+          "item": "an interval join requires at least one equi-join predicate and a join condition bounding time on both sides",
+          "at": [{ "step": "Reveal: interval and temporal joins each bound state differently" }]
+        },
+        {
+          "item": "temporal joins correlate each probe-side row to the build-side's relevant version and define no time window, unlike interval joins",
+          "at": [{ "step": "Reveal: interval and temporal joins each bound state differently" }]
+        },
+        {
+          "item": "a lookup join enriches a table with data queried from an external system via a lookup source connector",
+          "at": [{ "step": "Reveal: lookup and delta joins trade state for a different cost" }]
+        }
+      ]
+    },
+    {
+      "source": "Configuration (Apache Flink, 2.3 docs)",
+      "items": [
+        {
+          "item": "the delta-join optimizer strategy defaults to AUTO, trying a delta join first and falling back to a regular join if it fails",
+          "at": [{ "step": "Reveal: lookup and delta joins trade state for a different cost" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Flink 2.2.0 release announcement",
+      "items": [
+        {
+          "item": "ML_PREDICT has been supported in Flink SQL since version 2.1",
+          "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+        },
+        {
+          "item": "delta join was introduced in Flink 2.1 as a bidirectional lookup-based join replacing regular-join state",
+          "at": [{ "step": "Reveal: lookup and delta joins trade state for a different cost" }]
+        }
+      ]
+    },
+    {
+      "source": "Materialized Table Overview (Apache Flink, 2.3 docs)",
+      "items": [
+        {
+          "item": "data freshness is a target, not a guarantee, that the engine attempts to meet by deriving a refresh pipeline",
+          "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+        },
+        {
+          "item": "CONTINUOUS mode launches a streaming job that continuously refreshes the table; FULL mode has the scheduler periodically trigger a batch job",
+          "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+        }
+      ]
+    },
+    {
+      "source": "Process Table Functions (Apache Flink, 2.3 docs)",
+      "items": [
+        {
+          "item": "PTFs have access to Flink's managed state, event-time and timer services, and underlying table changelogs",
+          "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+        }
+      ]
+    },
+    {
+      "source": "Changelog Conversion (Apache Flink, 2.3 docs)",
+      "items": [
+        {
+          "item": "FROM_CHANGELOG converts an append-only table with an explicit operation-code column into a potentially updating dynamic table",
+          "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+        },
+        {
+          "item": "TO_CHANGELOG converts a dynamic table into an append-only table with an explicit operation-code column",
+          "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+        }
+      ]
+    },
+    {
+      "source": "Model Inference (Apache Flink, 2.3 docs)",
+      "items": [
+        {
+          "item": "ML_PREDICT only supports append-only tables; CDC tables are not supported because results are non-deterministic",
+          "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Framing all five join types (regular, interval, temporal, lookup, delta) as answers to a single axis — how much state does the join need — is what makes the whole taxonomy coherent rather than a disconnected list of syntax variants to memorize separately.",
+        "at": [{ "step": "Reveal: a regular join keeps every row forever" }]
+      },
+      {
+        "item": "Upsert mode's dependence on a unique key is not a minor implementation detail — it's the precise reason retract mode exists at all as a genuine alternative, not a strictly worse one: retract works without any key, at the cost of extra messages per update.",
+        "at": [{ "step": "Reveal: upsert and retract agree on the table, not the cost" }]
+      },
+      {
+        "item": "Interval and temporal joins both avoid a regular join's unbounded state, but by genuinely different mechanisms — a real time window versus a per-row point-in-time version lookup — which is why this topic presents them as two separate reveals rather than variations of the same idea.",
+        "at": [{ "step": "Reveal: interval and temporal joins each bound state differently" }]
+      },
+      {
+        "item": "Delta joins are deliberately framed as newer and less settled than the other four join types, since Flink's own documentation covers them only through a configuration-option reference and a release announcement, not a dedicated conceptual docs page the way regular and interval joins have.",
+        "at": [{ "step": "Reveal: lookup and delta joins trade state for a different cost" }]
+      },
+      {
+        "item": "Materialised tables' freshness-driven refresh-mode choice mirrors the same state-versus-cost tradeoff running through the whole topic: a continuous job (more resource cost, less latency) versus a periodic batch job (less cost, more latency), the identical shape as the join taxonomy's own tradeoff.",
+        "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+      },
+      {
+        "item": "This topic's hook (a stream is secretly a table) and the recap's close (same table, different encodings) are the same observation made twice — first as an open reframing, then as the settled idea the whole reel built toward through the changelog-mode and join-taxonomy reveals.",
+        "at": [{ "step": "Hook: a stream is secretly a table the whole time" }]
+      },
+      {
+        "item": "The toy changelog-mode interpreter and join-state models are deliberately simplified standalone demonstrations, not ports of Flink's actual SQL planner or join-operator internals, and every figure shown is this run's own measured output, not a cited Flink benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic uses the state-backend and checkpoint mechanics from topics 20-23 directly as a given foundation — the dynamic-table model doesn't reopen how Flink actually stores a join's kept state, only how much of it each join type needs to keep.",
+        "at": [{ "step": "Setup: operators and state, underneath any particular API" }]
+      },
+      {
+        "item": "Presenting FROM_CHANGELOG/TO_CHANGELOG and ML_PREDICT with their specific version numbers, rather than folding them into the general feature list, reflects CHAPTER.md's own instruction to treat them as currency facts that need reconfirming, not settled mechanics.",
+        "at": [{ "step": "Reveal: materialised tables and process table functions" }]
+      },
+      {
+        "item": "This topic deliberately leaves Kafka Streams' own, library-based version of the stream-table idea unexplored — the direct contrast between a cluster-based SQL layer and a no-cluster library implementing almost the same duality is large enough to need the next topic's full treatment.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

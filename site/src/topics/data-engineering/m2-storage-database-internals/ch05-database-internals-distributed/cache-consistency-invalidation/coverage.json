@@ -1,0 +1,127 @@
+{
+  "topic": "de.cache-consistency-invalidation",
+  "syllabus": [
+    {
+      "clause": "the delete-after-write race and why \"update the cache\" is wrong",
+      "at": [
+        { "step": "Hook: a reader's stale read lands in the cache right after a writer already deleted that key" },
+        { "step": "Predict: would updating the cache instead of deleting it have prevented this" },
+        { "step": "Reveal: delete, not update" },
+        { "step": "Reveal: the race, reproduced for real" }
+      ]
+    },
+    {
+      "clause": "versioned keys, leases against stale sets (the Memcache-at-Facebook design)",
+      "at": [{ "step": "Reveal: leases close it" }]
+    },
+    {
+      "clause": "CDC-driven invalidation from the database log",
+      "at": [
+        { "step": "Reveal: CDC-driven invalidation" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "deciding per field how stale is acceptable (the TAO case study)",
+      "at": [{ "step": "Reveal: per-field staleness, the TAO case study" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Nishtala et al. — Scaling Memcache at Facebook",
+      "items": [
+        {
+          "item": "deletes, not updates, are the correct write-path operation, because deletes are idempotent and updates are not",
+          "at": [{ "step": "Reveal: delete, not update" }]
+        },
+        {
+          "item": "a lease token, handed out on a cache miss, is invalidated by a later delete for that key, letting the cache reject a stale concurrent write rather than store it",
+          "at": [{ "step": "Reveal: leases close it" }]
+        },
+        {
+          "item": "an invalidation daemon reads the database's own commit log directly and extracts deletes from it, rather than relying on application code to send them",
+          "at": [
+            { "step": "Reveal: CDC-driven invalidation" },
+            { "step": "Prove it" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Bronson et al. — TAO: Facebook's Distributed Data Store for the Social Graph",
+      "items": [
+        {
+          "item": "a real system's reads default to eventually consistent, but a specific field (authentication, in the case study) can be marked critical and routed to the consistent source instead",
+          "at": [{ "step": "Reveal: per-field staleness, the TAO case study" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "the delete-after-write race and its lease fix are both reproduced for real, with the cache's own resulting state read back directly rather than asserted from a source",
+          "at": [
+            { "step": "Reveal: the race, reproduced for real" },
+            { "step": "Reveal: leases close it" }
+          ]
+        },
+        {
+          "item": "single-flight coalescing is measured reducing many concurrent readers' backing-store fetches on a hot key down to one, and early expiration's refresh probability is measured rising as a key nears its TTL",
+          "at": [{ "deep": "Lab" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The delete-after-write race is not a bug in delete-on-write; it is a timing problem that delete-on-write alone cannot close, because the delete and the reader's own slow write-back can land in either order regardless of which write-path operation is used.",
+        "at": [{ "step": "Hook: a reader's stale read lands in the cache right after a writer already deleted that key" }]
+      },
+      {
+        "item": "Update is strictly riskier than delete here, not merely equally risky: two concurrent updates can land in either order and silently overwrite a newer value with an older one, a failure mode two concurrent deletes cannot produce since they always leave the same cold result.",
+        "at": [{ "step": "Reveal: delete, not update" }]
+      },
+      {
+        "item": "A lease closes the race by binding a token to the specific read that caused the miss, so a delete that happens after that token was issued can invalidate exactly that reader's own pending write-back, without needing to know anything else about which value is stale.",
+        "at": [{ "step": "Reveal: leases close it" }]
+      },
+      {
+        "item": "CDC-driven invalidation and leases solve two different problems, not the same one twice: leases arbitrate a specific race between one reader's write-back and one writer's delete, while CDC-driven invalidation guarantees every write path's delete actually gets sent at all, regardless of whether that write path remembered to call anything.",
+        "at": [{ "step": "Reveal: CDC-driven invalidation" }]
+      },
+      {
+        "item": "Per-field staleness is a routing decision, not a different storage engine: the same TAO store serves both an eventually consistent read and a critical one, differing only in which copy the request is proxied to, not in what the data model is.",
+        "at": [{ "step": "Reveal: per-field staleness, the TAO case study" }]
+      },
+      {
+        "item": "Single-flight coalescing and leases both reduce concurrent work on a miss, but for different reasons: coalescing exists to avoid redundant backing-store load from many simultaneous misses on the same key, while a lease exists to arbitrate which of several concurrent writers is allowed to actually set the value — a cache can need either without the other.",
+        "at": [{ "deep": "Lab" }]
+      },
+      {
+        "item": "Early expiration's probability curve is deliberately smooth rather than a step function at the exact TTL boundary, because a step function at one instant is exactly what recreates a thundering herd — every reader checking at that instant would refresh simultaneously, which is the failure the smooth curve is built to avoid.",
+        "at": [{ "deep": "Lab" }]
+      },
+      {
+        "item": "This topic's own CDC-driven-invalidation reveal depends directly on the prior chapter's own physical-vs-logical-replication material: mcsqueal's daemon is reading the same kind of commit-log stream that topic 18's logical replication already introduced, applied here to cache invalidation instead of replica catch-up.",
+        "at": [{ "topic": "Physical vs logical replication", "quote": "logical replication" }]
+      },
+      {
+        "item": "This topic establishes that a cache's contents can be kept correct under concurrent writes; it says nothing yet about what internals make a real cache engine (eviction, persistence, replication) actually behave this way, which is exactly the gap the next topic closes by naming one real engine directly.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "The hook's own race is strictly worse than ordinary staleness: an ordinary stale cache entry self-corrects on its own TTL or next write, but the delete-after-write race can leave a cache holding a stale value indefinitely, with nothing left in the system that will ever trigger a correction on its own.",
+        "at": [{ "step": "Reveal: the race, reproduced for real" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

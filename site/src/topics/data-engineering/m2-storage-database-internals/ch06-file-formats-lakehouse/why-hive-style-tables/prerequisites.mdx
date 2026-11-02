@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Object storage as a database substrate" domain="data-engineering" host="de.object-storage-as-database" by="This chapter's tenth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="LanguageManual DDL" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL" by="Apache Hive">The partitioned-table DDL this topic's directory layout follows.</Resource>
+  <Resource kind="reading" title="Hive — A Warehousing Solution Over a Map-Reduce Framework" href="https://www.vldb.org/pvldb/vol2/vldb09-938.pdf" by="Thusoo et al., VLDB 2009">Hive's own original directory-as-partition design, straight from the source paper.</Resource>
+  <Resource kind="reading" title="Partition refresh and configuration" href="https://docs.cloudera.com/cdp-private-cloud-base/latest/using-hiveql/topics/hive-manage-partitions.html" by="Cloudera">The metastore-staleness and listing-cost-scaling claims this topic reproduces.</Resource>
+  <Resource kind="reading" title="Hive Transactions" href="https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions" by="Apache Hive">Hive's own documented motivation for ACID: dirty reads and small-file pressure from streaming writers.</Resource>
+  <Resource kind="reading" title="Partitioning" href="https://iceberg.apache.org/docs/latest/partitioning/" by="Apache Iceberg">Iceberg's own stated list of problems with Hive-style partitioning.</Resource>
+</ul>
+
+</section>

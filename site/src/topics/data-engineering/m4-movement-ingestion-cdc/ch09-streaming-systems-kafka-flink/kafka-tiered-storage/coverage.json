@@ -1,0 +1,143 @@
+{
+  "topic": "de.kafka-tiered-storage",
+  "syllabus": [
+    {
+      "clause": "KIP-405 (production-ready since 3.9): the remote log manager copies closed segments to object storage",
+      "at": [
+        { "step": "Predict: does the copy wait for local retention?" },
+        { "step": "Reveal: the copy starts the moment the segment rolls" }
+      ]
+    },
+    {
+      "clause": "separate local vs total retention",
+      "at": [
+        { "step": "Reveal: two retention knobs, not one" }
+      ]
+    },
+    {
+      "clause": "the RemoteStorageManager plugin",
+      "at": [
+        { "step": "Setup: a boundary drawn across the strip" },
+        { "step": "Reveal: the copy starts the moment the segment rolls" }
+      ]
+    },
+    {
+      "clause": "consumers reading cold data transparently",
+      "at": [
+        { "step": "Predict: can a read tell local from remote?" },
+        { "step": "Reveal: transparent, but not free" }
+      ]
+    },
+    {
+      "clause": "limits (no compacted topics) and the cost/latency profile of historical reads",
+      "at": [
+        { "step": "Reveal: why a compacted topic can't be tiered" },
+        { "step": "Hook: two years of history, at a fraction of the bill" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "KIP-405: Kafka Tiered Storage (Apache Kafka wiki)",
+      "items": [
+        {
+          "item": "the KIP has been merged and marked production-ready since Kafka 3.9",
+          "at": [{ "step": "Reveal: the copy starts the moment the segment rolls" }]
+        },
+        {
+          "item": "it does not support compact topics with tiered storage",
+          "at": [{ "step": "Reveal: why a compacted topic can't be tiered" }]
+        },
+        {
+          "item": "RemoteLogManager delegates copy, read, and delete of segments to a pluggable RemoteStorageManager implementation",
+          "at": [{ "step": "Setup: a boundary drawn across the strip" }]
+        },
+        {
+          "item": "the RLM leader task checks for rolled over segments and copies them, along with their indexes, to the remote tier",
+          "at": [{ "step": "Predict: does the copy wait for local retention?" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 operations documentation: Tiered Storage",
+      "items": [
+        {
+          "item": "the local tier is the current Kafka local-disk behavior; the remote tier uses external storage systems like HDFS or S3 to store completed log segments",
+          "at": [{ "step": "Setup: a boundary drawn across the strip" }]
+        },
+        {
+          "item": "RemoteStorageManager is an interface with no out-of-the-box implementation; users must configure the class name and path",
+          "at": [{ "step": "Setup: a boundary drawn across the strip" }]
+        },
+        {
+          "item": "the local-prefixed configs specify how long the local log file is kept before moving to remote storage and being deleted; if unset, the total retention value is used",
+          "at": [{ "step": "Reveal: two retention knobs, not one" }]
+        },
+        {
+          "item": "no support for compacted topics",
+          "at": [{ "step": "Reveal: why a compacted topic can't be tiered" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 configuration reference: Tiered Storage Configs",
+      "items": [
+        {
+          "item": "log.local.retention.ms keeps local log segments only until it elapses, and its effective value must stay at or below log.retention.ms",
+          "at": [{ "step": "Reveal: two retention knobs, not one" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Copying to remote and deleting from local are two separate events gated by two separate conditions, not one event under two names.",
+        "at": [{ "step": "Reveal: the copy starts the moment the segment rolls" }]
+      },
+      {
+        "item": "A segment can be simultaneously present in both the local and remote tiers for a while — that overlap is the normal, expected state while local retention is still running out.",
+        "at": [{ "step": "Reveal: two retention knobs, not one" }]
+      },
+      {
+        "item": "The fetch API's uniformity is a deliberate design choice, not an accident — it's what lets tiered storage be adopted without any consumer-side code change.",
+        "at": [{ "step": "Reveal: transparent, but not free" }]
+      },
+      {
+        "item": "Shrinking local retention aggressively while total retention stays long doesn't save storage cost overall — it just shifts more of the same data into the remote tier sooner.",
+        "at": [{ "step": "Reveal: two retention knobs, not one" }]
+      },
+      {
+        "item": "The compacted-topics restriction is a direct consequence of what compaction does to a segment's bytes (topic 6), not an arbitrary product limitation layered on top.",
+        "at": [{ "step": "Reveal: why a compacted topic can't be tiered" }]
+      },
+      {
+        "item": "This topic's cost framing and topic 6's retention framing are the same mechanism viewed from two angles: where bytes live, versus how long they're kept at all.",
+        "at": [{ "step": "Hook: two years of history, at a fraction of the bill" }]
+      },
+      {
+        "item": "The ordering guarantees from the previous topic are completely undisturbed by tiering — moving a segment's physical bytes never touches the sequence of records inside it.",
+        "at": [{ "step": "Setup: a boundary drawn across the strip" }]
+      },
+      {
+        "item": "A backfill or disaster-recovery job that reads a wide historical range should expect its latency profile to differ sharply from a normal tail-read workload, precisely because of this cold-read cost.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Fully leaderless, diskless designs remove the local tier from the hot path entirely rather than layering a remote tier on top of it — a more radical version of the same cost pressure this topic addresses.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "This topic closes out the chapter's log-mechanics arc (segments, replication, consumer groups, retention, ordering, tiering) before the next arc turns to correctness under failure.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

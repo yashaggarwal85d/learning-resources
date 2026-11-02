@@ -1,0 +1,5 @@
+- **Scale factor**: a stated multiple declaring how large a benchmark dataset is, used by TPC's own standard suites.
+- **Snowflake schema**: a normalized dimensional schema where dimension tables themselves branch into further sub-dimension tables.
+- **Cardinality estimation**: a query planner's own guess at how many rows a condition or join will match.
+- **Benchmarketing**: a vendor publishing only the true benchmark results, query subsets, or configurations that favor their own product.
+- **Licence clause**: a contractual term in a software licence restricting what the licensee may do, such as publish benchmark results.

@@ -1,0 +1,131 @@
+{
+  "topic": "de.gitops-reconciliation-data-platforms",
+  "syllabus": [
+    {
+      "clause": "pull-based reconcilers (Argo CD, Flux) continuously converge clusters to Git",
+      "at": [
+        { "step": "The loop, with Git as the spec" },
+        { "step": "Two real projects, and Git isn't even required" }
+      ]
+    },
+    {
+      "clause": "Helm/Kustomize packaging",
+      "at": [
+        { "step": "A chart or a base, not a cluster" }
+      ]
+    },
+    {
+      "clause": "environment promotion by pull request",
+      "at": [
+        { "step": "Promotion by pull request" }
+      ]
+    },
+    {
+      "clause": "automatic drift correction",
+      "at": [
+        { "step": "Drift correction, and its guard" },
+        { "step": "Deletes everything, refuses, or something else?" },
+        { "step": "The field another controller owns" }
+      ]
+    },
+    {
+      "clause": "secrets in GitOps (External Secrets, SOPS)",
+      "at": [
+        { "step": "A secret committed in the clear is a leak" }
+      ]
+    },
+    {
+      "clause": "progressive delivery for streaming services",
+      "at": [
+        { "step": "Why a stream job resists a gradual rollout" }
+      ]
+    },
+    {
+      "clause": "the split between IaC for cloud resources (§10.4) and GitOps for in-cluster state",
+      "at": [
+        { "step": "The seam: identity and secrets" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Argo CD documentation, Architectural Overview",
+      "items": [
+        { "item": "the application controller continuously monitors running applications and compares the live state against the desired target state", "at": [{ "step": "The loop, with Git as the spec" }] }
+      ]
+    },
+    {
+      "source": "Flux documentation, Core Concepts",
+      "items": [
+        { "item": "GitOps as declaratively describing the whole system and automating convergence to one or more Git repositories", "at": [{ "step": "The loop, with Git as the spec" }] },
+        { "item": "Gitless GitOps introduces an OCIRepository source type, decoupling the controllers from Git and relying on container registries as the source of truth", "at": [{ "step": "Two real projects, and Git isn't even required" }] }
+      ]
+    },
+    {
+      "source": "Argo CD documentation, Helm",
+      "items": [
+        { "item": "Helm is only used to inflate charts with helm template; Argo CD, not Helm, handles the application lifecycle", "at": [{ "step": "A chart or a base, not a cluster" }] }
+      ]
+    },
+    {
+      "source": "Argo CD documentation, Automated Sync Policy",
+      "items": [
+        { "item": "by default, live cluster changes do not trigger automated sync; self-heal must be explicitly enabled", "at": [{ "step": "Survives, gets corrected, or something else?" }, { "step": "Drift correction, and its guard" }] },
+        { "item": "by default, automated sync will not delete resources no longer defined in git", "at": [{ "step": "Drift correction, and its guard" }] },
+        { "item": "automated sync with prune has a protection against pruning an application down to having no target resources", "at": [{ "step": "Deletes everything, refuses, or something else?" }] },
+        { "item": "an automated sync only runs when the application is OutOfSync; a Synced or error-state application is not auto-synced", "at": [{ "deep": "A little deeper" }] }
+      ]
+    },
+    {
+      "source": "Argo CD documentation, Sync Options",
+      "items": [
+        { "item": "a Prune=false annotation on a resource overrides the application's own prune policy for that one resource", "at": [{ "deep": "A little deeper" }] }
+      ]
+    },
+    {
+      "source": "Argo CD documentation, Diff Customization",
+      "items": [
+        { "item": "ignoreDifferences on spec.replicas for Deployments is Argo CD's own worked example for a field an autoscaler legitimately owns", "at": [{ "step": "The field another controller owns" }] }
+      ]
+    },
+    {
+      "source": "External Secrets Operator documentation, Overview",
+      "items": [
+        { "item": "custom resources define where secrets live and how to synchronize them; the controller fetches from an external API and reconciles the cluster Secret on change", "at": [{ "step": "A secret committed in the clear is a leak" }] }
+      ]
+    },
+    {
+      "source": "SOPS, README",
+      "items": [
+        { "item": "SOPS encrypts files with AWS KMS, GCP KMS, Azure Key Vault, HuaweiCloud KMS, age, and PGP", "at": [{ "step": "A secret committed in the clear is a leak" }] }
+      ]
+    },
+    {
+      "source": "Argo Rollouts documentation, Overview",
+      "items": [
+        { "item": "a controller and CRD set providing blue-green, canary, canary analysis, experimentation, and progressive delivery", "at": [{ "step": "Why a stream job resists a gradual rollout" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "self-heal and a sync triggered by an unrelated git change are two different mechanisms with overlapping effects: self-heal off does not mean an edit is permanent, because any sync at all applies the whole desired manifest, not just the changed fields — the edit can still be overwritten incidentally, just not by a mechanism that specifically detected and targeted it", "at": [{ "step": "Survives, gets corrected, or something else?" }] },
+      { "item": "Flux's gitless direction does not mean Git has become irrelevant to GitOps generally; it is one project's newer option, and Argo CD's own architecture in this topic's main source is still Git-based — the two are shown as separate, real, differently-evolving tools, not as Git being obsolete", "at": [{ "step": "Two real projects, and Git isn't even required" }] },
+      { "item": "a resource-level Prune=false annotation and an application-level allow-empty setting solve two different failure modes: the first stops one specific resource from ever being deleted by this mechanism at all, the second stops an accidental total deletion when git momentarily looks empty — a team that only sets one of the two is still exposed to the other", "at": [{ "deep": "A little deeper" }] },
+      { "item": "ignoreDifferences only affects what Argo CD treats as in-sync; it does not stop the autoscaler from changing the field, and does not mean Argo CD will apply a different replica count than what's in git on an actual sync — it specifically means Argo CD will sync, not flag this field, as the sync's own documentation about RespectIgnoreDifferences clarifies the subtlety of", "at": [{ "deep": "A little deeper" }] },
+      { "item": "External Secrets Operator and SOPS solve different halves of the secrets problem and are not substitutes for each other: ESO keeps the secret value out of git entirely by fetching it live from an external store, while SOPS's encrypted-commit approach keeps a value in git but encrypted, meaning SOPS still needs a KMS/age/PGP key available at decrypt time, which is itself a credential the cluster needs from outside — the same identity-and-secret-store seam this topic ends on", "at": [{ "step": "The seam: identity and secrets" }] },
+      { "item": "progressive delivery tools like Argo Rollouts are built for stateless or horizontally-scaled services; nothing in Argo Rollouts' own documentation claims special handling for a job with exactly one running instance holding irreplaceable state, which is exactly why the stream-job contrast in this topic is stated as design reasoning rather than attributed to Argo Rollouts itself", "at": [{ "step": "Why a stream job resists a gradual rollout" }] },
+      { "item": "the IaC-vs-GitOps seam is not a technology boundary (both sides can use YAML, both can be in git) but an ownership boundary: IaC changes typically require broader cloud credentials and touch resources outside any one cluster, while GitOps changes are scoped to objects a cluster's own API server can already create — conflating the two tools does not remove this ownership distinction", "at": [{ "out": "a boundary-design detail below this topic's main scope" }] },
+      { "item": "Helm's template rendering happening before Argo CD applies anything means a chart's own hooks (pre-install, post-upgrade) are a separate concern from Argo CD's own sync phases and sync waves — a team moving from plain Helm to Argo-CD-managed Helm needs to re-map chart hooks onto Argo CD's own hook model rather than assuming they carry over unchanged", "at": [{ "out": "a Helm-migration detail below this topic's scope" }] },
+      { "item": "'automatic drift correction' being off by default is itself a deliberate default, not an oversight: Argo CD's own self-heal documentation frames unconditional self-heal as risky for multi-source applications specifically, where a change to one source can trigger an autosync that touches resources whose desired state came from a different, unchanged source", "at": [{ "deep": "A little deeper" }] },
+      { "item": "declaring staging-to-production promotion as 'a commit' abstracts over a real operational choice this topic doesn't resolve: whether the production overlay tracks a floating reference (same branch, different path) or a pinned one (an explicit commit SHA or tag) changes whether a later staging change can accidentally reach production without a new promotion commit at all", "at": [{ "out": "a promotion-strategy detail below this topic's scope" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

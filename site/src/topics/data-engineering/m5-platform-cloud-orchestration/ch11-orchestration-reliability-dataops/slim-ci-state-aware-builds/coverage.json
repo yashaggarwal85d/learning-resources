@@ -1,0 +1,84 @@
+{
+  "topic": "de.slim-ci-state-aware-builds",
+  "syllabus": [
+    {
+      "clause": "build and test only modified models plus downstream (dbt state:modified, --defer to production artefacts)",
+      "at": [
+        { "step": "Reveal: state:modified + --defer" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "SQLMesh plans and virtual environments",
+      "at": [{ "step": "Reveal: SQLMesh's virtual environment" }]
+    },
+    {
+      "clause": "column-level breaking-change detection (dbt Fusion, SQLMesh)",
+      "at": [
+        { "step": "Reveal: column-level breaking-change detection" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "CI on sampled or seeded synthetic data",
+      "at": [{ "step": "Reveal: CI on a seeded sample" }]
+    },
+    {
+      "clause": "failing the build on broken lineage or SLA regression",
+      "at": [{ "step": "Reveal: the lineage and SLA gate" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Node selection methods: state; Defer (dbt Developer Hub)",
+      "items": [
+        { "item": "the state method selects nodes by comparing them against a previous version of the project, represented by a manifest", "at": [{ "step": "Reveal: state:modified + --defer" }] },
+        { "item": "state:modified selects all new nodes, plus any changes to existing nodes", "at": [{ "step": "Reveal: state:modified + --defer" }] },
+        { "item": "with --defer, an unselected node that doesn't exist locally resolves its ref to the production relation instead of failing or being rebuilt", "at": [{ "step": "Reveal: state:modified + --defer" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Overview (SQLMesh documentation)",
+      "items": [
+        { "item": "SQLMesh automatically identifies all affected models and the computations a change entails by creating a plan", "at": [{ "step": "Reveal: SQLMesh's virtual environment" }] },
+        { "item": "a virtual environment promotes views and tables from non-production to production without computation or data movement", "at": [{ "step": "Reveal: SQLMesh's virtual environment" }] }
+      ]
+    },
+    {
+      "source": "dbt Fusion engine announcement (dbt Labs blog)",
+      "items": [
+        { "item": "dbt Fusion names column-aware change detection in CI/CD as a capability, named here as a pointer rather than independently demonstrated (not installed in this sandbox)", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real build/CI experiments",
+      "items": [
+        { "item": "on the shop's own model graph, a single-model change builds only the changed model plus its real downstream under state:modified+defer, while a full rebuild builds every model regardless", "at": [{ "step": "Reveal: state:modified + --defer" }, { "step": "Prove it" }] },
+        { "item": "a column rename done by contracting straight to the new name is flagged breaking; the identical change done through expand first is not", "at": [{ "step": "Reveal: column-level breaking-change detection" }] },
+        { "item": "a seeded 100-row sample of a 2,000-row table with six planted bugs catches only the fraction of those bugs that happen to land inside it, measured directly", "at": [{ "step": "Reveal: CI on a seeded sample" }] },
+        { "item": "a CI gate built from the model graph fails when an expected lineage edge disappears, and a separate gate fails when a measured p95 latency crosses the chapter's own SLO", "at": [{ "step": "Reveal: the lineage and SLA gate" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's real lesson is that 'safe' and 'exhaustive' are not the same property -- a full rebuild is sufficient for safety but not necessary, and conflating the two is what makes slow CI feel unavoidable.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume state:modified and a SQLMesh virtual environment are competing solutions to the same problem -- they're actually two different mechanisms (selective building vs. promoting already-built output) that a single project could in principle combine, not mutually exclusive alternatives.", "at": [{ "deep": "Internals" }] },
+      { "item": "--defer's real safety property is its conservatism: it only falls back to production when the node is BOTH unselected AND not already built locally, so it can never silently substitute a stale production table for one you actually meant to test.", "at": [{ "deep": "Internals" }] },
+      { "item": "Column-level breaking-change detection's connection to expand/migrate/contract isn't incidental -- it's the automated enforcement of exactly the discipline that topic covered by hand, which is why a premature contract is the textbook case this mechanism is built to catch.", "at": [{ "step": "Reveal: column-level breaking-change detection" }] },
+      { "item": "The seeded-sample coverage number in this topic's own demo (roughly one bug in six caught) isn't a universal constant -- it depends entirely on the sample size relative to the bug's own prevalence in the data, so the real lesson is 'measure your own coverage,' not 'samples catch about this fraction.'", "at": [{ "step": "Reveal: CI on a seeded sample" }] },
+      { "item": "A lineage-break gate and an SLA-regression gate both fail a build for a reason that has nothing to do with whether any individual row's value is correct -- they're checking properties of the pipeline's *shape* and *behavior over time*, categories a row-level test can't see at all.", "at": [{ "step": "Reveal: the lineage and SLA gate" }] },
+      { "item": "dbt Fusion's column-aware CI/CD is named here only as a pointer to where this capability is headed in the tooling ecosystem, not as something this topic's own sandbox experiments demonstrate -- the toy classifier in examples.py reproduces the idea, not the tool.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic deliberately leaves out running state-aware selection against a true zero-copy clone or branch (the chapter's one skipped syllabus entry) -- the --defer mechanism it demonstrates instead falls back to the actual production relation, a different and slightly riskier mechanism than an isolated branch would be.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A reader might assume a smaller CI build is always strictly better -- it isn't free: state:modified's correctness depends entirely on the stored manifest being trustworthy and current, so a stale or corrupted manifest can make a state-aware build silently skip something it should have tested.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's lineage-break and SLA-regression gates are deliberately simple, synthetic versions of a much larger production concern -- a real lineage check runs against the project's actual dependency graph at every commit, and a real SLA gate needs a longer, statistically stable baseline than one topic's toy numbers provide.", "at": [{ "step": "Reveal: the lineage and SLA gate" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

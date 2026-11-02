@@ -1,0 +1,63 @@
+{
+  "topic": "de.why-hive-style-tables",
+  "syllabus": [
+    { "clause": "directory-as-partition, file listing as table state, no atomic multi-partition commits, readers seeing partial writes, metastore and listing bottlenecks at millions of files", "at": [{ "step": "Reveal: directory-as-partition, and no validation" }, { "step": "Reveal: reproduced for real — a listing catches a partition mid-write" }, { "step": "Reveal: listing itself gets slower as files pile up" }] },
+    { "clause": "the \"mutable table on an immutable object store\" problem every modern format solves", "at": [{ "step": "Reveal: every problem traces back to one choice" }, { "step": "Recap" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Hive, LanguageManual DDL",
+      "items": [
+        { "item": "a partitioned table creates a separate data directory for each distinct partition-column value combination", "at": [{ "step": "Reveal: directory-as-partition, and no validation" }] }
+      ]
+    },
+    {
+      "source": "Thusoo et al., Hive — A Warehousing Solution Over a Map-Reduce Framework (VLDB 2009)",
+      "items": [
+        { "item": "Hive's own canonical example writes partition values directly into the directory path, e.g. /wh/T/ds=value/ctry=value", "at": [{ "step": "Reveal: directory-as-partition, and no validation" }] }
+      ]
+    },
+    {
+      "source": "Cloudera, Partition refresh and configuration",
+      "items": [
+        { "item": "the metastore does not auto-update when files or directories are added or dropped on disk; it goes stale until an explicit sync", "at": [{ "step": "Reveal: the metastore can drift from what's actually on disk" }] },
+        { "item": "a full MSCK REPAIR TABLE sync takes longer as the number of partitions grows", "at": [{ "step": "Reveal: listing itself gets slower as files pile up" }] }
+      ]
+    },
+    {
+      "source": "Apache Hive, Hive Transactions wiki",
+      "items": [
+        { "item": "before Hive 0.13's transactions, atomicity/consistency/durability were only guaranteed at the partition level", "at": [{ "step": "Predict: can a write to two partitions commit as one atomic unit?" }] },
+        { "item": "streaming writers into a live partition without ACID caused dirty reads and small-file pressure on the NameNode — Hive's own documented motivation for adding transactions", "at": [{ "step": "Reveal: this is Hive's own documented reason for adding ACID" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Partitioning docs ('Problems with Hive partitioning')",
+      "items": [
+        { "item": "Hive can't validate partition values; it's up to the writer to produce the correct value", "at": [{ "step": "Predict: does Hive validate a partition value before writing it?" }] },
+        { "item": "working queries are tied to the table's partitioning scheme, so partitioning configuration cannot change without breaking queries", "at": [{ "deep": "Where this goes next" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The partial-write reproduction is a deliberately paused, single-process sequential write on real local disk, not a genuine two-process race — it reproduces the shape of the failure (a listing taken mid-write sees an inconsistent state) rather than claiming to model exact multi-writer timing.", "at": [{ "step": "Reveal: reproduced for real — a listing catches a partition mid-write" }] },
+      { "item": "The listing-cost measurement is this sandbox's own local disk, not S3's documented LIST latency or its per-prefix request-rate limits (both already covered with real AWS numbers in the previous topic) — only the qualitative shape (cost grows with file count) is claimed here.", "at": [{ "step": "Reveal: listing itself gets slower as files pile up" }] },
+      { "item": "Hive's own 'dirty reads' wording in its Transactions wiki describes in-progress streaming writes within a single partition; this topic draws an explicit, not implicit, connection to the cross-partition case it reproduces, since both share the same root cause (no atomic commit boundary) without claiming they are identical scenarios.", "at": [{ "step": "Reveal: this is Hive's own documented reason for adding ACID" }] },
+      { "item": "Hive 0.13 is cited as a historical pre/post marker, not as the final word on Hive's current ACID capabilities — Hive continued adding transactional features afterward; this topic frames the pre-ACID gap as what motivated other table formats (Iceberg, Delta), not as Hive being permanently unfixed.", "at": [{ "step": "Predict: can a write to two partitions commit as one atomic unit?" }] },
+      { "item": "The local-filesystem stand-in for object storage is disclosed explicitly in examples.py's own docstring: this sandbox has no real multi-petabyte S3 bucket, but the filesystem-listing mechanics demonstrated (a listing reflecting only currently-existing files, cost growing with file count) are the same mechanics a real object-store LIST call has.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Partition-value validation (or its absence) and atomic multi-partition commits are two separate failure modes with two separate root causes in Hive's design — the first is a writer-trust problem (no check against the row), the second is a transaction-boundary problem (no commit wrapping multiple files) — this topic keeps them distinct rather than conflating them as one issue.", "at": [{ "step": "Reveal: every problem traces back to one choice" }] },
+      { "item": "The §6.3.3 Hudi material is entirely skipped per CHAPTER.md's own plan; this topic names only Hive, Iceberg and Delta, never Hudi, consistent with that chapter-wide decision.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "MSCK REPAIR TABLE's cost scaling with partition count (Cloudera's own documented behavior) is distinct from this topic's own measured os.scandir() curve (a raw filesystem listing call) — the topic draws the parallel explicitly (both get slower as the thing being listed grows) without claiming they are the same operation.", "at": [{ "step": "Reveal: listing itself gets slower as files pile up" }] },
+      { "item": "This topic's own handoff names the specific fix the next topic builds: replacing file listing with an explicit, versioned table state — the snapshot — which is exactly what topic 12 (snapshot-based table metadata) introduces next.", "at": [{ "step": "Recap" }] },
+      { "item": "The prerequisites panel lists only topic 10 (object storage) as a direct dependency, since this topic's own introduced concept (hive-table-breakage) builds on object-storage-guarantees specifically, not on the earlier file-format topics (4-9), which this topic doesn't reference.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

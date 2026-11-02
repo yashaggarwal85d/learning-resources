@@ -1,0 +1,91 @@
+{
+  "topic": "de.slim-ci-state-aware-builds",
+  "steps": [
+    {
+      "lines": [
+        "A large dbt project's full CI run rebuilds every single model, on every single pull request, no matter what actually changed.",
+        "Most of what gets rebuilt is work nobody touched at all -- the same output, computed again, for no real reason.",
+        "A single-model change, run through a state-aware build instead, builds only that one model and whatever actually sits downstream of it.",
+        "Same change, same guarantee of correctness, a measurably smaller amount of work actually done."
+      ]
+    },
+    {
+      "lines": [
+        "Worth predicting before the next few steps answer it directly.",
+        "A full rebuild is certainly safe -- it genuinely tests every single model in the project, with nothing left out.",
+        "Is testing absolutely everything the only way to be safe about one small, specific change?",
+        "Or is there a smaller set of models that's just as safe to test?"
+      ],
+      "answer": "No, a full rebuild isn't the only safe option. Everything a change could possibly reach is exactly the changed model plus everything downstream of it -- nothing sitting outside that set could have been affected at all."
+    },
+    {
+      "lines": [
+        "Here's the first real mechanism, built specifically around that exact idea.",
+        "Compare the current project against a stored manifest from the last known-good build.",
+        "Select the node that changed, plus everything downstream of it, using that same comparison.",
+        "Everything else gets deferred straight to its already-built production relation instead of being rebuilt from scratch."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second, independent mechanism built around the same underlying idea.",
+        "A plan previews exactly what a change would affect, computing nothing until that preview is actually verified.",
+        "Once it's verified, promotion repoints production directly at what was already built and tested in development.",
+        "No recomputation happens at that point, and no data actually moves -- it's a pointer swap, not a rebuild."
+      ],
+      "takeaway": "A verified output does not need to be computed twice to be trusted in production."
+    },
+    {
+      "lines": [
+        "One more question worth sitting with before the reveal that follows it.",
+        "A model's overall shape, its name and its grain, can look exactly the same from the outside after a change.",
+        "Does an unchanged model-level contract mean nothing underneath it could possibly have broken?",
+        "Or can something real break while the surface of the contract stays exactly the same?"
+      ],
+      "answer": "No, an unchanged contract doesn't mean nothing broke. A single column being renamed or having its type changed is still breaking, for any consumer reading that exact column, even while the model around it looks completely untouched."
+    },
+    {
+      "lines": [
+        "Here's that exact risk, caught directly, using the very column rename this chapter warned about earlier.",
+        "Jumping straight to a new column name, skipping the expand phase entirely, gets flagged as a breaking change immediately.",
+        "The identical underlying change, done properly through expand first -- adding the new column while keeping the old one -- is not flagged as breaking at all.",
+        "Same destination, two different paths there, and only one of those two paths earns a breaking-change warning."
+      ]
+    },
+    {
+      "lines": [
+        "Now a different kind of tradeoff, measured rather than simply assumed.",
+        "Testing the full table catches every single one of a known, fixed set of planted bugs, with nothing missed.",
+        "A small, fixed, seeded sample runs much faster, but checked against that exact same set of planted bugs, it only catches whichever fraction happened to land inside it.",
+        "That's a real, measured tradeoff between CI speed and actual bug coverage, not a hypothetical one."
+      ],
+      "takeaway": "A seeded sample only ever catches the bugs that happen to land inside it."
+    },
+    {
+      "lines": [
+        "A build can fail for reasons that have nothing to do with a wrong value at all.",
+        "An expected dependency between two models can silently disappear, breaking the lineage a downstream model was actually relying on.",
+        "Separately, a measured latency can cross this chapter's own SLO threshold before the change carrying it ever reaches production.",
+        "Both of those get checked and failed right here in CI, before the merge happens, not discovered afterward in production."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling every piece of this topic together into one shape.",
+        "Two genuinely different mechanisms, state:modified plus defer and a virtual environment's promotion, both build only what a change could actually reach.",
+        "A column-level check catches a contract that looks unchanged but genuinely isn't, and a seeded sample's coverage tradeoff gets measured instead of assumed.",
+        "And a CI gate can now fail on a broken lineage edge or a breached SLO, not only on a wrong computed value."
+      ],
+      "takeaway": "A fast CI run and a safe CI run are the same thing once it builds exactly what a change could reach."
+    },
+    {
+      "lines": [
+        "One real comparison to close on, run for real rather than just described.",
+        "Take the shop's own model graph and change exactly one model inside it.",
+        "Run a full rebuild against that single change, and separately run state:modified plus defer against the identical change.",
+        "Does the state-aware build end up building roughly the same number of models as the full rebuild, or does it genuinely build fewer?"
+      ],
+      "answer": "It genuinely builds fewer models. The state-aware build selects only the changed model and whatever sits downstream of it, correctly skipping every model the change could not possibly have reached."
+    }
+  ]
+}

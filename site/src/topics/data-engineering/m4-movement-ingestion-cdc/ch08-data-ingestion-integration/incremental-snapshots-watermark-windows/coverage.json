@@ -1,0 +1,143 @@
+{
+  "topic": "de.incremental-snapshots-watermark-windows",
+  "syllabus": [
+    {
+      "clause": "DBLog-style chunked snapshots interleaved with the live log: open/close watermarks around each primary-key chunk, drop buffered snapshot rows superseded by streamed changes",
+      "at": [
+        { "step": "Reveal: the watermark window" },
+        { "step": "Reveal: superseded, measured" },
+        { "step": "Reveal: no lock, and the log never waits" },
+        { "step": "Reveal: the full run, measured" }
+      ]
+    },
+    {
+      "clause": "signal tables vs Kafka signalling vs read-only (transaction-id watermark) variants",
+      "at": [{ "step": "Prove it" }]
+    },
+    {
+      "clause": "re-snapshotting one table without stopping CDC",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Predict: resurrected or gone" },
+        { "step": "Recap" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "DBLog: A Watermark Based Change-Data-Capture Framework (Netflix)",
+      "items": [
+        {
+          "item": "Log events continue progress without stalling while processing selects; selects run in chunks and track progress, allowing pause and resume; the watermark approach uses no locks",
+          "at": [{ "step": "Reveal: no lock, and the log never waits" }]
+        },
+        {
+          "item": "Algorithm 1: a low watermark opens the window, the chunk is selected into memory, a high watermark closes it; rows colliding with log events inside the window are removed before the surviving rows are appended",
+          "at": [
+            { "step": "Reveal: the watermark window" },
+            { "step": "Reveal: superseded, measured" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for PostgreSQL",
+      "items": [
+        {
+          "item": "The default chunk size for incremental snapshots is 1024 rows",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        },
+        {
+          "item": "If the progress of an incremental snapshot is interrupted, it resumes without losing any data, beginning at the point where it stopped",
+          "at": [{ "step": "Reveal: pause and resume, measured" }]
+        },
+        {
+          "item": "During the snapshot window, a streamed event matching a buffered READ event's primary key discards the buffered READ event and the streamed record is written instead, because the streamed event logically supersedes the static snapshot event",
+          "at": [{ "step": "Reveal: superseded, measured" }]
+        },
+        {
+          "item": "The Debezium connector for PostgreSQL does not support schema changes while an incremental snapshot is running",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        },
+        {
+          "item": "data-collections and additional-conditions select which tables and rows an ad hoc snapshot signal covers; a stop-snapshot signal can omit tables from a running snapshot",
+          "at": [{ "step": "Prove it" }]
+        },
+        {
+          "item": "A PostgreSQL read-only incremental snapshot uses the current in-progress transaction as high and low watermarks, comparing the transaction ID of WAL events or heartbeats against them",
+          "at": [{ "step": "Prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium connector for MySQL",
+      "items": [
+        {
+          "item": "A MySQL read-only incremental snapshot uses the executed GTID set as high and low watermarks instead of a transaction ID",
+          "at": [{ "out": "named only, no MySQL server in this sandbox, per SOURCES.md" }]
+        }
+      ]
+    },
+    {
+      "source": "Flink CDC docs: PostgreSQL CDC Source",
+      "items": [
+        {
+          "item": "Flink CDC's incremental snapshot reads chunks of multiple tables in parallel and needs no global read lock before snapshot reading",
+          "at": [{ "out": "named only, per post-notes.md Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The algorithm is implemented as a general-purpose chunk runner reused unmodified across all four measured functions, rather than four separate ad hoc implementations, so the no-lock, supersede and pause-resume claims are all exercised against the identical code path.",
+        "at": [{ "step": "Reveal: the watermark window" }]
+      },
+      {
+        "item": "The hook's own resurrection scenario is reproduced as a genuine race against this sandbox's real PostgreSQL — a real concurrent DELETE fired between two real watermark writes on a real logical-decoding slot — not simulated by reordering events in memory.",
+        "at": [{ "step": "Reveal: superseded, measured" }]
+      },
+      {
+        "item": "The full-run measurement fires a distinct, varying write (two updates, a delete and an insert, each touching a different key derived from the current chunk index) between every single chunk rather than one fixed write repeated identically, so the diff against the source covers many distinct collision positions, not one.",
+        "at": [{ "step": "Reveal: the full run, measured" }]
+      },
+      {
+        "item": "The pause-and-resume proof compares two entirely independent runs seeded from identical starting data, rather than comparing one run's output against itself, so the claim rests on reproducing the same final state twice by different paths, not on a single run's own internal consistency.",
+        "at": [{ "step": "Reveal: pause and resume, measured" }]
+      },
+      {
+        "item": "The algorithm's only writes to the database it is copying are the two single-row watermark updates per chunk, confirmed by inspection of the implementation itself, not merely asserted in prose, directly supporting the no-lock claim.",
+        "at": [{ "step": "Reveal: no lock, and the log never waits" }]
+      },
+      {
+        "item": "The wrong half of the first predict question — that a chunk's own read is the final value — is ruled out directly by the measured delete-resurrection proof, which is also the exact scenario the hook opens with, so the predict and the hook reinforce the same measured fact rather than two unrelated claims.",
+        "at": [{ "step": "Predict: resurrected or gone" }]
+      },
+      {
+        "item": "The wrong half of the final predict question — that restarting the whole connector is how a newly added table gets picked up — is ruled out by Debezium's own documented signal mechanism, which this topic names specifically because it avoids exactly that cost.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Debezium's own buffered-window implementation, its default chunk size, and the signal-table/Kafka/read-only variants are disclosed explicitly as sourced-only, since exercising a real Debezium connector's signal channel needs a JVM and Kafka this sandbox does not have.",
+        "at": [{ "out": "disclosed environment limit, per SOURCES.md" }]
+      },
+      {
+        "item": "Flink CDC's own parallel chunked-reader framework is named only from its own documentation and explicitly not built here, since Flink CDC's architecture is topic 21's own subject, matching CHAPTER.md's own 'Leaves out' line.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      },
+      {
+        "item": "This topic hosts the incremental-snapshot leg of the 8.2 lab directly, per CHAPTER.md's own instruction, while the ordering and transaction-boundary guarantees of the combined snapshot-plus-stream output are explicitly left to topic 15, not attempted here.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "topic": "de.checkpoints-exactly-once-boundaries",
+  "syllabus": [
+    {
+      "clause": "offsets + state + commit log make the engine exactly-once only together with replayable sources and idempotent or transactional sinks; foreachBatch with batchId for idempotent writes; which query changes break checkpoint compatibility and the 4.2 named sources/sinks that relax it.",
+      "at": [
+        { "step": "Reveal: kill a batch mid-run, restart from checkpoint" },
+        { "step": "Predict: an at-least-once sink, restarted the same way. Still exact?" },
+        { "step": "Reveal: no -- a duplicate survives, in the sink alone" },
+        { "step": "Elaborate: Spark's guarantee stops at its own boundary" },
+        { "step": "Predict: the same sink, now deduplicating by batchId. Exact now?" },
+        { "step": "Reveal: yes -- zero duplicates, same crash, same restart" },
+        { "step": "Elaborate: batchId is the same number, every time it's replayed" },
+        { "step": "Reveal: not every restart survives -- changed grouping keys fail first" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Spark \"Structured Streaming: APIs on DataFrames and Datasets\" docs",
+      "items": [
+        {
+          "item": "in case of a failure or intentional shutdown, checkpointing and write-ahead logs let a query recover its previous progress and state and continue where it left off",
+          "at": [{ "step": "Reveal: kill a batch mid-run, restart from checkpoint" }]
+        },
+        {
+          "item": "changes in the number or type of input sources between restarts from the same checkpoint location are not allowed",
+          "at": [{ "step": "Reveal: not every restart survives -- changed grouping keys fail first" }]
+        },
+        {
+          "item": "any changes (additions, deletions, or schema modifications) to the stateful operations of a streaming query are not allowed between restarts, since the schema of checkpointed state data must remain the same",
+          "at": [{ "step": "Reveal: not every restart survives -- changed grouping keys fail first" }]
+        },
+        {
+          "item": "by default, foreachBatch provides only at-least-once write guarantees, but the batchId provided to the function can be used to deduplicate the output and get an exactly-once guarantee",
+          "at": [{ "step": "Predict: the same sink, now deduplicating by batchId. Exact now?" }, { "step": "Reveal: yes -- zero duplicates, same crash, same restart" }]
+        },
+        {
+          "item": "the file sink is fault-tolerant with an exactly-once guarantee; the Kafka and Foreach sinks are fault-tolerant with only an at-least-once guarantee",
+          "at": [{ "step": "Predict: an at-least-once sink, restarted the same way. Still exact?" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark release notes, \"Spark Release 4.2.0\"",
+      "items": [
+        {
+          "item": "DataStreamReader.name() and IDENTIFIED BY syntax give streaming sources stable identifying names, so sources can be added, removed and reordered without breaking checkpoints",
+          "at": [{ "step": "Reveal: not every restart survives -- changed grouping keys fail first" }]
+        },
+        {
+          "item": "streaming sinks can now be named with .name(), backed by a V3 commit log that persists the sink name",
+          "at": [{ "step": "Reveal: not every restart survives -- changed grouping keys fail first" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "Before Spark 4.2's named-source support, swapping which source feeds a query (even a logically equivalent replacement, like migrating from one Kafka cluster to another) was indistinguishable from an entirely different, checkpoint-breaking source to the engine -- named sources exist specifically to let such a swap happen without a full checkpoint reset.",
+        "at": [{ "out": "the pre-4.2 all-or-nothing source-identity problem that named sources solve named only; this topic's own examples.py measures the 4.0.0-era restriction (changed grouping keys break restart), not the 4.2 relaxation itself" }]
+      },
+      {
+        "item": "The V3 commit log that sink naming introduces in 4.2 persists which named sink produced each committed batch, which matters specifically when a query's output is later rerouted to a differently-configured sink of the same type -- without that persisted name, Spark has no way to tell a legitimate sink reconfiguration apart from an entirely different sink.",
+        "at": [{ "out": "the V3 commit log's specific role in sink identity across restarts named only; this topic's own examples.py measures batchId-based sink-level dedup, not the commit log's own sink-naming mechanism" }]
+      },
+      {
+        "item": "Changes to a file sink's output directory are explicitly disallowed between restarts, even though the file sink is the one sink the docs mark as exactly-once -- exactly-once accounting and checkpoint-compatibility rules are two separate axes, and a sink can be strict on one while still being restricted on the other.",
+        "at": [{ "out": "output-directory changes as a separate, file-sink-specific checkpoint-compatibility restriction named only; this topic's own examples.py changes grouping keys, not a sink's output location" }]
+      },
+      {
+        "item": "foreachBatch's own documentation warns it cannot be used with continuous processing mode, since that mode has no discrete batchId to key a deduplication check against -- the very mechanism this topic measures (batchId-keyed idempotent writes) is unavailable under the one execution model where micro-batch boundaries don't exist.",
+        "at": [{ "out": "foreachBatch's incompatibility with continuous processing, and why, named only; this topic's own examples.py uses ordinary micro-batch execution throughout" }]
+      },
+      {
+        "item": "Addition or deletion of a filter, or a same-output-schema projection change, is explicitly allowed between restarts -- a narrower, compatible category of query change that sits alongside the incompatible category (changed grouping keys, changed source count) this topic measures directly.",
+        "at": [{ "out": "the compatible-change category, as the contrast to the incompatible one measured here, named only; this topic's own examples.py constructs only an incompatible change (different grouping keys)" }]
+      },
+      {
+        "item": "A projection change to a different output schema is only conditionally allowed, depending on whether the sink itself can absorb the new schema -- a third category, neither flatly allowed nor flatly disallowed, that depends on a property of the sink this topic's own sink-focused claims (1 and 2) don't test for schema tolerance.",
+        "at": [{ "out": "the sink-dependent, conditionally-allowed schema-change category named only; this topic's own examples.py uses a fixed schema throughout both sink probes" }]
+      },
+      {
+        "item": "A stream-stream join's own equi-join columns and join type (inner vs. outer) are named explicitly among the stateful operations whose schema can't change between restarts, extending the same checkpoint-compatibility rule this topic measures on a plain aggregation to a second, more complex stateful operator from the previous two topics.",
+        "at": [{ "out": "the join-specific instance of the same checkpoint-compatibility rule named only; this topic's own examples.py tests the rule on a groupBy aggregation, not a join" }]
+      },
+      {
+        "item": "The Kafka sink's at-least-once guarantee means an idempotent-write strategy like this topic's batchId-based deduplication is exactly as necessary there as for the custom foreachBatch sink measured directly -- the file sink's own exactly-once guarantee is the exception among built-in sinks, not the rule.",
+        "at": [{ "out": "the Kafka sink's own need for the identical idempotent-write pattern measured here on a custom sink named only; this topic's own examples.py uses a custom foreachBatch sink, not the built-in Kafka sink" }]
+      },
+      {
+        "item": "foreachBatch documents a separate caveat for stateful streaming queries with multiple actions inside the same batch function: each action can trigger input data to be read and processed again, so the batch DataFrame should itself be cached inside the function to avoid silently recomputing (and potentially re-reading) the same batch's data.",
+        "at": [{ "out": "the multiple-actions-inside-foreachBatch recomputation caveat named only; this topic's own examples.py performs exactly one action (collect) per batch inside each sink function" }]
+      },
+      {
+        "item": "A streaming aggregation's commit-log-based recovery (this topic's claims 1 and 2) and its state-schema-based restart validation (claim 3) are enforced by two entirely separate mechanisms inside Spark -- one governs whether a specific batch gets redone, the other governs whether the restarted query is even allowed to start -- which is why a batchId-based fix for the first kind of problem does nothing to prevent the second.",
+        "at": [{ "out": "the two separate enforcement mechanisms underlying claims 1-2 versus claim 3 named only; this topic's own examples.py demonstrates both mechanisms' effects directly without naming them as architecturally distinct" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

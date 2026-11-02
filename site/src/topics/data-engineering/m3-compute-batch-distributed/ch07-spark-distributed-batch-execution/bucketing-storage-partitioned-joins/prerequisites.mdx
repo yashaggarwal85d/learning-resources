@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: hash and range partitioning, partition pruning
+
+<ul class="resources">
+  <Resource kind="reel" title="Hash and range partitioning, partition pruning" domain="data-engineering" host="de.hash-range-partitioning-pruning" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Generic Load/Save Functions" href="https://spark.apache.org/docs/latest/sql-data-sources-load-save-functions.html" by="Apache Spark documentation">bucketBy's own purpose and the persistent-table requirement bucketing depends on.</Resource>
+  <Resource kind="reading" title="Performance Tuning — Storage Partition Join" href="https://spark.apache.org/docs/latest/sql-performance-tuning.html" by="Apache Spark documentation">SPJ's own definition as a generalisation of bucket joins to DSv2 sources, and its observable no-Exchange signal.</Resource>
+  <Resource kind="reading" title="partitioning.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/plans/physical/partitioning.scala" by="Apache Spark source, GitHub">KeyGroupedPartitioning's own mechanism, keyed on a data source's reported transform expressions.</Resource>
+</ul>
+
+</section>

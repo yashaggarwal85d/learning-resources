@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: models, fencing tokens, and the two atomic-commit routes
+
+<ul class="resources">
+  <Resource kind="reel" title="Timing and failure models" domain="data-engineering" host="de.timing-failure-models" by="Chapter 14, topic 1" />
+  <Resource kind="reel" title="Leases, fencing tokens and split brain" domain="data-engineering" host="de.leases-fencing-tokens-split" by="Chapter 14, topic 10" />
+  <Resource kind="reel" title="Coordination services and replicated logs in data systems" domain="data-engineering" host="de.coordination-services-replicated-logs" by="Chapter 14, topic 11" />
+  <Resource kind="reel" title="Two-phase commit and its blocking problem" domain="data-engineering" host="de.two-phase-commit-blocking" by="Chapter 14, topic 12" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes directly
+
+<ul class="resources">
+  <Resource kind="reading" title="End-to-End Arguments in System Design" href="https://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf" by="Saltzer, Reed and Clark, ACM TOCS 1984">The end-to-end argument itself, in the paper's own words.</Resource>
+  <Resource kind="reading" title="KIP-98 - Exactly Once Delivery and Transactional Messaging" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-98+-+Exactly+Once+Delivery+and+Transactional+Messaging" by="Apache Kafka">The idempotent producer, atomic multi-partition writes, and read-committed, in the proposal's own words.</Resource>
+  <Resource kind="reading" title="An Overview of End-to-End Exactly-Once Processing in Apache Flink" href="https://flink.apache.org/2018/02/28/an-overview-of-end-to-end-exactly-once-processing-in-apache-flink-with-apache-kafka-too/" by="Apache Flink engineering blog, 2018">The two-phase-commit sink's pre-commit and commit phases, in the post's own words.</Resource>
+</ul>
+
+</section>

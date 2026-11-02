@@ -1,0 +1,75 @@
+{
+  "topic": "de.correctness-under-replay-late",
+  "syllabus": [
+    {
+      "clause": "duplicates, out-of-order and late events",
+      "at": [
+        { "step": "Hook: the same re-run disagrees with itself" },
+        { "step": "Predict: which hidden non-determinism caused the disagreement?" },
+        { "step": "Reveal: the watermark and late events" }
+      ]
+    },
+    {
+      "clause": "replay, backfill and reprocessing designed as first-class paths",
+      "at": [
+        { "step": "Hook: the same re-run disagrees with itself" },
+        { "step": "Reveal: the same pipeline, replayed twice" }
+      ]
+    },
+    {
+      "clause": "idempotent writes, deterministic transforms",
+      "at": [
+        { "step": "Reveal: deterministic transforms and idempotent writes" },
+        { "step": "Reveal: the same pipeline, replayed twice" }
+      ]
+    },
+    {
+      "clause": "watermarks and correction windows",
+      "at": [
+        { "step": "Reveal: the watermark and late events" },
+        { "step": "Reveal: the correction window amends, instead of dropping or corrupting" },
+        { "step": "Reveal: sizing the window from the late-data rate" }
+      ]
+    },
+    {
+      "clause": "versioned outputs",
+      "at": [{ "step": "Reveal: versioned outputs" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Akidau, Bradshaw, Chambers, et al. — The Dataflow Model (VLDB 2015)",
+      "items": [
+        { "item": "The pipeline decomposes into four related dimensions: what results, where in event time, when in processing time, how refinements relate.", "at": [{ "step": "Reveal: versioned outputs" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg documentation — Branching and Tagging",
+      "items": [
+        { "item": "Snapshots are the basis for reader isolation and time-travel queries in Iceberg's own table metadata.", "at": [{ "step": "Reveal: versioned outputs" }] },
+        { "item": "Branching and tagging are used for retaining historical snapshots for auditing.", "at": [{ "deep": "Production failures this topic warns about" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A deterministic transform (output from input alone) and an idempotent write (repetition has no further effect) together, not separately, are what make a re-run trustworthy.", "at": [{ "step": "Reveal: deterministic transforms and idempotent writes" }] },
+      { "item": "A hidden non-determinism (wall-clock time, input ordering, an unseeded sample) can make two runs over identical input silently disagree, with no data having changed.", "at": [{ "step": "Predict: which hidden non-determinism caused the disagreement?" }] },
+      { "item": "A watermark is a heuristic assertion that input is complete up to a point in time, not a guarantee — late events are the expected cost of that heuristic being wrong sometimes.", "at": [{ "step": "Reveal: the watermark and late events" }] },
+      { "item": "A correction window turns a late event from something dropped or silently overwritten into something that amends a published result with a new version.", "at": [{ "step": "Reveal: the correction window amends, instead of dropping or corrupting" }] },
+      { "item": "A correction window's width is set by a measured late-data rate and is a real cost in held state and consumer-visible change, not a free margin.", "at": [{ "step": "Reveal: sizing the window from the late-data rate" }] },
+      { "item": "A versioned output lets a consumer pin a version and an auditor reconstruct exactly what was reported and when, by appending rather than overwriting.", "at": [{ "step": "Reveal: versioned outputs" }] },
+      { "item": "Pipeline-level determinism and idempotence don't automatically protect an external side effect (an email, a webhook) — that needs its own deduplication key.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic leaves out watermark generation, trigger mechanics, Kafka/Flink delivery recipes, the exactly-once argument, and table-format snapshot mechanics deliberately — it teaches the design response, not the mechanics.", "at": [{ "deep": "Internals" }] },
+      { "item": "Deterministic, idempotent pipeline design and watermark-based lateness handling are established, Dataflow-Model-era practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic fixes the shop's own replay-correctness and late-data design that the next topic (failure-mode analysis and recovery) assumes already holds before asking what happens when a component is simply down.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

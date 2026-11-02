@@ -1,0 +1,74 @@
+{
+  "topic": "de.spill-shuffle-memory-pressure",
+  "steps": [
+    {
+      "lines": [
+        "Picture several workers, each about to sort its own piece of the same kind of data.",
+        "One of those pieces happens to be far bigger than the rest.",
+        "Which worker is going to run out of room first?"
+      ]
+    },
+    {
+      "lines": [
+        "Run that sort and watch what actually happens when a worker genuinely runs short.",
+        "It doesn't just report one number for what it had to do. It reports two: one accounting for memory, a separate one accounting for disk.",
+        "And those two numbers are not the same."
+      ]
+    },
+    {
+      "lines": [
+        "All of these workers are sorting pieces of the same kind of data, but one piece is far bigger than the others.",
+        "Out of the whole group, how many of them actually end up needing to write anything out to disk?"
+      ],
+      "answer": "Only the one holding the oversized piece. The rest never come anywhere close to needing it."
+    },
+    {
+      "lines": [
+        "Here's exactly what the measurement shows.",
+        "Precisely one worker carries the entire burden. The others don't report a smaller amount. They report nothing at all.",
+        "Running short of room turns out to be about one worker's own piece, not something every worker experiences together."
+      ]
+    },
+    {
+      "lines": [
+        "Now look at why the two earlier numbers didn't match.",
+        "The one counted as memory includes space rounded up to fixed-size chunks, plus room kept aside for the sorter's own internal bookkeeping.",
+        "None of that extra space actually gets written out to disk, which is exactly why the disk number comes in smaller."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of question. Give the entire job four times as much room to work with overall.",
+        "Does that one struggling worker's own shortfall shrink by anywhere close to that same amount?"
+      ],
+      "answer": "Hardly at all. It barely changes."
+    },
+    {
+      "lines": [
+        "Here's the measurement, laid out plainly.",
+        "The worker that was struggling is still struggling, almost exactly as much as before.",
+        "And the workers that were already fine are still exactly as fine as they were, completely untouched either way."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the reasoning behind that result.",
+        "That additional room got divided up equally among every worker, whether or not it actually needed any of it.",
+        "Only one worker ever needed extra room in the first place, and even after its own share grew, that share still fell well short of what it would actually take to stop running short entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Put the two full runs next to each other: the version with modest room to work with, and the version with four times as much.",
+        "For the worker that matters, the two outcomes land almost on top of each other.",
+        "And for everyone else, nothing changed at all, in either direction."
+      ]
+    },
+    {
+      "lines": [
+        "So one moment of running short produces two separate numbers worth reading on their own terms.",
+        "And handing out more room evenly across the board is a weak answer to one worker holding on to far more than its own fair share."
+      ]
+    }
+  ]
+}

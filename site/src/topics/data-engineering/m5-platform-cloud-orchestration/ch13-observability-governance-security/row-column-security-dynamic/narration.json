@@ -3,82 +3,75 @@
   "steps": [
     {
       "lines": [
-        "A shop masks one column on its customers table for the analyst role, so an analyst never sees a raw email address.",
-        "And yet an analyst keeps recovering real addresses anyway. They tried three different paths to get there. Before I tell you which one actually worked, think about which of those three the mask should have stopped."
+        "The email column is supposedly masked for anyone on the analyst team, and somehow an analyst still gets the real addresses.",
+        "Three different queries ran. One filtered straight on the masked column. One hit a table built from a copy of the data. One read a file straight out of storage. Which of those did the masking actually cover, and which one slipped past it?"
       ]
     },
     {
       "lines": [
-        "So, three paths. A query that reads the masked column, straight, through the normal table. A query against a table someone built earlier, derived from that same data. And a read of the file sitting underneath all of it, in storage.",
-        "Which of those three does the mask actually cover? Just the first? All three? Work it out before I go on."
+        "Here's the line that actually matters, and it's worth drawing clearly.",
+        "A filter written into the application only protects whoever's request goes through that particular application.",
+        "A policy written into the engine itself applies to every single query against that table, no matter who sends it or what tool they're using."
+      ]
+    },
+    {
+      "lines": [
+        "So try this one before I tell you.",
+        "A table holds three thousand customer rows, and there's no row-security policy on it yet. Query it as the role that's eventually going to be restricted. How many rows come back?"
       ],
       "answer": [
-        "Only the first one. The mask is attached to a column on the live table, and it's checked only when the engine runs a query against that exact table.",
-        "A table built earlier from that data, and a file read straight from storage, never go anywhere near that check. Neither one ever asks the engine anything at all."
+        "Every single one of them. A role's name alone restricts nothing — nothing has actually told the engine to hold anything back yet.",
+        "Until a policy exists on that table, whatever grants that role holds just apply, in full."
       ]
     },
     {
       "lines": [
-        "Here's the distinction underneath all of this.",
-        "The policy doesn't live in some application's own code, checking requests as they come in. It lives inside the engine itself, checked at the exact place a row or a column actually gets read.",
-        "An application-side check only ever protects the requests that happen to go through that one application. Put the check inside the engine instead, and it doesn't matter who's asking — every single caller runs into it."
+        "And that's exactly what happens when it's actually run.",
+        "With no policy anywhere in sight, that role's query comes back with the entire table — all three thousand rows, measured directly."
       ]
     },
     {
       "lines": [
-        "Let's get concrete about how one real system actually does this.",
-        "Postgres runs a row policy's own condition against every row before it even looks at anything the user themselves asked for. There's exactly one kind of exception: a function the system can prove will never leak anything, which the planner's allowed to run earlier.",
-        "And three kinds of people skip the policy outright: a superuser, a role marked to bypass it specifically, and ordinarily, whoever owns the table in the first place."
+        "Here's what a row-security policy actually is, underneath all the vendor terminology.",
+        "It's a yes-or-no expression the engine checks against every single row, and it runs before whatever the user's own query asked for.",
+        "There's exactly one carve-out — a function proven mathematically incapable of leaking anything might get run a touch earlier by the optimizer. Everything else waits its turn."
       ]
     },
     {
       "lines": [
-        "Now, that same idea shows up under five completely different names, depending on which system you're in.",
-        "Snowflake calls it masking and row-access policies. Databricks calls it row filters and column masks. BigQuery calls it row-level security. AWS calls it a data filter. Trino hands the whole decision off to a separate policy engine.",
-        "Strip away each one's own vocabulary, and it's the same single idea underneath every time: a rule, evaluated by the engine, right when something gets read."
-      ]
-    },
-    {
-      "lines": [
-        "None of this comes for free, though — it shows up in the query's own plan.",
-        "Push the policy down into the scan itself, and the engine only ever touches the rows the policy was going to let through anyway. Don't push it down, and the engine scans every single row first, then throws most of them away afterward.",
-        "And here's a sneaky one: if a result got cached before anyone added the mask, that cache is now quietly handing back the exact values the mask exists to hide."
-      ]
-    },
-    {
-      "lines": [
-        "First of the paths around all of this: a table someone built from the data, before the mask ever existed.",
-        "That table just keeps serving whatever values it was built with. As far as the engine's concerned, it's not connected to the original column's mask at all anymore — it's simply a table, full stop."
-      ]
-    },
-    {
-      "lines": [
-        "Second path: an export, taken out of the system at some point in the past.",
-        "That export is just a copy now. The policy was never written to reach a copy sitting somewhere else — it only ever governs a query running against the one live table it's actually attached to."
-      ]
-    },
-    {
-      "lines": [
-        "And the third, maybe the most direct of all: reading the file itself, straight off of storage.",
-        "There's no query happening there at all, which means the engine is never even in the picture — and if the engine's never asked, there's nothing left standing in the way except whatever's encrypting that file in the first place."
-      ]
-    },
-    {
-      "lines": [
-        "So, pulling all of that together.",
-        "An engine-side check beats an application-side one because it reaches every single caller, not just the ones going through one particular app. Five different systems, one shared idea underneath, each with its own real cost sitting in the plan.",
-        "And three separate paths — an old derived table, an old export, a direct read of the file — sit completely outside anything any of that policy ever touches."
-      ]
-    },
-    {
-      "lines": [
-        "One more time, with a slightly different setup.",
-        "A mask gets added to a column today. An export was taken a month back. A table built from the data was last refreshed just yesterday — the day before today's mask went on.",
-        "Right now, at this moment: does just the export carry unmasked values, or does the refreshed table carry them too?"
+        "Same test, new twist. Work it out first.",
+        "Put a policy on that table limiting this role to one region — which happens to be a third of the rows. Run the exact same query again. Nothing about the query itself changed. How many rows this time?"
       ],
       "answer": [
-        "Both of them do. What matters isn't how recent the refresh was — it's whether the refresh happened before or after the mask existed.",
-        "Yesterday is still before today, so that table's last refresh ran before the mask went on. It picked up exactly the same unmasked values the month-old export did."
+        "Exactly whatever the policy allows — full stop.",
+        "The policy gets checked whether or not the query's own conditions ever mention it. The query never had to ask for anything; the engine asked on its own."
+      ]
+    },
+    {
+      "lines": [
+        "And sure enough: the identical query, not touched at all, now comes back with exactly one thousand rows out of the three thousand that exist.",
+        "The policy decided that. The query had nothing to do with it."
+      ]
+    },
+    {
+      "lines": [
+        "Now look at what actually happened under the hood, not just at the row count.",
+        "Read the plan the engine chose before any policy existed, and there's no extra step in it at all. Read the plan again after the policy goes on, and a whole new step shows up — a Filter.",
+        "Whenever an engine has to choose between running fast and keeping something secret, it chooses secret, every time, even when that costs more."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing worth knowing, because it closes the loop on the Hook.",
+        "A superuser account — the kind that's allowed to bypass this entire mechanism by design — still sees all three thousand rows, measured directly, policy or no policy.",
+        "Reading the underlying file straight off disk works exactly the same way. So does a copy someone already pulled out, or a view built on top that nobody thought to protect. None of those ever ask the engine anything in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it.",
+        "A policy inside the engine runs before the query, covers every caller, and can genuinely cost something to run — all three measured directly.",
+        "None of that reaches whoever never had to go through the engine at all. That gap is exactly where the Hook's leak came from."
       ]
     }
   ]

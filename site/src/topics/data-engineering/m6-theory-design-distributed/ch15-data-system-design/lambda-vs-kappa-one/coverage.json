@@ -1,0 +1,57 @@
+{
+  "topic": "de.lambda-vs-kappa-one",
+  "syllabus": [
+    {
+      "clause": "design the same pipeline both ways",
+      "at": [{ "step": "Reveal: the same pipeline, two designs" }]
+    },
+    {
+      "clause": "argue reprocessing cost",
+      "at": [{ "step": "Reveal: the reprocessing-cost crossover" }]
+    },
+    {
+      "clause": "dual-logic drift and correctness",
+      "at": [{ "step": "Reveal: dual-logic drift, measured" }, { "step": "Reveal: a unified engine reduces drift, doesn't remove it" }]
+    },
+    {
+      "clause": "and when a separate batch correction layer still earns its complexity (§3.3)",
+      "at": [{ "step": "Reveal: when a batch layer still earns its complexity" }, { "step": "Reveal: the decision, stated as thresholds" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Jay Kreps — \"Questioning the Lambda Architecture\" (O'Reilly Radar, 2014)",
+      "items": [
+        { "item": "Maintaining code that must produce the same result in two complex distributed systems is exactly as painful as it seems, and not fixable.", "at": [{ "step": "Reveal: dual-logic drift, measured" }] },
+        { "item": "Retaining the full log and replaying it through a second instance of the same code is the proposed alternative to Lambda.", "at": [{ "step": "Reveal: the same pipeline, two designs" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink documentation — \"Execution Mode (Batch/Streaming)\"",
+      "items": [
+        { "item": "A DataStream application executed over bounded input produces the same final results regardless of streaming or batch mode.", "at": [{ "step": "Reveal: a unified engine reduces drift, doesn't remove it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "Kappa's reprocessing cost and Lambda's are each a computed number, not a default choice made out of habit.", "at": [{ "step": "Reveal: the reprocessing-cost crossover" }] },
+      { "item": "Two code paths that must agree will drift; a unified engine reduces the drift without removing the second path.", "at": [{ "step": "Reveal: a unified engine reduces drift, doesn't remove it" }] },
+      { "item": "A batch layer earns its place by a threshold computed from the shop's own numbers, not by habit.", "at": [{ "step": "Reveal: the decision, stated as thresholds" }] },
+      { "item": "A single code path can't drift from itself, but it still has a real reprocessing cost and a real retention limit.", "at": [{ "step": "Predict: when is ripping out the batch layer right?" }] },
+      { "item": "A huge-historical-dimension join is one of the four named conditions that justify a batch layer, so the request maps onto an existing threshold.", "at": [{ "step": "Prove it: a Kappa pipeline hits a huge-dimension join" }] },
+      { "item": "Extending a log's retention window trades directly against storage cost and throughput, and still can't join against a dimension the log was never built to hold.", "at": [{ "step": "Prove it: a Kappa pipeline hits a huge-dimension join" }] },
+      { "item": "This topic leaves out Lambda and Kappa as architectures, the engines themselves, the correctness mechanisms, the clickstream reconciliation design, and the general choice of shape.", "at": [{ "deep": "Internals" }] },
+      { "item": "Lambda, Kappa, and unified batch/stream engines are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic gives the shop its Lambda-versus-Kappa decision; the next design must serve two continents, with where data lives and what crossing a border costs.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A streaming job and a batch job that must produce the same number will diverge the moment their rules differ even slightly.", "at": [{ "step": "Hook: two pipelines, two different answers" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

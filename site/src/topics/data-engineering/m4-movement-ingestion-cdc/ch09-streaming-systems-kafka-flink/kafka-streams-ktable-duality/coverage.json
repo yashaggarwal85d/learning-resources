@@ -1,0 +1,158 @@
+{
+  "topic": "de.kafka-streams-ktable-duality",
+  "syllabus": [
+    {
+      "clause": "a library, not a cluster: tasks per input partition, local state stores backed by compacted changelog topics, standby replicas, exactly-once v2",
+      "at": [
+        { "step": "Reveal: one task per partition, an assignment that never changes" },
+        { "step": "Reveal: excess application instances just sit idle" },
+        { "step": "Reveal: local state stores backed by a compacted changelog topic" },
+        { "step": "Reveal: a warm standby replaces a full replay with a small gap" },
+        { "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }
+      ]
+    },
+    {
+      "clause": "stream-table duality",
+      "at": [{ "step": "Reveal: the stream-table duality" }]
+    },
+    {
+      "clause": "the Streams rebalance protocol",
+      "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+    },
+    {
+      "clause": "ksqlDB as the SQL layer on top (Confluent Community License, no longer accepting community contributions)",
+      "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Architecture (Apache Kafka Streams, 4.4 docs)",
+      "items": [
+        {
+          "item": "Kafka Streams creates a fixed number of tasks based on input partitions, and the assignment of partitions to tasks never changes",
+          "at": [{ "step": "Reveal: one task per partition, an assignment that never changes" }]
+        },
+        {
+          "item": "Kafka Streams is not a resource manager, but a library that runs anywhere its stream processing application runs",
+          "at": [{ "step": "Hook: a library, not a cluster" }]
+        },
+        {
+          "item": "each state store maintains a replicated, partitioned, log-compacted changelog Kafka topic tracking state updates",
+          "at": [{ "step": "Reveal: local state stores backed by a compacted changelog topic" }]
+        },
+        {
+          "item": "standby replicas are fully replicated copies of local state kept to minimize task reinitialization cost on migration",
+          "at": [{ "step": "Reveal: a warm standby replaces a full replay with a small gap" }]
+        }
+      ]
+    },
+    {
+      "source": "Core Concepts (Apache Kafka Streams, 4.4 docs)",
+      "items": [
+        {
+          "item": "there is a close relationship between streams and tables, the stream-table duality",
+          "at": [{ "step": "Reveal: the stream-table duality" }]
+        },
+        {
+          "item": "Kafka Streams models the stream-table duality explicitly via the KStream, KTable, and GlobalKTable interfaces",
+          "at": [{ "step": "Reveal: the stream-table duality" }]
+        },
+        {
+          "item": "exactly-once v2, since 2.6.0, is more efficient than the original implementation, deprecated as of 3.0.0",
+          "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+        }
+      ]
+    },
+    {
+      "source": "Streams Rebalance Protocol (Apache Kafka Streams, 4.4 docs)",
+      "items": [
+        {
+          "item": "the Streams Rebalance Protocol is enabled by default on new clusters starting with Apache Kafka 4.2",
+          "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+        },
+        {
+          "item": "warmup task support is not implemented yet",
+          "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+        }
+      ]
+    },
+    {
+      "source": "Configuring a Streams Application (Apache Kafka Streams, 4.4 docs)",
+      "items": [
+        {
+          "item": "Kafka Streams uses RocksDB as the default storage engine for persistent stores",
+          "at": [{ "step": "Reveal: local state stores backed by a compacted changelog topic" }]
+        }
+      ]
+    },
+    {
+      "source": "Confluent Community License FAQ (Confluent)",
+      "items": [
+        {
+          "item": "the license change applies to Confluent Schema Registry, REST Proxy, ksqlDB, and some Connectors, excluding a competing SaaS offering",
+          "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+        }
+      ]
+    },
+    {
+      "source": "CONTRIBUTING.md (confluentinc/ksql repository, GitHub)",
+      "items": [
+        {
+          "item": "ksqlDB's own repository states it is no longer accepting contributions from the community",
+          "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Presenting task-per-partition parallelism and idle excess instances as two separate reveals, rather than folding them into one, makes clear that the partition count is a hard ceiling on parallelism while extra instances still have genuine value as failover capacity, not processing capacity.",
+        "at": [{ "step": "Reveal: one task per partition, an assignment that never changes" }]
+      },
+      {
+        "item": "Backing a local state store with a compacted changelog topic is the exact same mechanism topic 6 covered in the abstract — this topic's framing is deliberately that it's the same idea shown as the thing a real system is actually built on, not a new idea of its own.",
+        "at": [{ "step": "Reveal: local state stores backed by a compacted changelog topic" }]
+      },
+      {
+        "item": "A standby replica's value is best understood through the specific cost it eliminates — the replay of a task's entire changelog history — rather than as a vague 'faster recovery' claim; the toy model's own measured speedup makes that specific mechanism concrete.",
+        "at": [{ "step": "Reveal: a warm standby replaces a full replay with a small gap" }]
+      },
+      {
+        "item": "The stream-table duality reveal is this topic's center of gravity by design — everything else (tasks, state stores, standbys, exactly-once) is infrastructure in service of that one idea, which is why it's the step this topic's own takeaway and the chapter's cross-topic framing both anchor to.",
+        "at": [{ "step": "Reveal: the stream-table duality" }]
+      },
+      {
+        "item": "Naming ksqlDB's licence restriction precisely (excludes a competing SaaS offering, not general commercial use) rather than vaguely (\"restricted license\") matters because the imprecise version would wrongly suggest ksqlDB can't be run in an ordinary production deployment, which the source directly contradicts.",
+        "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+      },
+      {
+        "item": "This topic's hook (what changes with no cluster at all) and the recap's close (no cluster, just a library) are the same observation made twice — first as an open question, then as the settled answer every reveal in between built toward.",
+        "at": [{ "step": "Hook: a library, not a cluster" }]
+      },
+      {
+        "item": "The toy task-assignment, stream-table, and standby-recovery models are deliberately simplified standalone demonstrations, not ports of Kafka Streams' actual StreamsPartitionAssignor or RocksDB-backed state store internals, and every figure shown is this run's own measured output, not a cited Kafka benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic uses topic 24's dynamic-table changelog modes directly as the comparison point for the stream-table duality, rather than reopening what a changelog mode is — the duality here is the same relationship from a library's, rather than a cluster's, point of view.",
+        "at": [{ "step": "Setup: SQL formalised streams as tables, run by a cluster" }]
+      },
+      {
+        "item": "Citing both the Confluent Community License FAQ and ksqlDB's own repository CONTRIBUTING.md, rather than either alone, triangulates the licence and contribution-status claims from two independent primary sources instead of resting on one.",
+        "at": [{ "step": "Reveal: exactly-once v two, and a rebalance protocol still filling gaps" }]
+      },
+      {
+        "item": "This topic deliberately leaves the lakehouse and real-time OLAP destinations unexplored beyond naming them as what's next — every engine in this chapter eventually has to put its output somewhere queryable, and that's large enough to need its own topics.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

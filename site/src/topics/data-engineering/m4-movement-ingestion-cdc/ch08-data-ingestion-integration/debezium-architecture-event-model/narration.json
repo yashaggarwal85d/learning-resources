@@ -1,0 +1,83 @@
+{
+  "topic": "de.debezium-architecture-event-model",
+  "steps": [
+    {
+      "lines": [
+        "A team reading a Debezium topic simplifies it for whatever sink is downstream, keeping only the actual column values each record carries.",
+        "The field that named what kind of change each record actually was goes along with everything else that gets stripped away.",
+        "From that point on, a row that just finished catching up during a fresh snapshot looks exactly the same as a row that was genuinely just inserted."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what that simplified record actually looks like, think through this with me.",
+        "Once a record has been stripped down to just its own column values, with nothing else attached.",
+        "Can whatever reads that record still tell a snapshot catching up apart from a brand-new row actually being inserted?"
+      ],
+      "answer": [
+        "The column values by themselves carry no memory of how that row came to exist in the first place.",
+        "Both cases now look identical, because the one field that ever distinguished them is exactly the field that got thrown away."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something worth knowing before looking at a single field of any event.",
+        "This capture tool can actually run in three genuinely different shapes, not just one.",
+        "It can run as a connector inside a shared cluster, as its own standalone application with no cluster at all, or as a plain library embedded directly inside somebody's own code."
+      ]
+    },
+    {
+      "lines": [
+        "I confirmed the shape of a full event directly, against a real decoded change from this sandbox's own database.",
+        "A freshly inserted row carried nothing at all in the slot meant for what the row looked like beforehand, since there was no before state to carry.",
+        "An updated row carried real values in both the before slot and the after slot, exactly as the full card promises."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's exactly what gets thrown away when a team simplifies that full card.",
+        "The simplifying step keeps only the after values and throws the entire rest of the card away by default.",
+        "So the row's own earlier state, what kind of change it was, and where it came from are all gone unless a team explicitly configures the step to keep them."
+      ]
+    },
+    {
+      "lines": [
+        "I measured that simplifying step directly, against a real card built from this sandbox's own database.",
+        "Simplifying a real update left behind nothing but its column values, with no trace of where it came from or what kind of change it was.",
+        "A real deleted row, simplified the same way, didn't disappear outright — it came through as its last known values plus a flag marking it as gone."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one setting that actually decides whether a sink can safely see the same event twice.",
+        "Telling the sink to either update an existing row or insert a brand-new one, depending on whether that row's key already exists, is what makes its writes safe to repeat.",
+        "With that setting on, sending the exact same event through a second time leaves the destination table in exactly the state it was already in."
+      ]
+    },
+    {
+      "lines": [
+        "I put that exact claim to the test, against a real sink table in the real database.",
+        "I sent one simplified record through to that table, then sent the identical record through again right afterward.",
+        "The row ended up in the exact same state after both attempts, and the table never grew a second row out of that repeat."
+      ]
+    },
+    {
+      "lines": [
+        "Let's pull together what today actually covered, because four separate pieces fit into one picture.",
+        "There are three different shapes this capture tool can run in, one shared card every one of them produces, and a simplifying step that trades fields away for less to carry.",
+        "A sink only stays safe to replay because of one specific setting, never automatically, and that's the whole thread running through today."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, because a team might assume every sink behaves the same way by default.",
+        "Say a team sets up a sink and never explicitly turns on that update-or-insert setting at all.",
+        "Sending one already-applied event through that sink a second time — is the destination table still guaranteed to end up in the same state?"
+      ],
+      "answer": [
+        "Nothing about a sink is safe to repeat by default — that guarantee only ever came from one specific setting, turned on deliberately.",
+        "Without it, sending the same event through twice can easily insert a second, duplicate row instead of correcting the one that's already there."
+      ]
+    }
+  ]
+}

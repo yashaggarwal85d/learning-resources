@@ -1,0 +1,7 @@
+- **Outlier**: a value far enough from its neighbors to be suspect. *Where you meet it:* the spike detector's target.
+- **Flatline**: a signal that stops varying when it should keep varying. *Where you meet it:* the hook's furnace and the windowed variance check.
+- **Rate of change**: how fast a value moves per unit time. *Where you meet it:* one of the per-point rules this topic names but scores separately from the matrix headline.
+- **Change point**: a timestamp where a signal's statistical level shifts. *Where you meet it:* the firmware-update fault.
+- **Median absolute deviation (MAD)**: a robust measure of spread, resistant to the outlier it's checking for. *Where you meet it:* the spike detector.
+- **Quarantine**: a holding area for suspect data that isn't deleted. *Where you meet it:* every flagged point in this topic's pipeline.
+- **Quality flag**: a status attached to a value (good/suspect/bad) instead of a deletion. *Where you meet it:* OPC UA's own StatusCode convention, adapted here.

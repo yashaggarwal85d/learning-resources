@@ -1,0 +1,64 @@
+{
+  "topic": "de.pyspark-execution-python-udf-cost",
+  "steps": [
+    {
+      "lines": [
+        "Last topic, three separate operators collapsed into a single generated method, running entirely inside the JVM, start to finish.",
+        "Picture swapping one of those three for something Spark didn't write itself: a function you wrote, in ordinary Python.",
+        "Does that generated method simply keep going, or does something underneath it give out completely?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real commitment before the next reveal.",
+        "Generating code means writing out actual source and compiling it. Can that process reach into something it was never given the source of in the first place?",
+        "Think about what's actually sitting inside that generated file by the time it's handed to a compiler."
+      ],
+      "answer": [
+        "It's tempting to assume codegen can generate a call into anything, Python included.",
+        "But codegen generates Java bytecode. It has no way to reach into a Python function's own body and inline it, so fusion simply stops cold the moment it hits one.",
+        "A Python function isn't a slower operator to fuse around. It's a complete gap codegen can't see past at all."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and sourced directly from Spark's own code this time, not just observed behavior.",
+        "A pickled Python UDF's own execution path pickles every single row by itself, one at a time, specifically to send it across into a separate Python process.",
+        "That's the real mechanism behind the gap you're about to see measured directly."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the identical computation three separate ways, on the same three million rows.",
+        "The built-in expression is fastest, by a wide margin, since it never leaves the JVM at all.",
+        "The Arrow-based UDF comes in several times slower than that. And the plain pickled UDF is slower again than the Arrow one, the slowest of the three by a clear margin."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, and it's the sharper question here.",
+        "Both the Arrow UDF and the pickled UDF leave the JVM to run actual Python code. So why is the Arrow one still so much faster, if both of them cross that same line?",
+        "Resist the easy answer about format alone. Think about how often each one actually crosses."
+      ],
+      "answer": [
+        "It's easy to assume Arrow just uses some faster encoding for the same per-row crossing.",
+        "But that's not the real story. Arrow hands over an entire batch of rows in one crossing. Pickling crosses that same boundary once for every single row, one at a time.",
+        "The expensive part isn't the format. It's how many times you pay for it."
+      ]
+    },
+    {
+      "lines": [
+        "Measured and sourced together, confirming the same mechanism from two directions.",
+        "Arrow's own documentation states it directly: vectorised transfer, a whole batch at once, not row by row.",
+        "That single structural difference, batch versus row, is the entire reason behind the gap you measured a moment ago."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the full picture, named precisely.",
+        "A built-in expression stays fully fused inside codegen's own loop, and it's fastest because of it. An Arrow UDF crosses the boundary once per batch. A pickled UDF crosses it once per row, and pays that cost every single time.",
+        "Reach for a built-in expression first. Reach for an Arrow UDF second. And keep a pickled UDF off of anything that actually runs often."
+      ]
+    }
+  ]
+}

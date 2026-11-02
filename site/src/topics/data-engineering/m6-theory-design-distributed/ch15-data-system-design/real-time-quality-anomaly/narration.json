@@ -1,0 +1,80 @@
+{
+  "topic": "de.real-time-quality-anomaly",
+  "steps": [
+    {
+      "lines": [
+        "A reading drifts far from its baseline, the detector fires, and a supervisor stops the line over what was genuinely just the normal ramp after a changeover.",
+        "That same false alarm keeps firing all week, until the supervisors stop acting on it entirely, the way anyone eventually tunes out a noise that never means anything.",
+        "Then a slow drift arrives, genuinely the one fault that mattered, and it quietly folds right into the baseline without ever once triggering an alarm."
+      ]
+    },
+    {
+      "lines": [
+        "Notice that one failure was firing on something harmless, and the other was staying silent on something that actually mattered; those aren't the same mistake.",
+        "What did the design actually get wrong in both directions, and what would a backtest genuinely have shown before any of this ever went live?"
+      ],
+      "answer": [
+        "A looser threshold on the exact same rule still fires on the ramp, or still misses the drift; the number alone was never the real problem.",
+        "The baseline adapted into a fault it should have flagged, and the ramp genuinely needed suppression, not a detector tuned to ignore it a little less."
+      ]
+    },
+    {
+      "lines": [
+        "A line-quality dashboard tolerates seconds of delay, since it's only ever aggregating over a window anyway.",
+        "A detector flagging a live measurement has no such patience; what matters there is catching the flag itself, not the exact number attached to it.",
+        "What an operator actually does once a flag fires is what sets the real cost of a false alarm against a missed one."
+      ]
+    },
+    {
+      "lines": [
+        "An exponentially weighted average discounts older data as it goes, which is exactly why it adapts smoothly into whatever the series does next.",
+        "A seasonal baseline learns the shift, day, and week pattern a line normally follows, so a routine ramp never looks unusual to it at all.",
+        "A fixed control-chart limit catches a sudden jump reliably, precisely because it never moves, which is also exactly why it assumes nothing else ever will either."
+      ]
+    },
+    {
+      "lines": [
+        "Every single series out there needs its own baseline state, kept independently in the stream engine's own memory.",
+        "A series that just appeared, with barely any history behind it yet, genuinely can't be trusted to alarm on anything at all.",
+        "So it stays quiet under a cold-start policy until it actually earns a baseline, or it briefly borrows one from a similar machine nearby."
+      ]
+    },
+    {
+      "lines": [
+        "The same condition firing over and over gets folded into one single alert with its own duration, rather than repeating endlessly.",
+        "Alerts that genuinely share one root cause get grouped together under the asset hierarchy, the same grouping idea a data-quality platform already uses for lineage.",
+        "A changeover window gets suppressed on purpose, because that ramp was never the anomaly anyone actually needed to hear about."
+      ]
+    },
+    {
+      "lines": [
+        "A detector earns trust by its own precision, and by how much of what it actually flags an operator bothers to act on.",
+        "A detector nobody trusts anymore is genuinely worse than having no detector at all, since it still costs attention while returning nothing useful."
+      ]
+    },
+    {
+      "lines": [
+        "Before any detector goes live, it gets replayed straight through history and scored against incidents someone already labelled by hand.",
+        "Thresholds get tuned against one period and then genuinely tested against a later one the tuning never touched at all.",
+        "That's what would have caught both of this topic's own failures before a single supervisor ever had to live through either one."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually closed the gap between a false alarm nobody trusted and a real fault nobody heard: three baselines, each matched to the failure shape it actually suits, and grouping and suppression that keep an alert worth acting on.",
+        "And a backtest that proves all of it before anything ever goes live."
+      ]
+    },
+    {
+      "lines": [
+        "The series count here grows by a full order of magnitude.",
+        "Each baseline stays exactly as accurate as before, since every series genuinely keeps its own independent state built from nothing but its own history.",
+        "So what's actually the next bottleneck?"
+      ],
+      "answer": [
+        "More series doesn't thin out any single series's own history, so accuracy itself was never actually at risk here.",
+        "What genuinely grows right along with the series count is the per-series state's own memory footprint and how fast new series churn through a cold start."
+      ]
+    }
+  ]
+}

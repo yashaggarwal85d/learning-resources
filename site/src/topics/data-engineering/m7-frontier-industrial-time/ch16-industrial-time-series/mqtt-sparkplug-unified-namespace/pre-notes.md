@@ -1,0 +1,8 @@
+- **Publish-subscribe**: a publisher sends to a broker, decoupled from whoever's listening. *Where you meet it:* MQTT's whole model, and the reason OPC UA's PubSub (topic 16) and this topic share the idea.
+- **Broker**: the server that routes published messages to subscribers by topic. *Where you meet it:* the Mosquitto broker this topic runs for real.
+- **Topic**: a named channel a message is published to and subscribed from. *Where you meet it:* MQTT topics and the Sparkplug namespace built on top of them.
+- **QoS (quality of service)**: the delivery guarantee a publish or subscribe asks for. *Where you meet it:* the measured difference between QoS 0 and QoS 1 under a killed connection.
+- **Retained message**: the broker's own stored last value for a topic, handed to a new subscriber. *Where you meet it:* why a dead node's dashboard kept showing an old reading.
+- **Last will**: a message a client registers that the broker publishes if its connection dies ungracefully. *Where you meet it:* the death certificate for a node that loses power.
+- **Protobuf**: a binary serialization format with a declared schema (Chapter 6). *Where you meet it:* the Sparkplug B payload format, used here only as a payload, not re-taught.
+- **Sequence number**: a counter in every message a sender can use to detect a gap. *Where you meet it:* Sparkplug's NDATA sequence, and the detector that watches for a skip.

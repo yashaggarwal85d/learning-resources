@@ -1,0 +1,74 @@
+{
+  "topic": "de.representative-data-workload-skew",
+  "steps": [
+    {
+      "lines": [
+        "The shop's own benchmark from last time came back looking wonderfully clean, a flat, even latency distribution with no hot spots anywhere in sight.",
+        "That very same week, the shop's real traffic told a completely different story, with a tiny sliver of customers generating nearly a third of every single lookup.",
+        "One tidy benchmark. One real traffic shape that benchmark never actually looked like."
+      ]
+    },
+    {
+      "lines": [
+        "So what exactly did that benchmark's own data get wrong, and what single change to how it was generated would actually fix it.",
+        "Was the query itself somehow broken, or was something else entirely to blame."
+      ],
+      "answer": [
+        "The query was always fine.",
+        "What was wrong was the data feeding it. Picking a customer id uniformly at random spreads load evenly across every single customer, which real traffic simply never does.",
+        "Swap that for a seeded, skewed generator instead, and the real hot-key shape comes right back on the exact same query."
+      ]
+    },
+    {
+      "lines": [
+        "Here is that same uniform baseline, confirmed.",
+        "Same query, same load shape, a customer id picked uniformly at random. Every customer carries roughly the same number of orders, and the lookup runs equally fast no matter who you ask for."
+      ]
+    },
+    {
+      "lines": [
+        "Now swap in a seeded, skewed generator, and change absolutely nothing else about the query or the load.",
+        "Suddenly, one busiest customer is carrying a wildly disproportionate share of all the orders.",
+        "And looking that customer up takes measurably longer than looking up anyone else. The hot key was sitting there the entire time. The uniform data was simply hiding it."
+      ]
+    },
+    {
+      "lines": [
+        "A query planner that assumes every column is independent of every other one runs into real trouble here.",
+        "Make two columns genuinely correlated, say one deciding the other outright, and that planner's own row-count estimate comes out badly wrong.",
+        "Run the identical query shape over two columns that are truly independent instead, and the very same planner's estimate lands far closer to the truth."
+      ]
+    },
+    {
+      "lines": [
+        "Next, the dataset's own size gets stated plainly, as an actual number, rather than left for anyone to guess at.",
+        "That is exactly the same convention an entire industry's own benchmark standards lean on, so that one person's result can be honestly compared against someone else's."
+      ]
+    },
+    {
+      "lines": [
+        "Finally, the very generator that produced both the skew and the correlation gets committed as a real, reusable piece of code, not thrown away after one run.",
+        "Give it that same seed again, run it twice, completely separately, and it produces byte for byte identical data both times.",
+        "That is what actually makes a benchmark's own data reproducible by anyone else who picks it up later."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling this together now.",
+        "Uniform data quietly hides both a hot key and a correlation that breaks a cardinality estimate.",
+        "A seeded, skewed generator, an explicit stated size, and a committed, reproducible generator together turn a toy benchmark into something that actually resembles the real thing."
+      ]
+    },
+    {
+      "lines": [
+        "A benchmark comes back reporting a perfectly clean result, measured entirely on synthetic data built from independent, uniformly random columns.",
+        "Should that clean result be trusted for a real production workload, one whose actual columns are skewed and correlated."
+      ],
+      "answer": [
+        "Not without running it again on data that actually looks like the real thing.",
+        "A clean result on independent, uniform data is not really a result about production at all. It is only ever a result about independent, uniform data.",
+        "This very lesson just showed both of those failure modes directly: a hot key completely invisible under a uniform key, and a cardinality estimate that only breaks once the columns underneath it are genuinely correlated."
+      ]
+    }
+  ]
+}

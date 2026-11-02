@@ -1,0 +1,86 @@
+{
+  "topic": "de.parquet-file-anatomy",
+  "steps": [
+    {
+      "lines": [
+        "What you're looking at is a real file on disk, assembled one structure at a time, with nothing but a plain text-processing language doing the writing.",
+        "No library wrote this. Every byte in it was placed there deliberately, following the format's own published rules.",
+        "That's what lets us trust what comes next: every number this reel shows is read back out of these exact bytes, not asserted from memory."
+      ]
+    },
+    {
+      "lines": [
+        "Before a reader can make sense of a single row, it needs the schema: the column names, their types, where each one's data actually lives in the file.",
+        "So here's the question worth pausing on: does a format like this put that schema at the very front, or does it make you read to the end first?",
+        "Think about what each choice would cost a writer that's streaming data out as it's produced, unable to go back and revise what it already wrote."
+      ],
+      "answer": [
+        "It's the end, and that's not an accident — it's forced by how the file gets produced in the first place.",
+        "A writer streaming rows out doesn't know the final byte offset of every column chunk until it has actually written every column chunk.",
+        "Put the schema first and you'd need to know all of that in advance, or go back and rewrite the start of the file. Put it last, and one forward pass is all it ever takes."
+      ]
+    },
+    {
+      "lines": [
+        "So that's exactly what happens: every row group, every column chunk, every page gets written first, in one unbroken forward pass.",
+        "Only once all of that data is down does the format append its footer — the schema, every offset, every row count — as the very last thing in the file.",
+        "A storage system that can only be appended to, never edited in place, can still produce a file with a table of contents. It just has to put that table of contents at the end instead of the start."
+      ]
+    },
+    {
+      "lines": [
+        "Now that the footer exists, we can use it the way any real reader would: to find out what's actually inside this file, without guessing.",
+        "It describes two row groups, each one a horizontal slice of the table, and each row group holding one chunk for every one of five columns.",
+        "Two rows landed in each group, four rows in the file altogether — a small table, but the same shape a file with billions of rows would use."
+      ]
+    },
+    {
+      "lines": [
+        "One of those five columns is a status field, and across every row in this file it only ever takes one of two words.",
+        "So here's the question: when the same short word shows up again and again down a column, does the file actually store that word's full text every single time?",
+        "Picture what a format built around columns, not rows, could do differently once it can see the whole column at once before deciding how to write it."
+      ],
+      "answer": [
+        "It doesn't repeat the text at all — it writes each distinct value exactly once, in its own small page, and then points to it.",
+        "A dictionary page lists the column's unique values a single time. The data page that follows no longer stores text — it stores a tiny index into that list, one per row.",
+        "Seeing the whole column before writing any of it is exactly what makes this possible. A row-at-a-time writer never gets that chance."
+      ]
+    },
+    {
+      "lines": [
+        "So that's the shape sitting in this file's first row group: a dictionary page holding the handful of distinct words, immediately followed by a data page of small indexes, one per row, pointing back into it.",
+        "Four rows, but no row's actual text is written out a fourth time — only once, in the dictionary, and four short pointers after it.",
+        "That's the trade a dictionary makes: a little indirection, in exchange for never paying to store the same value twice."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something this file can show you that no diagram can: the exact same column, one row group later, written a completely different way.",
+        "Open the page header for that second row group's status column and the very first field inside it — its declared type — has changed from what the first row group used.",
+        "The newer page format keeps one thing separate from everything else: the bookkeeping for how many values and nulls are in the page, apart from the value bytes themselves.",
+        "That separation means a reader can learn how many rows a page holds just from its header, without first decompressing a single value — the older format gives a reader no such shortcut."
+      ]
+    },
+    {
+      "lines": [
+        "Now for the column this chapter keeps warning about: a timestamp, stored in a type the format itself calls deprecated, and still found constantly in files written years ago.",
+        "Twelve raw bytes in this file encode one instant: part of them count nanoseconds since the start of a day, the rest count which day, in a calendar most engines never show you directly.",
+        "Decode those bytes assuming they mean one specific point on the universal clock, and you land exactly on the instant that was actually written. Decode the identical bytes assuming they're a local wall clock reading somewhere on the Pacific coast, and you land several hours away from that same instant."
+      ]
+    },
+    {
+      "lines": [
+        "That drift isn't a bug in either piece of decoding math — both readers did exactly what their assumption told them to do. The bug is that the format gave them nothing to check their assumption against.",
+        "The replacement type fixes that by adding one field the old type never had: a flag the writer is required to set, saying outright whether the stored number is a universal instant or a local clock reading.",
+        "Nothing about the encoding gets smarter. What changes is that the question stops being an assumption a reader has to bring with it, and becomes a fact already sitting in the file."
+      ]
+    },
+    {
+      "lines": [
+        "Pull back and the whole file is four layers, nested inside each other: the file holds row groups, a row group holds one chunk per column, and a column chunk holds one or more pages.",
+        "Every one of those leaf columns in the footer carries two labels at once: a physical type describing how its bytes are actually laid out, and a logical type describing what those bytes are supposed to mean.",
+        "The timestamp column that nearly went wrong is the clearest case for why both labels matter: the same twelve bytes, with no logical type attached, are just numbers a reader has to interpret alone."
+      ]
+    }
+  ]
+}

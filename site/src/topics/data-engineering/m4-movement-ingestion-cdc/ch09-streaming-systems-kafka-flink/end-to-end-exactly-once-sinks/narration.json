@@ -1,0 +1,85 @@
+{
+  "topic": "de.end-to-end-exactly-once-sinks",
+  "steps": [
+    {
+      "lines": [
+        "One small setting, quietly misaligned with another, and every single attempt starts failing the same way.",
+        "A staged write simply expires before anyone ever gets the chance to finish it.",
+        "And that keeps happening, checkpoint after checkpoint, completely unnoticed."
+      ]
+    },
+    {
+      "lines": [
+        "That earlier guarantee only reaches as far as one particular system's own walls.",
+        "Step outside those walls, to a database, a file, an outside API, and it stops applying entirely.",
+        "Whatever happens out there needs its own answer to the exact same problem."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A write gets staged, and right after that, the whole job goes down, before anything confirms it's done.",
+        "Is that staged write gone for good, duplicated somewhere, or neither of those?"
+      ],
+      "answer": [
+        "Neither one, and that's the whole point of staging it first.",
+        "It was already safely saved before anything went wrong.",
+        "Recovery just needs to notice that and finish the one step still left undone."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the shape that makes that safe: durable well before it's ever visible to anyone.",
+        "A crash landing in between those two moments changes nothing about the eventual outcome.",
+        "Recovery comes along, finds exactly what was left staged, and finishes it, exactly once."
+      ]
+    },
+    {
+      "lines": [
+        "There's a second way to get the same safety, with no staging step involved at all.",
+        "Give every write an id computed the same way every single time from its own contents.",
+        "Send that same write again, and it simply lands on top of itself, not beside it."
+      ]
+    },
+    {
+      "lines": [
+        "One detail decides whether any of this actually holds together end to end.",
+        "Where exactly does the record of how far along you've gotten get saved?",
+        "Save it anywhere separate from the write itself, and the old gap is right back open."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "Every mechanism described so far can be working exactly as intended, and this can still fail.",
+        "Name one real, specific way that happens."
+      ],
+      "answer": [
+        "A few genuinely different things can each do it on their own.",
+        "A retry that quietly computes something different than the first attempt did is one.",
+        "Something no database can ever undo, or a clock set wrong in just one place, are two more."
+      ]
+    },
+    {
+      "lines": [
+        "A retry that comes out differently than the original breaks the whole premise underneath it.",
+        "Something that reaches outside any database entirely simply can't be rolled back by one.",
+        "And a clock set too tight throws away a perfectly good write before it ever lands."
+      ]
+    },
+    {
+      "lines": [
+        "Every number shown in this reel came from one real run, happening just now, of this topic's own toy models.",
+        "The crash that lost nothing and duplicated nothing.",
+        "The retry that quietly became one single row, and the misconfigured run that lost every write it touched."
+      ]
+    },
+    {
+      "lines": [
+        "So: stage first and finalize later, or write by a repeatable id either one gets you there.",
+        "Keep the record of progress glued to the write it describes, not off on its own somewhere.",
+        "And remember that a few specific, ordinary things can still undo every bit of it."
+      ]
+    }
+  ]
+}

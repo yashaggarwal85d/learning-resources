@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Copy-on-write vs merge-on-read" domain="data-engineering" host="de.copy-on-write-vs" by="This chapter's fourteenth topic" />
+  <Resource kind="reel" title="Optimistic commits and conflict resolution" domain="data-engineering" host="de.optimistic-commits-conflict-resolution" by="This chapter's thirteenth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The deletion-vector section this topic quotes and reproduces.</Resource>
+  <Resource kind="reading" title="Puffin Spec" href="https://iceberg.apache.org/puffin-spec/" by="Apache Iceberg">The deletion-vector-v1 blob definition, including its stated Delta compatibility.</Resource>
+  <Resource kind="reading" title="What are deletion vectors?" href="https://docs.delta.io/delta-deletion-vectors/" by="Delta Lake">Delta's own deletion-vector mechanism and its compaction commands.</Resource>
+  <Resource kind="reading" title="Table and Query Types" href="https://hudi.apache.org/docs/table_types/" by="Apache Hudi">Hudi's own non-bitmap mechanism, log-file delete records.</Resource>
+  <Resource kind="reading" title="RoaringFormatSpec" href="https://github.com/RoaringBitmap/RoaringFormatSpec" by="RoaringBitmap">The real array/bitset container threshold this topic's deletion vector reuses.</Resource>
+</ul>
+
+</section>

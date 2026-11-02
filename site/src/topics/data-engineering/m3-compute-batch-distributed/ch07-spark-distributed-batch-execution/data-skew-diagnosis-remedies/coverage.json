@@ -1,0 +1,112 @@
+{
+  "topic": "de.data-skew-diagnosis-remedies",
+  "syllabus": [
+    {
+      "clause": "evidence (max vs median task duration and shuffle-read bytes, one straggler per stage); remedies in order: AQE skew-join splitting, broadcasting, isolating hot keys, salting with replicated small side, two-phase (partial then final) aggregation; where AQE's skew handling does not apply (aggregations, preserved side of outer joins, window functions).",
+      "at": [
+        { "step": "Reveal: a 12.2x bytes gap, one straggler task" },
+        { "step": "Reveal: no — the default threshold is bigger than the skew" },
+        { "step": "Elaborate: retuned to the data's scale, AQE splits it" },
+        { "step": "Reveal: yes — no shuffle left to skew" },
+        { "step": "Elaborate: isolate hot keys when the small side won't fit" },
+        { "step": "Reveal: salting works, but it isn't free" },
+        { "step": "Reveal: a combinable aggregate was never skewed at all" },
+        { "step": "Reveal: a non-combinable aggregate has nowhere to hide" },
+        { "step": "Elaborate: two-phase aggregation spreads the hot key out" },
+        { "deep": "Isolating hot keys without broadcasting the whole table" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Databricks engineering blog — Adaptive Query Execution: Speeding Up Spark SQL at Runtime",
+      "items": [
+        {
+          "item": "skew is detected automatically from shuffle file statistics, then skewed partitions are split into smaller subpartitions joined against the matching partition on the other side",
+          "at": [{ "step": "Elaborate: retuned to the data's scale, AQE splits it" }]
+        },
+        {
+          "item": "skew-join handling is one of the adaptive-execution-specific physical rules, run only once a shuffle stage has materialized",
+          "at": [{ "step": "Reveal: no — the default threshold is bigger than the skew" }]
+        }
+      ]
+    },
+    {
+      "source": "OptimizeSkewedJoin.scala (Apache Spark source, GitHub, tag v4.0.0)",
+      "items": [
+        {
+          "item": "a skewed partition's threshold is the median partition size times a skew factor, or an absolute floor, whichever is larger",
+          "at": [{ "step": "Reveal: no — the default threshold is bigger than the skew" }]
+        },
+        {
+          "item": "the rule's own purpose, stated in its doc comment: avoid straggler tasks whose data share is significantly larger than the rest",
+          "at": [{ "step": "Reveal: a 12.2x bytes gap, one straggler task" }]
+        },
+        {
+          "item": "optimizeSkewJoin pattern-matches exactly SortMergeJoinExec and ShuffledHashJoinExec and nothing else",
+          "at": [{ "step": "Reveal: a non-combinable aggregate has nowhere to hide" }]
+        }
+      ]
+    },
+    {
+      "source": "Spark SQL Performance Tuning docs — Adaptive Query Execution",
+      "items": [
+        {
+          "item": "the docs restate the skew-join feature as scoped specifically to sort-merge join",
+          "at": [{ "step": "Reveal: a non-combinable aggregate has nowhere to hide" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The preserved side of an outer join can be just as skewed as any join side, but AQE's skew-join rule only ever rewrites a SortMergeJoinExec/ShuffledHashJoinExec node wholesale — it has no special-case logic for which side of an outer join must be preserved, so a skewed preserved side is outside this topic's own measured remedies entirely, same as an aggregation.",
+        "at": [{ "out": "the preserved-outer-join-side case named only, by the same source-level mechanism (join-operator-only pattern match) this topic measures for aggregations; not independently re-measured with its own worked example" }]
+      },
+      {
+        "item": "A window function's own partition-and-sort step can skew exactly like a GROUP BY's shuffle, for the same reason: one partition key holds disproportionately many rows. Because a window operator is never a join node, OptimizeSkewedJoin's pattern match cannot reach it either.",
+        "at": [{ "out": "window functions named only, by the same join-only-pattern-match mechanism; this topic does not construct a skewed-window worked example, deferring the full window-execution story to this chapter's own window-function topic" }]
+      },
+      {
+        "item": "spark.sql.adaptive.skewJoin.skewedPartitionFactor (default 5) is the multiplier against the median that, together with the absolute byte threshold, decides skew — this topic's own examples.py only needed to lower the byte threshold because the factor-based comparison already treated a 155MB partition against an 8-13MB median as skewed; raising the data's own median closer to the hot partition's size would have required tuning the factor instead.",
+        "at": [{ "out": "the skewedPartitionFactor config named only; this topic's own examples.py tunes the absolute byte threshold, not the factor" }]
+      },
+      {
+        "item": "Isolating hot keys composes with salting: a real pipeline can isolate the handful of truly extreme keys (broadcast their matching rows) while salting only the remaining moderately-skewed keys, rather than choosing one remedy for the whole table.",
+        "at": [{ "out": "composing isolate-and-salt named only; this topic's own examples.py measures each remedy against the same full dataset separately, not a combined remedy" }]
+      },
+      {
+        "item": "Salting's extra shuffle bytes scale with the replication factor (SALT_N) times the small side's own size — a small dimension table makes this cost negligible, but salting a genuinely large 'small' side multiplies a real cost by SALT_N, which is exactly why this topic's own examples.py discloses the byte increase rather than treating salting as strictly better than doing nothing.",
+        "at": [{ "out": "the replication-factor cost formula named only; this topic's own examples.py measures the resulting byte increase at one specific SALT_N (8), not the formula's general form" }]
+      },
+      {
+        "item": "Spill (memory_bytes_spilled/disk_bytes_spilled in the Spark UI) is a separate, often co-occurring symptom of the same skewed task — a straggler with a disproportionate row share is also the task most likely to spill, which is why the chapter's own later 'spill and shuffle memory pressure' topic revisits the same stage-metrics view this topic introduces.",
+        "at": [{ "out": "spill as a co-occurring symptom named only; this topic's own examples.py measures duration and shuffle-read/write bytes, not spill metrics" }]
+      },
+      {
+        "item": "AdaptiveSparkPlanExec's own cost-gated reoptimization (covered in this chapter's AQE topic) also governs the skew-join rule: a skew split is only adopted if ValidateRequirements confirms the rewritten plan still satisfies distribution requirements, per OptimizeSkewedJoin.scala's own apply() method — the split is not unconditionally applied even when partitions qualify as skewed.",
+        "at": [{ "out": "the requirement-validation gate on skew splitting named and sourced only; this topic's own examples.py observes the adopted split, not a case where validation rejects it" }]
+      },
+      {
+        "item": "Two-phase aggregation's second (final) pass re-shuffles by the unsalted key, which means the result still eventually funnels through one task per real key — the remedy spreads the expensive per-row combine work across the first shuffle, not the final key cardinality itself, so it helps most when the per-row work (not the final output size) is what made the single task slow.",
+        "at": [{ "out": "the scope of what two-phase aggregation actually fixes, named only; this topic's own examples.py measures the first (partial) shuffle's improved duration ratio, which is where the fix's effect is visible, not the final merge stage" }]
+      },
+      {
+        "item": "A combinable aggregate's map-side partial aggregation is itself a cost-based decision Catalyst makes per aggregate function (sum, count, min, max, and avg all qualify; collect_list and collect_set do not) — this topic's own examples.py picks one combinable (sum) and one non-combinable (collect_list) function specifically because they sit on opposite sides of that same qualification.",
+        "at": [{ "out": "the general combinable/non-combinable classification named only; this topic's own examples.py measures exactly the two functions already named, not the full list" }]
+      },
+      {
+        "item": "Shuffle-read bytes alone can understate row-count skew when the shuffled columns are low-entropy or get pruned before the shuffle (a real confound this topic's own examples.py avoided by using high-entropy random payload values and forcing them to survive into the shuffle) — a stage that looks balanced by bytes can still be skewed by row count if the measurement itself doesn't force the right columns through.",
+        "at": [{ "out": "the byte-vs-row-count measurement confound named only, as a caution about reading stage metrics in general; this topic's own examples.py already designs around it rather than demonstrating the confound itself" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

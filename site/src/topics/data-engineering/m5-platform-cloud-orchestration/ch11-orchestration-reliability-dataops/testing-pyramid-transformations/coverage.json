@@ -1,0 +1,85 @@
+{
+  "topic": "de.testing-pyramid-transformations",
+  "syllabus": [
+    {
+      "clause": "unit tests on transforms (dbt unit tests, pytest on PySpark functions via local Spark or Spark Connect)",
+      "at": [
+        { "step": "Reveal: the bottom rung, unit tests on transforms" }
+      ]
+    },
+    {
+      "clause": "property-based invariants (§4.2)",
+      "at": [
+        { "step": "Reveal: the next rung, a property stated once" }
+      ]
+    },
+    {
+      "clause": "golden-dataset snapshots",
+      "at": [
+        { "step": "Reveal: the next rung, a golden-dataset snapshot" }
+      ]
+    },
+    {
+      "clause": "in-pipeline expectation tests (§13.3)",
+      "at": [
+        { "step": "Reveal: the top rung, named" },
+        { "deep": "Frontier" }
+      ]
+    },
+    {
+      "clause": "what belongs at which layer and the usual sources of flakiness (ordering, time, floating point)",
+      "at": [
+        { "step": "Reveal: three real causes of flakiness" },
+        { "step": "Recap" },
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Unit tests (dbt Developer Hub)",
+      "items": [
+        { "item": "a dbt unit test validates SQL modeling logic on a small set of static inputs before materializing the full model", "at": [{ "step": "Reveal: the bottom rung, unit tests on transforms" }] },
+        { "item": "dbt currently only supports unit testing SQL models, defined in a YML file in the models directory", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Testing PySpark (Apache Spark Python API documentation)",
+      "items": [
+        { "item": "pytest is one of the most popular Python testing frameworks for writing real tests against PySpark code", "at": [{ "step": "Reveal: the bottom rung, unit tests on transforms" }] },
+        { "item": "a pytest fixture lets a test suite share one Spark session across tests, tearing it down once they finish", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real tests across all four rungs",
+      "items": [
+        { "item": "a dbt-unit-test-style mocked input and expected output, run directly against the shop's stg_orders transform logic", "at": [{ "step": "Reveal: the bottom rung, unit tests on transforms" }] },
+        { "item": "a real pytest test against a real local Spark session, testing a pure transformation function", "at": [{ "step": "Reveal: the bottom rung, unit tests on transforms" }, { "step": "Prove it" }] },
+        { "item": "a real hypothesis property search finds a genuine counterexample in a buggy merge function that lets a total decrease", "at": [{ "step": "Reveal: the next rung, a property stated once" }, { "step": "Prove it" }] },
+        { "item": "a golden-dataset snapshot catches an unintended rounding regression that a narrow unit test on a round number never exercises", "at": [{ "step": "Reveal: the next rung, a golden-dataset snapshot" }] },
+        { "item": "three flaky-test causes -- ordering, time, floating point -- each shown genuinely failing under a naive assertion and passing under a corrected one", "at": [{ "step": "Reveal: three real causes of flakiness" }, { "step": "Prove it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's real lesson isn't that GROUP BY is unreliable -- it's that an assertion comparing position by position was making a claim ('this exact order') the transform never actually promised, so the bug was in the test's own assertion, not necessarily in the transform.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume the pyramid's layers are about test importance (bottom rungs matter less) -- they're actually about cost and scope: a bottom-rung test is cheap and narrow, a top-rung check is expensive and broad, and a real bug can live at any layer regardless of how 'important' that layer sounds.", "at": [{ "deep": "Internals" }] },
+      { "item": "Property-based testing's real value here isn't that it tries more examples than a human would write by hand -- it's that it tries examples a human specifically wouldn't think to write, which is exactly the class of input a hand-picked example-based test structurally can't cover.", "at": [{ "step": "Reveal: the next rung, a property stated once" }] },
+      { "item": "A golden-dataset snapshot has its own failure mode this topic doesn't dwell on: once a real, intentional change needs to update the baseline, someone has to review and approve that new snapshot by hand, or the snapshot becomes a rubber stamp that re-approves whatever the code currently outputs.", "at": [{ "step": "Reveal: the next rung, a golden-dataset snapshot" }] },
+      { "item": "In-pipeline expectation tests catching something in production doesn't mean the earlier rungs failed -- it means some violations are properties of the real data distribution itself (a schema drift from an upstream source, a genuinely new edge case) that no amount of pre-merge testing against synthetic or historical data could have anticipated.", "at": [{ "step": "Reveal: the top rung, named" }] },
+      { "item": "The time-flakiness fix (checking recency instead of exact equality) trades one risk for another: a test that's too tolerant of timing drift can silently pass even when a pipeline's actual latency has regressed, so the tolerance window itself needs its own justification, not just 'wide enough to stop failing.'", "at": [{ "step": "Reveal: three real causes of flakiness" }] },
+      { "item": "Floating-point non-associativity is not a bug in Python or in floating-point arithmetic -- it's an unavoidable consequence of finite precision, which is why the fix is never 'make addition associative' but always 'decide and justify a tolerance for how much order-dependent drift is acceptable.'", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's dbt-unit-test demonstration runs the same input/output shape dbt's own unit tests use, in plain Python, because dbt itself isn't installed in this build environment -- the technique transfers exactly, but a reader running real dbt would write the mocked input and expected output in a YAML unit-test block, not a Python function call.", "at": [{ "step": "Reveal: the bottom rung, unit tests on transforms" }] },
+      { "item": "The decision rule (fast and narrow at the bottom, slow and broad at the top) is a default, not a law -- a transformation with an unusually cheap in-pipeline check and an unusually expensive unit-test fixture could reasonably invert part of that ordering for its own specific cost profile.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's planted bugs and the four-rung ladder itself are reused, not re-invented, as the baseline a later chapter-lab scorecard measures against -- so the specific bugs chosen here (the GROUP BY ordering bug, the buggy merge, the rounding regression) are deliberately the fixed, known set that scorecard will later ask which layer actually caught.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

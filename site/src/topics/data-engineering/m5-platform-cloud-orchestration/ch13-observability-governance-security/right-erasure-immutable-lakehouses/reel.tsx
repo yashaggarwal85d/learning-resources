@@ -1,195 +1,196 @@
 import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
-// Every claim here runs in examples.py: a real Delta Lake table's DELETE survives time travel
-// until VACUUM runs, after which the same time-travel read fails; a backup copied before the
-// erasure still carries the subject; a compacted-log tombstone keeps its key until retention
-// elapses; one key deletion makes all three synthetic copies unreadable at once.
+// Measured directly (examples.py, modelling Iceberg/Delta's own documented snapshot and
+// delete-file mechanics, and Kafka's own documented tombstone and delete.retention.ms
+// behaviour): a time-travel query against a snapshot from before a DELETE still returns the
+// "erased" subject; expiring old snapshots and compacting removes them from the physical data
+// file; a Kafka tombstone hides the value immediately but the tombstone record itself only
+// disappears after the retention window elapses; and deleting one subject's encryption key
+// makes every copy of their data -- including a backup taken before the key was deleted --
+// unreadable at once, while an untouched subject's data in the same copies stays readable.
 const reel: Reel = {
   steps: [
     {
       title: 'Hook',
       body: (
         <>
-          A customer asks to be forgotten. You run a `DELETE`, and the row is gone from every
-          query. A month later an auditor time-travels to last week's snapshot — and reads the
-          customer's name there, in a Kafka topic, and in last night's backup.
+          A customer exercises the right to erasure. `DELETE FROM customers WHERE id = 42` runs,
+          and the row is gone from every query you try. A month later, an auditor runs a
+          time-travel query at last week's snapshot and reads the customer's name -- in the
+          lakehouse, in a Kafka topic, and in last night's backup. Which of the three can a SQL
+          statement actually fix, and which needs a key?
         </>
       ),
-      duration: 6,
-      fig: 'deleted, everywhere you looked. Still readable in three other places.',
+      duration: 5,
+      fig: 'DELETE ran. An auditor still finds the name, three places. Which needs a key?',
       Visual: S.Hook,
     },
     {
-      title: 'Predict: SQL, or something else?',
+      title: "Reveal: a DELETE writes a new snapshot; the old snapshot still references the old data file, untouched",
       body: (
         <>
-          The table, the Kafka topic, the backup. Does one more SQL statement finish the job on
-          all three, or does each one actually need something different?
+          A `DELETE` in a lakehouse table does not erase anything in place. It writes a brand
+          new snapshot with a marker saying the row is gone. The snapshot that existed a moment
+          earlier still points at the exact same data file, which nothing has touched.
         </>
       ),
-      duration: 6,
-      fig: 'table, topic, backup. One fix, or three different ones?',
+      duration: 4.8,
+      fig: 'DELETE writes a new snapshot. The old one still points at the old, untouched file.',
+      Visual: S.RevealNewSnapshot,
+    },
+    {
+      title: 'Predict: time-travel to the snapshot from before the DELETE. Does it still show the subject?',
+      body: (
+        <>
+          Run a query against the snapshot that existed the moment before the `DELETE` ran.
+          Does that query still return the subject whose row was supposedly erased?
+        </>
+      ),
+      duration: 2.8,
+      fig: 'query the old snapshot, from before the DELETE. Subject still there?',
       predict: {
         options: [
-          { label: 'One more SQL statement, run against each one, finishes the job' },
-          { label: 'Three different operations — none of them is just "run more SQL"', correct: true },
+          { label: "No -- deleting the row should have removed it from every snapshot, old or new" },
+          { label: "Yes -- the old snapshot's own metadata still points at the same unchanged file", correct: true },
         ],
         explain: (
           <>
-            The table needs its old snapshot expired and vacuumed, not just deleted from. The
-            topic needs its own tombstone's retention window to pass. The backup needs a new
-            backup cycle, or a key deleted out from under it.
+            Yes. The old snapshot was never edited; it still references the data file exactly
+            as it existed before the delete, which still physically contains the row.
           </>
         ),
       },
-      Visual: S.Predict,
+      Visual: S.PredictTimeTravel,
     },
     {
-      title: 'Reveal: a delete writes a snapshot, not an erasure',
+      title: 'Reveal: yes, measured directly -- the current read hides them, the old snapshot does not',
       body: (
         <>
-          `DELETE` doesn't erase a row — it writes a new snapshot that leaves it out. The old
-          snapshot, and every file it points to, is still sitting right there on disk, and a
-          time-travel query at that old snapshot still reads it.
+          Measured directly: querying the table normally hides the deleted subject, exactly as
+          expected. Querying the old snapshot by its own id still returns them, untouched.
         </>
       ),
-      duration: 6,
-      fig: 'a new snapshot, leaving the row out. The old one, untouched.',
-      Visual: S.RevealSnapshotNotErasure,
+      duration: 4.8,
+      fig: 'current read: hidden. Old snapshot: still there, measured.',
+      Visual: S.RevealTimeTravelShows,
     },
     {
-      title: 'Reveal: hidden from queries before it’s gone from disk',
+      title: 'Elaborate: expiring the old snapshots and compacting physically removes the row',
       body: (
         <>
-          A delete file marks the row as removed for every query that runs from here on. The
-          row's own bytes stay exactly where they were, inside the original file, until a
-          compaction actually rewrites it away.
+          Erasure finishes in two more steps. Expiring the old snapshots removes them from
+          metadata, so time travel can no longer reach them. Compacting rewrites the data file
+          itself, leaving out whatever no remaining snapshot still points at. Neither step runs
+          automatically -- a real system defaults to a retention window of about a week before
+          it will even consider a file safe to remove.
         </>
       ),
-      duration: 6,
-      fig: 'marked removed for every query. Its bytes, untouched, until rewritten.',
-      Visual: S.RevealMergeOnRead,
+      duration: 5,
+      fig: 'expire: old metadata gone. Compact: file rewritten, row gone for good.',
+      takeaway: "A delete only hides a row from the newest snapshot; expiring and compacting is what actually erases it.",
+      Visual: S.ElaborateExpireCompact,
     },
     {
-      title: 'Reveal: what actually frees the bytes',
+      title: 'Predict: a Kafka tombstone removes the value. Does it remove the record that a deletion happened?',
       body: (
         <>
-          Expiring the old snapshot, vacuuming, removing orphan files — these are what physically
-          remove data. Each has its own retention window, and shortening that window risks
-          breaking a reader mid-query.
+          A tombstone is a record with the subject's key and no value, written specifically to
+          delete their earlier value from a compacted log. Does writing that tombstone also
+          erase the evidence that a deletion ever took place?
         </>
       ),
-      duration: 6,
-      fig: 'expire, vacuum, remove orphans. Each with its own window, its own risk.',
-      Visual: S.RevealMaintenanceOps,
+      duration: 2.8,
+      fig: 'tombstone written. Value gone. Does the deletion record disappear too?',
+      predict: {
+        options: [
+          { label: 'Yes -- a tombstone and the thing it deletes vanish from the log together' },
+          { label: 'No -- the tombstone itself sticks around for a separate retention window', correct: true },
+        ],
+        explain: (
+          <>
+            No. The tombstone is its own record, and it is kept for its own configured length
+            of time before the log cleans it out too -- deleting the value and erasing the
+            tombstone are two different moments.
+          </>
+        ),
+      },
+      Visual: S.PredictTombstone,
     },
     {
-      title: 'Reveal: three more places it survives',
+      title: 'Reveal: not immediately -- the tombstone itself only disappears after delete.retention.ms, measured directly',
       body: (
         <>
-          A replica. A nightly backup. A Kafka topic, cleared only once its own tombstone's
-          retention window elapses. None of these sit anywhere near a table operation at all.
+          Measured directly: right after the tombstone is written, the subject's value is gone
+          but the tombstone record itself is still sitting there. Only once the configured
+          retention window has actually elapsed does a later compaction remove the tombstone
+          too.
         </>
       ),
-      duration: 6,
-      fig: 'replica, backup, topic. Outside every table operation, entirely.',
-      Visual: S.RevealSurvivalPoints,
+      duration: 4.8,
+      fig: 'right after: tombstone present. After the window: tombstone gone, measured.',
+      Visual: S.RevealTombstoneExpires,
     },
     {
-      title: 'Reveal: one key, every copy at once',
+      title: 'Elaborate: a lagging consumer can miss the delete marker entirely',
       body: (
         <>
-          Encrypt a subject's rows under a key that belongs only to them. Delete that one key,
-          and the table, the topic and the backup all go unreadable in the same instant — without
-          touching a single one of them.
+          If a reader is behind by more than that retention window when it finally gets to
+          scanning from the start of the log, the tombstone has already been swept away. It
+          sees no value and no record that one was ever removed -- which is exactly why a
+          backup taken before the key was ever touched can quietly go on holding the subject.
         </>
       ),
-      duration: 6.4,
-      fig: 'one key, deleted once. Three copies, unreadable at once.',
+      duration: 5,
+      fig: 'lag past the window, and the deletion itself leaves no trace to find.',
+      takeaway: 'A compacted log forgets the value at once, but only forgets it forgot after its own retention window runs out.',
+      Visual: S.ElaborateLaggingConsumer,
+    },
+    {
+      title: "Reveal: crypto-shredding -- deleting one subject's key makes every copy unreadable at once, measured directly; an untouched subject stays fully readable",
+      body: (
+        <>
+          Measured directly: encrypt one subject's data under their own key everywhere it
+          lives -- the table, the log, and a backup taken before the key is ever deleted.
+          Delete that one key, and all three copies become unreadable in the same instant,
+          without touching a single byte of any of them. A different subject, whose key was
+          never deleted, stays fully readable in those exact same copies.
+        </>
+      ),
+      duration: 5,
+      fig: 'one key deleted: table, log, backup -- all unreadable at once, measured.',
       Visual: S.RevealCryptoShredding,
     },
     {
-      title: 'Reveal: what that costs at scale',
+      title: "Reveal: proving deletion to an auditor; retention policies as code",
       body: (
         <>
-          A key per subject means a key to store, a key looked up on every single read, and a KMS
-          call rate that climbs with every subject added — and it only ever erases what was
-          actually encrypted under that one key.
+          None of this is worth anything to an auditor unless it can be shown, not just
+          asserted. The evidence is the table's own snapshot list after expiry, the physical
+          file listing, and the key store's own deletion record, plus a repeat of the search
+          for the subject coming back empty. Writing the retention rule itself as versioned
+          configuration -- a retention class per dataset, applied by a scheduled job -- is what
+          turns "we delete after some number of days" into something that can actually be
+          checked, not just claimed.
         </>
       ),
-      duration: 6.4,
-      fig: 'a key per subject. Storage, lookups, and a limit of its own.',
-      takeaway: 'Crypto-shredding scales with every subject added — a key to store, a lookup per read, a growing call rate.',
-      Visual: S.RevealShredCost,
-    },
-    {
-      title: 'Reveal: proving it to an auditor',
-      body: (
-        <>
-          "We ran a command" isn't evidence. The table's own metadata showing no active snapshot
-          points at the subject's files, and the key store's own record of exactly when the key
-          was destroyed — that's what actually proves it.
-        </>
-      ),
-      duration: 6.4,
-      fig: "metadata, and a key store's own record. Not a memory of a command.",
-      takeaway: 'Proof is the table’s own metadata and the key store’s deletion record — not a memory of a command run.',
-      Visual: S.RevealProvingErasure,
-    },
-    {
-      title: 'Reveal: retention, written down as code',
-      body: (
-        <>
-          Which windows apply, and which artefacts get crypto-shredded versus left to retention —
-          written down and version-controlled, not decided fresh, under pressure, every single
-          time a request lands.
-        </>
-      ),
-      duration: 6,
-      fig: 'the policy, in code. Not a judgment call, remade each time.',
-      takeaway: 'Retention and crypto-shredding decisions belong in version-controlled policy, not a fresh judgment call per request.',
-      Visual: S.RevealPolicyAsCode,
+      duration: 5,
+      fig: "evidence: snapshot list, file listing, key store record. Retention: written as code.",
+      Visual: S.RevealProvingDeletion,
     },
     {
       title: 'Recap',
       body: (
         <>
-          A delete writes a snapshot, not an erasure. Merge-on-read hides a row before it's
-          physically gone. Expiry and vacuum are what actually free the bytes. A replica, a
-          backup, a topic all sit outside every table operation. One key, deleted once, reaches
-          every copy. And proof is metadata, not memory.
+          A `DELETE` alone leaves the old snapshot standing. Expiring and compacting is what
+          actually erases the file. A tombstone hides a value before the log forgets the
+          tombstone ever existed. One key deleted reaches every copy at once, measured.
         </>
       ),
-      duration: 6.4,
-      fig: 'hidden, then freed; outside the table; one key; proof in metadata.',
+      duration: 5,
+      fig: 'delete hides; expire and compact erase; one key reaches every copy, measured.',
+      takeaway: "Erasure here is never one step: the SQL statement, the maintenance job, and for what SQL can't reach, a key.",
       Visual: S.Recap,
-    },
-    {
-      title: 'Prove it',
-      body: (
-        <>
-          A subject's key gets crypto-shredded today. Nobody ever ran a table-level `DELETE` for
-          that subject — their row is still sitting there, in every ordinary query. Does the
-          query still hand back readable data, or not?
-        </>
-      ),
-      duration: 6.4,
-      fig: 'key shredded, row never deleted. Still readable, or not?',
-      predict: {
-        options: [
-          { label: 'The row disappears from the query entirely, the same as a real delete' },
-          { label: 'The row is still returned — its value is now ciphertext nobody can decrypt', correct: true },
-        ],
-        explain: (
-          <>
-            Crypto-shredding never touches the table itself — only the key. The row stays exactly
-            where it was and the query still returns it; what comes back is unreadable ciphertext,
-            because the one key that could decrypt it is gone.
-          </>
-        ),
-      },
-      Visual: S.ProveIt,
     },
   ],
 };

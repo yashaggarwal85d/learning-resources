@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Container resource limits: cgroups and OOM" domain="data-engineering" host="de.container-resource-limits-cgroups" by="the kernel mechanism this topic's limit enforcement reads" />
+  <Resource kind="reel" title="Kubernetes workload primitives" domain="data-engineering" host="de.kubernetes-workload-primitives" by="the objects this topic's requests and limits attach to" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="resources">
+
+### <span class="n">02</span> Requests, QoS, eviction
+
+<ul class="resources">
+  <Resource kind="reading" title="Configure Quality of Service for Pods" href="https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/" by="Kubernetes documentation" length="10 min">The exact QoS-classification rule this topic's reel draws.</Resource>
+  <Resource kind="reading" title="Node-pressure Eviction" href="https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/" by="Kubernetes documentation" length="15 min">The kubelet's eviction ranking and the oom_score_adj table, the source for "two rankings, not one."</Resource>
+  <Resource kind="reading" title="Disruptions" href="https://kubernetes.io/docs/concepts/workloads/pods/disruptions/" by="Kubernetes documentation" length="10 min">Why a PodDisruptionBudget never reaches node-pressure eviction.</Resource>
+  <Resource kind="reading" title="Pod Priority and Preemption" href="https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/" by="Kubernetes documentation" length="10 min">When a pending pod may preempt a running one.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,166 @@
+{
+  "topic": "de.kafka-transactions-read-committed",
+  "syllabus": [
+    {
+      "clause": "transactional ids and zombie fencing",
+      "at": [
+        { "step": "Setup: an identity that outlives a restart" },
+        { "step": "Predict: what happens to a still-writing old instance?" },
+        { "step": "Reveal: a restart fences, it never merges" }
+      ]
+    },
+    {
+      "clause": "the transaction coordinator and __transaction_state",
+      "at": [{ "step": "Setup: an identity that outlives a restart" }]
+    },
+    {
+      "clause": "commit/abort markers",
+      "at": [{ "step": "Reveal: filtered at read time, not erased at write time" }]
+    },
+    {
+      "clause": "last stable offset and read_committed consumers",
+      "at": [
+        { "step": "Predict: does a reader see an aborted write?" },
+        { "step": "Reveal: filtered at read time, not erased at write time" }
+      ]
+    },
+    {
+      "clause": "consume-transform-produce with sendOffsetsToTransaction",
+      "at": [{ "step": "Reveal: the second crash window, closed inside Kafka" }]
+    },
+    {
+      "clause": "transactions v2",
+      "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+    },
+    {
+      "clause": "KIP-890: server-side defence against hanging transactions",
+      "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+    },
+    {
+      "clause": "epoch bump per transaction",
+      "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+    },
+    {
+      "clause": "completed in 4.0",
+      "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+    },
+    {
+      "clause": "KIP-939 two-phase-commit participation for atomic Kafka + database writes",
+      "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "KIP-98: Exactly Once Delivery and Transactional Messaging (Apache Kafka wiki)",
+      "items": [
+        {
+          "item": "each producer is assigned a transaction coordinator, and all the logic of assigning PIDs and managing transactions is done by the transaction coordinator",
+          "at": [{ "step": "Setup: an identity that outlives a restart" }]
+        },
+        {
+          "item": "a new internal kafka topic called the Transaction Log is a persistent and replicated record of every transaction, the state store for the transaction coordinator",
+          "at": [{ "step": "Setup: an identity that outlives a restart" }]
+        },
+        {
+          "item": "the transaction coordinator issues a request to the leader of each TopicPartition in the transaction; each broker writes a COMMIT(PID) or ABORT(PID) control message to the log",
+          "at": [{ "step": "Reveal: filtered at read time, not erased at write time" }]
+        },
+        {
+          "item": "setting transactional.id logs the mapping to the corresponding PID in the transaction log, enabling the same PID to be returned to future instances and recovering or aborting previously incomplete transactions",
+          "at": [{ "step": "Reveal: a restart fences, it never merges" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 design documentation",
+      "items": [
+        {
+          "item": "in read_uncommitted, all messages are visible even from an aborted transaction; in read_committed, the consumer only returns messages from committed transactions",
+          "at": [{ "step": "Reveal: filtered at read time, not erased at write time" }]
+        },
+        {
+          "item": "setting transactional.id configures the producer for transactional delivery and ensures a restarted application aborts any in-flight transaction from the previous instance",
+          "at": [{ "step": "Reveal: a restart fences, it never merges" }]
+        }
+      ]
+    },
+    {
+      "source": "KIP-890: Transactions Server-Side Defense (Apache Kafka wiki)",
+      "items": [
+        {
+          "item": "hanging transactions mean the last stable offset does not update, the log can't be cleaned if compacted, and read_committed consumers get stuck",
+          "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka 4.4 operations documentation: Transaction Protocol",
+      "items": [
+        {
+          "item": "starting from Kafka 4.0, Transactions Server Side Defense bumps the producer epoch on every transaction so every transaction includes the intended messages and duplicates aren't written as part of the next transaction",
+          "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+        }
+      ]
+    },
+    {
+      "source": "KIP-939: Support Participation in 2PC (Apache Kafka wiki)",
+      "items": [
+        {
+          "item": "Kafka already has a 2PC implementation controlled by its own transaction coordinator; supporting an external transaction coordinator would let Kafka become a participant in a distributed transaction with other systems",
+          "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Fencing is strictly a rejection, never a merge — a zombie instance's writes don't queue up behind the new one, they're simply turned away, which the toy coordinator models as an outright rejected return value, not a delay.",
+        "at": [{ "step": "Reveal: a restart fences, it never merges" }]
+      },
+      {
+        "item": "read_committed is purely a consumer-side filtering rule, not a broker-side erasure — an aborted transaction's bytes occupy exactly the same disk space whether or not any read_committed consumer ever asks for them.",
+        "at": [{ "step": "Reveal: filtered at read time, not erased at write time" }]
+      },
+      {
+        "item": "Consume-transform-produce closes the second of the two crash windows named earlier in this chapter, the one idempotence alone never touched — this topic is specifically the mechanism that closes it, not a restatement of idempotence.",
+        "at": [{ "step": "Reveal: the second crash window, closed inside Kafka" }]
+      },
+      {
+        "item": "KIP-890 and KIP-939 solve two different problems that both happen to extend transactions: one defends against a transaction that never finishes, the other lets a transaction extend past Kafka's own boundary.",
+        "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+      },
+      {
+        "item": "A Kafka transaction's guarantee stops exactly at Kafka's own boundary — nothing about it makes a write to a database, file, or API atomic with anything, which is precisely why KIP-939 and the next topic exist.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "The toy TinyCoordinator and TinyLog models are deliberately simplified standalone simulations, not a port of Kafka's real broker code, since no real Kafka broker runs in this sandbox.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "A stable transactional id is what lets a restarted producer recover or cleanly abort a transaction left behind by its previous instance, rather than starting over with no memory of it.",
+        "at": [{ "step": "Setup: an identity that outlives a restart" }]
+      },
+      {
+        "item": "The last stable offset is the mechanism, not the guarantee — it's how a read_committed consumer knows exactly how far it's safe to read without risking a still-open transaction's eventual outcome.",
+        "at": [{ "step": "Predict: does a reader see an aborted write?" }]
+      },
+      {
+        "item": "Before KIP-890, one careless client that opened a transaction and never finished it could silently stall every read_committed consumer in the cluster, since the LSO can't advance past an undecided transaction.",
+        "at": [{ "step": "Reveal: a stuck transaction defended against, a door opened wider" }]
+      },
+      {
+        "item": "This chapter's two crash windows are now both closed by mechanisms taught so far: idempotence closed the producer-retry window, and this topic's transactional offset commit closes the consumer process-then-commit window.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

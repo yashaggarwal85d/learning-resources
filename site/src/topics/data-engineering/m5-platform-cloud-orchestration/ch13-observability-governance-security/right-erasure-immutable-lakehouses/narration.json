@@ -3,90 +3,82 @@
   "steps": [
     {
       "lines": [
-        "A customer asks to be forgotten. You run a delete, and sure enough, the row disappears from every query you try.",
-        "A month goes by. An auditor runs a query against last week's version of the table — and there's the customer's name, right there. Same name, sitting in a messaging topic. Same name again, in last night's backup."
+        "Somebody exercises their right to be forgotten. The delete runs, and every query you try comes back clean.",
+        "A month later an auditor goes looking anyway, and finds the same name sitting in three places at once: the lakehouse table, a message log, and last night's backup. One of those three a plain delete statement can actually reach. The other two need something else entirely."
       ]
     },
     {
       "lines": [
-        "So, three places this customer's name is still sitting: the table, that messaging topic, and the backup.",
-        "Is finishing the job just a matter of running one more statement against each of those three? Or does something genuinely different have to happen to each one? Work that out before I go on."
+        "Here's the part that trips people up about a table built on snapshots.",
+        "A delete never edits anything in place. It writes a brand new snapshot that simply says this row is gone now.",
+        "The snapshot that existed one moment earlier is still sitting there, still pointing at the exact same file, which nothing has touched at all."
+      ]
+    },
+    {
+      "lines": [
+        "Work this one out before I say it.",
+        "Go back and query the snapshot that existed the instant before that delete ran. Does it still hand back the row that just got supposedly erased?"
       ],
       "answer": [
-        "No single statement closes out all three. The table needs its old version expired and then physically cleaned up — a delete alone doesn't do either of those.",
-        "The topic needs its own waiting period to run out before anything's actually gone. And the backup needs either a brand new backup made, or a key pulled out from underneath it entirely."
+        "It does. That old snapshot was never touched by the delete at all.",
+        "It still references the same file, which still physically holds the row exactly as it was."
       ]
     },
     {
       "lines": [
-        "Here's the thing a delete statement actually does, underneath.",
-        "It doesn't erase a row at all. It writes a new version of the table that simply leaves that row out. The version from right before it ran? Still sitting there on disk, completely intact.",
-        "So a query that asks for data as of that earlier version — that's exactly what a time-travel query is — goes right on returning the row like nothing ever happened to it."
+        "And that's exactly what measuring it shows.",
+        "Query the table the normal way, and the row is gone, just as it should be. Query that earlier snapshot by its own identifier, and the row comes right back, completely untouched."
       ]
     },
     {
       "lines": [
-        "There's an even sneakier gap hiding underneath that one.",
-        "A system can mark a row as deleted using a small pointer file, without touching the original file that row's actual bytes live in at all. Every query from that point on skips right past the marked row — so it looks erased.",
-        "But those bytes themselves are still sitting in that original file, completely unchanged, until some later process actually goes in and rewrites that file for real."
+        "So erasure takes two more steps the delete alone never did.",
+        "Expiring the old snapshots clears them out of the metadata, so nobody can time-travel back to them anymore. Compacting then rewrites the actual file, leaving out anything no surviving snapshot still needs.",
+        "Neither of those happens by itself. Left alone, a real system will quietly hold onto that file for roughly a week before it even considers removing it."
       ]
     },
     {
       "lines": [
-        "So what does it actually take to free that data for real?",
-        "Expiring the version that still points at it. Then an operation that goes and removes whatever files nothing points to anymore. Plus a separate sweep for files some failed job left behind, orphaned, that nothing ever pointed to in the first place.",
-        "Every one of those has its own waiting window attached to it — and shrink that window too far, and you risk yanking a file out from under someone who's still mid-query against it."
-      ]
-    },
-    {
-      "lines": [
-        "And even once all of that's done, on the table itself, there are still three more places this could be sitting.",
-        "A replica, holding its own separate copy. A backup, taken independently, on its own schedule. And a topic, where that record only actually disappears once its own deletion marker has sat around long enough.",
-        "None of those three live anywhere near the table. Nothing you just did to the table touches any of them at all."
-      ]
-    },
-    {
-      "lines": [
-        "Now here's a completely different way to close out all three of those at once.",
-        "Encrypt one subject's data under a key that belongs to that subject, and only that subject. Delete that single key — and the table, the topic, and the backup all go unreadable at the exact same moment, without you touching one byte of any of the three."
-      ]
-    },
-    {
-      "lines": [
-        "That trick clearly isn't free, though. Think about what it actually costs you once you're doing this for every subject.",
-        "Every subject now needs their own key sitting in storage somewhere. Every single read now needs a lookup against that key. And your key-management system now takes a hit that scales with your subject count, not with how much data you actually have.",
-        "And there's a hard limit baked into the whole approach: it only ever erases whatever was actually encrypted under that one specific key — nothing else."
-      ]
-    },
-    {
-      "lines": [
-        "Say an auditor shows up and asks you to prove all of this actually happened. 'We ran the command' isn't going to cut it.",
-        "What actually counts as proof is the table's own records showing that nothing active points at that subject's old files anymore. And on the key side, it's whatever system held that key having its own record of the exact moment it got destroyed."
-      ]
-    },
-    {
-      "lines": [
-        "One more piece, and it's less about the mechanics, more about how any of this gets decided in the first place.",
-        "Which waiting windows apply, which categories of data get the key-deletion treatment versus just waiting out a retention window — none of that should be a judgment call somebody's making fresh, under pressure, every time a request lands on their desk.",
-        "Write it down. Put it under version control, the same as everything else that matters."
-      ]
-    },
-    {
-      "lines": [
-        "So, bringing all of that together.",
-        "A delete writes a new version — it doesn't erase anything by itself. A row can look gone from every query while its actual bytes are still sitting there untouched. Expiring and cleaning up old versions are what actually free that data for good.",
-        "A replica, a backup, a topic — none of them live anywhere near the table. One key, deleted once, reaches every copy at once. And proof means records, not somebody's memory of having typed a command."
-      ]
-    },
-    {
-      "lines": [
-        "One more scenario, and this one's got a twist.",
-        "Somebody's key gets destroyed today, through that key-deletion trick. But nobody ever ran an actual delete against the table for that particular subject — their row is still sitting there, completely untouched, in every ordinary query anyone runs.",
-        "Does a query against that table still hand back something readable for that row, or not?"
+        "New system, same kind of question. Think it through first.",
+        "A tombstone record gets written specifically to erase somebody's value out of a compacted log. Does writing that tombstone also erase the fact that a deletion ever happened?"
       ],
       "answer": [
-        "The row comes back. Nothing about destroying a key ever touches the table itself — the row was never deleted, so the query still returns it, exactly as before.",
-        "What comes back with it, though, is nothing but scrambled bytes. The one key that could ever turn that back into something readable is gone for good."
+        "No. The tombstone is its own record, sitting right there in the log.",
+        "It gets kept around for its own separate stretch of time before a later cleanup sweeps it out too, so the value disappearing and the tombstone disappearing are two different moments."
+      ]
+    },
+    {
+      "lines": [
+        "Measuring it confirms that split exactly.",
+        "The instant after the tombstone gets written, the value is already gone, but the tombstone record itself is still sitting right there. Only once its own configured window has fully run out does a later cleanup actually remove it too."
+      ]
+    },
+    {
+      "lines": [
+        "Which creates a real gap for anyone reading slowly.",
+        "A reader that falls behind by more than that window, then finally scans from the very start, never even sees the tombstone. No value, and no sign a deletion ever happened — which is exactly how a backup taken before anyone touched the key can keep quietly holding the data."
+      ]
+    },
+    {
+      "lines": [
+        "One mechanism closes every single gap at once, and it's worth seeing measured directly.",
+        "Encrypt a person's data everywhere it lives — the table, the log, and a backup taken well before any of this starts — each under that one person's own key.",
+        "Delete that single key, and all three copies go unreadable in the same instant, without rewriting a single byte of any of them.",
+        "Somebody else's data, sitting in those exact same copies under a key nobody deleted, stays perfectly readable."
+      ]
+    },
+    {
+      "lines": [
+        "None of this means anything to an auditor unless it can actually be shown.",
+        "The evidence is the table's snapshot list after expiry, the physical file listing, and the key store's own record that a key was deleted — plus running the search again and watching it come back empty.",
+        "Writing the retention rule itself down as versioned, checkable configuration is what turns a vague promise about deleting data after some number of days into something a reviewer can actually verify."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the full shape of what just happened.",
+        "A delete on its own leaves the earlier snapshot standing exactly where it was. Expiring and compacting is what finally erases the file. A tombstone hides a value well before the log forgets the tombstone itself ever existed.",
+        "And one deleted key reaches every single copy at once — measured, not assumed."
       ]
     }
   ]

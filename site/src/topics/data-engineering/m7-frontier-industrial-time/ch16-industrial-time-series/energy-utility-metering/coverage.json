@@ -1,0 +1,111 @@
+{
+  "topic": "de.energy-utility-metering",
+  "syllabus": [
+    {
+      "clause": "cumulative meter counters → interval consumption (counter resets, rollovers, meter swaps)",
+      "at": [
+        { "step": "Reveal: a register is cumulative, consumption is a difference" },
+        { "step": "Reveal: a rollover, corrected for real" },
+        { "step": "Reveal: a reset, bounded but never recovered" },
+        { "step": "Reveal: the old fix was worse than an honest bound" },
+        { "step": "Reveal: a meter swap, split rather than diffed" }
+      ]
+    },
+    {
+      "clause": "power vs energy units",
+      "at": [{ "step": "Reveal: power integrated into energy, against the naive average" }]
+    },
+    {
+      "clause": "allocation of shared utilities to lines/products",
+      "at": [{ "step": "Reveal: one header meter, two allocation rules, a costed spread" }]
+    },
+    {
+      "clause": "energy-per-unit KPIs feeding sustainability reporting.",
+      "at": [{ "step": "Prove it" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Query functions (Prometheus documentation)",
+      "items": [
+        {
+          "item": "increase() and rate() automatically adjust for counter resets due to target restarts",
+          "at": [{ "step": "Reveal: a register is cumulative, consumption is a difference" }]
+        },
+        {
+          "item": "resets() treats any decrease between consecutive samples as a counter reset",
+          "at": [{ "step": "Reveal: a reset, bounded but never recovered" }]
+        }
+      ]
+    },
+    {
+      "source": "SI Brochure, 9th edition (BIPM)",
+      "items": [
+        {
+          "item": "the joule and watt definitions, and the watt's dimension as joule per second",
+          "at": [{ "step": "Reveal: power integrated into energy, against the naive average" }]
+        }
+      ]
+    },
+    {
+      "source": "Metering-data-exchange standards (not used; disclosed)",
+      "items": [
+        {
+          "item": "IEC's standards were not fetchable as quotable primary source; named as a gap",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A cumulative register's own guarantee (it only ever goes up) is exactly what makes a negative difference diagnostic rather than merely wrong — the direction of the anomaly tells you something broke, long before you know which of the three things it was.",
+        "at": [{ "step": "Reveal: a register is cumulative, consumption is a difference" }]
+      },
+      {
+        "item": "A rollover, a reset and a meter swap all look identical as a single negative number in a difference column — the three only separate once you bring in side information the raw numbers don't carry: the register's known width, a plausibility band, and install-history metadata.",
+        "at": [{ "step": "Predict: does a negative difference always mean the same thing?" }]
+      },
+      {
+        "item": "Correcting a rollover is not a heuristic, it's exact arithmetic, once the register's fixed width is known — there is zero uncertainty left in that correction, unlike the other two failure modes.",
+        "at": [{ "step": "Reveal: a rollover, corrected for real" }]
+      },
+      {
+        "item": "A bound is not a weaker answer than a point estimate — for a genuinely unobserved reset, a bound is the strongest true statement available, and presenting a point estimate anyway would be a stronger-sounding but false claim.",
+        "at": [{ "step": "Reveal: a reset, bounded but never recovered" }]
+      },
+      {
+        "item": "A system that silently replaces missing information with a confident default (zero) is more dangerous than one that visibly admits the gap, because the first produces numbers nobody has reason to double-check.",
+        "at": [{ "step": "Reveal: the old fix was worse than an honest bound" }]
+      },
+      {
+        "item": "A meter swap isn't a data-quality problem to detect and clean, it's a legitimate changeover that needs its own lifecycle event (an install record) feeding the pipeline, the same way topic 1's hierarchy needed a valid-time window rather than a lookup table.",
+        "at": [{ "step": "Reveal: a meter swap, split rather than diffed" }]
+      },
+      {
+        "item": "Treating a varying rate as if it were constant between samples is the single most common unit error in any metered system, and it is invisible in the arithmetic (an average times a duration looks exactly as valid as an integral) until you check it against the real sample spacing.",
+        "at": [{ "step": "Reveal: power integrated into energy, against the naive average" }]
+      },
+      {
+        "item": "An allocation rule is chosen, not measured, which means every KPI built on top of it (energy per unit, a sustainability figure) inherits that same chosen, not measured, quality — reporting the spread alongside the number is the only honest way to convey that.",
+        "at": [{ "step": "Reveal: one header meter, two allocation rules, a costed spread" }]
+      },
+      {
+        "item": "Converting an allocation spread into a currency figure (rather than leaving it as an abstract kWh range) is what makes the uncertainty legible to someone who has to decide whether it's worth resolving — an unquantified 'this number is a bit uncertain' rarely survives contact with a budget conversation.",
+        "at": [{ "step": "Reveal: one header meter, two allocation rules, a costed spread" }]
+      },
+      {
+        "item": "A sustainability or carbon-footprint figure that cites an energy-per-unit KPI without naming the allocation rule behind it is reporting a number with an invisible, unstated assumption baked in.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "topic": "de.asset-administration-shell-digital",
+  "syllabus": [
+    {
+      "clause": "the Industrie 4.0 asset model (IEC 63278): an AAS per asset with standardized submodels (digital nameplate, technical data, documentation, carbon footprint),",
+      "at": [
+        { "step": "Reveal: one type shell, two distinct instance shells" },
+        { "step": "Reveal: a REST read and a packaged file agree exactly" }
+      ]
+    },
+    {
+      "clause": "type vs instance shells, REST API and AASX packages;",
+      "at": [
+        { "step": "Reveal: one type shell, two distinct instance shells" },
+        { "step": "Reveal: a REST read and a packaged file agree exactly" }
+      ]
+    },
+    {
+      "clause": "its role in EU data spaces (e.g. Catena-X) and digital product passports.",
+      "at": [
+        { "step": "Hook: a shared shape says nothing about a value's truth" },
+        { "step": "Prove it: does the gate catch a wrong carbon-footprint number?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "IEC 63278-1:2023",
+      "items": [
+        {
+          "item": "the AAS is a standardized digital representation of an asset, giving uniform access to information and services",
+          "at": [{ "step": "Reveal: one type shell, two distinct instance shells" }]
+        }
+      ]
+    },
+    {
+      "source": "IDTA Part 1: Metamodel",
+      "items": [
+        {
+          "item": "type and instance assets are distinguished by AssetInformation/assetKind",
+          "at": [{ "step": "Reveal: one type shell, two distinct instance shells" }]
+        },
+        {
+          "item": "every submodel element needs a semanticId to have a well-defined meaning, referring either directly to an external reference or indirectly via a concept description",
+          "at": [{ "step": "Reveal: a semantic ID outlasts whatever a supplier calls it" }]
+        }
+      ]
+    },
+    {
+      "source": "IDTA Part 2: APIs / Part 5: AASX",
+      "items": [
+        {
+          "item": "Part 2 specifies the interfaces and APIs for the AAS and its submodels; Part 5 is the exchange file format for transporting information between value-chain partners",
+          "at": [{ "step": "Reveal: a REST read and a packaged file agree exactly" }]
+        }
+      ]
+    },
+    {
+      "source": "Catena-X / GS1 Belgium & Luxembourg",
+      "items": [
+        {
+          "item": "Catena-X's own use cases include PCF tracking, Digital Product Passports and Quality Management; the DPP is part of the ESPR and is consulted via a QR code",
+          "at": [{ "step": "Hook: a shared shape says nothing about a value's truth" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A supplier handing over three incompatible JSON shapes isn't a data problem waiting for more storage — it's an integration cost someone has to carry, once per supplier, forever, until a shape is agreed on.",
+        "at": [{ "step": "Hook: a shared shape says nothing about a value's truth" }]
+      },
+      {
+        "item": "The honest prediction isn't that a standard fixes data quality — it's that structure and meaning are a completely separate problem from whether a number is true, and solving one buys nothing toward the other.",
+        "at": [{ "step": "Predict: what does a shared shape actually buy?" }]
+      },
+      {
+        "item": "Describing a machine model's own specification once, in a type shell, instead of copying it into every instance, is the same move as separating a dimension from its facts — just applied to an asset instead of a database row.",
+        "at": [{ "step": "Reveal: one type shell, two distinct instance shells" }]
+      },
+      {
+        "item": "A semantic ID is a small piece of infrastructure doing a large job: it lets two companies that have never agreed on a naming convention still agree, silently, on what a property means.",
+        "at": [{ "step": "Reveal: a semantic ID outlasts whatever a supplier calls it" }]
+      },
+      {
+        "item": "Choosing between an API and a file isn't a technical detail buried in an integration spec — it's the difference between data that has to stay reachable and data that travels with whoever receives it.",
+        "at": [{ "step": "Reveal: a REST read and a packaged file agree exactly" }]
+      },
+      {
+        "item": "A validation gate that rejects a missing semantic ID is doing exactly what it was built for; expecting it to also catch a wrong number is asking a grammar checker to fact-check the sentence.",
+        "at": [{ "step": "Reveal: validation catches a structurally broken submodel" }]
+      },
+      {
+        "item": "The moment a submodel passes validation, it earns a kind of trust it hasn't actually earned yet — structural trust gets mistaken for factual trust constantly, and that mistake is exactly where this topic's hook lives.",
+        "at": [{ "step": "Reveal: validation never checks a value's truth" }]
+      },
+      {
+        "item": "Every piece of this topic reduces to the same move: a shared shape makes data exchangeable between strangers, and exchangeable has never once meant correct.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A carbon-footprint number that passed every structural check a pipeline could run on it is still, at that point, nothing more than an unverified claim wearing a very tidy format.",
+        "at": [{ "step": "Prove it: does the gate catch a wrong carbon-footprint number?" }]
+      },
+      {
+        "item": "Landing a supplier's submodels in a lakehouse with a contract isn't bureaucracy layered on top of the data engineering — the contract is the only place the obligation to actually check a value can be written down at all.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "This chapter closes exactly where it should: a hierarchy gave every reading a place, a historian and a gateway gave it a path, and the AAS gives the asset itself a shape everyone outside the plant can finally read.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

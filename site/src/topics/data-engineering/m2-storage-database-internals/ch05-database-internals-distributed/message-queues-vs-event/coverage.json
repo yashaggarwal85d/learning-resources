@@ -1,0 +1,126 @@
+{
+  "topic": "de.message-queues-vs-event",
+  "syllabus": [
+    {
+      "clause": "per-message ack and redelivery without replay (RabbitMQ, SQS) vs offset-based replayable logs (Kafka)",
+      "at": [
+        { "step": "Hook: the identical message, delivered two ways: a queue acknowledges and it's gone, a log advances a marker but keeps it" },
+        { "step": "Reveal: a queue deletes on acknowledgement" },
+        { "step": "Reveal: a log tracks a position, not a deletion" },
+        { "step": "Reveal: replay is the real dividing line" }
+      ]
+    },
+    {
+      "clause": "choosing by replay, ordering and fan-out",
+      "at": [
+        { "step": "Reveal: ordering and fan-out tilt the choice further" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "Kafka 4.2 share groups (KIP-932 \"queues for Kafka\", production-ready Feb 2026) blurring the line",
+      "at": [{ "step": "Reveal: Kafka's own share groups blur the line" }]
+    },
+    {
+      "clause": "(Kafka internals in Ch.9)",
+      "at": [{ "topic": "Consumer groups and rebalance protocols", "domain": "data-engineering", "quote": "classic protocol" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "RabbitMQ docs — Consumer Acknowledgements and Publisher Confirms",
+      "items": [
+        {
+          "item": "a positive acknowledgement marks a delivered message for deletion",
+          "at": [{ "step": "Reveal: a queue deletes on acknowledgement" }]
+        },
+        {
+          "item": "a negative acknowledgement instead discards, dead-letters, or requeues the same delivery, controlled by the requeue field",
+          "at": [{ "step": "Reveal: a queue deletes on acknowledgement" }]
+        }
+      ]
+    },
+    {
+      "source": "AWS docs — Amazon SQS visibility timeout",
+      "items": [
+        {
+          "item": "a message becomes visible again only if it was never deleted before its visibility timeout expired",
+          "at": [{ "step": "Hook: the identical message, delivered two ways: a queue acknowledges and it's gone, a log advances a marker but keeps it" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Kafka docs — Design, and Upgrading (4.2)",
+      "items": [
+        {
+          "item": "a consumer's own position is a single, rewindable integer per partition, and a message's own offset never changes",
+          "at": [{ "step": "Reveal: a log tracks a position, not a deletion" }]
+        },
+        {
+          "item": "share groups (KIP-932) are production-ready in Kafka's current release, adding cooperative per-record acknowledgement without assigning a whole partition to one consumer",
+          "at": [{ "step": "Reveal: Kafka's own share groups blur the line" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a queue message, consumed and acknowledged against a real on-disk database, is genuinely gone when asked for again; a log message survives a consumer's own offset rewind and is read again unchanged",
+          "at": [{ "step": "Reveal: replay is the real dividing line" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The hook's own two outcomes are not an arbitrary design choice between two systems; they follow directly from what each system's own acknowledgement protocol is defined to do, which is exactly what the predict step is built to surface before the reveal names the mechanism.",
+        "at": [{ "step": "Hook: the identical message, delivered two ways: a queue acknowledges and it's gone, a log advances a marker but keeps it" }]
+      },
+      {
+        "item": "A queue's own negative-acknowledgement requeue is not the same thing as a log's replay, even though both result in a message being seen again: a requeue happens because the original delivery was never successfully acknowledged, while a log's replay can happen for a message that was already successfully consumed once.",
+        "at": [{ "step": "Reveal: a queue deletes on acknowledgement" }]
+      },
+      {
+        "item": "A log's own offset being a single rewindable integer, rather than a per-message deletion flag, is what makes the storage itself cheap to keep: tracking consumption state costs one number per partition regardless of how many messages exist, which is a different trade-off than a queue's own per-message bookkeeping.",
+        "at": [{ "step": "Reveal: a log tracks a position, not a deletion" }]
+      },
+      {
+        "item": "Replay being possible is a direct consequence of the log never deleting on read, not a separately bolted-on feature; any system that keeps a message's own position permanent and lets a reader's own position move independently gets replay for free, which is why Kafka's own documentation can describe it as violating 'the common contract of a queue' rather than as a special case.",
+        "at": [{ "step": "Reveal: replay is the real dividing line" }]
+      },
+      {
+        "item": "Fan-out and ordering are two separate real properties that happen to both favor the log for a related reason: partitioning is what gives per-partition ordering, and the same partitioning (plus never deleting on read) is what lets many independent consumer groups each read the whole stream without interfering with each other.",
+        "at": [{ "step": "Reveal: ordering and fan-out tilt the choice further" }]
+      },
+      {
+        "item": "Share groups blurring the queue/log line doesn't make the distinction this topic draws obsolete; it adds a third real option (per-record acknowledgement on a log) rather than replacing either of the first two, which is exactly why the 'Prove it' step's own correct answer is still a plain offset-based log, not share groups specifically.",
+        "at": [{ "step": "Reveal: Kafka's own share groups blur the line" }]
+      },
+      {
+        "item": "This topic's own lab measurement uses a real on-disk database rather than an in-memory structure deliberately, because the deletion in the queue table and the offset update in the log table are both genuine, committed writes — the same durability guarantee a real broker's own acknowledgement and offset-commit protocols rely on, not an in-memory approximation of it.",
+        "at": [{ "deep": "Internals" }]
+      },
+      {
+        "item": "This topic establishes which structure gets a consumer to its data (a queue or a log); it says nothing yet about structures that trade correctness itself for a massive reduction in memory, which is exactly the shift the next topic makes by opening the chapter's closing section on approximate structures.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "The 'Prove it' step's own scenario combines fan-out and replay deliberately, not redundantly: a workload that only needed fan-out could still work with enough queue consumers added, and a workload that only needed replay could work with a single-consumer log, but needing both at once is what rules out the queue entirely.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic's own log-offset material is the same structural idea this chapter's earlier write-ahead-log topic already introduced one layer down: an append-only record addressed by a position that never changes, reused here at the level of an entire messaging system instead of a single database's own durability mechanism.",
+        "at": [{ "topic": "Write-ahead logging and fsync semantics", "domain": "data-engineering", "quote": "Write-ahead logging" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

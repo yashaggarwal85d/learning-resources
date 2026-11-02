@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Streaming into the lakehouse
+
+This topic answers the previous one's handoff — a lakehouse table is read by a batch-style
+query engine; this topic is the other destination, built to answer a query in milliseconds
+against data that arrived seconds ago. See
+[Streaming into the lakehouse](../streaming-into-lakehouse/) first if any of that isn't
+familiar.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Storage overview" href="https://druid.apache.org/docs/latest/design/storage/" by="Apache Druid">Per-partition realtime tasks, segment handoff, exactly-once offset commits.</Resource>
+  <Resource kind="reading" title="Stream ingestion with Upsert" href="https://docs.pinot.apache.org/release-1.4.0/manage-data/data-import/upsert-and-dedup/upsert" by="Apache Pinot">Upsert tables over immutable segments.</Resource>
+  <Resource kind="reading" title="Kafka table engine" href="https://clickhouse.com/docs/en/engines/table-engines/integrations/kafka" by="ClickHouse">The in-process Kafka engine versus ClickPipes.</Resource>
+</ul>
+
+</section>

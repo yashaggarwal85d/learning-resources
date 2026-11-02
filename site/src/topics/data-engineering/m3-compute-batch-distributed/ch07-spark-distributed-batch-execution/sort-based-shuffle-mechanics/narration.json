@@ -1,0 +1,71 @@
+{
+  "topic": "de.sort-based-shuffle-mechanics",
+  "steps": [
+    {
+      "lines": [
+        "Four map tasks are about to run a shuffle. Each one sorts its own rows and spills them for a group by.",
+        "Here's the question before we look at anything. When those four tasks finish, how many files actually sit on disk?",
+        "Let's actually count them, rather than guess from how many tasks there are."
+      ]
+    },
+    {
+      "lines": [
+        "I ran it against a real Spark session and listed every file it wrote.",
+        "Four map tasks produced exactly four shuffle data files, and separately, exactly four index files. One pair, per task.",
+        "Not four total, not eight combined into fewer files. Four distinct pairs, matching the task count precisely."
+      ]
+    },
+    {
+      "lines": [
+        "Commit to an answer before I show you the next measurement.",
+        "Same million rows, same group by, but this time split across eight map tasks instead of four. Does the file count climb to match, or does it stay at four since the underlying data hasn't changed at all?",
+        "Think about what a map task actually writes, not about how much data passes through it."
+      ],
+      "answer": [
+        "It's tempting to reason from the data: the rows are identical, so surely the files are too.",
+        "But a map task writes its own file no matter how much or how little passes through it. That's a property of the task, not of the row count.",
+        "Eight map tasks means eight pairs of files, over the exact same rows that four tasks turned into four pairs."
+      ]
+    },
+    {
+      "lines": [
+        "Measured, and it's exactly that.",
+        "The identical million rows, now split across eight map tasks, wrote eight brand new data files and eight brand new index files.",
+        "Nothing about the data moved. Only the task count did, and the file count followed it precisely."
+      ]
+    },
+    {
+      "lines": [
+        "So those files exist, scattered across whichever executors ran each map task. How does a reducer, somewhere else entirely, know where to find its piece?",
+        "The moment a map task finishes, it reports its block locations back to the driver.",
+        "And before a reducer ever reaches across the network for anything, it asks one thing first: the MapOutputTracker, which holds exactly that map from block to location."
+      ]
+    },
+    {
+      "lines": [
+        "One more commitment, and this one's sneakier.",
+        "Hold the four map tasks fixed this time, and instead grow the number of reduce buckets. Does the number of logical blocks being fetched grow the same way growing the map tasks did, or is that a totally different kind of scaling?",
+        "The honest answer requires knowing what's actually inside one map task's single sorted file."
+      ],
+      "answer": [
+        "The easy guess is that blocks only depend on map tasks, since that's what drove the count a moment ago.",
+        "But every map task's one file already has a contiguous span inside it for every single reduce bucket, not just one.",
+        "Add a bucket, and every map task's file gains one more span. The block count is the product of the two counts, not the sum of them."
+      ]
+    },
+    {
+      "lines": [
+        "Measured: with four map tasks and ninety-seven buckets, that shuffle already carries three hundred eighty-eight logical blocks.",
+        "Grow either side of that multiplication, map tasks or reduce buckets, and the block count climbs with it. There's no flat floor anywhere in this.",
+        "That's the real shape of a shuffle's cost: not additive, multiplicative."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the full mechanism, stated precisely.",
+        "Each map task writes exactly one sorted data file and one index file. Reducers never guess where those live, they ask the MapOutputTracker, which tracks every block's real location.",
+        "And what gets fetched is M map tasks times R reduce partitions worth of small blocks, over the network, serialized on both ends. That multiplication, not any single operation, is most of what a shuffle actually costs."
+      ]
+    }
+  ]
+}

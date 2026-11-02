@@ -1,0 +1,8 @@
+- **Batch job**: a workload that runs to completion and stops, as opposed to a service that runs forever. *Where you meet it:* every step.
+- **Idempotent**: safe to run more than once with the same result. *Where you meet it:* the two-pods-one-index and per-index steps.
+- **Exit code**: the integer a container process returns on exit; the pod failure policy reads it. *Where you meet it:* the failure-policy and predict-2 steps.
+- **Retry budget**: how many failures a Job (or one of its indexes) tolerates before giving up. *Where you meet it:* the hook through the per-index and max-failed-indexes steps.
+- **Completion index**: the number (0 to completions-1) the control plane assigns to each pod of an Indexed Job. *Where you meet it:* the no-queue and per-index steps.
+- **Backoff**: the growing delay between retries after a failure. *Where you meet it:* the per-index backoff step.
+- **Time zone in a schedule**: a CronJob's `.spec.timeZone`, so its cron expression means the same wall-clock time everywhere. *Where you meet it:* the concurrency-policy step's context.
+- **Missed run**: a scheduled CronJob execution that never started, because the controller was down or busy. *Where you meet it:* the missed-schedules step.

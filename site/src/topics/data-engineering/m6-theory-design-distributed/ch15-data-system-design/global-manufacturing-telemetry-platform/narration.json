@@ -1,0 +1,78 @@
+{
+  "topic": "de.global-manufacturing-telemetry-platform",
+  "steps": [
+    {
+      "lines": [
+        "The shop floor asked for real-time dashboards, and the platform team built a cloud-only streaming pipeline to give it to them.",
+        "The moment the plant's own link to that cloud actually went down, every single dashboard on the floor went dark with it.",
+        "And once the link came back, the backlog that had piled up flooded straight in, keeping the dashboards stale for hours more."
+      ]
+    },
+    {
+      "lines": [
+        "Notice that neither failure was actually about the network itself being too slow; both were about what the design assumed would always be reachable.",
+        "Which two decisions, missing from that first version, would have kept the plants running and made reconnecting genuinely boring?"
+      ],
+      "answer": [
+        "A bigger link wouldn't have helped once it was actually down, and it does nothing at all for a backlog flooding back in.",
+        "What the plant actually needed was its own local autonomy during the outage, plus a throttle on the catch-up once the link returned."
+      ]
+    },
+    {
+      "lines": [
+        "Each plant's own event rate adds up into one fleet-wide total, and a shift change or a line restart pushes that total well above its normal average.",
+        "A published compression result gets quoted here as a reference point for what's achievable, genuinely never as a promise for this particular fleet's own signals."
+      ]
+    },
+    {
+      "lines": [
+        "A gateway sitting at the edge holds every reading durably for as long as the link stays down, then forwards them back in order once it returns.",
+        "That buffer's own size is genuinely just one multiplication: how long the outage runs, times the rate it has to hold for that entire stretch."
+      ]
+    },
+    {
+      "lines": [
+        "Sensors on the floor speak in two different protocols, and the design has to decide where that translation actually happens.",
+        "A safety signal earns a stricter delivery guarantee than a routine reading does, and both still land in the very same durable log regardless.",
+        "That single log is what lets every plant stay fully decoupled from whatever happens to be consuming its data downstream."
+      ]
+    },
+    {
+      "lines": [
+        "A hot store answers an operator's question about data that's seconds old; a lakehouse holds years of history for whoever analyzes it later.",
+        "Cardinality, the sheer count of distinct series driven by labels and by how many assets actually exist, is genuinely the hot store's own limit.",
+        "That's a different constraint entirely from how much the lakehouse itself can hold, which barely cares how many distinct series feed into it.",
+        "Each reading also has to learn which machine, line, and plant it actually came from, and that join can happen early, right at ingest, or late, at read."
+      ]
+    },
+    {
+      "lines": [
+        "The plant keeps its own local broker, a short-retention store, and its own alert rules running even with the cloud link fully down.",
+        "A safety alarm earns a genuinely tighter recovery target than a quality metric does, and that difference gets written down, never assumed.",
+        "Some sites' own data genuinely has to stay put by rule, with only an aggregate ever replicated upward to the cloud."
+      ]
+    },
+    {
+      "lines": [
+        "Once the link comes back, the buffer that piled up during the outage replays straight through that very same idempotent ingest path.",
+        "A throttle on that replay is what actually keeps the catch-up itself from becoming a second outage, just shaped differently than the first one."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually closed the gap between a plant going dark and a boring reconnect: an estimate built with a cited reference point, a buffer sized from the outage itself, and plant autonomy treated as its own degraded mode with a throttled catch-up behind it."
+      ]
+    },
+    {
+      "lines": [
+        "The sensor count across these same three plants grows by a full order of magnitude.",
+        "The WAN link itself still buffers through an outage just fine, regardless of how many sensors happen to be feeding it.",
+        "So what's actually the next bottleneck here?"
+      ],
+      "answer": [
+        "More sensors sending more data doesn't actually break the link, since the design already buffers straight through an outage regardless of volume.",
+        "What genuinely climbs right along with the sensor count is the hot store's own series count, against that very same label-driven limit."
+      ]
+    }
+  ]
+}

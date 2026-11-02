@@ -1,0 +1,69 @@
+{
+  "topic": "de.diagnosing-jobs-spark-ui",
+  "steps": [
+    {
+      "lines": [
+        "Five jobs are all running slow. From the outside they look identical.",
+        "The question this closing topic answers is whether one dashboard can tell you which of five very different problems you actually have, without reading a single line of code."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first one, measured directly.",
+        "Eight pieces split the same stretch of work, and one of them takes hundreds of times longer than the rest. That's not noise. That's one key carrying almost all of the data."
+      ]
+    },
+    {
+      "lines": [
+        "Before you open that stretch's own breakdown by piece, think about what it has to show.",
+        "A gap this large, in a table built to summarize exactly this -- does it stay hidden, or does it announce itself?"
+      ],
+      "answer": "It announces itself. The smallest and the middle value sit close together, and the largest stands alone, far above both."
+    },
+    {
+      "lines": [
+        "Here's exactly what the table shows.",
+        "The smallest and the middle value agree with each other, and the largest stands alone, far above both. You don't need a formula. You need to look at three numbers."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the reasoning behind that.",
+        "The giveaway for this kind of imbalance isn't a slow job overall. It's one stretch of work where the pieces don't agree with each other.",
+        "Compare a piece to its own neighbors, not to some entirely different stretch of work."
+      ]
+    },
+    {
+      "lines": [
+        "Now a second job shows that exact same shape -- one piece far out ahead, the rest uniform.",
+        "Is this the same imbalance you just saw, or does the shape alone not actually settle that?"
+      ],
+      "answer": "The shape alone doesn't settle it. The job's own per-piece numbers, not its shape, are what decide."
+    },
+    {
+      "lines": [
+        "The shape alone doesn't settle it.",
+        "This job's outlier piece carries real spilled memory, and real spilled disk space. A separate job entirely shows something else again: real time spent collecting garbage in one version, and none at all in another version doing the identical aggregation."
+      ]
+    },
+    {
+      "lines": [
+        "Two more failures, read the same way.",
+        "One job runs thousands of tiny pieces, each one so small that the overhead of scheduling it outweighs the work it actually does.",
+        "Another job goes quiet for a stretch where every worker sits idle -- work is happening, just not inside any stretch this dashboard tracks."
+      ]
+    },
+    {
+      "lines": [
+        "Five symptoms, one method.",
+        "Look at a stretch's own spread across pieces first. Then look at that piece's own spill and garbage-collection numbers. Then count the pieces against how little each one does. Then check the gaps between jobs for idle workers."
+      ]
+    },
+    {
+      "lines": [
+        "Every one of these failures leaves its own trace in exactly one place.",
+        "Naming the cause isn't a guess from the symptom -- it's reading the one trace that's already sitting there, waiting."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "topic": "de.data-skipping-statistics-page",
+  "steps": [
+    {
+      "lines": [
+        "What you're looking at is one thousand rows of the same data, laid out two different ways, with the exact same question asked of both: find everything in a narrow slice of values.",
+        "One version keeps those values in order before splitting them into groups. The other scrambles them first, using the same groups of the same size.",
+        "Watch how differently those two layouts answer an identical question, and the reason why will carry the rest of this topic."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the setup: ten groups of rows, and each group, on its own, already knows the smallest and largest value it contains.",
+        "A query comes in asking only for a narrow slice near the middle of the full range. Given what each group already knows about itself, how many of those ten groups actually need to be opened at all?",
+        "Think about what a group's own smallest and largest value can tell you, before you've looked at a single row inside it."
+      ],
+      "answer": [
+        "Only one of them, as it turns out — the rest can be ruled out immediately, using nothing but the two numbers each group already carries about itself.",
+        "If a group's own largest value falls below where the query starts, or its own smallest value falls above where the query ends, nothing inside that group could possibly match — there's no reason to ever open it.",
+        "That's the entire trick: two small numbers, known in advance, are enough to rule out almost the whole dataset without reading a single row of it."
+      ]
+    },
+    {
+      "lines": [
+        "Walk through all ten groups with that rule and only one of them survives — the one whose own range happens to overlap the narrow slice the query asked for.",
+        "Every other group gets ruled out for the same simple reason: its own smallest-to-largest range sits entirely outside what the query could ever match.",
+        "Nine groups, each representing a tenth of the whole dataset, never get opened at all — and the reason is knowable before a single value inside any of them is read."
+      ]
+    },
+    {
+      "lines": [
+        "Now run that exact same query against the scrambled version of the same thousand values, split into the same ten groups by size.",
+        "This time, nearly every group's own smallest-to-largest range stretches across almost the entire dataset, because scrambling spread every value randomly across every group.",
+        "With ranges that wide, there's nothing left to rule out — every single group has to be opened and checked, because every single group could plausibly contain a match.",
+        "Keep this in mind whenever skipping seems to stop working for no obvious reason: it's not that the trick broke, it's that nothing about how the data was laid out gives it anything to work with anymore."
+      ]
+    },
+    {
+      "lines": [
+        "Having to open one group out of ten is already a big win, but the exact same trick works again, one level further down, inside that single surviving group.",
+        "Split that one group into four smaller pieces, and each of those smaller pieces also keeps track of its own smallest and largest value, completely independently of the group as a whole.",
+        "Apply the identical rule at this smaller scale and three of those four pieces get ruled out too — only one of them actually overlaps the query's narrow slice."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a very different kind of column: one where every single value is unique, with nothing ever repeating anywhere in the dataset.",
+        "A column like that has one serious problem for the trick you've just seen: its smallest-to-largest range, in every group, stretches across almost the entire set of possible values, no matter how the data happens to be sorted.",
+        "So here's the real question: is there anything at all that can still answer 'does this one specific value exist in this group,' once the smallest-and-largest trick has nothing useful left to say?"
+      ],
+      "answer": [
+        "There is, but it isn't the smallest-and-largest trick anymore — it's a completely different structure, built specifically for exactly this situation.",
+        "Instead of two boundary numbers, it keeps a large block of bits, specifically shaped so a single value can be checked against it in roughly constant time, regardless of how many groups or how large the dataset actually is.",
+        "It can never wrongly say a value is absent when it was actually inserted — but it can occasionally, and only occasionally, say a value might be present when it never actually was."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that structure built for real, following its own published algorithm down to the exact bit-selection rule it specifies.",
+        "Tens of thousands of real keys get inserted into it, one at a time, each one flipping a small, fixed number of bits scattered across the structure according to that same published rule.",
+        "Check any one of those inserted keys afterward and the structure answers correctly every single time — not most of the time, every time, because that guarantee is unconditional by design.",
+        "That's the one promise a structure like this always keeps: nothing you actually put in can ever come back looking like it was never there."
+      ]
+    },
+    {
+      "lines": [
+        "What it doesn't promise is the opposite direction: a key that was never inserted can still, occasionally, come back looking like it might be present.",
+        "The people who designed this exact structure published their own worked example of how often that should happen, for one particular size and one particular number of inserted keys.",
+        "Build that identical configuration here and check it against tens of thousands of genuinely absent keys, and the rate this sandbox actually measures lands almost exactly on the number the original design specifies."
+      ]
+    },
+    {
+      "lines": [
+        "Step away from bit structures for a moment and consider something that sounds like a harmless space-saving trick: shortening a long stored value down to something shorter that still bounds it correctly.",
+        "Shortened correctly, that trick is completely safe — the shortened value still sits above everything it's supposed to bound, so nothing gets missed.",
+        "Shortened carelessly, though, the exact same trick can quietly produce a boundary that's actually smaller than a real value it was supposed to cover.",
+        "When that happens, a query that should have matched a row that genuinely exists gets told, incorrectly, that the group isn't even worth opening — and the row simply disappears from the result, with no error, no warning, nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and every single trick in this topic is doing the same underlying thing: proving, from information gathered in advance, that some portion of the data is safe to never read at all.",
+        "A group's own smallest and largest value proves it for whole groups. The same idea, applied one level smaller, proves it again for individual pieces within a group.",
+        "The bit structure proves a weaker but still useful version of the same thing, for data that has no usable order at all.",
+        "Every one of those proofs only holds if whatever a writer recorded about the data was actually true — get that wrong, even by rounding a boundary the wrong direction, and a reader ends up skipping real data while believing, the entire time, that it did nothing wrong."
+      ]
+    }
+  ]
+}

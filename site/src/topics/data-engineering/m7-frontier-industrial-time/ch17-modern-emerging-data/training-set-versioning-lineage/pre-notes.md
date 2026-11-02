@@ -1,0 +1,6 @@
+- **Snapshot**: a named, immutable reference to the exact state of a table at one point in time.
+- **Tag**: a human-friendly name pinned to one specific commit or snapshot, for reuse later.
+- **Branch**: an isolated, writable view of a repository, created as a pointer to a commit rather than a copy of its data.
+- **Content hash**: an identifier computed from a file's exact bytes; identical content always produces the identical hash.
+- **Experiment tracker**: a system that records a model run together with the code, parameters and dataset that produced it.
+- **Label pipeline**: the process that assigns the ground-truth answer a model is trained to predict.

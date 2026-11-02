@@ -1,0 +1,77 @@
+{
+  "topic": "de.gdpr-erasure-across-lakehouse",
+  "steps": [
+    {
+      "lines": [
+        "An erasure request runs through the lakehouse in just minutes, and the ticket closes right away.",
+        "An audit days later finds that exact same customer's name sitting in a Kafka topic, in last week's backup, in a marketing export, and in a data scientist's training set.",
+        "The lakehouse delete itself was correct, and it was complete."
+      ]
+    },
+    {
+      "lines": [
+        "So which parts of the design were actually missing here, and which of them have no technical answer at all?"
+      ],
+      "answer": [
+        "The delete operation itself wasn't buggy — it was correct and complete for the lakehouse, and the places the name survived were simply never reached by that operation in the first place.",
+        "The real gap sits in every place a table operation never reaches, plus one question that only a lawyer can actually answer."
+      ]
+    },
+    {
+      "lines": [
+        "A subject's own identifier gets traced through classification tags and a lineage graph first.",
+        "Then a subject index maps that identifier straight to the exact files and partitions holding them, so a deletion never has to scan the whole lake at all."
+      ]
+    },
+    {
+      "lines": [
+        "That same subject's data can still sit in a spreadsheet, in a model trained on it, or in an export — each one entirely outside the lineage graph's own reach.",
+        "A register names every one of those with a human owner attached, rather than pretending the lineage graph already covers it.",
+        "A correct delete in one place isn't an erasure process on its own — the blind spots lineage genuinely can't see still need a named owner standing behind them."
+      ]
+    },
+    {
+      "lines": [
+        "Think of the delete as writing forward, not erasing backward.",
+        "A fresh snapshot gets written, but the lake's own time-travel feature keeps the previous version reachable until somebody actually expires it.",
+        "Setting that expiry clock is the whole design decision, measured against how long the law says it can wait and how long an auditor needs the trail kept."
+      ]
+    },
+    {
+      "lines": [
+        "Delete just one per-subject key, and every copy of that subject's data, including every single backup, becomes unreadable all at once.",
+        "That's traded directly against the cost of keeping one key per subject, plus a decryption lookup on every single read.",
+        "Crypto shredding trades one per-subject key and a decryption lookup for every copy, including every backup, going unreadable at the exact same instant."
+      ]
+    },
+    {
+      "lines": [
+        "Delete-and-expire's own cost rises both with how often requests arrive and with how long backups get kept around.",
+        "Crypto shredding's cost, meanwhile, stays flat once its own up-front key cost is paid.",
+        "Those two lines cross at a request rate you can actually compute."
+      ]
+    },
+    {
+      "lines": [
+        "An automated pipeline assembles the snapshot list after expiry, the physical-file listing, the key store's own deletion record, and a repeat search for the subject.",
+        "All of that gets emitted for every single request — never produced only once an auditor happens to ask for it.",
+        "Proof of deletion is itself a deliverable this pipeline emits on its own, not some auditor's job to go dig up afterward."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually turned this from one correct operation into a real process: naming every place the data could hide, picking a schedule or a key strategy by the arithmetic rather than by habit, and never calling it done until the pipeline hands back its own proof."
+      ]
+    },
+    {
+      "lines": [
+        "A second erasure request now arrives for a subject whose data was replicated into a second region before that first request ever landed.",
+        "Does the exact same process still find everything it needs to?"
+      ],
+      "answer": [
+        "Treating it exactly like a single-region request would miss a replica the erasure pipeline never even knew existed.",
+        "That's precisely the kind of blind spot this design registers rather than assumes away, so checking the subject index and the blind-spot register for every region the data was placed in follows directly from the register's own purpose."
+      ]
+    }
+  ]
+}

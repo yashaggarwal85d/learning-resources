@@ -1,10 +1,12 @@
 import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
-// Every number here is computed and asserted in examples.py: a dictionary attack on a plain,
-// unkeyed hash recovers nine in ten known emails; the same attack against HMAC recovers zero; a
-// linkage attack on quasi-identifiers, with the pseudonymisation key never used, re-identifies
-// about two in three rows.
+// Measured directly (examples.py, against real local hashing and a real linkage attack on
+// synthetic data): a dictionary attack recovers the large majority of a synthetic email list's
+// plain SHA-256 hashes; the identical attack against the same emails under a keyed HMAC, without
+// the secret key, recovers none of them; a linkage attack joining quasi-identifiers from a
+// pseudonymised release against an outside reference list re-identifies a real, measurable
+// fraction of individuals who were never named in the release at all.
 const reel: Reel = {
   steps: [
     {
@@ -12,171 +14,157 @@ const reel: Reel = {
       body: (
         <>
           The analytics team asks for customer emails "hashed, so it's anonymous." Ten minutes
-          later, a list of known email addresses, hashed the same way, matches nine in ten rows
-          back to named people.
+          with a list of known emails, hashed the same way, matches most of the table back to
+          named people. Was it ever anonymous?
         </>
       ),
-      duration: 5.2,
-      fig: '"hashed, so it\'s anonymous." Nine in ten, matched back.',
+      duration: 5,
+      fig: 'hashed emails, called anonymous. A known email list says otherwise.',
       Visual: S.Hook,
     },
     {
-      title: 'Predict: what single change stops this?',
+      title: 'Reveal: pseudonymisation and encryption protect data; they do not change what it legally is for whoever holds the key',
       body: (
         <>
-          What single change would have made that attack fail — and would the result then be
-          anonymous, or only pseudonymised?
+          A pseudonym can't be tied back to a person without extra information, kept separately.
+          That extra information is still what it takes, and whoever holds it still holds
+          personal data.
         </>
       ),
       duration: 4.8,
-      fig: 'one change stops the attack. Anonymous, or only pseudonymised?',
+      fig: 'protection, not a change of status. The key holder still has personal data.',
+      Visual: S.RevealStillPersonalForKeyHolder,
+    },
+    {
+      title: 'Predict: hash a known email list with the same plain function as the pseudonymised table. Recovers most of it?',
+      body: (
+        <>
+          Take a candidate list of known emails, hash each one with the exact same plain
+          function used on a pseudonymised table, and look for matches. Does that recover most
+          of the table?
+        </>
+      ),
+      duration: 2.8,
+      fig: 'same plain hash on known emails. Recovers most of the table?',
       predict: {
         options: [
-          { label: 'A keyed hash (HMAC) stops the attack, and the data becomes anonymous' },
-          { label: 'A keyed hash (HMAC) stops the attack, but the data stays pseudonymised', correct: true },
+          { label: "No -- a hash scrambles the input beyond recognition, so a matching candidate shouldn't exist" },
+          { label: 'Yes -- a plain hash is deterministic, so the same email always produces the same hash', correct: true },
         ],
         explain: (
           <>
-            HMAC under a secret key stops the dictionary attack cold. But the key is exactly the
-            "additional information" the legal definition cares about — kept separately, not
-            destroyed. The data is still personal data for whoever holds that key.
+            Yes. A plain hash is public and deterministic: anyone who hashes the same candidate
+            list gets the identical output and can match it straight back to the table.
           </>
         ),
       },
-      Visual: S.Predict,
+      Visual: S.PredictDictionaryAttack,
     },
     {
-      title: 'Reveal: pseudonymised data is still personal data for the key holder',
+      title: 'Reveal: the dictionary attack recovers the large majority of the table, measured directly',
       body: (
         <>
-          The legal test is attribution without additional information. Data that can still be
-          attributed with that information — the key, the dictionary — stays information on an
-          identifiable person for whoever holds it.
+          Measured directly: hashing a known candidate list with the same plain function
+          recovers the large majority of the pseudonymised table's own entries.
         </>
       ),
-      duration: 5.6,
-      fig: 'attribution, with the key. Still personal data, for the holder.',
-      Visual: S.RevealLegalLine,
+      duration: 4.8,
+      fig: 'plain hash: deterministic, public. Dictionary attack: recovers most, measured.',
+      Visual: S.RevealDictionaryRecovers,
     },
     {
-      title: 'Reveal: the dictionary attack on a plain hash',
+      title: 'Elaborate: a keyed hash needs a secret the attacker never has',
       body: (
         <>
-          A plain hash is deterministic and public. Hash every candidate email with the same
-          function, and the ones that match the table are recovered — no guessing of the function
-          itself required.
+          Under a keyed hash, the same attack recovers nothing, measured directly, because the
+          secret key is the "additional information" the law requires to be kept separately --
+          without it, the output isn't reproducible by anyone else.
         </>
       ),
-      duration: 5.2,
-      fig: 'same function, every candidate. Matches, recovered.',
-      Visual: S.RevealDictionaryAttack,
+      duration: 5,
+      fig: 'HMAC needs the key. The same attack, measured, recovers nothing.',
+      takeaway: 'A plain hash of an email or phone number is a public, reproducible dictionary waiting to be matched.',
+      Visual: S.ElaborateHMACNeedsSecret,
     },
     {
-      title: 'Reveal: HMAC resists it',
+      title: 'Predict: a release with no names, only quasi-identifiers, joined to an outside list that has names. Anyone re-identified?',
       body: (
         <>
-          A keyed hash under a secret produces a different result entirely without that secret.
-          The attacker's dictionary, hashed the same old way, matches nothing in the table.
+          A pseudonymised release holds no names or emails, only quasi-identifiers like postcode
+          and birth year. Join it against an outside list that already has names attached to the
+          same quasi-identifiers. Does anyone get re-identified?
         </>
       ),
-      duration: 5.2,
-      fig: 'same dictionary, no key. Nothing matches.',
-      Visual: S.RevealHmacResists,
+      duration: 2.8,
+      fig: 'no names, just quasi-identifiers, joined to an outside list. Anyone re-identified?',
+      predict: {
+        options: [
+          { label: 'No -- removing direct identifiers before release is exactly what makes a dataset anonymous' },
+          { label: 'Yes -- quasi-identifiers in combination can be unique enough to link straight back to a name', correct: true },
+        ],
+        explain: (
+          <>
+            Yes. A combination of quasi-identifiers can be unique enough on its own to match a
+            single named record in an outside list, with no key or dictionary ever needed.
+          </>
+        ),
+      },
+      Visual: S.PredictLinkageAttack,
     },
     {
-      title: "Reveal: the CJEU's relative approach, EDPS v SRB",
+      title: 'Reveal: a real, measurable fraction gets re-identified, with the key never compromised',
       body: (
         <>
-          The Court held that pseudonymised data isn't personal data in every case for every
-          person — only for someone with the means to re-identify. For a recipient with no such
-          means, it may not be.
+          Measured directly: joining quasi-identifiers against an outside reference list
+          re-identifies a real, measurable fraction of the pseudonymised release -- without
+          touching the key or the dictionary at all.
         </>
       ),
-      duration: 5.6,
-      fig: 'not personal data, for everyone, in every case. It depends.',
-      Visual: S.RevealRelativeApproach,
+      duration: 4.8,
+      fig: 'key: never compromised. Quasi-identifiers: still re-identify, measured.',
+      Visual: S.RevealLinkageReidentifies,
     },
     {
-      title: "Reveal: the controller's duty is judged from the controller's own side",
+      title: "Elaborate: the CJEU's EDPS v SRB judgment -- pseudonymised data isn't personal data in all cases, for every person",
       body: (
         <>
-          The same judgment held that the duty to inform people is judged from the controller's
-          own position, at the moment it collects the data — not from whatever position a later
-          recipient happens to be in.
+          The Court of Justice confirmed that pseudonymisation can genuinely prevent someone
+          other than the controller from identifying the data subject, so for that recipient the
+          data may not be personal data at all -- judged by that recipient's own actual means,
+          not the controller's.
         </>
       ),
-      duration: 5.6,
-      fig: "the controller's own side, at collection. Not the recipient's.",
-      takeaway: "A controller can't point to a recipient's blind spot to escape its own duty to inform.",
-      Visual: S.RevealControllerDuty,
+      duration: 5,
+      fig: 'not personal data for every person -- judged by the recipient\'s own means.',
+      takeaway: "Identifiability is relative: the same dataset can be personal data for one party and not for another.",
+      Visual: S.ElaborateRelativeIdentifiability,
     },
     {
-      title: 'Reveal: the Digital Omnibus, pending',
+      title: 'Reveal: the Digital Omnibus proposal would write this relative approach into the law directly -- not yet adopted',
       body: (
         <>
-          A pending proposal would write that relative approach into the law itself, and let
-          regulators decide the line by a later rule. The regulators' own opinion on that proposal
-          asks for that specific piece to be removed. Nothing here is law yet.
+          A pending proposal would add this relative approach straight into the definition of
+          personal data, and let the Commission decide by a later act exactly when pseudonymised
+          data stops counting as personal. It is only a proposal, and the EDPB and EDPS have
+          urged the lawmakers not to adopt it.
         </>
       ),
-      duration: 5.6,
-      fig: 'written into the law, by proposal. Regulators object. Not law yet.',
-      takeaway: 'A pending proposal changes nothing today; this topic states its status, not its outcome.',
-      Visual: S.RevealDigitalOmnibus,
-    },
-    {
-      title: 'Reveal: linkage attacks',
-      body: (
-        <>
-          Even a perfectly keyed pseudonym gives nothing to a dictionary attack. But join its
-          quasi-identifiers — postcode, birth year, what someone buys — against an outside list,
-          and about two in three rows come back uniquely matched. No key involved at all.
-        </>
-      ),
-      duration: 5.6,
-      fig: 'quasi-identifiers, joined outside. About two in three, matched. No key needed.',
-      takeaway: 'A keyed pseudonym resists a dictionary attack but not a linkage attack on what else sits beside it.',
-      Visual: S.RevealLinkageAttacks,
+      duration: 5,
+      fig: 'a pending proposal, not yet law -- the EDPB and EDPS urged against it.',
+      Visual: S.RevealDigitalOmnibusPending,
     },
     {
       title: 'Recap',
       body: (
         <>
-          Pseudonymised stays personal data for the key holder. The relative approach says it may
-          not be, for someone without the means to re-identify — judged from the controller's own
-          side. A proposal, pending, would write that into law. A keyed hash stops a dictionary
-          attack; nothing stops a linkage attack on what sits beside it.
+          A plain hash falls to a dictionary attack. A keyed hash holds. Quasi-identifiers can
+          still re-identify, with the key never touched at all.
         </>
       ),
-      duration: 6.0,
-      fig: "key holder, relative approach, pending law, dictionary versus linkage.",
+      duration: 5,
+      fig: 'plain hash falls; HMAC holds; quasi-identifiers still re-identify.',
+      takeaway: 'Whether data is anonymous is never just the transformation; it depends on what a real attacker can actually do.',
       Visual: S.Recap,
-    },
-    {
-      title: 'Prove it',
-      body: (
-        <>
-          A pseudonymised release has its key destroyed, but its quasi-identifiers are still
-          sitting right there, intact. Which attack still works, and does the data count as
-          anonymous now?
-        </>
-      ),
-      duration: 5.2,
-      fig: 'key destroyed, quasi-identifiers intact. Still attackable?',
-      predict: {
-        options: [
-          { label: 'Destroying the key makes it anonymous; no attack applies anymore' },
-          { label: 'A linkage attack on the quasi-identifiers still works; it is not anonymous', correct: true },
-        ],
-        explain: (
-          <>
-            Destroying the key only closes the dictionary attack on the pseudonym itself. The
-            quasi-identifiers left beside it are an entirely separate path back to a person, and
-            the linkage reveal just measured how often that path succeeds.
-          </>
-        ),
-      },
-      Visual: S.ProveIt,
     },
   ],
 };

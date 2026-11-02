@@ -1,0 +1,6 @@
+- **Shadow deployment**: a model that receives real traffic and logs its output, but whose output is never served.
+- **Canary**: a model that receives a share of real traffic and whose output is served for that share.
+- **Request id**: a unique identifier carried through a request's life, used here to join a label back to its logged vector.
+- **PII**: personally identifiable information — data that can single out or re-identify one specific person.
+- **Retention policy**: a stated limit on how long stored data is kept before it's deleted.
+- **Model version**: the identifier of the exact model artifact that scored a given request.

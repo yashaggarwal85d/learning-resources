@@ -1,0 +1,8 @@
+- **Pod**: one or more containers sharing network and storage, the unit Kubernetes schedules. *Where you meet it:* every step.
+- **Node**: a machine (virtual or physical) in the cluster that runs pods. *Where you meet it:* the taints and affinity step.
+- **Namespace**: a scope that separates a cluster's objects into named groups. *Where you meet it:* mentioned in passing for Secrets' namespace-level read access.
+- **Label and selector**: a key-value tag on an object, and a query that matches objects by their tags. *Where you meet it:* implied by how a Service finds its pods.
+- **Replica**: one running copy of a Pod template that a Deployment or StatefulSet manages. *Where you meet it:* the predict step and the Pod/Deployment/StatefulSet step.
+- **YAML manifest**: the declarative file that describes an object's desired spec. *Where you meet it:* every step's "spec" idea.
+- **`kubectl`**: the command-line client used to read and change cluster objects. *Where you meet it:* the hook's manual edit.
+- **API server**: the component every other piece of Kubernetes talks to, and the only writer of the cluster's declared state. *Where you meet it:* the control-loop step.

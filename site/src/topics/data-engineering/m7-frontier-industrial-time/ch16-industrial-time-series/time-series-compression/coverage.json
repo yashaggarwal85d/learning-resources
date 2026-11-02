@@ -1,0 +1,140 @@
+{
+  "topic": "de.time-series-compression",
+  "syllabus": [
+    {
+      "clause": "delta-of-delta timestamps and XOR-encoded floats (Gorilla),",
+      "at": [
+        { "step": "Reveal: delta-of-delta timestamps and XOR'd floats" },
+        { "step": "Predict: same encoder, same ratio on a different signal?" },
+        { "step": "Reveal: three regimes, three very different ratios" }
+      ]
+    },
+    {
+      "clause": "Chimp,",
+      "at": [{ "step": "Reveal: Chimp's threshold, and the wider window that helps" }]
+    },
+    {
+      "clause": "and ALP (SIGMOD 2024; DuckDB's default float codec) with dictionary/RLE for tags;",
+      "at": [
+        { "step": "Reveal: ALP's decimal-aware encoding, and why it wins here" },
+        { "step": "Reveal: dictionary and RLE shrink the tags, not the values" }
+      ]
+    },
+    {
+      "clause": "lossy options (deadband, swinging-door — §16.3);",
+      "at": [{ "step": "Recap" }]
+    },
+    {
+      "clause": "what the gains really are — Gorilla's ~12× over raw 16-byte points comes mostly from regular timestamps and slowly changing values, and ALP's benchmarks show older float codecs barely beat Zstd, so the win is decimal-aware encoding plus streaming-friendly, fast decode.",
+      "at": [
+        { "step": "Reveal: three regimes, three very different ratios" },
+        { "step": "Recap" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Gorilla: A Fast, Scalable, In-Memory Time Series Database (Pelkonen et al., VLDB 2015)",
+      "items": [
+        {
+          "item": "series to an average of 1.37 bytes per point, a 12x reduction",
+          "at": [{ "step": "Hook: the same algorithm, a very different ratio" }]
+        },
+        {
+          "item": "a delta of delta of -2 is stored with a two bit header and seven bits, for a total of 9 bits; an XOR with eleven leading zeros and one meaningful bit is stored in 14 total bits",
+          "at": [{ "step": "Reveal: delta-of-delta timestamps and XOR'd floats" }]
+        },
+        {
+          "item": "about 96% of all time stamps compress to a single bit, and roughly 51% of all values compress to a single bit since the current and previous values are identical",
+          "at": [{ "step": "Reveal: delta-of-delta timestamps and XOR'd floats" }]
+        }
+      ]
+    },
+    {
+      "source": "Chimp: Efficient Lossless Floating Point Compression for Time Series Databases (Liakos et al., PVLDB 2022)",
+      "items": [
+        {
+          "item": "the trailing-zero threshold is set to 6, the bit length necessary to specify the maximum number of meaningful bits in any XORed value",
+          "at": [{ "step": "Reveal: Chimp's threshold, and the wider window that helps" }]
+        },
+        {
+          "item": "Chimp128 compares against the best of the previous 128 values rather than only the immediately preceding one",
+          "at": [{ "step": "Reveal: Chimp's threshold, and the wider window that helps" }]
+        }
+      ]
+    },
+    {
+      "source": "ALP: Adaptive Lossless floating-Point Compression (Afroozeh, Kuffo and Boncz, SIGMOD 2024)",
+      "items": [
+        {
+          "item": "earlier schemes including Gorilla and Chimp128 have compression ratios not better than general-purpose compressors such as Zstd, while decompression is much slower",
+          "at": [{ "step": "Reveal: ALP's decimal-aware encoding, and why it wins here" }]
+        },
+        {
+          "item": "ALP losslessly encodes doubles as integers if they originated as decimals, and otherwise compresses the doubles' front bits in vectors designed to auto-vectorise",
+          "at": [{ "step": "Reveal: ALP's decimal-aware encoding, and why it wins here" }]
+        }
+      ]
+    },
+    {
+      "source": "DuckDB: ALP library page",
+      "items": [
+        {
+          "item": "The ALP algorithm is the default compression method for floating-point numbers in DuckDB",
+          "at": [{ "step": "Reveal: ALP's decimal-aware encoding, and why it wins here" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A 12x reduction isn't a property of the Gorilla algorithm in the abstract — it's a property of the algorithm applied to data with a specific shape (regular timestamps, slowly changing values), so quoting the number without the data that produced it promises something the algorithm alone can't keep.",
+        "at": [{ "step": "Hook: the same algorithm, a very different ratio" }]
+      },
+      {
+        "item": "Reproducing the paper's own worked bit counts exactly, rather than trusting its prose description of the rule, is what turns 'the algorithm does X' into a checked claim instead of a restated one.",
+        "at": [{ "step": "Reveal: delta-of-delta timestamps and XOR'd floats" }]
+      },
+      {
+        "item": "The honest answer to 'does the same encoder give the same ratio on different data' is not a single number — it's that the ratio is a function of two inputs, the encoder and the data, and changing either one changes the output.",
+        "at": [{ "step": "Predict: same encoder, same ratio on a different signal?" }]
+      },
+      {
+        "item": "A noisy float with many significant digits defeats delta-of-delta and XOR encoding for the same underlying reason: both rely on successive values being close to each other, and noise by definition isn't.",
+        "at": [{ "step": "Reveal: three regimes, three very different ratios" }]
+      },
+      {
+        "item": "A refinement that only wins under a specific further condition (here, a repeating pattern a wider match window can find) is not a strictly better algorithm — it's a different bet about what the data looks like, and the bet can lose on data the original algorithm wins on.",
+        "at": [{ "step": "Reveal: Chimp's threshold, and the wider window that helps" }]
+      },
+      {
+        "item": "ALP's advantage isn't that it compresses harder than Gorilla in general — it's that it targets a specific, common failure mode (decimal values whose low bits are measurement noise, not information) that bit-pattern codecs can't see because they operate on the float's raw bits, not its decimal meaning.",
+        "at": [{ "step": "Reveal: ALP's decimal-aware encoding, and why it wins here" }]
+      },
+      {
+        "item": "A tag column repeating the same few strings millions of times and a value column that changes every reading are different compression problems with different right answers — applying a value-shaped codec to a label-shaped column, or vice versa, wastes the properties each data type actually has.",
+        "at": [{ "step": "Reveal: dictionary and RLE shrink the tags, not the values" }]
+      },
+      {
+        "item": "A lossy codec that drops points within an error band is solving a different problem than a lossless codec that keeps every bit — stating the error bound explicitly is what keeps 'we compressed it more' from quietly becoming 'we changed what the data says.'",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "The real lesson of the Facebook-to-plant gap isn't that Gorilla is overrated — it's that a compression ratio quoted without its data's shape is a promise with a hidden precondition, and the fix is to measure your own data's shape, not to distrust the published number.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "A measurement that only reports the best-case regime for each codec would make every codec look interchangeable; reporting bytes per point across all three regimes for every codec is what actually lets a reader pick the right tool for their own data instead of the tool with the best marketing number.",
+        "at": [{ "step": "Prove it" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

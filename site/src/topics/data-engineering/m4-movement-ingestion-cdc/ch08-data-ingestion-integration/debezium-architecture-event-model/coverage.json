@@ -1,0 +1,169 @@
+{
+  "topic": "de.debezium-architecture-event-model",
+  "syllabus": [
+    {
+      "clause": "Debezium 3.x (Java 17+ for connectors, 21+ for Debezium Server): Kafka Connect connectors vs Debezium Server (Kinesis, Pub/Sub, Redis, …) vs embedded engine",
+      "at": [{ "step": "Reveal: three deployment shapes" }]
+    },
+    {
+      "clause": "the change-event envelope (before/after/source/op/ts_ms)",
+      "at": [
+        { "step": "Predict: read against insert" },
+        { "step": "Reveal: the envelope card, measured" }
+      ]
+    },
+    {
+      "clause": "single-message transforms (unwrap/new-record-state, routing, filtering)",
+      "at": [
+        { "step": "Reveal: what unwrap actually drops" },
+        { "step": "Reveal: unwrap, measured" }
+      ]
+    },
+    {
+      "clause": "JDBC sink connector",
+      "at": [
+        { "step": "Reveal: why upsert is the safe mode" },
+        { "step": "Reveal: the idempotent sink, measured" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Debezium docs: Release Series 3.7",
+      "items": [
+        {
+          "item": "Tested versions: Java 17+ for connectors; 21+ for Debezium Server, Operator, Outbox and Quarkus extension; Kafka Connect 3.1 and later",
+          "at": [{ "out": "named only, per pre-notes.md and post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: Architecture",
+      "items": [
+        {
+          "item": "Kafka Connect is a framework and runtime for implementing and operating source connectors that send records into Kafka and sink connectors that propagate records out",
+          "at": [{ "step": "Reveal: three deployment shapes" }]
+        },
+        {
+          "item": "The Debezium server is a configurable, ready-to-use application that streams change events from a source database to a variety of messaging infrastructures",
+          "at": [{ "step": "Reveal: three deployment shapes" }]
+        },
+        {
+          "item": "Change events can be sent to messaging infrastructures such as Amazon Kinesis, Google Cloud Pub/Sub, or Apache Pulsar",
+          "at": [{ "step": "Reveal: three deployment shapes" }]
+        },
+        {
+          "item": "The Debezium engine runs not via Kafka Connect, but as a library embedded into a custom Java application",
+          "at": [{ "step": "Reveal: three deployment shapes" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: Store Debezium state (Debezium Server)",
+      "items": [
+        {
+          "item": "Redis (Stream) is one of Debezium Server's own documented sink targets",
+          "at": [{ "out": "named only, confirming the syllabus's own Redis mention" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: New Record State Extraction (event flattening)",
+      "items": [
+        {
+          "item": "The event flattening SMT extracts the after field from a Debezium change event and replaces the original change event with only its after field",
+          "at": [
+            { "step": "Reveal: what unwrap actually drops" },
+            { "step": "Reveal: unwrap, measured" }
+          ]
+        },
+        {
+          "item": "Instead of dropping the record that contains the before row data, the SMT can be configured to keep it",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Debezium docs: JDBC sink connector",
+      "items": [
+        {
+          "item": "Configure the connector to use upsert mode so that data written to the sink database is idempotent, and replaying an event always produces the same final row state",
+          "at": [
+            { "step": "Reveal: why upsert is the safe mode" },
+            { "step": "Reveal: the idempotent sink, measured" },
+            { "step": "Prove it" }
+          ]
+        },
+        {
+          "item": "delete.enabled must be explicitly set to true for the connector to remove rows",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        },
+        {
+          "item": "When schema.evolution is set to basic, the connector automatically creates or alters the destination table according to the incoming event's structure",
+          "at": [{ "out": "named only, per post-notes.md Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Confluent docs: Kafka Connect configuration reference (standing in for an unreadable Apache Kafka page)",
+      "items": [
+        {
+          "item": "The name of the Kafka topic where source connector offsets are stored",
+          "at": [{ "out": "named only, tying the Connect deployment shape back to topic 18's own offset storage" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "item": "The envelope-rebuild measurement uses one insert and one update from the same connection, decoded by the same slot, so the before-field contrast between them is the same stream's own two different outcomes, not two separately constructed records that might differ for unrelated reasons.",
+        "at": [{ "step": "Reveal: the envelope card, measured" }]
+      },
+      {
+        "item": "The unwrap measurement applies the identical hand-built transform function to both an update and a delete, confirming the delete's own __deleted-marker behavior is the same function's own branch, not a separately written special case.",
+        "at": [{ "step": "Reveal: unwrap, measured" }]
+      },
+      {
+        "item": "The delete used for the unwrap measurement is captured under REPLICA IDENTITY FULL specifically so its before carries real column values rather than only a key, making the __deleted-plus-columns claim concrete rather than a __deleted-plus-nothing claim that a default-identity table would have produced.",
+        "at": [{ "step": "Reveal: unwrap, measured" }]
+      },
+      {
+        "item": "The idempotent-upsert measurement applies the exact same record object twice rather than two separately constructed but equal records, ruling out any difference in construction as a confound and isolating the upsert statement itself as the only variable between the first write and the replay.",
+        "at": [{ "step": "Reveal: the idempotent sink, measured" }]
+      },
+      {
+        "item": "The row-count assertion after the replay (exactly one row) is checked in addition to the row's own final values, since a sink could in principle leave the visible values correct while still having silently inserted a second, duplicate row — the measurement rules out both failure modes, not just the more obvious one.",
+        "at": [{ "step": "Reveal: the idempotent sink, measured" }]
+      },
+      {
+        "item": "The wrong option in the first predict question — that column values alone are enough to distinguish a re-snapshot read from an insert — is ruled out by the measured unwrap function itself: nothing in its own output carries any trace of which op produced it, so the information needed to distinguish them is structurally gone, not merely hard to find.",
+        "at": [{ "step": "Predict: read against insert" }]
+      },
+      {
+        "item": "The wrong option in the final predict question — that a sink stays consistent under replay regardless of insert mode — is ruled out directly by Debezium's own documentation, which ties idempotence specifically to upsert mode being configured, not to any property of the JDBC sink connector in general.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "Every scratch table and replication slot this topic creates is confirmed dropped inside the same function that created it, verified by three successive clean runs of examples.py, and the shared orders table is never touched by any of this topic's four functions.",
+        "at": [{ "out": "verified directly before writing any content, per REVIEW.md" }]
+      },
+      {
+        "item": "The Confluent Kafka Connect configuration reference is used explicitly as a disclosed substitute for the unreadable Apache Kafka Connect user guide, confirmed unreachable the same way earlier topics in this chapter confirmed it, rather than silently passing off a different source as the one CHAPTER.md names.",
+        "at": [{ "out": "disclosed source substitution, per SOURCES.md" }]
+      },
+      {
+        "item": "The transactional outbox router, Flink CDC, landing in table formats, each engine's own capture mechanism, Kafka internals, and Kafka Connect exactly-once are each named in CHAPTER.md's own 'Leaves out' line, and none of them appear anywhere in this topic's reel, narration or examples.py.",
+        "at": [{ "out": "disclosed scope boundary, per CHAPTER.md's own 'Leaves out'" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-01",
+    "by": "self-review",
+    "open": []
+  }
+}

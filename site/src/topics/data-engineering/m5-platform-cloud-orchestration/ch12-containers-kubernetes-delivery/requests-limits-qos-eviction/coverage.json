@@ -1,0 +1,127 @@
+{
+  "topic": "de.requests-limits-qos-eviction",
+  "syllabus": [
+    {
+      "clause": "the scheduler places by requests, the kubelet enforces limits",
+      "at": [
+        { "step": "Two different jobs, two different numbers" }
+      ]
+    },
+    {
+      "clause": "QoS classes (Guaranteed/Burstable/BestEffort) and eviction order under node pressure",
+      "at": [
+        { "step": "Same limit, three different fates" },
+        { "step": "Who does the kubelet evict first?" },
+        { "step": "Three classes, one rule" },
+        { "step": "Two rankings, not one" },
+        { "step": "The exception: even Guaranteed can fall" },
+        { "step": "A spike that outruns the poll" },
+        { "deep": "Two rankings, not one" }
+      ]
+    },
+    {
+      "clause": "the CPU-limit throttling debate",
+      "at": [
+        { "step": "The CPU-limit debate, named honestly" },
+        { "deep": "The CPU-limit debate" }
+      ]
+    },
+    {
+      "clause": "priority classes and preemption",
+      "at": [
+        { "step": "Preemption and resize, the two boundaries" }
+      ]
+    },
+    {
+      "clause": "PodDisruptionBudgets",
+      "at": [
+        { "step": "A budget that never reaches this" }
+      ]
+    },
+    {
+      "clause": "in-place pod resize (GA in 1.35)",
+      "at": [
+        { "step": "Preemption and resize, the two boundaries" },
+        { "deep": "Why a resize can't cross a QoS boundary" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Kubernetes documentation, Configure Quality of Service for Pods",
+      "items": [
+        { "item": "Guaranteed requires every container's CPU and memory limit to equal its request", "at": [{ "step": "Three classes, one rule" }] },
+        { "item": "Burstable is not Guaranteed but has at least one request or limit set", "at": [{ "step": "Three classes, one rule" }] },
+        { "item": "BestEffort has no requests or limits at all", "at": [{ "step": "Three classes, one rule" }] },
+        { "item": "a worked kubectl example creating each class", "at": [{ "out": "a hands-on exercise this build machine can't run (no local cluster); the rule itself, not the kubectl walkthrough, is the outcome this topic needs" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Node-pressure Eviction",
+      "items": [
+        { "item": "the kubelet's eviction ranking: usage-over-request, then priority, then overage — never QoS class itself", "at": [{ "step": "Who does the kubelet evict first?" }, { "step": "Two rankings, not one" }] },
+        { "item": "a Guaranteed pod is never evicted for another pod's usage, but can be for a system daemon's own need", "at": [{ "step": "The exception: even Guaranteed can fall" }] },
+        { "item": "oom_score_adj: -997 Guaranteed, 1000 BestEffort, a formula for Burstable", "at": [{ "step": "Two rankings, not one" }] },
+        { "item": "the kubelet may not observe memory pressure fast enough; --kernel-memcg-notification mitigates", "at": [{ "step": "A spike that outruns the poll" }] },
+        { "item": "default hard eviction thresholds (memory.available<100Mi on Linux, disk and inode thresholds)", "at": [{ "out": "specific default numeric thresholds beyond this topic's own claims list; the ranking logic, not the threshold values, is the outcome" }] },
+        { "item": "the kubelet ignores PodDisruptionBudgets and terminationGracePeriodSeconds for node-pressure eviction; hard thresholds use a zero-second grace period", "at": [{ "step": "A budget that never reaches this" }] },
+        { "item": "minimum eviction reclaim configuration", "at": [{ "out": "a kubelet-tuning detail below this topic's scope, which is the eviction ranking and QoS relationship, not kubelet configuration flags" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Disruptions",
+      "items": [
+        { "item": "node-pressure eviction is listed as an involuntary disruption", "at": [{ "step": "A budget that never reaches this" }] },
+        { "item": "involuntary disruptions cannot be prevented by a PDB, only counted against it", "at": [{ "step": "A budget that never reaches this" }] },
+        { "item": "a PDB limits how many replicas may be down from voluntary disruption at once, enforced via the Eviction API", "at": [{ "deep": "In code review" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Pod Priority and Preemption",
+      "items": [
+        { "item": "preemption only happens when the pending pod's priority exceeds every victim's", "at": [{ "step": "Preemption and resize, the two boundaries" }] },
+        { "item": "preempted pods still receive their normal graceful termination period before forced removal", "at": [{ "step": "Preemption and resize, the two boundaries" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Autoscaling Workloads",
+      "items": [
+        { "item": "in-place pod resize has been stable (GA) since Kubernetes v1.35", "at": [{ "step": "Preemption and resize, the two boundaries" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Resize CPU and Memory Resources assigned to Containers",
+      "items": [
+        { "item": "a resize cannot change a pod's QoS class; the resized values must still satisfy the original class's rules", "at": [{ "deep": "Why a resize can't cross a QoS boundary" }] },
+        { "item": "a memory decrease during resize is a best-effort attempt to avoid an OOM-kill, not a guarantee", "at": [{ "deep": "Why a resize can't cross a QoS boundary" }] }
+      ]
+    },
+    {
+      "source": "Robusta Blog, \"For the Love of God, Stop Using CPU Limits on Kubernetes\" (practitioner opinion)",
+      "items": [
+        { "item": "the argument that CPU limits cause more throttling harm than they prevent, and should be dropped in favor of accurate requests alone", "at": [{ "step": "The CPU-limit debate, named honestly" }, { "deep": "The CPU-limit debate" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "a container that specifies a limit but not a request gets that request auto-set to match the limit (per the QoS docs' own note), which is why a pod can still land in Guaranteed without writing the request field explicitly", "at": [{ "step": "Three classes, one rule" }] },
+      { "item": "QoS classification happens once at admission and is immutable except through a resize, which itself cannot cross a class boundary — the two facts are the same underlying rule seen at two different times", "at": [{ "deep": "Why a resize can't cross a QoS boundary" }] },
+      { "item": "the kubelet's own eviction ranking and PriorityClass's preemption ranking are two more separate systems, distinct from both the kubelet-vs-kernel split this topic's main claim covers and from each other — preemption only ever acts on pending pods needing to be scheduled, never on a pod already running under pressure", "at": [{ "step": "Preemption and resize, the two boundaries" }] },
+      { "item": "EphemeralStorage-triggered eviction (DiskPressure) does not follow the same QoS-estimate pattern the memory-pressure scenario does, per the eviction docs' own caution note", "at": [{ "out": "a documented caveat narrower than this topic's memory-focused running example; named here for a future seam, not taught in the reel" }] },
+      { "item": "a static pod (one defined directly on a node, not through the API server) cannot use priorityClassName and must set its priority field directly to avoid being evicted under pressure", "at": [{ "out": "a narrow operational detail about static pods, below this topic's scope" }] },
+      { "item": "the kubelet's eviction loop first tries to reclaim node-level resources (garbage-collecting dead pods, deleting unused images) before evicting any end-user pod at all", "at": [{ "deep": "Two rankings, not one" }] },
+      { "item": "PriorityClass's integer value, not just its name, is what preemption and eviction priority both actually compare; an empty priorityClassName resolves to zero by default", "at": [{ "step": "Preemption and resize, the two boundaries" }] },
+      { "item": "the memcg-notification mitigation for slow kubelet polling is a kubelet flag, not a cgroup v2 file itself — it changes how fast the kubelet learns about a crossed threshold, not the threshold's enforcement, which the kernel already does unconditionally", "at": [{ "step": "A spike that outruns the poll" }] },
+      { "item": "a system daemon exceeding its own system-reserved/kube-reserved allocation is the one documented case where the kubelet evicts a Guaranteed or under-request Burstable pod, and it still picks the lowest-priority one among those, not an arbitrary one", "at": [{ "step": "The exception: even Guaranteed can fall" }] },
+      { "item": "the Robusta opinion piece's own recommendation for memory is the opposite of its CPU recommendation (always set memory limit equal to request, never set a CPU limit at all) — a detail this topic's CPU-limit step doesn't need but that a learner reading the source directly should not conflate with the CPU argument", "at": [{ "out": "the source's own memory-specific companion argument, not part of this topic's claim about CPU limits" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

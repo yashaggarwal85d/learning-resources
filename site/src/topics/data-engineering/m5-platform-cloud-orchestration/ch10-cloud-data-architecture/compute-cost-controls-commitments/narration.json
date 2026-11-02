@@ -1,0 +1,73 @@
+{
+  "topic": "de.compute-cost-controls-commitments",
+  "steps": [
+    {
+      "lines": [
+        "Watch what happens before the bill, not after it. One missing filter, one full table scan, and nothing in the path stops it.",
+        "Now watch the same query with a cap configured. It fails in an instant, and nothing was ever charged at all."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, separate two different jobs a control can do. One tells you something happened. The other refuses to let it happen.",
+        "Of these four, which one actually stops the money, rather than reporting on it afterward?"
+      ],
+      "answer": [
+        "A guardrail that refuses to run before the cost is incurred at all.",
+        "A tag and an alert both fire after the spend already happened. Only a check that runs before execution can keep the cost from existing."
+      ]
+    },
+    {
+      "lines": [
+        "Notice where this check actually happens. Not after the query runs — before a single byte is read.",
+        "The engine estimates what the query would scan, compares that estimate to your limit, and only lets it through if it fits."
+      ]
+    },
+    {
+      "lines": [
+        "Resist the urge to treat auto-suspend and a resource monitor as the same kind of thing. One reacts to time. The other reacts to spend.",
+        "Together they close a gap a tag alone never could: an idle warehouse stops billing on its own, and a credit threshold can suspend it outright."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what this tag actually changes, and what it doesn't. It shows up correctly later, in the billing record, attributed to the right budget.",
+        "What it never does is stop a single dollar from being spent — which makes it a completely different tool from a guardrail that blocks."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trade being made, in plain terms. A steep discount, in exchange for losing the instance on short notice, at any time.",
+        "Watch the checkpoint do its job: when the preemption actually hits, only the work since the last save gets redone, not the whole thing."
+      ]
+    },
+    {
+      "lines": [
+        "Don't treat this as a simple discount. It's a bet on how much you'll actually use, stretched across a multi-year term.",
+        "Below a certain utilization, paying full price the whole time would genuinely have cost less than the commitment did."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this gate doesn't care whether the code is correct. It cares whether the bill for running it crossed a line.",
+        "Cross that line on this run, and the build goes red — exactly the way a failed test would, with nobody needing to notice the invoice days later."
+      ]
+    },
+    {
+      "lines": [
+        "If you only remember one line: some of these controls block, and some of them only label — and mixing the two up is the actual risk.",
+        "A cap and a monitor stop money from leaving. A tag just explains where it went. A discount trades flexibility for price. And now, even the bill itself can fail a build."
+      ]
+    },
+    {
+      "lines": [
+        "Before I answer, picture the job running overnight, unattended, with nobody watching a dashboard until morning.",
+        "Of everything covered tonight, which single change would have actually stopped the cost, not just reported it the next day?"
+      ],
+      "answer": [
+        "Configuring a byte cap that fails the query before it runs.",
+        "A tag only labels spend after it happens. Preemptible compute changes who can interrupt the job, not what it costs per byte. Only the cap itself runs before the charge."
+      ]
+    }
+  ]
+}

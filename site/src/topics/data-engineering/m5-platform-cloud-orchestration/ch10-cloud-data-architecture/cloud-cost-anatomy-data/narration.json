@@ -1,0 +1,70 @@
+{
+  "topic": "de.cloud-cost-anatomy-data",
+  "steps": [
+    {
+      "lines": [
+        "A team writes one file per row, every single day. They check the storage line on the bill first, because that's the instinct — bytes held, priced per gigabyte.",
+        { "beat": 0.3 },
+        "That line barely moves. Something else on that same bill, something they never thought to check, turns out to be bigger than everything else on it combined."
+      ]
+    },
+    {
+      "lines": [
+        "Pause and think about this before I answer it. The bytes written are exactly the same bytes, whether they land as one file or a million. The storage line proves that — it didn't move.",
+        "So what, exactly, scales with the file count instead of the byte count, and ends up costing more than the storage itself?"
+      ],
+      "answer": [
+        "Requests. Every PUT, every page of a directory listing, every GET is billed as its own operation, counted per call.",
+        "Split the same bytes into far more objects, and you've multiplied the number of billed operations without changing the number of bytes at all. That's the whole trap."
+      ]
+    },
+    {
+      "lines": [
+        "A cloud object store runs two separate meters on the same data, not one. One meter counts the bytes you're holding this month. The other counts every single operation performed against them.",
+        "A tiny object and a huge object cost the exact same amount on that second meter, for the exact same operation. The meter doesn't know or care how big the thing it just touched was."
+      ]
+    },
+    {
+      "lines": [
+        "Reserved capacity bills for existing, full stop — whether or not anything is actually running on it at any given moment. Consumed capacity only bills for what you actually used.",
+        "Whatever gap sits between what you reserved and what you consumed isn't a rounding error. It's money spent on hours nothing happened."
+      ]
+    },
+    {
+      "lines": [
+        "Staying inside one availability zone usually costs nothing. Crossing into a different zone, even in the exact same region, has its own separate price.",
+        "Crossing into a different region entirely is priced again, differently. Leaving to the public internet is priced again, on top of whichever of those already applied. A NAT gateway adds yet another fee, on the very same bytes, regardless of where they were headed."
+      ]
+    },
+    {
+      "lines": [
+        "A managed service costing more than running the same thing yourself isn't the provider padding a number for no reason. Think about what that gap is actually buying.",
+        "It's buying the patching, the scaling, the failing-over — all of it moved off your team and onto theirs. That's a real thing changing hands, not nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where everything from this topic pays off at once, on one real job. Storage held for however long the run takes. Requests against every object it touches along the way.",
+        "Network for the shuffle crossing zone boundaries, and for the result shipped back out. The gateway's own fee for whatever left through it.",
+        "Four separate lines, one job, and not a single dollar left sitting there unlabeled."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it all together. Storage runs on two meters, bytes and operations. Compute bills for what you reserved, not just what you actually used.",
+        { "beat": 0.3 },
+        "Network charges separately for every boundary a byte crosses. A managed premium is buying moved burden, not buying nothing. What's still missing is a map: three vendors, three different names, for these same four ideas."
+      ]
+    },
+    {
+      "lines": [
+        "One more to work out yourself. Twenty writers race to update the same counter. The naive version makes the fewest requests of anyone in the room, and it loses nearly every single commit.",
+        "The safe version retries until nothing at all is lost. Which one of those two actually costs more in requests?"
+      ],
+      "answer": [
+        "The safe one. Being correct was never free here — every single retry after a lost race is a real, counted request the naive version simply never makes, because it never notices it lost anything.",
+        "Correctness and cost sit on two different axes entirely. Cheaper doesn't make something safer, and safer doesn't make something cheaper — you have to measure each one on its own."
+      ]
+    }
+  ]
+}

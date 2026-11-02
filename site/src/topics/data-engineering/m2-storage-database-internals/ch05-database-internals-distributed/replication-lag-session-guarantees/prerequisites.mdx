@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: physical vs logical replication
+
+<ul class="resources">
+  <Resource kind="reel" title="Physical vs logical replication" domain="data-engineering" host="de.physical-vs-logical-replication" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Synchronous, asynchronous and semi-synchronous replication" domain="data-engineering" host="de.synchronous-asynchronous-semi-synchronous" by="the acknowledgement vocabulary this topic's standby uses (asynchronous)" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Read Your Writes" href="https://jepsen.io/consistency/models/read-your-writes" by="Jepsen">The guarantee this topic breaks and then fixes with a real LSN token.</Resource>
+  <Resource kind="reading" title="Monotonic Reads" href="https://jepsen.io/consistency/models/monotonic-reads" by="Jepsen">The second guarantee, measured holding on this topic's own single standby.</Resource>
+  <Resource kind="reading" title="26.2. Log-Shipping Standby Servers" href="https://www.postgresql.org/docs/current/warm-standby.html" by="PostgreSQL documentation">The real standby this topic's own setup built, and the WAL-receiver lag indicator it describes.</Resource>
+  <Resource kind="reading" title="27.2.4. pg_stat_replication" href="https://www.postgresql.org/docs/current/monitoring-stats.html" by="PostgreSQL documentation">The real write_lag/flush_lag/replay_lag numbers this topic measures under load.</Resource>
+</ul>
+
+</section>

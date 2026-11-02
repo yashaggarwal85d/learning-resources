@@ -1,0 +1,72 @@
+{
+  "topic": "de.latency-percentiles-histogram-aggregation",
+  "syllabus": [
+    {
+      "clause": "why means hide tails",
+      "at": [
+        { "step": "Reveal: why means hide tails" }
+      ]
+    },
+    {
+      "clause": "p50/p95/p99/p99.9/max",
+      "at": [
+        { "step": "Reveal: the percentile ladder, p50 through max" }
+      ]
+    },
+    {
+      "clause": "percentiles cannot be averaged across hosts or time windows, so merge histograms (HdrHistogram) or mergeable sketches (t-digest/DDSketch, §5.6) instead",
+      "at": [
+        { "step": "Reveal: merging histograms instead of averaging percentiles" }
+      ]
+    },
+    {
+      "clause": "tail amplification under fan-out (a request touching 100 shards hits at least one shard's p99 about 63% of the time)",
+      "at": [
+        { "step": "Reveal: fan-out tail amplification" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "HdrHistogram — README",
+      "items": [
+        { "item": "histogram objects are additive, so per-thread histograms are merged by a reporting thread rather than having their separately-computed statistics averaged", "at": [{ "step": "Reveal: merging histograms instead of averaging percentiles" }] }
+      ]
+    },
+    {
+      "source": "wrk2 — README",
+      "items": [
+        { "item": "a closed-loop model measures latency from actual send to actual completion, which exhibits a strong Coordinated Omission effect since each connection only sends its next request after the previous response arrives", "at": [{ "step": "Reveal: closed-loop vs. constant-rate generators, and the chapter lab's stall" }] },
+        { "item": "wrk2 avoids Coordinated Omission by measuring latency from the time a request should have been sent on a constant schedule, not the time it actually was sent", "at": [{ "step": "Reveal: closed-loop vs. constant-rate generators, and the chapter lab's stall" }] }
+      ]
+    },
+    {
+      "source": "Dean & Barroso — The Tail at Scale",
+      "items": [
+        { "item": "a single server with a ninety-ninth-percentile latency of one second makes one user request in a hundred slow when handled by just that one server", "at": [{ "step": "Reveal: fan-out tail amplification" }] },
+        { "item": "the same server's latency profile, fanned out to one hundred parallel servers, makes sixty-three percent of user requests take more than one second", "at": [{ "step": "Reveal: fan-out tail amplification" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately uses a believable, round mean (forty milliseconds) against a dramatically worse single request (four seconds) to make the mean-hides-tail mechanism viscerally obvious before any math is shown, then the reel's own lab reproduces the same shape at a smaller, honestly-labeled scale rather than claiming the hook's own numbers were measured.", "at": [{ "step": "Hook" }] },
+      { "item": "Choosing a nearest-rank percentile convention (the smallest value at or above which p percent of samples fall) rather than linear interpolation is stated as a deliberate convention choice in examples.py, not an arbitrary implementation detail, since it is what lets a single rare sample cleanly register at p99.9 for a dataset under a thousand samples.", "at": [{ "deep": "Internals" }] },
+      { "item": "The five-point percentile ladder is presented as answering five different real questions (typical, unlucky, very unlucky, rare-enough-only-at-volume, and worst-ever-observed), not as an arbitrary list of statistics to memorize, consistent with the topic's own outcome statement.", "at": [{ "step": "Reveal: the percentile ladder, p50 through max" }] },
+      { "item": "The two-hosts histogram-merge demonstration deliberately uses two genuinely different, really-executed query shapes (a point lookup and a range aggregate) rather than two synthetic copies of the same distribution with different random seeds, so the disagreement it measures reflects a real cause (different workload shapes across a fleet), not an artifact of random sampling noise alone.", "at": [{ "step": "Reveal: merging histograms instead of averaging percentiles" }] },
+      { "item": "The fan-out simulation's measured probability is checked against both this topic's own first-principles derivation and the paper's own independently-stated sixty-three-percent figure, so a learner sees three independent routes (derivation, simulation, and a cited primary source) converge on the same number rather than trusting any single one.", "at": [{ "step": "Reveal: fan-out tail amplification" }] },
+      { "item": "The chapter lab's closed-loop and constant-rate generators are run against the identical sequence of customer ids (the same random seed) with the stall injected at the identical index, so the dramatic difference in their reported p99s is attributable only to the measurement model, not to the two runs happening to see different underlying query traffic.", "at": [{ "deep": "Lab" }] },
+      { "item": "This topic is explicit that it demonstrates the Coordinated Omission effect without formally defining the term as its own taught concept, matching the syllabus's own skip mark on that bullet, rather than silently teaching the skipped material under a different heading.", "at": [{ "step": "Recap" }] },
+      { "item": "The topic's 'Leaves out' line (whether the data generating these distributions was itself realistic) is written to point forward to topic 3's exact subject, consistent with how CHAPTER.md threads one running benchmark through all four topics in this chapter.", "at": [{ "step": "Recap" }] },
+      { "item": "The Prove It step is designed so a plausible-sounding wrong answer (assuming ten hosts that each independently report the same p99 means the fleet's combined p99 is also that value) fails for the same documented reason the lab's own merge demonstration does, testing whether the viewer generalized the lesson rather than just watched the lab run once.", "at": [{ "step": "Prove it" }] },
+      { "item": "Every absolute millisecond number this topic prints varies run to run (a real, shared sandbox Postgres instance under real variable load), while the qualitative relationships the topic actually teaches (mean near-flat vs. tail sharp; naive-average disagreeing with true-merged; closed-loop p99 far below constant-rate p99) hold robustly across repeated runs, which is the property that was actually verified, not a single frozen number.", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

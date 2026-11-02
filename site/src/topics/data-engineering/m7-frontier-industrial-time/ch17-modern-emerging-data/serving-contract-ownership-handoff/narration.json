@@ -1,0 +1,83 @@
+{
+  "topic": "de.serving-contract-ownership-handoff",
+  "steps": [
+    {
+      "lines": [
+        "Two separate dashboards, built from the exact same underlying mart, report two different totals for the same question.",
+        "Both engineers look at their own query and genuinely believe it's correct, because, taken on its own, it actually is.",
+        "So how can two correct queries land on two different answers."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real question underneath that contradiction.",
+        "What fact was simply never written down anywhere that would have kept this from happening in the first place.",
+        "And whose responsibility should writing that fact down have actually been."
+      ],
+      "answer": [
+        "Neither engineer made a mistake in their own SQL at all.",
+        "What nobody ever documented was what one single row of that mart actually represents, so one query ended up counting at a finer level of detail than the other without anyone intending it."
+      ]
+    },
+    {
+      "lines": [
+        "Here is exactly what crosses that boundary, and nothing more.",
+        "A properly conformed table, sitting behind a layer that turns one shared metric definition into the right query for whichever tool is asking.",
+        "Never a raw, unprocessed table on its own, and never a finished dashboard either."
+      ]
+    },
+    {
+      "lines": [
+        "Two specific facts have to travel across that boundary in writing, not just in someone's head.",
+        "First, exactly what one row of that table actually represents. Second, exactly how stale that table is allowed to get before it's considered a problem.",
+        "Leave either one unspoken, and it quietly turns into an assumption, which then breaks the very first time it actually matters."
+      ]
+    },
+    {
+      "lines": [
+        "Past this exact point, who typically ends up owning a metric's definition changes.",
+        "It becomes the analytics engineers' job, not the job of the data engineers who built the underlying table in the first place.",
+        "Moving enormous amounts of data around reliably and correctly defining a business metric turn out to be two genuinely different skills."
+      ]
+    },
+    {
+      "lines": [
+        "So what actually keeps a shared metric from quietly being computed two different ways by two different people.",
+        "It's deciding, out loud, who's even allowed to change a shared definition, and exactly how a disagreement about it gets resolved when it comes up.",
+        "That decision-making never finishes. It's a living process, not a document someone wrote once and then filed away."
+      ]
+    },
+    {
+      "lines": [
+        "A real company built exactly this, at a genuinely large scale.",
+        "Their own internal metrics platform was built specifically so that metrics get created, computed, served, and consumed all through one single, standardized path.",
+        "Every metric lives in exactly one place, computed on their workflow and processing tools, and served out through their own serving layer underneath."
+      ]
+    },
+    {
+      "lines": [
+        "A few things on purpose don't get covered here.",
+        "How that shared layer actually compiles a definition down into real queries was already covered earlier in this course.",
+        "Which specific tool an analyst actually opens, the engine that keeps many tools fast at once, and the full back-and-forth of negotiating a definition, each get covered properly later on instead."
+      ]
+    },
+    {
+      "lines": [
+        "Bringing the whole thing together now.",
+        "A conformed table and one compiled metric definition are what actually cross this boundary. Grain and freshness get written down explicitly, never left to be guessed at.",
+        "Ownership of the metric itself shifts over to analytics engineers. And an ongoing negotiation, not a one-time document, is what actually keeps that metric computed only once."
+      ]
+    },
+    {
+      "lines": [
+        "A third dashboard shows up, built against that exact same table, and it reports yet another different number for the same metric.",
+        "The analyst who built it explains that they simply wrote their own query by hand instead of using the shared definition.",
+        "Given everything just covered, what actually broke here, and where exactly did it break."
+      ],
+      "answer": [
+        "Nothing broke in the underlying table, and nothing broke in the shared metric layer either, since neither one even changed.",
+        "Writing a metric's logic by hand instead of calling the shared definition is, by its very nature, computing that same thing a second, completely independent time."
+      ]
+    }
+  ]
+}

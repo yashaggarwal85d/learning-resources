@@ -1,0 +1,114 @@
+{
+  "topic": "de.jobs-cronjobs-batch-pipelines",
+  "syllabus": [
+    {
+      "clause": "Indexed Jobs",
+      "at": [
+        { "step": "No external queue" },
+        { "step": "Isolate the one bad partition" },
+        { "step": "Two pods, one index, briefly" }
+      ]
+    },
+    {
+      "clause": "per-index backoff limits (GA 1.33)",
+      "at": [
+        { "step": "One bad index, 199 good ones" },
+        { "step": "The cap: maxFailedIndexes" },
+        { "step": "Isolate the one bad partition" }
+      ]
+    },
+    {
+      "clause": "pod failure policy (ignore disruptions, fail fast on exit codes)",
+      "at": [
+        { "step": "Classify the failure, not just count it" },
+        { "step": "Does a drain count?" }
+      ]
+    },
+    {
+      "clause": "success policy",
+      "at": [
+        { "step": "Done at partial completion" }
+      ]
+    },
+    {
+      "clause": "TTL cleanup",
+      "at": [
+        { "step": "Cleanup has a cost" }
+      ]
+    },
+    {
+      "clause": "CronJob concurrencyPolicy, startingDeadlineSeconds and missed-schedule behaviour",
+      "at": [
+        { "step": "One overrun, three outcomes" },
+        { "step": "Give up after 100 misses" }
+      ]
+    },
+    {
+      "clause": "when Kubernetes CronJobs suffice and when you need an orchestrator (Ch.11)",
+      "at": [
+        { "step": "What a CronJob doesn't give you" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Kubernetes documentation, Jobs",
+      "items": [
+        { "item": "the completion index is exposed via annotation, label, pod hostname, and the JOB_COMPLETION_INDEX environment variable", "at": [{ "step": "No external queue" }] },
+        { "item": "a failing index joins failedIndexes without interrupting the others; completedIndexes records succeeded indexes regardless", "at": [{ "step": "One bad index, 199 good ones" }] },
+        { "item": "maxFailedIndexes terminates all remaining running pods once exceeded", "at": [{ "step": "The cap: maxFailedIndexes" }] },
+        { "item": "per-index backoff is a stable feature since Kubernetes v1.33", "at": [{ "step": "Isolate the one bad partition" }] },
+        { "item": "a pod failure policy's rules are evaluated in order; first match wins; Ignore/FailJob/Count/FailIndex action definitions", "at": [{ "step": "Classify the failure, not just count it" }] },
+        { "item": "Ignore on a DisruptionTarget condition excludes that failure from the backoffLimit count", "at": [{ "step": "Does a drain count?" }] },
+        { "item": "successPolicy's succeededIndexes/succeededCount rules end a Job early and terminate lingering pods", "at": [{ "step": "Done at partial completion" }] },
+        { "item": "a worked kubectl example of each feature (backoffLimitPerIndex, podFailurePolicy, successPolicy, TTL)", "at": [{ "out": "a hands-on exercise this build machine can't run (no local cluster); the rule itself, not the kubectl walkthrough, is the outcome this topic needs" }] },
+        { "item": "ttlSecondsAfterFinished cascades deletion to the Job's pods", "at": [{ "step": "Cleanup has a cost" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, CronJob",
+      "items": [
+        { "item": "Allow/Forbid/Replace concurrency policy definitions", "at": [{ "step": "One overrun, three outcomes" }] },
+        { "item": "startingDeadlineSeconds skips a Job occurrence once the deadline passes; unset means no deadline", "at": [{ "step": "Give up after 100 misses" }] },
+        { "item": "more than 100 missed schedules and the controller does not start the Job, logging an error", "at": [{ "step": "Give up after 100 misses" }] },
+        { "item": "both of the doc's own worked examples (no deadline vs. a 200-second deadline, same outage)", "at": [{ "step": "Give up after 100 misses" }] },
+        { "item": "a CronJob creates a Job approximately once per schedule; its Jobs must therefore be idempotent", "at": [{ "step": "What a CronJob doesn't give you" }] },
+        { "item": "successfulJobsHistoryLimit / failedJobsHistoryLimit defaults", "at": [{ "out": "a kubectl-tunable detail below this topic's scope, which is the concurrency/missed-schedule semantics, not history retention" }] },
+        { "item": "time zone support (spec.timeZone, stable since v1.27)", "at": [{ "out": "named in pre-notes as a term; not dramatized in the reel, which focuses on concurrency and missed schedules" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes documentation, Indexed Job for Parallel Processing with Static Work Assignment",
+      "items": [
+        { "item": "the pod index is published via the downward API into the JOB_COMPLETION_INDEX environment variable", "at": [{ "step": "No external queue" }] }
+      ]
+    },
+    {
+      "source": "Kubernetes blog, Kubernetes v1.33: Octarine",
+      "items": [
+        { "item": "both per-index backoff limits and Job success policy are announced as GA in the 1.33 release", "at": [{ "step": "Isolate the one bad partition" }, { "step": "Done at partial completion" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "backoffLimitPerIndex and maxFailedIndexes answer two different questions — one caps retries within an index, the other caps how many indexes may fail before the whole Job is cut short early — and conflating them is the single easiest mistake to make reading this feature for the first time", "at": [{ "deep": "Two different caps, one easy mix-up" }] },
+      { "item": "when backoffLimitPerIndex is set, spec.backoffLimit itself silently defaults to MaxInt32 instead of 6, which is what lets per-index retries actually run their own course instead of being cut off by the old shared counter", "at": [{ "step": "One bad index, 199 good ones" }] },
+      { "item": "a podFailurePolicy field requires the pod template to set restartPolicy: Never, or the API rejects the Job outright — a validation requirement easy to trip over when adding a failure policy to an existing Job", "at": [{ "out": "a specific API validation detail, named in post-notes's code-review section rather than dramatized in the reel" }] },
+      { "item": "FailIndex, the fourth pod-failure-policy action, exists specifically to pair with per-index backoff — it fails one index outright on a matched condition, skipping that index's remaining retries, without touching the others", "at": [{ "step": "Classify the failure, not just count it" }] },
+      { "item": "unmanaged Jobs (created directly, not through a CronJob) default to an orphanDependents deletion policy, which is exactly why the docs themselves recommend always setting ttlSecondsAfterFinished rather than relying on manual cleanup", "at": [{ "deep": "In code review" }] },
+      { "item": "concurrencyPolicy only ever compares a CronJob's own runs against each other — multiple different CronJobs are always allowed to run concurrently regardless of any one's policy", "at": [{ "step": "One overrun, three outcomes" }] },
+      { "item": "a suspended CronJob (spec.suspend: true) still counts its skipped executions as missed jobs, and turning suspension back off without a starting deadline schedules all of them immediately — a surprising interaction with the missed-schedule rule", "at": [{ "out": "a documented interaction narrower than this topic's concurrency/missed-schedule running example; named here for a future seam, not taught in the reel" }] },
+      { "item": "the CronJob controller checks for missed schedules on a fixed internal interval, which is why a startingDeadlineSeconds set below that interval can cause the CronJob not to be scheduled at all", "at": [{ "out": "an operational caveat below this topic's scope" }] },
+      { "item": "the batch.kubernetes.io/cronjob-scheduled-timestamp annotation (added in v1.32) records a Job's originally scheduled time, separate from its actual creation time, which is what makes auditing a Replace-policy CronJob's history possible after the fact", "at": [{ "out": "a recent annotation below this topic's scope, named for a future seam" }] },
+      { "item": "the Job doc's own note that terminating pods are not counted as failures until they reach a terminal phase (when a podFailurePolicy is set) is the same mechanism that makes the brief two-pods-one-index overlap possible — the replacement starts before the terminal phase is confirmed", "at": [{ "step": "Two pods, one index, briefly" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

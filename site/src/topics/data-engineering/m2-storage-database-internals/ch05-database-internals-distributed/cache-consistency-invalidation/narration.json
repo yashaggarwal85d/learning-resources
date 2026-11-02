@@ -1,0 +1,78 @@
+{
+  "topic": "de.cache-consistency-invalidation",
+  "steps": [
+    {
+      "lines": [
+        "Here's a failure that looks like it shouldn't survive the fix meant to prevent it.",
+        "Something starts reading an old answer, and before that slow read finishes, whoever's responsible for the real answer changes it and tells the cache to forget what it had.",
+        "And yet the old answer still ends up back in the cache right after that forgetting happened."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before settling on an answer.",
+        "The cache was already told to forget, and the problem still happened anyway.",
+        "Would telling it the new answer directly, instead of just telling it to forget, have actually closed that gap?"
+      ],
+      "answer": [
+        "It wouldn't, and it's actually the riskier choice of the two.",
+        "The timing problem here has nothing to do with which instruction got sent — forgetting or replacing both have the same hole in them.",
+        "Replacing is worse, too: two of those sent at once can land in either order, quietly letting an older answer overwrite a newer one, which forgetting never does."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual reason one of those two instructions gets picked over the other.",
+        "Telling the cache to forget something, sent twice, in any order, leaves it in the exact same empty state either time.",
+        "Telling it to replace something, sent twice, can leave behind whichever version happened to arrive last — and that's not guaranteed to be the newer one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact sequence from the very start of this topic, run for real rather than just described.",
+        "The real answer, checked afterward, holds the new version, exactly as expected.",
+        "The cache, checked the same way, is still holding the old one."
+      ]
+    },
+    {
+      "lines": [
+        "One more piece closes this gap for good.",
+        "Whoever starts a slow read gets handed a token tied to that exact request, and telling the cache to forget something cancels any token already handed out for it.",
+        "Run the same sequence again with that token in place, and the slow reader's own outdated write gets refused outright, checked directly rather than assumed."
+      ]
+    },
+    {
+      "lines": [
+        "A completely different way to close the same gap, worth naming on its own.",
+        "Instead of trusting every single place that changes the real answer to remember to tell the cache about it, something reads the real system's own record of what actually changed and acts on that directly.",
+        "A place that genuinely forgot to send that notice still gets caught, because nothing had to remember anything in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "One last idea, and it's less about mechanism than about judgment.",
+        "Not every piece of information needs to be equally fresh — a real system built this way is comfortable serving a slightly outdated answer for most things.",
+        "But it marks a specific few pieces, like whatever proves who someone is, as too important to ever hand out stale, routing just those to the one place guaranteed to be current."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Forgetting beats replacing, because forgetting survives being repeated and replacing doesn't.",
+        "A borrowed token closes the gap that forgetting alone left open. Reading the real system's own record of changes catches what a forgetful code path would otherwise miss. And how fresh something needs to be isn't one global rule — it's decided piece by piece."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A team adds a brand-new way of changing the real answer, and nobody remembers to wire it up to tell the cache anything at all.",
+        "Which of this topic's own fixes would have caught that missing wiring automatically, without anyone having to remember it?"
+      ],
+      "answer": [
+        "The one that never depended on anyone remembering anything in the first place.",
+        "Reading the real system's own record of what changed doesn't care whether the new code path called the right function — it just sees that something changed and reacts to that directly.",
+        "A borrowed-token approach wouldn't have helped here either, since nothing ever even tried to write a stale value through it; this isn't that kind of race."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: tiered storage, exactly-once sinks, and dedup
+
+A replay's backfill source is either the hot log or the tiered storage this chapter already
+covered; a replay is only safe to repeat using the same idempotent-sink and dedup machinery
+already built for exactly-once sinks and deduplication. Raw/bronze landing-layer design (Chapter
+8) is the other possible backfill source once Kafka itself no longer has the data, named here but
+not retaught. If these are unfamiliar, start with
+[Kafka tiered storage](../kafka-tiered-storage/),
+[End-to-end exactly-once with external sinks](../end-to-end-exactly-once-sinks/), and
+[Deduplication keys and idempotent consumers](../deduplication-idempotent-consumers/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="KafkaConsumer" href="https://kafka.apache.org/44/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html" by="Apache Kafka 4.4.0 API, Javadoc">The offsetsForTimes and seek methods this topic's reveal cites.</Resource>
+  <Resource kind="reading" title="Idempotent requests" href="https://docs.stripe.com/api/idempotent_requests" by="Stripe API Reference">The general safe-to-repeat pattern behind this topic's replay-safety reveal.</Resource>
+</ul>
+
+</section>

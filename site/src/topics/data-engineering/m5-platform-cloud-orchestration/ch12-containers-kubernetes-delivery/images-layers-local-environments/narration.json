@@ -1,0 +1,78 @@
+{
+  "topic": "de.images-layers-local-environments",
+  "steps": [
+    {
+      "lines": [
+        "A pipeline change can pass every gate your tests and your reviewers set, and it still has to run somewhere.",
+        "Here is where it runs: packaged as an image, a stack of layers, one on top of the last.",
+        { "beat": 0.4 },
+        "Change one line of application code, and watch how much of that stack has to be rebuilt and pushed again."
+      ]
+    },
+    {
+      "lines": [
+        "Six layers. The change lands on the instruction that copies the application's source code, fourth up from the base.",
+        "Think about what a layer actually is. Is it a record of just that one instruction, or everything up to and including it?",
+        { "beat": 0.4 },
+        "So how many of these six layers does the rebuild actually touch?"
+      ],
+      "answer": [
+        "That layer, and every layer stacked on top of it: three layers rebuild, three stay cached.",
+        "A layer is a snapshot of the whole filesystem up to that instruction, not a private diff of what the instruction itself changed.",
+        "So nothing below the change is touched, and nothing above it can survive untouched either."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the wave play upward from the changed layer, never downward.",
+        "The build tool's own guidance says it plainly: once a layer changes, every layer that comes after it has to run again, even when it wouldn't build anything differently."
+      ]
+    },
+    {
+      "lines": [
+        "So the practical rule is to order instructions by how often they change.",
+        "A naive build copies the dependency manifest and the source code together, so any source edit forces every dependency to reinstall.",
+        "Reorder it: copy the manifest first, install, and copy the source last. The same edit now rebuilds two layers instead of four."
+      ]
+    },
+    {
+      "lines": [
+        "Now delete a file in a later instruction. Does the image get smaller?",
+        "It can't. The layers underneath are read only, so nothing can be removed from them.",
+        "What actually happens is a tiny marker file gets added on top, telling the runtime to hide that name. The bytes underneath never leave the image."
+      ]
+    },
+    {
+      "lines": [
+        "A build stage can carry a whole compiler toolchain and its cache. None of that has to ship.",
+        "Copy only the finished program into a second, fresh, minimal base, and the build stage's layers fall away entirely.",
+        "The project that publishes these minimal bases states its smallest image at about two mebibytes, against a lightweight distribution's five and a full distribution's one hundred and twenty four."
+      ]
+    },
+    {
+      "lines": [
+        "A container's own writable layer dies the moment the container does.",
+        "A named volume or a bind mount lives on past it, and a shared network lets services find each other by name instead of a changing address."
+      ]
+    },
+    {
+      "lines": [
+        "Bring up a database, an object store and a message broker together, and one plain ordering rule only decides which starts first, not which is actually ready.",
+        "Pair that ordering with a condition that waits for each service's own health check, and the application never greets a database that hasn't finished starting up."
+      ]
+    },
+    {
+      "lines": [
+        "Last choice: environment variable, or a mounted file?",
+        "An environment variable is simple, but anyone who can inspect the running container can read it in plain text.",
+        "A mounted file keeps a secret out of that inspection surface, readable only from inside the container's own filesystem."
+      ]
+    },
+    {
+      "lines": [
+        "An image is a frozen filesystem. Running it is something else entirely: a process on a machine, kept inside a boundary the kernel enforces with a number written to one of its own files.",
+        "What that boundary does when the process asks for more than it was given is exactly where we go next."
+      ]
+    }
+  ]
+}

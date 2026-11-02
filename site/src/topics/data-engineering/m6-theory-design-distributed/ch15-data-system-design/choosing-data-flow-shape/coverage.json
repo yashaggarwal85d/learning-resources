@@ -1,0 +1,69 @@
+{
+  "topic": "de.choosing-data-flow-shape",
+  "syllabus": [
+    {
+      "clause": "batch vs micro-batch vs streaming vs hybrid driven by the freshness SLO and the reprocessing story",
+      "at": [
+        { "step": "Hook: three teams, three shapes, one freshness SLO — which wins at the lowest cost?" },
+        { "step": "Predict: which shape wins, and what could flip the answer?" },
+        { "step": "Reveal: the decision card, four shapes against the SLO line" },
+        { "step": "Reveal: of the survivors, the cheapest one wins" }
+      ]
+    },
+    {
+      "clause": "where Lambda/Kappa (§3.3) and unified engines fit",
+      "at": [
+        { "step": "Reveal: Lambda, Kappa, and a unified engine, placed on the card" },
+        { "step": "Reveal: the real cost Lambda pays, and the real cost Kappa pays" }
+      ]
+    },
+    {
+      "clause": "push vs pull boundaries with source owners",
+      "at": [
+        { "step": "Reveal: push versus pull, decided at each source" },
+        { "step": "Predict: does a silent pulled source look different from a quiet day?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Jay Kreps — Questioning the Lambda Architecture",
+      "items": [
+        { "item": "Maintaining code that produces the same result in two complex distributed systems is exactly as painful as it seems, and not fixable.", "at": [{ "step": "Reveal: the real cost Lambda pays, and the real cost Kappa pays" }] },
+        { "item": "LinkedIn's own hybrid-Hadoop architectures and a 'transparent' dual-run API worked, but were never pleasant or productive.", "at": [{ "deep": "Production failures this topic warns about" }] },
+        { "item": "Reprocessing defined precisely: re-deriving output from retained input after the processing code itself changes.", "at": [{ "step": "Reveal: Lambda, Kappa, and a unified engine, placed on the card" }] },
+        { "item": "The Kappa proposal: retain the full log, start a second instance of the same job from the beginning, write to a new output table.", "at": [{ "step": "Reveal: Lambda, Kappa, and a unified engine, placed on the card" }] },
+        { "item": "The 'Kappa Architecture' name, offered with explicit modesty about whether it merits a Greek letter at all.", "at": [{ "step": "Reveal: Lambda, Kappa, and a unified engine, placed on the card" }] },
+        { "item": "The real resource trade-off: Kappa's reprocessing run needs roughly double the output storage, temporarily — not a free alternative to Lambda.", "at": [{ "step": "Reveal: the real cost Lambda pays, and the real cost Kappa pays" }] }
+      ]
+    },
+    {
+      "source": "Akidau, Bradshaw, Chambers, et al. — The Dataflow Model (VLDB 2015)",
+      "items": [
+        { "item": "Nothing about the unified model is magical: what's computationally impractical in a batch, micro-batch, streaming, or Lambda Architecture system stays impractical, since CPU, RAM, and disk constraints never move.", "at": [{ "deep": "Internals" }] },
+        { "item": "The paper reserves 'streaming' and 'batch' for execution engines only, not for the shape of unbounded versus bounded data itself — the theoretical basis a shape-first decision card rests on.", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A freshness SLO acts as a hard latency floor: any shape whose floor sits above the SLO line is eliminated outright, regardless of tuning.", "at": [{ "step": "Reveal: the decision card, four shapes against the SLO line" }] },
+      { "item": "Among the shapes that clear the floor, the decision rule is the cheapest one, not the one with the most headroom — headroom is infrastructure cost, not a free bonus.", "at": [{ "step": "Reveal: of the survivors, the cheapest one wins" }] },
+      { "item": "A single question about reprocessing cost can override the cheapest-that-clears rule, since two shapes with the same floor can differ sharply in how expensive it is to redo old output.", "at": [{ "step": "Predict: which shape wins, and what could flip the answer?" }] },
+      { "item": "Lambda sits on the hybrid card (two permanent code paths); Kappa sits on the streaming card (replay is the same job, rerun from the retained log).", "at": [{ "step": "Reveal: Lambda, Kappa, and a unified engine, placed on the card" }] },
+      { "item": "A unified execution engine's appeal is Kappa's one-code-path property without hand-building the replay logic — it is a maturing pattern, not a settled default.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Lambda's real cost is organizational (two systems' logic kept in sync by people), while Kappa's real cost is a genuine, temporary resource cost (roughly double output storage during a reprocessing run).", "at": [{ "step": "Reveal: the real cost Lambda pays, and the real cost Kappa pays" }] },
+      { "item": "A push source's owning team is responsible for delivery and schema; a pull source's owning pipeline is responsible for extraction — the boundary decides who gets paged.", "at": [{ "step": "Reveal: push versus pull, decided at each source" }] },
+      { "item": "A pulled source's silent failure (zero new rows) is indistinguishable from a successful, ordinary quiet day at the level of the pull job's own exit status — only a freshness alert catches the difference.", "at": [{ "step": "Predict: does a silent pulled source look different from a quiet day?" }] },
+      { "item": "The Dataflow Model frames batch and streaming as two points on one continuous processing model, which is the theoretical basis unified engines implement in practice.", "at": [{ "deep": "Internals" }] },
+      { "item": "Tightening a freshness SLO from minutes to seconds can eliminate every shape but one, removing any slower fallback and raising the stakes of the reprocessing-cost question this topic opens with.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,6 @@
+- **GB-month**: a billing unit for storage — one gigabyte held for one month. *Where you meet it:* every object store's storage line item.
+- **Request charge**: a fee per operation (PUT, GET, LIST, …) independent of the bytes moved. *Where you meet it:* a bill where splitting the same data into more, smaller objects raises the cost without changing total bytes.
+- **Egress**: data leaving a cloud provider's network to the public internet. *Where you meet it:* nearly always charged; inbound is nearly always free.
+- **Cross-AZ transfer**: data moving between two availability zones in the same region. *Where you meet it:* a per-GB fee in each direction, separate from egress.
+- **NAT gateway**: a managed service that lets private resources reach the internet outbound. *Where you meet it:* an hourly fee plus a per-GB data-processing fee, on top of ordinary transfer charges.
+- **Managed-service premium**: the price gap between a managed service and the same workload self-hosted. *Where you meet it:* buying away operational burden, not buying nothing.

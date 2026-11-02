@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: epoch fencing, and the crash windows themselves
+
+This topic builds on the leader-epoch fencing pattern and the two canonical crash windows,
+without re-teaching either. If leader epochs or delivery semantics are unfamiliar, start with
+[Replication, ISR and the high watermark](../replication-isr-high-watermark/) and
+[Delivery semantics and where duplicates arise](../delivery-semantics-duplicates/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="KIP-98: Exactly Once Delivery and Transactional Messaging" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-98+-+Exactly+Once+Delivery+and+Transactional+Messaging" by="Apache Kafka wiki">The PID, sequence number, and producer epoch mechanics this topic's reveals cite, read for the original design rationale.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.4 producer configuration reference" href="https://kafka.apache.org/44/generated/producer_config.html" by="Apache Kafka docs">`enable.idempotence`'s current requirements and its enabled-by-default status.</Resource>
+</ul>
+
+</section>

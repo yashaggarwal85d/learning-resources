@@ -1,0 +1,80 @@
+{
+  "topic": "de.lambda-vs-kappa-one",
+  "steps": [
+    {
+      "lines": [
+        "This shop runs its own revenue-by-product pipeline two ways at once: a streaming job, and a separate nightly batch job.",
+        "For several days running, those two jobs genuinely disagreed on one single product, and nobody could actually say which number was the right one.",
+        "It turned out the batch job treated a refund issued right after midnight completely differently from how the streaming job treated that exact same refund."
+      ]
+    },
+    {
+      "lines": [
+        "A colleague now proposes tearing the whole batch layer out, going with pure streaming instead, no second path at all.",
+        "When is that genuinely the right call to make, and when does it quietly make the next restatement flatly impossible?"
+      ],
+      "answer": [
+        "A single code path obviously can't drift away from itself, sure, but it still carries a perfectly real reprocessing cost, and a perfectly real limit on how far back its own retained log actually reaches.",
+        "The right call here depends entirely on whether this pipeline's own numbers happen to fall under the thresholds that make pure streaming genuinely sufficient on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Design A, called Kappa, is one single streaming program running over a retained log, with replay as its only reprocessing path.",
+        "Design B, called Lambda, is a streaming speed layer plus a separate batch layer, merged together only at serve time.",
+        "Each one of these two designs gets its own estimate, its own failure table, and its own cost, computed independently."
+      ]
+    },
+    {
+      "lines": [
+        "Kappa's own cost to recompute a full year comes from replaying the entire retained log straight through the streaming engine itself.",
+        "Lambda's cost, by contrast, simply re-runs its own cheap batch layer directly over the lake instead.",
+        "Those two cost lines cross at one specific retention length and reprocessing frequency, computed directly from this shop's own real numbers."
+      ]
+    },
+    {
+      "lines": [
+        "The exact same synthetic stream now runs through both of these paths at once, with one single rule deliberately made to diverge between them: how a post-midnight refund actually gets treated.",
+        "The two resulting outputs get plotted right beside each other.",
+        "They diverge at exactly the one spot where that difference was deliberately planted, and nowhere else at all."
+      ]
+    },
+    {
+      "lines": [
+        "One single program, executed by one shared engine in either streaming mode or batch mode, produces genuinely matching results whenever its input happens to be bounded.",
+        "That's real, measurable progress toward solving this problem.",
+        "But it's still a second mode underneath, and that second mode still has to be kept correct, right alongside the first."
+      ]
+    },
+    {
+      "lines": [
+        "Four specifically named cases get checked directly against this shop's own actual numbers.",
+        "Billing-grade counts that must absorb genuinely very late data. Reprocessing that's simply too large or too slow for a streaming replay to handle. A logic change that needs a join against some huge historical dimension table. And a compliance-driven restatement."
+      ]
+    },
+    {
+      "lines": [
+        "A decision card lines all four of those named conditions up directly against this exact pipeline's own current numbers, checking each one in turn.",
+        "Whichever conditions actually end up met are what decide whether the batch layer stays in place.",
+        "No vague appeal to caution gets to stand in for an actual number here."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate designs for the exact same pipeline, each one genuinely priced on its own terms.",
+        "A reprocessing-cost crossover, fully computed. A single planted edge case, measured as actual, real drift between the two paths.",
+        "A unified engine that genuinely helps here, without ever removing that second path entirely. And a batch-layer decision, stated plainly as four conditions anyone could go check."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a pure Kappa pipeline now needs years of history fully recomputed, after a logic change that requires joining against a dimension table far larger than its own retained log's window.",
+        "What's genuinely the right move here?"
+      ],
+      "answer": [
+        "Simply extending the log's retention window to cover however many years are needed trades directly against both storage cost and streaming throughput, and a replay still flatly can't join against a dimension the log itself was never built to hold in the first place.",
+        "The huge-historical-dimension join is already one of the four named conditions that justify keeping a batch layer around, so this request maps directly onto a threshold that already exists."
+      ]
+    }
+  ]
+}

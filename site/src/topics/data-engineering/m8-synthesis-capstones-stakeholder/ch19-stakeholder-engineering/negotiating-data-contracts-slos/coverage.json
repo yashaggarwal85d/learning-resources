@@ -1,0 +1,67 @@
+{
+  "topic": "de.negotiating-data-contracts-slos",
+  "syllabus": [
+    {
+      "clause": "driving producer/consumer agreements",
+      "at": [
+        { "step": "Reveal: what a data contract actually is" }
+      ]
+    },
+    {
+      "clause": "pricing each freshness or availability tier so consumers choose SLOs from the cost curve",
+      "at": [
+        { "step": "Reveal: pricing three tiers on a cost curve" }
+      ]
+    },
+    {
+      "clause": "error budgets and who owns a breach (§11.3)",
+      "at": [
+        { "step": "Reveal: the error budget" },
+        { "step": "Reveal: who owns a breach" }
+      ]
+    },
+    {
+      "clause": "this reel is the negotiation, while enforcement lives in §3.4, §11.4 and §13.4",
+      "at": [
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "dbt Labs — Model contracts",
+      "items": [
+        { "item": "a data contract is an upfront set of guarantees that define the shape of a model's returned dataset", "at": [{ "step": "Reveal: what a data contract actually is" }] },
+        { "item": "dbt checks a previous project state for breaking changes that could impact downstream consumers", "at": [{ "step": "Reveal: what a data contract actually is" }] }
+      ]
+    },
+    {
+      "source": "Google SRE book — Embracing Risk",
+      "items": [
+        { "item": "an error budget is jointly defined by two teams, quarterly, based on a stated service level objective", "at": [{ "step": "Reveal: the error budget" }] },
+        { "item": "an error budget aligns incentives and emphasizes joint ownership between the team providing a service and the team consuming it", "at": [{ "step": "Reveal: who owns a breach" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately shows a request fulfilled to the letter (genuinely real-time freshness, exactly as asked) still being the wrong decision, so the lesson is that a contract's price has to be negotiated before the build, not that engineering made a technical mistake.", "at": [{ "step": "Hook" }] },
+      { "item": "The topic cites dbt's own model-contracts feature as one real, documented instance of a data contract, explicit in SOURCES.md that this is an example of the general practice rather than the only or universal definition of the term.", "at": [{ "step": "Reveal: what a data contract actually is" }] },
+      { "item": "The three priced tiers are computed from a cost model that is explicitly labeled illustrative and disclosed, not sourced real pricing data, so the lesson taught is the shape of the cost curve (a streaming surcharge makes the fast tier dramatically, not just marginally, more expensive) rather than any specific dollar figure.", "at": [{ "step": "Reveal: pricing three tiers on a cost curve" }] },
+      { "item": "Each tier's own non-goal is treated as part of the contract itself, checked mechanically in examples.py (every tier must have a non-empty non_goal), rather than presented as an optional nicety a contract can skip.", "at": [{ "step": "Reveal: a non-goal is part of the contract too" }] },
+      { "item": "The error-budget calculation follows the SRE book's own worked style (a stated SLO percentage turned into an allowed number of breach minutes per quarter) rather than inventing a different formula, and the chosen twenty-minute breach is picked specifically to land meaningfully between zero and the full budget, not at either extreme.", "at": [{ "step": "Reveal: the error budget" }] },
+      { "item": "The fast tier's own named breach owner (platform on-call engineer) is explicit, in FACT-CHECK.md's own red team, as this topic's invented worked illustration of the SRE book's joint-ownership principle, not a claim about any real organization's actual on-call structure.", "at": [{ "step": "Reveal: who owns a breach" }] },
+      { "item": "The topic's own 'Leaves out' line and this clause's own Internals coverage state plainly that enforcement (schema checks, alerting, access boundaries) is named but not taught here, so a viewer does not come away believing this topic covered how a breach actually gets detected.", "at": [{ "deep": "Internals" }] },
+      { "item": "The Prove It step is designed so the plausible-sounding wrong answer (the fast tier was chosen, so the negotiation is finished) fails for the same reason this topic's own lab just demonstrated: price alone isn't the whole contract, the non-goals and the owner still need agreement too.", "at": [{ "step": "Prove it" }] },
+      { "item": "examples.py computes every number it prints rather than hardcoding the tier costs or the budget figures as literals, so the assertions (fast costs more than medium times three; the breach consumes between zero and the full budget) actually test the model's own logic, not a pre-picked result dressed up as a computation.", "at": [{ "deep": "Lab" }] },
+      { "item": "This topic opens the chapter with no 'uses' id at all, consistent with it being the first topic after Chapter 18's own handoff, and its own four introduced ids (data-contract, slo-tiering, error-budget-ownership, producer-consumer-negotiation) are each given their own dedicated reveal step rather than bundled into a single generic 'contracts' step.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

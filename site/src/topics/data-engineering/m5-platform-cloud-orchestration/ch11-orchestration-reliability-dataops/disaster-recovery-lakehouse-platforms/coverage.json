@@ -1,0 +1,98 @@
+{
+  "topic": "de.disaster-recovery-lakehouse-platforms",
+  "syllabus": [
+    {
+      "clause": "RPO/RTO per data tier",
+      "at": [
+        { "step": "Recap" },
+        { "step": "Reveal: restore drills are the only proof" }
+      ]
+    },
+    {
+      "clause": "why bucket replication is not DR (table metadata holds absolute paths, catalog databases need their own backups, Kafka replication needs offset translation, encryption keys must be multi-region)",
+      "at": [
+        { "step": "Reveal: table metadata holds absolute paths" },
+        { "step": "Reveal: the catalog is a separate system" },
+        { "step": "Reveal: encryption keys must be multi-region" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "immutable backups against ransomware",
+      "at": [
+        { "step": "Reveal: immutable backups survive a compromised admin" }
+      ]
+    },
+    {
+      "clause": "restore drills as the only proof (DORA-style resilience testing)",
+      "at": [
+        { "step": "Reveal: restore drills are the only proof" },
+        { "deep": "Frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Multi-Region keys in AWS KMS",
+      "items": [
+        { "item": "a multi-Region key has the same key material and key ID across regions, so data encrypted in one region decrypts in another without re-encrypting", "at": [{ "step": "Reveal: encryption keys must be multi-region" }] }
+      ]
+    },
+    {
+      "source": "Locking objects with Object Lock",
+      "items": [
+        { "item": "compliance-mode Object Lock prevents an object version from being overwritten or deleted by any user, including the account's root user", "at": [{ "step": "Reveal: immutable backups survive a compromised admin" }] },
+        { "item": "variable retention is suggested specifically as a configurable recovery window against ransomware", "at": [{ "step": "Reveal: immutable backups survive a compromised admin" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "ManifestFile (Apache Iceberg Javadoc)",
+      "items": [
+        { "item": "an Iceberg manifest entry's path accessor returns a fully qualified, absolute path", "at": [{ "step": "Reveal: table metadata holds absolute paths" }] }
+      ]
+    },
+    {
+      "source": "Delta Transaction Log Protocol (add / remove actions)",
+      "items": [
+        { "item": "a Delta add action's path field may be an absolute path, not only one relative to the table root", "at": [{ "step": "Reveal: table metadata holds absolute paths" }, { "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Digital Operational Resilience Act (DORA)",
+      "items": [
+        { "item": "DORA requires an operational resilience testing programme encompassing a range of tests, including advanced testing", "at": [{ "step": "Reveal: restore drills are the only proof" }, { "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "This topic's own real local-filesystem and Fernet-crypto experiments",
+      "items": [
+        { "item": "a manifest's absolute paths resolve zero of three files after a simulated region move, and all three once the manifest is rewritten", "at": [{ "step": "Reveal: table metadata holds absolute paths" }] },
+        { "item": "a catalog lookup finds nothing for a table whose data files are byte-identical in both regions, until the catalog itself is backed up", "at": [{ "step": "Reveal: the catalog is a separate system" }] },
+        { "item": "a region-scoped Fernet key raises InvalidToken on ciphertext a genuinely multi-region key decrypts without issue", "at": [{ "step": "Reveal: encryption keys must be multi-region" }, { "step": "Prove it" }] },
+        { "item": "a compliance-mode WORM store refuses a delete that a mutable store allows, from the identical stolen admin credential", "at": [{ "step": "Reveal: immutable backups survive a compromised admin" }] },
+        { "item": "a timed, end-to-end restore of the same table is measured and shown to meet its own RTO target", "at": [{ "step": "Reveal: restore drills are the only proof" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "The hook's real failure wasn't skipping disaster recovery -- the team built and ran a replication job every night. The gap was believing bucket replication alone satisfied every part of a recovery plan, when it structurally can only ever cover the raw bytes.", "at": [{ "step": "Hook" }] },
+      { "item": "A reader might assume the four reasons are variations on one root cause (everything lives outside the bucket), but they fail independently and at different times: a manifest break surfaces the instant a query runs, a lost catalog surfaces the same way, but a region-scoped key only surfaces when someone actually tries to decrypt, which can be long after the 'successful' replication.", "at": [{ "deep": "Internals" }] },
+      { "item": "Rewriting a manifest's absolute paths after a region move is not a mechanical find-and-replace in every table format -- some formats version their metadata and expect a new manifest list entry rather than an in-place rewrite, so the general claim here is the failure mode, not a single universal fix procedure.", "at": [{ "step": "Reveal: table metadata holds absolute paths" }] },
+      { "item": "Catalog backup has its own recovery-objective question nested inside it: a catalog restored from a backup that is itself stale points at manifests that may no longer match the data files' true current state, so the catalog's own RPO has to be at least as tight as the table's.", "at": [{ "step": "Reveal: the catalog is a separate system" }] },
+      { "item": "A multi-region KMS key is not a weaker security boundary than a region-scoped key -- it is the same key material, deliberately made available in more than one place, which is a design trade a security team has to approve explicitly rather than a default most organizations should assume is already on.", "at": [{ "step": "Reveal: encryption keys must be multi-region" }] },
+      { "item": "Compliance-mode WORM protection cannot be undone even by the vendor or the account owner before the retention period expires, which is a feature against a compromised admin but also means a genuine mistake (wrong retention period, wrong object locked) cannot be corrected early either -- the same property cuts both ways.", "at": [{ "step": "Reveal: immutable backups survive a compromised admin" }] },
+      { "item": "A restore drill proves the mechanics of a restore, not necessarily the full RTO under real incident conditions -- a drill run with a calm team and a known-good backup can understate the real RTO, which typically also includes detection time, decision time and coordination overhead the drill itself skips.", "at": [{ "step": "Reveal: restore drills are the only proof" }] },
+      { "item": "DORA's resilience-testing obligation applies to financial-sector entities specifically, not to data platforms in general -- this topic uses it as the clearest public example of a regulator making restore drills mandatory rather than claiming every organization building a lakehouse is legally required to run one.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Kafka's offset-translation problem is conceptually the same shape as the other three (something besides raw bytes has to be re-derived after a region move), but it is sourced and demonstrated in Chapter 9, not re-built here, since no live Kafka cluster is available in this environment.", "at": [{ "deep": "Internals" }] },
+      { "item": "The lab's four demonstrations each isolate one failure mode cleanly by construction (one manifest, one catalog, one key pair, one backup pair) rather than combining them, which keeps each assertion independently falsifiable but means the lab does not show what happens when, realistically, more than one of these fails during the same regional outage.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

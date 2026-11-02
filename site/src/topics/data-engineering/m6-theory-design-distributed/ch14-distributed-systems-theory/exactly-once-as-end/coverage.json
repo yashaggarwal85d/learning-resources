@@ -1,0 +1,97 @@
+{
+  "topic": "de.exactly-once-as-end",
+  "syllabus": [
+    {
+      "clause": "the end-to-end argument (Saltzer, Reed & Clark): delivery is at-least-once at best",
+      "at": [
+        { "step": "Reveal: the end-to-end argument" },
+        { "step": "Reveal: at-least-once is the best a lossy link offers" }
+      ]
+    },
+    {
+      "clause": "so \"exactly-once\" is an effect — at-least-once plus idempotent writes",
+      "at": [
+        { "step": "Reveal: the shop's charge, twice without a key, once with one" },
+        { "step": "Reveal: exactly-once as an effect, not a delivery guarantee" }
+      ]
+    },
+    {
+      "clause": "deterministic replay or atomic offset+output commits (Kafka transactions, Flink two-phase-commit sinks, table-format commits)",
+      "at": [
+        { "step": "Reveal: making consume, produce and record-the-offset one atomic unit" },
+        { "deep": "Lab: an atomic commit is \"no observable in-between,\" not \"no failure\"" }
+      ]
+    },
+    {
+      "clause": "where the guarantee breaks at external side effects",
+      "at": [
+        { "step": "Reveal: where the pipeline stops being able to help" },
+        { "step": "Prove it: an idempotency key is added everywhere — is retrying now always safe?" }
+      ]
+    },
+    {
+      "clause": "Mechanics: §9.2",
+      "at": [{ "deep": "Mechanics live in Chapter 9 §9.2, not here" }]
+    },
+    {
+      "clause": "idempotency keys: → Rust Systems Engineering Ch.27–28",
+      "at": [{ "deep": "Idempotency keys as a designed component: the Rust track's build" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Saltzer, Reed & Clark: End-to-End Arguments in System Design",
+      "items": [
+        { "item": "the end-to-end argument's own statement: correct only with the application's knowledge", "at": [{ "step": "Reveal: the end-to-end argument" }] }
+      ]
+    },
+    {
+      "source": "Apache Kafka: KIP-98",
+      "items": [
+        { "item": "the idempotent producer's exactly-once-write semantics, and atomic multi-partition commits", "at": [{ "step": "Reveal: making consume, produce and record-the-offset one atomic unit" }] },
+        { "item": "read_committed as the consumer-side half of the same guarantee", "at": [{ "deep": "Production: two systems, the identical shape, different vocabulary" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink: An Overview of End-to-End Exactly-Once Processing",
+      "items": [
+        { "item": "the TwoPhaseCommitSinkFunction's pre-commit and commit phases, tied to a checkpoint", "at": [{ "step": "Reveal: making consume, produce and record-the-offset one atomic unit" }] }
+      ]
+    },
+    {
+      "source": "de.two-phase-commit-blocking (internal cross-reference)",
+      "items": [
+        { "item": "the two-phase commit protocol Kafka transactions and Flink's sink both reuse", "at": [{ "step": "Reveal: making consume, produce and record-the-offset one atomic unit" }] }
+      ]
+    },
+    {
+      "source": "de.coordination-services-replicated-logs (internal cross-reference)",
+      "items": [
+        { "item": "the table-format compare-and-swap commit as the third atomic-commit route", "at": [{ "step": "Reveal: where the pipeline stops being able to help" }] }
+      ]
+    },
+    {
+      "source": "de.leases-fencing-tokens-split (internal cross-reference)",
+      "items": [
+        { "item": "the producer epoch, already taught as a fencing token, reused by name in KIP-98", "at": [{ "deep": "Production: two systems, the identical shape, different vocabulary" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review (no independent reviewer ran)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The end-to-end argument says a function correct only with the application's own knowledge can be completely and correctly implemented only at the endpoints; a lower layer's attempt at the same function can be a useful performance optimisation but never a substitute.", "at": [{ "step": "Reveal: the end-to-end argument" }] },
+      { "item": "On a fair-loss link, the only way to be reasonably sure a message arrives is to retry it, and a retry sent after a lost acknowledgement delivers the message twice; at-most-once is the choice never to retry, risking loss instead of duplication, and there is no third option.", "at": [{ "step": "Reveal: at-least-once is the best a lossy link offers" }] },
+      { "item": "Running the identical retry with no idempotency key lets a processor apply both the original request and the retry as two separate charges; sending the same idempotency key on both attempts lets the processor recognize the second as a repeat of the first and apply it as a no-op.", "at": [{ "step": "Reveal: the shop's charge, twice without a key, once with one" }] },
+      { "item": "Exactly-once names an effect, not a stronger delivery mechanism: delivery remains at-least-once throughout, and what changes is that an idempotent write makes applying the message twice cost the same as applying it once.", "at": [{ "step": "Reveal: exactly-once as an effect, not a delivery guarantee" }] },
+      { "item": "Kafka transactions commit a producer's output records and the consumer's offsets together as one atomic unit, and Flink's TwoPhaseCommitSinkFunction pre-commits an external write at a checkpoint and only commits it once that checkpoint succeeds; both close the same crash window by making two writes one unit.", "at": [{ "step": "Reveal: making consume, produce and record-the-offset one atomic unit" }] },
+      { "item": "A table-format commit's atomic pointer swap is a third version of the identical atomic-commit idea, already taught in this chapter; none of the three atomic-commit mechanisms reach an effect that has already left the system, such as a sent email or an external charge made outside the pipeline's own transaction.", "at": [{ "step": "Reveal: where the pipeline stops being able to help" }] },
+      { "item": "An idempotency key makes a retry safe only for the specific write that checks it; a second, unrelated side effect triggered by the same retried request, such as a confirmation email with no deduplication of its own, still happens again even after the key is added.", "at": [{ "step": "Prove it: an idempotency key is added everywhere — is retrying now always safe?" }] },
+      { "item": "A deterministic computation whose inputs can be replayed can recover from a failure by overwriting its prior, partial output with the freshly recomputed one, rather than appending the new result alongside the old as a second copy.", "at": [{ "deep": "Lab: an atomic commit is \"no observable in-between,\" not \"no failure\"" }] },
+      { "item": "Chapter 9 §9.2 and the idempotency-key design work named for Rust Systems Engineering Ch.27-28 do not exist yet as built topics in registry.ts (confirmed by grep), so this topic cites their primary sources directly rather than borrowing a concept id through uses; the gap is logged in OUTLINE.md.", "at": [{ "deep": "Mechanics live in Chapter 9 §9.2, not here" }] },
+      { "item": "Kafka's idempotent producer, transactions, read-committed and sink recipes in full implementation detail, Structured Streaming's exactly-once boundaries, idempotency keys as a designed component, CRDTs, and the Two Generals problem are left to other topics, chapters or tracks, not re-derived here.", "at": [{ "out": "named in CHAPTER.md's Leaves out; Chapter 9 §9.2, Chapter 7 §7.4, Rust Systems Engineering Ch.27-28, and the skipped Two Generals syllabus topic" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-30", "by": "self-review", "open": [] }
+}

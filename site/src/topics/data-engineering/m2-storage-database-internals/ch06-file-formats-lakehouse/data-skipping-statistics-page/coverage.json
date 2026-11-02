@@ -1,0 +1,55 @@
+{
+  "topic": "de.data-skipping-statistics-page",
+  "syllabus": [
+    { "clause": "projection pruning, row-group min/max/null-count statistics, the page index (ColumnIndex/OffsetIndex) for page-level skipping, optional split-block bloom filters for high-cardinality equality predicates", "at": [{ "step": "Predict: how many of 10 row groups get skipped?" }, { "step": "Reveal: 9 of 10 row groups skipped, sorted" }, { "step": "Reveal: the page index goes one level deeper" }, { "step": "Predict: can min-max help a high-cardinality column?" }, { "step": "Reveal: a real split-block bloom filter" }, { "step": "Reveal: the measured rate matches the spec's own number" }, { "deep": "Three layers of proof" }] },
+    { "clause": "why sorting/clustering decides whether stats prune at all", "at": [{ "step": "Reveal: the same query, shuffled, skips nothing" }] },
+    { "clause": "truncated binary statistics and other skipping failures", "at": [{ "step": "Reveal: a truncated max that silently loses data" }, { "deep": "Lab: a bug that costs real rows, not just time" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Parquet Format, parquet.thrift",
+      "items": [
+        { "item": "Statistics exist per row group and per page, and all its fields are optional", "at": [{ "step": "Reveal: 9 of 10 row groups skipped, sorted" }, { "step": "Reveal: the page index goes one level deeper" }] },
+        { "item": "writers should always write null_count even when zero; readers must not assume 0 when it's absent", "at": [{ "deep": "Three layers of proof" }] },
+        { "item": "a writer may store a truncated, more compact min/max bound as long as it remains a valid bound", "at": [{ "step": "Reveal: a truncated max that silently loses data" }] }
+      ]
+    },
+    {
+      "source": "Parquet Page Index",
+      "items": [
+        { "item": "the page index is optional per-ColumnChunk metadata enabling page-level skipping", "at": [{ "step": "Reveal: the page index goes one level deeper" }] },
+        { "item": "ColumnIndex lets a reader navigate to pages matching a scan predicate by column value", "at": [{ "step": "Reveal: the page index goes one level deeper" }] },
+        { "item": "an ordered column's index supports binary search; an unordered column's only supports a sequential scan", "at": [{ "step": "Reveal: the same query, shuffled, skips nothing" }] }
+      ]
+    },
+    {
+      "source": "Parquet Bloom Filter",
+      "items": [
+        { "item": "high-cardinality columns with widely separated min/max get no benefit from statistics pushdown", "at": [{ "step": "Predict: can min-max help a high-cardinality column?" }] },
+        { "item": "a bloom filter has no false negatives, only a configurable false-positive rate", "at": [{ "step": "Reveal: a real split-block bloom filter" }] },
+        { "item": "1024 blocks with 26,214 inserted values gives a false-positive rate of around 1.26%", "at": [{ "step": "Reveal: the measured rate matches the spec's own number" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "Row-group pruning and page-index pruning are the same overlap check (query range vs. recorded min/max) applied at two different granularities, not two different algorithms — this topic's own code reuses the identical overlap logic for both.", "at": [{ "step": "Reveal: 9 of 10 row groups skipped, sorted" }, { "step": "Reveal: the page index goes one level deeper" }] },
+      { "item": "Sort order doesn't change what statistics record (every row group still has a real min/max either way) — it changes how tightly those bounds cluster around the actual values a query asks for, which is the entire difference between 1 row group read and 10.", "at": [{ "step": "Reveal: the same query, shuffled, skips nothing" }] },
+      { "item": "A bloom filter's false-positive rate is a property of its size relative to how many values were inserted, not a fixed constant — this topic's own filter is sized to match the specification's own 1024-block/26,214-insert example specifically so the measured rate can be checked against a stated number.", "at": [{ "step": "Reveal: the measured rate matches the spec's own number" }] },
+      { "item": "A bloom filter complements row-group/page statistics rather than replacing them — it's the tool for exactly the case (high cardinality, no useful clustering) where min/max statistics give up.", "at": [{ "step": "Predict: can min-max help a high-cardinality column?" }] },
+      { "item": "Truncating a stored bound is a legitimate, spec-documented space optimization; the bug this topic reproduces is specifically a truncation that rounds the wrong direction, not truncation itself.", "at": [{ "step": "Reveal: a truncated max that silently loses data" }] },
+      { "item": "A truncated-max bug produces silently wrong query results (a real row missing with no error), not a crash or a visible failure — which is exactly what makes this class of bug dangerous in production.", "at": [{ "deep": "Lab: a bug that costs real rows, not just time" }] },
+      { "item": "This topic's bloom filter substitutes a SHA-256-derived hash for the specification's own XXH64; the first attempt (a hand-rolled FNV-1a hash) measured a false-positive rate over 10x the spec's stated figure, traced to poor upper-bit distribution on sequential keys — a real, found-and-fixed bug, not a hypothetical caveat.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Projection pruning (skipping a whole column a query never references) is the coarsest and cheapest of this topic's skipping tricks, applied before row-group statistics are even consulted.", "at": [{ "deep": "Three layers of proof" }] },
+      { "item": "The page index is only consulted for a row group that survived row-group-level pruning — this topic's own code only builds page statistics for the one row group that wasn't already ruled out, matching how a real reader avoids the cost of reading page-level metadata it won't use.", "at": [{ "step": "Reveal: the page index goes one level deeper" }] },
+      { "item": "Every skip decision in this topic depends on the writer's own recorded bounds being true; nothing about the reader-side overlap check can detect a bound that's simply wrong, which is why the truncated-max failure is a writer bug, not a reader bug.", "at": [{ "step": "Reveal: a truncated max that silently loses data" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

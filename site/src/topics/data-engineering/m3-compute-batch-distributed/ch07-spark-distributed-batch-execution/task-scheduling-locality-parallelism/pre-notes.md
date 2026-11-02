@@ -1,0 +1,4 @@
+- **Executor**: a JVM process a cluster manager launches to run a Spark application's tasks, established in topic 1. *Where you meet it:* this reel's own local-mode limitation — one JVM is both driver and the only executor.
+- **Core**: one unit of CPU parallelism a `local[N]` session or an executor is given. *Where you meet it:* the number this reel measures `spark.default.parallelism` against directly.
+- **Shuffle**: data redistributed between partitions by key, established in topics 2 and 3. *Where you meet it:* the operation whose output partition count this reel measures as a separate setting from core count.
+- **RDD partition**: one chunk of an RDD's data, processed by exactly one task. *Where you meet it:* the unit this reel counts in every measurement.

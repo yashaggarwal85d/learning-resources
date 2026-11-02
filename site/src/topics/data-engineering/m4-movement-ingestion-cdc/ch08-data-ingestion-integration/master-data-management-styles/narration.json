@@ -1,0 +1,84 @@
+{
+  "topic": "de.master-data-management-styles",
+  "steps": [
+    {
+      "lines": [
+        "The exact same customer sits inside a sales system under one name and one spelling, and inside a finance system under a slightly different one, each with its own separate key and its own separate credit limit.",
+        "Nobody ever decided which of those two records was actually correct.",
+        "A report that counts customers simply counts both of them, and that one customer quietly becomes two."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you how this actually gets fixed, think through this with me.",
+        "Does fixing a duplicate like this always require rewriting one of those two original systems directly, replacing whatever it already has on file?",
+        "Or is there a way to fix it entirely outside both of those systems, without changing either one of them at all?"
+      ],
+      "answer": [
+        "Two of the four approaches this lesson covers never write anything back into either original system at all.",
+        "Both of them resolve the very same duplicate in a separate layer that sits outside the two systems completely, leaving each one exactly as it already was."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the lightest of these four approaches.",
+        "A separate layer simply cross-references the two systems' own keys against each other, without ever copying either system's actual data anywhere else.",
+        "Neither original system changes at all. Each one keeps right on being the one true version of its own record."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second approach that goes one step further than simple cross-referencing.",
+        "A separate layer actually gathers both systems' records together and assembles one single, clean copy meant purely for reporting.",
+        "That clean copy never gets written back into either original system. Each one keeps being the true version of its own record, exactly like the first approach."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a third approach that behaves quite differently from the first two.",
+        "A separate layer still keeps its own single copy, but that copy now actually gets synchronized back into both original systems in both directions.",
+        "Both of those original systems stay fully writable on their own, the same as before, but now they're also kept in sync with that shared copy."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fourth and most demanding of these four approaches.",
+        "One single system becomes the only place this kind of record can ever be created or changed at all, full stop.",
+        "Every other system that used to write its own version of that record now simply reads from this one system instead of writing anything itself.",
+        "The more control that one single system demands over writing, the less freedom every other system keeps to run its own part of the business independently."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how a team actually builds one of those clean, assembled copies in practice.",
+        "Records first get standardized into one consistent shape, then matched against each other, then merged using a fixed rule for which source wins each individual field, then finally published.",
+        "Whatever that fixed rule genuinely can't decide on its own simply waits in a queue for an actual person to look at and resolve by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why this entire problem actually matters to a real business in the first place.",
+        "The exact same customer, the exact same product, or the exact same physical plant can genuinely exist inside two or more completely separate systems at once.",
+        "Whichever one of these four approaches a team actually picks decides exactly what kind of agreement those separate systems will have about that one shared thing."
+      ]
+    },
+    {
+      "lines": [
+        "Let's gather what today actually covered, because every piece of it comes back to the exact same two questions.",
+        "Simple cross-referencing, an assembled reporting copy, a copy synced in both directions, and one single system that owns everything outright.",
+        "Every single one of those four approaches is really just a different answer to who gets to write, and where the one true copy of a record actually lives."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, because picking the right approach here genuinely depends on what a team actually needs.",
+        "A company wants every one of its order systems to keep writing its own orders directly, with no brand new single system taking over that job.",
+        "But that same company also wants one single, clean, duplicate-free customer list purely for its own reporting. Which of today's four approaches actually fits that company's situation?"
+      ],
+      "answer": [
+        "The approach that assembles a clean reporting copy fits perfectly here, since it never asks any existing order system to give up writing its own orders.",
+        "Taking full ownership away from every other system is exactly the one thing this particular company already ruled out wanting."
+      ]
+    }
+  ]
+}

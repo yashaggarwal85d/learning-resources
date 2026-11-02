@@ -1,0 +1,97 @@
+{
+  "topic": "de.replication-lag-session-guarantees",
+  "steps": [
+    {
+      "lines": [
+        "On its own database, a client reading back something it just wrote isn't even a question.",
+        "The moment a second node enters the picture, that stops being automatic.",
+        "So the real question is what exactly happens the instant that read lands somewhere else."
+      ]
+    },
+    {
+      "lines": [
+        "Commit to an answer before I show you.",
+        "A standby out there has already received the bytes of a write, but hasn't actually replayed them yet.",
+        "Does the client that made that write see it, the very next time it reads?"
+      ],
+      "answer": [
+        "It's tempting to say yes, since the client just wrote it moments ago.",
+        "But what the standby can show depends entirely on its own replay position, not on who's asking or how recently they wrote.",
+        "That position hasn't moved past the write yet. So no, the write simply isn't there."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that guarantee, named precisely.",
+        "A process's own write has to be visible to that same process's own later read.",
+        "Nothing stronger than that, and notice it says nothing at all about a different process reading the same data."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this actually happen, against a real database, not a thought experiment.",
+        "Pause a real standby's own replay. Commit a real write on the primary.",
+        "Read the standby right now. The row the client itself just wrote: simply not there."
+      ]
+    },
+    {
+      "lines": [
+        "Fixing this needs something more exact than just waiting a little while.",
+        "Capture the primary's own exact commit position the moment the write lands, as a token.",
+        "Then make the read wait, not for a fixed amount of time, but until the standby's own replay position has actually passed that exact token."
+      ]
+    },
+    {
+      "lines": [
+        "Run the identical write, the identical read, with that one change.",
+        "The row becomes visible at the exact moment replay crosses the token's position.",
+        "Not sooner, not with extra margin added for safety. Exactly at that position."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing to commit to before I reveal it.",
+        "In every measurement so far, reads off this one standby never go backward.",
+        "What would it actually take to make one go backward for real?"
+      ],
+      "answer": [
+        "It's tempting to think any lagging standby could eventually show you something older than what you already saw.",
+        "But one standby is replaying one ordered stream of changes. Its own visible state can only move forward through that stream, never back.",
+        "A real violation needs a session that gets served by two different standbys whose own lag varies independently of each other."
+      ]
+    },
+    {
+      "lines": [
+        "That same reasoning covers two guarantees at once.",
+        "Reads never moving backward on one session, and an effect never appearing before the cause that produced it.",
+        "Both hold here, measured directly, for the identical structural reason: one replica, one ordered stream, nothing to violate it with."
+      ]
+    },
+    {
+      "lines": [
+        "Now put a real load behind all of this.",
+        "Two thousand real writes, sent as fast as this connection allows.",
+        "And then ask the database itself, not a guess, exactly how far behind writing, flushing, and actually replaying that load left the standby."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "Three guarantees, and one real fix underneath the one that actually breaks: a token naming the exact position a read has to wait for.",
+        "The other two guarantees needed nothing extra, because one replica can't violate them in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario. A dashboard reads order counts off a replica running thirty seconds behind, in the middle of a sale.",
+        "A customer who just placed an order calls support, asking where it went.",
+        "Given everything you just watched measured here: what does the token fix actually cost if you bolt it onto every single dashboard read, and is that even the right place to put it?"
+      ],
+      "answer": [
+        "It's tempting to reach for the strongest fix and apply it everywhere.",
+        "But the dashboard was never checking anyone's own write. Forcing it to wait for the newest possible position just makes it as slow as reading the primary directly, for nothing.",
+        "The token belongs on that one customer's own support lookup. The dashboard doesn't need it, and shouldn't pay for it."
+      ]
+    }
+  ]
+}

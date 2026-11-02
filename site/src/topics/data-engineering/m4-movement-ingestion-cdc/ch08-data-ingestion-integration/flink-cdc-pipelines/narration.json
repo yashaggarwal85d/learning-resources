@@ -1,0 +1,83 @@
+{
+  "topic": "de.flink-cdc-pipelines",
+  "steps": [
+    {
+      "lines": [
+        "A team sets out to copy one single source database into one single lakehouse table.",
+        "To get there, they end up running a capture tool, a message broker, and a separate connector just to land the result.",
+        "Most of their actual time goes into keeping that middle running, not into the one source and one destination they actually cared about."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what this simpler path actually keeps, think through this with me.",
+        "This path skips the message broker entirely, with nothing sitting between the source and wherever the data ends up.",
+        "Does skipping that broker also mean giving up the parallel, lock-free way of reading the starting snapshot, or does that stay completely separate from whether a broker exists at all?"
+      ],
+      "answer": [
+        "Reading the snapshot without locking anything or waiting on one single reader is a property of how the source itself behaves.",
+        "That property stays completely intact either way, because what happens to the records afterward never changes how the source went about reading them in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly what that parallel, lock-free read actually gives a team.",
+        "Several readers can work through the starting snapshot side by side, each one checkpointing its own small slice independently rather than everyone waiting on one giant read.",
+        "None of this ever requires locking the whole source table while that read is happening, which is the exact same idea from earlier in this chapter, just handed to several readers at once instead of one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a detail worth knowing before assuming this behaves identically everywhere.",
+        "For one particular source database, this same parallel way of reading a starting snapshot is still labeled as experimental, and it stays switched off unless somebody explicitly turns it on.",
+        "For another source database this lesson already covered, that same capability is simply the normal, standard way things already work."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's how the ongoing log gets read once that starting snapshot is done.",
+        "The capture logic itself runs directly inside the stream processor's own reading component, rather than as some separate service sitting off to the side.",
+        "Wherever that reading component actually left off gets carried along by the stream processor's own regular checkpoints, the same mechanism that protects every other part of that job."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually defines one of these pipelines from source to destination.",
+        "A single configuration file names where data comes from, where it goes, and how it should be handled along the way, and that one file is what gets handed to a running cluster.",
+        "That single file alone can land the result in a lakehouse table, a warehouse, a search index, or any of several other destinations, without writing anything else by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's how this path handles a source table whose shape changes while a pipeline is already running.",
+        "A team picks from a small handful of named behaviors ahead of time, rather than writing custom logic by hand for every possible kind of change, the way an earlier topic in this chapter actually measured directly.",
+        "Whichever behavior gets picked decides automatically what happens the moment that kind of change actually shows up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part of today's lesson that explains exactly what a team actually trades away for all of this simplicity.",
+        "There's no broker running, and that's genuinely fewer moving parts to operate day to day.",
+        "But there's also nothing durable sitting in the middle for anyone else to read from later, so a second reader of this exact same data has no choice but to go back and read the original source all over again."
+      ]
+    },
+    {
+      "lines": [
+        "Let's gather what today actually showed, because every piece of it traces back to one single tradeoff.",
+        "A fast, lock-free starting read, the ongoing log folded directly into the stream processor itself, one single file describing the whole path, and a small set of named choices for handling a changing source.",
+        "All of that simplicity comes directly at the cost of there being nothing durable left behind for anybody else to read from later."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, because a team might assume adding a second destination later is simply trivial.",
+        "Say a team already has this kind of pipeline running, and now wants a completely separate destination added, pointed at the exact same source table.",
+        "What does actually adding that second destination genuinely require?"
+      ],
+      "answer": [
+        "It requires an entirely separate job that reads the original source database all over again from scratch.",
+        "That's a second load placed directly on that same source, precisely because nothing durable was ever sitting in the middle for the new destination to simply attach to instead."
+      ]
+    }
+  ]
+}

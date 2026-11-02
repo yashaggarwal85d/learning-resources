@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: capacity estimation, storage, failure modes, and the interview
+
+<ul class="resources">
+  <Resource kind="reel" title="Back-of-envelope capacity estimation" domain="data-engineering" host="de.global-manufacturing-telemetry-platform">The estimate chain this topic reuses for a fleet of sensors instead of a web service.</Resource>
+  <Resource kind="reel" title="Storage, layout and lifecycle decisions" domain="data-engineering" host="de.global-manufacturing-telemetry-platform">The hot-store-versus-lakehouse decision this topic applies to time-series data.</Resource>
+  <Resource kind="reel" title="Failure-mode analysis and recovery" domain="data-engineering" host="de.global-manufacturing-telemetry-platform">The degraded-mode thinking behind this topic's plant-local autonomy design.</Resource>
+  <Resource kind="reel" title="Destination-side interrogation" domain="data-engineering" host="de.global-manufacturing-telemetry-platform">The requirements interview whose prompt this topic's design answers.</Resource>
+  <Resource kind="reel" title="Resumable multi-TB historical backfill" domain="data-engineering" host="de.global-manufacturing-telemetry-platform">The chunked, idempotent catch-up this topic's own throttled replay is built on.</Resource>
+  <Resource kind="reel" title="Multi-region analytical platform" domain="data-engineering" host="de.global-manufacturing-telemetry-platform">The replicate-versus-federate decision behind this topic's per-site residency rule.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="Gorilla: A Fast, Scalable, In-Memory Time Series Database" href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf" by="Pelkonen et al., VLDB 2015">The compression figure this topic's capacity estimate quotes as a reference point, not a promise.</Resource>
+  <Resource kind="reading" title="Metric and label naming" href="https://prometheus.io/docs/practices/naming/" by="Prometheus documentation">The cardinality warning behind this topic's series-count decision.</Resource>
+</ul>
+
+</section>

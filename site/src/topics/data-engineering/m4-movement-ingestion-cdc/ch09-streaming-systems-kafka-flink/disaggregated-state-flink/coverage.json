@@ -1,0 +1,131 @@
+{
+  "topic": "de.disaggregated-state-flink",
+  "syllabus": [
+    {
+      "clause": "ForSt stores state primarily on remote object storage with local disk as cache",
+      "at": [{ "step": "Reveal: ForSt is an LSM-tree store built on remote storage" }]
+    },
+    {
+      "clause": "the asynchronous execution model and async state API hide remote latency while preserving per-key order",
+      "at": [
+        { "step": "Reveal: the async state API returns a non-blocking future" },
+        { "step": "Reveal: same-key order is preserved while different keys interleave freely" }
+      ]
+    },
+    {
+      "clause": "checkpoints become near-metadata operations, enabling fast recovery and rescaling",
+      "at": [
+        { "step": "Reveal: a checkpoint becomes a near-metadata update" },
+        { "step": "Reveal: faster recovery, scale-in, and scale-out follow from the same cause" }
+      ]
+    },
+    {
+      "clause": "what latency-sensitive jobs give up",
+      "at": [{ "step": "Reveal: no cache costs real throughput; a modest one earns it back" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Disaggregated state in Flink 2.0 (Mei et al., 2025 VLDB)",
+      "items": [
+        {
+          "item": "Flink 2.0 introduces an asynchronous record execution framework and a disaggregated state store, ForSt, with an LSM-tree abstraction unifying local and remote state access",
+          "at": [{ "step": "Reveal: ForSt is an LSM-tree store built on remote storage" }]
+        },
+        {
+          "item": "the asynchronous model preserves Flink 1.x's per-key processing order, watermark correctness, and fault tolerance guarantees",
+          "at": [{ "step": "Reveal: same-key order is preserved while different keys interleave freely" }]
+        },
+        {
+          "item": "checkpointing becomes a lightweight metadata update, consistently completing within a few seconds regardless of checkpoint size",
+          "at": [{ "step": "Reveal: a checkpoint becomes a near-metadata update" }]
+        },
+        {
+          "item": "compared to Flink 1.20, disaggregated state provides sixteen-times faster job recovery, twelve-times faster scale-in, and forty-nine-times faster scale-out",
+          "at": [{ "step": "Reveal: faster recovery, scale-in, and scale-out follow from the same cause" }]
+        },
+        {
+          "item": "enabling disaggregated state without any cache degrades throughput by 48% on average for heavy-I/O queries, while even a 1GB cache outperforms the local setup",
+          "at": [{ "step": "Reveal: no cache costs real throughput; a modest one earns it back" }]
+        }
+      ]
+    },
+    {
+      "source": "State Backends (Apache Flink, 2.0 docs)",
+      "items": [
+        {
+          "item": "ForStStateBackend is an LSM-tree structured key-value store built on top of RocksDB, holding sst files on remote file systems such as HDFS or S3",
+          "at": [{ "step": "Reveal: ForSt is an LSM-tree store built on remote storage" }]
+        },
+        {
+          "item": "asynchronous state access is preferred, since ForStStateBackend is currently the only backend supporting it",
+          "at": [{ "step": "Reveal: the async state API returns a non-blocking future" }]
+        }
+      ]
+    },
+    {
+      "source": "Working with State V2 (Apache Flink, 2.0 docs)",
+      "items": [
+        {
+          "item": "the new state API gives synchronous and asynchronous versions of each state type, with the asynchronous version returning a non-blocking StateFuture",
+          "at": [{ "step": "Reveal: the async state API returns a non-blocking future" }]
+        },
+        {
+          "item": "the new API set is only available on a KeyedStream with enableAsyncState() invoked",
+          "at": [{ "step": "Reveal: the async state API returns a non-blocking future" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "ForSt's move is best understood as an inversion, not an addition: every earlier backend's local copy was authoritative with the remote copy (if any) derived from it; ForSt flips which side is derived, and almost every other consequence in this topic follows from that one flip.",
+        "at": [{ "step": "Reveal: ForSt is an LSM-tree store built on remote storage" }]
+      },
+      {
+        "item": "A checkpoint becoming near-metadata-only is not a separate optimization bolted onto ForSt — it's the direct, mechanical consequence of the authoritative copy already living where a checkpoint would need to copy it to.",
+        "at": [{ "step": "Reveal: a checkpoint becomes a near-metadata update" }]
+      },
+      {
+        "item": "The paper's own recovery/scale-in/scale-out multiples all share one root cause (near-free checkpoints), which is why presenting them together as one reveal, rather than three separate unrelated wins, better reflects the actual architecture.",
+        "at": [{ "step": "Reveal: faster recovery, scale-in, and scale-out follow from the same cause" }]
+      },
+      {
+        "item": "The per-key ordering guarantee is the one property that keeps async state access from silently breaking correctness — without it, a naive async rewrite of keyed processing would be a different, much riskier change than this topic presents it as.",
+        "at": [{ "step": "Reveal: same-key order is preserved while different keys interleave freely" }]
+      },
+      {
+        "item": "Framing the cache tradeoff as a real cost rather than a footnote matters because it's the one place this topic explicitly says ForSt is not strictly better than RocksDB — a latency-sensitive job with a poorly cached working set is a genuinely worse fit for it.",
+        "at": [{ "step": "Reveal: no cache costs real throughput; a modest one earns it back" }]
+      },
+      {
+        "item": "This topic's hook (every backend so far kept its primary copy local) and the recap's close (the primary copy moved off-machine on purpose) are the same observation stated twice, first as an open question and then as the settled answer the whole reel built toward.",
+        "at": [{ "step": "Hook: what if the primary copy didn't stay next to the processing?" }]
+      },
+      {
+        "item": "The toy checkpoint-cost, async-ordering, throughput, and cache-latency models are deliberately simplified standalone demonstrations, not ports of ForSt's actual LSM-tree or async-runtime internals, and every figure shown is this run's own measured output, not a cited Flink benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic uses the state-backend comparison and key-group rescaling unit from the previous topic directly — ForSt is introduced as a third backend alongside heap and RocksDB, not as a replacement for the rescaling mechanics those backends already share.",
+        "at": [{ "step": "Setup: heap and RocksDB both keep their primary copy local" }]
+      },
+      {
+        "item": "Presenting the async state API's change as a consequence of ForSt's remote primary copy, rather than an independent feature, keeps the causal chain (remote primary -> real round-trip latency -> async access needed) explicit instead of implied.",
+        "at": [{ "step": "Reveal: the async state API returns a non-blocking future" }]
+      },
+      {
+        "item": "This topic deliberately leaves Flink SQL's own consumption of state through dynamic tables unexplored — the runtime and state model just covered is what that SQL layer is built directly on top of, large enough to need the next topic's full treatment.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

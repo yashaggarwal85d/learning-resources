@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: a real system that already used one of these
+
+<ul class="resources">
+  <Resource kind="reel" title="LSM trees: write and read paths" domain="data-engineering" host="de.lsm-trees-write-read" by="its own per-file Bloom filter, a real instance of this family, used without this topic naming it yet" />
+  <Resource kind="reel" title="Message queues vs event logs" domain="data-engineering" host="de.message-queues-vs-event" by="the chapter's own previous topic, this topic's handoff into the opposite idea: a small, bounded error for a massive reduction in memory" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Bloom filter" href="https://en.wikipedia.org/wiki/Bloom_filter" by="Wikipedia">The no-false-negatives guarantee and the real bits-per-key sizing relationship.</Resource>
+  <Resource kind="reading" title="Xor Filters: Faster and Smaller Than Bloom and Cuckoo Filters" href="https://arxiv.org/pdf/1912.08258" by="Graf & Lemire">What an xor filter trades for being smaller and faster.</Resource>
+  <Resource kind="reading" title="Cuckoo Filter: Practically Better Than Bloom" href="https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf" by="Fan, Andersen, Kaminsky, Mitzenmacher">What a cuckoo filter adds over a standard filter: real deletes.</Resource>
+  <Resource kind="reading" title="RocksDB Bloom Filter" href="https://raw.githubusercontent.com/wiki/facebook/rocksdb/RocksDB-Bloom-Filter.md" by="RocksDB wiki">A real, shipped engine's own ribbon-filter trade.</Resource>
+</ul>
+
+</section>

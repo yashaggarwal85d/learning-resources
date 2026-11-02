@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: per-partition ordering, and bounded deduplication
+
+This topic's whole problem — why one bad record can block everything behind it — follows
+directly from per-partition ordering, and its fix leans on the event-id deduplication this
+chapter already built. If those are unfamiliar, start with
+[Kafka ordering guarantees](../kafka-ordering-guarantees/) and
+[Deduplication keys and idempotent consumers](../deduplication-idempotent-consumers/) first.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="User Guide" href="https://kafka.apache.org/44/kafka-connect/user-guide/" by="Apache Kafka Connect docs">The errors.tolerance setting and dead-letter-queue configuration.</Resource>
+  <Resource kind="reading" title="KIP-1034: Dead letter queue in Kafka Streams" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-1034%3A+Dead+letter+queue+in+Kafka+Streams" by="Apache Kafka wiki">Kafka Streams' own DLQ handler mechanism.</Resource>
+  <Resource kind="reading" title="Error Handling Patterns in Kafka" href="https://www.confluent.io/blog/error-handling-patterns-in-kafka/" by="Confluent blog">The retry-topic pattern and its explicit ordering trade-off.</Resource>
+</ul>
+
+</section>

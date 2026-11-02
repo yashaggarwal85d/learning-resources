@@ -1,0 +1,83 @@
+{
+  "topic": "de.data-slis-slos-error",
+  "steps": [
+    {
+      "lines": [
+        "A pipeline's own dashboard reports a perfect month: every single run finished right on schedule.",
+        "Meanwhile, the customer-facing report that pipeline actually feeds was showing yesterday's numbers for several days straight.",
+        "A step downstream of the pipeline, a view meant to refresh right after, had silently stopped refreshing.",
+        "The dashboard wasn't lying. It was just measuring the wrong point entirely."
+      ]
+    },
+    {
+      "lines": [
+        "This course has already named six quality dimensions, more than once: how fresh something is, how complete, how valid, how unique, how consistent, how accurate.",
+        "Those definitions aren't new here, and they're only recapped briefly.",
+        "What's new is turning each one into an actual measured number, with an explicit target and a budget attached to it.",
+        "A feeling about quality becomes something you can page a person about."
+      ]
+    },
+    {
+      "lines": [
+        "Worth pausing before the reveal.",
+        "A pipeline can genuinely finish exactly on schedule, every time, while whatever a person actually looks at is still stale.",
+        "So where should a freshness measurement actually be taken?",
+        "At the pipeline's own finish line, or somewhere else entirely?"
+      ],
+      "answer": "At the point a consumer actually reads the data -- a dashboard query, an API response -- not wherever the pipeline itself happens to finish writing."
+    },
+    {
+      "lines": [
+        "Here's that read point, named directly.",
+        "A freshness measurement taken where a consumer actually reads the data, not where the pipeline finishes writing it.",
+        "Those two points agree almost all the time, which is exactly why the gap is so easy to miss.",
+        "They stop agreeing the moment some downstream step, a cache or a view, quietly stops doing its job."
+      ],
+      "takeaway": "A pipeline finishing on time isn't the same claim as the data being fresh. Only the read point can tell the two apart."
+    },
+    {
+      "lines": [
+        "One more question worth asking before it's answered.",
+        "A table a customer looks at directly and a table used only for occasional internal exploration clearly don't carry the same weight if either one goes stale.",
+        "Should they really be held to the exact same freshness target anyway?",
+        "Or does the target itself need to depend on who's actually looking?"
+      ],
+      "answer": "No, they shouldn't share one target. A table customers actually see earns a much tighter target than one used only for occasional internal digging."
+    },
+    {
+      "lines": [
+        "Here's how that's actually structured.",
+        "A top-tier, customer-facing table gets a noticeably tighter freshness target than a lower-tier, internal table.",
+        "Whatever slack that target leaves -- the gap between a perfect score and the target itself -- is called an error budget.",
+        "That slack gets spent on purpose, by things like a deliberate historical backfill or a planned schema change, not just lost to random failures."
+      ],
+      "takeaway": "An error budget is not a failure allowance. It is the slack a team is allowed to spend on purpose."
+    },
+    {
+      "lines": [
+        "Here's the alerting rule behind this, sourced directly from a well-known site-reliability engineering guide rather than invented for this course.",
+        "A short time window paired with a fast rate of budget being spent pages someone immediately.",
+        "A longer time window paired with a slower, but still meaningfully large, rate of spend doesn't need a page -- it opens a ticket instead.",
+        "Together, the two windows catch both a sudden, sharp failure and a slow, quiet one before either empties the whole budget unnoticed."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it together now.",
+        "Measure freshness at the point a consumer actually reads the data, not wherever the pipeline itself happens to finish.",
+        "Size the target by who's actually affected, spend the resulting budget on purpose rather than losing it to accidents, and alert on how fast that budget is draining.",
+        "The hook's dashboard wasn't wrong about its own number. It was simply answering a different question than the one that mattered."
+      ],
+      "takeaway": "The hook's dashboard wasn't lying. It was just measuring the wrong point in the pipeline."
+    },
+    {
+      "lines": [
+        "One real test to close on, run against an actual database rather than just described.",
+        "A full month of a real pipeline, measured at both points at once: right where it finishes, and right where a consumer would actually read from it.",
+        "The same downstream failure from the very start of this topic is injected partway through that month.",
+        "Does the finish-time measurement ever catch on, even late -- or does it stay perfect the entire time?"
+      ],
+      "answer": "It stays perfect the entire time, because the pipeline genuinely never missed its own schedule once. Only the read-point measurement saw the failure, and the sourced ticket-alert rule fired exactly when the real numbers said it should."
+    }
+  ]
+}

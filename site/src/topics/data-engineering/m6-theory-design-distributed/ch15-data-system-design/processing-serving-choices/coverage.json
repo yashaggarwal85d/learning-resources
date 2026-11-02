@@ -1,0 +1,69 @@
+{
+  "topic": "de.processing-serving-choices",
+  "syllabus": [
+    {
+      "clause": "engine choice by state size, latency and team skill",
+      "at": [
+        { "step": "Hook: one slow query, three proposed fixes" },
+        { "step": "Predict: which fix is cheapest, fastest, and which breaks tomorrow?" },
+        { "step": "Reveal: three real drivers for an engine choice" },
+        { "step": "Reveal: team skill as a real, counted cost" }
+      ]
+    },
+    {
+      "clause": "serving store by query shape (point lookup, OLAP slice, search, vector)",
+      "at": [
+        { "step": "Reveal: a serving store follows the shape of the question" },
+        { "step": "Reveal: one dataset, three serving stores at once" }
+      ]
+    },
+    {
+      "clause": "pre-aggregation vs on-query compute",
+      "at": [{ "step": "Reveal: pre-aggregation trades compute at write for compute at read" }]
+    },
+    {
+      "clause": "read/write amplification accounting",
+      "at": [
+        { "step": "Reveal: the amplification ledger" },
+        { "step": "Reveal: the surprising multiplier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "DuckDB documentation — Why DuckDB",
+      "items": [
+        { "item": "DuckDB adopted SQLite's own ideas of simplicity and in-process, embedded operation deliberately, not accidentally.", "at": [{ "deep": "Frontier" }] },
+        { "item": "DuckDB has no external dependencies for build or runtime, which is the concrete form of 'no server to operate.'", "at": [{ "step": "Reveal: team skill as a real, counted cost" }] }
+      ]
+    },
+    {
+      "source": "Martin Kleppmann — Turning the database inside-out (talk abstract)",
+      "items": [
+        { "item": "A database as mutable global state, versus derived views materialized from streams as the alternative.", "at": [{ "step": "Reveal: one dataset, three serving stores at once" }] },
+        { "item": "The named trade-off: simpler code, better scalability, lower latency, and more flexibility gained by this approach.", "at": [{ "deep": "Outcomes" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "An engine choice rests on three drivers — state size, the latency floor the data-flow shape already set, and whether the team can operate it — with the last one counted as a real cost, not an afterthought.", "at": [{ "step": "Reveal: three real drivers for an engine choice" }] },
+      { "item": "A serving store follows the shape of the question asked (point lookup, OLAP slice, full-text, similarity), never the shape of the raw data.", "at": [{ "step": "Reveal: a serving store follows the shape of the question" }] },
+      { "item": "One dataset commonly needs several serving stores at once, each clearly derived from a single system of record, none of them the source of truth itself.", "at": [{ "step": "Reveal: one dataset, three serving stores at once" }] },
+      { "item": "Pre-aggregation and on-query compute trade compute at write for compute at read; the choice turns on a query's repetition and its freshness SLO, not on which sounds faster.", "at": [{ "step": "Reveal: pre-aggregation trades compute at write for compute at read" }] },
+      { "item": "The amplification ledger compares designs by physical bytes moved (after replication, rewrite and compaction), never by logical volume alone.", "at": [{ "step": "Reveal: the amplification ledger" }] },
+      { "item": "A design that looks cheapest by its logical size can have the largest amplification factor once a full rewrite or heavy compaction is counted honestly.", "at": [{ "step": "Reveal: the surprising multiplier" }] },
+      { "item": "This topic leaves out engine internals (Chapters 2, 7, 9) and serving-store internals (Chapter 5, Chapter 6 §6.4, Chapter 9, Chapter 17) deliberately — it teaches the decision those mechanics execute, not the mechanics themselves.", "at": [{ "deep": "Internals" }] },
+      { "item": "The single-node renaissance (DuckDB, Polars) is the one still-growing option in this topic, as capacity estimates increasingly justify skipping a distributed engine for workloads that fit on one machine.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A fix that computes a new breakdown on demand (the clustering-key option) survives a changed question untouched; a fixed-shape pre-aggregate usually needs a full rebuild.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic fixes the shop's own engine and serving-store choices that the next topic (correctness under replay and late data) assumes already hold on a normal day.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

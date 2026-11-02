@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: cost, storage choices and a two-region design
+
+<ul class="resources">
+  <Resource kind="reel" title="Storage, layout and lifecycle decisions" domain="data-engineering" host="de.multi-tenant-analytics-cost">The system-of-record and tiering-and-retention decisions this topic couples to per-tenant isolation.</Resource>
+  <Resource kind="reel" title="Cost model and dominant cost lever" domain="data-engineering" host="de.multi-tenant-analytics-cost">The cost-waterfall method this topic applies to per-tenant attribution.</Resource>
+  <Resource kind="reel" title="E-commerce warehouse with incremental loads" domain="data-engineering" host="de.multi-tenant-analytics-cost">A real warehouse design this topic now shares across many tenants.</Resource>
+  <Resource kind="reel" title="Multi-region analytical platform" domain="data-engineering" host="de.multi-tenant-analytics-cost">Isolation by region is one boundary; this topic's boundary is the tenant.</Resource>
+  <Resource kind="reel" title="Compute–storage separation and workload isolation" domain="data-engineering" host="de.multi-tenant-analytics-cost">The workload-isolation mechanism this topic's noisy-neighbour control is built on.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic argues from
+
+<ul class="resources">
+  <Resource kind="reading" title="QUERY_ATTRIBUTION_HISTORY view" href="https://docs.snowflake.com/en/sql-reference/account-usage/query_attribution_history" by="Snowflake documentation">The per-query compute-cost view this topic's attribution model reads from, and its own stated idle-time exclusion.</Resource>
+  <Resource kind="reading" title="INFORMATION_SCHEMA.JOBS view" href="https://docs.cloud.google.com/bigquery/docs/information-schema-jobs" by="Google Cloud documentation">The bytes-billed, slot-time and label fields this topic's BigQuery attribution model allocates from.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,54 @@
+{
+  "topic": "de.parquet-file-anatomy",
+  "syllabus": [
+    { "clause": "row groups, column chunks, pages (data, dictionary, v1 vs v2 data pages)", "at": [{ "step": "Hook" }, { "step": "Reveal: row group, column chunk, page" }, { "step": "Reveal: dictionary page vs. data page" }, { "step": "Reveal: the same column, v1 vs v2" }] },
+    { "clause": "Thrift footer metadata, logical vs physical types", "at": [{ "step": "Reveal: isAdjustedToUTC closes the gap" }, { "deep": "Three mechanisms, one shared requirement" }] },
+    { "clause": "timestamp pitfalls (legacy INT96, isAdjustedToUTC, unit mismatches) as classic cross-engine bugs", "at": [{ "step": "Reveal: the INT96 timestamp pitfall" }, { "step": "Reveal: isAdjustedToUTC closes the gap" }] },
+    { "clause": "why the footer-at-the-end design suits write-once object storage", "at": [{ "step": "Predict: does the footer come first or last?" }, { "step": "Reveal: the footer is written last" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Parquet Format, README.md",
+      "items": [
+        { "item": "a file consists of one or more row groups, each with exactly one column chunk per column, each chunk with one or more pages", "at": [{ "step": "Reveal: row group, column chunk, page" }] },
+        { "item": "file metadata is written after the data, to allow single-pass writing", "at": [{ "step": "Reveal: the footer is written last" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet Format, parquet.thrift",
+      "items": [
+        { "item": "INT96 is a deprecated physical type", "at": [{ "step": "Reveal: the INT96 timestamp pitfall" }] },
+        { "item": "a v2 data page keeps repetition/definition levels uncompressed, outside the optionally-compressed value section", "at": [{ "step": "Reveal: the same column, v1 vs v2" }] },
+        { "item": "the legacy INT96 chronological ordering rule confirms the 12-byte layout: 8 bytes nanoseconds-of-day, 4 bytes Julian day, both little-endian", "at": [{ "deep": "Three mechanisms, one shared requirement" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet Format, LogicalTypes.md",
+      "items": [
+        { "item": "TIMESTAMP(isAdjustedToUTC=true) is an unambiguous instant since the Unix epoch UTC", "at": [{ "step": "Reveal: isAdjustedToUTC closes the gap" }] },
+        { "item": "the legacy ConvertedType enum's TIMESTAMP_MILLIS/MICROS only ever map to isAdjustedToUTC=true — there is no ConvertedType value for local semantics", "at": [{ "deep": "Three mechanisms, one shared requirement" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A row group is a logical horizontal partitioning with no guaranteed physical structure of its own — the guarantee is only that a row group's column chunks are contiguous in the file, not that row groups themselves are any particular size.", "at": [{ "step": "Reveal: row group, column chunk, page" }] },
+      { "item": "The footer is written last specifically because it lets a writer produce the file in a single forward pass without knowing in advance where every column chunk will end up — not an arbitrary format choice.", "at": [{ "step": "Reveal: the footer is written last" }] },
+      { "item": "A dictionary page is optional per column chunk; a reader must check for its presence (via the optional dictionary_page_offset field) rather than assume one exists, which this topic's own second row group demonstrates by omitting it.", "at": [{ "step": "Reveal: dictionary page vs. data page" }] },
+      { "item": "The entire structural difference between a v1 DATA_PAGE and a v2 DATA_PAGE_V2 header is that v2 keeps repetition and definition levels uncompressed and separate from the value section, letting a reader learn row/null counts without decompressing values — not a difference in what data each page can represent.", "at": [{ "step": "Reveal: the same column, v1 vs v2" }] },
+      { "item": "INT96's 12 bytes carry no timezone information at all; any apparent agreement between two readers interpreting those bytes is coincidence, not correctness, which is why the format deprecated it in favor of a logical type with an explicit flag.", "at": [{ "step": "Reveal: the INT96 timestamp pitfall" }] },
+      { "item": "isAdjustedToUTC does not change how the underlying integer is encoded (still milliseconds/microseconds/nanoseconds since an epoch) — it only removes the ambiguity about which epoch-relative meaning that integer has.", "at": [{ "step": "Reveal: isAdjustedToUTC closes the gap" }] },
+      { "item": "A column's physical type (how its bytes are laid out) and its logical type (what those bytes mean) are two separate fields in the same SchemaElement — a column can have a physical type with no logical type at all, as this topic's own legacy INT96 column does.", "at": [{ "deep": "Three mechanisms, one shared requirement" }] },
+      { "item": "This topic's hand-rolled file was independently verified against a real Parquet implementation (pyarrow), confirming the Thrift Compact Protocol encoding and the page/footer byte layout are genuinely spec-compliant, not merely self-consistent with this topic's own reader.", "at": [{ "deep": "Three mechanisms, one shared requirement" }] },
+      { "item": "Column statistics, page-level indexes and bloom filters are deliberately out of scope here — they are the next topic's own subject (§6.2, data skipping), built on top of exactly this file anatomy.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Table formats (Iceberg, Delta Lake) add a stable, format-level column ID on top of a file format like Parquet's own schema, which this topic's file does not use — that comparison belongs to this chapter's later table-format topics, not this one.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

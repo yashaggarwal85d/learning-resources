@@ -1,0 +1,69 @@
+{
+  "topic": "de.warmup-steady-state-measurement",
+  "syllabus": [
+    {
+      "clause": "why the first minutes lie: JIT/code-gen warm-up, cold page cache and buffer pool, empty result caches, LSM compaction debt and table-format small files not yet accumulated",
+      "at": [
+        { "step": "Reveal: why the first minutes lie — the warm-up causes" },
+        { "step": "Reveal: cold page cache and buffer pool, reproduced" }
+      ]
+    },
+    {
+      "clause": "detecting steady state, run length, repeated trials with confidence intervals",
+      "at": [
+        { "step": "Reveal: detecting steady state" },
+        { "step": "Reveal: repeated trials and confidence intervals" }
+      ]
+    },
+    {
+      "clause": "reporting cold-cache and hot-cache numbers as two separate results",
+      "at": [
+        { "step": "Reveal: cold-cache and hot-cache as two honest numbers" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL — 19.4 Resource Consumption",
+      "items": [
+        { "item": "shared_buffers and the OS page cache are two distinct, stacked caches; PostgreSQL's own guidance warns that allocating more than 40% of RAM to shared_buffers is unlikely to help, because the OS cache is doing real work too", "at": [{ "step": "Reveal: cold page cache and buffer pool, reproduced" }] },
+        { "item": "a reasonable starting shared_buffers value is 25% of system memory on a dedicated server", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "RocksDB — Overview of RocksDB",
+      "items": [
+        { "item": "compactions exist for space efficiency, read efficiency and timely deletion; a full memtable flushes to an L0 file and compaction periodically merges files into later LSM levels", "at": [{ "step": "Reveal: why the first minutes lie — the warm-up causes" }] }
+      ]
+    },
+    {
+      "source": "Georges, Buytaert & Eeckhout — Statistically Rigorous Java Performance Evaluation (OOPSLA 2007)",
+      "items": [
+        { "item": "there are two issues with quantifying steady-state performance: determining when it is reached, and that different invocations may converge to different steady states", "at": [{ "step": "Reveal: detecting steady state" }] },
+        { "item": "a steady-state iteration is flagged once the coefficient of variation of the k most recent iterations falls below a preset threshold (e.g. 0.01 or 0.02)", "at": [{ "step": "Reveal: detecting steady state" }] },
+        { "item": "a confidence interval for a given confidence level is computed across the means from repeated invocations, not read off a single run", "at": [{ "step": "Reveal: repeated trials and confidence intervals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "The hook deliberately gives both engineers a correct, honestly-run benchmark — neither made an arithmetic or coding error — so the lesson is specifically about measurement timing, not about catching a bug; conflating the two would undercut the topic's own central claim.", "at": [{ "step": "Hook" }] },
+      { "item": "Naming five warm-up causes but only reproducing two on this sandbox's Postgres is itself the topic's own honesty discipline in miniature: it would be easy to imply all five were demonstrated, and the topic instead states plainly which two are measured and which three are named from their own sources.", "at": [{ "step": "Reveal: why the first minutes lie — the warm-up causes" }] },
+      { "item": "The steady-state detector's threshold is deliberately adapted from Georges et al.'s CoV convention rather than copied verbatim, because this topic's unit (wall-clock request latency across a handful of requests) and the paper's unit (JVM benchmark iteration counts, often in the thousands) are different enough that a borrowed literal threshold value would be a false precision, not a faithful adaptation.", "at": [{ "step": "Reveal: detecting steady state" }] },
+      { "item": "Treating the result-cache-analog effect (a second, un-restarted run of the identical query running faster) as a distinct mechanism from the cold-restart effect, rather than folding both into one 'warm-up' bucket, is what lets the two REvealed causes in examples.py actually be checked against two different code paths instead of one experiment doing double duty.", "at": [{ "step": "Reveal: cold page cache and buffer pool, reproduced" }] },
+      { "item": "Reporting a confidence interval instead of a single number is presented as answering a specific question — whether an observed difference between two numbers is real or just noise — rather than as a generic 'best practice,' so a learner comes away knowing what the interval is for, not just that papers use them.", "at": [{ "step": "Reveal: repeated trials and confidence intervals" }] },
+      { "item": "The cold-cache/hot-cache split is framed as a design decision driven by which real question a reader needs answered (a service that restarts often vs. one that runs for days), not as an arbitrary convention, which is the same framing CHAPTER.md's own syllabus clause insists on ('reporting... as two separate results', not 'averaging them').", "at": [{ "step": "Reveal: cold-cache and hot-cache as two honest numbers" }] },
+      { "item": "The Prove It step is deliberately unanswerable from the vendor number alone — it tests whether the viewer has internalized that the two *missing* pieces of information (warm-up discard, trial count) are themselves the red flag, independent of whether the reported number happens to be accurate.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's own examples.py measures real wall-clock timings on a real, shared sandbox Postgres instance, so its own cold-vs-hot gap and its own confidence-interval width will vary run to run with the container's actual load — the topic states this as expected variance consistent with its own lesson, rather than papering over it with a single frozen 'example' number.", "at": [{ "deep": "Lab" }] },
+      { "item": "The topic's 'Leaves out' line (how to summarize the resulting samples — mean vs. percentile, and merging across trials) is written to point forward to topic 2's exact subject rather than gesture vaguely at 'more to come,' consistent with how this chapter's CHAPTER.md threads one running benchmark through all four topics.", "at": [{ "step": "Recap" }] },
+      { "item": "Choosing the shop's own order-lookup query, already familiar from earlier chapters' examples, rather than introducing a new synthetic workload, keeps the chapter's running example doing the same narrative work CHAPTER.md assigns it: one target, one set of measurement lies corrected one topic at a time.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the CDC choice and PostgreSQL's own slot
+
+<ul class="resources">
+  <Resource kind="reel" title="Query-based vs log-based CDC" domain="data-engineering" host="de.query-based-vs-log" by="Chapter 8, §8.2" />
+  <Resource kind="reel" title="PostgreSQL logical decoding internals" domain="data-engineering" host="de.postgresql-logical-decoding-internals" by="Chapter 8, §8.2" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic models and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Debezium connector for MySQL" href="https://debezium.io/documentation/reference/stable/connectors/mysql.html" by="Debezium docs">The row image, GTID and retention facts this topic's own model is built from.</Resource>
+  <Resource kind="reading" title="Debezium connector for Oracle" href="https://debezium.io/documentation/reference/stable/connectors/oracle.html" by="Debezium docs">LogMiner and XStream, named directly rather than run against a live Oracle.</Resource>
+  <Resource kind="reading" title="Using LogMiner to Analyze Redo Log Files" href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-logminer-utility.html" by="Oracle docs">LogMiner's own description of itself, independent of Debezium's framing.</Resource>
+  <Resource kind="reading" title="About change data capture (SQL Server)" href="https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/about-change-data-capture-sql-server" by="Microsoft docs">The capture instance and the `_CT` change table this topic places on the poll-versus-log spectrum.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,80 @@
+{
+  "topic": "de.two-phase-commit-blocking",
+  "steps": [
+    {
+      "lines": [
+        "Notice what each shard actually knows at this point, and what it doesn't.",
+        "Both shards know they said yes. Neither one knows what the coordinator decided, because the only copy of that decision just disappeared with the machine that wrote it.",
+        "An hour of silence doesn't tell them anything they didn't already know a second after the crash."
+      ]
+    },
+    {
+      "lines": [
+        "Before choosing, ask what each option risks getting wrong, not just how long it's been waiting.",
+        "Aborting is wrong if the coordinator already decided commit. Committing is wrong if it decided abort. Only one of those risks is avoidable."
+      ],
+      "answer": [
+        "It has to wait.",
+        "The coordinator may well have already logged commit before it crashed. Guessing abort now would contradict a decision that already exists somewhere, even if nobody prepared can currently read it.",
+        "Waiting is the only option that can't actively create an inconsistency."
+      ]
+    },
+    {
+      "lines": [
+        "Watch exactly what a yes vote commits a participant to, because it's more than it sounds like.",
+        "It's not a vote in the sense of an opinion. It's a durable promise: I can commit this, and I will not change my mind."
+      ]
+    },
+    {
+      "lines": [
+        "Pay attention to why the participant can't just decide for itself here.",
+        "It genuinely cannot tell, from where it sits, whether the coordinator logged commit or abort. Guessing either way risks landing on the wrong side of a decision that's already made.",
+        "So it holds its locks. That wait is the cost of a promise it can't take back."
+      ]
+    },
+    {
+      "lines": [
+        "Separate what three-phase commit actually buys from what it quietly assumes.",
+        "The extra phase genuinely lets a participant finish without the coordinator, if it got that message.",
+        "But deciding the coordinator is gone, rather than just slow, needs a timeout you can trust. Split the network, and two separate groups can each trust their own timeout, and each finish differently."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what actually changes when the decision itself becomes a vote instead of a fact one machine holds.",
+        "Losing the coordinator used to mean losing the decision outright. Now losing it just means losing one voice out of several, and the others still carry the answer.",
+        "Classic two-phase commit is what you get when you only ever had one voice to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Think about these two production choices as separate questions, not one bundled improvement.",
+        "Where does the decision live, so one machine's death doesn't erase it? And how many of the needed consensus rounds can happen at once, instead of one after another?",
+        "A system can answer the first question without touching the second, or answer both."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what this route gives up that everything before it was trying to keep.",
+        "A saga and an outbox both stop insisting on one atomic outcome. They accept that the pieces commit separately, and put the job of staying coherent onto the application instead of the protocol."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the one thing every fix in this topic reached for.",
+        "A promise that can't be taken back is dangerous exactly when only one machine remembers it. Every answer here is some version of putting that memory somewhere a single crash can't reach."
+      ]
+    },
+    {
+      "lines": [
+        "Before answering, ask what kind of failure replicating the decision actually removes.",
+        "It removes the specific failure from the hook: one coordinator machine, holding the only copy, gone for an hour."
+      ],
+      "answer": [
+        "It narrows the problem. It doesn't erase it.",
+        "A participant can still be stuck in doubt by its own crash, by a message that never arrives, or by the decision-replicating group itself losing its own majority.",
+        "What's gone is the single point of failure. What's left is everything consensus itself still can't promise."
+      ]
+    }
+  ]
+}

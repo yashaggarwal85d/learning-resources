@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: Flink SQL and dynamic tables
+
+This topic contrasts directly with the previous one — Flink SQL formalised the stream-table idea
+as changelogs of dynamic tables, run by a separate cluster; this topic builds almost the identical
+idea as a library, with no cluster of its own at all. See
+[Flink SQL and dynamic tables](../flink-sql-dynamic-tables/) first if any of that isn't familiar.
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Architecture" href="https://kafka.apache.org/44/streams/architecture/" by="Apache Kafka Streams, 4.4 docs">The task-per-partition model, local state stores, and standby replicas.</Resource>
+  <Resource kind="reading" title="Core Concepts" href="https://kafka.apache.org/44/streams/core-concepts/" by="Apache Kafka Streams, 4.4 docs">The stream-table duality and exactly-once v2.</Resource>
+  <Resource kind="reading" title="Streams Rebalance Protocol" href="https://kafka.apache.org/44/streams/developer-guide/streams-rebalance-protocol/" by="Apache Kafka Streams, 4.4 docs">The newer broker-driven rebalance protocol's current scope.</Resource>
+  <Resource kind="reading" title="Confluent Community License FAQ" href="https://www.confluent.io/confluent-community-license-faq/" by="Confluent">ksqlDB's current licence scope.</Resource>
+</ul>
+
+</section>

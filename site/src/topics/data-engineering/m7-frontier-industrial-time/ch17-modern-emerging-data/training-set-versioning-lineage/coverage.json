@@ -1,0 +1,86 @@
+{
+  "topic": "de.training-set-versioning-lineage",
+  "syllabus": [
+    {
+      "clause": "reproducible datasets via table-format snapshots/tags (Iceberg/Delta)",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Reveal: a moving target vs. a pinned one" }
+      ]
+    },
+    {
+      "clause": "lakeFS branches or DVC",
+      "at": [
+        { "step": "Reveal: lakeFS branches, the mechanism" },
+        { "step": "Reveal: DVC pins, the mechanism" },
+        { "step": "Reveal: the decision, by scale" }
+      ]
+    },
+    {
+      "clause": "linking dataset versions, code and models in an experiment tracker (MLflow 3's LoggedModel, Weights & Biases)",
+      "at": [
+        { "step": "Reveal: linking it in an experiment tracker" }
+      ]
+    },
+    {
+      "clause": "labeling pipelines and label-version drift",
+      "at": [
+        { "step": "Reveal: label-version drift" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "lakeFS documentation — Internals",
+      "items": [
+        { "item": "a branch is a pointer to a commit plus uncommitted changes, zero-copy to create", "at": [{ "step": "Reveal: lakeFS branches, the mechanism" }] },
+        { "item": "a tag gives a meaningful name to a specific commit", "at": [{ "step": "Reveal: lakeFS branches, the mechanism" }] },
+        { "item": "a merge finds the nearest common ancestor and performs a three-way merge", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "DVC documentation — Internal Files",
+      "items": [
+        { "item": "the DVC cache is content-addressable; a file's identity is a hash of its contents", "at": [{ "step": "Reveal: DVC pins, the mechanism" }] },
+        { "item": "files with identical content but different names/paths are deduplicated to one cache entry", "at": [{ "step": "Reveal: DVC pins, the mechanism" }] }
+      ]
+    },
+    {
+      "source": "MLflow documentation — MLflow 3.0 (Preview)",
+      "items": [
+        { "item": "MLflow 3.0 introduced LoggedModel as a new first-class tracking entity", "at": [{ "step": "Reveal: linking it in an experiment tracker" }] },
+        { "item": "a LoggedModel's page shows evaluation metrics, model ID, source run, parameters — \"a comprehensive overview of the model's performance and lineage\"", "at": [{ "step": "Reveal: linking it in an experiment tracker" }] },
+        { "item": "passing a name when logging a model lets you search for LoggedModels by that name later", "at": [{ "step": "Reveal: linking it in an experiment tracker" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg documentation — Branching and Tagging",
+      "items": [
+        { "item": "table metadata maintains a snapshot log of every change applied to a table", "at": [{ "step": "Reveal: a moving target vs. a pinned one" }] },
+        { "item": "branches and tags are named references to snapshots with independent lifecycles", "at": [{ "step": "Reveal: a moving target vs. a pinned one" }] },
+        { "item": "tags are used for retaining important historical snapshots for auditing purposes", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-30",
+    "items": [
+      { "item": "A snapshot and a branch answer different questions even though both version the same underlying lake: a snapshot/tag pins one state for reading, while a branch is a writable, isolated view for building a new derived state before it is validated and merged — this topic uses a snapshot for the training-set reproducibility claim and names the branch separately for the case where the derived dataset itself needs its own working area.", "at": [{ "step": "Reveal: a moving target vs. a pinned one" }] },
+      { "item": "lakeFS's zero-copy branching and DVC's content-addressable cache solve the same underlying problem (avoid duplicating bytes that haven't changed) at two different granularities: lakeFS at the scale of an entire repository's object set, DVC at the scale of one file — which is exactly why the decision in this topic is a scale question, not a feature comparison.", "at": [{ "step": "Reveal: the decision, by scale" }] },
+      { "item": "MLflow's LoggedModel searchability by dataset (this topic's claim) only has teeth if the dataset identifier logged against a run is itself a stable, content-derived digest rather than a mutable name — otherwise two different dataset states could share a logged name and the search would silently conflate them, which is why this topic pairs the tracker with the earlier reveals rather than teaching it standalone.", "at": [{ "step": "Reveal: linking it in an experiment tracker" }] },
+      { "item": "Label-version drift is easy to mistake for a data-quality bug because the symptom looks identical to data drift from the outside (the trained model's behavior shifts) — the diagnostic difference is that the *features* are provably unchanged (same snapshot, same hash) while only the label's own definition moved, which is why pinning the dataset alone is necessary but not sufficient for reproducibility.", "at": [{ "step": "Reveal: label-version drift" }] },
+      { "item": "A table-format tag (Iceberg) and a lakeFS tag serve the identical conceptual role — naming one immutable point in a changing dataset's history — at two different layers of the stack (one inside a single table's own metadata, one across a whole repository of many tables and files), which is why a team might reasonably use both at once rather than choosing one over the other.", "at": [{ "deep": "Internals" }] },
+      { "item": "The hook's six-month-old irreproducible dataset is not a hypothetical edge case but the default outcome of querying \"the current table\" with no snapshot at all — reproducibility failures of this kind are silent by construction, since the query itself never changes and nothing about running it again signals that its answer has.", "at": [{ "step": "Hook" }] },
+      { "item": "DVC's MD5-based content hash is deliberately not a security mechanism (MD5's collision weaknesses would matter for an adversarial use case); its job is accidental-collision detection within one project's own files, a much weaker and sufficient requirement that the choice of hash function should be read against.", "at": [{ "deep": "Internals" }] },
+      { "item": "Reproducibility built on a snapshot is only as strong as the retention policy governing the snapshot itself — Iceberg's own documentation ties branch and tag lifecycles to explicit retention settings precisely because an unbounded number of pinned snapshots has its own storage cost, so 'reproducible' in practice means 'reproducible for as long as the policy keeps the pin alive,' not forever by default.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's experiment-tracker reveal deliberately logs a dataset digest rather than a dataset name, because a name is exactly the kind of mutable reference the Hook's broken six-month-old dataset relied on — the tracker is only as trustworthy as the thing it links to, which is why it has to sit downstream of the snapshot/pin reveals rather than stand alone.", "at": [{ "step": "Reveal: linking it in an experiment tracker" }] },
+      { "item": "A lakeFS branch and a DVC pin both avoid duplicating unchanged bytes, but they fail differently under concurrent writers: a lakeFS branch isolates a whole derived dataset's writes from other branches until an explicit merge, while a DVC pin has no branching concept at all — two people editing the same file produce two different hashes with no automatic reconciliation, which is exactly why DVC is paired with Git's own branching rather than inventing its own.", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-30",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "topic": "de.semantic-integration-schemas-codes",
+  "steps": [
+    {
+      "lines": [
+        "One source reports its own revenue as a whole number of cents, and its own timestamps in a local European time zone.",
+        "A second source reports that exact same kind of revenue as an ordinary decimal amount, and its own timestamps already converted to a single universal time.",
+        "Simply summed together, one of those two figures ends up off by a hundred times, and the other ends up off by a full hour on the one night each year the clocks actually change."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you how both of these actually get fixed, think through this with me.",
+        "Does fixing that revenue mismatch between the two sources also happen to fix the timestamp mismatch, since both problems come from the same two mismatched sources?",
+        "Or are these genuinely two separate problems, each one needing its own completely separate kind of fix?"
+      ],
+      "answer": [
+        "These turn out to be two separate problems with two separate fixes, even though they show up together in the exact same pair of sources.",
+        "One is a missing scale factor on a number, and the other is a missing time zone on a timestamp, and neither fix touches the other one at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how a team actually lines up two different schemas with each other in the first place.",
+        "Columns get matched against each other using their own names, their own declared types, and the actual sample values sitting inside them, with stronger evidence drawn as a thicker line between two columns.",
+        "Whatever that matching work settles on then gets written down as an actual transformation, not left as a one-time decision in somebody's head."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how one system's own codes actually get mapped onto a different system's own codes.",
+        "A separate table holds that mapping, and each mapping row also carries its own window of time during which that particular mapping was actually the correct one.",
+        "Whenever a fact gets joined to that mapping table, it joins specifically to whichever row was valid back when that fact's own event actually happened, never to whatever happens to be the newest row right now."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why a unit written as plain, ordinary text is genuinely a problem on its own.",
+        "A proper unit standard assigns every single valid unit string exactly one meaning, something a machine can actually check and compare automatically.",
+        "Plain free text describing a unit has no such guarantee at all, so two sources can write what looks like the same unit while actually meaning two different things."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part of today's lesson that explains exactly where that revenue bug from the very start actually came from.",
+        "Every single currency has its own fixed scale, a number of decimal places its smallest possible unit actually represents, and that scale has to be divided out before any conversion rate ever gets applied.",
+        "Skip that one division, and the resulting figure doesn't come out slightly wrong. It comes out wrong by precisely that currency's own fixed scale, every single time.",
+        "A currency conversion only comes out correct once both that fixed scale and a rate dated to the actual transaction get applied together."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly why the timestamp bug from the very start of today's lesson actually happened.",
+        "Storing one single universal instant in time, together with the original local value and the exact zone it came from, survives even a real seasonal clock change completely intact.",
+        "Converting that same local value using one single fixed number of hours, instead of consulting a real time zone's own rules, gets it wrong by precisely one hour, specifically on the one night those rules actually change."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how a mapping like this actually earns a team's own long-term trust.",
+        "The mapping itself gets tracked in version control, has an owner, and carries a real automated test confirming every single known code still maps to exactly one target.",
+        "The moment a source introduces some brand-new code nobody has mapped yet, that very same test fails immediately, naming the offending code directly, rather than letting it quietly fall into some vague \"unknown\" bucket."
+      ]
+    },
+    {
+      "lines": [
+        "Let's gather what today actually covered, because every piece of it comes back to one single idea.",
+        "Matching columns by real evidence, a crosswalk that changes over time, units and currencies and time zones each reconciled explicitly, and the mapping itself owned as real, tested data.",
+        "Meaning between two systems gets reconciled the exact same way identity between two systems does: explicitly, with an actual rule and an actual test, never simply assumed to already line up."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, because this is exactly the situation that mapping test exists to catch in the first place.",
+        "A brand-new category code shows up in the legacy source for the very first time, and nobody has gotten around to adding it to the crosswalk table yet.",
+        "The instant that row actually gets loaded, what genuinely happens?"
+      ],
+      "answer": [
+        "The mapping test fails right away, naming that specific unmapped code directly, before the row is ever treated as correctly categorized anywhere downstream.",
+        "Owning a mapping as real, tested data means precisely this: an unmapped code becomes a visible, named failure, not a silent, unnoticed one."
+      ]
+    }
+  ]
+}

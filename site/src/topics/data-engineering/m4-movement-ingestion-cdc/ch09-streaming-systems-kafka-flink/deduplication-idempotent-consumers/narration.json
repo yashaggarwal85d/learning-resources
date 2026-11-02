@@ -1,0 +1,85 @@
+{
+  "topic": "de.deduplication-idempotent-consumers",
+  "steps": [
+    {
+      "lines": [
+        "Keep remembering everything you've ever seen, forever, and eventually you simply run out of room to remember it in.",
+        "Put a limit on how long any one memory sticks around, and that growth just stops.",
+        "The whole trick is deciding exactly how to spend that limit."
+      ]
+    },
+    {
+      "lines": [
+        "One earlier fix made a single kind of write safe to repeat, in one narrow spot.",
+        "The same basic idea stretches much further than that one spot.",
+        "Anyone receiving anything can borrow it, as long as they're honest about how much they can afford to remember."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "The exact same identity shows up again, but only long after this consumer stopped tracking it.",
+        "Does it still get caught as a repeat, or not?"
+      ],
+      "answer": [
+        "It doesn't, and that's by deliberate design, not by accident.",
+        "Holding on to everything forever was never actually on the table.",
+        "So letting go of the truly old stuff is simply the cost of staying bounded."
+      ]
+    },
+    {
+      "lines": [
+        "Right up until that cutoff, a repeat gets caught every single time, no exceptions.",
+        "Cross it, though, and that same identity is simply gone from memory.",
+        "At that point it just looks brand new again, because as far as anyone can tell, it is."
+      ]
+    },
+    {
+      "lines": [
+        "There's more than one reasonable way to decide where that cutoff actually sits.",
+        "One option just watches the clock on the wall, plain and simple.",
+        "The other watches how far the stream itself has actually gotten instead."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "A compact structure like this one answers with little more than a shrug: maybe.",
+        "Can that shrug ever turn out to be flat wrong, and if it can, which way does it lean?"
+      ],
+      "answer": [
+        "It leans exactly one way, never the other.",
+        "Anything genuinely remembered is always recognized, with no exceptions at all.",
+        "Every so often, though, something brand new gets mistaken for something familiar."
+      ]
+    },
+    {
+      "lines": [
+        "Ask about anything that was actually stored, and the answer back is certain, every time.",
+        "Ask about something never stored at all, and once in a while it gets flagged anyway.",
+        "That rate isn't guessed at here — it's counted directly off a real run, just now."
+      ]
+    },
+    {
+      "lines": [
+        "One more trick extends this whole idea one step further downstream.",
+        "Build a new event's identity straight out of its own contents, the same formula, every time.",
+        "Recompute it later and it lands on the exact same identity, so the very next hop can catch a repeat too."
+      ]
+    },
+    {
+      "lines": [
+        "Every number shown in this reel came from one real run, happening just now, of this topic's own toy models.",
+        "The boundary that caught a repeat right up until it didn't.",
+        "The shrug that was almost always right, and the recomputed identity that still got caught one hop downstream."
+      ]
+    },
+    {
+      "lines": [
+        "So: give every identity out exactly once, right at the very start.",
+        "Bound how long you hold onto it, and say plainly what that bound costs.",
+        "And when something new gets built from something old, give it an identity that lands the same way twice."
+      ]
+    }
+  ]
+}

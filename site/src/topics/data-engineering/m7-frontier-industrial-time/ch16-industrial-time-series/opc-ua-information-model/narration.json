@@ -1,0 +1,76 @@
+{
+  "topic": "de.opc-ua-information-model",
+  "steps": [
+    {
+      "lines": [
+        "Two plants buy the exact same model of machine tool from the exact same vendor.",
+        "One of them ends up with a long, flat list of raw addresses and a spreadsheet nobody has kept up to date.",
+        "The other plant's machine simply publishes a typed model of itself, with names, units and a hierarchy already built in."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal answers it.",
+        "One of those two plants gets this new machine fully onboarded in a matter of days, while the other takes months to get there.",
+        "What exactly did that typed model carry along with it that a raw, bare address never could have?"
+      ],
+      "answer": [
+        "It carried semantics the raw address simply never had.",
+        "The typed model attaches a name, a type, a unit, and a place in a hierarchy to every single value — exactly what the tag list left for some person to go figure out and maintain entirely by hand."
+      ]
+    },
+    {
+      "lines": [
+        "In this model, every node is connected to other nodes through references, and each one of those references is its own specific, named type.",
+        "Starting from the machine itself and browsing down through its monitoring object and then its spindle object eventually reaches one particular variable.",
+        "That variable already carries its own data type and its own engineering unit, built right into the model itself."
+      ]
+    },
+    {
+      "lines": [
+        "A companion specification takes that exact same kind of path and standardizes it for an entire domain, once, for everyone.",
+        "Any machine tool built against that specification ends up exposing the very same object types as any other.",
+        "A client reading from it never has to build or maintain its own per-vendor map of tags just to make sense of what it's looking at."
+      ]
+    },
+    {
+      "lines": [
+        "A client can subscribe to a variable using what's called a monitored item, which only reports back once a value has moved past some stated threshold.",
+        "Measure that against simply polling the exact same signal over and over, reading every single sample along the way.",
+        "The monitored item ends up sending only a small fraction of the messages that plain polling would have sent for the very same signal."
+      ]
+    },
+    {
+      "lines": [
+        "In the client-server style of connecting, every single subscriber needs its own dedicated session with the server.",
+        "That means the total amount of notification traffic scales up directly with how many subscribers happen to be listening.",
+        "A publish-subscribe model decouples the publisher from whoever's subscribing, so its own message count doesn't scale that way at all."
+      ]
+    },
+    {
+      "lines": [
+        "The specification's own default security setting isn't actually set to no security at all.",
+        "Instead, that default is deliberately an invalid value, specifically so that no security can never end up chosen purely by accident.",
+        "Finding a real server out in a plant still configured with no security applied at all is therefore a genuine finding to raise, never something to treat as an acceptable default."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole picture together: typed nodes joined by typed references, a companion specification that standardizes one single path across every vendor.",
+        "Add a deadband that meaningfully cuts down how much notification traffic gets sent, and a publish-subscribe model that decouples that cost from how many subscribers exist.",
+        "And underneath every bit of it, a security default that was deliberately built so that no security could never be chosen purely by accident."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth reasoning through before moving on.",
+        "Suppose all you're given are the fields that one single browsed variable node actually carries: its own name, its own type, its own unit, and its own place somewhere in a hierarchy.",
+        "Working only from those fields, could you actually rebuild this entire plant's whole equipment hierarchy from the model alone?"
+      ],
+      "answer": [
+        "You could, yes.",
+        "The very references that connect a machine's objects all the way down to its individual variables already encode that whole hierarchy directly — that's the entire reason browsing a model like this replaces a spreadsheet in the first place."
+      ]
+    }
+  ]
+}

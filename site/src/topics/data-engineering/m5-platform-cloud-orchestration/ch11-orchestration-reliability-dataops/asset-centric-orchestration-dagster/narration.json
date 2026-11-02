@@ -1,0 +1,83 @@
+{
+  "topic": "de.asset-centric-orchestration-dagster",
+  "steps": [
+    {
+      "lines": [
+        "A team keeps a spreadsheet of which table feeds which, updated by hand whenever someone remembers to.",
+        "Nobody on that team fully trusts it, because nobody can prove it's actually still accurate.",
+        "A different system answers the exact same question a totally different way: by asking the data itself what it depends on.",
+        "That one distinction is this whole topic."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the same real pipeline, written two different ways, counted for real rather than just described.",
+        "One version wires three stages together as a graph of the data products themselves.",
+        "The other wires those same three stages together as a sequence of actions to run, one after another.",
+        "Counting only the lines that actually connect one stage's output to the next stage's input: three lines for the first version, four for the second."
+      ]
+    },
+    {
+      "lines": [
+        "Before the next reveal, here's something worth guessing at.",
+        "A planted bad row sits in the data -- a number that should never go negative, flipped negative on purpose.",
+        "A quality check attached to the pipeline is built specifically to catch exactly that kind of bad row.",
+        "When that check catches it and fails, does the rest of the pipeline stop running?"
+      ],
+      "answer": "No. The pipeline still runs to completion. The check reports a failure -- it doesn't act as a gate the rest of the run has to pass through first."
+    },
+    {
+      "lines": [
+        "Watch that exact scenario run for real, against a live install, not simulated.",
+        "The bad row is planted, the pipeline runs end to end, and it succeeds overall.",
+        "At the same time, the quality check attached to the middle stage reports failure, and names exactly one bad row caught.",
+        "Fix that one row and run the identical pipeline again: the same check now reports success."
+      ],
+      "takeaway": "A failing check doesn't stop a pipeline. It's a report attached to the data, not a gate in front of it."
+    },
+    {
+      "lines": [
+        "One more thing worth guessing before it's shown.",
+        "The last stage of this pipeline depends on the middle stage, which depends on the first stage.",
+        "Nothing here built or updated any separate diagram tracking which stage feeds which.",
+        "Can the system still correctly answer what feeds the last stage, all the way back to the start?"
+      ],
+      "answer": "Yes, directly. The dependencies were already declared once, on the data itself, so asking for that chain of dependencies is just asking the same structure that already exists."
+    },
+    {
+      "lines": [
+        "Ask it directly, for real, right now.",
+        "What does the pipeline's final stage depend on, all the way back?",
+        "The answer comes back immediately: the middle stage, and the first stage before that.",
+        "No separate lineage tool was built, run, or kept in sync to produce that answer."
+      ],
+      "takeaway": "Lineage isn't a separate system here. It's the same dependency graph the pipeline already declared."
+    },
+    {
+      "lines": [
+        "Worth naming two more things before moving on.",
+        "This system's own packaging and scaffolding layer, for assembling new projects quickly, reached full general release status in a recent version, after a period as a release candidate.",
+        "But not every job fits this data-product shape. Sending an email, or calling an outside payment system, doesn't produce a table or a file anyone would call a data product.",
+        "Purely operational work -- a deployment step, a cleanup job -- doesn't fit that shape either, and is usually handled outside it instead."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole comparison together now.",
+        "One way of building a pipeline wires together the actions that need to run, one after another.",
+        "The other way wires together the data products themselves, and lets the actions follow from that.",
+        "Choosing the second way is what makes a lineage graph fall out automatically -- at the cost of a model that doesn't fit every single kind of work."
+      ],
+      "takeaway": "The asset graph isn't a prettier task graph. It's a different answer to what the nodes even are."
+    },
+    {
+      "lines": [
+        "Back to the exact pipeline this all started with.",
+        "A fourth stage joins it now, declaring its own dependency on the final stage from before.",
+        "Everything shown so far only ever had three stages declaring their own upstream.",
+        "Does adding this fourth stage require building or updating anything to correctly derive its lineage?"
+      ],
+      "answer": "No. The mechanism doesn't depend on how many stages already exist. The new stage declares its own single dependency, and the same graph-derivation that worked for three stages keeps working automatically for four."
+    }
+  ]
+}

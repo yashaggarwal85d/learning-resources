@@ -1,0 +1,82 @@
+{
+  "topic": "de.replication-slot-wal-retention",
+  "steps": [
+    {
+      "lines": [
+        "Every signal anyone was watching stayed green, right up until the disk itself ran out of room.",
+        "That gap between what the dashboard showed and what actually happened is the whole reason this incident is worth studying closely.",
+        "A slot doesn't report its own danger anywhere a status page checks. It just sits there, pinning exactly what it was built to pin."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you what actually happened here, answer this.",
+        "That connector never crashed. It never lost its connection. By every normal measure, it was healthy the whole weekend.",
+        "Can a connector that looks completely healthy still be the reason a disk fills up like that?"
+      ],
+      "answer": [
+        "Saying no treats being connected and being healthy as the same thing as actually making progress. They aren't.",
+        "A slot only moves forward when its consumer confirms a new position, and a consumer watching a quiet table simply has nothing new to confirm, no matter how healthy it otherwise looks."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why a slot can sit frozen for an entire weekend without anyone noticing.",
+        "A replication slot survives a crash on purpose, and it was designed to know nothing about whether its own consumer is still there.",
+        "With no reader at all, there's simply nothing telling the server it's safe to let go of anything that slot might still need."
+      ]
+    },
+    {
+      "lines": [
+        "I ran that exact scenario against this sandbox's own real database, not a simulation of it.",
+        "A slot with no reader at all, under a real batch of writes, and I read its retained log size before and after.",
+        "The gap came back larger every single time, because nothing about having no reader ever lets that gap shrink on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's the fix, and it's not what you'd expect from the word running.",
+        "I split the identical amount of writing into five separate pieces. One slot's own consumer never once confirmed between those pieces.",
+        "The other slot's consumer confirmed after every single piece, the exact same way a heartbeat would, even with no real change worth capturing."
+      ]
+    },
+    {
+      "lines": [
+        "I measured both of those slots side by side, against the identical total amount of writing.",
+        "The slot that was never confirmed finished with a large, lingering gap behind it.",
+        "The slot that confirmed after every piece finished with a gap so much smaller it barely counted. Confirming, not merely running, is what actually moves the marker."
+      ]
+    },
+    {
+      "lines": [
+        "A slot that never lets go can obviously fill a disk eventually. So what's the actual safety valve for that?",
+        "You can set a real limit on how much log a slot is allowed to hold onto.",
+        "Past that limit, the server is finally allowed to remove log the slot still needed, which is exactly the trade it sounds like."
+      ]
+    },
+    {
+      "lines": [
+        "I set that exact limit on a real slot on this sandbox, then wrote past it on purpose.",
+        "Before crossing the limit, the slot's own status read back as perfectly fine, holding exactly what it was supposed to hold.",
+        "After crossing it, the status flipped to lost, and trying to read from that slot afterward got refused outright, by the database itself, not by anything I wrote."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, and the whole weekend-long incident comes down to three separate, measurable facts.",
+        "A slot with nobody reading it pins log space no matter how healthy its connector looks. A confirmed read, not uptime, is the only thing that actually frees that space. And the safety valve that caps it trades a full disk for a broken stream.",
+        "None of those three facts shows up anywhere on a typical connector status dashboard."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one question none of that has actually answered yet.",
+        "If connector status can't catch this, what number should someone actually be watching for, before the disk gets anywhere near full?"
+      ],
+      "answer": [
+        "Saying connector status is enough ignores the entire weekend you just watched happen while that status read healthy the whole time.",
+        "The number worth watching is the retained log gap itself, read straight from the slot's own position, because that's the exact thing that was filling the disk the whole time."
+      ]
+    }
+  ]
+}

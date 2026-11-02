@@ -1,0 +1,82 @@
+{
+  "topic": "de.dynamic-task-mapping-fan",
+  "steps": [
+    {
+      "lines": [
+        "An engineer writes a task meant to process one file from a partner.",
+        "Today, that partner's drop folder happens to contain eleven thousand small files.",
+        "The scheduler that was comfortably handling a few hundred tasks an hour now has to schedule eleven thousand of them in a single run.",
+        "Every other workflow sharing that same scheduler slows to a crawl, and nobody wrote a single line of code asking for that."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the mechanism that makes that possible, and it's worth separating from an ordinary loop.",
+        "A plain for loop in a workflow's own definition has to know, the moment that definition is written, exactly how many times it runs.",
+        "This is different. The number of tasks gets decided the moment the workflow actually executes, based on whatever it discovers right then.",
+        "Five files show up this run, so five task instances get created. Nobody wrote five into the code anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "So here's a question worth sitting with before the next reveal.",
+        "Suppose someone maps a task over more files than the orchestrator is willing to allow at once.",
+        "Does it quietly go ahead and process whatever fits, ignoring the rest, or does the entire run simply refuse to start?",
+        "Take a moment and decide which one sounds more honest."
+      ],
+      "answer": "It refuses outright. The orchestrator has no principled way to decide which files to drop and which to keep, so rather than guess, it fails the whole run loudly, right at the point where the list was handed off."
+    },
+    {
+      "lines": [
+        "Now watch exactly where that line sits.",
+        "One thousand twenty four discovered files, mapped and run: every single one succeeds without complaint.",
+        "Add one more file to that folder and run it again: the entire run fails, with the orchestrator's own real error naming precisely what went wrong.",
+        "That boundary isn't approximate or fuzzy. It is one single file, measured directly against a real install."
+      ],
+      "takeaway": "The limit isn't a cap on what runs. It's a refusal to run at all."
+    },
+    {
+      "lines": [
+        "Numbers alone don't convey what that actually costs in time, so here it is measured directly.",
+        "The identical workflow, timed end to end, at four different file counts: a small handful, a modest batch, a few hundred, and right at the boundary just revealed.",
+        "Every one of those runs took longer than the last, and not by a little. The jump from the smallest batch to the largest is dramatic.",
+        "This is pure scheduling cost. None of it is the actual work of touching a single file's contents."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the alternative, and it changes which layer pays that cost.",
+        "Take the exact same pile of files, but instead of handing one to each of thousands of separate orchestrator tasks, hand the whole pile to one engine job.",
+        "That engine splits the work into pieces internally, on its own, inside a single task the orchestrator only has to schedule once.",
+        "The scheduling overhead that was climbing a moment ago effectively disappears, because the orchestrator is no longer the thing doing the splitting."
+      ],
+      "takeaway": "Scheduler overhead and engine overhead are not the same cost. Pick which one pays it."
+    },
+    {
+      "lines": [
+        "So gather all of that together.",
+        "A workflow decides how many tasks it needs the moment it actually runs, not when someone writes it.",
+        "Cross the orchestrator's own ceiling, and nothing gets quietly trimmed. The whole run refuses outright.",
+        "And asking an orchestrator to schedule thousands of individual tasks costs far more than asking one engine to split that same work internally."
+      ]
+    },
+    {
+      "lines": [
+        "One more case worth thinking through before moving on.",
+        "Some run, the partner simply sends nothing. The drop folder is completely empty.",
+        "A task mapped over that empty list — does it fail, since it has no input to work with, or something else entirely?",
+        "Think about which outcome actually matches what happened: nothing went wrong, there was just nothing to do."
+      ],
+      "answer": "Neither failure nor forcing it to run once on nothing. No task instances get created at all, and the mapped task is simply marked skipped — the orchestrator's honest way of saying there was genuinely no work this time."
+    },
+    {
+      "lines": [
+        "One last thing left completely open by everything shown so far.",
+        "A fan-out can put thousands of task instances in front of a scheduler, all wanting to start at the exact same moment.",
+        "Nothing about expand or partial says how many of those get to actually run together.",
+        "Does the scheduler just let every one of them loose at once?"
+      ],
+      "answer": "No, and it shouldn't. Left unbounded, thousands of task instances trying to run simultaneously would starve every other workflow sharing that same scheduler and database. Something else has to decide how many run together, which is exactly where this leads next."
+    }
+  ]
+}

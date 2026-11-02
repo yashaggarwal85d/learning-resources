@@ -1,0 +1,82 @@
+{
+  "topic": "de.cdc-from-oltp-into",
+  "steps": [
+    {
+      "lines": [
+        "A change-data-capture connector gets paused for an ordinary weekend upgrade, and nobody happens to restart it come Monday morning.",
+        "By the middle of that week, the orders database, the very one that takes this shop's payments, is running dangerously close to out of room.",
+        "That same connector had been running cleanly for the better part of a year before this."
+      ]
+    },
+    {
+      "lines": [
+        "The disk didn't fill because some stray bug in the connector's own logging quietly leaked space behind the scenes.",
+        "So what single setting actually bounds how far a replication slot is allowed to grow, and what does enforcing that bound genuinely cost?"
+      ],
+      "answer": [
+        "A logging bug wouldn't line up this cleanly with the exact moment the connector stopped and the exact moment it resumed.",
+        "The slot's own job is to keep every byte of log the connector hasn't yet confirmed, outage or not, and that job is exactly what turns a paused connector into a liability sitting on the source's own disk."
+      ]
+    },
+    {
+      "lines": [
+        "The write-ahead log sits at one end, a replication slot holds the connector's place in it, and a connector reads from that slot into a topic.",
+        "From there a merge lands each change into the lakehouse table, ordered by where it sat in that log, never by when it happened to arrive.",
+        "The real correctness boundary for this whole design sits right at that merge; everything upstream of it is free to replay or arrive out of order."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the uncomfortable part: the very same guarantee that keeps this pipeline safe during a routine outage is what eventually fills a disk.",
+        "Keep every unconfirmed byte, no matter what, is a fine promise while the connector is reading steadily.",
+        "The moment that connector stops confirming anything at all, that identical promise becomes the thing slowly eating through the source's own storage."
+      ]
+    },
+    {
+      "lines": [
+        "A cap line draws a hard limit on how far that retained log is allowed to grow before something has to give.",
+        "Cross it, and the slot itself gets invalidated outright, forcing a full re-snapshot rather than a simple resume.",
+        "A heartbeat solves a quieter version of the same problem, nudging a slot forward on a table that just doesn't change very often, long before it ever drifts anywhere near that same cap."
+      ]
+    },
+    {
+      "lines": [
+        "A brand-new consumer needs this table's entire current state first, and then every change that happens after that, with nothing missing and nothing counted twice.",
+        "One approach takes a single consistent snapshot, then simply streams onward from wherever that snapshot left off in the log.",
+        "The other interleaves log events with rows read straight off the table itself, taking no lock on the source at all while it works."
+      ]
+    },
+    {
+      "lines": [
+        "A row deleted at the source shows up downstream as a tombstone, something the merge is told to apply as a delete, never something it has to guess at on its own.",
+        "A brand-new column added at the source doesn't get renamed the same day either.",
+        "It rolls out through a coordinated two-step: first expand to accept the new shape, only later contract away the old one, so nobody still reading the old shape ever breaks."
+      ]
+    },
+    {
+      "lines": [
+        "Every row-level merge leaves behind a few small delete and data files on that lakehouse table, and they pile up fast over time.",
+        "Compaction exists specifically to clear that pile back out, but when a compaction job itself stalls, it slows the very merge job sitting downstream of it.",
+        "A slower merge means slower slot consumption, and slower slot consumption means the source's own log keeps right on growing behind it."
+      ]
+    },
+    {
+      "lines": [
+        "A correctness boundary sits at the merge, where the log's own order is finally made to stick.",
+        "The slot's guarantee and its hazard turn out to be the exact same mechanism, bounded only by a cap that trades availability against completeness.",
+        "A snapshot hands over to a stream without any gap; a delete or a schema change gets applied on purpose rather than guessed at; and compaction, the slot, and the merge all stay tied together, for better or worse."
+      ]
+    },
+    {
+      "lines": [
+        "One more, to use this for real: a second table's connector gets paused for an entirely unrelated maintenance window.",
+        "Its own slot is already sitting well past half of its configured cap, and it's still climbing.",
+        "What's genuinely the right first move here?"
+      ],
+      "answer": [
+        "Simply raising that cap higher doesn't remove the trade this design already made; it only pushes the same cliff a little further down the road.",
+        "The growth rate this particular slot is actually showing, measured against however much time is left before it hits that cap, is what decides whether to restart it now or let a re-snapshot happen on purpose."
+      ]
+    }
+  ]
+}

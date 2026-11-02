@@ -1,0 +1,8 @@
+- **Sampling interval**: the fixed spacing between a regular series' readings. *Where you meet it:* the grid every signal is resampled onto.
+- **Grid**: the fixed set of timestamps (here, one per minute) a resampled series is aligned to, independent of when any sensor actually reported. *Where you meet it:* every resample call in this topic.
+- **Interpolation**: estimating a value between two known points by a smooth path (here, linear) between them. *Where you meet it:* one of the two gap-fill methods and why it can lie.
+- **Carry-forward (LOCF)**: repeating the last observed value for every point until a new one arrives. *Where you meet it:* the other gap-fill method, and the step-signal aggregate.
+- **Deadband**: the threshold a continuous value must cross before a change-triggered sensor reports again, from this chapter's §16.2 opening on irregular series. *Where you meet it:* why an irregular series' silence can mean "no change" rather than "no data."
+- **Signal type**: a declared property of a tag (continuous, step, counter) that decides which aggregate is legal for it, not something inferred from the data's shape. *Where you meet it:* this topic's own central claim.
+- **Event-time timestamp**: the clock chosen as "when it happened," from the previous topic. *Where you meet it:* the axis every resample bucket in this topic is built on.
+- **Cumulative counter**: a reading that only ever increases, from topic 5's energy meter. *Where you meet it:* the counter signal's own aggregate, the difference of bucket end values.

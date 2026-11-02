@@ -1,0 +1,83 @@
+{
+  "topic": "de.deferrable-tasks-triggerer",
+  "steps": [
+    {
+      "lines": [
+        "Picture a hundred separate sensors, each one set to check for an upstream file every so often, for up to six hours.",
+        "Every single one of those checks happens inside a worker process, and that worker stays claimed the entire time.",
+        "A hundred sensors means a hundred claimed workers, almost all of them doing nothing but waiting.",
+        "From the CPU's point of view, the whole cluster could be asleep, and it would look exactly the same."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the same sensor, run two different ways, measured for real rather than just described.",
+        "Twelve copies waiting the same fifteen seconds, set to the ordinary mode that never lets go of its worker.",
+        "Twelve more copies, same wait, same operator, set instead to hand its worker back the moment it starts waiting.",
+        "Reading the real logs from both runs: the first group held its worker the entire fifteen seconds, every single time."
+      ],
+      "takeaway": "Poke mode doesn't just wait slowly. It wastes a worker the entire time it waits."
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the measured numbers land.",
+        "Ten seconds into that same fifteen-second wait, picture both versions of the sensor still running.",
+        "Does either one still have a claim on a worker process at that exact moment, or has one already let go?",
+        "Decide which one still has something to lose if that worker were needed elsewhere."
+      ],
+      "answer": "The ordinary version is still holding on. The other version let its worker go almost the instant it started waiting, long before the fifteen seconds were anywhere near up."
+    },
+    {
+      "lines": [
+        "So where does that handed-back waiting actually go? It doesn't just vanish.",
+        "A completely separate process picks it up, built specifically to sit and wait on many things at once.",
+        "One single process can hold many of these small waiting jobs side by side, because none of them are doing real work, just watching for something to happen.",
+        "And critically, this process scales on its own terms. Add more of it without touching your worker count or your scheduler at all."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario worth thinking through before the next reveal.",
+        "Say the thing being handed off to wait also needs to remember something that simply can't be written down and read back later. A lock. A live connection.",
+        "What do you think happens when that gets handed off anyway?",
+        "Does the system refuse outright and fail loudly right then, or does something quieter happen?"
+      ],
+      "answer": "Nothing refuses it. The handoff succeeds without complaint, and the object that can't survive being written down and read back just... doesn't. The real trouble only shows up later, the moment something tries to actually use it."
+    },
+    {
+      "lines": [
+        "Watch that exact scenario, played out for real rather than just promised.",
+        "Take a genuine lock object, the kind of thing a running program uses to guard access to something shared.",
+        "Write it down through Airflow's own mechanism for saving this handed-off state, then read it straight back.",
+        "No error anywhere in that process. What comes back, though, isn't a lock anymore. It's plain text describing what the lock used to look like, and the moment something tries to use it as a lock, that's where it actually breaks."
+      ],
+      "takeaway": "Trigger serialization doesn't reject a bad argument. It quietly keeps the wrong one."
+    },
+    {
+      "lines": [
+        "There's a scale question worth naming too, even without pushing this far in the sandbox.",
+        "Each one of those separate waiting processes defaults to a firm ceiling on how many waiting jobs it will try to hold open at once, documented at a thousand.",
+        "Past that ceiling, on a single process, the extras don't fail. They simply queue and wait their turn to even start waiting.",
+        "That number is Airflow's own stated default, not something measured here at that scale."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling all of this together.",
+        "A named bucket of slots, from earlier in this chapter, caps how many tasks run at the same time.",
+        "This mechanism goes further than that. It doesn't just limit who runs — it gives the worker back completely, while the task itself only sits and waits.",
+        "And two newer pieces of Airflow, one for pausing on a human decision and one for watching a missed deadline, both lean on this exact same mechanism rather than building something new."
+      ],
+      "takeaway": "A pool bounds how many tasks run. Deferral frees the worker itself, not just a slot."
+    },
+    {
+      "lines": [
+        "Back to where this started.",
+        "That same hundred sensors from the very beginning, each waiting up to six hours, switched over to the mode that hands its worker back.",
+        "Nothing about the wait itself changes. Each one still waits exactly as long as it did before.",
+        "So what happens to the total worker time spent, across all hundred of them, once that switch is made?"
+      ],
+      "answer": "It drops by roughly the same enormous share the measured run just showed — well over ninety percent. The wait doesn't get any shorter. What disappears is the worker time wasted holding a slot for something that was never doing real work in the first place."
+    }
+  ]
+}

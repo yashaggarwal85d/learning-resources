@@ -1,0 +1,83 @@
+{
+  "topic": "de.orchestrator-landscape-selection",
+  "steps": [
+    {
+      "lines": [
+        "A team picks a well-known orchestrator for one reason: everyone else they know already uses it.",
+        "A year later, they're spending more engineer time keeping that system's own scheduler and database healthy than they ever spent writing the actual pipelines.",
+        "A much lighter, fully managed option would have fit their actual workload for a fraction of that ongoing cost.",
+        "The tool wasn't wrong in general. It was wrong for this specific job."
+      ]
+    },
+    {
+      "lines": [
+        "So what should actually decide a choice like that? Four separate questions, not one gut feeling.",
+        "Does the workload react to data showing up, or does it just run on a schedule.",
+        "How much ongoing care does running the system yourself demand, versus letting someone else run it.",
+        "And two more worth naming here: how rich is its surrounding ecosystem, and how hard would it be to walk away from later."
+      ]
+    },
+    {
+      "lines": [
+        "Before naming the answer, think about the team from the very start of this topic.",
+        "Their workload runs quickly, happens constantly, and needs no custom code written specifically for it.",
+        "None of those traits particularly favor the tool they picked.",
+        "Which of the four questions actually explains why they picked it anyway?"
+      ],
+      "answer": "None of them, really. They optimized for familiarity -- the tool they already knew how to run -- rather than for how well it actually fit this particular job."
+    },
+    {
+      "lines": [
+        "One well-known cloud provider offers two distinct flavors of a fully managed, serverless workflow tool, sourced directly from their own documentation.",
+        "One flavor is built to run for a very long time, up to a full year, and guarantees each step happens exactly once.",
+        "The other flavor is built to finish quickly, within minutes, and only guarantees each step happens at least once, possibly more.",
+        "Same underlying product name. Two genuinely different promises, priced in two completely different ways."
+      ],
+      "takeaway": "A serverless state machine isn't one tool with two modes. It's two different trade-offs wearing the same name."
+    },
+    {
+      "lines": [
+        "Worth pausing on this before it's shown.",
+        "An earlier topic in this chapter covered a task graph that could expand itself to match data discovered while it ran.",
+        "Does this cloud provider's own serverless workflow tool have anything built specifically for that same shape of problem?",
+        "Think about whether fan-out like that has to be hand-rolled, or whether it comes as a real, managed feature."
+      ],
+      "answer": "It comes as a real, dedicated feature. Large-scale fan-out isn't something you have to build yourself here -- it's offered as a first-class, managed primitive."
+    },
+    {
+      "lines": [
+        "Here's that exact feature, sourced directly rather than just described.",
+        "By default, it can run an enormous number of these child pieces of work in parallel -- on the order of ten thousand at once.",
+        "Each one of those child pieces keeps its own separate history, entirely apart from the parent that launched it.",
+        "That separation is deliberate, not incidental."
+      ],
+      "takeaway": "A managed fan-out primitive isn't a bigger loop. It gives every child its own history, by design."
+    },
+    {
+      "lines": [
+        "Worth naming the rest of this field quickly, each sourced from its own documentation.",
+        "Two more Python-native tools embrace genuinely dynamic flows the same spirit as before. One well-known alternative writes everything declaratively in plain structured text instead of code.",
+        "One system is named and sourced from its own published write-up, since it isn't something you can simply install and run yourself.",
+        "And a well-known cloud data platform's own orchestration feature was recently given a brand new name as part of a bigger product announcement."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it all together now.",
+        "Four questions decide a real choice here, not one single favorite tool: how data-aware it needs to be, how much ongoing care it demands, how rich its ecosystem is, and how hard it'd be to leave later.",
+        "The team from the very start of this topic optimized for none of those four questions.",
+        "They optimized for what they already happened to know."
+      ],
+      "takeaway": "There is no single best orchestrator. There is only the tool that fits a workload on all four axes."
+    },
+    {
+      "lines": [
+        "One more scenario to test this against.",
+        "A different workload this time: it finishes quickly, happens extremely often, and needs no custom code written specifically for it.",
+        "Does that same four-question approach still point toward the exact tool the first team chose?",
+        "Or does it point somewhere else entirely, once the job's actual shape is taken seriously?"
+      ],
+      "answer": "It points somewhere else. This workload's shape matches the quick, high-volume flavor of serverless workflow almost exactly -- the four questions don't favor any one tool by habit, only by fit."
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "topic": "de.schema-registry-compatibility",
+  "syllabus": [
+    {
+      "clause": "backward/forward/full and their transitive variants",
+      "at": [
+        { "step": "Predict: would a stricter gate have caught it?" },
+        { "step": "Reveal: backward, forward, full, transitive" },
+        { "step": "Reveal: the same evolution, two different gates" }
+      ]
+    },
+    {
+      "clause": "which evolutions each permits for Avro/Protobuf/JSON Schema",
+      "at": [
+        { "step": "Predict: which format catches a reused number?" },
+        { "step": "Reveal: three formats, three native behaviors" }
+      ]
+    },
+    {
+      "clause": "subject-naming strategies",
+      "at": [{ "step": "Reveal: naming strategies, and schema ids in the wire" }]
+    },
+    {
+      "clause": "schema ids in the wire format",
+      "at": [{ "step": "Reveal: naming strategies, and schema ids in the wire" }]
+    },
+    {
+      "clause": "data-contract rules as an extension",
+      "at": [{ "step": "Recap" }]
+    },
+    {
+      "clause": "(Ch.13)",
+      "at": [{ "deep": "Frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Schema Evolution and Compatibility for Schema Registry (Confluent Platform docs)",
+      "items": [
+        {
+          "item": "backward compatibility means consumers using the new schema can read data written with the old schema (add optional fields, remove fields)",
+          "at": [{ "step": "Reveal: backward, forward, full, transitive" }]
+        },
+        {
+          "item": "transitive compatibility is checked against all previous versions, not just the last one",
+          "at": [{ "step": "Reveal: backward, forward, full, transitive" }]
+        }
+      ]
+    },
+    {
+      "source": "Formats, Serializers, and Deserializers for Schema Registry (Confluent Platform docs)",
+      "items": [
+        {
+          "item": "TopicNameStrategy, RecordNameStrategy, and TopicRecordNameStrategy derive a subject name from the topic, the record, or both",
+          "at": [{ "step": "Reveal: naming strategies, and schema ids in the wire" }]
+        },
+        {
+          "item": "a wire-format record carries a 4-byte schema id, encoded big-endian, rather than the whole schema",
+          "at": [{ "step": "Reveal: naming strategies, and schema ids in the wire" }]
+        }
+      ]
+    },
+    {
+      "source": "Specification (Apache Avro 1.11.1 docs)",
+      "items": [
+        {
+          "item": "if the reader's schema has a field with a default and the writer's schema lacks that field, the reader uses its default; if the reader's field has no default, an error is signalled",
+          "at": [{ "step": "Reveal: three formats, three native behaviors" }]
+        }
+      ]
+    },
+    {
+      "source": "Language Guide (proto 3) (Protocol Buffers docs)",
+      "items": [
+        {
+          "item": "field numbers should never be reused, because reuse makes decoding wire-format messages ambiguous",
+          "at": [{ "step": "Predict: which format catches a reused number?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Compatibility mode isn't a property of an evolution alone — the same change (removing a field) passes under one mode and would fail under a stricter one, which is why choosing the mode is itself a design decision, not a formality.",
+        "at": [{ "step": "Reveal: the same evolution, two different gates" }]
+      },
+      {
+        "item": "Backward being the default isn't arbitrary — it's specifically what lets consumers rewind to the beginning of a topic and still read every historical record, a guarantee forward compatibility doesn't give.",
+        "at": [{ "step": "Reveal: backward, forward, full, transitive" }]
+      },
+      {
+        "item": "Avro and Protobuf don't just enforce compatibility differently — they disagree on the more basic question of what makes two fields 'the same field' across versions (name vs. position), which is why a safe rename in one format is unsafe in the other.",
+        "at": [{ "step": "Reveal: three formats, three native behaviors" }]
+      },
+      {
+        "item": "JSON Schema having no native evolution model isn't a minor gap — it means every compatibility guarantee for JSON Schema in this registry is entirely a product of the registry's own layered rules, not anything the format itself enforces.",
+        "at": [{ "step": "Reveal: three formats, three native behaviors" }]
+      },
+      {
+        "item": "A subject-naming strategy is really a decision about blast radius: TopicNameStrategy makes every record type on a topic share one compatibility fate, while RecordNameStrategy isolates each type's own evolution from the others.",
+        "at": [{ "step": "Reveal: naming strategies, and schema ids in the wire" }]
+      },
+      {
+        "item": "Carrying only a schema id in the wire format, not the schema itself, is what makes compatibility checking a registry-side concern rather than a per-message cost — every message stays small regardless of how large the schema actually is.",
+        "at": [{ "step": "Reveal: naming strategies, and schema ids in the wire" }]
+      },
+      {
+        "item": "A technically compatible evolution passing every mode this topic teaches can still be semantically wrong, which is exactly the gap a data contract is built to close — compatibility and correctness are related but not the same question.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "The toy compatibility checker, field-number check, wire-format codec, and subject-naming comparison are deliberately simplified standalone models, not ports of a real Schema Registry, and every figure shown is this run's own output, not a cited constant.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic's hook evolution (removing a field under backward-only compatibility) is a real, named failure mode specifically because backward compatibility is checked from the reader's side — a writer dropping a field it believes is unused never triggers a check from the writer's own point of view.",
+        "at": [{ "step": "Hook: a field removed, a dashboard broken days later" }]
+      },
+      {
+        "item": "Transitive checking isn't simply 'stricter backward' in a vague sense — it closes a specific gap where a change passes against the immediately prior version but would have broken a consumer still running two versions back.",
+        "at": [{ "step": "Predict: would a stricter gate have caught it?" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

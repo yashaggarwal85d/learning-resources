@@ -1,0 +1,98 @@
+{
+  "topic": "dsa.elementary-sorts-sorting-networks",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Pop open the sort function in almost any mainstream language's standard library and read how it actually works.",
+        { "beat": 0.3 },
+        "Before it does anything clever at all, it checks one thing first: is this range short? And if it is, it just hands the whole job to insertion sort, the very first sorting algorithm anyone learns, the one that's quadratic."
+      ]
+    },
+    {
+      "lines": [
+        "Take six keys: five, two, four, six, one, three. Run insertion sort on them by hand and count every single comparison it makes.",
+        { "beat": 0.3 },
+        "Of those comparisons, how many end up being spent on pairs of keys that were already sitting in the right order relative to each other?"
+      ],
+      "answer": [
+        "Twelve comparisons total, and nine of them land on pairs that started out backwards.",
+        "That number nine isn't a coincidence at all — it's exactly how many moves the algorithm makes too, because moves and out-of-order pairs are, for this algorithm, the very same count."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the whole algorithm in one motion. Lift the next key out of the row entirely, slide every larger key one step to the right, and drop the lifted key into the gap that opens up.",
+        { "beat": 0.3 },
+        "Its total cost is the number of keys, minus one, plus however many pairs started out backwards — and the number of moves it makes equals that second count exactly, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "This one works completely differently. Scan the entire unsorted part of the row, every time, looking for whichever key is smallest, and swap that one to the front.",
+        { "beat": 0.3 },
+        "Because that scan covers the whole remaining row every round, the number of comparisons it makes never changes — not even a little — no matter how close to already-sorted the input happens to be."
+      ]
+    },
+    {
+      "lines": [
+        "One more approach just swaps any two neighboring keys that are out of order, over and over. It ends up making more moves than the lift-and-shift approach for the exact same result, which is the whole reason nobody reaches for it.",
+        { "beat": 0.4 },
+        "And the scan-for-the-smallest approach has a quieter problem: its one swap per round can carry an equal key right past another equal key, flipping their original order."
+      ]
+    },
+    {
+      "lines": [
+        "Keeping equal keys in their original relative order is one property a sort can have. Using no extra memory beyond a small constant amount is a completely separate property.",
+        { "beat": 0.4 },
+        "An algorithm can have either one of those without the other, and getting both at once is not automatic at all."
+      ]
+    },
+    {
+      "lines": [
+        "A recursive sorting algorithm keeps cutting its input into smaller and smaller pieces as it goes.",
+        { "beat": 0.3 },
+        "Once a piece gets small enough, does handing it off to a totally different, simpler algorithm actually save anything real, or is that just something people do out of habit?"
+      ],
+      "answer": [
+        "It really does save something real. Below a small enough size, the overhead of recursing and calling functions outweighs whatever asymptotic advantage the fancier algorithm has.",
+        "The simple, straight-line loop of the lift-and-shift approach just wins outright down there."
+      ]
+    },
+    {
+      "lines": [
+        "Real production libraries back this up with actual numbers, not just folklore. One switches over to the lift-and-shift approach the moment a range drops below sixteen elements.",
+        { "beat": 0.4 },
+        "Another one uses small, fixed helper routines once a range is above nine or above thirteen elements, and falls back to the same lift-and-shift approach below that — no recursion, no function call, memory read straight through in order."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a completely fixed sequence of compare-and-swap steps, decided entirely in advance, that never once looks at the actual data to decide what to do next.",
+        { "beat": 0.4 },
+        "No decision depends on the data, so there's nothing for a branch predictor to ever get wrong — and because nothing depends on anything else, several of those steps could even run side by side."
+      ]
+    },
+    {
+      "lines": [
+        "Take that fixed network built for four inputs and run it on every single one of the twenty-four possible orderings of four distinct keys.",
+        { "beat": 0.3 },
+        "Then run it again on all sixteen patterns made from just two repeated values. Every single case, without exception, comes out fully sorted — and that's confirmed directly, not assumed from watching one example work."
+      ]
+    },
+    {
+      "lines": [
+        "A network like that is still, underneath it all, a comparison-based algorithm — it's just an oblivious one, since every one of its comparisons gets fixed before any actual data shows up.",
+        { "beat": 0.4 },
+        "Which means the same hard floor from before still applies to it. And at four inputs specifically, the smallest network anyone has found lands exactly on that floor, with nothing to spare."
+      ]
+    },
+    {
+      "lines": [
+        "Lifting a key into its place, scanning for the smallest remaining one, swapping neighbors, and a fixed network built from the same basic comparison — none of these four ever gets below that one shared floor.",
+        { "beat": 0.4 },
+        "And the smallest, simplest one of them is exactly what every fast, recursive sort still quietly leans on at the bottom. So how close does a sort built entirely on recursion get to that same floor? That's next."
+      ]
+    }
+  ]
+}

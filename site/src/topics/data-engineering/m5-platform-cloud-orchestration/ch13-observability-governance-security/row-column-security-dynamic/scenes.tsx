@@ -2,7 +2,6 @@ import { C, Svg, T } from '../../../../../reels/kit';
 import { easeOut, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
-/** A label-left / value-right row, stacked vertically with generous gaps (DESIGN.md, phone text scaling). */
 function Row({ y, label, value, valueColor = C.crema, o = 1 }: { y: number; label: string; value: string; valueColor?: string; o?: number }) {
   return (
     <g opacity={o}>
@@ -18,105 +17,91 @@ function Row({ y, label, value, valueColor = C.crema, o = 1 }: { y: number; labe
 
 export function Hook({ t }: StepCtx) {
   return (
-    <Svg label="masked column, three paths tried." h={200}>
-      <Row y={70} label="masked column" value="email, for analysts" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="which path leaked" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
-    </Svg>
-  );
-}
-
-export function Predict({ t }: StepCtx) {
-  return (
-    <Svg label="three paths. Covered, or not?" h={260}>
-      <Row y={50} label="masked query" value="covered?" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="derived table" value="covered?" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="direct file read" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="email is masked for analysts, and an analyst still recovers addresses. Which path leaked?" h={200}>
+      <Row y={70} label="masked column query" value="covered" o={easeOut(seg(t, 0, 0.6))} />
+      <Row y={130} label="derived table, raw file" value="covered or not?" valueColor={C.focus} o={easeOut(seg(t, 0.4, 1))} />
     </Svg>
   );
 }
 
 export function RevealEngineVsApp({ t }: StepCtx) {
   return (
-    <Svg label="enforced in the engine, not the app." h={200}>
-      <Row y={70} label="app-side check" value="only its calls" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="engine-side policy" value="every caller" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="engine policy: every query. Application filter: only requests through that app" h={200}>
+      <Row y={70} label="application filter" value="one path only" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="engine policy" value="every query, always" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealRowPolicy({ t }: StepCtx) {
+export function PredictBeforePolicy({ t }: StepCtx) {
   return (
-    <Svg label="the policy runs first, row by row." h={260}>
-      <Row y={50} label="policy expression" value="runs before user's" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="leakproof functions" value="the one exception" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="owner, superuser" value="skip it entirely" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="query as the restricted role, before any row policy exists. How many rows?" h={200}>
+      <Row y={70} label="restricted role, no policy" value="3,000 rows exist" />
+      <Row y={130} label="rows returned?" value="not yet revealed" valueColor={C.focus} />
     </Svg>
   );
 }
 
-export function RevealFiveEngines({ t }: StepCtx) {
+export function RevealBeforePolicy({ t }: StepCtx) {
   return (
-    <Svg label="five engines, one shared idea." h={260}>
-      <Row y={50} label="Snowflake, Databricks" value="masks and filters" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="BigQuery, Lake Formation" value="row-level security" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="Trino, via OPA" value="one shared idea" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="measured: all 3,000 rows, nothing stops the query yet" h={200}>
+      <Row y={70} label="no policy applied" value="query runs plain" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="rows returned" value="all 3,000, measured" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealPlanCost({ t }: StepCtx) {
+export function ElaboratePolicyExpression({ t }: StepCtx) {
   return (
-    <Svg label="pushed down, or scanned in full." h={260}>
-      <Row y={50} label="pushed to scan" value="fewer rows touched" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="not pushed down" value="scan then filter" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="cache, pre-mask" value="hands back unmasked" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="a row policy is an expression, evaluated before the user's own query conditions" h={200}>
+      <Row y={70} label="policy expression" value="evaluated per row" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="before" value="the user's own WHERE" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealDerivedTable({ t }: StepCtx) {
+export function PredictAfterPolicy({ t }: StepCtx) {
   return (
-    <Svg label="built before the mask, serving it still." h={200}>
-      <Row y={70} label="view built earlier" value="before the mask" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="the engine now" value="just another table" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="same query, same role, after the policy. How many rows now?" h={200}>
+      <Row y={70} label="policy: region = us" value="1,000 of 3,000 match" />
+      <Row y={130} label="rows returned?" value="not yet revealed" valueColor={C.focus} />
     </Svg>
   );
 }
 
-export function RevealExtract({ t }: StepCtx) {
+export function RevealAfterPolicy({ t }: StepCtx) {
   return (
-    <Svg label="exported once, carries what it carried then." h={200}>
-      <Row y={70} label="export, taken earlier" value="just a copy" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="the policy now" value="never governed it" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    <Svg label="measured: exactly 1,000 rows -- the policy, not the query, decided" h={200}>
+      <Row y={70} label="same query" value="no change to it" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="rows returned" value="1,000, measured" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
-export function RevealDirectFile({ t }: StepCtx) {
+export function ElaboratePlanChanges({ t }: StepCtx) {
   return (
-    <Svg label="read the file, and no policy is asked." h={260}>
-      <Row y={50} label="read the file" value="straight from storage" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="no query" value="skips the engine" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="encrypting the file" value="the one defence" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
+    <Svg label="EXPLAIN: no Filter node before the policy, an explicit one after it" h={200}>
+      <Row y={70} label="before policy" value="no Filter node" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="after policy" value="Filter node appears" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+    </Svg>
+  );
+}
+
+export function RevealBypassPaths({ t }: StepCtx) {
+  return (
+    <Svg label="a superuser bypasses the policy; so does anyone reading the file directly" h={200}>
+      <Row y={70} label="superuser bypass" value="all 3,000, measured" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="direct file read" value="same bypass" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
 
 export function Recap({ t }: StepCtx) {
   return (
-    <Svg label="enforced at every read; three paths outside it." h={260}>
-      <Row y={50} label="engine, not app" value="covers every caller" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="five engines" value="same idea, costs" o={easeOut(seg(t, 0.15, 0.45))} />
-      <Row y={140} label="view, export, file" value="all outside it" valueColor={C.focus} o={easeOut(seg(t, 0.35, 0.7))} />
-    </Svg>
-  );
-}
-
-export function ProveIt({ t }: StepCtx) {
-  return (
-    <Svg label="mask added today. Which copies leak?" h={200}>
-      <Row y={70} label="export, last month" value="before the mask" o={easeOut(seg(t, 0, 0.4))} />
-      <Row y={130} label="view, refreshed yesterday" value="not yet revealed" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.65))} />
+    <Svg label="engine policies cover every query; they don't cover a bypass around the engine" h={280}>
+      <Row y={50} label="engine policy" value="every query, measured" o={easeOut(seg(t, 0, 0.3))} />
+      <Row y={100} label="plan cost" value="rises, measured" o={easeOut(seg(t, 0.15, 0.45))} />
+      <Row y={150} label="bypass paths" value="untouched by the policy" valueColor={C.focus} o={easeOut(seg(t, 0.4, 0.75))} />
     </Svg>
   );
 }

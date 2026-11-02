@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: shard keys and resharding, and partitioning schemes
+
+<ul class="resources">
+  <Resource kind="reel" title="Shard keys, hot shards and resharding" domain="data-engineering" host="de.shard-keys-hot-shards" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Partitioning schemes: range, hash, consistent hashing" domain="data-engineering" host="de.partitioning-schemes-range-hash" by="the per-range partitioning this topic's consensus groups sit on" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Raft Consensus Algorithm" href="https://raft.github.io/" by="raft.github.io">Majority quorum's own stated progress-and-safety guarantee.</Resource>
+  <Resource kind="reading" title="KRaft" href="https://kafka.apache.org/44/operations/kraft/" by="Apache Kafka documentation">The controller metadata quorum and its own majority-availability rule.</Resource>
+  <Resource kind="reading" title="etcd versus other key-value stores" href="https://etcd.io/docs/v3.6/learning/why/" by="etcd documentation">etcd's own single global replication group, documented as a deliberate trade.</Resource>
+  <Resource kind="reading" title="Replication Layer" href="https://docs.cockroachlabs.com/docs/stable/architecture/replication-layer" by="CockroachDB documentation">Per-range Raft groups, quorum, and leader/follower heartbeats.</Resource>
+</ul>
+
+</section>

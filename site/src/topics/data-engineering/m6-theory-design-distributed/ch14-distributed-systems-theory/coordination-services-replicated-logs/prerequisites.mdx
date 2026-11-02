@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the mechanisms this topic names in production
+
+<ul class="resources">
+  <Resource kind="reel" title="Raft at the conceptual level" domain="data-engineering" host="de.raft-at-conceptual-level" by="Chapter 14, topic 9" />
+  <Resource kind="reel" title="Leases, fencing tokens and split brain" domain="data-engineering" host="de.leases-fencing-tokens-split" by="Chapter 14, topic 10" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes directly
+
+<ul class="resources">
+  <Resource kind="reading" title="ZooKeeper: Wait-free coordination for Internet-scale systems" href="https://www.usenix.org/legacy/event/atc10/tech/full_papers/Hunt.pdf" by="Hunt, Konar, Junqueira, Reed — USENIX ATC 2010">Linearizable writes, FIFO client order, ephemeral znodes, and sync reads.</Resource>
+  <Resource kind="reading" title="ZooKeeper Programmer's Guide" href="https://zookeeper.apache.org/doc/current/zookeeperProgrammers.html" by="Apache ZooKeeper">The zxid as a total order stamp.</Resource>
+  <Resource kind="reading" title="etcd API guarantees" href="https://etcd.io/docs/v3.5/learning/api_guarantees/" by="etcd documentation">Strict serializability by default, the opt-in serializable read, and leases.</Resource>
+  <Resource kind="reading" title="Apache Kafka 4.0.0 Release Announcement" href="https://kafka.apache.org/blog/2025/03/18/apache-kafka-4.0.0-release-announcement/" by="Apache Kafka">The first major release without ZooKeeper, and Pre-Vote.</Resource>
+  <Resource kind="reading" title="Kafka design documentation: Replication" href="https://docs.confluent.io/kafka/design/replication.md" by="Apache Kafka design docs, mirrored by Confluent">The in-sync replica set, its replica-count trade-off, and unclean leader election.</Resource>
+  <Resource kind="reading" title="KIP-966: Eligible Leader Replicas" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-966%3A+Eligible+Leader+Replicas" by="Apache Kafka KIP">The last-replica-standing data-loss case this fix closes.</Resource>
+  <Resource kind="reading" title="Apache Iceberg Table Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The atomic metadata swap and serializable isolation.</Resource>
+  <Resource kind="reading" title="Cluster Architecture" href="https://kubernetes.io/docs/concepts/architecture/" by="Kubernetes documentation">etcd named as Kubernetes' backing store for all cluster data.</Resource>
+</ul>
+
+</section>

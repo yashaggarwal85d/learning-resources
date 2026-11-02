@@ -1,0 +1,5 @@
+- **Warm-up period**: the stretch of a benchmark run during which the system under test is still reaching its normal operating state, not yet representative of steady behaviour.
+- **Steady state**: the point in a run after which performance stops systematically improving and settles into its repeatable, normal behaviour.
+- **Buffer pool / page cache**: two stacked, in-memory caches (a database's own, and the operating system's beneath it) that start empty on a cold start and fill as data is read.
+- **Confidence interval**: a range around a measured value stating how much repeated measurement would plausibly vary, used to judge whether an observed difference is real or just noise.
+- **Cold-cache vs. hot-cache result**: two separate, honestly labeled numbers for the same system — one from a fresh start, one from steady-state operation — reported side by side rather than averaged together.

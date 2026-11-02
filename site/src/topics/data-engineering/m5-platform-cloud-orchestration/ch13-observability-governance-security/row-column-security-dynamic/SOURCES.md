@@ -1,63 +1,81 @@
-# Sources — de.row-column-security-dynamic
+# Sources: Row/column security and dynamic masking in-engine (`de.row-column-security-dynamic`)
 
-## PostgreSQL — Row Security Policies
+PostgreSQL's row security policies documentation (the runnable local example), Snowflake's
+column-level security and row access policy documentation, Databricks' row-filter and
+column-mask documentation, BigQuery's row-level and column-level access-control documentation,
+and AWS Lake Formation's data-filtering documentation are all fetched directly.
+
+## PostgreSQL documentation — 5.9. Row Security Policies
 
 URL: https://www.postgresql.org/docs/current/ddl-rowsecurity.html
+Version: PostgreSQL 18 documentation, retrieved 2026-11-01
 
-> tables can have row security policies that restrict, on a per-user basis, which rows can be returned by normal queries or inserted, updated, or deleted by data modification commands
+> To specify which rows are visible or modifiable according to a policy, an expression is required that returns a Boolean result. This expression will be evaluated for each row prior to any conditions or functions coming from the user's query. (The only exceptions to this rule are leakproof functions, which are guaranteed to not leak information; the optimizer may choose to apply such functions ahead of the row-security check.)
 
 > Superusers and roles with the BYPASSRLS attribute always bypass the row security system when accessing a table. Table owners normally bypass row security as well, though a table owner can choose to be subject to row security with ALTER TABLE ... FORCE ROW LEVEL SECURITY.
 
-> This expression will be evaluated for each row prior to any conditions or functions coming from the user's query. (The only exceptions to this rule are leakproof functions, which are guaranteed to not leak information; the optimizer may choose to apply such functions ahead of the row-security check.)
+> Enabling and disabling row security, as well as adding policies to a table, is always the privilege of the table owner only.
 
-## Snowflake — Understanding column-level security (Dynamic Data Masking)
+Contents: the exact mechanics the reel runs directly -- a policy expression evaluated before the
+user's own query conditions except for leakproof functions, and the owner/BYPASSRLS bypass this
+topic's own hook depends on -- the "enforce in the query engine, not the application" and
+"Postgres row-security documentation is the runnable local example" clauses.
+
+## Snowflake Documentation — Understanding Dynamic Data Masking
 
 URL: https://docs.snowflake.com/en/user-guide/security-column-ddm-intro
+Version: retrieved 2026-11-01
 
-> In Snowflake, masking policies are schema-level objects, which means a database and schema must exist in Snowflake before a masking policy can be applied to a column.
+> Dynamic Data Masking is a Column-level Security feature that uses masking policies to selectively mask plain-text data in table and view columns at query time.
 
-> At query runtime, the masking policy is applied to the column at every location where the column appears.
+Contents: Snowflake's own description of masking as a query-time transform rather than a
+rewrite of stored data -- the "no static masking, masks at query time" half of the named-engines
+clause.
 
-## Snowflake — Understanding row access policies
+## Snowflake Documentation — Understanding row access policies
 
 URL: https://docs.snowflake.com/en/user-guide/security-row-intro
+Version: retrieved 2026-11-01
 
-> A row access policy is a schema-level object that determines whether a given row in a table or view can be viewed
+> A row access policy is a schema-level object that determines whether a given row in a table or view can be viewed from the following types of statements:
 
-> the query output only contains rows based on the policy definition evaluating to TRUE
+Contents: Snowflake's own separate row-access-policy mechanism, confirming it is a distinct
+feature from column masking rather than the same policy object doing both.
 
-## Google BigQuery — Introduction to BigQuery row-level security
+## Databricks documentation — Row filters and column masks
 
-URL: https://docs.cloud.google.com/bigquery/docs/row-level-security-intro
+URL: https://docs.databricks.com/aws/en/data-governance/unity-catalog/row-and-column-filters
+Version: retrieved 2026-11-01
+
+> Row filters and column masks control data visibility by ensuring that users cannot view base table values before filtering or masking is applied. When the query engine must choose between optimization and protecting against information leakage from filtered or masked values, it always makes the secure choice, which can affect query performance.
+
+Contents: Databricks' own direct statement of the pruning/caching trade-off -- the "impact on
+pruning and caching" clause, in the vendor's own words rather than inferred.
+
+## BigQuery documentation — Introduction to BigQuery row-level security
+
+URL: https://cloud.google.com/bigquery/docs/row-level-security-intro
+Version: retrieved 2026-11-01
 
 > Row-level security lets you filter data and enables access to specific rows in a table based on qualifying user conditions.
 
-> Any users or groups not specifically included in the allowed list are denied access.
+> Row-level security extends the principle of least privilege by enabling fine-grained access control to a subset of data in a BigQuery table, by means of row-level access policies.
 
-> The filter_expression functions like a WHERE clause in a typical query.
+Contents: BigQuery's own row-level-security mechanism, named alongside its own column-level
+policy tags as the two halves of the same named-engines clause.
 
-## AWS Lake Formation — Data filtering and cell-level security in Lake Formation
+## AWS Lake Formation documentation — Data filtering and cell-level security in Lake Formation
 
 URL: https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html
+Version: retrieved 2026-11-01
 
-> Lake Formation uses data filtering to achieve column-level security, row-level security, and cell-level security.
+> Cell-level security combines row filtering and column filtering for a highly flexible permissions model.
 
-> Filters apply only to read operations. Therefore, you can grant only the SELECT Lake Formation permission with filters.
+Contents: Lake Formation's own data filters, combining row and column security into one
+mechanism (a "data cells filter") -- the Lake Formation half of the named-engines clause.
 
-## Databricks — Create and manage row filter and column mask policies
-
-URL: https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac/policies
-
-> Creates a row filter policy. The UDF evaluates each row and returns a boolean.
-
-> Creates a column mask policy. The UDF takes the column value as input and returns the original or a masked version.
-
-> Rows where the UDF returns FALSE are excluded from query results.
-
-## Trino — Open Policy Agent access control
-
-URL: https://trino.io/docs/current/security/opa-access-control.html
-
-> supports retrieving filter definitions from OPA by configuring the OPA endpoint for row filter processing
-
-> supports fetching column masks from OPA by configuring the OPA endpoint for columns mask processing
+Note on Trino's row filtering and column masking: Trino's OPA integration (row filtering and
+column masking as access decisions returned by a policy engine) was already fetched and quoted
+directly in the previous topic's own `SOURCES.md` (`de.access-control-models-rbac`); this topic
+reuses those same two quotes rather than re-fetching the identical page, and cites it the same
+way.

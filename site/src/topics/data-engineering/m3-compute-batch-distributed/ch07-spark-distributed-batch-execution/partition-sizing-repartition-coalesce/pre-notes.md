@@ -1,0 +1,4 @@
+- **Shuffle**: redistributing data across the cluster so rows with the same key land together, covered in this chapter's own earlier sort-based-shuffle topic. *Where you meet it:* the cost this entire topic is about sizing and avoiding.
+- **Exchange**: the physical plan node marking a real shuffle boundary, read directly off EXPLAIN FORMATTED. *Where you meet it:* the exact textual signal this topic's own measurement checks for, present or absent.
+- **Partition**: one independently schedulable slice of a dataset, processed by one task. *Where you meet it:* the thing this whole topic counts, splits, and merges.
+- **Narrow vs. wide dependency**: a narrow transformation reads only from the same partition it writes to; a wide one needs data redistributed across partitions first. *Where you meet it:* the structural reason one of this topic's two calls needs a shuffle and the other doesn't.

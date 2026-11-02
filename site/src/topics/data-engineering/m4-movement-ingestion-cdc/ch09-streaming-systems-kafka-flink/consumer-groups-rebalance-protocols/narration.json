@@ -1,0 +1,85 @@
+{
+  "topic": "de.consumer-groups-rebalance-protocols",
+  "steps": [
+    {
+      "lines": [
+        "One new consumer joins a group, and suddenly nobody in that group is reading anything at all.",
+        "Not just the new member catching up — every single consumer, frozen, waiting for the whole group to settle.",
+        "That's a design choice, not an inevitability, and this topic is about exactly what that choice costs and how it changed."
+      ]
+    },
+    {
+      "lines": [
+        "A consumer's committed offset isn't some side-channel bookkeeping value — it's a record, written into a log, the same kind of log this chapter keeps coming back to.",
+        "That log stays compacted down to just the latest offset per consumer, so constant commits never make it grow without bound.",
+        "On top of that log sits a much messier problem: dividing a topic's partitions fairly among a group of consumers that come and go."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Growing a group by one member only ever forces some partitions to change hands, never all of them at once.",
+        "Does every member's consumption pause while that happens, or only the members whose own assignment actually changes?"
+      ],
+      "answer": [
+        "It depends entirely on which protocol the group is running — and that's the whole point of this topic.",
+        "Under the older protocol, every member pauses, whether its own partitions moved or not.",
+        "Under the newer approach, only the members whose assignment actually changed ever pause at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real reassignment, not a hypothetical one: the same eight-to-nine scale-up, computed for real.",
+        "Most of the group keeps exactly the partitions it already had.",
+        "Only a small handful of members actually hand anything off to make room for the new one."
+      ]
+    },
+    {
+      "lines": [
+        "Run that same scale-up under two different rules for who gets to keep consuming.",
+        "The older rule pauses the entire group, every member, without exception.",
+        "The newer rule pauses only the handful that reassignment actually touched — everyone else never even notices."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the next reveal settles it.",
+        "A consumer restarts briefly, but it's configured with a persistent identity it keeps across restarts.",
+        "Does that brief restart still force the whole group to rebalance?"
+      ],
+      "answer": [
+        "Not if it comes back quickly enough.",
+        "A persistent configured identity means the coordinator treats the group's membership as unchanged the whole time it's gone, not just that the rejoin happens to be fast.",
+        "Wait too long, past the configured timeout, and it's treated as a real departure — rebalanced like anyone else."
+      ]
+    },
+    {
+      "lines": [
+        "Three restarts, run for real, side by side.",
+        "No persistent identity at all: a rebalance, every time, no matter how fast the restart was.",
+        "A persistent identity and a fast restart: nothing happens. The same identity after a slow restart: rebalanced anyway."
+      ]
+    },
+    {
+      "lines": [
+        "The newer protocol doesn't just change who gets paused — it moves the actual computation of who owns what onto the broker itself.",
+        "Kafka Streams gets that same broker-driven shape through its own dedicated protocol.",
+        "That one comes with its own stated rough edges for now, not a complete drop-in replacement yet."
+      ]
+    },
+    {
+      "lines": [
+        "Every number in this reel so far came from one real run of this topic's own toy rebalance model, happening just now.",
+        "The reassignment itself, and exactly how many members it actually touched.",
+        "The paused-member counts under both protocols, and every one of those static-membership restart outcomes."
+      ]
+    },
+    {
+      "lines": [
+        "So: a committed offset is just another record in a log this chapter already knows how to build.",
+        "A membership change no longer has to stop everyone — only the members it actually touches.",
+        "A persistent identity skips the pause entirely when it isn't needed, and that same broker-driven shape now reaches Kafka Streams too."
+      ]
+    }
+  ]
+}

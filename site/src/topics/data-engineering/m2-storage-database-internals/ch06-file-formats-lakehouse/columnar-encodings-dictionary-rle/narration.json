@@ -1,0 +1,90 @@
+{
+  "topic": "de.columnar-encodings-dictionary-rle",
+  "steps": [
+    {
+      "lines": [
+        "What you're looking at is one set of rows, encoded five separate ways, each one a different bet about what the underlying values look like.",
+        "A warehouse zone column shrinks dramatically. A shipment id column shrinks even further. Neither shrinkage comes from the same trick.",
+        "That's the real lesson here: there's no single best encoding. Each one wins only when the data actually has the shape it was built to exploit."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a column that only ever holds a handful of distinct short codes, repeated over and over down every row.",
+        "Here's the question worth pausing on: does a columnar format actually write that short text out again, every single time it repeats?",
+        "Think about what becomes possible once a writer can see an entire column's worth of values before deciding how to lay any of them out."
+      ],
+      "answer": [
+        "It doesn't repeat the text at all — it writes each distinct value exactly once, in a small page, and points to it from everywhere else.",
+        "A dictionary page lists the column's unique values a single time. The page that follows no longer stores text — it stores a tiny index into that list, one per row.",
+        "That's only possible because a column-oriented writer can look at the whole column before committing to an encoding, something a row-at-a-time writer never gets to do."
+      ]
+    },
+    {
+      "lines": [
+        "So that's exactly the shape sitting in this column: a dictionary page holding the handful of distinct codes, followed by a page of small packed indexes, one per row.",
+        "Those indexes aren't stored as separate bytes each — they're packed together at whatever bit width the dictionary actually needs, run together as one dense block.",
+        "Put a dictionary page and a tightly packed index page side by side, and most of what used to be repeated text has simply disappeared."
+      ]
+    },
+    {
+      "lines": [
+        "Now run that same trick on a column where almost nothing repeats — every value in it is genuinely unique.",
+        "A dictionary built from a column like that would end up about as large as the column itself, because there would be almost nothing left to deduplicate.",
+        "So the format doesn't force the trick through regardless: past a real size or cardinality limit, it falls straight back to the plain encoding instead.",
+        "Remember that whenever a column surprises you by not shrinking: a dictionary with as many entries as rows was never going to help in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "The packed-index trick you just saw has a narrower job than it might seem — it isn't a general-purpose encoding for arbitrary columns.",
+        "It's reserved for exactly three things: the structural levels that describe nesting and nulls, dictionary indices themselves, and boolean values used as an alternative to writing them out plainly.",
+        "And within a page, it commits to one fixed width for every value in that page, because those three uses all tend to stay within a narrow, predictable range."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a very different column: an identifier that climbs steadily upward, where each row's value is only a hair larger than the one before it.",
+        "Here's the question: given values that close together, does a format do better widening its encoding, or narrowing it down to just the gaps between them?",
+        "Consider what a difference between two nearly identical numbers actually looks like next to either number on its own."
+      ],
+      "answer": [
+        "Narrowing wins, and wins by a lot — the differences between consecutive values are tiny compared to the values themselves.",
+        "Store the first value in full, then store only the small gap to each value after it, and most of what used to be large numbers becomes almost nothing.",
+        "That's the entire idea: a sequence of mostly-similar numbers compresses far better once you stop storing the numbers and start storing how little they changed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that idea done properly, the way a real writer does it rather than the shortened version used just to explain the concept.",
+        "Values get grouped into a block, and within that block, into several smaller miniblocks, each one choosing its own tightest possible width for just its own gaps.",
+        "One more step squeezes it further: the smallest gap in a block gets subtracted from every other gap in that block first, so nothing stored is ever negative or larger than it has to be.",
+        "Run that whole pipeline on a steadily climbing identifier column and the shrinkage is dramatic — most of what used to be full-width numbers is simply gone."
+      ]
+    },
+    {
+      "lines": [
+        "Two more encodings exist for two very different reasons, and it's worth not confusing what each one is actually betting on.",
+        "One targets text that tends to share a leading chunk with whatever came right before it — think of values sorted alphabetically, where neighboring entries often start the same way.",
+        "It stores only how much of the previous entry's beginning a new entry reuses, plus whatever's genuinely new after that shared part.",
+        "The other targets numbers with a fixed byte width, and it isn't trying to shrink anything by itself at all — it just rearranges which bytes sit next to which."
+      ]
+    },
+    {
+      "lines": [
+        "That rearranging encoding deserves a closer look, because on its own it changes nothing about the total size — the same number of bytes goes in as comes out.",
+        "What it actually does is take every value's first byte and group them all together, then every value's second byte, and so on, instead of keeping each value's bytes together.",
+        "Numbers in a real column often agree closely in their higher-order bytes while differing mostly in their lower-order ones, and that rearrangement is what lets a general compressor finally see that pattern.",
+        "Run a general-purpose compressor on the plain version and then on the rearranged version of the same column, and the rearranged one comes out noticeably smaller every time."
+      ]
+    },
+    {
+      "lines": [
+        "Pull all five of these apart and each one is making a different wager about what the data in front of it actually looks like.",
+        "Dictionary encoding wagers that values repeat; the packed-index trick wagers that a value's range stays small and narrow across a whole page.",
+        "The two encodings built around closeness wager that neighboring values, whether numbers or strings, resemble each other; the byte-rearranging one wagers only on what a compressor can do once it sees the right pattern.",
+        "None of those wagers are free guesses — every one of them is checked against the data first, and the one trick every format keeps in reserve is simply storing the value as it is when no wager pays off."
+      ]
+    }
+  ]
+}

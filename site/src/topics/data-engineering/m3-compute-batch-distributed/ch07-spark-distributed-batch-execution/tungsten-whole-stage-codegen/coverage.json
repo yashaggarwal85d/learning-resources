@@ -1,0 +1,106 @@
+{
+  "topic": "de.tungsten-whole-stage-codegen",
+  "syllabus": [
+    {
+      "clause": "UnsafeRow binary layout outside Java object overhead; fusing a pipeline of operators into one generated Java method compiled by Janino (no virtual next() per row, values in registers)",
+      "at": [
+        { "step": "Reveal: one marker, one subtree" },
+        { "step": "Reveal: UnsafeRow, not an object" },
+        { "deep": "Janino and the generated method" }
+      ]
+    },
+    {
+      "clause": "the vectorised Parquet/ORC reader as the columnar exception",
+      "at": [
+        { "step": "Reveal: batched, bridged in by ColumnarToRow" },
+        { "deep": "ORC's own vectorised reader" }
+      ]
+    },
+    {
+      "clause": "when codegen silently falls back (huge methods, too many fields) and how to see it",
+      "at": [
+        { "step": "Reveal: zero markers, zero subtrees" },
+        { "deep": "Huge methods, the other fallback trigger" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "WholeStageCodegenExec.scala (Apache Spark source, GitHub)",
+      "items": [
+        {
+          "item": "WholeStageCodegen compiles a subtree of plans that support codegen together into a single Java function",
+          "at": [{ "step": "Reveal: one marker, one subtree" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark as a Compiler: Joining a Billion Rows per Second on a Laptop (Databricks Engineering Blog)",
+      "items": [
+        {
+          "item": "operators together generate code at runtime and collapse each fragment of the query, where possible, into a single function",
+          "at": [{ "step": "Reveal: one marker, one subtree" }]
+        },
+        {
+          "item": "the prior Volcano iterator model called next() one tuple at a time between operators, the model codegen replaces",
+          "at": [{ "step": "Hook" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "The star marker's number — *(1), *(2), and so on — identifies which generated WholeStageCodegen subtree a node belongs to, not an ordering or priority; a plan with several unrelated fused regions carries several different numbers, each its own independently compiled method.",
+        "at": [{ "step": "Reveal: one marker, one subtree" }]
+      },
+      {
+        "item": "Janino, the lightweight embedded Java compiler Spark calls to turn generated source into bytecode at runtime, is named in the syllabus clause directly but not independently measured here — this topic confirms the generated source and its fusion, not Janino's own compile step.",
+        "at": [{ "out": "Janino named only in the syllabus clause; its own compilation step not independently measured" }]
+      },
+      {
+        "item": "UnsafeRow's layout is fixed-length null-bitset plus fixed-length fields plus a variable-length region for strings and other non-fixed data, addressed by byte offset rather than by field index into an object graph — the specific mechanism behind 'raw bytes' this topic states at a higher level.",
+        "at": [{ "step": "Reveal: UnsafeRow, not an object" }]
+      },
+      {
+        "item": "ORC's own vectorised reader exists alongside Parquet's, following the same columnar-exception pattern this topic measures for Parquet specifically (Batched: true, no stage marker, a bridging ColumnarToRow node) — named only, not independently measured, since this topic's own examples.py writes and reads Parquet.",
+        "at": [{ "out": "ORC's vectorised reader named only; this topic measures Parquet specifically" }]
+      },
+      {
+        "item": "spark.sql.codegen.maxFields is one of two documented fallback triggers; the other is a generated method exceeding the JVM's own 64-kilobyte bytecode size limit per method, which this topic's forced-fallback measurement doesn't reach (it forces the field-count trigger instead, which is deterministic and reliable in a small local query).",
+        "at": [{ "out": "the 64KB method-size fallback trigger named only; this topic forces the field-count trigger instead" }]
+      },
+      {
+        "item": "Whole-stage codegen does not fuse every physical operator unconditionally; an operator must itself implement the CodegenSupport interface (most do: Filter, Project, Range, hash aggregates and joins), and a non-supporting operator (such as a sort in some configurations, or a user-defined function's own exec node) breaks the fused chain at that point, starting a new subtree on the other side of it.",
+        "at": [{ "deep": "Huge methods, the other fallback trigger" }]
+      },
+      {
+        "item": "The generated code's use of CPU registers for intermediate values, rather than placing them back on a memory-resident stack between operators, is the other half of the Databricks-sourced performance claim this topic quotes; this topic's own measurement confirms the structural fusion and the UnsafeRow writes, not a direct register-level profiling claim.",
+        "at": [{ "out": "register-residency of intermediate values named via the quoted source; not independently profiled here" }]
+      },
+      {
+        "item": "A pickled Python UDF (this chapter's very next topic) is not merely slow codegen — it is a complete gap in codegen's coverage, since Catalyst cannot see inside an opaque user function to fuse anything around it at all, which is the handoff this topic's own bridge text sets up directly.",
+        "at": [{ "step": "Recap" }]
+      },
+      {
+        "item": "debug.codegen() has no public Python wrapper on PySpark; this topic's own examples.py reaches the identical Scala-side report by calling org.apache.spark.sql.execution.debug.package.codegenString directly through the JVM gateway (spark.sparkContext._jvm), the same text a Scala shell's debugCodegen() would print.",
+        "at": [{ "step": "Reveal: one marker, one subtree" }]
+      },
+      {
+        "item": "The generated method's class name and package (org.apache.spark.sql.catalyst.expressions.GeneratedClass by default) are visible in the codegen report's own header line above the fused loop body; this topic reads the loop body and the UnsafeRowWriter calls inside it, not the class scaffolding around it.",
+        "at": [{ "out": "generated class scaffolding visible in the full codegen report; not the fact this topic measures" }]
+      },
+      {
+        "item": "Spark caches compiled codegen classes by their generated source's own content, so an identical query shape run twice reuses the already-compiled class instead of invoking Janino again — a cache this topic's own single-run measurement doesn't exercise, since it only runs each query shape once.",
+        "at": [{ "out": "codegen class caching named only; this topic's own measurement runs each query shape once" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "self-review",
+    "open": []
+  }
+}

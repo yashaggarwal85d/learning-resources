@@ -1,0 +1,133 @@
+{
+  "topic": "de.cache-patterns-eviction-policies",
+  "syllabus": [
+    {
+      "clause": "cache-aside, read-through, write-through, write-behind and the failure each risks",
+      "at": [
+        { "step": "Hook: a write-behind cache acknowledges a write, then the node dies before the queue drains" },
+        { "step": "Reveal: cache-aside, the application's own miss path" },
+        { "step": "Reveal: read-through, the cache's own miss path" },
+        { "step": "Reveal: write-through and write-behind, and the loss the hook already showed" }
+      ]
+    },
+    {
+      "clause": "TTLs",
+      "at": [{ "step": "Reveal: a TTL bounds the wrong, not fixes it" }]
+    },
+    {
+      "clause": "LRU vs LFU vs W-TinyLFU (Caffeine) and why admission matters as much as eviction",
+      "at": [
+        { "step": "Reveal: LRU, LFU, and a real measured gap between them" },
+        { "step": "Prove it" }
+      ]
+    },
+    {
+      "clause": "structures in → Data Structures & Algorithms Ch.5",
+      "at": [{ "topic": "LRU caches", "domain": "data-structures-and-algorithms", "quote": "hash map + doubly linked list for O(1) get/put" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Amazon ElastiCache — Caching strategies for Memcached",
+      "items": [
+        {
+          "item": "the application itself owns the read-miss path under cache-aside, checking the cache first and only then querying the data store and writing the result back",
+          "at": [{ "step": "Reveal: cache-aside, the application's own miss path" }]
+        },
+        {
+          "item": "cache-aside's own named risk is staleness, because nothing updates the cache when the underlying data changes outside of a miss",
+          "at": [{ "step": "Reveal: cache-aside, the application's own miss path" }]
+        }
+      ]
+    },
+    {
+      "source": "Oracle Coherence — Caching Data Sources",
+      "items": [
+        {
+          "item": "under read-through, the cache itself (not the application) delegates to the backing store on a miss, loads the value, and keeps it for next time",
+          "at": [{ "step": "Reveal: read-through, the cache's own miss path" }]
+        },
+        {
+          "item": "a write-through write doesn't complete until the backing store has actually been updated, which is its own named cost: no improvement to write latency at all",
+          "at": [{ "step": "Reveal: write-through and write-behind, and the loss the hook already showed" }]
+        },
+        {
+          "item": "write-behind returns immediately and writes the backing store asynchronously after a delay, which effectively makes the cache the system-of-record until that queue has actually been written",
+          "at": [
+            { "step": "Hook: a write-behind cache acknowledges a write, then the node dies before the queue drains" },
+            { "step": "Reveal: write-through and write-behind, and the loss the hook already showed" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Caffeine project wiki — Efficiency",
+      "items": [
+        {
+          "item": "Caffeine's own W-TinyLFU policy uses a small admission LRU gated by a TinyLFU frequency-sketch admission filter in front of a larger Segmented LRU",
+          "at": [{ "step": "Reveal: LRU, LFU, and a real measured gap between them" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a plain LRU cache and a frequency-gated admission policy, run against the identical skewed access pattern, measure a real, meaningfully different hit rate rather than an asserted one",
+          "at": [{ "step": "Reveal: LRU, LFU, and a real measured gap between them" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "Cache-aside, read-through, write-through and write-behind aren't four unrelated strategies; they're two independent choices (who owns the read miss — the application or the cache — and when a write is acknowledged — before or after the backing store lands) that happen to get four names.",
+        "at": [{ "step": "Reveal: cache-aside, the application's own miss path" }]
+      },
+      {
+        "item": "Moving miss-path ownership from the application to the cache (cache-aside to read-through) doesn't change the staleness risk at all — it only changes which piece of code has to know how to load from the backing store.",
+        "at": [{ "step": "Reveal: read-through, the cache's own miss path" }]
+      },
+      {
+        "item": "Write-behind's own loss risk isn't a bug in any particular implementation; it's the direct, unavoidable consequence of choosing to acknowledge a write before the durable store has it, the same trade write-ahead-log group commit makes deliberately and names explicitly.",
+        "at": [{ "step": "Hook: a write-behind cache acknowledges a write, then the node dies before the queue drains" }]
+      },
+      {
+        "item": "A TTL doesn't make cached data correct; it only puts a ceiling on how long incorrect data is allowed to keep being served before the next read is forced to ask the backing store again.",
+        "at": [{ "step": "Reveal: a TTL bounds the wrong, not fixes it" }]
+      },
+      {
+        "item": "Plain LRU and plain LFU both make the same mistake from opposite directions: LRU admits everything and evicts by recency alone, so a flood of one-hit-wonders can displace a key that recurs; LFU needs history before it can protect anything, so it is slow to adapt when the workload shifts. An admission filter in front of either is a defense against exactly LRU's failure mode.",
+        "at": [{ "step": "Reveal: LRU, LFU, and a real measured gap between them" }]
+      },
+      {
+        "item": "Swapping an eviction policy changes nothing about what gets let in to begin with; if every requested key is admitted regardless of how rarely it recurs, the cache fills with one-hit-wonders under any eviction policy, which is exactly why admission matters as much as eviction and not instead of it.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic's own buffer pool parallel (introduced two topics into this chapter) is structural, not incidental: pin/unpin bookkeeping decides what can even be considered for eviction, the same role an admission filter plays here one layer up.",
+        "at": [{ "topic": "Buffer pool and page replacement", "quote": "pin" }]
+      },
+      {
+        "item": "This topic only establishes that an eviction-plus-admission policy can keep a cache's contents useful; it says nothing about whether those contents are still correct once the underlying data changes, which is exactly the gap the next topic closes.",
+        "at": [{ "deep": "Where this goes next" }]
+      },
+      {
+        "item": "Write-through's own named disadvantage (missing data on a freshly spun-up, empty node) is a different failure than write-behind's loss risk, not the same one restated — write-through never loses an acknowledged write, it only has nothing cached yet for keys nobody has written since the new node appeared.",
+        "at": [{ "step": "Reveal: write-through and write-behind, and the loss the hook already showed" }]
+      },
+      {
+        "item": "LRU and the caching structures this topic names (hash map plus doubly linked list, CLOCK) are exactly the same data structures Data Structures & Algorithms Ch.5 builds from scratch; this topic uses them at the pattern level without re-deriving their O(1) get/put mechanics.",
+        "at": [{ "topic": "LRU caches", "domain": "data-structures-and-algorithms", "quote": "hash map + doubly linked list for O(1) get/put" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

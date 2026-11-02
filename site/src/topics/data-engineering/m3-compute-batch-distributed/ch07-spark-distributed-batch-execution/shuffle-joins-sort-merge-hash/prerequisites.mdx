@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: broadcast hash join
+
+<ul class="resources">
+  <Resource kind="reel" title="Broadcast hash join" domain="data-engineering" host="de.broadcast-hash-join" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="SparkStrategies.scala — JoinSelection" href="https://github.com/apache/spark/blob/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala" by="Apache Spark source, GitHub">The planner's own comment naming the shuffled hash join's real OOM risk and its own strategy-selection rules.</Resource>
+  <Resource kind="reading" title="SortMergeJoinExec.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/SortMergeJoinExec.scala" by="Apache Spark source, GitHub">The sort-then-merge mechanism this topic's own default measurement confirms.</Resource>
+  <Resource kind="reading" title="ShuffledHashJoinExec.scala" href="https://github.com/apache/spark/blob/v4.0.0/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/ShuffledHashJoinExec.scala" by="Apache Spark source, GitHub">The shuffle-then-hash mechanism the hinted measurement confirms, with no sort step anywhere.</Resource>
+</ul>
+
+</section>

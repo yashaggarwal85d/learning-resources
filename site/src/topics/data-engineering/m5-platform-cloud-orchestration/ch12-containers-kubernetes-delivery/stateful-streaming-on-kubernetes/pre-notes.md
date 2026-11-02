@@ -1,0 +1,9 @@
+- **Broker**: a Kafka process that stores a partition's data and serves reads and writes for it. *Where you meet it:* every step.
+- **Partition replica**: one broker's copy of a partition's data. *Where you meet it:* the roller and rack-awareness steps.
+- **In-sync replica**: a replica that has caught up to the leader closely enough to count toward durability. *Where you meet it:* the predict, roller, and drain-cleaner steps.
+- **min.insync.replicas**: the minimum number of in-sync replicas a write with `acks=all` requires before it's acknowledged. *Where you meet it:* the predict and roller steps.
+- **Controller quorum**: the KRaft nodes that replicate Kafka's own cluster metadata. *Where you meet it:* the KRaft step.
+- **Checkpoint**: a recovery point Flink itself creates, owns, and usually deletes automatically. *Where you meet it:* the upgrade-modes and lifecycle steps.
+- **Savepoint**: a recovery point the user creates and owns; Flink never deletes it on its own. *Where you meet it:* the upgrade-modes and lifecycle steps.
+- **Operator**: a controller that reconciles a custom resource toward a declared state. *Where you meet it:* the Flink-declared-resource step.
+- **Rack**: a Kubernetes node-topology label (often an availability zone) used to spread replicas. *Where you meet it:* the rack-awareness step.

@@ -1,0 +1,64 @@
+{
+  "topic": "de.sub-100-ms-fraud",
+  "syllabus": [
+    {
+      "clause": "event → streaming feature computation → online feature lookup → model → decision",
+      "at": [{ "step": "Reveal: the pipeline strip and its correctness boundary" }]
+    },
+    {
+      "clause": "latency budget per hop",
+      "at": [{ "step": "Reveal: the latency budget, built at p99, hop by hop" }, { "step": "Reveal: why the chain's p99 isn't the sum of the hops' p99s" }]
+    },
+    {
+      "clause": "state size",
+      "at": [{ "step": "Reveal: sizing the streaming-feature state" }]
+    },
+    {
+      "clause": "fallback decisions on timeout",
+      "at": [{ "step": "Reveal: the fallback as a recorded business decision" }]
+    },
+    {
+      "clause": "label feedback and replay for model retraining",
+      "at": [{ "step": "Reveal: score-time logging and replay for retraining" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Flink documentation, \"State Backends\"",
+      "items": [
+        { "item": "The RocksDB state backend holds in-flight data on the TaskManager's own local data directories, not only in memory.", "at": [{ "step": "Reveal: sizing the streaming-feature state" }] },
+        { "item": "The amount of state RocksDB can keep is limited only by the amount of disk space available.", "at": [{ "step": "Reveal: sizing the streaming-feature state" }] },
+        { "item": "RocksDB allows keeping very large state compared to the HashMapStateBackend that keeps state in memory.", "at": [{ "step": "Reveal: sizing the streaming-feature state" }] }
+      ]
+    },
+    {
+      "source": "Redis documentation, \"Diagnosing latency issues\"",
+      "items": [
+        { "item": "Redis processing time is usually extremely low, in the sub-microsecond range.", "at": [{ "step": "Reveal: the latency budget, built at p99, hop by hop" }] },
+        { "item": "Redis serves a single request at every given moment, so all requests are served sequentially.", "at": [{ "step": "Reveal: the latency budget, built at p99, hop by hop" }] },
+        { "item": "Normal commands like GET, SET or LPUSH execute in constant, very small time.", "at": [{ "step": "Reveal: the pipeline strip and its correctness boundary" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      { "item": "A budget built from average hop times looks comfortable right up until the tail arrives, which is exactly when the fallback's own cost matters.", "at": [{ "step": "Hook: the average looked fine, the p99 ate the budget" }] },
+      { "item": "A budget has to be built at p99 per hop because an average hides exactly the hop that blows the deadline.", "at": [{ "step": "Reveal: the latency budget, built at p99, hop by hop" }] },
+      { "item": "The chain's own measured p99 sits below the summed ceiling because the hops' latencies aren't independent of each other.", "at": [{ "step": "Reveal: why the chain's p99 isn't the sum of the hops' p99s" }] },
+      { "item": "Streaming-feature state is sized by card count and window length, and past a point it stops fitting in memory alone.", "at": [{ "step": "Reveal: sizing the streaming-feature state" }] },
+      { "item": "A timeout fallback is a business decision with a recorded error cost, never a default to whichever branch is easiest to code.", "at": [{ "step": "Reveal: the fallback as a recorded business decision" }] },
+      { "item": "Logging the exact features and decision live at scoring time lets a label arriving weeks later train on what the model actually saw.", "at": [{ "step": "Reveal: score-time logging and replay for retraining" }] },
+      { "item": "At ten times the payment rate, the next bottleneck is the feature-state size and the online store's own load, not the timeout itself.", "at": [{ "step": "Prove it: ten times the payments" }] },
+      { "item": "This topic leaves out model training and fraud-detection modelling, the stream engine, key-value store and model-serving internals, and the offline/online parity built in topic 23.", "at": [{ "deep": "Internals" }] },
+      { "item": "Latency-budget tables at p99, timeout fallbacks recorded as business decisions, and score-time feature logging are each established practice, not an emerging technique.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic logs what the model saw at scoring time; the next design is the feature platform that must agree with it down to the timestamp.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

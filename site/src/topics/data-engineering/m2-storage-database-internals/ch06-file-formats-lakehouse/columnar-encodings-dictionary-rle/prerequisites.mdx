@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Row vs columnar vs hybrid layouts" domain="data-engineering" host="de.row-vs-columnar-vs" by="This chapter's second topic" />
+  <Resource kind="reel" title="Schema evolution rules across formats" domain="data-engineering" host="de.schema-evolution-rules-across" by="This chapter's third topic" />
+  <Resource kind="reel" title="Parquet file anatomy" domain="data-engineering" host="de.parquet-file-anatomy" by="This chapter's fourth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache Parquet Format: Encodings.md" href="https://github.com/apache/parquet-format/blob/master/Encodings.md" by="Apache Parquet">Dictionary encoding and its fallback, RLE/bit-packing, DELTA_BINARY_PACKED, DELTA_BYTE_ARRAY, BYTE_STREAM_SPLIT, and ALP.</Resource>
+  <Resource kind="reading" title="FSST: README" href="https://github.com/cwida/fsst/blob/master/README.md" by="Boncz, Leis, Neumann">What FSST targets that dictionary encoding does not — high-cardinality strings with random access.</Resource>
+</ul>
+
+</section>

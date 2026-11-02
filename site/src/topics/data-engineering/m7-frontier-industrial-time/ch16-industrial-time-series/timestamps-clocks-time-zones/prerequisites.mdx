@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the clock material this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" title="IT/OT boundary and data ownership" domain="data-engineering" host="de.it-ot-boundary-data" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="OEE and downtime event modeling" domain="data-engineering" host="de.oee-downtime-event-modeling" by="this chapter, for the shift-boundary bug this topic revisits" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="DataValue" href="https://reference.opcfoundation.org/Core/Part4/v105/docs/7.11" by="OPC UA Part 4: Services">The source and server timestamp fields this topic's three-clock notation builds on.</Resource>
+  <Resource kind="reading" title="Date and Time on the Internet: Timestamps" href="https://www.rfc-editor.org/rfc/rfc3339" by="RFC 3339">The Unknown Local Offset Convention and the UTC-storage format this topic follows.</Resource>
+  <Resource kind="reading" title="Theory and pragmatics of the tz code and data" href="https://data.iana.org/time-zones/tzdb/theory.html" by="IANA tz database">Why a time zone abbreviation can't be trusted to disambiguate a zone.</Resource>
+</ul>
+
+</section>

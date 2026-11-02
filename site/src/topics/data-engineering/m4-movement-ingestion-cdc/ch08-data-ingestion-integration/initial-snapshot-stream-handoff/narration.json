@@ -1,0 +1,82 @@
+{
+  "topic": "de.initial-snapshot-stream-handoff",
+  "steps": [
+    {
+      "lines": [
+        "A connector is most of the way through copying a genuinely huge table when something kills it.",
+        "On restart, watch the progress bar. It doesn't pick up where it left off. It snaps straight back to empty.",
+        "Meanwhile the log this table's slot is pinning just keeps growing, the entire time that bar sits at zero."
+      ]
+    },
+    {
+      "lines": [
+        "Before I explain why that happens, think it through with me.",
+        "That snapshot was most of the way done when it got killed. A lot of work was already finished.",
+        "So on restart, does it pick up close to where it was killed, or does it throw all of that away and start from the very first row?"
+      ],
+      "answer": [
+        "Assuming it resumes treats partial progress as something the system actually wrote down somewhere. It didn't.",
+        "A snapshot only marks itself complete at its very last step, so a kill anywhere before that leaves nothing behind for a restart to resume from."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly why a restart can't just pick up where things stopped.",
+        "A snapshot's own workflow reads a log position, scans every row, and only after all of that does it mark itself finished.",
+        "A kill at any point before that very last mark leaves nothing recorded anywhere, which means a restart has no partial state to even look for."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the actual mechanism behind all of this against this sandbox's own real database, not a description of it.",
+        "Creating a slot exports a snapshot, and I opened a second session that imported exactly that snapshot a moment later.",
+        "A row written right after the slot existed was simply invisible to that import, which is exactly what pins a snapshot to one fixed instant."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that makes the whole handover actually work.",
+        "A slot's own starting position and the snapshot it exports describe the exact same instant in the log, not two instants that happen to be close.",
+        "So whatever the snapshot never got to see, the stream picks up from precisely that point onward, with nothing skipped and nothing repeated."
+      ]
+    },
+    {
+      "lines": [
+        "I measured that exact guarantee directly, against the real database again.",
+        "I wrote a row while the snapshot was still being read, and checked for it in the snapshot's own dump. It wasn't there.",
+        "Then I checked the slot's own decoded stream, and that same row showed up in it exactly once, never zero times and never twice."
+      ]
+    },
+    {
+      "lines": [
+        "Now I built the exact scenario this entire topic opened with.",
+        "A hand-written loop copies a source table into a target, one row at a time, and I killed it on purpose partway through.",
+        "What it left behind was a real, genuinely partial target table, with no completion marker anywhere saying it had ever finished."
+      ]
+    },
+    {
+      "lines": [
+        "I ran the full recovery against the real database too, not just the kill.",
+        "The killed attempt's partial rows got thrown away entirely, and a fresh attempt started completely over at the very first row.",
+        "I diffed that final target against the source, row for row, and it matched exactly, even after an attempt had been thrown away in the middle."
+      ]
+    },
+    {
+      "lines": [
+        "Pull all of that together, and here's what actually happened this whole time.",
+        "Every one of today's measurements traces back to the same single design choice: a snapshot writes down nothing durable until it's entirely finished, so there's no partial state a restart could ever trust.",
+        "That choice is cheap to pay for on a small table, and it can genuinely cost you the rest of your day on a huge one."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing this hasn't settled yet.",
+        "Say you're setting up a connector that will genuinely never care about a single row older than what's currently sitting in the log. Which mode do you actually give it?"
+      ],
+      "answer": [
+        "Picking the mode that snapshots once and then stops still pays for a snapshot this connector never actually needed.",
+        "The mode that skips the snapshot outright and streams straight from the slot's own starting point is the right fit here, and it's safe only because every row this connector cares about is still sitting in the log."
+      ]
+    }
+  ]
+}

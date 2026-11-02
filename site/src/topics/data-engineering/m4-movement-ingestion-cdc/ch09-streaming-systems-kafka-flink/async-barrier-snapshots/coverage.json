@@ -1,0 +1,149 @@
+{
+  "topic": "de.async-barrier-snapshots",
+  "syllabus": [
+    {
+      "clause": "Chandy–Lamport-derived checkpoint barriers",
+      "at": [{ "step": "Reveal: a barrier rides the stream like Chandy and Lamport's snapshot" }]
+    },
+    {
+      "clause": "aligned vs unaligned checkpoints under backpressure",
+      "at": [
+        { "step": "Predict: does a backed-up channel stall the checkpoint, or get skipped?" },
+        { "step": "Reveal: aligned checkpoints wait for every input" },
+        { "step": "Reveal: unaligned checkpoints snapshot on first sight" }
+      ]
+    },
+    {
+      "clause": "incremental checkpoints",
+      "at": [{ "step": "Reveal: incremental checkpoints are bounded by the delta" }]
+    },
+    {
+      "clause": "exactly-once vs at-least-once mode",
+      "at": [
+        { "step": "Predict: is the strictest checkpointing mode always the right default?" },
+        { "step": "Reveal: exactly-once is the default; at-least-once is the rare exception" }
+      ]
+    },
+    {
+      "clause": "checkpoints vs savepoints and restoring a changed job",
+      "at": [{ "step": "Reveal: a checkpoint is automatic; a savepoint is deliberate" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "State Management in Apache Flink (Carbone et al., 2017 VLDB)",
+      "items": [
+        {
+          "item": "the state snapshotting mechanism is coordinated and pipelined, similarly to the classical Chandy-Lamport's protocol",
+          "at": [{ "step": "Reveal: a barrier rides the stream like Chandy and Lamport's snapshot" }]
+        },
+        {
+          "item": "special markers are injected at the dataflow sources and disseminated throughout the dataflow graph",
+          "at": [{ "step": "Reveal: a barrier rides the stream like Chandy and Lamport's snapshot" }]
+        },
+        {
+          "item": "a task blocks a channel on receiving a marker until the current epoch finishes; once markers arrive on all inputs it notifies downstream and proceeds with snapshotting",
+          "at": [{ "step": "Reveal: aligned checkpoints wait for every input" }]
+        },
+        {
+          "item": "in situations where relaxed guarantees are acceptable (at-least-once), a totally asynchronous version of the protocol can be selected on-demand",
+          "at": [{ "step": "Reveal: exactly-once is the default; at-least-once is the rare exception" }]
+        }
+      ]
+    },
+    {
+      "source": "Checkpointing (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "exactly-once is preferable for most applications; at-least-once may be relevant for super-low-latency applications",
+          "at": [{ "step": "Reveal: exactly-once is the default; at-least-once is the rare exception" }]
+        },
+        {
+          "item": "unaligned checkpoints greatly reduce checkpointing times under backpressure, only for exactly-once mode and one concurrent checkpoint",
+          "at": [{ "step": "Reveal: unaligned checkpoints snapshot on first sight" }]
+        },
+        {
+          "item": "an incremental checkpoint stores only a diff from the previous checkpoint, not the complete state",
+          "at": [{ "step": "Reveal: incremental checkpoints are bounded by the delta" }]
+        }
+      ]
+    },
+    {
+      "source": "Checkpointing under backpressure (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "under heavy backpressure the dominant factor in checkpoint time can be the time to propagate checkpoint barriers",
+          "at": [{ "step": "Reveal: aligned checkpoints wait for every input" }]
+        },
+        {
+          "item": "unaligned checkpoints contain in-flight buffered data as part of the checkpoint state, making checkpoint duration independent of backpressure",
+          "at": [{ "step": "Reveal: unaligned checkpoints snapshot on first sight" }]
+        }
+      ]
+    },
+    {
+      "source": "Checkpoints vs. Savepoints (Apache Flink, 1.20 docs)",
+      "items": [
+        {
+          "item": "a checkpoint's lifecycle is managed by Flink, created/owned/released by Flink, automatically deleted on termination",
+          "at": [{ "step": "Reveal: a checkpoint is automatic; a savepoint is deliberate" }]
+        },
+        {
+          "item": "savepoints are created internally with the same mechanisms but focus on portability, and are created, owned and deleted solely by the user",
+          "at": [{ "step": "Reveal: a checkpoint is automatic; a savepoint is deliberate" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A barrier riding the same channels as ordinary records, rather than a separate control plane, is what lets Flink take a globally consistent snapshot without ever pausing the dataflow to do it — the exact property Chandy and Lamport's original algorithm was designed to generalize beyond request-response systems.",
+        "at": [{ "step": "Reveal: a barrier rides the stream like Chandy and Lamport's snapshot" }]
+      },
+      {
+        "item": "Aligned checkpointing's stall under backpressure isn't an implementation gap to fix later — it follows directly from the correctness requirement (every input must have passed the same logical point) the mechanism exists to satisfy in the first place.",
+        "at": [{ "step": "Reveal: aligned checkpoints wait for every input" }]
+      },
+      {
+        "item": "Unaligned checkpointing doesn't eliminate the cost of a backed-up channel, it relocates it — from stalled wall-clock time to a larger recorded snapshot — which is why it's a trade-off a job opts into deliberately, not a strictly better default.",
+        "at": [{ "step": "Reveal: unaligned checkpoints snapshot on first sight" }]
+      },
+      {
+        "item": "Bounding checkpoint cost by the delta rather than the accumulated total is the same idea this chapter's compacted-topic and retention discussions apply to storage, now applied to the cost of fault tolerance itself.",
+        "at": [{ "step": "Reveal: incremental checkpoints are bounded by the delta" }]
+      },
+      {
+        "item": "Stating exactly-once as the default, with at-least-once as a narrow, named exception for genuinely latency-sensitive jobs, matters because the cheaper mode's risk (occasional double-processing on recovery) is silent until a recovery actually happens.",
+        "at": [{ "step": "Reveal: exactly-once is the default; at-least-once is the rare exception" }]
+      },
+      {
+        "item": "The checkpoint/savepoint distinction being about ownership and intent, not just mechanism, is what lets a job survive a deliberate version or parallelism change that an ordinary checkpoint was never designed to carry across.",
+        "at": [{ "step": "Reveal: a checkpoint is automatic; a savepoint is deliberate" }]
+      },
+      {
+        "item": "This topic's hook (the same backlog producing two very different checkpoint times) is the same aligned-vs-unaligned trade-off its own primary source motivates, demonstrated here on a toy barrier-sweep model instead of a real cluster trace.",
+        "at": [{ "step": "Hook: same backlog, two very different checkpoint times" }]
+      },
+      {
+        "item": "The toy barrier-sweep, snapshot-size, and incremental-checkpoint models are deliberately simplified standalone demonstrations, not ports of Flink's actual network-stack or state-backend internals, and every figure shown is this run's own measured output, not a cited benchmark.",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "This topic uses credit-based backpressure and the slot/TaskManager architecture from the previous topic directly — the backed-up channel that stalls an aligned checkpoint is the same backpressure mechanism that topic measured, now shown to have a second, checkpoint-specific consequence.",
+        "at": [{ "step": "Setup: a worker can fail, and recovery needs a consistent snapshot" }]
+      },
+      {
+        "item": "This topic deliberately leaves out what the snapshotted state actually consists of and how rescaling redistributes it — those are the next topic's scope, kept separate because each is large enough to need its own full treatment.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

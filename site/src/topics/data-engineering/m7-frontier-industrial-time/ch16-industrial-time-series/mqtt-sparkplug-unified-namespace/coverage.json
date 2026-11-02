@@ -1,0 +1,160 @@
+{
+  "topic": "de.mqtt-sparkplug-unified-namespace",
+  "syllabus": [
+    {
+      "clause": "MQTT pub/sub with QoS 0/1/2, retained messages and last will;",
+      "at": [
+        { "step": "Reveal: QoS 0 loses messages, QoS 1 can duplicate — measured" },
+        { "step": "Reveal: the retained value is why the dashboard trusted a dead node" }
+      ]
+    },
+    {
+      "clause": "Sparkplug B (ISO/IEC 20237) topic namespace, Protobuf payloads,",
+      "at": [{ "step": "Reveal: a real Protobuf NBIRTH carries every metric and sequence 0" }]
+    },
+    {
+      "clause": "birth/death certificates and sequence numbers for state awareness;",
+      "at": [
+        { "step": "Predict: what two fields tell a consumer the node died and restarted?" },
+        { "step": "Reveal: a skipped sequence number triggers a rebirth request" }
+      ]
+    },
+    {
+      "clause": "the Unified Namespace pattern (an ISA-95-shaped topic tree as the single real-time hub)",
+      "at": [{ "step": "Reveal: the Unified Namespace is one topic tree, not a point-to-point map" }]
+    },
+    {
+      "clause": "and its limits (no history, no replay — pair with a log).",
+      "at": [{ "step": "Reveal: a broker holds the current value, never the history" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "MQTT 5.0 OASIS Standard: retained messages (3.3.1.3)",
+      "items": [
+        {
+          "item": "setting RETAIN replaces any existing retained message for the topic and stores it for future subscribers",
+          "at": [{ "step": "Reveal: the retained value is why the dashboard trusted a dead node" }]
+        }
+      ]
+    },
+    {
+      "source": "MQTT 5.0 OASIS Standard: the three QoS levels (3.1)",
+      "items": [
+        {
+          "item": "QoS 0 can lose a message; QoS 2 is for cases like billing where a duplicate or loss means incorrect charges",
+          "at": [{ "step": "Reveal: QoS 0 loses messages, QoS 1 can duplicate — measured" }]
+        }
+      ]
+    },
+    {
+      "source": "MQTT 5.0 OASIS Standard: Will Delay Interval (3.1.3.2.2)",
+      "items": [
+        {
+          "item": "the Will Delay Interval defaults to 0, so a Will is published immediately once the Session ends with no new connection in time",
+          "at": [{ "step": "Reveal: the retained value is why the dashboard trusted a dead node" }]
+        }
+      ]
+    },
+    {
+      "source": "Eclipse Sparkplug 3.0.0: NBIRTH requirements",
+      "items": [
+        {
+          "item": "the NBIRTH MUST include every metric the Edge Node will ever report on, and the bdSeq number MUST start at zero and increment on every new CONNECT",
+          "at": [{ "step": "Reveal: a real Protobuf NBIRTH carries every metric and sequence 0" }]
+        }
+      ]
+    },
+    {
+      "source": "Eclipse Sparkplug 3.0.0: sequence number wrap (5.4)",
+      "items": [
+        {
+          "item": "every later message's sequence number is one more than the previous, up to 255 where it wraps back to zero",
+          "at": [{ "step": "Reveal: a real Protobuf NBIRTH carries every metric and sequence 0" }]
+        }
+      ]
+    },
+    {
+      "source": "Eclipse Sparkplug 3.0.0: Host Application message ordering (5.9)",
+      "items": [
+        {
+          "item": "a missing expected sequence number that doesn't arrive before the Reorder Timeout should trigger a Rebirth Request",
+          "at": [{ "step": "Reveal: a skipped sequence number triggers a rebirth request" }]
+        }
+      ]
+    },
+    {
+      "source": "Eclipse Sparkplug 3.0.0: Primary Host Application (3.5)",
+      "items": [
+        {
+          "item": "Sparkplug Host Applications MUST publish STATE messages denoting their own online and offline status",
+          "at": [{ "step": "Reveal: a skipped sequence number triggers a rebirth request" }]
+        }
+      ]
+    },
+    {
+      "source": "HiveMQ: Architecting a Unified Namespace for IIoT (secondary write-up)",
+      "items": [
+        {
+          "item": "a UNS establishes a hub-and-spoke model as a single source of truth for current state and events, not for history",
+          "at": [{ "step": "Reveal: the Unified Namespace is one topic tree, not a point-to-point map" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "item": "A dashboard that trusted a dead node for twenty minutes wasn't wrong about what it read — it was reading a value that was never designed to expire on its own.",
+        "at": [{ "step": "Hook: an edge node loses power mid-shift" }]
+      },
+      {
+        "item": "The honest prediction isn't a faster reconnect or a better timestamp — it's that the protocol already has two fields built for exactly this: one that says the node died, one that says this isn't the same data again.",
+        "at": [{ "step": "Predict: what two fields tell a consumer the node died and restarted?" }]
+      },
+      {
+        "item": "QoS 0 and QoS 1 aren't a slow option and a fast one — they're two different places to put the cost of reliability: nowhere, or in a redelivery that can occasionally double up.",
+        "at": [{ "step": "Reveal: QoS 0 loses messages, QoS 1 can duplicate — measured" }]
+      },
+      {
+        "item": "A retained message answering instantly and a Will firing only on an ungraceful disconnect are the same mechanism from two sides — the broker speaking for a client that can no longer speak for itself.",
+        "at": [{ "step": "Reveal: the retained value is why the dashboard trusted a dead node" }]
+      },
+      {
+        "item": "Learning the schema from a birth message instead of a side document is what makes Sparkplug more than MQTT with better manners — the payload explains itself before anyone asks.",
+        "at": [{ "step": "Reveal: a real Protobuf NBIRTH carries every metric and sequence 0" }]
+      },
+      {
+        "item": "A sequence number that wraps isn't a bug to tolerate — it's the field doing exactly its one job, at the exact boundary where a naive comparison would get it wrong.",
+        "at": [{ "step": "Reveal: a real Protobuf NBIRTH carries every metric and sequence 0" }]
+      },
+      {
+        "item": "A gap detector that fires on one missing number and stays silent on a clean run is the whole state-awareness promise in one assertion.",
+        "at": [{ "step": "Reveal: a skipped sequence number triggers a rebirth request" }]
+      },
+      {
+        "item": "A single topic tree replacing point-to-point integrations isn't a convenience — it's moving the cost of 'who talks to whom' out of every pair of systems and into one shared structure.",
+        "at": [{ "step": "Reveal: the Unified Namespace is one topic tree, not a point-to-point map" }]
+      },
+      {
+        "item": "A pattern with no normative source still has a falsifiable claim at its center: one broker, one tree, every reader looking at the same place.",
+        "at": [{ "step": "Reveal: the Unified Namespace is one topic tree, not a point-to-point map" }]
+      },
+      {
+        "item": "Calling the retained value 'the current state' is only honest once you've said out loud what it isn't — a record of anything that came before it.",
+        "at": [{ "step": "Reveal: a broker holds the current value, never the history" }]
+      },
+      {
+        "item": "Every piece of this topic reduces to the same move: a system that only ever tells you what is true right now needs a second system, built differently, for everything that was true before.",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-31",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

@@ -1,0 +1,4 @@
+- **Map task**: the per-input-partition unit of work in a shuffle's write side, producing its own sorted output. *Where you meet it:* this reel measures exactly how many files each one writes.
+- **Reduce partition / bucket**: one of the output buckets a shuffle redistributes rows into, by key. *Where you meet it:* the number of buckets is the R in this reel's M times R block count.
+- **Spill**: writing an in-memory structure to disk when it grows too large to keep in memory. *Where you meet it:* named as part of how a map task's sort happens, not separately measured here.
+- **Query plan Exchange node**: the point in a physical plan where a shuffle is materialised, established by the previous topic. *Where you meet it:* assumed, not re-derived — this reel opens what that Exchange node actually writes and reads.

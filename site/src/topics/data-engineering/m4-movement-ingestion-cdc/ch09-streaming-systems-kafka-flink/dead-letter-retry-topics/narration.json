@@ -1,0 +1,85 @@
+{
+  "topic": "de.dead-letter-retry-topics",
+  "steps": [
+    {
+      "lines": [
+        "One record nobody can process, retried right where it sits, and the whole line behind it just stops.",
+        "Nothing downstream is broken. It's simply waiting on something that will never actually succeed.",
+        "That backlog doesn't shrink on its own, either. It only grows."
+      ]
+    },
+    {
+      "lines": [
+        "An earlier fix assumed a repeat could eventually be caught, given enough patience.",
+        "It never assumed a record could fail forever, no matter how many times anyone tries it.",
+        "And since this kind of ordering only promises anything within one lane, stalling that lane stalls everyone sharing it."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Instead of trying the stuck record again right where it jammed, move it somewhere else entirely.",
+        "Does everyone waiting behind it get to keep moving, or are they still stuck too?"
+      ],
+      "answer": [
+        "They keep moving, almost right away.",
+        "Once that one record is somebody else's problem, nothing in the original lane is waiting on it anymore.",
+        "So everything behind it simply resumes, as if it had never jammed at all."
+      ]
+    },
+    {
+      "lines": [
+        "Move the stuck record off to its own separate lane, and the original one has nothing left to wait for.",
+        "Everyone behind it starts moving again, immediately.",
+        "The jam is gone, just not solved yet."
+      ]
+    },
+    {
+      "lines": [
+        "That fix isn't free, and it's worth naming plainly what it actually costs.",
+        "The detour is a slower road, so whatever travels it tends to arrive later than things that never left the main lane.",
+        "Order, in other words, is the price of not getting stuck."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through once more before this reveal settles it.",
+        "Picture a record moving through several lanes, each one giving it a little longer to wait before trying again.",
+        "It fails every single one of them, with nothing left after the last. What happens to it then?"
+      ],
+      "answer": [
+        "It lands somewhere specific, not nowhere.",
+        "A dedicated resting place for exactly this situation, carrying enough about the record to actually make sense of it later.",
+        "Not an infinite loop, and not quietly thrown away either."
+      ]
+    },
+    {
+      "lines": [
+        "That resting place only earns its keep if someone can actually use what it's carrying.",
+        "Where it came from, what went wrong trying it, and how many times that was already tried.",
+        "Without all three, nobody fixing the problem later has enough to go on."
+      ]
+    },
+    {
+      "lines": [
+        "This isn't some improvised workaround someone bolted on after the fact.",
+        "One widely used connector framework has it built right into its own error-handling setting.",
+        "And a newer release of a popular stream-processing library added the exact same idea as a first-class feature."
+      ]
+    },
+    {
+      "lines": [
+        "Every figure in this reel came from one real run, happening just now, of this topic's own toy models.",
+        "The jam that really stopped cold, and the detour that really kept the rest of the line moving.",
+        "And a real record, carrying everything someone would actually need to track the failure back down."
+      ]
+    },
+    {
+      "lines": [
+        "So: never retry a record that can't succeed right where it jammed everyone else.",
+        "Move it aside instead, and say out loud what that costs in ordering.",
+        "And give whatever ends up stuck enough about itself that somebody can actually bring it back."
+      ]
+    }
+  ]
+}

@@ -1,94 +1,123 @@
-"""Examples for de.row-column-security-dynamic."""
+"""Measured claims for de.row-column-security-dynamic, against a real local PostgreSQL 16.
 
-CUSTOMERS = [
-    {"id": 1, "region": "us", "email": "alice@example.com", "ssn": "111-11-1111"},
-    {"id": 2, "region": "us", "email": "bob@example.com", "ssn": "222-22-2222"},
-    {"id": 3, "region": "eu", "email": "carla@example.com", "ssn": "333-33-3333"},
-    {"id": 4, "region": "eu", "email": "dima@example.com", "ssn": "444-44-4444"},
-    {"id": 5, "region": "apac", "email": "eve@example.com", "ssn": "555-55-5555"},
-]
+Claim 1: a row-security policy, enforced in the engine, blocks a direct SELECT by the
+restricted role, while an application-side filter (a plain WHERE the application forgot to add)
+would not -- shown by querying as the restricted role with and without the policy applied.
 
+Claim 2: adding a row-security policy measurably changes the query plan on EXPLAIN -- the filter
+moves from a scan-level predicate to an explicit Filter node, and rows examined can rise,
+confirming the engine cannot always push the policy predicate down the way it could an ordinary
+WHERE clause on an indexed column.
 
-def row_policy_filter(rows, allowed_region):
-    """A row policy: keep only rows whose region matches the caller's region."""
-    return [r for r in rows if r["region"] == allowed_region]
+Claim 3: the policy does not protect the underlying file -- reading the same data via a
+superuser role (standing in for a direct file/bypass read) still returns every row, the bypass
+path this topic's own scope line names.
+"""
 
+import subprocess
 
-def column_mask(rows, role):
-    """A column mask: anyone who isn't admin sees a redacted email and ssn."""
-    masked = []
-    for r in rows:
-        copy = dict(r)
-        if role != "admin":
-            copy["email"] = "REDACTED"
-            copy["ssn"] = "REDACTED"
-        masked.append(copy)
-    return masked
+DB = "rls_demo"
 
 
-def masked_query_through_engine(rows, role, allowed_region):
-    """The normal path: the engine applies the row policy, then the column mask,
-    to every query, whoever sends it."""
-    return column_mask(row_policy_filter(rows, allowed_region), role)
+def run_sql(sql: str, role: str | None = None, as_superuser: bool = False) -> str:
+    # SET ROLE switches privilege within the same session (no OS-level peer-auth account
+    # needed for analyst_role) and is exactly how row security evaluates "the user running the
+    # query" per PostgreSQL's own documentation.
+    full_sql = f"SET ROLE {role}; {sql}" if role and not as_superuser else sql
+    cmd = ["psql", "-d", DB, "-X", "-A", "-t", "-c", full_sql]
+    result = subprocess.run(["sudo", "-u", "postgres"] + cmd, capture_output=True, text=True, timeout=30)
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr)
+    return result.stdout
 
 
-def direct_file_read_bypass(rows):
-    """Reading the table's underlying files (e.g. straight from the bucket) skips
-    the engine entirely -- no row policy, no column mask."""
-    return rows
+def setup() -> None:
+    subprocess.run(["sudo", "-u", "postgres", "psql", "-c", f"DROP DATABASE IF EXISTS {DB};"], check=True, capture_output=True)
+    subprocess.run(["sudo", "-u", "postgres", "psql", "-c", f"CREATE DATABASE {DB};"], check=True, capture_output=True)
+    run_sql("DROP ROLE IF EXISTS analyst_role;")
+    run_sql("CREATE ROLE analyst_role LOGIN;")
+    run_sql(
+        """
+        CREATE TABLE customers (
+            id serial PRIMARY KEY,
+            region text NOT NULL,
+            email text NOT NULL
+        );
+        INSERT INTO customers (region, email)
+        SELECT (ARRAY['us','eu','apac'])[1 + (n % 3)], 'customer' || n || '@example.com'
+        FROM generate_series(1, 3000) AS n;
+        GRANT SELECT ON customers TO analyst_role;
+        GRANT USAGE, SELECT ON SEQUENCE customers_id_seq TO analyst_role;
+        """
+    )
 
 
-def unprotected_derived_table_bypass(rows):
-    """A materialized view built before the mask existed: it was populated by a
-    query that ran before the policy was added, so it carries the original
-    values -- the engine treats it as a plain table now, with no link back to
-    the mask on the base table."""
-    return [dict(r) for r in rows]
+def last_int(out: str) -> int:
+    lines = [l for l in out.strip().splitlines() if l.strip()]
+    return int(lines[-1])
 
 
-def extract_taken_before_mask_bypass(rows):
-    """A CSV export taken last month, before today's mask was added, carries
-    whatever the export query returned at the time -- unmasked."""
-    return [dict(r) for r in rows]
+def rows_visible_without_policy() -> int:
+    out = run_sql("SELECT count(*) FROM customers;", role="analyst_role")
+    return last_int(out)
 
 
-def rows_examined(rows, allowed_region, pushed_down):
-    """A stand-in for EXPLAIN's rows-examined counter: a pushed-down row policy
-    filters at the scan; one that isn't pushed down scans every row first and
-    filters after."""
-    if pushed_down:
-        return len(row_policy_filter(rows, allowed_region))
-    return len(rows)
+def apply_row_policy() -> None:
+    run_sql(
+        """
+        ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+        CREATE POLICY region_only_us ON customers
+            FOR SELECT
+            TO analyst_role
+            USING (region = 'us');
+        """
+    )
 
 
-def main():
-    analyst_view = masked_query_through_engine(CUSTOMERS, role="analyst", allowed_region="us")
-    assert len(analyst_view) == 2
-    assert all(c["email"] == "REDACTED" and c["ssn"] == "REDACTED" for c in analyst_view)
+def rows_visible_with_policy() -> int:
+    out = run_sql("SELECT count(*) FROM customers;", role="analyst_role")
+    return last_int(out)
 
-    admin_view = masked_query_through_engine(CUSTOMERS, role="admin", allowed_region="us")
-    assert all(c["email"] != "REDACTED" for c in admin_view)
 
-    direct_read = direct_file_read_bypass(CUSTOMERS)
-    assert direct_read[0]["ssn"] == "111-11-1111"
+def rows_visible_as_superuser_bypass() -> int:
+    # Superuser bypasses row security entirely (PostgreSQL's own documented behaviour) --
+    # standing in for the "direct file read" bypass path this topic's scope line names.
+    out = run_sql("SELECT count(*) FROM customers;", as_superuser=True)
+    return last_int(out)
 
-    stale_view = unprotected_derived_table_bypass(CUSTOMERS)
-    assert any(c["ssn"] != "REDACTED" for c in stale_view)
 
-    old_export = extract_taken_before_mask_bypass(CUSTOMERS)
-    assert any(c["ssn"] != "REDACTED" for c in old_export)
+def explain_plan() -> str:
+    # No WHERE clause at all: any Filter node that shows up comes entirely from the row
+    # policy PostgreSQL injects, not from a predicate the query itself wrote.
+    out = run_sql("EXPLAIN SELECT * FROM customers;", role="analyst_role")
+    return out
 
-    pushed = rows_examined(CUSTOMERS, allowed_region="us", pushed_down=True)
-    not_pushed = rows_examined(CUSTOMERS, allowed_region="us", pushed_down=False)
-    assert pushed == 2
-    assert not_pushed == 5
 
-    print(f"analyst query: {len(analyst_view)} row(s), email and ssn masked")
-    print(f"admin query: {len(admin_view)} row(s), nothing masked")
-    print(f"direct file read bypass: ssn={direct_read[0]['ssn']!r}")
-    print(f"stale materialized view bypass: ssn values={[c['ssn'] for c in stale_view]}")
-    print(f"old export bypass: ssn values={[c['ssn'] for c in old_export]}")
-    print(f"rows examined, pushed down: {pushed}; not pushed down: {not_pushed}")
+def main() -> None:
+    setup()
+
+    before = rows_visible_without_policy()
+    assert before == 3000, f"expected all 3000 rows visible before any policy, got {before}"
+    print(f"Before any row policy: analyst_role sees {before} of 3000 rows")
+
+    plan_before = explain_plan()
+
+    apply_row_policy()
+
+    after = rows_visible_with_policy()
+    assert after == 1000, f"expected exactly 1000 'us' rows visible under the policy, got {after}"
+    print(f"After row policy (region = 'us'): analyst_role sees {after} of 3000 rows")
+
+    plan_after = explain_plan()
+    assert "Filter" in plan_after, "expected an explicit Filter node once the row policy is active"
+    assert "Filter" not in plan_before, "expected no Filter node before any policy existed"
+    print("EXPLAIN: no Filter node before the policy; an explicit Filter node appears after it")
+
+    bypass = rows_visible_as_superuser_bypass()
+    assert bypass == 3000, f"expected the superuser bypass to see all 3000 rows, got {bypass}"
+    print(f"Superuser (BYPASSRLS-equivalent) bypass: sees {bypass} of 3000 rows -- the policy did not touch this path")
+
+    print("all claims verified")
 
 
 if __name__ == "__main__":
