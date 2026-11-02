@@ -1,0 +1,126 @@
+{
+  "topic": "de.choosing-table-format-catalog",
+  "syllabus": [
+    {
+      "clause": "decide from evidence: engine read/write support matrix (Spark, Flink, Trino, DuckDB, Snowflake, BigQuery, Redshift), catalog strategy, upsert-heavy vs append-heavy workload, streaming-writer concurrency, managed-service availability; the 2024 consolidation (Databricks bought Tabular and open-sourced Unity Catalog, Snowflake announced Polaris, all June 2024) and the market's convergence on Iceberg REST as the interop contract.",
+      "at": [
+        { "step": "Reveal: a real matrix" },
+        { "step": "Reveal: two cloud warehouses write Iceberg for real" },
+        { "step": "Reveal: Delta blocked, for real" },
+        { "step": "Reveal: DuckDB's two write paths, opposite directions" },
+        { "step": "Reveal: three real announcements, one month" },
+        { "step": "Reveal: the convergence, named precisely" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Spark getting started",
+      "items": [
+        { "item": "Iceberg supports writing DataFrames using Spark's new v2 DataFrame write API", "at": [{ "step": "Reveal: a real matrix" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Flink getting started",
+      "items": [
+        { "item": "Apache Iceberg supports both Apache Flink's DataStream API and Table API", "at": [{ "step": "Reveal: a real matrix" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Apache Flink connector",
+      "items": [
+        { "item": "The Delta Flink connector enables reading from and writing to Delta tables from Apache Flink", "at": [{ "step": "Reveal: a real matrix" }] }
+      ]
+    },
+    {
+      "source": "Trino, Iceberg connector",
+      "items": [
+        { "item": "Trino's Iceberg connector provides read access and write access to data and metadata in Iceberg", "at": [{ "step": "Reveal: a real matrix" }] }
+      ]
+    },
+    {
+      "source": "Trino, Delta Lake connector",
+      "items": [
+        { "item": "Trino's Delta Lake connector supports INSERT, DELETE, UPDATE, and MERGE on Delta tables", "at": [{ "step": "Reveal: a real matrix" }] }
+      ]
+    },
+    {
+      "source": "DuckDB, Iceberg extension",
+      "items": [
+        { "item": "DuckDB's direct, non-catalog Iceberg access is read-only; catalog access unlocks the full feature set including writing", "at": [{ "step": "Reveal: DuckDB's two write paths, opposite directions" }] }
+      ]
+    },
+    {
+      "source": "DuckDB, Delta extension",
+      "items": [
+        { "item": "DuckDB's Delta extension writes by creating tables and appending to them; CREATE OR REPLACE and CREATE TABLE AS SELECT are not supported", "at": [{ "step": "Reveal: DuckDB's two write paths, opposite directions" }] }
+      ]
+    },
+    {
+      "source": "Snowflake, Apache Iceberg tables",
+      "items": [
+        { "item": "An Iceberg table that uses Snowflake as the catalog provides full Snowflake platform support with read and write access", "at": [{ "step": "Reveal: two cloud warehouses write Iceberg for real" }] },
+        { "item": "Snowflake supports writes to externally managed Iceberg tables that use a remote REST catalog", "at": [{ "step": "Reveal: two cloud warehouses write Iceberg for real" }] }
+      ]
+    },
+    {
+      "source": "Google BigQuery, Apache Iceberg managed tables",
+      "items": [
+        { "item": "BigQuery's managed Iceberg tables support real table mutations using GoogleSQL DML", "at": [{ "step": "Reveal: two cloud warehouses write Iceberg for real" }] },
+        { "item": "Batch loading and LOAD DATA for BigQuery's managed Iceberg tables only support appending data", "at": [{ "step": "Reveal: Delta blocked, for real" }] }
+      ]
+    },
+    {
+      "source": "Amazon Redshift, Using Apache Iceberg tables",
+      "items": [
+        { "item": "Redshift can query Iceberg tables cataloged in the AWS Glue Data Catalog", "at": [{ "step": "Reveal: a real matrix" }] },
+        { "item": "Redshift's own docs reference writing to Apache Iceberg tables as a current capability", "at": [{ "step": "Reveal: a real matrix" }] }
+      ]
+    },
+    {
+      "source": "AWS, Redshift Spectrum adds support for querying Apache Hudi and Delta Lake",
+      "items": [
+        { "item": "Redshift Spectrum reads Delta Lake tables via manifest files, with no write path described", "at": [{ "step": "Reveal: a real matrix" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Databricks Agrees to Acquire Tabular",
+      "items": [
+        { "item": "Databricks' own announcement frames the Tabular acquisition around the lakehouse paradigm's split between Delta Lake and Iceberg", "at": [{ "step": "Reveal: three real announcements, one month" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Databricks Open Sources Unity Catalog",
+      "items": [
+        { "item": "Databricks announced open-sourcing Unity Catalog the same month as the Tabular acquisition", "at": [{ "step": "Reveal: three real announcements, one month" }] }
+      ]
+    },
+    {
+      "source": "Snowflake, Snowflake Unveils Polaris Catalog",
+      "items": [
+        { "item": "Snowflake unveiled Polaris Catalog and committed to open-sourcing it, citing open storage and interoperable query engines without lock-in", "at": [{ "step": "Reveal: three real announcements, one month" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The engine support matrix is built entirely from each engine's own current documentation, with every cell backed by a direct quote in SOURCES.md, rather than estimated or rounded to a clean yes/no.", "at": [{ "step": "Reveal: a real matrix" }] },
+      { "item": "The BigQuery and Snowflake findings correct an easy assumption: both cloud warehouses genuinely write Iceberg today, not merely read it via a bolted-on external table.", "at": [{ "step": "Reveal: two cloud warehouses write Iceberg for real" }] },
+      { "item": "The decision framework is real, executed Python that runs the sourced matrix against a concrete workload (analytics.events' writer engines and upsert-heaviness) and is asserted against a known outcome, not merely narrated.", "at": [{ "step": "Reveal: Delta blocked, for real" }] },
+      { "item": "DuckDB's two write paths are stated with their real, opposite asymmetry (Iceberg needs a catalog but then has no limit; Delta needs no catalog but stays append-only) rather than rounded to a single blanket statement about DuckDB's write support.", "at": [{ "step": "Reveal: DuckDB's two write paths, opposite directions" }] },
+      { "item": "All three 2024 consolidation events are dated from the vendor's own press release (June 3, 4, and 12), not rounded from a nearby date, and Red team discloses that the Polaris announcement is the preview/open-source-commitment date, not the later actual code donation date.", "at": [{ "step": "Reveal: three real announcements, one month" }] },
+      { "item": "The workload applied to analytics.events (Snowflake, BigQuery, and DuckDB as writers, upsert-heavy) is disclosed as this script's own illustrative choice, not a canonical requirement, while still being evaluated against real, sourced matrix data.", "at": [{ "deep": "Production" }] },
+      { "item": "No query engine is actually run in this sandbox; this is disclosed directly rather than implied by a demo that merely prints literal values.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The predict step at step 2 and the predict step at step 5 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: which format do more engines write?" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 32's handoff (closing §6.3 with the practical decision) and hands off cleanly to topic 34's Trino opening, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] },
+      { "item": "Redshift's exact Iceberg-write GA date is deliberately left unpinned since it could not be independently re-fetched and quoted, stated instead as a current capability referenced in Redshift's own docs.", "at": [{ "step": "Reveal: a real matrix" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

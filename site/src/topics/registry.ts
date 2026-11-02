@@ -10492,4 +10492,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Real formats, real deletes, a real catalog -- every mechanism this section needed now exists. The next topic closes §6.3 by asking the practical question every one of these topics was really in service of: which format and catalog do you actually pick?",
   },
+  {
+    id: 'de.choosing-table-format-catalog',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/choosing-table-format-catalog',
+    title: 'Choosing a table format and catalog',
+    syllabusTitle: 'Choosing a table format and catalog',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.6' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['table-format-choice'],
+    uses: ['table-catalog-model', 'iceberg-rest-catalog', 'cow-vs-mor', 'iceberg-v3-features', 'delta-4x-kernel'],
+    declared: [],
+    bridge:
+      "Real formats, real deletes, a real catalog -- every mechanism this section needed now exists. This topic closes §6.3 by asking the practical question every one of these topics was really in service of: a real, current support matrix and decision framework applied to the same table this chapter built throughout.",
+    handoff:
+      "Every topic from here forward asks who actually reads these tables. The next section opens with the general-purpose engines: Trino first.",
+  },
 ];

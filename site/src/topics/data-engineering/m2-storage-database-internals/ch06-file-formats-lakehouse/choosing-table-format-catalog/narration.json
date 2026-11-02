@@ -1,0 +1,84 @@
+{
+  "topic": "de.choosing-table-format-catalog",
+  "steps": [
+    {
+      "lines": [
+        "Every single mechanism this whole section needed now actually exists, either built directly or sourced with real precision.",
+        "So this step closes it out by asking the question every one of those pieces was really in service of the whole time.",
+        "Which table format do you actually reach for, decided from real evidence instead of brand loyalty?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question before we build anything.",
+        "Two table formats, seven engines people actually use in production.",
+        "More of those engines can write one of these formats today than the other one. Which format do you think wins that count?"
+      ],
+      "answer": [
+        "Think about which format arrived as an open standard from day one, versus which one grew up tightly bound to a single engine first.",
+        "That early binding tends to slow down how fast other engines build a full write path for it."
+      ]
+    },
+    {
+      "lines": [
+        "A real matrix, built directly from each engine's own current documentation, not from memory or assumption.",
+        "Most of these engines can genuinely write the open standard.",
+        "Several of them can only read the other format, or write it in a narrower, more limited way."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a correction worth sitting with, because the easy assumption gets this one wrong.",
+        "Two major cloud data warehouses both genuinely write the open format today, by their own current documentation.",
+        "Neither of them treats it as some bolted-on, read-only external table."
+      ]
+    },
+    {
+      "lines": [
+        "Now let's make this concrete with the exact table this whole chapter has been building toward.",
+        "That table needs three specific engines to all write it, and the workload leans heavily on updating existing rows, not just appending new ones.",
+        "Does the format this chapter has spent so much time on survive that real requirement?"
+      ],
+      "answer": [
+        "Walk through each of those three engines against the real matrix one at a time.",
+        "Two of them can't write that format at all, and the third can write it, but only by appending -- never by updating a row that's already there."
+      ]
+    },
+    {
+      "lines": [
+        "It doesn't survive, and all three of those engines are exactly why.",
+        "The decision framework doesn't guess or prefer one answer -- it runs the real matrix against this real workload and the losing format simply gets ruled out.",
+        "That's a mechanical result, not a stylistic preference."
+      ]
+    },
+    {
+      "lines": [
+        "One engine's two write paths for these two formats actually run in opposite directions, and it's worth getting precise about why.",
+        "Writing the open standard needs a catalog in front of it, but once that catalog exists, there's no further limit.",
+        "Writing the other format needs no catalog at all, but stays stuck at appending only -- no updates, no merges, no replacing what's already there."
+      ]
+    },
+    {
+      "lines": [
+        "Three real announcements, each from a different major vendor, and every single one of them landed in the same month.",
+        "One major vendor agreeing to acquire the company founded by the open format's own original creators.",
+        "That same vendor open-sourcing its own catalog implementation, and a separate major cloud vendor unveiling an open catalog of its own."
+      ]
+    },
+    {
+      "lines": [
+        "Put all of that together and a pattern falls out immediately.",
+        "The market converging on one open, REST-based catalog contract as the way every engine interoperates isn't some slow trend line drifting in that direction.",
+        "It's three named vendor decisions, landing in the same month, sitting right alongside the real matrix this topic just built from scratch."
+      ]
+    },
+    {
+      "lines": [
+        "So here's where the evidence actually lands, for the exact table this chapter built.",
+        "A real matrix and a real decision framework, run against this chapter's own table, point to the open standard, served over a real REST catalog.",
+        "Not because of brand preference -- because that's what the evidence, run for real, actually supports.",
+        "Every topic from here forward asks a different question: who actually reads these tables. The general-purpose engines open with the first one up."
+      ]
+    }
+  ]
+}

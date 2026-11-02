@@ -1,0 +1,4 @@
+- **Engine support matrix**: a table of which query engines can read and, separately, write each table format today, sourced from each engine's own current documentation rather than assumed.
+- **Catalog strategy**: the choice of which catalog implementation and catalog-managed vs. externally-managed table a given engine reads and writes against.
+- **Upsert-heavy vs. append-heavy workload**: whether a table's writers mostly update and merge existing rows, or mostly just add new ones -- a real constraint on which engines can actually write a format.
+- **Interop contract**: the shared protocol (here, the Iceberg REST catalog protocol) that lets independently built engines agree on how to read and write the same table.
