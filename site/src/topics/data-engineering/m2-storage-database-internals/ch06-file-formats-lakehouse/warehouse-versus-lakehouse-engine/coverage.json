@@ -1,0 +1,112 @@
+{
+  "topic": "de.warehouse-versus-lakehouse-engine",
+  "syllabus": [
+    {
+      "clause": "workload isolation, concurrency and spilling behaviour, cost-based tuning, data-gravity and egress, governance and lock-in; when a managed warehouse beats a lakehouse engine on total cost and when it does not.",
+      "at": [
+        { "step": "Reveal: workload isolation and concurrency" },
+        { "step": "Reveal: cost-based tuning" },
+        { "step": "Reveal: the real scan, two sourced rates" },
+        { "step": "Reveal: data gravity, egress and governance" },
+        { "step": "Reveal: when each one wins" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Snowflake docs, Apache Iceberg tables",
+      "items": [
+        { "item": "Snowflake bills your account for virtual warehouse (compute) usage and cloud services when you work with Iceberg tables", "at": [{ "step": "Reveal: the real scan, two sourced rates" }] },
+        { "item": "If your Snowflake account and external volume are in different regions, your external cloud storage account incurs egress costs when you query the table", "at": [{ "step": "Reveal: data gravity, egress and governance" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, Multi-cluster warehouses",
+      "items": [
+        { "item": "Multi-cluster warehouses are best utilized for scaling resources to improve concurrency for users/queries, not for speeding up slow-running queries", "at": [{ "step": "Reveal: workload isolation and concurrency" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, Automatic Clustering",
+      "items": [
+        { "item": "Automatic Clustering is the Snowflake service that seamlessly and continually manages all reclustering of clustered tables, without administrator action", "at": [{ "step": "Reveal: cost-based tuning" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud docs, BigQuery tables for Apache Iceberg",
+      "items": [
+        { "item": "Google recommends co-located single-region Cloud Storage buckets to avoid data transfer charges", "at": [{ "step": "Reveal: data gravity, egress and governance" }] },
+        { "item": "BigQuery's managed Iceberg tables get automatic storage optimization (adaptive file sizing, automatic clustering, garbage collection)", "at": [{ "step": "Reveal: cost-based tuning" }] },
+        { "item": "BigQuery's managed Iceberg tables support column-level security, row-level security, and data masking", "at": [{ "step": "Reveal: data gravity, egress and governance" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud docs, BigQuery pricing",
+      "items": [
+        { "item": "On-demand pricing gives access to up to 2,000 concurrent slots shared per project", "at": [{ "step": "Reveal: workload isolation and concurrency" }] },
+        { "item": "BigQuery's on-demand rate is $6.25 per TiB, 1 TiB and above", "at": [{ "step": "Predict: whose rate prices it higher?" }, { "step": "Reveal: the real scan, two sourced rates" }] }
+      ]
+    },
+    {
+      "source": "Amazon Redshift pricing",
+      "items": [
+        { "item": "Redshift Spectrum bills per byte scanned, rounded up to the next MB, 10 MB minimum per query", "at": [{ "step": "Reveal: the real scan, two sourced rates" }] },
+        { "item": "A worked example: 4 TB scanned costs $20 at $5 per TB", "at": [{ "step": "Predict: whose rate prices it higher?" }, { "step": "Reveal: the real scan, two sourced rates" }] },
+        { "item": "Each cluster earns up to one free hour of Concurrency Scaling credits per day", "at": [{ "step": "Reveal: workload isolation and concurrency" }] }
+      ]
+    },
+    {
+      "source": "Amazon Redshift docs, Automatic table optimization",
+      "items": [
+        { "item": "Automatic table optimization continuously observes queries and uses AI methods to choose sort and distribution keys, without administrator intervention", "at": [{ "step": "Reveal: cost-based tuning" }] }
+      ]
+    },
+    {
+      "source": "Trino docs, Cost-based optimizations",
+      "items": [
+        { "item": "Cost-based join enumeration uses connector table statistics to automatically pick the lowest-cost join order", "at": [{ "step": "Reveal: cost-based tuning" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse docs, ClickHouse Cloud architecture",
+      "items": [
+        { "item": "There is no QPS limit, but there is a limit of 1000 concurrent queries per replica", "at": [{ "step": "Reveal: workload isolation and concurrency" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse docs, MergeTree table engine",
+      "items": [
+        { "item": "The number of columns in the primary key is not explicitly limited; it is chosen from the table's own schema, not tuned automatically by an optimizer", "at": [{ "step": "Reveal: cost-based tuning" }] }
+      ]
+    },
+    {
+      "source": "DuckDB docs, Tuning Workloads",
+      "items": [
+        { "item": "DuckDB supports out-of-core processing for larger-than-memory workloads via spilling to disk", "at": [{ "step": "Reveal: the real scan, two sourced rates" }] },
+        { "item": "DuckDB parallelizes the workload based on row groups", "at": [{ "step": "Reveal: the real scan, two sourced rates" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "This capstone synthesizes six engines already taught in this chapter (topics 19-39); no new engine internals are introduced, matching CHAPTER.md's own description of this topic as a comparison, not a seventh engine.", "at": [{ "step": "Hook" }] },
+      { "item": "The predict at step 2 and the predict at step 6 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: measure it, or look up its price?" }] },
+      { "item": "examples.py's real DuckDB-over-Iceberg EXPLAIN ANALYZE bytes-scanned figure is a real executed measurement, not narrated; the two warehouse cost figures applied to it are a sourced estimate on top of that real number, disclosed as exactly that combination throughout.", "at": [{ "step": "Reveal: the real scan, two sourced rates" }] },
+      { "item": "Snowflake's compute-time billing model has no comparable per-byte rate to apply to the lab's measurement; this is reported as a real structural difference between the three warehouses' pricing models, not a missing data point.", "at": [{ "step": "Reveal: the real scan, two sourced rates" }] },
+      { "item": "BigQuery's $6.25/TiB and Redshift's $5/TB are compared correctly: a TiB is larger than a TB, so BigQuery's rate produces a larger dollar estimate for the identical byte count even though $6.25 looks like a bigger number than $5 in the same direction -- the predict step tests this exact distinction.", "at": [{ "step": "Predict: whose rate prices it higher?" }] },
+      { "item": "The cost-based-tuning dimension distinguishes query-plan-only optimization (Trino, ClickHouse, DuckDB) from automatic storage-layout tuning (Snowflake, BigQuery, Redshift), matching each engine's own documentation rather than treating 'automatic' as a single undifferentiated label.", "at": [{ "step": "Reveal: cost-based tuning" }] },
+      { "item": "The uses list (duckdb-single-node-engine, trino-mpp-architecture, clickhouse-mergetree, snowflake-micro-partitions, bigquery-dremel-architecture, redshift-mpp-architecture, table-format-choice) and the §6.4-§6.5 prerequisites panel both match CHAPTER.md's topic-40 entry.", "at": [{ "step": "Hook" }] },
+      { "item": "The bridge answers topic 39's handoff verbatim and the handoff matches CHAPTER.md's own topic-40 handoff into Chapter 7 (Apache Spark), correctly closing Chapter 6.", "at": [{ "step": "Hook" }, { "step": "Recap" }] },
+      { "item": "The recap names the lab's real-measurement-plus-sourced-estimate structure explicitly rather than presenting a single blended number, matching this topic's own stated design throughout SOURCES.md and FACT-CHECK.md.", "at": [{ "step": "Recap" }] },
+      { "item": "The data-gravity/egress dimension correctly distinguishes a real quoted cost (Snowflake's cross-region egress, BigQuery's region co-location advice) from a structural property (open engines querying data in place with no managed storage tier of their own).", "at": [{ "step": "Reveal: data gravity, egress and governance" }] },
+      { "item": "Workload isolation and concurrency are presented as the same underlying problem solved from two directions (adding machines vs. pooling shared capacity), not two unrelated dimensions, matching how each vendor's own docs frame the mechanism.", "at": [{ "step": "Reveal: workload isolation and concurrency" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

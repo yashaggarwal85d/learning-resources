@@ -10732,4 +10732,31 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Three proprietary engines and the open engines before them have now all been taught on their own terms. The one question left is the practical one every engineer eventually has to answer: warehouse or lakehouse, and when.",
   },
+  {
+    id: 'de.warehouse-versus-lakehouse-engine',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/warehouse-versus-lakehouse-engine',
+    title: 'Warehouse versus lakehouse engine choice',
+    syllabusTitle: 'Warehouse versus lakehouse engine choice',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.5' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['warehouse-vs-lakehouse-choice'],
+    uses: [
+      'duckdb-single-node-engine',
+      'trino-mpp-architecture',
+      'clickhouse-mergetree',
+      'snowflake-micro-partitions',
+      'bigquery-dremel-architecture',
+      'redshift-mpp-architecture',
+      'table-format-choice',
+    ],
+    bridge:
+      "Three proprietary engines and the open engines before them have now all been taught on their own terms. This topic is the practical question every one of them was really in service of: a direct comparison, real measurement against sourced estimate, of warehouse versus lakehouse engine choice on the identical table this chapter built throughout.",
+    handoff:
+      "Every engine in this chapter turned stored data into an answer, but none of them yet turned stored data into *more* stored data at real scale. The next chapter opens that: Apache Spark and distributed batch execution, starting with its own execution model.",
+  },
 ];

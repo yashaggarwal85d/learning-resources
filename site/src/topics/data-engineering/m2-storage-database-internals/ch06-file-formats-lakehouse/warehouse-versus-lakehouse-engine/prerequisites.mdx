@@ -1,0 +1,36 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: §6.4–§6.5 in full
+
+<ul class="resources">
+  <Resource kind="reel" title="Trino: federated MPP execution" domain="data-engineering" host="de.trino-federated-mpp-execution" by="§6.4" />
+  <Resource kind="reel" title="ClickHouse MergeTree internals" domain="data-engineering" host="de.clickhouse-mergetree-internals" by="§6.4" />
+  <Resource kind="reel" title="DuckDB and single-node analytics" domain="data-engineering" host="de.duckdb-single-node-analytics" by="§6.4" />
+  <Resource kind="reel" title="Snowflake storage, micro-partitions and pruning" domain="data-engineering" host="de.snowflake-storage-micro-partitions" by="§6.5" />
+  <Resource kind="reel" title="BigQuery Dremel execution and storage" domain="data-engineering" host="de.bigquery-dremel-execution-storage" by="§6.5" />
+  <Resource kind="reel" title="Redshift distribution, sort keys and RMS" domain="data-engineering" host="de.redshift-distribution-sort-keys" by="§6.5" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Apache Iceberg tables" href="https://docs.snowflake.com/en/user-guide/tables-iceberg" by="Snowflake">Billing: compute time, not bytes scanned.</Resource>
+  <Resource kind="reading" title="Multi-cluster warehouses" href="https://docs.snowflake.com/en/user-guide/warehouses-multicluster" by="Snowflake">Scaling for concurrency, not slow queries.</Resource>
+  <Resource kind="reading" title="Automatic Clustering" href="https://docs.snowflake.com/en/user-guide/tables-auto-reclustering" by="Snowflake">Self-tuning storage layout.</Resource>
+  <Resource kind="reading" title="BigQuery tables for Apache Iceberg" href="https://cloud.google.com/bigquery/docs/iceberg-tables" by="Google Cloud">Region co-location, built-in governance.</Resource>
+  <Resource kind="reading" title="BigQuery pricing" href="https://cloud.google.com/bigquery/pricing" by="Google Cloud">On-demand rate and slot pool.</Resource>
+  <Resource kind="reading" title="Amazon Redshift pricing" href="https://aws.amazon.com/redshift/pricing" by="Amazon Redshift">Spectrum's per-byte rate.</Resource>
+  <Resource kind="reading" title="Automatic table optimization" href="https://docs.aws.amazon.com/redshift/latest/dg/t_Creating_tables.html" by="Amazon Redshift">Self-tuning sort and distribution keys.</Resource>
+  <Resource kind="reading" title="Cost-based optimizations" href="https://trino.io/docs/current/optimizer/cost-based-optimizations.html" by="Trino">Query-plan-only tuning.</Resource>
+  <Resource kind="reading" title="ClickHouse Cloud architecture" href="https://clickhouse.com/docs/cloud/reference/architecture" by="ClickHouse">Per-replica concurrency limit.</Resource>
+  <Resource kind="reading" title="MergeTree table engine" href="https://clickhouse.com/docs/engines/table-engines/mergetree-family/mergetree" by="ClickHouse">Manually chosen primary key.</Resource>
+  <Resource kind="reading" title="Tuning Workloads" href="https://duckdb.org/docs/2.0/guides/performance/how_to_tune_workloads.html" by="DuckDB">Out-of-core spilling, row-group parallelism.</Resource>
+</ul>
+
+</section>

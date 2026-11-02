@@ -1,0 +1,10 @@
+- **Workload isolation** — how separate tenants or queries are kept from stepping on each other's resources.
+- **Concurrency pool** — a shared capacity (slots, clusters, replicas) that many queries draw from at once.
+- **Spilling** — writing an oversized intermediate result to disk instead of failing for lack of memory.
+- **Cost-based tuning** — an optimizer choosing a query plan, or a service choosing a table's storage layout, from measured or estimated cost.
+- **Data gravity** — the pull toward keeping compute near where the data already sits, since moving it is costly.
+- **Egress cost** — a charge for data leaving one region, cloud, or account boundary to reach another.
+- **Governance** — built-in controls like row-level, column-level, or masking access rules.
+- **Lock-in** — the cost of leaving a vendor because of a proprietary catalog, format, or feature dependency.
+- **On-demand pricing** — paying per byte or unit of work scanned, rather than for reserved capacity.
+- **Sourced estimate** — a number computed by applying a vendor's own published rate to a real, measured quantity.
