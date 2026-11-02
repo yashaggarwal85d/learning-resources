@@ -1,0 +1,9 @@
+- **Capacitor**: BigQuery's columnar storage format, built on the original Dremel paper's foundation, holding data on Colossus.
+- **Colossus**: Google's distributed, multi-master successor to GFS, the storage layer underneath BigQuery.
+- **Borg**: the cluster-management system, a precursor to Kubernetes, that orchestrates the separate Dremel compute cluster.
+- **Jupiter network**: the internal network joining BigQuery's separated storage and compute.
+- **Partitioning**: dividing a table into segments a qualifying filter can prune outright.
+- **Clustering**: sorting a table's rows by chosen columns into blocks a filter can skip -- block pruning.
+- **Materialized view**: a precomputed view BigQuery keeps current automatically as its base table changes.
+- **BI Engine**: an in-memory analysis service that caches a project's most frequently used data.
+- **Storage Write API**: BigQuery's modern streaming ingestion path, guaranteeing exactly-once delivery via stream offsets.

@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Nested data: repetition and definition levels" domain="data-engineering" host="de.nested-data-repetition-definition" by="Topic 6" />
+  <Resource kind="reel" title="Snowflake storage, micro-partitions and pruning" domain="data-engineering" host="de.snowflake-storage-micro-partitions" by="Topic 37" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Dremel: A Decade of Interactive SQL Analysis at Web Scale" href="https://www.vldb.org/pvldb/vol13/p3461-melnik.pdf" by="Melnik et al., PVLDB 2020">Borg, Colossus and Capacitor's own history.</Resource>
+  <Resource kind="reading" title="Separation of storage and compute in BigQuery" href="https://cloud.google.com/blog/products/bigquery/separation-of-storage-and-compute-in-bigquery" by="Google Cloud">The Capacitor/Colossus/Borg/Jupiter architecture.</Resource>
+  <Resource kind="reading" title="Introduction to partitioned tables" href="https://docs.cloud.google.com/bigquery/docs/partitioned-tables" by="Google Cloud">Partition pruning.</Resource>
+  <Resource kind="reading" title="Introduction to clustered tables" href="https://docs.cloud.google.com/bigquery/docs/clustered-tables" by="Google Cloud">Block pruning via clustering.</Resource>
+  <Resource kind="reading" title="Introduction to materialized views" href="https://docs.cloud.google.com/bigquery/docs/materialized-views-intro" by="Google Cloud">Automatic precomputation.</Resource>
+  <Resource kind="reading" title="Introduction to BI Engine" href="https://docs.cloud.google.com/bigquery/docs/bi-engine-intro" by="Google Cloud">In-memory query caching.</Resource>
+  <Resource kind="reading" title="Batch loading data" href="https://docs.cloud.google.com/bigquery/docs/batch-loading-data" by="Google Cloud">Single-job table loads.</Resource>
+  <Resource kind="reading" title="Use the Storage Write API (REST)" href="https://docs.cloud.google.com/bigquery/docs/write-api" by="Google Cloud">Exactly-once streaming via stream offsets.</Resource>
+  <Resource kind="reading" title="Streaming data into BigQuery" href="https://docs.cloud.google.com/bigquery/docs/streaming-data-into-bigquery" by="Google Cloud">The legacy tabledata.insertAll method it replaced.</Resource>
+</ul>
+
+</section>

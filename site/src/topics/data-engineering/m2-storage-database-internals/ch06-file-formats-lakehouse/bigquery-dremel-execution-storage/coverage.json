@@ -1,0 +1,95 @@
+{
+  "topic": "de.bigquery-dremel-execution-storage",
+  "syllabus": [
+    {
+      "clause": "Capacitor columnar storage on Colossus, separated compute (Borg) joined by the Jupiter network and an in-memory shuffle tier; partitioning plus clustering, materialized views, BI Engine; loading via batch load jobs vs the Storage Write API (exactly-once with stream offsets) instead of legacy insertAll streaming.",
+      "at": [
+        { "step": "Reveal: Capacitor on Colossus, Dremel on Borg" },
+        { "step": "Reveal: partitioning and clustering" },
+        { "step": "Reveal: materialized views" },
+        { "step": "Reveal: BI Engine" },
+        { "step": "Reveal: batch load jobs vs a streaming write path" },
+        { "step": "Reveal: exactly-once streaming replaces legacy streaming" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dremel: A Decade of Interactive SQL Analysis at Web Scale (Melnik et al., PVLDB 2020)",
+      "items": [
+        { "item": "Dremel was migrated to Borg, a cluster management system and precursor to Kubernetes, in early 2009", "at": [{ "step": "Reveal: Capacitor on Colossus, Dremel on Borg" }] },
+        { "item": "Google's file system was migrated from GFS's single-master model to the distributed multi-master model in Colossus", "at": [{ "step": "Reveal: Capacitor on Colossus, Dremel on Borg" }] },
+        { "item": "In 2014, Google began migrating storage to an improved columnar format, Capacitor, built on the original Dremel paper's foundation, with filtering embedded directly into the Capacitor access library", "at": [{ "step": "Reveal: Capacitor on Colossus, Dremel on Borg" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud blog, Separation of storage and compute in BigQuery",
+      "items": [
+        { "item": "Compute is Dremel, a large multi-tenant cluster executing Standard SQL queries; storage is Colossus; the two talk over the petabit Jupiter network; BigQuery itself is orchestrated via Borg", "at": [{ "step": "Reveal: Capacitor on Colossus, Dremel on Borg" }] }
+      ]
+    },
+    {
+      "source": "BigQuery docs, Introduction to partitioned tables",
+      "items": [
+        { "item": "A partitioned table is divided into segments a qualifying filter can prune, scanning only the matching ones", "at": [{ "step": "Reveal: partitioning and clustering" }] }
+      ]
+    },
+    {
+      "source": "BigQuery docs, Introduction to clustered tables",
+      "items": [
+        { "item": "A clustered table is sorted by its clustering columns into blocks, which block pruning can skip entirely to reduce query cost", "at": [{ "step": "Reveal: partitioning and clustering" }] }
+      ]
+    },
+    {
+      "source": "BigQuery docs, Introduction to materialized views",
+      "items": [
+        { "item": "BigQuery precomputes materialized views in the background and automatically adds incremental base-table changes, with no user action required", "at": [{ "step": "Reveal: materialized views" }] }
+      ]
+    },
+    {
+      "source": "BigQuery docs, Introduction to BI Engine",
+      "items": [
+        { "item": "BI Engine is a fast, in-memory analysis service that accelerates SQL queries by intelligently caching the most frequently used data", "at": [{ "step": "Reveal: BI Engine" }] }
+      ]
+    },
+    {
+      "source": "BigQuery docs, Batch loading data",
+      "items": [
+        { "item": "Batch loading ingests data from Cloud Storage or a local file into a table in a single load job, across several file formats", "at": [{ "step": "Reveal: batch load jobs vs a streaming write path" }] }
+      ]
+    },
+    {
+      "source": "BigQuery docs, Use the Storage Write API (REST)",
+      "items": [
+        { "item": "The Storage Write API gives exactly-once write semantics through the use of stream offsets", "at": [{ "step": "Reveal: exactly-once streaming replaces legacy streaming" }] }
+      ]
+    },
+    {
+      "source": "BigQuery docs, Streaming data into BigQuery",
+      "items": [
+        { "item": "The Storage Write API was previously known as the legacy tabledata.insertAll method", "at": [{ "step": "Reveal: exactly-once streaming replaces legacy streaming" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "This topic is disclosed as sourced-only throughout, the same pattern as the Snowflake topic earlier in this section -- this sandbox has no BigQuery/GCP account, so nothing here is independently executed or measured.", "at": [{ "step": "Hook" }] },
+      { "item": "No examples.py exists for this topic, by design -- every number shown on screen in reel.tsx is spelled out as words rather than digits, since the build's digit-backing check has no exemption for a sourced-only topic.", "at": [{ "step": "Hook" }] },
+      { "item": "The predict step at step 2 and the predict step at step 6 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: did storage and compute split apart?" }] },
+      { "item": "The Dremel paper quoted here is the 2020 retrospective, a distinct paper from the original 2010 Dremel paper topic 6 cites; the Borg/Colossus/Capacitor history is specifically the retrospective's own account.", "at": [{ "step": "Reveal: Capacitor on Colossus, Dremel on Borg" }] },
+      { "item": "The legacy-insertAll contrast CHAPTER.md's syllabus line names is sourced from a second, separate BigQuery docs page, since the Storage Write API's own docs page never names insertAll.", "at": [{ "step": "Reveal: exactly-once streaming replaces legacy streaming" }] },
+      { "item": "Partitioning and clustering are explicitly framed as two layers of the same pruning idea topic 37 already showed happening inside a single Snowflake micro-partition.", "at": [{ "step": "Reveal: partitioning and clustering" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 37's handoff (a second proprietary storage design) and hands off cleanly into topic 39's Redshift opening, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] },
+      { "item": "The uses list (snowflake-micro-partitions, dremel-shredding-levels, introduced respectively by topic 37 and topic 6) is reflected in the prerequisites panel and the explicit comparisons drawn in the hook and reveal steps.", "at": [{ "step": "Hook" }] },
+      { "item": "Materialized views and BI Engine are presented as two distinct mechanisms (precomputation vs. in-memory caching), not a restatement of the same idea, matching the docs' own separate treatment of each.", "at": [{ "step": "Reveal: BI Engine" }] },
+      { "item": "The recap's framing of BigQuery as fully disaggregated (storage and compute joined only over a network) is set up explicitly as the contrast point for topic 39's Redshift, matching CHAPTER.md's own chapter arc.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -10672,4 +10672,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Snowflake's immutability is one proprietary storage design. The next topic is a second, built on genuinely different infrastructure: BigQuery's Dremel execution over Colossus.",
   },
+  {
+    id: 'de.bigquery-dremel-execution-storage',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/bigquery-dremel-execution-storage',
+    title: 'BigQuery Dremel execution and storage',
+    syllabusTitle: 'BigQuery Dremel execution and storage',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.5' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['bigquery-dremel-architecture'],
+    uses: ['snowflake-micro-partitions', 'dremel-shredding-levels'],
+    declared: ["the Dremel paper's nested-columnar model from topic 6, now reused for the system it originally described"],
+    bridge:
+      "Snowflake's immutability is one proprietary storage design, built on infrastructure this sandbox can only read about. This topic is a second one, built on genuinely different infrastructure entirely: BigQuery's Capacitor storage on Colossus, with compute separated onto Borg and joined by the Jupiter network -- the real system topic 6's own Dremel shredding model came from.",
+    handoff:
+      "Both warehouses so far disaggregate storage from compute. The next one, Redshift, descends from a genuinely different lineage: classic shared-nothing MPP with its own nodes and slices.",
+  },
 ];
