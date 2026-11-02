@@ -1,0 +1,59 @@
+{
+  "topic": "de.hidden-partitioning-partition-evolution",
+  "syllabus": [
+    { "clause": "partition transforms (identity, bucket[N], truncate[W], year/month/day/hour, multi-argument transforms in v3) derived from source columns so queries never name partition columns; changing the spec without rewriting old data, with each manifest planned under the spec it was written with", "at": [
+      { "step": "Reveal: reproduced for real — a transform derives the partition value, tracked by Iceberg itself" },
+      { "step": "Reveal: reproduced for real — a real table’s partition spec evolved mid-life" },
+      { "step": "Reveal: reproduced for real — the old era’s files stay on disk under the old spec" },
+      { "step": "Reveal: reproduced for real — a source-column query prunes to one file in either era" },
+      { "step": "Reveal: v3 extends this with multi-argument transforms" },
+      { "step": "Reveal: reproduced for real — a full scan reads every row correctly across both eras" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Partitioning (hidden partitioning)",
+      "items": [
+        { "item": "Iceberg supports hidden partitioning, unlike other table formats such as Hive", "at": [{ "step": "Hook" }] },
+        { "item": "Iceberg produces partition values by taking a column value and optionally transforming it, and keeps track of the relationship", "at": [{ "step": "Reveal: reproduced for real — a transform derives the partition value, tracked by Iceberg itself" }] },
+        { "item": "because Iceberg doesn't require user-maintained partition columns, it can hide partitioning; producers and consumers wouldn't even see the derived column", "at": [{ "step": "Predict: partitioned by day(event_time) — does a query on event_time itself still prune?" }] },
+        { "item": "queries no longer depend on a table's physical layout; Iceberg tables can evolve partition schemes over time without an expensive migration", "at": [{ "step": "Reveal: reproduced for real — a real table’s partition spec evolved mid-life" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Table Spec (partition transforms and evolution)",
+      "items": [
+        { "item": "identity: source value, unmodified", "at": [{ "deep": "Frontier" }] },
+        { "item": "bucket[N]: hash of value, mod N", "at": [{ "step": "Reveal: reproduced for real — a real table’s partition spec evolved mid-life" }] },
+        { "item": "truncate[W]: value truncated to width W", "at": [{ "deep": "Frontier" }] },
+        { "item": "hour: extract a timestamp hour, as hours from 1970-01-01 00:00:00", "at": [{ "step": "Reveal: reproduced for real — a real table’s partition spec evolved mid-life" }] },
+        { "item": "partitioning can be evolved by adding, removing, renaming, or reordering partition spec fields", "at": [{ "step": "Reveal: reproduced for real — a real table’s partition spec evolved mid-life" }] },
+        { "item": "changing a partition spec produces a new spec with its own ID, added to the table's list of partition specs", "at": [{ "step": "Reveal: reproduced for real — the old era’s files stay on disk under the old spec" }] },
+        { "item": "the table's current partition spec is used by writers to partition new data, but reads use the specs stored in manifest files, not the table's current default", "at": [{ "step": "Reveal: reproduced for real — a source-column query prunes to one file in either era" }] },
+        { "item": "a single-argument transform writes only source-id; a multi-argument transform writes source-ids instead", "at": [{ "step": "Reveal: v3 extends this with multi-argument transforms" }] },
+        { "item": "source-ids was added for v3 and must be written for multi-argument transforms", "at": [{ "step": "Reveal: v3 extends this with multi-argument transforms" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The table in examples.py is real -- a real pyiceberg table whose partition spec is evolved with the real table.update_spec() API (remove_field/add_field), not a simulation of spec evolution -- with every structural and pruning claim read directly off table.specs(), table.inspect.data_files(), table.inspect.manifests(), and table.scan(...).plan_files(), disclosed in the script's own docstring and FACT-CHECK.md red-team #1.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Old-data-not-rewritten is checked positively, not merely not disproven: data_files() is filtered by the old spec's id and the surviving file count is asserted, per FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: reproduced for real — the old era’s files stay on disk under the old spec" }] },
+      { "item": "The each-manifest-planned-under-its-own-spec claim is measured, not inferred: the two files returned for the old-era and new-era queries are asserted to have different spec_id values, proof planning consulted each file's own recorded spec, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: reproduced for real — a source-column query prunes to one file in either era" }] },
+      { "item": "v3 multi-argument transforms are named from the spec's own v3 writing rules, not built, since this sandbox's pyiceberg table defaults to format version 2, per FACT-CHECK.md red-team #4.", "at": [{ "deep": "Frontier" }] },
+      { "item": "identity and truncate[W] are named from the spec but not executed in examples.py, which builds only day, hour, and bucket[N] -- named as a scope boundary in FACT-CHECK.md red-team #5.", "at": [{ "deep": "Frontier" }] },
+      { "item": "File paths and UUIDs are real-system randomness; the script asserts and prints counts and structure, not literal paths, verified byte-identical across 3 consecutive runs.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The prerequisites panel lists topic 21 only, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "declared: none beyond topic 21, matching CHAPTER.md's own note for this topic.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 1-file-old-era/1-file-new-era and all-20-rows-read counts are exact by construction given the chosen day/hour counts, not approximations -- checked against the model's actual emergent output via pyiceberg's own real APIs, not hardcoded to a desired narrative.", "at": [{ "step": "Reveal: reproduced for real — a full scan reads every row correctly across both eras" }] },
+      { "item": "This topic hosts the §6.3.1 chapter lab's partition-spec-evolution half directly, matching CHAPTER.md's own note.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -10272,4 +10272,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "This metadata tree already lets a query prune by partition tuple without touching data — but only if the table doesn't make the query name the partition column itself. That's hidden partitioning.",
   },
+  {
+    id: 'de.hidden-partitioning-partition-evolution',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/hidden-partitioning-partition-evolution',
+    title: 'Hidden partitioning and partition evolution',
+    syllabusTitle: 'Hidden partitioning and partition evolution',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.1' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['iceberg-hidden-partitioning'],
+    uses: ['iceberg-metadata-tree'],
+    declared: [],
+    bridge:
+      "The metadata tree already lets a query prune by partition tuple without touching data — but only if the table doesn't make the query name the partition column itself. This topic is exactly that: hidden partitioning, built and evolved on a real table without rewriting a single old file.",
+    handoff:
+      "Hidden partitioning prunes whole files by partition tuple. The next topic is how a single file's own rows get deleted without rewriting it: position and equality deletes.",
+  },
 ];

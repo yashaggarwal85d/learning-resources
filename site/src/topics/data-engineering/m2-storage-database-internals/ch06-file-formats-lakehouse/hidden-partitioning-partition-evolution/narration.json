@@ -1,0 +1,73 @@
+{
+  "topic": "de.hidden-partitioning-partition-evolution",
+  "steps": [
+    {
+      "lines": [
+        "The previous topic ended on a quiet condition: that tree already lets a query skip files by partition without reading them.",
+        "But that pruning only happens if the query never has to name the partition itself. This topic is exactly that trick, and how it keeps working even after the table's layout changes."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a table split into partitions by the date portion of a timestamp column, with the timestamp itself stored at full precision.",
+        "A query filters directly on that full timestamp column, never once mentioning the derived date. Does that query still get the benefit of skipping whole partitions, or does it have to scan the entire table?"
+      ],
+      "answer": [
+        "It still gets the benefit, and here's the mechanism. The table itself is responsible for turning that timestamp into its derived date, not the person writing the query.",
+        "Since the table already knows which column that date came from, it can recognize a filter on the original column and translate it into the same pruning a filter on the derived one would get."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that mechanism, reproduced directly. A handful of named rules take a real column and derive a partition value: keep it as is, hash it into buckets, cut it down to a fixed width, or pull out a calendar unit like the day or the hour.",
+        "Whichever rule a table uses, the table tracks it internally. A query never has to know the rule exists, let alone repeat it."
+      ]
+    },
+    {
+      "lines": [
+        "Now the harder question: what happens when that choice of rule needs to change? This was tested directly, on a real table, midway through its life.",
+        "It started out partitioned by the day of a timestamp. Partway through, without touching a single row already written, its partitioning was changed to the hour of that same timestamp, combined with a hash of a separate identifier column."
+      ]
+    },
+    {
+      "lines": [
+        "Checked directly afterward: every file written before that change is still sitting exactly where it was, still labeled with the rule that was in effect when it was written.",
+        "Changing how a table partitions its data going forward never reaches backward to touch what's already there."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real test. Ask for one specific row by its identifier, a plain column value, naming no partitioning rule of any kind.",
+        "That particular row happens to live among the files written before the layout changed, under the old rule. Does the table still manage to skip past every file that can't possibly hold it?"
+      ],
+      "answer": [
+        "It does, and this was measured directly rather than assumed. Every single file on disk carries its own label saying which rule was in force when it was written.",
+        "So a search doesn't apply one rule table-wide. It checks each file's own label and applies that file's own rule, which is exactly what lets old files and new files both get skipped correctly, at the same time, under two different rules."
+      ]
+    },
+    {
+      "lines": [
+        "That's confirmed by direct measurement: asking for one row narrows the search down to exactly one file, whether that row lives under the table's original rule or its current one.",
+        "A file written under a retired rule is never treated as table-wide stale. Its own label is still consulted, every time."
+      ]
+    },
+    {
+      "lines": [
+        "One extension of this same idea is worth naming without building it here. So far, every rule has derived its value from a single source column.",
+        "A newer revision of this format allows a single derived value to draw from more than one source column at once — the same underlying mechanism, just fed by several columns instead of one."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing confirmed directly: asking for everything, with no filter at all, still reads every single row correctly, spanning both the old rule and the new one.",
+        "The table doesn't care, even slightly, that some of its files were written under a rule that stopped being the default a while ago."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole idea in one line. A table derives its own partition values and tracks the rule behind them, so a query only ever has to name a real column.",
+        "And when that rule changes, nothing already written gets rewritten — each file simply keeps carrying the rule it was born under, forever correct under its own terms."
+      ]
+    }
+  ]
+}
