@@ -1,0 +1,73 @@
+{
+  "topic": "de.iceberg-metadata-tree-scan",
+  "steps": [
+    {
+      "lines": [
+        "Up to now, a snapshot has been treated as one thing a reader just reaches for — a single state, fetched whole.",
+        "But a snapshot is built from parts, arranged as a tree, and a scan plans its work by walking down that tree. This topic opens it up."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a table split into several day-sized partitions, and a reader that only wants one of those days back.",
+        "Does that reader have to open every single file that describes every partition, just to work out which ones actually hold the day it wants?"
+      ],
+      "answer": [
+        "It does not, and here's why. The tree carries its own summary one level above the files themselves.",
+        "That summary says, for each group of files, which partitions it could possibly contain — so a reader rules out whole groups without opening a single one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that tree, reproduced directly from a real table built in this environment, not sketched from memory.",
+        "At the root sits a file describing the table itself — its schema, how it's partitioned, how it's sorted, and which state is currently live. That file points to a list of groups, and each group in that list points to the files it actually covers."
+      ]
+    },
+    {
+      "lines": [
+        "Every one of those groups, and every file inside them, carries a number tied to the change that created it.",
+        "Tested directly: five real changes to this table come back with numbers running one through five, strictly in order, with nothing skipped — giving every change in the table's history a definite place in line."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what each level of that tree actually carries. The list of groups holds a summary for every group: roughly which partitions its files touch.",
+        "Each group itself then holds, for every file beneath it, exactly which partition that file belongs to, plus simple facts about its contents — enough to decide whether that one file is even worth opening."
+      ]
+    },
+    {
+      "lines": [
+        "So scale that same question up and make it concrete. Ask specifically for the one day's worth of rows out of five day-partitions.",
+        "Does planning actually use those group-level summaries to skip the groups that can't match — or does it still open every one of them and sort it out afterward?"
+      ],
+      "answer": [
+        "It skips them, and this was measured directly, not assumed. Asking for everything plans every file in the table — five of them here.",
+        "Asking for just one day plans exactly one file. The other four groups get ruled out by their summaries before a single file inside them is ever touched."
+      ]
+    },
+    {
+      "lines": [
+        "That's the whole planning shape, confirmed by measurement: groups get eliminated first by their rough summaries, and only the files that survive that cut get examined individually.",
+        "Nothing about a data file's own contents ever gets consulted until its enclosing group has already passed that first, cheaper test."
+      ]
+    },
+    {
+      "lines": [
+        "One consequence of that structure falls out immediately. Picture a table fed one small batch at a time, each batch committed the moment it arrives.",
+        "Every one of those small commits leaves behind its own small group of files in the tree. Commit enough of them, and the tree ends up with roughly as many groups as there were commits — a tree that has grown bushy for no reason but its own history."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real fix, reproduced directly against that same bushy tree, using the table's own real file-writing machinery rather than any shortcut.",
+        "Five of those small, separate groups get merged into a single new group, which is then committed as the table's new current state. Checked afterward: every original row is still there, readable exactly as before — just organized under one group now instead of five."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole idea in one line. A snapshot was never one flat thing — it's a tree, read top to bottom: the table's own description, a list of groups, and the files inside each group.",
+        "Planning prunes that tree one level before it ever prunes the next, and a write pattern that commits in small pieces is exactly what leaves that tree bushy enough to need tidying later."
+      ]
+    }
+  ]
+}

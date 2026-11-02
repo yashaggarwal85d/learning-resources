@@ -1,0 +1,60 @@
+{
+  "topic": "de.iceberg-metadata-tree-scan",
+  "syllabus": [
+    { "clause": "metadata.json (schemas, partition specs, sort orders, snapshot log, refs) → manifest list (per-manifest partition summaries) → manifests (per-file partition tuple, column metrics) → data and delete files; sequence numbers; how planning prunes manifests then files; manifest bloat and rewrite_manifests", "at": [
+      { "step": "Reveal: reproduced for real — a real table’s metadata.json, manifest list, and manifests" },
+      { "step": "Reveal: reproduced for real — every manifest and file inherits its snapshot’s sequence number" },
+      { "step": "Reveal: reproduced for real — per-manifest partition summaries, per-file partition tuples and metrics" },
+      { "step": "Reveal: reproduced for real — scan planning measured, manifests pruned before files" },
+      { "step": "Reveal: many small commits leave as many manifests as commits" },
+      { "step": "Reveal: reproduced for real — a real rewrite_manifests merges five manifests into one" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Table Spec (metadata tree)",
+      "items": [
+        { "item": "a manifest list stores metadata about manifests, including partition stats and data file counts, used to avoid reading manifests not required for an operation", "at": [{ "step": "Reveal: reproduced for real — per-manifest partition summaries, per-file partition tuples and metrics" }] },
+        { "item": "all manifests, data files, and delete files created for a snapshot inherit the snapshot's sequence number", "at": [{ "step": "Reveal: reproduced for real — every manifest and file inherits its snapshot’s sequence number" }] },
+        { "item": "a manifest is an immutable file tracking a subset of table metadata for a given snapshot; leaf manifests track data or delete files along with each file's partition data, metrics, and tracking information", "at": [{ "step": "Reveal: reproduced for real — a real table’s metadata.json, manifest list, and manifests" }] },
+        { "item": "table metadata consists of a defined set of fields, including schemas, partition specs, sort orders, snapshot log, and refs", "at": [{ "step": "Reveal: reproduced for real — a real table’s metadata.json, manifest list, and manifests" }] },
+        { "item": "the sequence number is a monotonically increasing long that tracks the order of changes to a table", "at": [{ "deep": "Frontier" }] },
+        { "item": "a reader plans a scan by producing live data files from the snapshot root file and any live leaf manifests referenced by the root", "at": [{ "step": "Predict: five day-partitions, one wanted — does a reader open every manifest to find out?" }] },
+        { "item": "manifests that contain no matching files, determined using file counts, partition summaries, or column stats, may be skipped", "at": [{ "step": "Reveal: reproduced for real — scan planning measured, manifests pruned before files" }] },
+        { "item": "using content stats, a manifest is filtered by evaluating scan predicates against the column bounds and counts of each tracked file", "at": [{ "deep": "Frontier" }] },
+        { "item": "manifests are filtered using scan predicates converted to partition predicates, which select relevant data files, delete files, and deletion vector metadata", "at": [{ "step": "Predict: does planning skip manifests outside the target partition, or filter rows after opening all of them?" }] },
+        { "item": "data files that match the query filter must be read by the scan", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Maintenance (rewrite manifests)",
+      "items": [
+        { "item": "the metadata tree (manifest list and manifest files) functions as an index over a table's data", "at": [{ "step": "Recap" }] },
+        { "item": "manifests are automatically compacted in the order they are added, which is fastest when the write pattern aligns with read filters", "at": [{ "step": "Reveal: many small commits leave as many manifests as commits" }] },
+        { "item": "when a table's write pattern doesn't align with the query pattern, rewriteManifests re-groups data files into manifests", "at": [{ "step": "Reveal: reproduced for real — a real rewrite_manifests merges five manifests into one" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The table in examples.py is a real pyiceberg table (SqlCatalog backed by SQLite, local filesystem warehouse) -- not a simulation of the format -- with every structural claim read directly off the real metadata.json, manifest list, and manifest Avro files via table.metadata and table.inspect, disclosed in the script's own docstring and FACT-CHECK.md red-team #1.", "at": [{ "deep": "Frontier" }] },
+      { "item": "pyiceberg 0.12.0 has no public rewrite_manifests action, unlike Spark's; the rewrite demo reproduces the mechanism from pyiceberg's own real write_manifest/write_manifest_list and snapshot-commit primitives through table.transaction()._apply, verified end to end by reloading the table fresh and confirming every original row is still readable, per FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: reproduced for real — a real rewrite_manifests merges five manifests into one" }] },
+      { "item": "Partition pruning is verified by comparing real plan_files() output (5 files unfiltered vs 1 filtered) rather than by inspecting which internal code path ran, the externally observable proof the source material itself describes, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: reproduced for real — scan planning measured, manifests pruned before files" }] },
+      { "item": "File paths and UUIDs are real-system randomness; the script asserts and prints counts and structure, not literal paths, verified byte-identical across 3 consecutive runs.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Column-level (content-stats) pruning within a single partition, equality/position deletes, and deletion vectors are introduced by name from the spec quotes but not exercised by examples.py, since the table built here has no deletes -- named as a scope boundary in FACT-CHECK.md red-team #4.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The prerequisites panel lists all of §6.3 (topics 10-20), matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "declared: none beyond topics 10-20, matching CHAPTER.md's own note for this topic.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 5-manifests-before/1-after and 5-files/1-file counts are exact by construction given the chosen partition count and day filter, not approximations -- checked against the model's actual emergent output via pyiceberg's own real APIs, not hardcoded to a desired narrative.", "at": [{ "step": "Reveal: reproduced for real — scan planning measured, manifests pruned before files" }] },
+      { "item": "This topic hosts the §6.3.1 chapter lab's metadata-table-inspection half (inspect the files, manifests and snapshots metadata tables), matching CHAPTER.md's own note.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The table is built one commit per day across five partitions purely to make manifest bloat and partition pruning both legible on screen with a small, deterministic row count -- not claimed to be a production-scale table.", "at": [{ "deep": "Frontier" }] },
+      { "item": "sequence numbers are read directly off table.metadata.snapshots sorted by commit order, not assumed from snapshot IDs, which are independent of commit order in general.", "at": [{ "step": "Reveal: reproduced for real — every manifest and file inherits its snapshot’s sequence number" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

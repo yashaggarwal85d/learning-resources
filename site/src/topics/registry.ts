@@ -10252,4 +10252,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Everything so far has been taught once, in the abstract, across whichever format made the point clearest. The next nine topics show the same ideas as two real, concretely different systems, starting with Iceberg's own metadata tree.",
   },
+  {
+    id: 'de.iceberg-metadata-tree-scan',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/iceberg-metadata-tree-scan',
+    title: 'Iceberg metadata tree and scan planning',
+    syllabusTitle: 'Iceberg metadata tree and scan planning',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.1' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['iceberg-metadata-tree'],
+    uses: ['table-snapshot-model', 'optimistic-commit-protocol'],
+    declared: [],
+    bridge:
+      "Everything in §6.3 was taught once, in the abstract. This topic opens the Iceberg arc by showing that abstraction as a real, readable tree of files: metadata.json, a manifest list, manifests, and the data files underneath, traced by hand from a table this sandbox builds.",
+    handoff:
+      "This metadata tree already lets a query prune by partition tuple without touching data — but only if the table doesn't make the query name the partition column itself. That's hidden partitioning.",
+  },
 ];
