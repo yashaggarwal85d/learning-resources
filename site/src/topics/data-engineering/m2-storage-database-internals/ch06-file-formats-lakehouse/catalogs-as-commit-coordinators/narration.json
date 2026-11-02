@@ -1,0 +1,84 @@
+{
+  "topic": "de.catalogs-as-commit-coordinators",
+  "steps": [
+    {
+      "lines": [
+        "Both table formats we just finished are now complete arcs, and each one commits by moving one atomic pointer.",
+        "This step asks where that pointer actually lives, and builds the thing that owns it, right here, for real."
+      ]
+    },
+    {
+      "lines": [
+        "Here's an easy assumption to make.",
+        "A catalog obviously has to track which metadata file is current for a table.",
+        "Is that the entire job, or is there more hiding underneath that one obvious piece?"
+      ],
+      "answer": [
+        "Think about everything a table actually needs besides knowing its own current state.",
+        "Who is allowed to change it, how a reader even gets permission to touch the files, and where a table lives among thousands of others."
+      ]
+    },
+    {
+      "lines": [
+        "There is more, and it breaks into four distinct, real jobs.",
+        "Keeping tables organized by name, moving the current-metadata pointer safely, deciding who is allowed to touch a table, and handing out the credentials a reader or writer actually needs."
+      ]
+    },
+    {
+      "lines": [
+        "Let's build the pointer move first, because it is the one piece that has already appeared, over and over, earlier in this chapter.",
+        "A table gets registered with its very first pointer.",
+        "Then two engines race to move it to the next version, using the identical compare-and-swap we've leaned on since far earlier in this chapter.",
+        "One of them wins outright. The other hits a real conflict and has to retry against whatever actually won."
+      ]
+    },
+    {
+      "lines": [
+        "Now a sharper question.",
+        "Someone without permission tries to move that same pointer.",
+        "Does their attempt reach the compare-and-swap step and fail there, or does something stop them before it ever gets that far?"
+      ],
+      "answer": [
+        "If the rejection only happened at the compare-and-swap, an attacker could still probe the table's current state just by trying.",
+        "A real catalog refuses to even let that attempt begin."
+      ]
+    },
+    {
+      "lines": [
+        "It never gets that far, and we can prove it.",
+        "The unauthorized request is turned away before the compare-and-swap step runs at all, not after it fails there.",
+        "That is a meaningfully stronger guarantee than simply rejecting a bad write once it's already in flight."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fourth job, and it's the one people forget exists.",
+        "A principal with real access gets handed back a real, time-limited credential, scoped to exactly one table's own storage location, nothing broader.",
+        "Nobody without access gets one at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now the options teams actually reach for, and exactly where each one falls short.",
+        "One classic metastore does grant real privileges, but its own tokens only prove who you are to the metastore itself, never to the storage layer underneath.",
+        "A major cloud catalog needs an entirely separate service bolted on before it can hand out fine-grained access or real credentials.",
+        "And the simplest option of all is really just one compare-and-swap row in an ordinary database table."
+      ]
+    },
+    {
+      "lines": [
+        "Put those gaps together and a pattern falls out immediately.",
+        "Lock-in to whichever engine owns that metastore, no path to real credentials without bolting something else on, and a footprint that assumes one account and one region by default.",
+        "Three concrete limits, not a vague complaint about legacy tools."
+      ]
+    },
+    {
+      "lines": [
+        "So here's where a catalog actually stands.",
+        "A small one, built entirely from scratch, can do every one of those four real jobs correctly.",
+        "The legacy options each miss at least one, for reasons we can point to directly rather than assume.",
+        "Proving the idea with something minimal is one thing. A real, shared protocol that lets five different engines agree on how to talk to any catalog at all is the next, much bigger step."
+      ]
+    }
+  ]
+}

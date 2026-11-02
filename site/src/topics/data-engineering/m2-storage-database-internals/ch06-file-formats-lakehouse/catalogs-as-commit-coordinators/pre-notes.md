@@ -1,0 +1,4 @@
+- **Table catalog**: the service that tracks which tables exist, which metadata file is each table's current version, who can touch a table, and what credentials a reader or writer gets.
+- **Compare-and-swap (CAS)**: a conditional write that only succeeds if the value being replaced still matches what the caller expects, the mechanism behind a catalog's atomic pointer move.
+- **Credential vending**: a catalog issuing a real, temporary, scoped credential (not just a yes/no permission check) that lets a client read or write a table's files directly.
+- **Lake Formation**: AWS's separate service, layered on top of Glue Data Catalog, that provides fine-grained access control and credential vending Glue Data Catalog does not do by itself.

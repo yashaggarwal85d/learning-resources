@@ -10452,4 +10452,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Both Iceberg and Delta now exist as real, fully built arcs. The next question is what sits above either of them so more than one engine can even find a given table: the catalog.",
   },
+  {
+    id: 'de.catalogs-as-commit-coordinators',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/catalogs-as-commit-coordinators',
+    title: 'Catalogs as commit coordinators',
+    syllabusTitle: 'Catalogs as commit coordinators',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.4' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['table-catalog-model'],
+    uses: ['table-snapshot-model', 'delta-commit-protocol', 'iceberg-metadata-tree'],
+    declared: [],
+    bridge:
+      "Both Iceberg and Delta now exist as real, fully built arcs, each committing by its own atomic pointer move. This topic names that pointer's own home: the catalog, built directly in this sandbox as a minimal compare-and-swap service, next to the legacy options and their real limits.",
+    handoff:
+      "A minimal catalog proves the idea; a real, vendor-neutral protocol for it is what actually lets five different engines agree on how to talk to one. That's the Iceberg REST catalog.",
+  },
 ];

@@ -1,0 +1,68 @@
+{
+  "topic": "de.catalogs-as-commit-coordinators",
+  "syllabus": [
+    {
+      "clause": "what a table catalog actually does: namespace, current-metadata pointer with compare-and-swap, access control and credential issuance; the legacy options (Hive Metastore, AWS Glue Data Catalog, JDBC catalog) and their limits for multi-engine, multi-cloud estates.",
+      "at": [
+        { "step": "Reveal: four real jobs" },
+        { "step": "Reveal: a real compare-and-swap race" },
+        { "step": "Reveal: access control, for real" },
+        { "step": "Reveal: credential issuance" },
+        { "step": "Reveal: the legacy options, named with their limits" },
+        { "step": "Reveal: why this matters for a multi-cloud estate" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Table Spec",
+      "items": [
+        { "item": "An atomic swap of one table metadata file for another provides the basis for serializable isolation", "at": [{ "step": "Reveal: a real compare-and-swap race" }] },
+        { "item": "The atomic swap can be implemented as a pointer in a metastore or database updated with a check-and-put (compare-and-swap) operation", "at": [{ "step": "Reveal: a real compare-and-swap race" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, REST Catalog API",
+      "items": [
+        { "item": "The REST catalog protocol has a real endpoint to load vended credentials for a table from the catalog", "at": [{ "step": "Reveal: credential issuance" }] },
+        { "item": "Catalog configuration may contain credentials used for subsequent requests for a table", "at": [{ "step": "Reveal: credential issuance" }] },
+        { "item": "A namespace is defined as a reference to one or more levels", "at": [{ "step": "Reveal: four real jobs" }] }
+      ]
+    },
+    {
+      "source": "Apache Hive, Hive Metastore thrift interface",
+      "items": [
+        { "item": "Hive Metastore's thrift interface defines real privilege-grant operations (GrantRevokePrivilegeRequest); it is not devoid of access control", "at": [{ "step": "Reveal: the legacy options, named with their limits" }] },
+        { "item": "Hive Metastore's own delegation tokens authenticate a caller to the metastore server itself, not to cloud storage", "at": [{ "step": "Reveal: the legacy options, named with their limits" }] }
+      ]
+    },
+    {
+      "source": "AWS, What is AWS Lake Formation?",
+      "items": [
+        { "item": "Fine-grained access control for Glue Data Catalog's S3 data and metadata is provided by Lake Formation, a separate, bolted-on service", "at": [{ "step": "Reveal: the legacy options, named with their limits" }] },
+        { "item": "Lake Formation's own cross-account capability is what simplifies securing distributed data lakes across multiple AWS accounts", "at": [{ "step": "Reveal: why this matters for a multi-cloud estate" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The catalog's pointer compare-and-swap reuses the exact put-if-absent primitive this chapter has used since topic 13, making the connection explicit rather than inventing a parallel mechanism.", "at": [{ "step": "Reveal: a real compare-and-swap race" }] },
+      { "item": "Access control is checked and enforced before the compare-and-swap is attempted, demonstrated by a real PermissionError raised prior to any pointer-file write, not merely a CAS that happens to fail.", "at": [{ "step": "Reveal: access control, for real" }] },
+      { "item": "The issued credential is a real, scoped data structure naming the exact table's storage prefix and a real TTL, not a placeholder string.", "at": [{ "step": "Reveal: credential issuance" }] },
+      { "item": "Hive Metastore's limit is stated precisely as a credential-vending gap, not a blanket claim of no access control at all, correcting what a casual reading of the syllabus clause might imply.", "at": [{ "step": "Reveal: the legacy options, named with their limits" }] },
+      { "item": "The three named multi-cloud limits (vendor lock-in, no credential vending, single region/account) are each traced to a specific sourced mechanism (whose metastore, which bolted-on service, what scope) rather than listed as abstract complaints.", "at": [{ "step": "Reveal: why this matters for a multi-cloud estate" }] },
+      { "item": "The namespace-management demo enforces real uniqueness (a duplicate create is rejected) rather than being a no-op dictionary with no real constraint.", "at": [{ "step": "Reveal: four real jobs" }] },
+      { "item": "No deltalake/delta-rs/iceberg-python library is used; the catalog is built entirely from this script's own code, matching the chapter's established from-scratch convention.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The scope boundary explicitly names what is not rebuilt (a thrift server, Glue's actual API, AWS STS) rather than silently omitting it.", "at": [{ "deep": "Production" }] },
+      { "item": "The predict step at step 2 and the predict step at step 5 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: is tracking the pointer the whole job?" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 30's handoff (the pointer's own home) and hands off cleanly to topic 32's REST catalog scope, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

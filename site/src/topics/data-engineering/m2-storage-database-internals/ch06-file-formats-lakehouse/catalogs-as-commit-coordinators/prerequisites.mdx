@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Snapshot-based table metadata" domain="data-engineering" host="de.snapshot-based-table-metadata" by="Topic 19" />
+  <Resource kind="reel" title="Iceberg metadata tree and scan planning" domain="data-engineering" host="de.iceberg-metadata-tree-scan" by="Topic 21" />
+  <Resource kind="reel" title="Delta commit protocol and catalog-managed tables" domain="data-engineering" host="de.delta-commit-protocol-catalog" by="Topic 28" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Table Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The atomic-swap / check-and-put commit mechanism.</Resource>
+  <Resource kind="reading" title="REST Catalog API" href="https://raw.githubusercontent.com/apache/iceberg/main/open-api/rest-catalog-open-api.yaml" by="Apache Iceberg">Vended credentials and namespaces.</Resource>
+  <Resource kind="reading" title="Hive Metastore thrift interface" href="https://raw.githubusercontent.com/apache/hive/master/standalone-metastore/metastore-common/src/main/thrift/hive_metastore.thrift" by="Apache Hive">Its real privileges, and what its tokens actually authenticate to.</Resource>
+  <Resource kind="reading" title="What is AWS Lake Formation?" href="https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html" by="AWS">Why fine-grained access control is a separate, bolted-on service.</Resource>
+</ul>
+
+</section>
