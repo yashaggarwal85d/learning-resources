@@ -10512,4 +10512,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every topic from here forward asks who actually reads these tables. The next section opens with the general-purpose engines: Trino first.",
   },
+  {
+    id: 'de.trino-federated-mpp-execution',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/trino-federated-mpp-execution',
+    title: 'Trino: federated MPP execution',
+    syllabusTitle: 'Trino: federated MPP execution',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.4' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['trino-mpp-architecture'],
+    uses: ['table-format-choice', 'iceberg-rest-catalog', 'iceberg-puffin-statistics'],
+    declared: [],
+    bridge:
+      "Every topic from here forward asks who actually reads these tables. This topic opens with the first general-purpose engine: Trino's coordinator/worker architecture, its connector pushdown, and a real cost-based join ordered using this chapter's own Puffin statistics.",
+    handoff:
+      "Trino owns no storage of its own; every byte it reads belongs to someone else's table format. The next engine answers 'what if it did' instead: ClickHouse.",
+  },
 ];

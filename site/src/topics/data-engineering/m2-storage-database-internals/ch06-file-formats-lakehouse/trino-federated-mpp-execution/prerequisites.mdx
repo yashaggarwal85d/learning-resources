@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Iceberg statistics and Puffin files" domain="data-engineering" host="de.iceberg-statistics-puffin-files" by="Topic 25" />
+  <Resource kind="reel" title="Choosing a table format and catalog" domain="data-engineering" host="de.choosing-table-format-catalog" by="Topic 33" />
+  <Resource kind="reel" title="Iceberg REST catalog protocol" domain="data-engineering" host="de.iceberg-rest-catalog-protocol" by="Topic 32" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Trino concepts" href="https://trino.io/docs/current/overview/concepts.html" by="Trino">Coordinator, worker, connector, stage, exchange.</Resource>
+  <Resource kind="reading" title="Dynamic filtering" href="https://trino.io/docs/current/admin/dynamic-filtering.html" by="Trino">Build-side candidate keys, connector-level pushdown.</Resource>
+  <Resource kind="reading" title="Cost-based optimizations" href="https://trino.io/docs/current/optimizer/cost-based-optimizations.html" by="Trino">Table statistics driving join-order selection.</Resource>
+  <Resource kind="reading" title="Iceberg connector" href="https://trino.io/docs/current/connector/iceberg.html" by="Trino">Iceberg's own pushdown and statistics config.</Resource>
+  <Resource kind="reading" title="Fault-tolerant execution" href="https://trino.io/docs/current/admin/fault-tolerant-execution.html" by="Trino">QUERY vs. TASK retry policy.</Resource>
+  <Resource kind="reading" title="We're rebranding PrestoSQL as Trino" href="https://trino.io/blog/2020/12/27/announcing-trino" by="Trino project">The 2019 split and the December 2020 rename.</Resource>
+  <Resource kind="reading" title="Introducing Velox: An open source unified execution engine" href="https://engineering.fb.com/2023/03/09/open-source/velox-open-source-execution-engine/" by="Meta Engineering">Prestissimo, Presto's C++ worker.</Resource>
+</ul>
+
+</section>

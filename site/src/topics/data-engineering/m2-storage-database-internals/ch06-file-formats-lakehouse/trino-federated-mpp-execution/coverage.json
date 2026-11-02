@@ -1,0 +1,88 @@
+{
+  "topic": "de.trino-federated-mpp-execution",
+  "syllabus": [
+    {
+      "clause": "coordinator/worker architecture, connector SPI and pushdown, pipelined exchanges, dynamic filtering, cost-based join ordering with table statistics, fault-tolerant execution mode for long batch queries; Presto's C++ worker (Prestissimo on Velox) as the PrestoDB alternative path.",
+      "at": [
+        { "step": "Reveal: coordinator plans, workers execute" },
+        { "step": "Reveal: a real dynamic filter" },
+        { "step": "Reveal: the smaller table, by real statistics" },
+        { "step": "Reveal: TASK retry, opt-in" },
+        { "step": "Reveal: Presto's own C++ path" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Trino docs, Trino concepts",
+      "items": [
+        { "item": "The coordinator parses statements, plans queries, and keeps track of worker activity", "at": [{ "step": "Reveal: coordinator plans, workers execute" }] },
+        { "item": "A connector is a standard-API implementation of Trino's service provider interface (SPI)", "at": [{ "step": "Reveal: coordinator plans, workers execute" }] },
+        { "item": "Stages model the distributed query plan; exchanges transfer data between stages", "at": [{ "step": "Reveal: coordinator plans, workers execute" }] }
+      ]
+    },
+    {
+      "source": "Trino docs, Dynamic filtering",
+      "items": [
+        { "item": "Dynamic filtering collects candidate join keys from the build side of a join", "at": [{ "step": "Reveal: a real dynamic filter" }] },
+        { "item": "Dynamic filter pushdown requires connector support at both the table-scan-runtime and splits-enumeration-stage levels", "at": [{ "step": "Reveal: a real dynamic filter" }] },
+        { "item": "The Hive connector pushes dynamic filters into ORC/Parquet readers for stripe/row-group pruning and skips non-matching partitions", "at": [{ "step": "Reveal: a real dynamic filter" }] }
+      ]
+    },
+    {
+      "source": "Trino docs, Cost-based optimizations",
+      "items": [
+        { "item": "Cost-based join enumeration uses connector-provided table statistics to pick the lowest-cost join order", "at": [{ "step": "Reveal: the smaller table, by real statistics" }] },
+        { "item": "Without usable statistics, Trino falls back to the ELIMINATE_CROSS_JOINS strategy, not full cost-based ordering", "at": [{ "step": "Reveal: the smaller table, by real statistics" }] }
+      ]
+    },
+    {
+      "source": "Trino docs, Iceberg connector",
+      "items": [
+        { "item": "The Iceberg connector exposes dynamic-filtering, table-statistics, and projection-pushdown configuration, and collects column statistics via ANALYZE", "at": [{ "step": "Reveal: a real dynamic filter" }] }
+      ]
+    },
+    {
+      "source": "Trino docs, Fault-tolerant execution",
+      "items": [
+        { "item": "Fault-tolerant execution is off by default; a QUERY retry policy retries the whole query, recommended for many small queries", "at": [{ "step": "Reveal: TASK retry, opt-in" }] },
+        { "item": "A TASK retry policy retries individual tasks alone, needs an external exchange manager for spooled data, and suits large batch queries", "at": [{ "step": "Reveal: TASK retry, opt-in" }] }
+      ]
+    },
+    {
+      "source": "Trino project, We're rebranding PrestoSQL as Trino",
+      "items": [
+        { "item": "Trino's founders started an independent foundation in January 2019 after Facebook sought tighter project control", "at": [{ "step": "Reveal: Trino wasn't always Trino" }] },
+        { "item": "Facebook's own competing foundation and its Presto trademark filing forced the December 2020 rename to Trino", "at": [{ "step": "Reveal: Trino wasn't always Trino" }] }
+      ]
+    },
+    {
+      "source": "Meta Engineering, Introducing Velox",
+      "items": [
+        { "item": "Prestissimo replaces Presto's Java worker with a C++ process built on Meta's Velox execution engine", "at": [{ "step": "Reveal: Presto's own C++ path" }] },
+        { "item": "Prestissimo is a drop-in C++ replacement for Presto workers, talking to an unchanged Java coordinator", "at": [{ "step": "Reveal: Presto's own C++ path" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "No real Trino cluster runs in this sandbox (no Docker daemon available); examples.py models four of Trino's documented mechanisms with real, executed Python and real threading, disclosed directly rather than implied.", "at": [{ "step": "Reveal: coordinator plans, workers execute" }] },
+      { "item": "Dynamic filtering's row-pruning effect is measured for real in examples.py (20,000 scanned rows down to 2,850 surviving the filter), not merely asserted as a concept.", "at": [{ "step": "Reveal: a real dynamic filter" }] },
+      { "item": "Cost-based build-side selection is modeled as choosing the smaller table by its real row-count statistic, matching the documented mechanism without overclaiming Trino's full cost model (network cost, join distribution, etc.) that this topic doesn't implement.", "at": [{ "step": "Reveal: the smaller table, by real statistics" }] },
+      { "item": "TASK retry's spooling behavior is modeled with a real dict-based spool and a real recompute counter proving the failed split retries exactly once while every other split computes exactly once.", "at": [{ "step": "Reveal: TASK retry, opt-in" }] },
+      { "item": "The Trino announcement blog never uses the word 'fork' for the 2019 split; this topic follows that primary source's own framing (leaving Facebook, founding an independent foundation) rather than asserting 'fork' as a direct quote.", "at": [{ "step": "Reveal: Trino wasn't always Trino" }] },
+      { "item": "Prestissimo's production maturity is stated in Meta's own measured terms ('under active development', 'various stages of integration'), not as a blanket claim of universal production status.", "at": [{ "step": "Reveal: Presto's own C++ path" }] },
+      { "item": "'Puffin' statistics are not named anywhere in Trino's own Iceberg connector docs (checked directly); this topic sources Iceberg's statistics support only via the table-statistics-enabled property and the ANALYZE-based collection sentence, which is what Trino's docs actually say.", "at": [{ "step": "Reveal: a real dynamic filter" }] },
+      { "item": "A PrestoDB blog post reportedly naming the C++ worker 'Presto 2.0' with 3-4x production gains returned HTTP 403 when fetched and is not used as a sourced claim anywhere in this topic.", "at": [{ "step": "Reveal: Presto's own C++ path" }] },
+      { "item": "The predict step at step 2 and the predict step at step 5 are both answered correctly by the reveal steps immediately following them.", "at": [{ "step": "Predict: does the whole query fail?" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 33's handoff (closing §6.3 with the format decision) and hands off cleanly into topic 35's ClickHouse opening, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

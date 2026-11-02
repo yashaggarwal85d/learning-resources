@@ -1,0 +1,4 @@
+- **Coordinator/worker split**: one node parses, plans, and schedules a query; a pool of other nodes execute its tasks and exchange intermediate data between stages.
+- **Dynamic filtering**: a runtime filter built from the values actually produced by a join's build side, pushed into the probe side's scan to prune rows before they're read.
+- **Cost-based join enumeration**: picking a join's execution order (and which side to build a hash table from) using real table statistics, rather than query-text order alone.
+- **Fault-tolerant execution**: an opt-in mode where individual failed tasks retry alone, reusing other tasks' already-computed output, instead of the whole query failing and restarting.

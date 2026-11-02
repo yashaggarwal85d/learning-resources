@@ -1,0 +1,82 @@
+{
+  "topic": "de.trino-federated-mpp-execution",
+  "steps": [
+    {
+      "lines": [
+        "Every topic before this one asked which table format to write.",
+        "None of them asked who reads it back.",
+        "That's new ground: splitting one query's work across a fleet of machines."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a long query, most of the way through, and one machine drops out.",
+        "Does the rest of the cluster shrug it off, or does everybody start over?"
+      ],
+      "answer": [
+        "Everybody starts over, by default.",
+        "A dropped machine means a human has to resubmit the entire thing."
+      ]
+    },
+    {
+      "lines": [
+        "One machine plans the whole thing out and hands pieces to the rest.",
+        "Those other machines never see the original request.",
+        "They just run their piece and pass results along to whoever needs them next."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a trick worth remembering: look at one side of a join first.",
+        "Whatever keys show up there are the only keys worth fetching on the other side.",
+        "Skip the rest before a single row of it gets read."
+      ]
+    },
+    {
+      "lines": [
+        "Two tables, wildly different sizes, about to be joined.",
+        "The engine already knows roughly how big each one is.",
+        "Which one does it load into memory to drive the match?"
+      ],
+      "answer": [
+        "The small one.",
+        "Loading the smaller side into memory is cheaper than loading the large one."
+      ]
+    },
+    {
+      "lines": [
+        "Size wins, and that choice comes straight from counting rows ahead of time.",
+        "Take the counts away, though, and the planner goes conservative.",
+        "It stops guessing at a smart order and just avoids the obviously dumb one."
+      ]
+    },
+    {
+      "lines": [
+        "There's a second mode built for exactly the failure from a few steps back.",
+        "Instead of restarting everything, only the piece that died gets redone.",
+        "Everything else that already finished stays put, nothing recomputed."
+      ]
+    },
+    {
+      "lines": [
+        "This engine used to carry a different name entirely.",
+        "Its own creators walked away from the company that built it, over who controlled its future.",
+        "A trademark fight a year later forced the new name to stick."
+      ]
+    },
+    {
+      "lines": [
+        "The company left behind kept building its own version in parallel.",
+        "Years later, that version got a from-scratch engine written in a faster language underneath it.",
+        "Same brain on top, a completely different set of hands doing the work."
+      ]
+    },
+    {
+      "lines": [
+        "A planner that survives a dead machine, a filter that skips unneeded data, a size-aware join.",
+        "Every one of those ran for real against this chapter's own table.",
+        "Next question: what if the engine and the storage were never two separate things?"
+      ]
+    }
+  ]
+}
