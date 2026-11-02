@@ -7203,6 +7203,26 @@ export const TOPICS: TopicMeta[] = [
       "A governance model is judged the day somebody wants to change something. Before a schema change or a deprecation, the question is who will be hurt, and the lineage graph can answer it. The last topic of this chapter is computing exactly that: lineage-driven impact analysis.",
   },
   {
+    id: 'de.lineage-driven-impact-analysis',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m5-platform-cloud-orchestration/ch13-observability-governance-security/lineage-driven-impact-analysis',
+    title: 'Lineage-driven impact analysis',
+    syllabusTitle: 'Lineage-driven impact analysis',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 5, title: 'Platform: Cloud, Orchestration, Containers & Operations' },
+    chapter: { number: 13, title: 'Observability, Governance and Security', section: '13.4' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['blast-radius-scoring', 'stale-propagation-along-lineage', 'owner-notification-deprecation-workflow'],
+    uses: ['openlineage-run-job-dataset-events', 'openlineage-facets', 'column-lineage-parse-vs-runtime', 'lineage-coverage-gaps', 'metadata-graph-architecture', 'technical-vs-business-catalog', 'federated-computational-governance', 'self-serve-table-registration-gate', 'error-budget-burn-rate', 'actionable-page-test', 'dag', 'graph-traversal', 'critical-path', 'tag-propagation-lineage', 'incident-response-five-stage-loop', 'lineage-derived-blast-radius', 'data-contract-as-code-odcs'],
+    declared: [],
+    bridge:
+      "A governance model is judged the day somebody wants to change something. This topic is computing exactly who will be hurt: walk the lineage graph downstream of a proposed change, score what it actually reaches, and say precisely who the walk cannot see.",
+    handoff:
+      "This chapter built the tools to see a platform: telemetry, SLOs, classification, encryption, access control, catalogs, lineage, quality and governance. The next chapter turns from seeing the platform to packaging and delivering it.",
+  },
+  {
     id: 'de.partitioned-log-segments-indexes',
     domain: 'data-engineering',
     slug: 'data-engineering/m4-movement-ingestion-cdc/ch09-streaming-systems-kafka-flink/partitioned-log-segments-indexes',

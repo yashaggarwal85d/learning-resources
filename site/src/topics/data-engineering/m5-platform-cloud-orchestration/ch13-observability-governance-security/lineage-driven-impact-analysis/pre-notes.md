@@ -1,0 +1,7 @@
+- **Blast radius**: everything a proposed change would actually affect, found by walking the lineage graph downstream from it. *Where you meet it:* the blast-radius reveal.
+- **Downstream and upstream**: downstream is everything that reads from a node, directly or through others; upstream is everything it itself reads from. *Where you meet it:* the blast-radius reveal and the stale-propagation elaboration.
+- **Transitive dependency**: a dependency reached only through one or more intermediate nodes, not directly. *Where you meet it:* the blast-radius reveal's "every transitive dependent."
+- **Owner**: (from earlier topics) the person or team the catalog resolves a dataset to for notification and accountability. *Where you meet it:* the owner-notification elaboration.
+- **Deprecation**: retiring a dataset through an announce-track-escalate-remove workflow, rather than deleting it outright. *Where you meet it:* the owner-notification elaboration.
+- **Stale**: a downstream dataset whose own upstream source has failed or changed, marked before a consumer discovers it on their own. *Where you meet it:* the stale-propagation elaboration.
+- **Graph traversal**: (from Chapter 1) walking a graph's edges from a starting node to find everything reachable -- the mechanism every reveal in this topic runs. *Where you meet it:* throughout.

@@ -1,0 +1,125 @@
+{
+  "topic": "de.lineage-driven-impact-analysis",
+  "syllabus": [
+    {
+      "clause": "blast-radius scoring before a schema change or deprecation, stale-table propagation, automated notification of dependent owners, deprecation workflows, lineage as the backbone of incident triage (§11.3) and contract enforcement (§11.4).",
+      "at": [
+        { "step": "Reveal: blast radius is a downstream walk of the lineage graph from a proposed change, scored by what it actually reaches" },
+        { "step": "Reveal: measured directly -- column-level lineage's affected set is a strict, more precise subset of table-level's" },
+        { "step": "Elaborate: the same graph walk, run forward -- an upstream failure marks every downstream dataset potentially stale, with a reason, instead of a silent discovery later" },
+        { "step": "Elaborate: resolve every affected node to its owner from the catalog and deduplicate, so an owner of ten affected tables gets exactly one message" },
+        { "step": "Reveal: measured directly -- a correct walk notifies every owner the graph can reach, and the uninstrumented export stays missed regardless, because no event for it ever existed" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OpenLineage specification -- Object Model",
+      "items": [
+        {
+          "item": "a Job is a process that consumes or produces Datasets, and a Run is one occurrence of a Job executing -- the graph a blast-radius walk traces through",
+          "at": [{ "step": "Reveal: blast radius is a downstream walk of the lineage graph from a proposed change, scored by what it actually reaches" }]
+        }
+      ]
+    },
+    {
+      "source": "OpenLineage specification -- Column Level Lineage Dataset Facet",
+      "items": [
+        {
+          "item": "a DIRECT transformation means the output column was derived from the input field; an INDIRECT one means the input impacted the output without the output being derived from it -- the distinction a column-level walk relies on to narrow its affected set",
+          "at": [{ "step": "Reveal: measured directly -- column-level lineage's affected set is a strict, more precise subset of table-level's" }]
+        }
+      ]
+    },
+    {
+      "source": "Marquez -- Get a column lineage graph",
+      "items": [
+        {
+          "item": "a real lineage API's own column-lineage endpoint takes a depth parameter (default 20) and a withDownstream flag, confirming a blast-radius walk is a bounded, directional traversal, not an unbounded one",
+          "at": [{ "step": "Reveal: blast radius is a downstream walk of the lineage graph from a proposed change, scored by what it actually reaches" }]
+        }
+      ]
+    },
+    {
+      "source": "DataHub -- Lineage Impact Analysis",
+      "items": [
+        {
+          "item": "a real catalog's own impact-analysis feature resolves the complete set of upstream and downstream dependencies and exports them with their assigned owners, confirming owner resolution is a standard, real part of impact analysis, not a toy addition",
+          "at": [{ "step": "Elaborate: resolve every affected node to its owner from the catalog and deduplicate, so an owner of ten affected tables gets exactly one message" }]
+        }
+      ]
+    },
+    {
+      "source": "Google SRE Workbook -- Incident Response",
+      "items": [
+        {
+          "item": "mitigating an incident only requires knowing the location of the root cause, not fully understanding it -- the triage framing this topic's blast-radius score serves: locate the damage first, explain it second",
+          "at": [{ "step": "Elaborate: the same graph walk, run forward -- an upstream failure marks every downstream dataset potentially stale, with a reason, instead of a silent discovery later" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a table-level walk implicates every consumer of a table including one that never touches the changed column; a column-level walk implicates a strict subset; a deduplicated owner-notification step produces one message per owner; an uninstrumented reader stays invisible to either walk",
+          "at": [
+            { "step": "Reveal: measured directly -- column-level lineage's affected set is a strict, more precise subset of table-level's" },
+            { "step": "Reveal: measured directly -- a correct walk notifies every owner the graph can reach, and the uninstrumented export stays missed regardless, because no event for it ever existed" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      {
+        "item": "DataHub's own impact-analysis UI defaults to a one-degree-of-dependency filter specifically to limit processor-intensive queries on a large graph, which is a real performance constraint a production blast-radius tool has to design around that this topic's own small, fully-materialized toy graph never has to face.",
+        "at": [{ "out": "DataHub's own default-depth-limit performance constraint named only; this topic's own measurement walks a small graph with no depth limit needed" }]
+      },
+      {
+        "item": "A deprecation workflow's own escalation step -- what happens when an owner doesn't reply within a stated window -- is itself a decision the federated-governance topic's own automate-vs-human split applies to: escalating to a steward is automatable, but deciding whether to remove a table with an unresponsive owner anyway is exactly the kind of judgment call that topic keeps human.",
+        "at": [{ "out": "deprecation's own escalation-on-no-reply step named only; this topic's own measurement runs a single notification pass, not a multi-step escalation timeline" }]
+      },
+      {
+        "item": "OpenLineage's own run-cycle page documents that a job's lineage events can themselves fail to arrive (a crashed job emitting no COMPLETE or FAIL event at all), which is a second, distinct source of lineage-graph incompleteness beyond simply never instrumenting a reader -- a gap this topic's own uninstrumented-export example doesn't demonstrate.",
+        "at": [{ "out": "missing-terminal-event incompleteness named only; this topic's own measurement models never-instrumented readers, not partially-emitted ones" }]
+      },
+      {
+        "item": "A real blast-radius score, per CHAPTER.md's own scope, weighs not just the count of affected nodes but their tier and criticality and whether a dependency is direct or only indirect in column lineage -- a multi-factor score this topic's own measurement simplifies to a plain set-membership count.",
+        "at": [{ "out": "the full multi-factor blast-radius scoring formula named only; this topic's own measurement computes a plain affected-node set, not a weighted score" }]
+      },
+      {
+        "item": "DataHub's own Lightning Cache mechanism activates automatically above a configurable result-size threshold specifically for impact-analysis queries, which is an operational detail about how a real system keeps a blast-radius query fast at scale, distinct from the correctness question this topic's own measurement focuses on.",
+        "at": [{ "out": "DataHub's own Lightning Cache performance optimization named only; this topic's own measurement addresses correctness (which nodes are affected), not query latency" }]
+      },
+      {
+        "item": "The Google SRE Workbook's own incident narrative shows a generic mitigation (a rollback) succeeding before the root cause was even found, which is the same principle this topic's blast-radius score serves for a planned change: you don't need full understanding to act correctly on where the damage reaches.",
+        "at": [{ "step": "Elaborate: the same graph walk, run forward -- an upstream failure marks every downstream dataset potentially stale, with a reason, instead of a silent discovery later" }]
+      },
+      {
+        "item": "A table's own column-level lineage can itself be incomplete even when the table-level edge is recorded correctly -- exactly topic 11's own SQL-parse-vs-runtime-plan gap -- which means a narrower column-level blast radius this topic measures can also be an under-count, not just a more precise count, depending on how that lineage was originally collected.",
+        "at": [{ "out": "column-lineage's own collection-method-dependent incompleteness named only; this topic's own measurement assumes its column edges are already correctly recorded" }]
+      },
+      {
+        "item": "This chapter's own federated-governance topic (topic 13) names this topic's lineage graph as the mechanism its self-serve registration gate could use to block a change with too large a blast radius before it ships, a composition this topic itself stops short of building.",
+        "at": [{ "out": "topic 13's own potential use of a blast-radius score as a registration-gate rule named only; this topic's own scope ends at computing the score, not gating on it" }]
+      },
+      {
+        "item": "A stale-propagation walk that marks every downstream node \"potentially stale\" can itself create alert fatigue if a frequently-changing upstream table propagates staleness to hundreds of marginal consumers on every run, a volume problem this topic's own small, fixed example graph is too small to surface.",
+        "at": [{ "out": "stale-propagation's own alert-volume problem at scale named only; this topic's own measurement propagates staleness across a handful of fixed nodes" }]
+      },
+      {
+        "item": "Chapter 14's own first topic (timing and failure models, named in this topic's own handoff) is where the course finally states precisely what a lineage event's own timestamp is actually relative to -- a question this topic and every earlier observability topic in this chapter has used informally without stating the underlying model.",
+        "at": [{ "out": "Chapter 14's own precise timing/failure-model treatment named only; this topic uses timestamps and event ordering informally throughout" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

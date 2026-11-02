@@ -1,0 +1,74 @@
+{
+  "topic": "de.lineage-driven-impact-analysis",
+  "steps": [
+    {
+      "lines": [
+        "Somebody wants to rename a single column on the orders table. Look it up in the catalog, and it tells you three other tables touch it.",
+        "The actual truth, planted ahead of time just for this exercise, is far bigger — a dozen or so real dependents, plus one script nobody ever wired up to report anything at all.",
+        "How many people actually need a heads-up, and how many will slip past you no matter how good your tooling is?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's a name for the thing you actually want to compute.",
+        "Take whatever change you're proposing, and just follow every arrow leading away from it, as far downstream as those arrows go — not only the things that touch it directly.",
+        "Whatever that walk actually reaches is the real size of the damage. Touch nothing downstream at all, and there's nothing to even review."
+      ]
+    },
+    {
+      "lines": [
+        "Here's one for you to work out before I answer it.",
+        "Say three different things all read from one table, but only two of them actually build one of their own output columns out of the specific column somebody wants to drop.",
+        "Trace that relationship two different ways — at the whole-table level, and at the single-column level — and see whether you land on the same group both times."
+      ],
+      "answer": [
+        "You don't land on the same group. The column-level version comes out smaller.",
+        "Knowing a table gets read at all tells you nothing about which column actually mattered to the reader — so tracking it at the column level correctly drops the one reader that was only ever after something else entirely."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what actually happens when you run it for real.",
+        "Tracking at the whole-table level flags absolutely everyone who reads that table, whether or not they ever touch the column in question.",
+        "Tracking column by column flags only the ones whose own output genuinely comes from that specific column — strictly fewer, and strictly the right ones, not just a different guess."
+      ]
+    },
+    {
+      "lines": [
+        "Run that exact same trace in the opposite direction, and it earns its keep in a completely different way.",
+        "The moment something upstream breaks or ships bad data, walk forward along those same arrows and flag everything downstream as questionable, and say exactly why. Nobody has to stumble onto the problem days later on their own."
+      ]
+    },
+    {
+      "lines": [
+        "Once you've got your list of everything affected, there's one more obvious step.",
+        "Look up who's actually responsible for each affected thing, through the catalog, and then collapse the list. Someone responsible for ten different affected tables should get exactly one message listing all ten — not ten separate pings they'll start tuning out by the third one.",
+        "Winding down an old table for good runs through that exact same lookup-and-notify step, just repeated on a schedule until every last reader has either answered or been pushed further up the chain."
+      ]
+    },
+    {
+      "lines": [
+        "Now bring back the actual planted truth from the very start, and ask the harder version of the same question.",
+        "A dozen or so genuine dependents, a couple of dashboards, and one script that was simply never hooked up to announce itself to anything. Run the best possible column-by-column trace you can build. Does it reach every single one of those, including that one lone script?"
+      ],
+      "answer": [
+        "It reaches every one of them — except that one script, and nothing can fix that.",
+        "That script was never wired up to say anything about itself in the first place, so there's genuinely no trail for any trace to follow there. That's not the trace falling short — it's a hole in what ever got recorded to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "And sure enough, running it for real lines up exactly with that.",
+        "Every single person reachable through a real, recorded connection gets correctly notified, full stop.",
+        "That one disconnected script never shows up anywhere, under any version of the trace you try — not because the trace failed, but because there was simply never anything there to find."
+      ]
+    },
+    {
+      "lines": [
+        "So really, the whole idea here boils down to two honest truths.",
+        "Figuring out what a change will actually break is just a matter of following the arrows as far as they genuinely go. Tracking it column by column narrows that list down to exactly the people who truly need to know.",
+        "But the honest answer to how many you'll still miss is never, ever zero — because this only ever knows about what someone actually bothered to wire up and report in the first place."
+      ]
+    }
+  ]
+}

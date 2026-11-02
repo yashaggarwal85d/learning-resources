@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the catalog, OpenLineage, governance, and the incident/contract topics this mechanism backs
+
+<ul class="resources">
+  <Resource kind="reel" title="Metadata platforms and active catalogs" domain="data-engineering" host="de.metadata-platforms-active-catalogs" by="topic 10 of this chapter" />
+  <Resource kind="reel" title="OpenLineage: events, facets and lineage graphs" domain="data-engineering" host="de.openlineage-events-facets-lineage" by="topic 11 of this chapter — the lineage graph this topic walks" />
+  <Resource kind="reel" title="Federated governance operating model" domain="data-engineering" host="de.federated-governance-operating-model" by="topic 13 of this chapter — the previous topic" />
+  <Resource kind="reel" title="Data incident response and blast radius" domain="data-engineering" host="de.data-incident-response-blast" by="Chapter 11 §11.3" />
+  <Resource kind="reel" title="Contract enforcement in CI" domain="data-engineering" host="de.contract-enforcement-in-ci" by="Chapter 11 §11.4" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Object Model" href="https://openlineage.io/docs/spec/object-model" by="OpenLineage specification">The Job/Run/Dataset graph a blast-radius walk traces through.</Resource>
+  <Resource kind="reading" title="Column Level Lineage Dataset Facet" href="https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet/" by="OpenLineage specification">DIRECT and INDIRECT, the distinction a column-level walk relies on.</Resource>
+  <Resource kind="reading" title="Get a column lineage graph" href="https://marquezproject.ai/docs/api/get-column-lineage/" by="Marquez Project">A real API's own depth and downstream parameters.</Resource>
+  <Resource kind="reading" title="Lineage Impact Analysis" href="https://docs.datahub.com/docs/act-on-metadata/impact-analysis" by="DataHub documentation">A real product's own upstream/downstream, owner-resolving impact view.</Resource>
+  <Resource kind="reading" title="Incident Response" href="https://sre.google/workbook/incident-response/" by="Google SRE Workbook">The triage framing: locate the damage before fully explaining it.</Resource>
+</ul>
+
+</section>
