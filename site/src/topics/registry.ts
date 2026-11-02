@@ -10332,4 +10332,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A table's column statistics (topic 21's manifests) are per-file. The next topic is statistics kept at the whole-table level instead: Iceberg's Puffin files.",
   },
+  {
+    id: 'de.iceberg-statistics-puffin-files',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/iceberg-statistics-puffin-files',
+    title: 'Iceberg statistics and Puffin files',
+    syllabusTitle: 'Iceberg statistics and Puffin files',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.1' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['iceberg-puffin-statistics'],
+    uses: ['iceberg-metadata-tree', 'quantile-sketches'],
+    declared: ['hyperloglog-distinct-counting'],
+    bridge:
+      "A table's column statistics are per-file, tracked in manifests. This topic is statistics kept at the whole-table level instead: a real Puffin sidecar file holding an NDV theta sketch, built in this sandbox and read by a cost-based optimizer.",
+    handoff:
+      "Iceberg's own snapshot history is already addressable by id. The next topic is giving some of those snapshots stable, human-meaningful names: branches and tags.",
+  },
 ];

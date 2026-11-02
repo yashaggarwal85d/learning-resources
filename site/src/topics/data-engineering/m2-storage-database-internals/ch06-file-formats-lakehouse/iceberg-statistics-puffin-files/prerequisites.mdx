@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="HyperLogLog and distinct counting" domain="data-engineering" host="de.hyperloglog-distinct-counting" by="Chapter 5 §5.6" />
+  <Resource kind="reel" title="Iceberg metadata tree and scan planning" domain="data-engineering" host="de.iceberg-metadata-tree-scan" by="Topic 21" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The table spec's own column-metrics truncation and table/partition statistics sections.</Resource>
+  <Resource kind="reading" title="Puffin Spec" href="https://iceberg.apache.org/puffin-spec/" by="Apache Iceberg">The file format's own Magic/Blob/Footer structure and the Theta sketch blob type.</Resource>
+  <Resource kind="reading" title="Iceberg connector" href="https://trino.io/docs/current/connector/iceberg.html" by="Trino">How Trino's Iceberg connector collects statistics.</Resource>
+  <Resource kind="reading" title="Cost-based optimizations" href="https://trino.io/docs/current/optimizer/cost-based-optimizations.html" by="Trino">How a cost-based optimizer actually consumes table statistics.</Resource>
+</ul>
+
+</section>

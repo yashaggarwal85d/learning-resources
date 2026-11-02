@@ -1,0 +1,72 @@
+{
+  "topic": "de.iceberg-statistics-puffin-files",
+  "syllabus": [
+    { "clause": "per-file column metrics in manifests (and their truncation), table-level statistics and NDV theta sketches in Puffin sidecars feeding cost-based optimizers in Trino and Spark, partition statistics files; keeping stats fresh", "at": [
+      { "step": "Reveal: truncated, for real" },
+      { "step": "Reveal: the spec says it directly" },
+      { "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" },
+      { "step": "Reveal: read back independently, checked against the truth" },
+      { "step": "Reveal: partition statistics files are the same idea, one level down" },
+      { "step": "Reveal: a cost-based optimizer leans on exactly this" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Table Spec (column metrics truncation, table/partition statistics)",
+      "items": [
+        { "item": "bounds for string and binary are never tight because they may be truncated when written", "at": [{ "step": "Reveal: the spec says it directly" }] },
+        { "item": "table statistics files are valid Puffin files; statistics are informational and a reader can choose to ignore them", "at": [{ "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" }] },
+        { "item": "ID of the Iceberg table's snapshot the statistics file is associated with", "at": [{ "deep": "Frontier" }] },
+        { "item": "ordered list of fields, given by field ID, on which the statistic was calculated", "at": [{ "deep": "Frontier" }] },
+        { "item": "partition statistics files are based on partition statistics file spec", "at": [{ "step": "Reveal: partition statistics files are the same idea, one level down" }] },
+        { "item": "partition statistics are not required for reading or planning and readers may ignore them", "at": [{ "step": "Reveal: partition statistics files are the same idea, one level down" }] },
+        { "item": "each table snapshot may be associated with at most one partition statistics file", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Puffin Spec (file structure, Theta sketch blob type)",
+      "items": [
+        { "item": "Magic is four bytes 0x50, 0x46, 0x41, 0x31", "at": [{ "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" }] },
+        { "item": "FooterPayload is an optionally compressed, UTF-8 encoded JSON payload describing the blobs in the file", "at": [{ "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" }] },
+        { "item": "the apache-datasketches-theta-v1 blob type is a serialized compact Theta sketch produced by the Apache DataSketches library", "at": [{ "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" }] },
+        { "item": "ndv is the estimate of number of distinct values, derived from the sketch, stored as a decimal-digit string", "at": [{ "step": "Reveal: read back independently, checked against the truth" }] }
+      ]
+    },
+    {
+      "source": "Trino, Iceberg connector",
+      "items": [
+        { "item": "the Iceberg connector can collect column statistics using the ANALYZE statement", "at": [{ "deep": "Frontier" }] },
+        { "item": "collecting statistics for all columns on a wide table is expensive and typically unnecessary beyond join keys, predicates and grouping keys", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Trino, Cost-based optimizations",
+      "items": [
+        { "item": "cost-based join enumeration uses connector-provided table statistics to estimate join-order costs", "at": [{ "step": "Reveal: a cost-based optimizer leans on exactly this" }] },
+        { "item": "when statistics are not available or a cost can't be computed, Trino falls back to ELIMINATE_CROSS_JOINS", "at": [{ "step": "Reveal: a cost-based optimizer leans on exactly this" }] },
+        { "item": "capping replicated table size helps prevent bad plans when the cost-based optimizer misestimates joined-table size", "at": [{ "step": "Reveal: a cost-based optimizer leans on exactly this" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The manifest bound truncation is measured, not assumed: examples.py asserts the real lower_bound and upper_bound returned by table.inspect.data_files() are exactly 16 bytes, against real values of 43 and 200 bytes, per FACT-CHECK.md claims 1-2.", "at": [{ "step": "Reveal: truncated, for real" }] },
+      { "item": "The upper bound's increment-the-last-byte construction is asserted directly (upper_bound[:15] matches the truncated prefix, upper_bound[15] is exactly one more than the real byte), not just described.", "at": [{ "step": "Reveal: truncated, for real" }] },
+      { "item": "The Puffin file's container bytes (magic, blob placement, footer JSON, footer payload size, flags) are built to match the spec's File structure and Footer structure sections exactly, verified by an independent raw-byte parse in step 7 that uses no pyiceberg API, per FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" }] },
+      { "item": "The statistics file is registered through pyiceberg's real public update_statistics()/set_statistics() API, not a low-level workaround, and this is disclosed as a contrast with this chapter's earlier delete-file and manifest-rewrite topics which needed low-level primitives, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" }] },
+      { "item": "The sketch's own serialized bytes are a disclosed, from-scratch substitute for the real Apache DataSketches library's wire format -- the spec names that exact library, and this repo's baseline environment has no dependency on it, matching this chapter's established sketch-implementation convention (Chapter 5's HyperLogLog topic) of building sketch algorithms from first principles rather than adding new pip dependencies with no install path in this repo's build pipeline, per FACT-CHECK.md red-team #1.", "at": [{ "step": "Reveal: a real Puffin file, byte-exact to spec, holding a real sketch" }] },
+      { "item": "The sketch estimate vs. true distinct count comparison is an exact computed percentage (not eyeballed), consistently near 0.3% across 3 determinism-check runs on 20,000 rows, printed by examples.py itself.", "at": [{ "step": "Reveal: read back independently, checked against the truth" }] },
+      { "item": "Partition statistics files are named from the spec's own quoted text only, not built, matching this topic's own CHAPTER.md scope (name it, don't build it), per FACT-CHECK.md red-team #4.", "at": [{ "step": "Reveal: partition statistics files are the same idea, one level down" }] },
+      { "item": "The 'stale stats cost a query plan' claim is Trino's own documented account of a fallback strategy and a misestimation risk, quoted directly rather than paraphrased into a stronger claim than the source supports, per FACT-CHECK.md red-team #5.", "at": [{ "step": "Reveal: a cost-based optimizer leans on exactly this" }] },
+      { "item": "The prerequisites panel lists topic 21 and Chapter 5 §5.6, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "declared: Chapter 5's HyperLogLog topic by direct analogy only, matching CHAPTER.md's own note for this topic.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

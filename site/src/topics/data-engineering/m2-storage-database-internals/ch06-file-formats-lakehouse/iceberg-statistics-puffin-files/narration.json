@@ -1,0 +1,73 @@
+{
+  "topic": "de.iceberg-statistics-puffin-files",
+  "steps": [
+    {
+      "lines": [
+        "A few topics back, a per-file record of column metrics was read straight out of this format's metadata tree — a minimum value, a maximum value, a count of rows, treated as simple facts about the file.",
+        "Those facts aren't always as exact as they looked. Here's the part that got glossed over."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a column holding a genuinely long piece of text, far longer than a typical identifier. That value gets written into a file, and this format still has to record a minimum and maximum for that column, in the metadata.",
+        "Does it store that long value in full, however long it happens to be? Or does it cut it down to a fixed length, at the cost of no longer being the literal value?"
+      ],
+      "answer": [
+        "It cuts it down. There's a fixed limit on how much of a text or binary value gets kept as a bound, and past that limit, what's stored stops being the literal minimum or maximum.",
+        "It becomes a safe range instead — close enough to rule out files during planning, but not a value anyone should trust as the literal smallest or largest thing in the column."
+      ]
+    },
+    {
+      "lines": [
+        "That's exactly what happened here, with real values written by this chapter's own library. One value two hundred bytes long, another just over forty — both stored as bounds of exactly sixteen bytes.",
+        "The upper one isn't even a truncated copy of the real value. Its final byte is nudged up by one, specifically so it still sorts above the real value it's standing in for."
+      ]
+    },
+    {
+      "lines": [
+        "And that's not an implementation quirk, either. The specification says this outright: bounds on text and binary columns are never treated as exact, precisely because they might have been cut short when they were written.",
+        "A bound in this format's metadata is a safe range a planner can lean on to skip files. It was never a promise of the literal smallest or largest value."
+      ]
+    },
+    {
+      "lines": [
+        "So if per-file statistics are this limited — scattered across many small metadata records, each one potentially imprecise — where does a query planner actually get something like a real distinct-value count across an entire table?",
+        "Does it open every single file and count the exact values by hand, every time a query needs that number? Or does something else entirely handle it?"
+      ],
+      "answer": [
+        "Something else entirely. A separate kind of file exists specifically to hold statistics at the level of the whole table, not any one piece of it — including a compact, pre-built summary structure for estimating how many distinct values a column holds.",
+        "That summary isn't exact, and it isn't meant to be. It trades a small, known margin of error for never having to scan the table just to answer that one question."
+      ]
+    },
+    {
+      "lines": [
+        "That exact kind of file was built here, for real, matching the file format's specification byte for byte — the right opening marker, the summary structure itself, and a closing section describing exactly what's inside and where to find it.",
+        "Inside it sits a real distinct-value-estimating structure, built from scratch in this sandbox, and the whole file was then registered against the table using this library's own genuine, public mechanism for attaching statistics — not a workaround, the real thing."
+      ]
+    },
+    {
+      "lines": [
+        "Then it was read back completely independently, parsing the raw bytes of that file by hand, because this particular library has no built-in way to read that summary structure back out once it's written.",
+        "The estimate that came out of it was checked directly against the table's actual, exactly-counted distinct value count. The two were close — not identical, which is exactly what a space-saving summary like this is supposed to produce."
+      ]
+    },
+    {
+      "lines": [
+        "One more file type worth naming here, though it wasn't built in this sandbox: the same whole-table statistics idea exists one level down, scoped to a single partition instead of the entire table.",
+        "It follows its own, separate specification, and just like the table-level version, a reader is free to simply ignore it if it isn't there."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why any of this actually matters beyond being a nice-to-have. A real query engine's cost-based planner — the part deciding which order to perform joins in — leans directly on exactly these kinds of statistics to estimate which plan will be cheapest.",
+        "When those statistics are missing, or simply can't be computed, that engine falls back to a noticeably weaker planning strategy. And when the statistics are present but wrong, the risk isn't just a slightly worse plan — it's a genuinely bad one, built on a bad estimate."
+      ]
+    },
+    {
+      "lines": [
+        "So the full picture is this. Per-file statistics were already sitting in this format's metadata tree, but capped and sometimes truncated. A dedicated file type carries the whole-table picture instead, built and verified here from first principles.",
+        "The same idea repeats one level down, at the partition level. And none of it is decoration — a real query planner's choice of join order depends on these numbers being there, and being right."
+      ]
+    }
+  ]
+}
