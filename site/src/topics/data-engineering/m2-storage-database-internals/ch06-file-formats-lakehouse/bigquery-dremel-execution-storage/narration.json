@@ -1,0 +1,83 @@
+{
+  "topic": "de.bigquery-dremel-execution-storage",
+  "steps": [
+    {
+      "lines": [
+        "A moment ago, one platform kept every one of its old storage blocks around forever, letting you reach into the past.",
+        "That one couldn't be run here at all -- only read about.",
+        "Here's a second platform, also unreachable, but built on an entirely different foundation underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Picture one single system that both holds a table's bytes and crunches through a query against them.",
+        "Does that same system still do both of those jobs today, or did holding the bytes and crunching the query end up somewhere else entirely?",
+        "Guess before the next slide answers it."
+      ],
+      "answer": [
+        "They ended up somewhere else entirely.",
+        "Holding the bytes and crunching the query now live on two separate systems."
+      ]
+    },
+    {
+      "lines": [
+        "One system holds every byte on a shared, column-oriented storage layer, far away from any one query.",
+        "A completely different cluster, managed on its own, reads that storage over a dedicated internal network to actually run the query.",
+        "Neither side ever needs to touch local disks belonging to the other."
+      ]
+    },
+    {
+      "lines": [
+        "A table gets sliced into segments first, so a filter can throw out whole segments that can't possibly match.",
+        "Inside the segments that survive, rows get sorted into tighter blocks for the exact same kind of filter.",
+        "Two passes of the identical idea, each one narrowing what actually gets read."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a saved, precomputed answer to a question you ask over and over against a table that keeps changing underneath it.",
+        "Nobody sits there refreshing that saved answer by hand.",
+        "It just stays current on its own, quietly, every time the table underneath it shifts."
+      ]
+    },
+    {
+      "lines": [
+        "Skipping unneeded segments and reusing a precomputed answer both still mean one more query actually has to run.",
+        "Is there anything that skips running a frequently repeated question altogether, rather than just running it faster?",
+        "Guess before the next slide answers it."
+      ],
+      "answer": [
+        "Yes, something skips running it altogether.",
+        "A caching layer sitting in front of the whole system catches it instead."
+      ]
+    },
+    {
+      "lines": [
+        "That caching layer keeps the data behind your most frequent questions sitting ready in memory, in front of everything else.",
+        "Nothing about the question itself, or the table it reads from, ever has to change for that to kick in.",
+        "It's just faster the next time, without anyone asking for that."
+      ]
+    },
+    {
+      "lines": [
+        "Getting data in splits two different ways: one big delivery, dropped in all at once from outside storage.",
+        "Or a steady trickle, one row after another, arriving continuously instead.",
+        "Same destination table, two very different rhythms of arrival."
+      ]
+    },
+    {
+      "lines": [
+        "That steady trickle used to only promise it would probably get every row there, eventually, with no hard guarantee.",
+        "The newer version of that same trickle now tracks exactly where each writer left off.",
+        "That tracking is what finally turns probably into a guarantee: every row, exactly once."
+      ]
+    },
+    {
+      "lines": [
+        "One system held the bytes and ran the question itself, together -- now two separate systems split that job, joined by a network between them.",
+        "Narrowing by segment, narrowing again by block, catching repeats before they run, two different rhythms for getting data in -- every one of those rests on that same split.",
+        "A third platform is coming next, and it splits nothing at all -- its compute and its storage live on the very same machines."
+      ]
+    }
+  ]
+}
