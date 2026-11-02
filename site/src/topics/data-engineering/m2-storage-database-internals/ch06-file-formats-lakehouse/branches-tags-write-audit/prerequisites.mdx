@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Snapshot-based table metadata" domain="data-engineering" host="de.snapshot-based-table-metadata" by="Topic 12" />
+  <Resource kind="reel" title="Iceberg metadata tree and scan planning" domain="data-engineering" host="de.iceberg-metadata-tree-scan" by="Topic 21" />
+  <Resource kind="reel" title="Iceberg statistics and Puffin files" domain="data-engineering" host="de.iceberg-statistics-puffin-files" by="Topic 25" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The table spec's own snapshot-references section: branches and tags.</Resource>
+  <Resource kind="reading" title="Spark Procedures" href="https://iceberg.apache.org/docs/latest/spark-procedures/" by="Apache Iceberg">The project's own fast_forward and publish_changes procedures, and the wap_id table property.</Resource>
+  <Resource kind="reading" title="View Spec" href="https://iceberg.apache.org/view-spec/" by="Apache Iceberg">What a view actually is: a separate catalog object, with its own metadata and no data of its own.</Resource>
+</ul>
+
+</section>

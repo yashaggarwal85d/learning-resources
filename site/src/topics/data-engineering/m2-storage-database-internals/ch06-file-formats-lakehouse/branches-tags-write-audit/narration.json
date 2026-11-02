@@ -1,0 +1,73 @@
+{
+  "topic": "de.branches-tags-write-audit",
+  "steps": [
+    {
+      "lines": [
+        "Any single point in this format's history is already something you can reach directly, just by its identifier. That part was covered already.",
+        "What hasn't been covered is giving some of those points real names people actually use, and, for at least one of them, letting it move on its own going forward."
+      ]
+    },
+    {
+      "lines": [
+        "Picture two of these named pointers, created at the exact same moment, aimed at the exact same point in history. One is called a tag. The other is called a branch.",
+        "Is there any real difference between them, or are they genuinely just two words for the same idea?"
+      ],
+      "answer": [
+        "There's a real difference, and it's about time, not position. Right now, this instant, they point at the same place. That won't stay true.",
+        "One of them is permanently fixed where it is. The other is allowed to move forward as new work gets committed against it. That's the entire distinction, and it matters enormously."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that distinction made concrete. Both a tag and a branch were just created, genuinely, in this sandbox, off the exact same single point in this table's history.",
+        "Right now they're indistinguishable by position. One of them is about to stop being indistinguishable."
+      ]
+    },
+    {
+      "lines": [
+        "The specification itself draws this line in plain language: one kind of reference is simply a label on one fixed point. The other is explicitly described as mutable, meant to be updated as new commits land against it.",
+        "A fixed label earns its keep for retention and for reproducing an exact past state on demand. A reference that's allowed to move is what makes isolated, in-progress work possible in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where that movable one actually gets used. Brand new rows get written, but deliberately not onto the table's primary line of history. They land only on that separate, named branch instead.",
+        "What happens to the primary line while that write is happening? Does it quietly pick up those same new rows too, or does it stay exactly as it was until something else says otherwise?"
+      ],
+      "answer": [
+        "It stays exactly as it was. Nothing about writing to a branch touches any other reference, the primary line included, unless some separate, explicit action goes and moves that other reference itself.",
+        "That isolation is the entire reason this pattern works at all. Whatever lands on a branch is invisible everywhere else until somebody deliberately decides otherwise."
+      ]
+    },
+    {
+      "lines": [
+        "That isolation was checked directly here, not just claimed. Three brand new rows were written only onto that separate branch. The primary line's own identifier, read right off the table immediately afterward, hadn't shifted by one bit.",
+        "Whatever was just written is sitting there, fully real, completely invisible to anyone still looking at the primary line."
+      ]
+    },
+    {
+      "lines": [
+        "Next comes the audit step, and it's a real check here, not a formality: does that staged batch contain any duplicate identifier that shouldn't be there? It doesn't.",
+        "Because it passes, the primary line gets fast-forwarded, for real, directly onto that branch's own latest point. And the tag from earlier? It never moved. It's still sitting exactly where it always was."
+      ]
+    },
+    {
+      "lines": [
+        "Now a second attempt, run through the exact same steps. This time the staged batch quietly reintroduces an identifier that already exists elsewhere in the table — a genuine duplicate.",
+        "The same real check catches it immediately. That branch gets thrown away entirely, and the primary line's identifier, checked again directly, never moved one bit. A failed audit here isn't a warning. It's a hard stop."
+      ]
+    },
+    {
+      "lines": [
+        "Worth being precise about what this whole mechanism actually covers. Everything just shown happened on one single table. A view is something else again: its own separate kind of catalog entry, with its own metadata history, holding no rows of data at all on its own.",
+        "And coordinating a branching operation like this across more than one table at the same time, atomically? That's explicitly a job for the catalog layer above any individual table, not something any single table can do by itself."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling it together: one kind of named pointer stays fixed forever, built for retention and for reproducing an exact past state. The other is free to move, which is exactly what makes isolated, staged work possible.",
+        "A complete stage-check-publish cycle ran twice here. One attempt genuinely passed and got published. One attempt genuinely failed and got discarded. Neither one touched the primary line until a real check had already decided which way it would go."
+      ]
+    }
+  ]
+}

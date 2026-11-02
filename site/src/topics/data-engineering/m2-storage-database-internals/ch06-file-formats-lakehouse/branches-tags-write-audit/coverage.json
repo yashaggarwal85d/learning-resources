@@ -1,0 +1,67 @@
+{
+  "topic": "de.branches-tags-write-audit",
+  "syllabus": [
+    {
+      "clause": "snapshot references: tags for retention and reproducibility, branches for isolated writes; write-audit-publish (stage on a branch, validate, fast-forward main); Iceberg views; multi-table branching belongs to the catalog (§6.3.4).",
+      "at": [
+        { "step": "Reveal: created for real, from the same snapshot" },
+        { "step": "Reveal: the spec says it directly" },
+        { "step": "Reveal: staged for real, main provably untouched" },
+        { "step": "Reveal: validated, then published for real" },
+        { "step": "Reveal: a second attempt, for real, fails and never reaches main" },
+        { "step": "Reveal: this is one table — views and the catalog are a different layer" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Table Spec (snapshot references: branches and tags)",
+      "items": [
+        { "item": "Branches and tags are both snapshot references", "at": [{ "step": "Reveal: created for real, from the same snapshot" }] },
+        { "item": "Tags are labels for individual snapshots", "at": [{ "step": "Reveal: the spec says it directly" }] },
+        { "item": "Branches are mutable named references that can be updated by committing a new snapshot", "at": [{ "step": "Reveal: the spec says it directly" }] },
+        { "item": "A branch's retention and expiration behave differently from a tag's", "at": [{ "deep": "Deep-dive" }] },
+        { "item": "References can be used for retention and reproducibility of a snapshot", "at": [{ "step": "Reveal: the spec says it directly" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Spark Procedures (fast_forward)",
+      "items": [
+        { "item": "fast_forward fast-forwards one branch's current snapshot to another branch's latest snapshot", "at": [{ "step": "Reveal: validated, then published for real" }] },
+        { "item": "fast_forward is only valid when the source branch's history is an ancestor of the target", "at": [{ "deep": "Deep-dive" }] },
+        { "item": "publish_changes and a wap_id table property name the staged-then-published pattern", "at": [{ "step": "Reveal: validated, then published for real" }] },
+        { "item": "The procedure returns the branch updated and the snapshots applied", "at": [{ "deep": "Production" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, View Spec",
+      "items": [
+        { "item": "A view is a separate catalog object from a table, with its own metadata", "at": [{ "step": "Reveal: this is one table — views and the catalog are a different layer" }] },
+        { "item": "View metadata storage mirrors how table metadata is stored and retrieved", "at": [{ "deep": "Frontier" }] },
+        { "item": "A view holds no data of its own, only a representation of a query", "at": [{ "step": "Reveal: this is one table — views and the catalog are a different layer" }] },
+        { "item": "A view's metadata can carry multiple SQL-dialect representations of the same query", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "Tag vs. branch is framed correctly as fixed point in time vs. a moving reference, not just two kinds of names, per FACT-CHECK.md claim 3.", "at": [{ "step": "Reveal: the spec says it directly" }] },
+      { "item": "The write-audit-publish flow is demonstrated end to end with a real pass and a real, distinct fail case, not just the happy path, per FACT-CHECK.md claims 6-11.", "at": [{ "step": "Reveal: a second attempt, for real, fails and never reaches main" }] },
+      { "item": "Branch isolation is asserted directly against main's own snapshot id before and after the branch write, not just claimed in narration, per FACT-CHECK.md claim 4.", "at": [{ "step": "Reveal: staged for real, main provably untouched" }] },
+      { "item": "The validation check (duplicate id detection) is a real, minimal, legible check rather than an opaque black box, per FACT-CHECK.md claim 6.", "at": [{ "step": "Reveal: validated, then published for real" }] },
+      { "item": "The fast-forward step is attributed to pyiceberg's real public manage_snapshots()/set_current_snapshot() API, matching the project's own fast_forward procedure semantics, per FACT-CHECK.md claim 7.", "at": [{ "step": "Reveal: validated, then published for real" }] },
+      { "item": "Views are named as a distinct catalog object and not conflated with branches/tags, consistent with the view spec, per FACT-CHECK.md claim 12.", "at": [{ "step": "Reveal: this is one table — views and the catalog are a different layer" }] },
+      { "item": "Multi-table branching is clearly scoped as a forward pointer to the catalog chapter, not implied to be solved here, per FACT-CHECK.md claim 13.", "at": [{ "step": "Reveal: this is one table — views and the catalog are a different layer" }] },
+      { "item": "The rejected branch's cleanup (remove_branch) is shown, so the failed attempt doesn't appear to silently linger, per FACT-CHECK.md claim 11.", "at": [{ "step": "Reveal: a second attempt, for real, fails and never reaches main" }] },
+      { "item": "The tag's immutability through the publish step is disclosed as following from the API's own documented behavior rather than an independent re-assertion -- an honest, non-overclaiming gap, per FACT-CHECK.md red-team #2.", "at": [{ "deep": "Deep-dive" }] },
+      { "item": "The topic correctly avoids calling write-audit-publish an official spec term, since Iceberg's own docs don't use that exact heading, per FACT-CHECK.md red-team #3.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

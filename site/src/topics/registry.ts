@@ -10352,4 +10352,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Iceberg's own snapshot history is already addressable by id. The next topic is giving some of those snapshots stable, human-meaningful names: branches and tags.",
   },
+  {
+    id: 'de.branches-tags-write-audit',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/branches-tags-write-audit',
+    title: 'Branches, tags and write-audit-publish',
+    syllabusTitle: 'Branches, tags and write-audit-publish',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.1' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['iceberg-branches-wap'],
+    uses: ['iceberg-metadata-tree', 'table-snapshot-model'],
+    declared: [],
+    bridge:
+      "Iceberg's own snapshot history is already addressable by id. This topic gives some of those snapshots stable, human-meaningful names and isolation: tags, branches, and a full write-audit-publish flow run end to end in this sandbox.",
+    handoff:
+      "Iceberg's own transaction log is a metadata tree of files. The next arc shows the same shared-foundations ideas built from a visibly different mechanism: Delta's ordered JSON log.",
+  },
 ];
