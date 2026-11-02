@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Object storage as a database substrate" domain="data-engineering" host="de.object-storage-as-database" by="This chapter's tenth topic" />
+  <Resource kind="reel" title="Why Hive-style tables broke" domain="data-engineering" host="de.why-hive-style-tables" by="This chapter's eleventh topic" />
+  <Resource kind="reel" title="Snapshot-based table metadata" domain="data-engineering" host="de.snapshot-based-table-metadata" by="This chapter's twelfth topic" />
+  <Resource kind="reel" title="Optimistic commits and conflict resolution" domain="data-engineering" host="de.optimistic-commits-conflict-resolution" by="This chapter's thirteenth topic" />
+  <Resource kind="reel" title="Copy-on-write vs merge-on-read" domain="data-engineering" host="de.copy-on-write-vs" by="This chapter's fourteenth topic" />
+  <Resource kind="reel" title="Snapshot lifecycle: time travel to garbage collection" domain="data-engineering" host="de.snapshot-lifecycle-time-travel" by="This chapter's seventeenth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Maintenance" href="https://iceberg.apache.org/docs/latest/maintenance/" by="Apache Iceberg">Why small files cost real metadata and open overhead, and what rewriteDataFiles does about it.</Resource>
+  <Resource kind="reading" title="Optimizations" href="https://docs.delta.io/latest/optimizations-oss.html" by="Delta Lake">Bin-packing, its idempotence, and auto compaction's own target-file-size defaults.</Resource>
+  <Resource kind="reading" title="How Amazon S3 Tables use compaction to improve query performance by up to 3 times" href="https://aws.amazon.com/blogs/storage/how-amazon-s3-tables-use-compaction-to-improve-query-performance-by-up-to-3-times/" by="AWS">The real request-overhead cost of small files, and S3 Tables' automatic compaction.</Resource>
+  <Resource kind="reading" title="Predictive optimization for Unity Catalog managed tables" href="https://docs.databricks.com/en/optimizations/predictive-optimization.html" by="Databricks">Automatically running OPTIMIZE so nobody has to schedule it themselves.</Resource>
+</ul>
+
+</section>

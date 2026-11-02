@@ -10192,4 +10192,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every snapshot this chapter has shown so far assumed the files underneath it stay a reasonable size. The next topic is what happens when they don't: small files and compaction.",
   },
+  {
+    id: 'de.small-files-compaction-file',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/small-files-compaction-file',
+    title: 'Small files, compaction and file sizing',
+    syllabusTitle: 'Small files, compaction and file sizing',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['small-files-compaction'],
+    uses: ['table-snapshot-model', 'cow-vs-mor'],
+    declared: [],
+    bridge:
+      "Every snapshot this chapter has shown so far assumed the files underneath it stay a reasonable size. This topic is what happens when they don't: where small files come from, what they really cost, and a real bin-pack compaction measured before and after.",
+    handoff:
+      "File size is only half of what makes a statistic useful for pruning. The other half is whether the rows inside each file are actually sorted or clustered by the columns a query filters on.",
+  },
 ];

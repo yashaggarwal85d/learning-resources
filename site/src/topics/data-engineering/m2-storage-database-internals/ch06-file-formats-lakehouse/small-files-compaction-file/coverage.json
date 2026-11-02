@@ -1,0 +1,71 @@
+{
+  "topic": "de.small-files-compaction-file",
+  "syllabus": [
+    { "clause": "where small files come from (streaming, high-partition-count writes, MOR)", "at": [{ "step": "Reveal: reproduced for real — streaming produces 200 real small files for one partition" }] },
+    { "clause": "why they hurt (metadata size, open/LIST cost, poor compression)", "at": [
+      { "step": "Reveal: Iceberg's own words — more files means more metadata and slower opens" },
+      { "step": "Reveal: reproduced for real — 200 small files cost real extra manifest bytes and real extra open overhead" },
+      { "step": "Reveal: reproduced for real — the same bytes compress worse split into small files" }
+    ] },
+    { "clause": "bin-pack compaction, target file and row-group sizes", "at": [{ "step": "Reveal: reproduced for real — a real bin-pack compaction, byte for byte" }] },
+    { "clause": "compaction scheduling vs ingestion", "at": [{ "step": "Reveal: the real scheduling trade-off, and who runs this today" }] },
+    { "clause": "managed maintenance (S3 Tables, Databricks predictive optimization) vs self-run jobs", "at": [{ "step": "Reveal: the real scheduling trade-off, and who runs this today" }] },
+    { "clause": "Spark-side output control in §7.2", "at": [{ "deep": "Frontier" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Maintenance",
+      "items": [
+        { "item": "more data files leads to more metadata stored in manifest files, and small data files cause an unnecessary amount of metadata and less efficient queries from file open costs", "at": [{ "step": "Reveal: Iceberg's own words — more files means more metadata and slower opens" }] },
+        { "item": "rewriteDataFiles combines small files into larger files to reduce metadata overhead and runtime file open cost", "at": [{ "step": "Reveal: reproduced for real — a real bin-pack compaction, byte for byte" }] },
+        { "item": "the files metadata table is useful for inspecting data file sizes and determining when to compact partitions", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Optimizations",
+      "items": [
+        { "item": "Delta Lake can improve the speed of read queries from a table by coalescing small files into larger ones", "at": [{ "step": "Reveal: reproduced for real — a real bin-pack compaction, byte for byte" }] },
+        { "item": "bin-packing optimization is idempotent, meaning that if it is run twice on the same dataset, the second run has no effect", "at": [{ "deep": "Frontier" }] },
+        { "item": "bin-packing aims to produce evenly-balanced data files with respect to their size on disk, but not necessarily number of tuples per file", "at": [{ "step": "Reveal: reproduced for real — a real bin-pack compaction, byte for byte" }] },
+        { "item": "auto compaction will by default use 128 MB as the target file size, and is only triggered once a partition or table has at least a certain number of small files", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "AWS, How Amazon S3 Tables use compaction to improve query performance by up to 3 times",
+      "items": [
+        { "item": "a dataset spread over multiple small Parquet files requires the query engine to make many small data reads per query, each with a fixed overhead", "at": [{ "step": "Reveal: reproduced for real — 200 small files cost real extra manifest bytes and real extra open overhead" }] },
+        { "item": "S3 Tables automatically perform compaction in addition to other maintenance tasks, such as snapshot management and unreferenced file removal, without any manual intervention", "at": [{ "step": "Reveal: the real scheduling trade-off, and who runs this today" }] },
+        { "item": "S3 Tables assigns each table a default target file size of 512MB, adjustable between 64MB and 512MB", "at": [{ "deep": "Frontier" }] },
+        { "item": "queries against 1MB Parquet objects required 8.5x more read requests than queries against 512MB objects in AWS's own benchmark", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Predictive optimization for Unity Catalog managed tables",
+      "items": [
+        { "item": "predictive optimization automatically runs OPTIMIZE, VACUUM, and ANALYZE on Unity Catalog managed tables, eliminating manual maintenance and time spent tracking performance issues", "at": [{ "step": "Reveal: the real scheduling trade-off, and who runs this today" }] },
+        { "item": "predictive optimization is enabled by default for accounts created on or after November 11, 2024, and only supports Unity Catalog managed tables", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The real local files in examples.py are a simplified stand-in for a table's actual Parquet data files and Iceberg/Delta manifest format, disclosed in the script's own docstring and FACT-CHECK.md red-team #1. A fixed-width manifest entry exists so the measured byte reduction is exact, not an approximation of either format's real binary manifest layout.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The open/LIST overhead figure (a fixed cost per file touched) is a deterministic cost-model proxy for Iceberg's documented file-open cost and the AWS S3 Tables post's own measured 8.5x read-request difference, not a timed wall-clock measurement — consistent with this site's standing no-flaky-timing rule, per FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: reproduced for real — 200 small files cost real extra manifest bytes and real extra open overhead" }] },
+      { "item": "The zlib compression comparison is a real, measured stand-in for 'worse compression' generally, not a reproduction of Parquet's actual column-level dictionary/RLE encoding or page-level compression, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: reproduced for real — the same bytes compress worse split into small files" }] },
+      { "item": "The scheduling trade-off (step 9) is stated directly from the sources, not demonstrated by a new live-concurrency measurement in examples.py, for the same flaky-timing reason topic 17 already disclosed — a real race between a writer and a compaction job would require two genuinely concurrent processes, per FACT-CHECK.md red-team #4.", "at": [{ "step": "Reveal: the real scheduling trade-off, and who runs this today" }] },
+      { "item": "This topic does not cover row-group/page-level target sizing inside a single Parquet file (topic 7's scope), Spark-side output control over file counts at write time (deferred to §7.2 per CHAPTER.md), or MOR delete/log-file accumulation in depth (already covered for real in topic 15's deletion-vector material), per FACT-CHECK.md red-team #5.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The prerequisites panel lists topics 10-14 and 17, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "The 20x reduction in both manifest bytes and open-cost units is exact by construction, not an approximation: both scale linearly with file count, which drops from 200 to 10 by design in examples.py.", "at": [{ "step": "Reveal: reproduced for real — both costs collapse by the same factor the file count did" }] },
+      { "item": "Delta's 128 MB auto-compaction default and S3 Tables' 512MB/64MB-512MB target range are quoted from the sources but not asserted as literal values in examples.py, so they are spoken as narration rather than shown as on-screen digits, consistent with the build's digit-provenance check.", "at": [{ "deep": "Frontier" }] },
+      { "item": "All four demonstrations in examples.py are deterministic (fixed-seed byte patterns, no timing assertions, no randomness), verified byte-identical across 3 consecutive runs — no flaky-timing risk.", "at": [{ "step": "Reveal: reproduced for real — streaming produces 200 real small files for one partition" }] },
+      { "item": "This topic hosts no chapter lab of its own, per CHAPTER.md's note that it extends topic 17's chapter-lab compaction leg.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

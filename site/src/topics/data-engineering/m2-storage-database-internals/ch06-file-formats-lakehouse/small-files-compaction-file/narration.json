@@ -1,0 +1,80 @@
+{
+  "topic": "de.small-files-compaction-file",
+  "steps": [
+    {
+      "lines": [
+        "The last topic assumed something quietly, the whole way through: that every file underneath a snapshot stayed a reasonable size.",
+        "What happens the moment that assumption breaks? What if the files are small, and there are a lot of them?"
+      ]
+    },
+    {
+      "lines": [
+        "Picture a streaming job committing one new, small file every time a micro-batch finishes. The total amount of data written doesn't change depending on how it's split up.",
+        "So here's the question: does splitting the same data into many small files cost anything, beyond just the bytes themselves?"
+      ],
+      "answer": [
+        "It does, and the cost has nothing to do with how much data is inside those files. It's the count of files itself that's expensive.",
+        "Every file a table tracks adds its own fixed overhead — something has to be recorded about it, and something has to be opened to read it, no matter how little it holds."
+      ]
+    },
+    {
+      "lines": [
+        "This was reproduced directly: a real streaming write pattern, committing one small file after another into the same partition.",
+        "The result is exactly what streaming produces in practice — a lot of separate files, each holding only a sliver of the data, all describing the same slice of the table."
+      ]
+    },
+    {
+      "lines": [
+        "The format's own documentation names this cost directly, in plain terms: more files means more bookkeeping to track them, and a real penalty just from opening each one.",
+        "Notice what's not in that sentence — nothing about how much data is in those files. The cost is the count."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what got measured directly: a real record kept per file, and a real, fixed cost charged every time a file has to be opened.",
+        "Both of those numbers track the file count precisely, and neither one has anything to do with the size of the data being tracked."
+      ]
+    },
+    {
+      "lines": [
+        "So what actually fixes this? Taking those same small files' real bytes and repacking them, in order, into a small number of larger files.",
+        "This was checked byte for byte: every single byte that went in came back out, in the exact same order, just organized into fewer, bigger files instead of many tiny ones."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the payoff, measured directly: both of those costs from before — the bookkeeping and the open penalty — fell by exactly the same factor the file count did.",
+        "And the data itself never moved an inch. Not one byte was added, removed, or changed. Only how it was packaged."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, before moving past compaction itself. A streaming job is still actively committing new files to a partition, at the exact moment a compaction job starts rewriting that same partition.",
+        "Is running that compaction right now a free action, or does it genuinely conflict with the writer?"
+      ],
+      "answer": [
+        "It's a real conflict, not a free action. A compaction is itself a commit, exactly the same kind of operation a write is.",
+        "Running one against a partition that's still actively being written to is a scheduling decision someone has to make deliberately, not something that just happens safely in the background."
+      ]
+    },
+    {
+      "lines": [
+        "There's a second cost to splitting data into small pieces, and it's a different one: compressing it.",
+        "The identical bytes, compressed once as many separate small pieces versus once as a single whole, came out measurably larger split than whole. Splitting data loses the compressor's ability to find patterns across what used to be a single file."
+      ]
+    },
+    {
+      "lines": [
+        "So who actually fixes small files in practice? Two very different answers, straight from the people who built each one.",
+        "Some systems do it for you now, continuously, with nobody scheduling anything. Others leave it as a job someone still has to run themselves.",
+        "Either way, that job does real work on files a writer might still be actively using — which makes timing it a genuine decision, not something you get for free."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole idea in one line. The cost of small files comes from their count, not their contents, and a real repacking collapses that cost without ever touching the data.",
+        "Whether that repacking happens automatically or on a schedule someone sets, it's still competing for the same files a writer is using — and that's the trade-off underneath all of it."
+      ]
+    }
+  ]
+}
