@@ -10472,4 +10472,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A minimal catalog proves the idea; a real, vendor-neutral protocol for it is what actually lets five different engines agree on how to talk to one. That's the Iceberg REST catalog.",
   },
+  {
+    id: 'de.iceberg-rest-catalog-protocol',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/iceberg-rest-catalog-protocol',
+    title: 'Iceberg REST catalog protocol',
+    syllabusTitle: 'Iceberg REST catalog protocol',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.4' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['iceberg-rest-catalog'],
+    uses: ['table-catalog-model', 'iceberg-metadata-tree', 'optimistic-commit-protocol'],
+    declared: [],
+    bridge:
+      "A minimal catalog proves the idea; a real, vendor-neutral protocol for it is what actually lets five different engines agree on how to talk to one. That's the Iceberg REST catalog.",
+    handoff:
+      "Real formats, real deletes, a real catalog -- every mechanism this section needed now exists. The next topic closes §6.3 by asking the practical question every one of these topics was really in service of: which format and catalog do you actually pick?",
+  },
 ];

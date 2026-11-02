@@ -1,0 +1,84 @@
+{
+  "topic": "de.iceberg-rest-catalog-protocol",
+  "steps": [
+    {
+      "lines": [
+        "A small catalog built from scratch just proved every real job a catalog needs to do actually works.",
+        "But proving an idea once isn't the same as everyone agreeing on how to talk to it.",
+        "This step builds the real, shared protocol that lets any engine speak to any catalog, over real HTTP, right here."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a brand-new client meeting this catalog for the very first time.",
+        "It already has some config of its own, assumptions about where things live and how to behave.",
+        "Does it just start firing off requests using those assumptions, or does something have to happen before any of that?"
+      ],
+      "answer": [
+        "Think about what could go wrong if the client just guessed.",
+        "Its own assumptions might not match what this particular server actually expects or where it actually wants things stored."
+      ]
+    },
+    {
+      "lines": [
+        "Something happens first, and it's a real call with a real answer.",
+        "The client asks for configuration, and the server hands back values the client has to layer onto its own.",
+        "Its own defaults come first, then whatever the client already set, and the server's own overrides win last, replacing anything underneath them."
+      ]
+    },
+    {
+      "lines": [
+        "With that settled, a real load works exactly the way any query engine would expect, fetching a table's current state over the wire.",
+        "Then the interesting part: two engines read that same table at the same moment and both try to commit.",
+        "Each one states, as part of its own request, the exact state it saw when it read -- a real condition the server has to check."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the sharper question.",
+        "Time passes, and one of those two engines' stated condition no longer matches what the server actually holds.",
+        "Does the server just go ahead and accept that commit anyway, or does it refuse it?"
+      ],
+      "answer": [
+        "If the server accepted it anyway, two engines could silently stomp on each other's changes.",
+        "A protocol serious about correctness has to check that condition and refuse the commit when it no longer holds."
+      ]
+    },
+    {
+      "lines": [
+        "It refuses it, and it tells you exactly why.",
+        "The losing engine gets back a real rejection naming the precise condition that no longer matched, not some generic failure.",
+        "So it reloads the table, sees the real current state, and retries -- this time it succeeds."
+      ]
+    },
+    {
+      "lines": [
+        "Now, a handful of real protocol features this script doesn't build, only names and sources honestly.",
+        "One lets several tables commit together as a single atomic step, instead of one table at a time.",
+        "Two more endpoints exist for registering an already-written table and for listing an entirely separate kind of object the protocol supports, called a view."
+      ]
+    },
+    {
+      "lines": [
+        "One more real feature, named precisely rather than faked: how a client gets temporary access to the actual storage underneath a table.",
+        "The client signals which mechanisms it can handle, and the server decides whether to hand any of them back.",
+        "This sandbox genuinely can't issue real temporary cloud access, so this piece stays sourced, not built."
+      ]
+    },
+    {
+      "lines": [
+        "Two more pieces worth naming before we close this out.",
+        "Newer catalogs can now plan a scan on the server's own side instead of leaving every engine to work it out alone, and the protocol has its own format for sharing reusable functions across engines.",
+        "Meanwhile the protocol's own original way of handing out login tokens is being phased out, in favor of letting a dedicated identity system handle that instead."
+      ]
+    },
+    {
+      "lines": [
+        "So here's where this leaves things.",
+        "A real catalog, speaking a real slice of the real shared protocol -- negotiating its config, loading a table, and committing with a condition the server actually checks.",
+        "Every mechanism this whole section needed now genuinely exists, built or carefully sourced.",
+        "What's left isn't a new mechanism at all. It's the practical choice every one of these pieces was really in service of: which format, and which catalog, do you actually reach for?"
+      ]
+    }
+  ]
+}

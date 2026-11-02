@@ -1,0 +1,61 @@
+{
+  "topic": "de.iceberg-rest-catalog-protocol",
+  "syllabus": [
+    {
+      "clause": "the OpenAPI spec as the interop standard: config negotiation, load/commit with requirement assertions, multi-table transactions, views and register endpoints, credential vending and remote signing (X-Iceberg-Access-Delegation), server-side scan planning (featured in Iceberg 1.11), metrics reporting, SQL UDFs; the built-in OAuth2 token endpoint deprecated in favour of external identity providers.",
+      "at": [
+        { "step": "Reveal: config negotiation, for real" },
+        { "step": "Reveal: a real load, then a real race" },
+        { "step": "Reveal: a real conflict, a real retry" },
+        { "step": "Reveal: named, sourced, not built" },
+        { "step": "Reveal: credential vending, named precisely" },
+        { "step": "Reveal: the protocol's current features" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, REST Catalog OpenAPI Specification",
+      "items": [
+        { "item": "All REST clients should first call the config route to get catalog configuration properties from the server to configure the catalog and its HTTP client", "at": [{ "step": "Reveal: config negotiation, for real" }] },
+        { "item": "Defaults are applied before client configuration, and overrides are applied after defaults and client configuration", "at": [{ "step": "Reveal: config negotiation, for real" }] },
+        { "item": "Requirements are assertions that will be validated before attempting to make and commit changes", "at": [{ "step": "Reveal: a real load, then a real race" }] },
+        { "item": "The commitTransaction endpoint commits updates to multiple tables in an atomic operation", "at": [{ "step": "Reveal: named, sourced, not built" }] },
+        { "item": "The register endpoint registers a table using a given metadata file location", "at": [{ "step": "Reveal: named, sourced, not built" }] },
+        { "item": "The views endpoint returns all view identifiers under a namespace", "at": [{ "step": "Reveal: named, sourced, not built" }] },
+        { "item": "A client signals via X-Iceberg-Access-Delegation which access mechanisms it supports, and the server may supply access via any or none of them", "at": [{ "step": "Reveal: credential vending, named precisely" }] },
+        { "item": "Clients must first check the storage-credentials field before checking config for vended credentials", "at": [{ "step": "Reveal: credential vending, named precisely" }] },
+        { "item": "Clients MUST use server-side scan planning via the planTableScan endpoint when the server requires it", "at": [{ "step": "Reveal: the protocol's current features" }] },
+        { "item": "SQL UDFs have a portable metadata format as part of the protocol", "at": [{ "step": "Reveal: the protocol's current features" }] },
+        { "item": "The oauth/tokens endpoint is marked deprecated for removal in the spec's own text", "at": [{ "step": "Reveal: the protocol's current features" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Releases",
+      "items": [
+        { "item": "Apache Iceberg 1.11.0, which shipped server-side scan planning, was released on May 19, 2026", "at": [{ "step": "Reveal: the protocol's current features" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "A real local REST catalog server implements a real subset of the actual OpenAPI spec -- config, load, commit-with-requirements -- over real HTTP, rather than simulating responses in-process.", "at": [{ "step": "Reveal: config negotiation, for real" }] },
+      { "item": "The config negotiation demo asserts the real merge order (defaults, then client config, then overrides) rather than just printing values without checking the order matters.", "at": [{ "step": "Reveal: config negotiation, for real" }] },
+      { "item": "The commit race names the exact requirement type (assert-current-snapshot-id) the spec itself defines, and the server checks it against its own real in-memory state under a lock.", "at": [{ "step": "Reveal: a real load, then a real race" }] },
+      { "item": "The 409 response names the exact requirement that failed and the server's current state, demonstrated by a real error message, not a generic failure.", "at": [{ "step": "Reveal: a real conflict, a real retry" }] },
+      { "item": "Credential vending is explicitly scoped out of the code (not just unmentioned) because issuing real down-scoped cloud credentials needs a real cloud STS-equivalent this sandbox cannot run.", "at": [{ "step": "Reveal: credential vending, named precisely" }] },
+      { "item": "Server-side scan planning is dated to a specific real Iceberg release (1.11.0, May 19, 2026) rather than described as a vague recent feature.", "at": [{ "step": "Reveal: the protocol's current features" }] },
+      { "item": "No deltalake/delta-rs/iceberg-python/pyiceberg library is used; both the server and the client are this script's own stdlib HTTP code, matching the chapter's from-scratch convention.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The scope boundary explicitly names what the script does not implement (most of the spec's endpoint surface, credential vending, a full reference server) rather than silently omitting it.", "at": [{ "deep": "Production" }] },
+      { "item": "The predict step at step 2 and the predict step at step 5 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: does a client just start sending requests?" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 31's handoff (the real, vendor-neutral protocol for the catalog this chapter already built) and hands off to topic 33's practical choice between format and catalog.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,4 @@
+- **Config negotiation**: the REST catalog protocol's required first call, where the server hands back configuration the client must layer onto its own, overrides winning last.
+- **Commit requirement**: an assertion a commit request names (such as the exact snapshot it read) that the server validates against its own real state before applying any change.
+- **X-Iceberg-Access-Delegation**: an HTTP header a client sends to signal which delegated-access mechanisms it supports, letting the server choose whether to vend real storage credentials.
+- **Server-side scan planning**: the server, not the client, computing which files a scan actually needs to read, via a dedicated protocol endpoint.
