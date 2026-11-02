@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: dbt tests, write-audit-publish, contract CI, and this chapter's own security and lineage topics
+
+<ul class="resources">
+  <Resource kind="reel" title="Row/column security and dynamic masking in-engine" domain="data-engineering" host="de.row-column-security-dynamic" by="topic 3 of this chapter" />
+  <Resource kind="reel" title="OpenLineage: events, facets and lineage graphs" domain="data-engineering" host="de.openlineage-events-facets-lineage" by="topic 11 of this chapter — the previous topic, whose facets attach a quality result to a dataset" />
+  <Resource kind="reel" title="dbt models, tests and lineage" domain="data-engineering" host="de.dbt-models-tests-lineage" by="Chapter 3 §3.4 — dbt's own generic and singular data tests" />
+  <Resource kind="reel" title="Testing pyramid for transformations" domain="data-engineering" host="de.testing-pyramid-transformations" by="Chapter 11 §11.4" />
+  <Resource kind="reel" title="Write-audit-publish and safe deploys" domain="data-engineering" host="de.write-audit-publish-safe" by="Chapter 11 §11.4 — the pattern that puts a gate before publication" />
+  <Resource kind="reel" title="Contract enforcement in CI" domain="data-engineering" host="de.contract-enforcement-in-ci" by="Chapter 11 §11.4" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic quotes and measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Add data tests to your DAG" href="https://docs.getdbt.com/docs/build/data-tests" by="dbt Developer Hub">Generic and singular data tests, and the four built-in generic tests.</Resource>
+  <Resource kind="reading" title="Unit tests" href="https://docs.getdbt.com/docs/build/unit-tests" by="dbt Developer Hub">Mocked-input logic tests, run before a model is materialized.</Resource>
+  <Resource kind="reading" title="An Update for the Great Expectations Community" href="https://greatexpectations.io/blog/an-update-from-great-expectations/" by="Great Expectations">The FICO/GX Cloud and Fivetran/GX Core stewardship facts, dated.</Resource>
+  <Resource kind="reading" title="Contract Language reference" href="https://docs.soda.io/soda-documentation/developer-tools/contract-language-reference.md" by="Soda documentation">The YAML contract format Soda 4 verifies against actual data.</Resource>
+  <Resource kind="reading" title="Deequ" href="https://github.com/awslabs/deequ" by="AWS Labs">The VerificationSuite, Checks and computed metrics.</Resource>
+  <Resource kind="reading" title="DQX" href="https://github.com/databrickslabs/dqx" by="Databricks Labs">PySpark checks for batch and Structured Streaming.</Resource>
+</ul>
+
+</section>

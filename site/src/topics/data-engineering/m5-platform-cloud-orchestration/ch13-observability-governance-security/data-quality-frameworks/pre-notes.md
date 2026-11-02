@@ -1,0 +1,9 @@
+- **Assertion**: a declarative statement about what data should look like -- the unit a check is built from. *Where you meet it:* the framework landscape elaboration.
+- **Expectation**: GX Core's own term for an assertion; a suite is a set of expectations run together. *Where you meet it:* the framework landscape elaboration.
+- **Data test**: a dbt select query that returns the rows which disprove an assertion, run against real built data. *Where you meet it:* the data-test-vs-unit-test elaboration.
+- **Unit test**: a check run against small, mocked inputs and expected outputs, before a model is ever materialized. *Where you meet it:* the data-test-vs-unit-test elaboration.
+- **Metric**: a number computed over a dataset (a count, an average, a null rate) that a check evaluates an assertion against. *Where you meet it:* the Deequ framework elaboration and the incremental-metric reveal.
+- **Partition**: (from earlier topics) a bounded slice of a table, usually by date, that a check or a metric computation can process on its own. *Where you meet it:* the incremental-metric predict-and-reveal pair.
+- **Sample**: a subset of rows checked instead of every row, trading completeness for lower cost. *Where you meet it:* the cost-lever predict-and-reveal pair.
+- **False positive**: a check that fails even though the data is actually fine -- a cost of checking too aggressively, named but not built here.
+- **Gate**: a check that runs inside the pipeline, on data still in flight, and can block it from publishing. *Where you meet it:* the gate-vs-post-hoc reveal.

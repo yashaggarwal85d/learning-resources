@@ -1,0 +1,81 @@
+{
+  "topic": "de.data-quality-frameworks",
+  "steps": [
+    {
+      "lines": [
+        "A shop bolts on a whole batch of fresh data-quality checks to its orders table, and overnight the pipeline takes twice as long to run.",
+        "Two weeks later a bad partition still slips all the way through to the dashboard, because the one check that would have caught it ran only after the data was already out the door."
+      ]
+    },
+    {
+      "lines": [
+        "There are really only two places a check can live, and they behave completely differently.",
+        "One sits inside the pipeline itself, looking at data still in flight, and it can physically refuse to let that data go out. The other only looks after the fact, on its own schedule, and by then the data's already loose in the world."
+      ]
+    },
+    {
+      "lines": [
+        "Sort these three before I tell you the answer.",
+        "A column that must never come back empty. A table that has to show up by a certain hour. A column whose overall shape has quietly started drifting. Which of those three belongs in front of the gate, and which only make sense checked afterward?"
+      ],
+      "answer": [
+        "Only the empty-column check really belongs up front.",
+        "A lateness check needs to know what time it actually is outside the run, and a drift check needs a long memory of what normal used to look like — neither of those is something the gate has on hand."
+      ]
+    },
+    {
+      "lines": [
+        "The empty-column check earns its spot at the front door because it's cheap and decisive.",
+        "The other two get pushed to run afterward instead, not because anyone's being lazy, but because each one is missing an ingredient — a clock, or a memory of history — that the in-flight gate simply doesn't carry."
+      ]
+    },
+    {
+      "lines": [
+        "One widely used tool draws a sharp line between two different kinds of testing.",
+        "One kind runs against data that's already real and already built, hunting for rows that break a rule. The other kind runs the transformation's own logic against a handful of made-up rows, before any real table even exists yet."
+      ]
+    },
+    {
+      "lines": [
+        "Walk the shelf of tools people actually reach for, and each one checks quality through a different lens entirely.",
+        "One leans on declared, spelled-out expectations. Another leads with a written agreement about what the data should look like.",
+        "A third turns every check into an actual computed number from the engine itself. A fourth builds its checks straight into the processing code, whether the data arrives all at once or in a continuous stream."
+      ]
+    },
+    {
+      "lines": [
+        "One of those tools went through a very public change of hands recently, and it's worth getting the facts exactly right rather than guessing.",
+        "A financial-analytics company absorbed the paid, hosted side of the product outright. Separately, a different company — one known for data movement — stepped in to keep the free, open community edition alive and developing under its own roof."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the harder question, and it's really about money, not correctness.",
+        "Put a full re-read of everything, a running tally kept up to date piece by piece, and a thin slice of the data side by side. Rank them by what they cost to run — and be honest about which one might just miss something entirely."
+      ],
+      "answer": [
+        "The full re-read costs the most but misses nothing at all.",
+        "The running tally lands on the exact same number for a fraction of the cost. The thin slice is cheapest of all, but a single oddball row can simply fall between the cracks and never get looked at."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the proof, run directly rather than just asserted.",
+        "Keep folding each new chunk of data into a running count instead of re-reading everything from scratch, and that running number lands on the exact same total a full re-read would have produced. Cheaper, and no less correct."
+      ]
+    },
+    {
+      "lines": [
+        "And here's the other half of that same proof.",
+        "Plant exactly one bad row among a pile of good ones. A full pass over everything catches it without fail, every single time. A thin, evenly-spaced slice of that same pile landed right between the sampled spots and never saw it at all."
+      ]
+    },
+    {
+      "lines": [
+        "So the two questions this whole topic turns on are genuinely different ones.",
+        "Where a check lives decides whether it can stop bad data before a single person has read it, or only tell you about it afterward.",
+        "How a check gets computed decides what you pay for it — and a cheaper method is always quietly betting it won't be the one that misses something."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "topic": "de.data-quality-frameworks",
+  "syllabus": [
+    {
+      "clause": "where checks run (in-pipeline gates vs post-hoc scans) and what they cost at scale; dbt tests and unit tests, GX Core expectation suites (open source; Fivetran announced in May 2026 that it will become steward; GX Cloud went to FICO in 2026), Soda 4 contracts-first engine, Deequ/PyDeequ metric-based checks, Databricks DQX; incremental metrics and sampling.",
+      "at": [
+        { "step": "Reveal: a gate runs inside the pipeline and can block publication; a post-hoc scan runs after landing and can only report" },
+        { "step": "Reveal: not-null gates because it is cheap and blocking-worthy; freshness and drift run post-hoc because each needs something the gate does not have" },
+        { "step": "Elaborate: dbt's data tests check real built data; its unit tests check the transformation's own logic before any table is built" },
+        { "step": "Elaborate: the framework landscape -- GX Core, Soda 4, Deequ and Databricks DQX each check quality a different way" },
+        { "step": "Elaborate: in May 2026 FICO acquired GX Cloud, and Fivetran became the new steward of the Great Expectations open-source community and the GX Core project" },
+        { "step": "Reveal: measured directly -- a metric merged partition by partition equals the metric a full rescan of every partition produces" },
+        { "step": "Reveal: measured directly -- a small fixed-rate sample missed the one bad row a full scan always finds" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "dbt -- Data tests",
+      "items": [
+        {
+          "item": "a data test is a select statement that seeks failing rows; dbt ships four built-in generic tests (unique, not_null, accepted_values, relationships), and a singular test is a one-off SQL file run automatically by dbt test",
+          "at": [{ "step": "Elaborate: dbt's data tests check real built data; its unit tests check the transformation's own logic before any table is built" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt -- Unit tests",
+      "items": [
+        {
+          "item": "a unit test validates a model's SQL transformation logic against small, static mocked inputs, before the model is ever materialized against real data",
+          "at": [{ "step": "Elaborate: dbt's data tests check real built data; its unit tests check the transformation's own logic before any table is built" }]
+        }
+      ]
+    },
+    {
+      "source": "Great Expectations's own stewardship announcement",
+      "items": [
+        {
+          "item": "GX's own post, dated May 06, 2026, states that FICO and GX completed a definitive agreement for FICO to acquire GX Cloud, and that Fivetran will become the new steward of the Great Expectations open source community and the GX Core project, which continues as open source",
+          "at": [{ "step": "Elaborate: in May 2026 FICO acquired GX Cloud, and Fivetran became the new steward of the Great Expectations open-source community and the GX Core project" }]
+        }
+      ]
+    },
+    {
+      "source": "Soda -- Contract Language reference and current version",
+      "items": [
+        {
+          "item": "a Soda data contract is a YAML document with a top-level dataset key and a checks block, verified against actual data; the current soda-core release (4.29.0) confirms Soda 4's contracts-first framing",
+          "at": [{ "step": "Elaborate: the framework landscape -- GX Core, Soda 4, Deequ and Databricks DQX each check quality a different way" }]
+        }
+      ]
+    },
+    {
+      "source": "Deequ's own README",
+      "items": [
+        {
+          "item": "Deequ's VerificationSuite translates checks into Spark jobs that compute metrics over the data, then evaluates assertions against those computed metrics, which can be persisted and compared over time for incremental computation",
+          "at": [
+            { "step": "Elaborate: the framework landscape -- GX Core, Soda 4, Deequ and Databricks DQX each check quality a different way" },
+            { "step": "Reveal: measured directly -- a metric merged partition by partition equals the metric a full rescan of every partition produces" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Databricks Labs DQX's own README",
+      "items": [
+        {
+          "item": "DQX defines rule-based quality checks for PySpark DataFrames, applying the same API to both batch and Spark Structured Streaming workloads",
+          "at": [{ "step": "Elaborate: the framework landscape -- GX Core, Soda 4, Deequ and Databricks DQX each check quality a different way" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a not-null data test flags a real bad row in built data while a unit test on mocked inputs catches a planted logic bug the data test cannot see; an incremental metric merged partition by partition equals a full rescan's count exactly; a small fixed-rate sample missed the one bad row a full scan of the same data always found",
+          "at": [
+            { "step": "Reveal: measured directly -- a metric merged partition by partition equals the metric a full rescan of every partition produces" },
+            { "step": "Reveal: measured directly -- a small fixed-rate sample missed the one bad row a full scan always finds" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      {
+        "item": "A dbt test's severity can be set to warn instead of error, which lets a check run and report without ever failing the build -- a third outcome between gating and pure post-hoc reporting that this topic's two-way gate/post-hoc split doesn't name.",
+        "at": [{ "out": "dbt's warn-severity test outcome named only; this topic's own measurement treats a failing data test as a hard pass/fail" }]
+      },
+      {
+        "item": "GX Core's own expectation suites can be run as a checkpoint, bundling a set of expectations with the data they validate and the actions to take on failure (such as sending a Slack alert), a composition this topic's own toy data tests don't build.",
+        "at": [{ "out": "GX Core's checkpoint abstraction named only; this topic's own measurement builds a single not-null check, not a bundled checkpoint" }]
+      },
+      {
+        "item": "Soda Cloud's own cloud-managed contracts let a non-technical business user author and propose a contract change from a UI, which is later pulled back into Git for version control -- a collaboration path distinct from the Git-managed, code-first contracts this topic focuses on.",
+        "at": [{ "out": "Soda Cloud's cloud-managed, UI-authored contract path named only; this topic focuses on the Git-managed, code-first contract workflow" }]
+      },
+      {
+        "item": "PyDeequ's own anomaly-detection module can flag a metric that moves outside its historical range even when every individual check still passes, which is a different failure mode from the fixed-threshold checks this topic's own VerificationSuite example builds.",
+        "at": [{ "out": "PyDeequ's own anomaly-detection-on-metrics module named only; this topic's own measurement builds a fixed-threshold not-null check" }]
+      },
+      {
+        "item": "Databricks DQX's own quarantine reaction can route a failing row to a separate table instead of merely flagging it, which keeps a bad row out of the primary table without blocking the whole batch the way a hard gate failure would.",
+        "at": [{ "out": "DQX's own quarantine-on-failure reaction named only; this topic's own gate/post-hoc split treats a gate as an all-or-nothing block" }]
+      },
+      {
+        "item": "A dbt unit test's mocked inputs can themselves be stale relative to a model's real schema if a column is renamed and the mock isn't updated, silently testing logic against a shape the real table no longer has -- a gap in unit testing itself that this topic's own two-case example is too small to hit.",
+        "at": [{ "out": "unit-test mock-drift risk named only; this topic's own measurement keeps its mocked inputs and the transformation in lockstep" }]
+      },
+      {
+        "item": "Hyperloglog and probabilistic filters (Chapter 5) are themselves a form of incremental, approximate metric -- merging sketches across partitions the same way this topic's incremental count merges partition counts -- which is why this topic's cost lever and Chapter 5's sketches share the same sample-can-miss-a-rare-value trade-off.",
+        "at": [{ "deep": "Measuring the cost of a check" }]
+      },
+      {
+        "item": "An OpenLineage quality facet (topic 11, this chapter) is how a quality check's own pass/fail result attaches to a dataset on the same lineage graph OpenLineage builds, rather than living in a separate, disconnected quality dashboard.",
+        "at": [{ "out": "the OpenLineage quality facet's own cross-topic attachment role named only; this topic's own measurement doesn't emit an OpenLineage event" }]
+      },
+      {
+        "item": "The federated-governance topic (topic 13, this chapter) uses this topic's own check set as one of the gates in its self-serve table registration flow, so a table that fails a registered quality check never becomes discoverable in the first place.",
+        "at": [{ "out": "topic 13's own reuse of this topic's checks in a registration gate named only; this topic stops at defining the checks themselves" }]
+      },
+      {
+        "item": "Write-audit-publish (Chapter 11 §11.4) is the concrete pattern that places this topic's own gate before a publish step -- the \"audit\" stage runs exactly the gate checks this topic describes, on data already written but not yet published.",
+        "at": [{ "step": "Reveal: a gate runs inside the pipeline and can block publication; a post-hoc scan runs after landing and can only report" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}
