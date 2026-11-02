@@ -1,0 +1,56 @@
+{
+  "topic": "de.position-equality-deletes",
+  "syllabus": [
+    { "clause": "v2 merge-on-read: position deletes (file + row ordinal) vs equality deletes (match on column values, produced by streaming writers such as Flink upserts); the read-side join cost of equality deletes, why v3 replaces position-delete files with deletion vectors, and why v4 drafts forbid new equality deletes", "at": [
+      { "step": "Reveal: reproduced for real — an equality delete file, naming column values" },
+      { "step": "Reveal: reproduced for real — a position delete, read back through pyiceberg’s own scan" },
+      { "step": "Reveal: reproduced for real — the measured join cost of an equality delete" },
+      { "step": "Reveal: v3 deprecates position delete files, replacing them with deletion vectors" },
+      { "step": "Reveal: v4 drafts forbid adding any new equality delete — the measured cost is why" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Table Spec (row-level delete formats)",
+      "items": [
+        { "item": "position deletes mark a row deleted by data file path and row position, encoded in a position delete file (v2) or a deletion vector (v3+)", "at": [{ "step": "Reveal: reproduced for real — a position delete, read back through pyiceberg’s own scan" }] },
+        { "item": "equality deletes mark a row deleted by one or more column values, encoded in an equality delete file, creatable only in v2 and v3 tables", "at": [{ "step": "Reveal: reproduced for real — an equality delete file, naming column values" }] },
+        { "item": "position delete files must not be added to v3 tables; equality delete files must not be added to v4 tables", "at": [{ "step": "Reveal: v3 deprecates position delete files, replacing them with deletion vectors" }] },
+        { "item": "a data row is deleted if there's an entry in a position delete file for that row's file and position, starting at 0", "at": [{ "step": "Reveal: reproduced for real — a position delete, read back through pyiceberg’s own scan" }] },
+        { "item": "equality delete files store any subset of a table's columns using the table's field ids; matching columns are named by id in the file's own equality_ids metadata", "at": [{ "step": "Reveal: reproduced for real — an equality delete file, naming column values" }] },
+        { "item": "a data row is deleted if its values equal all delete columns for any row in an applicable equality delete file", "at": [{ "step": "Reveal: reproduced for real — the measured join cost of an equality delete" }] },
+        { "item": "equality delete files must not be added to v4 tables at all", "at": [{ "step": "Reveal: v4 drafts forbid adding any new equality delete — the measured cost is why" }] }
+      ]
+    },
+    {
+      "source": "Apache Flink, Iceberg connector docs (Flink Writes — upsert and equality deletes)",
+      "items": [
+        { "item": "Iceberg supports UPSERT based on a primary key when writing into a v2 table", "at": [{ "step": "Predict: an upsert writer deletes a row it never rewrote — what can it write instead of a position?" }] },
+        { "item": "in UPSERT mode on a partitioned table, the partition's source columns must be included in the equality fields", "at": [{ "deep": "Frontier" }] },
+        { "item": "convertEqualityDeletes() converts a table's existing equality deletes to deletion vectors, requiring table format version 3 or above", "at": [{ "step": "Reveal: v3 deprecates position delete files, replacing them with deletion vectors" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "Both delete kinds are real, written via the same low-level DataFile/ManifestEntry/write_manifest/write_manifest_list primitives against a real pyiceberg (0.12.0) table -- not a simulation -- disclosed in examples.py's own docstring and FACT-CHECK.md red-team #1.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The position delete is verified read back through pyiceberg's own public table.scan().to_arrow() path, by direct assertion against the expected id set, per FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: reproduced for real — a position delete, read back through pyiceberg’s own scan" }] },
+      { "item": "pyiceberg 0.12.0's table.scan() genuinely refuses to read a table with an equality-delete file -- confirmed by catching the exact ValueError it raises from its own plan_files() code, citing the real open upstream issue https://github.com/apache/iceberg/issues/6568, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: pyiceberg’s own scan refuses to read this table — a disclosed library gap" }] },
+      { "item": "The manual equality-delete join is not a shortcut around the limitation -- it performs the identical column-value comparison a conformant v2 reader performs, verified by the same expected-id assertion used for the position delete.", "at": [{ "step": "Reveal: reproduced for real — an equality delete file, naming column values" }] },
+      { "item": "The read-side cost comparison counts column values read and compared, not wall-clock time, specifically so output stays byte-identical across the determinism check's 3 runs, per FACT-CHECK.md red-team #4.", "at": [{ "step": "Reveal: reproduced for real — the measured join cost of an equality delete" }] },
+      { "item": "File paths and UUIDs are real-system randomness; the script asserts counts and ids, not literal paths, verified byte-identical across 3 consecutive runs.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Only a single-column equality delete (id) is built; a multi-column AND delete and the optional stored-row-values feature are named from the spec but not executed, per FACT-CHECK.md red-team #5 (scope boundary).", "at": [{ "deep": "Frontier" }] },
+      { "item": "convertEqualityDeletes()'s actual migration to deletion vectors is named from Flink's own documentation, not run, since the table built here stays on v2 throughout, per FACT-CHECK.md red-team #5.", "at": [{ "step": "Reveal: v3 deprecates position delete files, replacing them with deletion vectors" }] },
+      { "item": "The prerequisites panel lists topics 15 and 21-22, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "declared: none beyond topics 15 and 21, matching CHAPTER.md's own note for this topic.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic hosts no lab of its own, matching CHAPTER.md's own note.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

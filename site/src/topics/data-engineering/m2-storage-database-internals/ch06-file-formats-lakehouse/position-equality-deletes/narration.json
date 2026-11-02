@@ -1,0 +1,73 @@
+{
+  "topic": "de.position-equality-deletes",
+  "steps": [
+    {
+      "lines": [
+        "Last time, a table learned to skip entire files without the query ever naming how they were laid out.",
+        "But skipping a whole file is the coarsest kind of delete there is. Sooner or later, something inside one surviving file has to go, without rewriting that file at all."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a streaming system that's told to replace one existing row with a new version, the instant it arrives, without ever reading the file that row currently lives in.",
+        "It knows the row's identifying value. It has no idea what position that row sits at inside its file, because it never opened the file to look. What can it possibly write down to mark that row deleted?"
+      ],
+      "answer": [
+        "It writes down the value itself, not a position. A delete file can simply say, this column equals this value, wherever it turns up.",
+        "That's a fundamentally different kind of delete than naming a file and a row number. It shifts the burden from the writer, who doesn't know positions, onto whoever reads the file later."
+      ]
+    },
+    {
+      "lines": [
+        "That exact kind of delete was built here, for real, against a real table. One file now carries two entries, each saying plainly: this identifying value is gone.",
+        "Nothing about where those matching rows actually sit was recorded. Only the values that disqualify them."
+      ]
+    },
+    {
+      "lines": [
+        "The other kind of delete was also built and committed here, the ordinary way: a file and a row position, nothing more. And reading it back worked immediately, with no extra effort.",
+        "The table's own built-in reading path picked it up, located those exact row positions, and skipped them, cleanly, the first time it was asked."
+      ]
+    },
+    {
+      "lines": [
+        "So one of these deletes is a pure address lookup: go straight to a known position, skip it, done. The other one only has a value to go on.",
+        "What does actually reading that second kind cost, compared to the first, once someone has to turn a bare value into a real decision about real rows?"
+      ],
+      "answer": [
+        "It costs far more, and this was measured directly rather than assumed. Every single row's own value in that file had to be pulled out and checked against the delete's value.",
+        "A position-based delete never does that. It never even looks at what a row contains. It just knows which positions to skip and skips them."
+      ]
+    },
+    {
+      "lines": [
+        "That gap was measured exactly, not estimated. Reading the value-based delete correctly required examining every single row's value in that file and comparing each one.",
+        "The position-based delete, over the same ten rows, examined zero values. It simply knew which two positions to leave out."
+      ]
+    },
+    {
+      "lines": [
+        "Here's something worth being upfront about. The table library used throughout this chapter will happily write that value-based delete. It refuses outright to read one back through its normal path.",
+        "That's a real, acknowledged gap in this particular piece of software, not a flaw in the delete itself. The comparison above was carried out by hand, reading both files directly and matching them exactly the way its own reading path is supposed to."
+      ]
+    },
+    {
+      "lines": [
+        "Knowing that cost now explains a real design decision made further along in this format's own evolution. The address-based delete, the cheap one, gets replaced entirely by something cheaper still.",
+        "That replacement is a plain bitmap of positions, already built and shown earlier in this chapter, attached directly to the one file it concerns."
+      ]
+    },
+    {
+      "lines": [
+        "And the value-based delete, the expensive one measured just now, eventually gets banned outright from being newly written at all, in a later draft of this same format.",
+        "That's not a style preference. It's a direct response to the exact cost just measured: checking every single row's value, every time, to act on one deleted value."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it. One kind of delete is a direct lookup by position. The other is a full comparison against every row's own value.",
+        "That gap in cost is exactly why the format eventually replaces the cheap one with something cheaper, and eventually forbids writing the expensive one at all."
+      ]
+    }
+  ]
+}

@@ -10292,4 +10292,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Hidden partitioning prunes whole files by partition tuple. The next topic is how a single file's own rows get deleted without rewriting it: position and equality deletes.",
   },
+  {
+    id: 'de.position-equality-deletes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/position-equality-deletes',
+    title: 'Position and equality deletes',
+    syllabusTitle: 'Position and equality deletes',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.1' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['iceberg-v2-deletes'],
+    uses: ['deletion-vectors', 'iceberg-metadata-tree'],
+    declared: [],
+    bridge:
+      "Hidden partitioning prunes whole files by partition tuple. This topic is how a single file's own rows get deleted without rewriting it, in Iceberg's own v2 mechanism: position deletes and the costlier equality deletes a streaming upsert writer produces.",
+    handoff:
+      "Both delete mechanisms here are v2 features. The next topic is v3 as a whole: the full set of spec features, deletion vectors among them, that replace or extend v2's own design.",
+  },
 ];
