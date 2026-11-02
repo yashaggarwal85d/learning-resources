@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Object storage as a database substrate" domain="data-engineering" host="de.object-storage-as-database" by="This chapter's tenth topic" />
+  <Resource kind="reel" title="Why Hive-style tables broke" domain="data-engineering" host="de.why-hive-style-tables" by="This chapter's eleventh topic" />
+  <Resource kind="reel" title="Snapshot-based table metadata" domain="data-engineering" host="de.snapshot-based-table-metadata" by="This chapter's twelfth topic" />
+  <Resource kind="reel" title="Optimistic commits and conflict resolution" domain="data-engineering" host="de.optimistic-commits-conflict-resolution" by="This chapter's thirteenth topic" />
+  <Resource kind="reel" title="Schema evolution with column IDs" domain="data-engineering" host="de.schema-evolution-column-ids" by="This chapter's sixteenth topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Maintenance" href="https://iceberg.apache.org/docs/latest/maintenance/" by="Apache Iceberg">Expiring snapshots, removing orphan files, and the real danger of too short a retention window.</Resource>
+  <Resource kind="reading" title="Table utility commands" href="https://docs.delta.io/latest/delta-utility.html" by="Delta Lake">VACUUM, RESTORE, and the retention-interval safety warning this topic reproduces.</Resource>
+  <Resource kind="reading" title="Prepare your data for GDPR compliance" href="https://docs.databricks.com/aws/en/security/privacy/gdpr-delta" by="Databricks">The real conflict between long time travel and a hard, permanent delete.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,5 @@
+- **The table snapshot model**, from earlier in this chapter. *Where you meet it:* this topic is entirely about the lifecycle of that same snapshot chain — how long a version stays reachable, and what finally removes it.
+- **The optimistic commit protocol**, from earlier in this chapter. *Where you meet it:* expiring a snapshot and rolling back are both commits in their own right, subject to the same atomic-pointer mechanism as any other write.
+- **Copy-on-write versus merge-on-read**, from this chapter's §6.3. *Where you meet it:* both strategies leave behind superseded or logged files that only expiry and vacuum ever actually remove.
+- **Deletion vectors across formats**, this chapter's topic 15. *Where you meet it:* a deletion vector is itself a file tracked by a snapshot — it is only truly gone once the snapshot referencing it is expired, exactly like any other file this topic retires.
+- **Schema evolution with column IDs**, this chapter's previous topic. *Where you meet it:* a rename or reorder is just another commit creating a new snapshot — this topic is what eventually happens to the snapshot that commit replaced.

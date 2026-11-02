@@ -1,0 +1,73 @@
+{
+  "topic": "de.snapshot-lifecycle-time-travel",
+  "steps": [
+    {
+      "lines": [
+        "A column surviving a rename is one kind of memory a table keeps. A whole table remembering its own past versions is a bigger kind, and it raises a harder question.",
+        "How far back can you actually go to see an old version of a table, and at what point does the table simply stop remembering it existed at all?"
+      ]
+    },
+    {
+      "lines": [
+        "Picture a table that commits three more times after its very first commit, each time adding something new.",
+        "Can a query still go back and read that table exactly the way it looked the moment right after that very first commit?"
+      ],
+      "answer": [
+        "Yes, with one condition attached. Every version a table has ever committed stays fully readable, for as long as nothing has gone back and expired it.",
+        "Expiring is a deliberate act someone has to take. Until that happens, the old version just sits there, waiting to be asked for."
+      ]
+    },
+    {
+      "lines": [
+        "And this was checked directly, on a real chain of committed versions, two different ways at once.",
+        "Asking for an old version by its own identity worked, and so did asking for whichever version was current at some earlier moment in time. Stepping a table backward to an older version worked the same way."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that's easy to miss: replacing a file with a new one doesn't make the old file disappear.",
+        "The format's own documentation says so directly — an old file sticks around for as long as any remembered version still points back to it."
+      ]
+    },
+    {
+      "lines": [
+        "So what actually gets rid of it? Checked directly: deliberately retiring two old versions, then clearing out whichever files only those two versions still needed.",
+        "The exact space those files were taking up came back for real, measured directly off the disk. And asking for either retired version afterward now genuinely fails."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's where that same mechanism runs into a real legal obligation. A privacy law doesn't just want a record hidden going forward — it wants it permanently, completely gone.",
+        "But committing a correction that hides a record from the current view doesn't erase the original file it came from. That file is still sitting there, still fully readable by anyone stepping back in time, until the version pointing at it is deliberately retired and cleared."
+      ]
+    },
+    {
+      "lines": [
+        "So picture someone in the middle of reading a version, files half-open, when cleanup decides that exact version is old enough to retire and clear away.",
+        "What happens to that read, caught mid-flight?"
+      ],
+      "answer": [
+        "It can genuinely fail, or worse. Both this format and its closest rival warn about exactly this scenario in their own documentation, in plain terms.",
+        "The read was still depending on a file that cleanup just decided nobody needed any more."
+      ]
+    },
+    {
+      "lines": [
+        "Checked directly, run twice, back to back. With a cleanup window shorter than that reader's own in-flight read, the exact file it was depending on vanished out from under it, and the read failed for real.",
+        "Run the identical scenario again with a window generous enough to outlast that read, and it finishes cleanly every time."
+      ]
+    },
+    {
+      "lines": [
+        "So there's really one single dial controlling all of this, and it has to satisfy two opposite demands at once.",
+        "Set it too generous, and old space never gets reclaimed, and a record someone legally has to erase just keeps on lingering. Set it too aggressive, and a reader or a writer still mid-flight gets its floor pulled out from underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole idea in one line. Going backward in time and clearing old space both read from, and act on, that exact same chain of committed versions.",
+        "Deliberately retiring an old version is the one act that both reclaims real space and finally makes an erasure permanent — and the window you choose for that act is the one dial balancing all of it."
+      ]
+    }
+  ]
+}

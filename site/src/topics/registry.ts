@@ -10172,4 +10172,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A table's schema and its file list are both things a snapshot captures. The next question is how far back in time a table lets you go to see an old one, and how it eventually forgets.",
   },
+  {
+    id: 'de.snapshot-lifecycle-time-travel',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/snapshot-lifecycle-time-travel',
+    title: 'Snapshot lifecycle: time travel to garbage collection',
+    syllabusTitle: 'Snapshot lifecycle: time travel to garbage collection',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['snapshot-lifecycle-gc'],
+    uses: ['table-snapshot-model', 'optimistic-commit-protocol'],
+    declared: [],
+    bridge:
+      "A table's schema and its file list are both things a snapshot captures. This topic is how far back a table lets you go to see an old one, and how it eventually forgets: time travel, rollback, snapshot expiry, orphan-file removal and VACUUM, including the conflict with a hard GDPR delete.",
+    handoff:
+      "Every snapshot this chapter has shown so far assumed the files underneath it stay a reasonable size. The next topic is what happens when they don't: small files and compaction.",
+  },
 ];
