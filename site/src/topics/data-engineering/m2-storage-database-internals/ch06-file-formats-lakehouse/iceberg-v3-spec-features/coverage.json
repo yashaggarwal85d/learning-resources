@@ -1,0 +1,57 @@
+{
+  "topic": "de.iceberg-v3-spec-features",
+  "syllabus": [
+    { "clause": "deletion vectors, row lineage, variant, geometry/geography, nanosecond timestamps, the unknown type, column default values (initial-default/write-default), multi-argument transforms and table encryption keys; what older readers do with each, and engine support lag as the real adoption constraint", "at": [
+      { "step": "Reveal: they’re all one coherent version bump — v3" },
+      { "step": "Reveal: v3 also adds five more features" },
+      { "step": "Reveal: reproduced for real — a v3 default value, read correctly on a v2 table" },
+      { "step": "Reveal: reproduced for real — writing an actual v3 table fails outright" },
+      { "step": "Reveal: a real, dated engine announcement supports exactly three v3 features today" },
+      { "step": "Reveal: engine support lag, not the spec, is what actually gates adopting v3" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Table Spec (v3 feature additions)",
+      "items": [
+        { "item": "deletion vectors are added in v3, stored using the Puffin deletion-vector-v1 blob type", "at": [{ "step": "Reveal: they’re all one coherent version bump — v3" }] },
+        { "item": "in v3 and later, an Iceberg table must track row lineage fields for all newly created rows", "at": [{ "step": "Reveal: they’re all one coherent version bump — v3" }] },
+        { "item": "support for Variant is added in Iceberg v3", "at": [{ "step": "Reveal: they’re all one coherent version bump — v3" }] },
+        { "item": "the types variant, geometry, geography, unknown, timestamp_ns, and timestamptz_ns are all added in v3", "at": [{ "step": "Reveal: v3 also adds five more features" }] },
+        { "item": "default values are added to struct fields in v3", "at": [{ "step": "Reveal: v3 also adds five more features" }] },
+        { "item": "tables with initial-default will be read correctly by older readers if initial-default is always null for optional fields; old readers fail to read required fields populated by initial-default", "at": [{ "step": "Predict: what does a v2-only reader do when it meets a v3 default value?" }] },
+        { "item": "source-ids was added and must be written in the case of a multi-argument transform", "at": [{ "step": "Reveal: v3 also adds five more features" }] },
+        { "item": "keys used for table encryption can be tracked in table metadata as a list named encryption-keys", "at": [{ "step": "Reveal: v3 also adds five more features" }] }
+      ]
+    },
+    {
+      "source": "Databricks, \"The next era of the open lakehouse: Apache Iceberg v3 in Public Preview on Databricks\"",
+      "items": [
+        { "item": "Unity Catalog Managed Iceberg v3 tables support Row Lineage, Deletion Vectors, and VARIANT", "at": [{ "step": "Reveal: a real, dated engine announcement supports exactly three v3 features today" }] },
+        { "item": "deletion vectors allow Iceberg to track logically deleted rows without immediately rewriting the underlying data files", "at": [{ "deep": "Frontier" }] },
+        { "item": "Databricks engineers are driving v4 proposals including an adaptive metadata tree that simplifies metadata so most operations write only a single file", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The blocked v3 table creation is measured, not assumed: examples.py calls catalog.create_table with format-version 3 against the real installed pyiceberg (0.12.0) and catches the real NotImplementedError it raises, citing the real open issue apache/iceberg-python#1551, per FACT-CHECK.md red-team #1.", "at": [{ "step": "Reveal: reproduced for real — writing an actual v3 table fails outright" }] },
+      { "item": "The default-value fallback is exercised on a genuinely v2-format table (format_version == 2, asserted directly), not a v3 table, making this a real instance of a widely used v2 implementation running ahead of the spec's own version boundary -- disclosed plainly in FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: reproduced for real — a v3 default value, read correctly on a v2 table" }] },
+      { "item": "Both the old-row-gets-default and new-row-keeps-its-own-value halves of the fallback are asserted by exact row-list comparison, not just 'it ran with no error'.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The Databricks three-feature list is the vendor's own complete summary sentence, not a cherry-picked subset -- the other five v3 features' absence from that announcement is reported as an absence in a point-in-time snapshot, not as permanent non-support, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: a real, dated engine announcement supports exactly three v3 features today" }] },
+      { "item": "Geometry, geography, nanosecond timestamps, the unknown type, multi-argument transforms, and table encryption keys are named from the spec's own text, not built or exercised in any form, per FACT-CHECK.md red-team #4 (scope boundary).", "at": [{ "deep": "Frontier" }] },
+      { "item": "File paths and UUIDs are real-system randomness; the script asserts structure and values, not literal paths, verified byte-identical across 3 consecutive runs.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The prerequisites panel lists topics 8, 15, 20-21, 23, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "declared: none beyond topics 8, 15, 20, 23, matching CHAPTER.md's own note for this topic.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic hosts no lab of its own, matching CHAPTER.md's own note.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The v3 features already built in earlier topics (deletion vectors at topic 15, Variant at topic 8, row lineage via topic 20's incremental reads) are each cross-referenced by name to their earlier topic rather than re-demonstrated, keeping this topic's own new content to the two features it actually exercises.", "at": [{ "step": "Reveal: they’re all one coherent version bump — v3" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

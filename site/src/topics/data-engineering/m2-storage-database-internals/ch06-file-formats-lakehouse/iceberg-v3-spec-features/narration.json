@@ -1,0 +1,73 @@
+{
+  "topic": "de.iceberg-v3-spec-features",
+  "steps": [
+    {
+      "lines": [
+        "The two kinds of delete just covered both belong to one specific revision of this format, the one this chapter has been building against the whole time.",
+        "But that revision also added a handful of other features, each one introduced separately, in its own topic, as if it were an isolated idea. It wasn't."
+      ]
+    },
+    {
+      "lines": [
+        "Think back across this chapter. A compact bitmap marking deleted rows. A permanent identifier that follows every row through every change. A column that can hold messy, inconsistent, semi-structured values.",
+        "Each was taught on its own terms, as a standalone trick. What actually connects all three of them to each other, underneath?"
+      ],
+      "answer": [
+        "They're not three separate tricks at all. They're three pieces of exactly the same single revision to this format, adopted together, at the same moment, as one coordinated step forward.",
+        "Naming that revision directly is what ties them together. Everything learned about each one separately was really a preview of this one bigger change, approached from three different angles."
+      ]
+    },
+    {
+      "lines": [
+        "So here's that revision, named plainly. The compact bitmap, the permanent row identifier, and the messy-value column all belong to it, and all three have already been built, concretely, earlier in this chapter.",
+        "That's three of its pieces. There are more."
+      ]
+    },
+    {
+      "lines": [
+        "The same revision also adds two kinds of geographic data, one planar and one accounting for the Earth's curvature. It adds a finer unit of time than this format previously allowed.",
+        "It adds a placeholder type for a column with no known shape yet. It adds default values for columns. It adds the ability to derive one partition value from more than one source column at once. And it adds table-level encryption keys."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a sharper question about one of those additions specifically: default values. Picture an older piece of software, built before this revision existed, opening a table that now has a required column filled in entirely by that newer default mechanism.",
+        "Does that older software read the column correctly? Does it quietly get the value wrong without noticing? Or does it fail outright?"
+      ],
+      "answer": [
+        "It depends entirely on one detail: whether that column is allowed to be empty or not. If it's allowed to be empty, the older software simply treats every missing value as empty, and that happens to be exactly correct here.",
+        "But if the column is required, meaning it's never allowed to be empty, the older software has no way to supply the value the newer mechanism would have provided. That specific case is where it genuinely fails."
+      ]
+    },
+    {
+      "lines": [
+        "That distinction was tested directly here, not assumed. A column that's allowed to be empty, given a default value through this exact mechanism, was read back correctly even by software built only for the format's previous revision.",
+        "Rows written before that column existed picked up the default automatically. A newly written row kept the specific value it was given. Both came back exactly right."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing worth being direct about. Actually building a brand new table under this newer revision, from scratch, was attempted here too, using the exact same library this chapter has used throughout.",
+        "It failed immediately, with that library's own genuine error message, naming an issue that's still openly tracked and unresolved. The newer revision gets read about and partially borrowed from here. It isn't fully written yet, even in this very sandbox."
+      ]
+    },
+    {
+      "lines": [
+        "That gap between a finished specification and software that actually implements all of it turns out to be the real story. One real company's own announcement about adopting this newer revision names exactly three of its features as ready for production use right now.",
+        "The remaining five aren't mentioned there at all, one way or the other."
+      ]
+    },
+    {
+      "lines": [
+        "So the thing actually holding this newer revision back isn't the specification itself. The specification was finished a while ago. What's holding it back is how far real software has caught up to implementing it.",
+        "That's the genuine constraint on using any of this today, not some unfinished idea on paper."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it. This newer revision isn't eight unrelated features scattered across a changelog. It's one coordinated step, and this chapter had already quietly demonstrated three of its pieces before ever naming the revision itself.",
+        "What remains open isn't the design. It's simply how much of it real, working software has gotten around to finishing."
+      ]
+    }
+  ]
+}

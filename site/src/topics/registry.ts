@@ -10312,4 +10312,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Both delete mechanisms here are v2 features. The next topic is v3 as a whole: the full set of spec features, deletion vectors among them, that replace or extend v2's own design.",
   },
+  {
+    id: 'de.iceberg-v3-spec-features',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/iceberg-v3-spec-features',
+    title: 'Iceberg v3 spec features',
+    syllabusTitle: 'Iceberg v3 spec features',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.1' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['iceberg-v3-features'],
+    uses: ['deletion-vectors', 'variant-type-shredding', 'incremental-reads-change-feeds', 'iceberg-v2-deletes'],
+    declared: [],
+    bridge:
+      "Both delete mechanisms from the last topic are v2 features. This topic is v3 as a whole: every new spec feature, most of which this chapter already met separately (deletion vectors, row lineage, Variant), now named as one coherent version bump and checked against what an older reader actually does with each.",
+    handoff:
+      "A table's column statistics (topic 21's manifests) are per-file. The next topic is statistics kept at the whole-table level instead: Iceberg's Puffin files.",
+  },
 ];
