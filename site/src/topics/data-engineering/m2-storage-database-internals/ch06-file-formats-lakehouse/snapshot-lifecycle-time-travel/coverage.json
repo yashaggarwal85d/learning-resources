@@ -1,0 +1,57 @@
+{
+  "topic": "de.snapshot-lifecycle-time-travel",
+  "syllabus": [
+    { "clause": "time travel and rollback by snapshot ID or timestamp", "at": [{ "step": "Reveal: reproduced for real — time travel by id, by timestamp, and rollback" }] },
+    { "clause": "retention windows; expiring snapshots, removing orphan files and VACUUM", "at": [{ "step": "Reveal: reproduced for real — expiring old snapshots and vacuuming reclaims real storage" }] },
+    { "clause": "the conflict between long time travel and GDPR deletes", "at": [{ "step": "Reveal: a hard delete isn't gone until vacuum runs — the real GDPR conflict" }] },
+    { "clause": "how a too-aggressive cleanup corrupts concurrent readers and writers", "at": [{ "step": "Reveal: reproduced for real — too-aggressive cleanup corrupts a pinned reader" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Maintenance",
+      "items": [
+        { "item": "each write creates a new snapshot; snapshots enable time-travel queries, or the table can be rolled back to any valid snapshot", "at": [{ "step": "Reveal: reproduced for real — time travel by id, by timestamp, and rollback" }] },
+        { "item": "data files are not deleted until no longer referenced by a snapshot usable for time travel or rollback; regularly expiring snapshots deletes unused data files", "at": [{ "step": "Reveal: Iceberg's own words — a superseded file stays until no snapshot needs it" }] },
+        { "item": "it is dangerous to remove orphan files with a retention interval shorter than the time expected for any write to complete", "at": [{ "step": "Reveal: reproduced for real — too-aggressive cleanup corrupts a pinned reader" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Table utility commands",
+      "items": [
+        { "item": "VACUUM removes files no longer referenced and older than the retention threshold; the default retention threshold is 7 days", "at": [{ "deep": "Frontier" }] },
+        { "item": "the ability to time travel back to a version older than the retention period is lost after running vacuum", "at": [{ "step": "Reveal: a hard delete isn't gone until vacuum runs — the real GDPR conflict" }] },
+        { "item": "a retention interval shorter than the longest running concurrent transaction can let VACUUM corrupt the table or fail concurrent readers", "at": [{ "step": "Reveal: the real retention-window trade-off" }] },
+        { "item": "RESTORE can return a Delta table to an earlier state by version or by timestamp", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Prepare your data for GDPR compliance",
+      "items": [
+        { "item": "GDPR/CCPA require permanently and completely deleting PII on request, within a specified period", "at": [{ "step": "Reveal: a hard delete isn't gone until vacuum runs — the real GDPR conflict" }] },
+        { "item": "VACUUM is what actually, permanently deletes data no longer referenced, past the retention threshold", "at": [{ "step": "Reveal: a hard delete isn't gone until vacuum runs — the real GDPR conflict" }] },
+        { "item": "by default Delta retains table history, including deleted records, for 30 days, available for time travel", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The table in examples.py is a real local directory tree with real JSON snapshot files and real binary data files, not Iceberg's or Delta's actual on-disk metadata/manifest format — disclosed in the script's own docstring and FACT-CHECK.md red-team #1. What transfers is the real mechanism: snapshot chain, time travel, rollback, expiry, orphan-file removal.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic's rollback moves the current pointer directly to an old snapshot's metadata file (Iceberg's own documented behavior), not Delta's RESTORE, which creates a new version — both are real, sourced mechanisms; this topic demonstrates the simpler one and names RESTORE as the equivalent, per FACT-CHECK.md red-team #2.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 'GDPR delete' demo stands in for a real column-level redaction, not an actual row-level DELETE/MERGE statement — the conflict demonstrated (the pre-delete file survives until expiry and vacuum) is the real, sourced conflict regardless of exactly how the delete is expressed in SQL, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: a hard delete isn't gone until vacuum runs — the real GDPR conflict" }] },
+      { "item": "The too-short vs. long-enough retention scenarios are simulated by code path (expiry before or after the read completes), not an actual wall-clock race between concurrent processes — a deterministic, sourced reproduction of the documented failure mode, per FACT-CHECK.md red-team #4.", "at": [{ "step": "Reveal: reproduced for real — too-aggressive cleanup corrupts a pinned reader" }] },
+      { "item": "This topic does not demonstrate Iceberg's separate metadata-file-level cleanup (write.metadata.delete-after-commit) — only snapshot expiry and orphan data-file removal, matching CHAPTER.md's stated scope for this topic.", "at": [{ "deep": "Frontier" }] },
+      { "item": "This topic hosts the §6.3 chapter lab's compaction/expiry/retention leg per CHAPTER.md's own note; the four demonstrations in examples.py already compact, expire, and vacuum a real table and verify time travel fails past the retention window.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Delta's default retention figures (7 days for VACUUM, 30 days for table history) are quoted from the sources but not asserted as literal numbers in examples.py, so they are spoken as words rather than shown as on-screen digits, consistent with the build's digit-provenance check.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The reclaimed-bytes figure shown on screen (40,000 bytes) is the literal FILE_SIZE_BYTES constant from examples.py, traced per-file; the demo's actual total reclaimed across two files (80,000 bytes) is not itself a literal in the source and is therefore not shown as a single on-screen number.", "at": [{ "step": "Reveal: reproduced for real — expiring old snapshots and vacuuming reclaims real storage" }] },
+      { "item": "The prerequisites panel lists topics 10-13 and topic 16, matching CHAPTER.md's own stated prerequisites-panel note for this topic.", "at": [{ "step": "Hook" }] },
+      { "item": "All four demonstrations in examples.py are deterministic (pure logic plus small local file I/O, no timing assertions), verified identical across 3 consecutive runs — no flaky-timing risk.", "at": [{ "step": "Reveal: reproduced for real — time travel by id, by timestamp, and rollback" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}
