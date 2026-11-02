@@ -1,0 +1,72 @@
+{
+  "topic": "de.federated-governance-operating-model",
+  "steps": [
+    {
+      "lines": [
+        "Three separate teams, each quietly running their own tables, and now a regulator wants a single answer: every table touching sensitive personal information, and who actually answers for it, by tomorrow.",
+        "Hand that job to one central team and it takes forever and still comes back wrong. Leave it to every team to answer on its own and you get three different, conflicting stories. What's the one thing that genuinely has to sit in the middle?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's a shape that actually resolves that tension.",
+        "Each team keeps running its own data, the way it already knows how. A separate platform team builds the shared tooling everyone uses instead of reinventing it.",
+        "And somewhere in the middle, a rule gets written exactly once, and the platform itself is what actually makes sure nobody quietly ignores it."
+      ]
+    },
+    {
+      "lines": [
+        "Before I say which way this splits, work it out yourself.",
+        "Three different things are on the table here — the rule, who answers for a given dataset, and the actual tool that checks it. Does each one belong in the middle, does each belong with the team, or does this split apart differently depending on which one you're asking about?"
+      ],
+      "answer": [
+        "It splits. Putting everything in the middle isn't the answer.",
+        "The rule has to be written once, or you're right back to three conflicting stories. The checking tool has to be shared too.",
+        "But who actually answers for a dataset is a fact about that data — moving it to the middle doesn't make a distant team understand it any better."
+      ]
+    },
+    {
+      "lines": [
+        "So that's exactly how it lands.",
+        "The rule itself gets written once, centrally. Who's actually responsible for a given table stays exactly where that data already lives. And the tool that checks every table against the rule is shared, central infrastructure — so enforcement never depends on any one team remembering to run it themselves."
+      ]
+    },
+    {
+      "lines": [
+        "There's an old, sharp observation about organizations worth borrowing here, stated plainly by the person who first wrote it down decades ago.",
+        "Whatever structure a group of people is organized into, that's the shape the thing they build ends up taking, like it or not. Flip that around on purpose, and you get a genuinely useful design move: pick the team structure you actually want first, and let the system follow it."
+      ]
+    },
+    {
+      "lines": [
+        "Sort three different calls before I give you the split.",
+        "Masking a column that's already been flagged as sensitive. A table nobody ever claimed ownership of. Letting one specific table skip the usual retention rule because of a real legal reason behind it.",
+        "Which of these can a machine just decide on its own, and which genuinely needs an actual person?"
+      ],
+      "answer": [
+        "The first two are honestly just rules checked against a label — a machine handles those fine on its own.",
+        "The legal exception is a judgment call about whether that particular reason actually holds up, and that's exactly the kind of thing you want one specific, named person answerable for, not a rule that fires once and gets forgotten."
+      ]
+    },
+    {
+      "lines": [
+        "Both of those first two really are just a label check, so the platform just handles them, no person needed anywhere in that loop.",
+        "But a legal reason behind an exception, or a column where it's genuinely unclear whether it even counts as sensitive — both of those stay with one named person, and get revisited on a set schedule instead of being decided once and then forgotten about entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that whole idea, actually run rather than just talked about.",
+        "Push one table through a check against its schema, its written agreement, and its sensitivity label, and a table that has everything it needs sails straight through.",
+        "Push through one that's missing its sensitivity label, and it gets turned away — and the rejection itself says exactly which piece it was missing."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real shape of this whole thing.",
+        "The rule gets written down exactly once, centrally. Whoever actually owns a piece of data stays wherever that data genuinely lives.",
+        "And the real dividing line is this: a plain rule checked against a label, a machine just handles on its own — but the moment it's a genuine judgment call, that call stays with one named person who can be asked to explain it."
+      ]
+    }
+  ]
+}

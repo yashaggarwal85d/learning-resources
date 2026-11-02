@@ -1,0 +1,107 @@
+{
+  "topic": "de.federated-governance-operating-model",
+  "syllabus": [
+    {
+      "clause": "domain teams own data products, a platform team supplies self-serve tooling, central policy is applied computationally; reverse Conway's law; what must stay human stewardship (criticality, retention exceptions, ambiguous PII classification) vs what to automate; links to §3.4 (data mesh) and §19.1 (team topology)",
+      "at": [
+        { "step": "Reveal: domain teams own their data products, a platform team supplies self-serve tooling, and central policy is applied by the platform, computationally" },
+        { "step": "Reveal: policy is written centrally; ownership stays with the domain that actually knows the data; tooling is central and enforces the policy automatically" },
+        { "step": "Elaborate: reverse Conway's law -- choose the team structure that produces the governance architecture you actually want" },
+        { "step": "Reveal: a rule over an attribute automates cleanly; a legal reason or a genuinely ambiguous case keeps a named human steward and a review cadence" },
+        { "step": "Reveal: measured directly -- a self-serve registration gate admits a table meeting every rule, and rejects one missing its classification tag, naming exactly which rule it failed" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dehghani -- Data Mesh Principles and Logical Architecture",
+      "items": [
+        {
+          "item": "data mesh's four principles (domain ownership, data as a product, a self-serve platform, federated computational governance) are collectively necessary and sufficient; pre-mesh centralized governance practices no longer apply, replaced by a global standard the federated team defines and the platform automates",
+          "at": [
+            { "step": "Reveal: domain teams own their data products, a platform team supplies self-serve tooling, and central policy is applied by the platform, computationally" },
+            { "step": "Reveal: policy is written centrally; ownership stays with the domain that actually knows the data; tooling is central and enforces the policy automatically" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Conway -- How Do Committees Invent? (1968)",
+      "items": [
+        {
+          "item": "Conway's own thesis, stated in his own words: organizations that design systems are constrained to produce designs that copy their own communication structures, which gives a criterion for structuring a design organization around its actual communication needs",
+          "at": [{ "step": "Elaborate: reverse Conway's law -- choose the team structure that produces the governance architecture you actually want" }]
+        }
+      ]
+    },
+    {
+      "source": "Open Data Contract Standard -- Home",
+      "items": [
+        {
+          "item": "a data contract is the agreement between a data producer and its consumers, used to implement data mesh at PayPal -- the format this chapter's own contract topics build on, reused here as the artifact a registration gate checks for",
+          "at": [{ "step": "Reveal: measured directly -- a self-serve registration gate admits a table meeting every rule, and rejects one missing its classification tag, naming exactly which rule it failed" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "a table-registration gate checking schema, contract and classification-tag rules admits a table meeting all three and rejects one missing exactly its classification tag, naming that specific rule in the rejection",
+          "at": [{ "step": "Reveal: measured directly -- a self-serve registration gate admits a table meeting every rule, and rejects one missing its classification tag, naming exactly which rule it failed" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      {
+        "item": "Dehghani's own article describes a data product's three structural components (code, data and metadata, infrastructure) as the architectural quantum data mesh builds governance enforcement into, not just a database table with a label -- a decomposition this topic's own measurement collapses into a single flat registration check.",
+        "at": [{ "out": "the data product's own three-component architectural-quantum structure named only; this topic's own measurement checks a flat table submission, not a full data product" }]
+      },
+      {
+        "item": "Conway's own paper names a second, practical consequence beyond the headline thesis: organizational protocol (a fixed span of control, at most roughly seven subordinates) itself restricts communication paths, which is a mechanical reason military-style organizations reliably produce system designs shaped like their own org charts.",
+        "at": [{ "out": "Conway's own span-of-control mechanism named only; this topic's own reveal states the reversed design principle, not the mechanical cause behind the original observation" }]
+      },
+      {
+        "item": "A reverse-Conway team topology can itself create new communication gaps at the seams between the new teams, which is exactly the problem Team Topologies (§19.1, named but not taught here) addresses with its own four team types and three interaction modes.",
+        "at": [{ "out": "Team Topologies' own four-team-type, three-interaction-mode framework named only; this topic stops at naming reverse Conway's law, not a full reorganization framework" }]
+      },
+      {
+        "item": "A table's business criticality -- named in CHAPTER.md's own list of what must stay human stewardship -- is a judgment about downstream consequence (what breaks, for whom) that this chapter's own later lineage-driven-impact-analysis topic (topic 14) is the one that actually computes from the lineage graph, rather than this topic building that computation itself.",
+        "at": [{ "out": "criticality-as-a-stewardship-decision named only; topic 14's own blast-radius computation is the mechanism that actually informs it, not built here" }]
+      },
+      {
+        "item": "DAMA-DMBOK's own, much older governance framework names many of the same roles (a data steward, a data owner) this topic's federated model also uses, but organizes them around a single enterprise-wide governance council rather than domain-by-domain federation -- a contrast CHAPTER.md's own source list names only as framing.",
+        "at": [{ "out": "DAMA-DMBOK's own centralized-council governance model named only as contrast; this topic's own measurement builds the federated, not the centralized, model" }]
+      },
+      {
+        "item": "A table's schema, contract and classification requirements can themselves evolve over time, which raises a versioning question this topic's own one-shot registration gate doesn't address: does a table registered under an older policy version get re-checked when the policy changes, or only a newly submitted one?",
+        "at": [{ "out": "policy-versioning-over-time named only; this topic's own measurement checks one submission against one fixed rule set, not re-validation on policy change" }]
+      },
+      {
+        "item": "Dehghani's own article lists specific self-serve platform capability categories (data product lifecycle management, discovery, observability, governance tooling) that a real self-serve platform must expose, of which this topic's own registration gate builds exactly one: an automated policy check, not the full capability set.",
+        "at": [{ "out": "the self-serve platform's own full capability-category list named only; this topic's own measurement builds one capability, the registration gate" }]
+      },
+      {
+        "item": "A domain can disagree with a centrally-defined policy rule itself (not just whether it's met), and Dehghani's own governance model doesn't eliminate that conflict -- it routes it through the federated team, made of domain representatives, rather than a dictate from an independent central authority, which is why the team's own composition matters as much as its output.",
+        "at": [{ "step": "Reveal: domain teams own their data products, a platform team supplies self-serve tooling, and central policy is applied by the platform, computationally" }]
+      },
+      {
+        "item": "This topic's own self-serve registration gate is the same mechanism Chapter 13's quality-frameworks topic (topic 12) describes as a gate running inside a pipeline -- federated governance's registration check and a quality gate are both instances of the same gate-before-publish pattern, applied to different rule sets.",
+        "at": [{ "out": "the shared gate-before-publish pattern across topic 12's quality gate and this topic's registration gate named only; this topic's own measurement builds the registration-specific rule set" }]
+      },
+      {
+        "item": "A measure-of-success shift Dehghani's own article names explicitly -- from counting governed tables to counting the network effect of actual data consumption across the mesh -- changes what a governance team should optimize for, a metric question this topic's own pass/fail registration gate doesn't address at all.",
+        "at": [{ "out": "Dehghani's own network-effect success metric named only; this topic's own measurement reports a binary admit/reject, not a consumption metric" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

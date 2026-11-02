@@ -1,0 +1,8 @@
+- **Domain team**: the team that owns and runs its own data, the way it already knows the data best. *Where you meet it:* the mesh-shape reveal.
+- **Data product**: (from Chapter 3) a domain's own analytical data, treated as something built for consumers rather than a byproduct of an operational system. *Where you meet it:* the mesh-shape reveal.
+- **Platform team**: the team that builds the shared, self-serve tooling every domain uses instead of reinventing it. *Where you meet it:* the mesh-shape reveal.
+- **Policy**: a rule written once, centrally -- a classification scheme, a retention rule, an access rule -- rather than redecided per domain. *Where you meet it:* the central-vs-local predict-and-reveal pair.
+- **Steward**: the one named person answerable for a judgment call a rule can't make on its own. *Where you meet it:* the automate-vs-human predict-and-reveal pair.
+- **Guardrail**: an automated check that blocks a violation outright, rather than merely flagging it after the fact. *Where you meet it:* the registration-gate reveal.
+- **Self-serve**: a platform capability a domain team can use on its own, without asking a central team to do it for them. *Where you meet it:* the mesh-shape reveal.
+- **Centralised vs. federated**: whether a decision, a tool, or ownership itself sits with one central body or is split across domains -- this topic's own central question. *Where you meet it:* throughout.
