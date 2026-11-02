@@ -10432,4 +10432,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Everything in the Delta arc so far is the current protocol as it stands today. The next topic is the current release line that ships it, and the library (Delta Kernel) that lets engines other than Spark use it correctly.",
   },
+  {
+    id: 'de.delta-lake-4-x',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/delta-lake-4-x',
+    title: 'Delta Lake 4.x and Delta Kernel',
+    syllabusTitle: 'Delta Lake 4.x and Delta Kernel',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.2' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['delta-4x-kernel'],
+    uses: ['variant-type-shredding', 'delta-merge-dml', 'delta-commit-protocol'],
+    declared: [],
+    bridge:
+      "Everything in the Delta arc so far is the current protocol as it stands. This topic closes the arc with the current release line that ships it and the library, Delta Kernel, that lets this very sandbox read and write Delta correctly with no Spark cluster at all -- exactly the engine of record this chapter has been using.",
+    handoff:
+      "Both Iceberg and Delta now exist as real, fully built arcs. The next question is what sits above either of them so more than one engine can even find a given table: the catalog.",
+  },
 ];

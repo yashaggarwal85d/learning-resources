@@ -1,0 +1,82 @@
+{
+  "topic": "de.delta-lake-4-x",
+  "steps": [
+    {
+      "lines": [
+        "We ended the last topic with a protocol fully described, as it stands today.",
+        "This topic closes that arc with two more pieces: the release line that actually ships it, and the one library built to read it correctly, running right here."
+      ]
+    },
+    {
+      "lines": [
+        "Four very different engines want to read the same Delta table.",
+        "Does each one have to study the protocol from scratch and build its own reader, or is there something they can all share instead?"
+      ],
+      "answer": [
+        "Think about what happens the moment the protocol adds a new feature.",
+        "If five engines each hand wrote their own reader, all five would need separate patches, on five different schedules."
+      ]
+    },
+    {
+      "lines": [
+        "That shared thing exists, and it is called Delta Kernel.",
+        "It is a library that owns the protocol itself, so a connecting engine only calls a small, stable API and never has to understand the format underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Now here is a name worth separating out carefully.",
+        "The tool this script uses directly is called delta-rs, and it is not a piece of Kernel at all.",
+        "It is its own complete, independent implementation of the same protocol, and the package running in this script is built straight on top of it.",
+        "Watch what it just did: wrote a real table to disk, appended a second version, and we are reading its own commit log back, in its own words."
+      ]
+    },
+    {
+      "lines": [
+        "One more question before we move on.",
+        "This table has already advanced to its second version on disk.",
+        "With nothing but this one library, no cluster, no separate tracking service, can it still hand us back exactly what the table looked like one version earlier?"
+      ],
+      "answer": [
+        "Picture a history book that only prints its newest edition.",
+        "That is not what this format is. Every version ever committed stays addressable by its own number, forever."
+      ]
+    },
+    {
+      "lines": [
+        "It can, and it just did.",
+        "We asked for the version before the append, by number alone, and got back exactly the row count from before that write happened.",
+        "That is not a Spark trick. It is a property of the format itself, so any correct reader gets it for free."
+      ]
+    },
+    {
+      "lines": [
+        "Here is something sharper still.",
+        "A single real call just switched on two features entirely by itself: deletion vectors, and row tracking.",
+        "Watch the table's own protocol numbers change in response, and a real list of which features are now required to read and write this table."
+      ]
+    },
+    {
+      "lines": [
+        "That same switch works for a feature we met much earlier in this chapter: the variant type.",
+        "Two more features land through this exact mechanism too, string collation rules and geospatial columns, and both arrived in the shared kernel library, not in any one engine."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put real numbers on the current release line, because a few of them are easy to get wrong.",
+        "The current major release is tested against three recent Spark releases in a row.",
+        "Type widening has had full support since the very start of this major version.",
+        "But variant shredding is a case worth slowing down on: as of the latest minor release, it is still marked as a preview feature, not the finished thing a casual read of the syllabus might suggest."
+      ]
+    },
+    {
+      "lines": [
+        "So here is where this chapter's Delta arc actually lands.",
+        "One shared library owns the protocol so engines do not reinvent it. A separate, independent implementation is what this very script just used, for real.",
+        "And the current release line keeps shipping real, versioned features, not vague promises.",
+        "Both Iceberg and Delta now stand as complete, real arcs in this course. What sits above either one, so more than one engine can even find the same table, is next."
+      ]
+    }
+  ]
+}

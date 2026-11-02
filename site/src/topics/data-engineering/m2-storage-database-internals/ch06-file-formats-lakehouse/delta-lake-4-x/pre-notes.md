@@ -1,0 +1,4 @@
+- **Delta Kernel**: a Rust library that handles the Delta protocol so a connecting engine (Flink, Trino, DuckDB, and others) doesn't have to reimplement it itself.
+- **delta-rs**: a separate, independent Rust implementation of the Delta protocol — not a Delta Kernel connector — that the Python `deltalake` package used in this topic is built on.
+- **Table feature**: a named, optional piece of the Delta protocol (deletion vectors, row tracking, Variant type, collations, geospatial types) that a table opts into, raising its minimum reader/writer protocol version.
+- **Time travel**: reading a Delta table as it existed at an earlier committed version, by version number, without any special session or catalog service.
