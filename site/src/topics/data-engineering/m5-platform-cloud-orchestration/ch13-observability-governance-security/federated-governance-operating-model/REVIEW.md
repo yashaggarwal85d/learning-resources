@@ -2,15 +2,19 @@
 
 ## Content review, self-review, 2026-10-30
 
-1. **Declared cross-chapter gap, checked and logged.** `CHAPTER.md`'s plan names `engine-enforced-
-   row-column-security` as a `uses` candidate from topic 8; checked directly against `registry.ts`
-   and the id does not exist anywhere — topic 8's own entry (read directly) introduces
-   `row-column-policies-in-engine` instead, which is what `uses` carries. `CHAPTER.md` also names
-   Chapter 11 §11.4 ("Contract enforcement in CI") and Chapter 10 §10.5 (compliance regimes) as
-   `uses` candidates; checked directly and neither `section: '11.4'` nor `section: '10.5'` exists
-   anywhere in `registry.ts`, so both are unbuilt. Both moved to `declared` with the gap logged in
-   `OUTLINE.md`. The other nine planned `uses` ids were each checked directly (`grep -c`) and all
-   resolve to live entries.
+1. **Declared cross-chapter gap, checked and logged; re-verified 2026-11-02.** `CHAPTER.md`'s plan
+   names `engine-enforced-row-column-security` as a `uses` candidate from topic 8; at the time this
+   topic first shipped (2026-10-30), topic 8's own entry introduced `row-column-policies-in-engine`
+   instead, so `uses` carried that id. Topic 8 was later independently rebuilt by another thread on
+   `main`, and its current entry introduces `engine-enforced-row-column-security` — matching
+   `CHAPTER.md`'s original guess exactly. Re-checked directly against `main`'s current `registry.ts`
+   on 2026-11-02 during branch reconciliation and corrected `uses` back to
+   `engine-enforced-row-column-security`. `CHAPTER.md` also names Chapter 11 §11.4 ("Contract
+   enforcement in CI") and Chapter 10 §10.5 (compliance regimes) as `uses` candidates; both were
+   unbuilt when this topic first shipped and are now built on `main` (`de.contract-enforcement-in-ci`,
+   `de.gdpr-by-design-pipelines`, `de.residency-transfers-extraterritorial-access`), left in
+   `declared` since this topic's prose was never checked against their specific content. The other
+   nine planned `uses` ids were each checked directly (`grep -c`) and all resolve to live entries.
 2. **Gap hunt against the syllabus line:** all four clauses (the operating shape; reverse Conway's
    law; automate vs. human; the §3.4/§19.1 links) mapped in `coverage.json`; caught twice by the
    build's own checks on resources naming a topic title that doesn't match its exact syllabus

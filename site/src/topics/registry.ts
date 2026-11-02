@@ -5095,7 +5095,7 @@ export const TOPICS: TopicMeta[] = [
     minutes: 15,
     verified: '2026-10-30',
     introduces: ['federated-computational-governance', 'reverse-conways-law', 'automate-vs-human-stewardship', 'self-serve-table-registration-gate'],
-    uses: ['data-mesh-four-principles', 'data-as-a-product', 'data-contract-specification', 'open-data-contract-standard', 'sensitivity-tier-and-category', 'abac-tag-based-policy', 'row-column-policies-in-engine', 'technical-vs-business-catalog', 'dq-gates-vs-posthoc-scans', 'discovery-false-negatives', 'openlineage-run-job-dataset-events'],
+    uses: ['data-mesh-four-principles', 'data-as-a-product', 'data-contract-specification', 'open-data-contract-standard', 'sensitivity-tier-and-category', 'abac-tag-based-policy', 'engine-enforced-row-column-security', 'technical-vs-business-catalog', 'dq-gates-vs-posthoc-scans', 'discovery-false-negatives', 'openlineage-run-job-dataset-events'],
     declared: ['contract-enforcement-ci', 'compliance-regimes'],
     bridge:
       "Catalog, lineage and quality checks are tools. Tools do not decide who owns a table, who fixes a failing check, or which rules a domain team may change. This topic is the operating model that puts people and policy around those tools: federated governance.",

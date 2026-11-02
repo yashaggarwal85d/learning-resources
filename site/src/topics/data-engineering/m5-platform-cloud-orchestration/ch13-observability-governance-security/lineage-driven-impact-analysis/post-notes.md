@@ -62,10 +62,10 @@ better tooling elsewhere.
 ## Frontier
 
 How lineage is collected is topic 11's own subject, not retold here. The catalog and its owners
-are topic 10's. The incident process and runbooks (Chapter 11 §11.3) and contract-as-code CI gates
-(Chapter 11 §11.4) are both declared gaps, logged in `OUTLINE.md` rather than guessed at — no
-`section: '11.3'` or `'11.4'` entry exists in `registry.ts` yet. The operating model that assigns
-ownership in the first place is topic 13's.
+are topic 10's. The incident process and runbooks (Chapter 11 §11.3, `de.data-incident-response-blast`)
+and contract-as-code CI gates (Chapter 11 §11.4, `de.contract-enforcement-in-ci`) were both declared
+gaps when this topic first shipped and are now built elsewhere in the registry. The operating model
+that assigns ownership in the first place is topic 13's.
 
 </section>
 

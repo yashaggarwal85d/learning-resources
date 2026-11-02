@@ -15,10 +15,11 @@
 **Uses (confirmed live in `registry.ts`):** `data-mesh-four-principles`, `data-as-a-product`
 (Chapter 3), `data-contract-specification`, `open-data-contract-standard` (Chapter 3),
 `sensitivity-tier-and-category` (topic 4), `abac-tag-based-policy` (topic 7),
-`row-column-policies-in-engine` (topic 8 — corrected: `CHAPTER.md`'s planning-time guess
-`engine-enforced-row-column-security` does not exist anywhere in `registry.ts`; topic 8's own
-entry was read directly and its real `introduces` array is
-`['row-column-policies-in-engine', 'policy-pruning-caching-cost', 'policy-bypass-paths']`),
+`engine-enforced-row-column-security` (topic 8 — re-verified 2026-11-02 after topic 8 was
+independently rebuilt by another thread on `main`: topic 8's current entry introduces
+`['engine-enforced-row-column-security', 'dynamic-masking-at-query-time', 'policy-cost-pruning-caching', 'policy-bypass-paths']`,
+matching `CHAPTER.md`'s original planning-time guess exactly, which supersedes this topic's
+earlier correction to `row-column-policies-in-engine` — that id no longer exists on `main`),
 `technical-vs-business-catalog` (topic 10), `dq-gates-vs-posthoc-scans` (topic 12),
 `discovery-false-negatives` (topic 4), `openlineage-run-job-dataset-events` (topic 11).
 
