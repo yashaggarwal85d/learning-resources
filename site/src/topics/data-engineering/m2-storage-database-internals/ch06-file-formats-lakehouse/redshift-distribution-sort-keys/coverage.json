@@ -1,0 +1,94 @@
+{
+  "topic": "de.redshift-distribution-sort-keys",
+  "syllabus": [
+    {
+      "clause": "leader/compute nodes and slices, distribution styles (KEY/EVEN/ALL/AUTO) and redistribution in joins, compound vs interleaved sort keys and zone maps, RA3 managed storage, Serverless RPUs, auto WLM and concurrency scaling, Spectrum over S3; automatic table optimization vs manual tuning.",
+      "at": [
+        { "step": "Reveal: leader node, compute nodes, slices" },
+        { "step": "Reveal: four distribution styles" },
+        { "step": "Reveal: sort keys and block skipping" },
+        { "step": "Reveal: RA3 managed storage and Serverless RPUs" },
+        { "step": "Reveal: automatic WLM and concurrency scaling" },
+        { "step": "Reveal: Spectrum and automatic table optimization" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Redshift docs, Data warehouse system architecture",
+      "items": [
+        { "item": "A cluster is composed of compute nodes; with two or more, a leader node coordinates them and handles external communication", "at": [{ "step": "Reveal: leader node, compute nodes, slices" }] },
+        { "item": "A compute node is partitioned into slices, each allocated a portion of the node's memory and disk space", "at": [{ "step": "Reveal: leader node, compute nodes, slices" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Distribution styles",
+      "items": [
+        { "item": "A table can designate one of four distribution styles: AUTO, EVEN, KEY, or ALL, each placing rows differently", "at": [{ "step": "Reveal: four distribution styles" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Data distribution for query optimization",
+      "items": [
+        { "item": "Data redistribution can account for a substantial portion of a query plan's cost, and its network traffic can slow overall system performance", "at": [{ "step": "Reveal: four distribution styles" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Working with sort keys and Choose the best sort key",
+      "items": [
+        { "item": "A table can specify a compound or interleaved sort key, which orders rows; Redshift tracks each block's minimum and maximum values to skip blocks outside a filter's range", "at": [{ "step": "Reveal: sort keys and block skipping" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Amazon Redshift provisioned clusters",
+      "items": [
+        { "item": "RA3 nodes with managed storage let you scale and pay for compute and storage independently, using local SSDs backed by durable S3 storage", "at": [{ "step": "Reveal: RA3 managed storage and Serverless RPUs" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Compute capacity for Amazon Redshift Serverless",
+      "items": [
+        { "item": "Redshift Serverless measures capacity in Redshift Processing Units (RPUs), each providing a fixed amount of memory", "at": [{ "step": "Reveal: RA3 managed storage and Serverless RPUs" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Implementing automatic WLM",
+      "items": [
+        { "item": "Automatic WLM manages query concurrency and memory allocation; concurrency scaling automatically adds cluster capacity to process a surge of concurrent queries", "at": [{ "step": "Reveal: automatic WLM and concurrency scaling" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Amazon Redshift Spectrum",
+      "items": [
+        { "item": "Spectrum lets you query and retrieve data from files in S3 directly, without loading it into Redshift tables first", "at": [{ "step": "Reveal: Spectrum and automatic table optimization" }] }
+      ]
+    },
+    {
+      "source": "Redshift docs, Automatic table optimization",
+      "items": [
+        { "item": "Automatic table optimization continuously observes queries and applies sort and distribution keys without administrator intervention", "at": [{ "step": "Reveal: Spectrum and automatic table optimization" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "This topic is disclosed as sourced-only throughout, the same pattern as the two warehouse topics earlier in this section -- this sandbox has no Redshift/AWS account, so nothing here is independently executed or measured.", "at": [{ "step": "Hook" }] },
+      { "item": "No examples.py exists for this topic, by design -- every number shown on screen in reel.tsx is spelled out as words rather than digits, since the build's digit-backing check has no exemption for a sourced-only topic.", "at": [{ "step": "Hook" }] },
+      { "item": "The predict step at step 2 and the predict step at step 6 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: does every node hold a full copy?" }] },
+      { "item": "The term 'zone map' itself does not appear on Redshift's current sort-key documentation pages; the mechanism it names is quoted from the min/max block-skipping description instead, and the reel never presents 'zone map' as a quoted phrase.", "at": [{ "step": "Reveal: sort keys and block skipping" }] },
+      { "item": "RA3 and Serverless are both framed as a second, independent route to the same storage/compute decoupling idea topics 37 and 38 already showed from their own disaggregated starting points, matching CHAPTER.md's own framing.", "at": [{ "step": "Reveal: RA3 managed storage and Serverless RPUs" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 38's handoff (a third proprietary lineage) and hands off cleanly into topic 40's warehouse-vs-lakehouse close, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] },
+      { "item": "The uses list (trino-mpp-architecture, table-format-choice, introduced respectively by topic 34 and the choosing-table-format-catalog topic) and the declared Chapter 5 §5.3 partitioning/shard-key vocabulary are reflected in the prerequisites panel.", "at": [{ "step": "Hook" }] },
+      { "item": "Distribution styles and sort keys are explicitly contrasted as two separate mechanisms (row placement across nodes vs. row ordering within a block), not a restatement of the same idea, matching the docs' own separate treatment of each.", "at": [{ "step": "Reveal: sort keys and block skipping" }] },
+      { "item": "Spectrum and automatic table optimization are presented as two independent automations (querying external storage without loading, and tuning keys without an administrator), each sourced from its own distinct docs page.", "at": [{ "step": "Reveal: Spectrum and automatic table optimization" }] },
+      { "item": "The recap's closing line ('three proprietary engines... now all taught') is copied in substance from CHAPTER.md's own topic-39 handoff text, correctly setting up topic 40 as the chapter's closing synthesis rather than a fourth engine.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

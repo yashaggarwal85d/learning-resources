@@ -1,0 +1,10 @@
+- **Leader node**: the Redshift node that coordinates client communication and compiles query plans for the compute nodes.
+- **Compute node / slice**: each compute node is partitioned into slices; a slice holds and processes a portion of the workload.
+- **Distribution style**: AUTO, EVEN, KEY or ALL -- the rule that decides which slice a row lands on.
+- **Redistribution**: physically moving rows between slices at query time to satisfy a join -- a real, sometimes dominant, cost.
+- **Sort key**: a compound or interleaved column ordering that lets Redshift skip whole blocks by tracked minimum/maximum values.
+- **RA3 managed storage**: node types that scale and bill compute and storage independently, backed by durable object storage.
+- **Serverless RPU**: a Redshift Processing Unit, the billing unit for Redshift Serverless, with no nodes to size.
+- **Automatic WLM / concurrency scaling**: self-tuning query concurrency, plus automatic extra cluster capacity under load.
+- **Spectrum**: querying files in object storage directly, without a load step into Redshift tables first.
+- **Automatic table optimization**: Redshift choosing a table's sort and distribution keys on its own, from observed query behavior.

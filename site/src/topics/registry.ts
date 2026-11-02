@@ -10712,4 +10712,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Both warehouses so far disaggregate storage from compute. The next one, Redshift, descends from a genuinely different lineage: classic shared-nothing MPP with its own nodes and slices.",
   },
+  {
+    id: 'de.redshift-distribution-sort-keys',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/redshift-distribution-sort-keys',
+    title: 'Redshift distribution, sort keys and RMS',
+    syllabusTitle: 'Redshift distribution, sort keys and RMS',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.5' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['redshift-mpp-architecture'],
+    uses: ['trino-mpp-architecture', 'table-format-choice'],
+    declared: ["Chapter 5's partitioning/shard-key vocabulary (§5.3) by direct reuse", 'this topic is disclosed throughout as sourced-only'],
+    bridge:
+      "Both warehouses so far disaggregate storage from compute. This topic is a third, descended from a genuinely different lineage: Redshift's classic shared-nothing MPP, with its own leader/compute nodes and slices, distribution styles, and a real redistribution cost at join time drawn directly from Redshift's own documentation.",
+    handoff:
+      "Three proprietary engines and the open engines before them have now all been taught on their own terms. The one question left is the practical one every engineer eventually has to answer: warehouse or lakehouse, and when.",
+  },
 ];
