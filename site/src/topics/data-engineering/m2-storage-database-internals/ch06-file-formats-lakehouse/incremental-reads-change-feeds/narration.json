@@ -1,0 +1,75 @@
+{
+  "topic": "de.incremental-reads-change-feeds",
+  "steps": [
+    {
+      "lines": [
+        "Everything up to now has been about a table as a sequence of point-in-time snapshots — one full state, then another full state, then another.",
+        "But that sequence is itself a kind of data. The question this topic asks is: between any two of those states, what actually changed?"
+      ]
+    },
+    {
+      "lines": [
+        "Picture a maintenance operation that merges two files on disk into one, purely to tidy up storage. Not a single row's value is touched — rows just move to a new home.",
+        "If something were watching that table for changes, would it report that this commit changed nothing at all, or would it report a long list of things that look like they changed?"
+      ],
+      "answer": [
+        "It reports a long list, and here's why. Something watching for changes has to compare before and after somehow.",
+        "Without a way to tell a row that merely moved from a row that was actually edited, every row in that merged file looks brand new, and every row in the old files looks deleted."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real fix, reproduced directly: give every row an identity of its own, separate from whatever file it happens to live in right now.",
+        "That identity is assigned exactly once, the moment a row is created, and it never changes. Alongside it rides a second marker, one that only moves forward the moment that specific row's value is genuinely edited — never when the row is simply relocated."
+      ]
+    },
+    {
+      "lines": [
+        "This was tested directly. Take a file holding several rows, with exactly one row's value edited for real. The file itself has to be rewritten whole to hold that edit.",
+        "A watcher that only compares which files exist before and after sees the entire old file vanish and the entire new file appear — reporting nearly every row in it as either deleted or newly inserted, when only one of them actually changed."
+      ]
+    },
+    {
+      "lines": [
+        "Now rerun that exact same comparison, but this time matching rows by their own identity instead of by which file they're sitting in.",
+        "The result: exactly one row comes back as a real change — the one whose edit marker actually moved. Every other row carried across unmodified, and is correctly left out."
+      ]
+    },
+    {
+      "lines": [
+        "So scale that same setup up. Two separate files, ten rows apiece, get merged into a single file — a pure tidy-up, with every value held exactly as it was.",
+        "Run that same naive, file-comparing watcher against this larger merge. Does the count of reported changes stay roughly the same as before, or does it grow in proportion to how many rows got touched by the rewrite?"
+      ],
+      "answer": [
+        "It grows right along with the rewrite — every single row in both files gets double-counted, once as a deletion and once as an insertion.",
+        "A watcher with no concept of row identity cannot tell the difference between a tidy-up and a total rewrite. To it, they look identical."
+      ]
+    },
+    {
+      "lines": [
+        "This was measured directly, for real. The file-comparing watcher reports dozens of apparent changes for a merge that altered exactly zero row values.",
+        "The identity-aware watcher reports none at all — it recognizes every single row as the same row it always was, just sitting somewhere new."
+      ]
+    },
+    {
+      "lines": [
+        "Two of the best-known table formats besides the one used here describe this exact same underlying idea, each in their own words.",
+        "One streams every change out as a record tagged with what kind of change it was — an insertion, the value before an edit, the value after it, or a deletion.",
+        "The other offers a choice: capture every single intermediate step along the way, or ask only for each row's most current value.",
+        "That second option turns out cheaper, since it never has to re-surface work that later tidy-ups already folded away."
+      ]
+    },
+    {
+      "lines": [
+        "One more mechanism, reproduced directly: a plain scan that only understands growth — rows being appended, nothing else.",
+        "Given a starting point and a stopping point, it hands back exactly the rows added in between. But hand it a range that includes any kind of rewrite at all, even a harmless tidy-up, and it refuses outright rather than guess."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole idea in one line. A row that only moved and a row that genuinely changed look identical to anything comparing files before and after.",
+        "Telling them apart takes a row identity that survives the move — and whichever vocabulary a format uses for it, that's the one piece every one of these systems needs before downstream change-tracking can be trusted at all."
+      ]
+    }
+  ]
+}

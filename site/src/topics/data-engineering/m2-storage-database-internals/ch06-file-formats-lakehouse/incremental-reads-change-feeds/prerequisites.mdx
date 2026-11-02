@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Snapshot-based table metadata" domain="data-engineering" host="de.snapshot-based-table-metadata" by="This chapter's twelfth topic" />
+  <Resource kind="reel" title="Deletion vectors across formats" domain="data-engineering" host="de.deletion-vectors-across-formats" by="This chapter's fifteenth topic" />
+  <Resource kind="reel" title="Schema evolution with column IDs" domain="data-engineering" host="de.schema-evolution-column-ids" by="This chapter's sixteenth topic" />
+  <Resource kind="reel" title="Data layout: sorting, Z-order, Hilbert, clustering" domain="data-engineering" host="de.data-layout-sorting-z" by="This chapter's previous topic" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Spec" href="https://iceberg.apache.org/spec/" by="Apache Iceberg">The table specification's own row lineage section: next-row-id, _row_id, _last_updated_sequence_number.</Resource>
+  <Resource kind="reading" title="Queries" href="https://iceberg.apache.org/docs/latest/spark-queries/" by="Apache Iceberg">Incremental read: start-snapshot-id, end-snapshot-id, appends only.</Resource>
+  <Resource kind="reading" title="Procedures" href="https://iceberg.apache.org/docs/latest/spark-procedures/" by="Apache Iceberg">create_changelog_view: change types and carry-over rows.</Resource>
+  <Resource kind="reading" title="Use change data feed on Databricks" href="https://docs.databricks.com/aws/delta/delta-change-data-feed" by="Databricks">Delta's Change Data Feed: enabling it, its columns, and its forward-looking-only semantics.</Resource>
+  <Resource kind="reading" title="SQL Queries" href="https://hudi.apache.org/docs/sql_queries" by="Apache Hudi">hudi_table_changes: cdc vs. latest_state query modes.</Resource>
+</ul>
+
+</section>

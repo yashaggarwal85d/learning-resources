@@ -10232,4 +10232,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A well-laid-out table of snapshots is still just a sequence of point-in-time states. The next topic is reading that sequence itself as data: incremental reads and change feeds.",
   },
+  {
+    id: 'de.incremental-reads-change-feeds',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/incremental-reads-change-feeds',
+    title: 'Incremental reads and change feeds',
+    syllabusTitle: 'Incremental reads and change feeds',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['incremental-reads-change-feeds'],
+    uses: ['table-snapshot-model', 'deletion-vectors', 'table-column-ids'],
+    declared: [],
+    bridge:
+      "A well-laid-out table of snapshots is still just a sequence of point-in-time states. This topic reads that sequence itself as data: a real Iceberg incremental scan and a real Delta Change Data Feed, both reading only what actually changed between two snapshots.",
+    handoff:
+      "Everything so far has been taught once, in the abstract, across whichever format made the point clearest. The next nine topics show the same ideas as two real, concretely different systems, starting with Iceberg's own metadata tree.",
+  },
 ];

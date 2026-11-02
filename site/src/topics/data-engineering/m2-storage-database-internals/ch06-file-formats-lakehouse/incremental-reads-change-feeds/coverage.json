@@ -1,0 +1,82 @@
+{
+  "topic": "de.incremental-reads-change-feeds",
+  "syllabus": [
+    { "clause": "reading only what changed between snapshots", "at": [{ "step": "Hook" }] },
+    { "clause": "Iceberg incremental scans, changelog views and v3 row lineage (_row_id, _last_updated_sequence_number)", "at": [
+      { "step": "Reveal: reproduced for real — a stable row identity and a sequence number that only moves on change" },
+      { "step": "Reveal: reproduced for real — Iceberg's own plain incremental scan, appends only" }
+    ] },
+    { "clause": "Delta Change Data Feed", "at": [{ "step": "Reveal: Delta's and Hudi's own words — the same idea, their own vocabulary" }] },
+    { "clause": "Hudi incremental queries", "at": [{ "step": "Reveal: Delta's and Hudi's own words — the same idea, their own vocabulary" }] },
+    { "clause": "how deletes and compaction complicate \"what changed\" and why downstream CDC needs row identity", "at": [
+      { "step": "Reveal: reproduced for real — compaction, measured by both scans" },
+      { "step": "Recap" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Iceberg, Table Spec (row lineage)",
+      "items": [
+        { "item": "Iceberg v3 must track row lineage fields (next-row-id, _row_id, _last_updated_sequence_number) for all newly created rows", "at": [{ "step": "Reveal: reproduced for real — a stable row identity and a sequence number that only moves on change" }] },
+        { "item": "_row_id is a unique long identifier assigned via inheritance when a row is first added", "at": [{ "step": "Reveal: reproduced for real — a stable row identity and a sequence number that only moves on change" }] },
+        { "item": "_last_updated_sequence_number is the sequence number of the commit that last updated a row, inherited when first added or modified", "at": [{ "step": "Reveal: reproduced for real — a stable row identity and a sequence number that only moves on change" }] },
+        { "item": "upgrading a table to v3 initializes next-row-id to 0; existing snapshots' row-id fields read as null", "at": [{ "deep": "Frontier" }] },
+        { "item": "equality deletes break row lineage: the reinserted row gets a brand-new _row_id, not the original, since the writer never reads the existing row", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Queries (incremental read)",
+      "items": [
+        { "item": "start-snapshot-id is exclusive, end-snapshot-id is inclusive, and the latter defaults to the current snapshot if omitted", "at": [{ "step": "Reveal: reproduced for real — Iceberg's own plain incremental scan, appends only" }] },
+        { "item": "incremental read only gets data from append operations; it cannot support replace, overwrite, or delete operations", "at": [{ "step": "Reveal: reproduced for real — Iceberg's own plain incremental scan, appends only" }] },
+        { "item": "incremental read is not supported by Spark's SQL syntax, only the DataFrame API", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Iceberg, Procedures (create_changelog_view)",
+      "items": [
+        { "item": "create_changelog_view reads a table's changes as INSERT/DELETE/UPDATE_BEFORE/UPDATE_AFTER row events", "at": [{ "step": "Predict: a compaction merges two files, touching no row — zero changes, or a pile of deletes and inserts?" }] },
+        { "item": "carry-over rows are the result of copy-on-write row-level operations rewriting a file that also holds untouched rows, appearing as a spurious delete+insert pair", "at": [{ "step": "Reveal: reproduced for real — compaction, measured by both scans" }] },
+        { "item": "the procedure removes carry-over rows by default; querying SparkChangelogTable directly with .changes shows them", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Change Data Feed",
+      "items": [
+        { "item": "change records are tagged insert / update_preimage / update_postimage / delete", "at": [{ "step": "Reveal: Delta's and Hudi's own words — the same idea, their own vocabulary" }] },
+        { "item": "CDF only records changes after it was enabled; querying a version before that raises an error", "at": [{ "deep": "Frontier" }] },
+        { "item": "some operations (insert-only, full-partition deletes) don't generate change data files; CDF falls back to the transaction log for those", "at": [{ "deep": "Frontier" }] },
+        { "item": "change data files follow the table's retention policy; VACUUM deletes them", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "Apache Hudi, SQL Queries",
+      "items": [
+        { "item": "hudi_table_changes offers a cdc mode (full before/after images and operation type within a time window) and a latest_state mode", "at": [{ "step": "Reveal: Delta's and Hudi's own words — the same idea, their own vocabulary" }] },
+        { "item": "latest_state (incremental) queries are more efficient than cdc because they amortize the cost of compactions already folded into the data", "at": [{ "step": "Reveal: Delta's and Hudi's own words — the same idea, their own vocabulary" }] },
+        { "item": "Hudi's own closed-interval (both start and end commit inclusive) semantics are documented for its Flink batch reader specifically", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The row-lineage model in examples.py is a from-scratch Python implementation of the v3 spec's actual rules (next-row-id counter, when _last_updated_sequence_number resets vs carries forward), not a wrapper around a real Iceberg catalog or Spark session, which this sandbox cannot run, disclosed in the script's own docstring and FACT-CHECK.md red-team #1.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The naive-vs-lineage scan distinction matches create_changelog_view's own documented carry-over example (file holding two rows, deleting one forces the other into a new file, reported as a spurious delete+insert pair) scaled up to 10 and 20 rows, per FACT-CHECK.md red-team #2.", "at": [{ "step": "Reveal: reproduced for real — compaction, measured by both scans" }] },
+      { "item": "Delta's CDF and Hudi's hudi_table_changes are introduced by name and their own documented semantics, not re-implemented in Python — this sandbox has no real Delta or Hudi runtime, and the topic's point is a shared underlying idea, not identical code, per FACT-CHECK.md red-team #3.", "at": [{ "step": "Reveal: Delta's and Hudi's own words — the same idea, their own vocabulary" }] },
+      { "item": "_last_updated_sequence_number is used as the sole 'did this row actually change' signal because that is exactly what the spec defines it to track, not a simplification invented for this topic, per FACT-CHECK.md red-team #4.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Iceberg's merge-on-read delete-file case for changelog scans (where some engines historically could not read snapshots containing delete files) is out of scope for this topic's executed demonstration, named only as a boundary in FACT-CHECK.md red-team #5.", "at": [{ "deep": "Frontier" }] },
+      { "item": "All four demonstrations in examples.py are deterministic (no randomness, no timing, fixed row counts and update targets), verified byte-identical across 3 consecutive runs.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The prerequisites panel lists topics 10-16, matching CHAPTER.md's own stated prerequisites-panel note for this topic (closing §6.3).", "at": [{ "step": "Hook" }] },
+      { "item": "declared: none beyond topics 10-16, matching CHAPTER.md's own note for this topic.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The 40-vs-0 and 20-vs-1 change counts are exact by construction given the chosen row counts and update target, not approximations — every demo's assertions are checked against the model's actual emergent output, not hardcoded to a desired narrative.", "at": [{ "step": "Reveal: reproduced for real — compaction, measured by both scans" }] },
+      { "item": "This topic hosts no chapter lab of its own.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}
