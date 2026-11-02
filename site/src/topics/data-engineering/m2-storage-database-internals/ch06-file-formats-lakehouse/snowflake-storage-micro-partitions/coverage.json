@@ -1,0 +1,83 @@
+{
+  "topic": "de.snowflake-storage-micro-partitions",
+  "syllabus": [
+    {
+      "clause": "immutable micro-partitions (50–500 MB uncompressed) with per-column metadata, pruning, clustering depth and automatic clustering, search optimization; time travel, fail-safe and zero-copy cloning as consequences of immutable storage; secure data sharing without copies.",
+      "at": [
+        { "step": "Reveal: immutable micro-partitions" },
+        { "step": "Reveal: pruning from per-column metadata" },
+        { "step": "Reveal: clustering depth and automatic clustering" },
+        { "step": "Reveal: the search optimization service" },
+        { "step": "Reveal: time travel and fail-safe" },
+        { "step": "Reveal: zero-copy cloning and secure data sharing" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Snowflake docs, Micro-Partitions & Data Clustering",
+      "items": [
+        { "item": "All data in Snowflake tables is automatically divided into micro-partitions, contiguous units of storage, fifty to five hundred megabytes of uncompressed data each", "at": [{ "step": "Reveal: immutable micro-partitions" }] },
+        { "item": "The micro-partition metadata maintained by Snowflake enables precise pruning of columns at query run-time, including semi-structured data", "at": [{ "step": "Reveal: pruning from per-column metadata" }] },
+        { "item": "Clustering depth measures the average depth of overlapping micro-partitions; an empty table has a clustering depth of zero", "at": [{ "step": "Reveal: clustering depth and automatic clustering" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, Automatic Clustering",
+      "items": [
+        { "item": "Automatic Clustering is the Snowflake service that continually manages reclustering of clustered tables, suspendable per table, needing no user-provided warehouse", "at": [{ "step": "Reveal: clustering depth and automatic clustering" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, Speeding up queries of structured data with search optimization",
+      "items": [
+        { "item": "The search optimization service improves point-lookup and substring queries, a mechanism distinct from clustering and pruning", "at": [{ "step": "Reveal: the search optimization service" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, Understanding & using Time Travel",
+      "items": [
+        { "item": "Time Travel accesses historical data within a defined retention period; one day by default, up to ninety days for permanent objects on paid editions", "at": [{ "step": "Reveal: time travel and fail-safe" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, Understanding and viewing Fail-safe",
+      "items": [
+        { "item": "Fail-safe is a non-configurable seven-day last-resort recovery window after Time Travel ends, reachable only through Snowflake Support", "at": [{ "step": "Reveal: time travel and fail-safe" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, Cloning considerations",
+      "items": [
+        { "item": "Clones share the same underlying storage as the source table", "at": [{ "step": "Reveal: zero-copy cloning and secure data sharing" }] }
+      ]
+    },
+    {
+      "source": "Snowflake docs, About Secure Data Sharing",
+      "items": [
+        { "item": "No actual data is copied or transferred between accounts; all shared objects stay read-only to the consumer", "at": [{ "step": "Reveal: zero-copy cloning and secure data sharing" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "This topic is disclosed as sourced-only throughout -- this sandbox has no Snowflake account, so unlike every other §6.4 engine topic, nothing here is independently executed or measured.", "at": [{ "step": "Hook" }] },
+      { "item": "No examples.py exists for this topic, by design -- every number shown on screen in reel.tsx is spelled out as words rather than digits, since the build's digit-backing check has no exemption for a sourced-only topic.", "at": [{ "step": "Reveal: immutable micro-partitions" }] },
+      { "item": "The predict step at step 2 and the predict step at step 6 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: who defines a table's partitions?" }] },
+      { "item": "The clustering-depth 'five micro-partitions ranging A to Z' example referenced in the docs is their own conceptual diagram, not a number this topic measured.", "at": [{ "step": "Reveal: clustering depth and automatic clustering" }] },
+      { "item": "The quoted cloning passage ('clones share the same underlying storage') is a general mechanism statement from the docs, not a measured byte count -- no real clone was created, since no Snowflake account is reachable here.", "at": [{ "step": "Reveal: zero-copy cloning and secure data sharing" }] },
+      { "item": "Time Travel and Fail-safe are presented explicitly as a parallel to topic 17's own snapshot-retention-then-garbage-collection mechanism, drawn conceptually rather than run side by side.", "at": [{ "step": "Reveal: time travel and fail-safe" }] },
+      { "item": "Zero-copy cloning and secure data sharing are both framed as direct consequences of the same immutability guarantee that pruning and clustering already rely on, matching CHAPTER.md's own framing for this topic.", "at": [{ "step": "Reveal: zero-copy cloning and secure data sharing" }] },
+      { "item": "The search optimization service is explicitly contrasted with pruning and clustering as a separate mechanism for a different access pattern (point lookups versus range scans), not a restatement of the same idea.", "at": [{ "step": "Reveal: the search optimization service" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 36's handoff (the first engine this sandbox can't run directly) and hands off cleanly into topic 38's BigQuery opening, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] },
+      { "item": "The uses list (table-snapshot-model, snapshot-lifecycle-gc, parquet-data-skipping, introduced respectively by the snapshot-based-table-metadata, snapshot-lifecycle-time-travel and data-skipping-statistics-page topics) is reflected in the prerequisites panel and the explicit comparisons drawn in the reveal steps.", "at": [{ "step": "Reveal: pruning from per-column metadata" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

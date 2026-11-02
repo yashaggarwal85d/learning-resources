@@ -1,0 +1,8 @@
+- **Micro-partition**: Snowflake's immutable, columnar unit of storage, fifty to five hundred megabytes of uncompressed data, derived automatically.
+- **Clustering depth**: a measure of how much a table's micro-partitions overlap in value for a given set of columns -- the lower, the better pruning works.
+- **Automatic Clustering**: the background Snowflake service that reclusters a table on its own, with no warehouse to provision.
+- **Search optimization service**: a separate mechanism, built for fast point lookups and substring matches, distinct from pruning and clustering.
+- **Time Travel**: querying or restoring a table as it existed at a past point within a retention window.
+- **Fail-safe**: a non-configurable, last-resort recovery window after Time Travel ends, reachable only through Snowflake Support.
+- **Zero-copy cloning**: creating a new table, schema or database that shares the source's existing storage at creation.
+- **Secure Data Sharing**: exposing selected objects to another Snowflake account without copying any data.

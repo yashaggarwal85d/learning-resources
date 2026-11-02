@@ -1,0 +1,83 @@
+{
+  "topic": "de.snowflake-storage-micro-partitions",
+  "steps": [
+    {
+      "lines": [
+        "Up to now, every engine we've looked at reads a table this chapter actually built, somewhere on this machine.",
+        "This one is different -- a platform running on infrastructure nobody here can touch directly.",
+        "Everything from here comes straight from that platform's own published documentation."
+      ]
+    },
+    {
+      "lines": [
+        "Think about any table you've worked with that got split into chunks for storage.",
+        "Did a person sit down and decide where those boundaries went, or did the system just figure it out on its own?",
+        "Guess before the next slide answers it."
+      ],
+      "answer": [
+        "Nobody draws those boundaries by hand here.",
+        "The system decides them on its own, every time."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a block of storage somewhere between the size of a small photo album and a feature film, holding one slice of a table.",
+        "Nobody carves that block out ahead of time -- it just appears as data lands.",
+        "Thousands, sometimes millions of these sit underneath one ordinary-looking table."
+      ]
+    },
+    {
+      "lines": [
+        "Each one of those blocks carries a little note about what range of values lives inside it, per column.",
+        "A filter reads those notes first and throws out whole blocks without opening them.",
+        "That's the entire trick behind a query that somehow skips most of a giant table."
+      ]
+    },
+    {
+      "lines": [
+        "Now imagine those blocks start overlapping in value -- block one and block eight both holding some of the same range.",
+        "The more that happens, the less a filter can throw away in one pass.",
+        "A background process watches for exactly that, and quietly rewrites things before anyone has to ask."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of question: finding one specific needle in a haystack of distinct values, not a whole range.",
+        "Does the same trick from a moment ago -- skipping blocks by range -- still get you there fast?",
+        "Or does that particular shape of question need something else entirely?"
+      ],
+      "answer": [
+        "It needs something else entirely.",
+        "A separate, purpose-built lookup mechanism takes over for that one."
+      ]
+    },
+    {
+      "lines": [
+        "That separate mechanism builds its own lookup structure, sitting beside the block metadata, not instead of it.",
+        "It's tuned for exactly one shape of question: find this one value, or this one fragment of text, fast.",
+        "Range-shaped questions never needed it; pinpoint questions do."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the payoff of never rewriting a block in place: an old version simply never disappears on its own.",
+        "For a while you can still ask the system to show you exactly how things looked before a change.",
+        "Past that window, a second, much stricter safety net still holds the data a little longer, reachable only by the platform's own support team."
+      ]
+    },
+    {
+      "lines": [
+        "Two more things fall out of that same never-rewritten guarantee, almost for free.",
+        "Making a full copy of a table costs nothing at the moment you make it, because both copies point at the exact same unchanged blocks underneath.",
+        "Handing a table to someone else works the same way -- nothing physically moves, because nothing underneath ever had to."
+      ]
+    },
+    {
+      "lines": [
+        "One rule, underneath every single thing shown here: a block never gets rewritten once it's written.",
+        "Skipping blocks by range, cleaning up overlap, holding old versions, copying for free, handing off without moving data -- all of it follows from that one rule.",
+        "A second platform, built on entirely different infrastructure, is next -- and this sandbox can't touch that one either."
+      ]
+    }
+  ]
+}
