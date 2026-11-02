@@ -1,0 +1,4 @@
+- **Immutable part**: the on-disk file a single insert (or a merge) produces; never edited in place, only combined with other parts into a new part.
+- **Granule**: the smallest block of rows (8,192 by default) ClickHouse reads when answering a query -- the unit any pruning mechanism operates on.
+- **Sparse primary index**: an index that marks only the first row of each granule, small enough to stay in memory even for huge tables.
+- **Data-skipping index**: a second, independent index (such as minmax) over any column, pruning granules the primary index can't.

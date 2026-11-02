@@ -1,0 +1,81 @@
+{
+  "topic": "de.clickhouse-mergetree-internals",
+  "syllabus": [
+    {
+      "clause": "immutable parts and background merges, the sparse primary index over granules (8,192 rows by default), data-skipping indexes and projections, materialized views as insert triggers, ReplacingMergeTree/AggregatingMergeTree semantics, lightweight deletes and updates; why it serves sub-second analytics (serving context in §5.5 and §9.3).",
+      "at": [
+        { "step": "Reveal: two immutable parts, for real" },
+        { "step": "Reveal: the sparse primary index, for real" },
+        { "step": "Reveal: a real minmax skip index" },
+        { "step": "Reveal: a materialized view, firing as an insert trigger" },
+        { "step": "Reveal: ReplacingMergeTree, before the merge" },
+        { "step": "Reveal: a real lightweight delete" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ClickHouse docs, MergeTree table engine",
+      "items": [
+        { "item": "Insert operations create table parts which are merged by a background process", "at": [{ "step": "Reveal: two immutable parts, for real" }] },
+        { "item": "The primary key references blocks of 8,192-row granules, not individual rows", "at": [{ "step": "Reveal: the sparse primary index, for real" }] },
+        { "item": "A sparse index can read extra rows beyond the exact match, and fits in RAM even for huge tables", "at": [{ "step": "Reveal: the sparse primary index, for real" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse docs, Understanding ClickHouse data skipping indexes",
+      "items": [
+        { "item": "A minmax skip index stores the minimum and maximum values of the index expression per block, and is lightweight", "at": [{ "step": "Reveal: a real minmax skip index" }] },
+        { "item": "Skip indexes are only applied to newly inserted data, not retroactively", "at": [{ "step": "Reveal: a real minmax skip index" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse docs, CREATE VIEW",
+      "items": [
+        { "item": "A materialized view converts and inserts data as part of inserting into the source table -- implemented more like an insert trigger", "at": [{ "step": "Reveal: a materialized view, firing as an insert trigger" }] },
+        { "item": "A materialized view's aggregation applies only to the freshly inserted batch, not existing source-table data", "at": [{ "step": "Reveal: a materialized view, firing as an insert trigger" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse docs, AggregatingMergeTree table engine",
+      "items": [
+        { "item": "AggregatingMergeTree replaces same-sorting-key rows with one row holding combined aggregate-function states", "at": [{ "step": "Reveal: a materialized view, firing as an insert trigger" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse docs, ReplacingMergeTree table engine",
+      "items": [
+        { "item": "Deduplication happens only during a merge, at an unscheduled, unknown time", "at": [{ "step": "Reveal: ReplacingMergeTree, before the merge" }] },
+        { "item": "Without a version column, the most recently inserted row wins deduplication", "at": [{ "step": "Reveal: ReplacingMergeTree, before the merge" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse docs, DELETE",
+      "items": [
+        { "item": "A lightweight DELETE marks rows as deleted without immediately physically deleting them", "at": [{ "step": "Reveal: a real lightweight delete" }] },
+        { "item": "Physical deletion of marked rows happens only during the next merge", "at": [{ "step": "Reveal: a real lightweight delete" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "Every numeric result (parts before/after merge, granules read, aggregate sums, row counts before/after delete) is chdb's own real, executed output against embedded ClickHouse 26.9, not hand-computed or narrated.", "at": [{ "step": "Reveal: two immutable parts, for real" }] },
+      { "item": "No Docker daemon or standalone clickhouse-server process is used anywhere -- chdb embeds real ClickHouse directly in the Python process, disclosed in examples.py's own docstring.", "at": [{ "step": "Hook" }] },
+      { "item": "'Background' merges in this script are triggered explicitly via OPTIMIZE TABLE ... FINAL, not ClickHouse's own unscheduled background process -- ReplacingMergeTree's own docs are quoted warning OPTIMIZE is a heavyweight substitute, disclosed directly in SOURCES.md's Red team section.", "at": [{ "step": "Reveal: two immutable parts, for real" }] },
+      { "item": "The minmax skip index's own granule numbers (4 of 37) are this script's own real measurement from its own dataset, not copied from the docs' differently-sized worked example quoted in SOURCES.md.", "at": [{ "step": "Reveal: a real minmax skip index" }] },
+      { "item": "The predict step at step 2 and the predict step at step 5 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: parts, or one growing file?" }] },
+      { "item": "Text/inverted indexes, projections, and TTL-based part expiry are named in the syllabus clause but not independently demonstrated in examples.py -- disclosed as sourced-but-not-executed in FACT-CHECK.md's scope boundary.", "at": [{ "step": "Reveal: a real minmax skip index" }] },
+      { "item": "The '§5.5 and §9.3' serving-context cross-reference in the syllabus line is explicitly out of scope for this topic per CHAPTER.md's own note, and is not covered here.", "at": [{ "step": "Hook" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 34's handoff (Trino owns no storage; this topic answers 'what if it did') and hands off cleanly into topic 36's DuckDB opening, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] },
+      { "item": "ReplacingMergeTree's before/after-merge demonstration uses two separate INSERT statements specifically (not one batched insert), because a single insert's duplicate keys within one part do not reliably demonstrate pre-merge duplicate visibility -- verified directly before writing the script.", "at": [{ "step": "Reveal: ReplacingMergeTree, before the merge" }] },
+      { "item": "The lightweight DELETE demonstration measures the row count drop immediately after the DELETE statement returns, matching the docs' own distinction between the DELETE marking rows (shown here) and the later physical rewrite during a merge (not independently demonstrated, but quoted).", "at": [{ "step": "Reveal: a real lightweight delete" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

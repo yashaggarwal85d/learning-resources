@@ -10552,4 +10552,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Trino owns no storage of its own; every byte it reads belongs to someone else's table format. The next engine answers 'what if it did' instead: ClickHouse.",
   },
+  {
+    id: 'de.clickhouse-mergetree-internals',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/clickhouse-mergetree-internals',
+    title: 'ClickHouse MergeTree internals',
+    syllabusTitle: 'ClickHouse MergeTree internals',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.4' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['clickhouse-mergetree'],
+    uses: ['trino-mpp-architecture', 'parquet-data-skipping'],
+    declared: [],
+    bridge:
+      "Trino owns no storage of its own; every byte it reads belongs to someone else's table format. This topic answers 'what if it did' instead: ClickHouse's own MergeTree storage, immutable parts, background merges and a sparse primary index, traced on a real query in this sandbox.",
+    handoff:
+      "A dedicated server process, however fast, is still a second system to run and operate. The next engine shows the opposite extreme: no server process at all.",
+  },
 ];

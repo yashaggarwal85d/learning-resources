@@ -1,0 +1,83 @@
+{
+  "topic": "de.clickhouse-mergetree-internals",
+  "steps": [
+    {
+      "lines": [
+        "The last engine never stored a single byte itself.",
+        "This one does.",
+        "Everything from here is about what that choice actually buys you."
+      ]
+    },
+    {
+      "lines": [
+        "Two batches of data land on the same table, one right after the other.",
+        "Does the engine open up what's already there and grow it in place?",
+        "Or does it just set the new batch down beside the old one?"
+      ],
+      "answer": [
+        "It sets it down beside the old one.",
+        "Each batch becomes its own separate, untouched file."
+      ]
+    },
+    {
+      "lines": [
+        "Two batches, two separate files, neither one ever rewritten in place.",
+        "Ask the engine to tidy up, and it reads both, writes a fresh combined file, and retires the old pair.",
+        "Count the rows before and after that cleanup: identical."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the payoff for sorting a table by time.",
+        "Ask for a single hour out of a much bigger stretch of data.",
+        "The engine doesn't scan the stretch. It jumps straight to the one small slice that could possibly match."
+      ]
+    },
+    {
+      "lines": [
+        "Now filter on something the table was never sorted by.",
+        "Intuition says that column gets a full scan, no shortcuts available.",
+        "Is intuition right here?"
+      ],
+      "answer": [
+        "No.",
+        "A separate structure, built just for that column, skips most of the work anyway."
+      ]
+    },
+    {
+      "lines": [
+        "That separate structure just remembers the low and high value seen in each chunk.",
+        "Nothing fancy, and it still throws out most chunks without reading a single row from them.",
+        "Sort order was never the only way in."
+      ]
+    },
+    {
+      "lines": [
+        "Set up a second table that only ever holds a running total.",
+        "Now write new rows into the first table and walk away -- no further command issued.",
+        "The running total updates itself, because writing into the first table is the trigger."
+      ]
+    },
+    {
+      "lines": [
+        "Write the same identifying key twice, with two different payloads.",
+        "Ask for it back right away, before any cleanup runs: both versions answer.",
+        "Only once a cleanup pass actually runs does one of them quietly disappear."
+      ]
+    },
+    {
+      "lines": [
+        "Ask to remove some rows, and the count drops the moment you ask.",
+        "But nothing on disk got smaller yet -- those rows are stamped, not erased.",
+        "The real rewrite only happens the next time a cleanup pass touches that data."
+      ]
+    },
+    {
+      "lines": [
+        "Files that never get edited, two separate ways of skipping data nobody needs, a table that updates itself on write, versions that survive until cleanup decides otherwise.",
+        "All of that from owning the storage directly.",
+        "One more engine still to see: what happens with no server running at all?"
+      ]
+    }
+  ]
+}

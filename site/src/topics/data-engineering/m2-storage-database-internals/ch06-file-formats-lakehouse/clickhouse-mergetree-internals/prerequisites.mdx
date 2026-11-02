@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Data skipping: statistics, page indexes, bloom filters" domain="data-engineering" host="de.data-skipping-statistics-page" by="Topic 7" />
+  <Resource kind="reel" title="Trino: federated MPP execution" domain="data-engineering" host="de.trino-federated-mpp-execution" by="Topic 34" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="MergeTree table engine" href="https://clickhouse.com/docs/engines/table-engines/mergetree-family/mergetree" by="ClickHouse">Parts, merges, granules, the sparse primary index.</Resource>
+  <Resource kind="reading" title="Understanding ClickHouse data skipping indexes" href="https://clickhouse.com/docs/optimize/skipping-indexes" by="ClickHouse">Minmax indexes and when they help.</Resource>
+  <Resource kind="reading" title="CREATE VIEW" href="https://clickhouse.com/docs/sql-reference/statements/create/view" by="ClickHouse">Materialized views as insert triggers.</Resource>
+  <Resource kind="reading" title="AggregatingMergeTree table engine" href="https://clickhouse.com/docs/engines/table-engines/mergetree-family/aggregatingmergetree" by="ClickHouse">Combined aggregate-function states per key.</Resource>
+  <Resource kind="reading" title="ReplacingMergeTree table engine" href="https://clickhouse.com/docs/engines/table-engines/mergetree-family/replacingmergetree" by="ClickHouse">Deduplication only at merge time.</Resource>
+  <Resource kind="reading" title="DELETE" href="https://clickhouse.com/docs/sql-reference/statements/delete" by="ClickHouse">Lightweight deletes as a marking mutation.</Resource>
+</ul>
+
+</section>
