@@ -1,0 +1,64 @@
+{
+  "topic": "de.delta-dml-execution-merge",
+  "syllabus": [
+    {
+      "clause": "how MERGE finds touched files and rewrites them, or writes deletion vectors instead; low-shuffle merge; why MERGE conflicts with concurrent compaction; row tracking for stable row identity; Change Data Feed as the outbound CDC stream (§6.3).",
+      "at": [
+        { "step": "Reveal: the whole file, for real" },
+        { "step": "Reveal: with deletion vectors, 70.8x less" },
+        { "step": "Reveal: named, not rebuilt here" },
+        { "step": "Reveal: a real conflict, and a real retry" },
+        { "step": "Reveal: the same row, rewritten, keeps one ID and loses the other" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Delta Lake, Transaction Log Protocol",
+      "items": [
+        { "item": "Row Tracking exposes Row IDs, which uniquely identify a row across multiple versions of a table, and Row Commit Versions", "at": [{ "step": "Reveal: the same row, rewritten, keeps one ID and loses the other" }] },
+        { "item": "A fresh or unstable Row ID uniquely identifies the row within one version of the table and may change every time the table is updated, even for rows that are not modified", "at": [{ "step": "Reveal: why the split exists" }] },
+        { "item": "A stable Row ID uniquely identifies the row across versions of the table and across updates; when a row is updated or copied, the stable Row ID for this row is preserved", "at": [{ "step": "Reveal: the same row, rewritten, keeps one ID and loses the other" }] },
+        { "item": "The default generated Row ID for a data file is calculated by adding the file's baseRowId to the physical position of the row within the file, and is reassigned every time a row is updated or moved to a different file", "at": [{ "step": "Reveal: the same row, rewritten, keeps one ID and loses the other" }] },
+        { "item": "Materialized Row IDs provide a mechanism for writers to preserve stable Row IDs for rows that are updated or copied", "at": [{ "deep": "Deep-dive" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Concurrency control",
+      "items": [
+        { "item": "MERGE INTO and COMPACTION write operations can conflict, per the documented write-conflicts table", "at": [{ "step": "Predict: what happens to MERGE's commit?" }] },
+        { "item": "A ConcurrentDeleteReadException occurs when a concurrent operation deleted a file that your operation read, commonly caused by a DELETE, UPDATE, or MERGE operation that rewrites files", "at": [{ "step": "Reveal: a real conflict, and a real retry" }] },
+        { "item": "Before committing, Delta checks whether the proposed changes conflict with anything committed since the snapshot that was read; with no conflict the write succeeds, with a conflict it fails with a concurrent modification exception", "at": [{ "deep": "Production" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Low shuffle merge on Databricks",
+      "items": [
+        { "item": "Delta Lake updates a table by rewriting whole data files, so a MERGE updating a few rows must also rewrite every unmodified row in that file", "at": [{ "step": "Reveal: the whole file, for real" }] },
+        { "item": "Low shuffle merge processes unmodified rows separately from modified rows, without shuffles, so MERGE shuffles much less data and runs faster", "at": [{ "step": "Reveal: named, not rebuilt here" }] },
+        { "item": "Low shuffle merge tries to preserve the existing layout of unmodified rows, so performance degrades more slowly after repeated MERGE commands", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The full-rewrite and deletion-vector-mode byte counts are measured on the identical matched-row set and the identical original file, making the ~70x ratio a real apples-to-apples comparison rather than two unrelated workloads.", "at": [{ "step": "Reveal: with deletion vectors, 70.8x less" }] },
+      { "item": "The deletion vector reuses de.deletion-vectors-across-formats' own exact array-container shape rather than inventing a new encoding for this topic.", "at": [{ "step": "Reveal: with deletion vectors, 70.8x less" }] },
+      { "item": "The MERGE-vs-compaction conflict is detected by a real read-set/remove-set intersection check against the committed log, not asserted as a given outcome.", "at": [{ "step": "Reveal: a real conflict, and a real retry" }] },
+      { "item": "The retry correctly re-reads the current tip and finds the compacted file's new name before recommitting, rather than blindly retrying the same stale plan.", "at": [{ "step": "Reveal: a real conflict, and a real retry" }] },
+      { "item": "The row-tracking demo changes both the file and the in-file position in the same rewrite, so the fresh ID's change is a direct, inescapable consequence of its own baseRowId-plus-position definition, not a coincidence of this demo's specific numbers.", "at": [{ "step": "Reveal: the same row, rewritten, keeps one ID and loses the other" }] },
+      { "item": "Low-shuffle merge and Change Data Feed are both explicitly disclosed as named-not-built, with the specific reason given for each (no real query engine; already built in topic 20) rather than silently omitted.", "at": [{ "step": "Reveal: named, not rebuilt here" }] },
+      { "item": "No deltalake/delta-rs library is used; the commit log, data files, and deletion vector are all built and read by this script's own code, matching the chapter's established from-scratch convention.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The scope boundary explicitly names which parts of Delta's broader conflict-detection surface (ConcurrentAppendException, MetadataChangedException, and others) are not exercised by this topic's specific two-writer scenario.", "at": [{ "deep": "Production" }] },
+      { "item": "The predict step at step 2 and the predict step at step 5 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: how much of the file does MERGE actually rewrite?" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 28's handoff (what produces commits) and hands off cleanly to topic 30's Delta 4.x/Delta Kernel scope, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

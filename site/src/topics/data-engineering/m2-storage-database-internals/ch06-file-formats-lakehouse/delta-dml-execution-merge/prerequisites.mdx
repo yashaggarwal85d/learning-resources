@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Copy-on-write vs merge-on-read" domain="data-engineering" host="de.copy-on-write-vs" by="Topic 14" />
+  <Resource kind="reel" title="Deletion vectors across formats" domain="data-engineering" host="de.deletion-vectors-across-formats" by="Topic 15" />
+  <Resource kind="reel" title="Incremental reads and change feeds" domain="data-engineering" host="de.incremental-reads-change-feeds" by="Topic 20" />
+  <Resource kind="reel" title="Delta commit protocol and catalog-managed tables" domain="data-engineering" host="de.delta-commit-protocol-catalog" by="Topic 28" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Transaction Log Protocol" href="https://raw.githubusercontent.com/delta-io/delta/master/PROTOCOL.md" by="Delta Lake">Row Tracking's fresh vs. stable Row ID definitions.</Resource>
+  <Resource kind="reading" title="Concurrency control" href="https://docs.delta.io/latest/concurrency-control.html" by="Delta Lake">The MERGE-vs-COMPACTION conflict pair and ConcurrentDeleteReadException.</Resource>
+  <Resource kind="reading" title="Low shuffle merge on Databricks" href="https://docs.databricks.com/aws/en/optimizations/low-shuffle-merge" by="Databricks">Why MERGE needs an optimization for unmodified rows at all.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,73 @@
+{
+  "topic": "de.delta-dml-execution-merge",
+  "steps": [
+    {
+      "lines": [
+        "Last time, we ended on a simple observation: a commit protocol only matters because of the operations that actually produce commits.",
+        "So today we look at Delta's own DML, starting with the operation that does the most work by far — MERGE."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the setup. A MERGE statement matches eleven rows out of a thousand sitting in one file.",
+        "With deletion vectors turned off, how much of that file do you think actually gets rewritten — just those eleven rows, or the whole thing?"
+      ],
+      "answer": [
+        "The whole file. Delta tables work by rewriting whole data files, not individual rows inside them.",
+        "So MERGE has to locate the file by its row range, then rewrite every single row in it, whether that row matched the condition or not."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what happens here, for real: rewriting a thousand-row file to change eleven of them costs about seventeen and a half kilobytes written.",
+        "Nothing about that file's contents mattered for finding it — only which row IDs it was known to contain."
+      ]
+    },
+    {
+      "lines": [
+        "Turn deletion vectors on, and the picture changes completely. The old file is never touched.",
+        "Instead, a real bitmap marks the old versions of the matched rows as gone, and a tiny new file holds only the rows that actually changed — roughly seventy times less data written for the same update."
+      ]
+    },
+    {
+      "lines": [
+        "Now a trickier case. A MERGE reads the table and plans to rewrite file one. Before it can commit, a concurrent compaction job finishes first and removes that exact file.",
+        "Does the MERGE's commit just go through anyway, fail outright, or get some kind of chance to recover?"
+      ],
+      "answer": [
+        "It gets a chance to recover — but only after a real conflict. MERGE and compaction are explicitly allowed to collide under Delta's own rules.",
+        "So the commit is rejected, not silently accepted and not silently dropped."
+      ]
+    },
+    {
+      "lines": [
+        "That's the real shape of it: the conflict fires because the file MERGE planned to touch is exactly the file compaction just removed — the precise pair Delta's documentation calls out by name.",
+        "From there, the MERGE simply re-reads the current state, finds the compacted replacement, reapplies the same condition, and commits cleanly on the next attempt."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where row identity gets interesting. Take one specific row, then rewrite it into a brand new file at a brand new position.",
+        "Its materialized ID — the one deliberately carried along through the rewrite — comes out exactly the same as before. But the other kind, computed fresh from nothing but file and position, comes out as a completely different number."
+      ]
+    },
+    {
+      "lines": [
+        "That split exists on purpose. A freshly computed ID costs nothing to store, but it's only trustworthy within a single version — perfect for something like matching rows against themselves in one pass.",
+        "A materialized ID costs real storage to carry forward, but it's the only one that still means the same row after that row has physically moved."
+      ]
+    },
+    {
+      "lines": [
+        "Two more pieces round this out, named here rather than rebuilt. Low-shuffle merge is a real engine's own internal optimization — it keeps unmatched rows out of the expensive rewrite path entirely, which isn't something this sandbox has the machinery to reproduce.",
+        "And the outbound stream of everything MERGE just changed already has a home: that's Change Data Feed, built for real several topics back."
+      ]
+    },
+    {
+      "lines": [
+        "So: MERGE finds the files a condition touches, then rewrites them either completely or just where something actually changed.",
+        "A collision with a concurrent job gets caught and retried rather than silently lost, and a row keeps the identity that matters even after the file underneath it has changed."
+      ]
+    }
+  ]
+}

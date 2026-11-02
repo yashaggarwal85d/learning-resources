@@ -10412,4 +10412,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A commit protocol only matters because of the operations that produce commits in the first place. The next topic is Delta's own DML: MERGE, UPDATE and DELETE.",
   },
+  {
+    id: 'de.delta-dml-execution-merge',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/delta-dml-execution-merge',
+    title: 'Delta DML execution: MERGE, UPDATE, DELETE',
+    syllabusTitle: 'Delta DML execution: MERGE, UPDATE, DELETE',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.2' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['delta-merge-dml'],
+    uses: ['delta-commit-protocol', 'cow-vs-mor', 'deletion-vectors', 'incremental-reads-change-feeds'],
+    declared: [],
+    bridge:
+      "A commit protocol only matters because of the operations that produce commits in the first place. This topic is Delta's own DML: a real MERGE run against a table in this sandbox, measured both with a full file rewrite and with a deletion vector instead, including a real conflict with a concurrent compaction job.",
+    handoff:
+      "Everything in the Delta arc so far is the current protocol as it stands today. The next topic is the current release line that ships it, and the library (Delta Kernel) that lets engines other than Spark use it correctly.",
+  },
 ];
