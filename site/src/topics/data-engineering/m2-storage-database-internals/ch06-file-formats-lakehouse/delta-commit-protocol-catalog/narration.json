@@ -1,0 +1,73 @@
+{
+  "topic": "de.delta-commit-protocol-catalog",
+  "steps": [
+    {
+      "lines": [
+        "Last time, we ended on a rule: a JSON entry in the log is only a commit once it's written atomically as the next version number.",
+        "Today we build exactly that, for real — reusing the same conditional-write primitive we already built, now doing the one job Delta actually asks of it."
+      ]
+    },
+    {
+      "lines": [
+        "Picture two writers racing to commit the same next version. Writer A's write lands first.",
+        "What happens to writer B? Does it overwrite A's result, merge with it somehow, or get turned away entirely?"
+      ],
+      "answer": [
+        "It gets rejected outright. A commit here is a single atomic write of one specific file name — there's no way for two different writers to both occupy it.",
+        "So the race has exactly one winner, decided by whichever write physically lands first, not by anything either writer can control after the fact."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the real write: a conditional PUT with If-None-Match, targeting the exact file the next version has to live at.",
+        "Writer A's write succeeds. Writer B sends the identical request a moment later and gets back a real precondition-failed error, not a timeout, not a merge."
+      ]
+    },
+    {
+      "lines": [
+        "So writer B lost the race. What does it actually have to check before trying again?",
+        "Because its operation was an append, the answer is nothing — an append never conflicts with anything that came before it, so it just re-aims at the new tip and wins the very next version instead."
+      ]
+    },
+    {
+      "lines": [
+        "Now change the operation. A concurrent insert lands first, at version three. A delete that started before that insert, and never saw it, tries to commit right after.",
+        "Under Delta's default isolation level, does that delete get to commit, or does it get turned back as a conflict?"
+      ],
+      "answer": [
+        "It commits. Delta's default level only requires that writes line up in some valid order — it doesn't require the delete to have seen everything that happened before it.",
+        "So the system is free to treat the insert as if it logically happened after the delete, even though the log says otherwise."
+      ]
+    },
+    {
+      "lines": [
+        "That default is called WriteSerializable, and this is exactly its behavior: the delete commits, because the two operations can still be arranged into some valid order.",
+        "The stronger level, Serializable, would not allow this — it insists the physical order and the logical order always agree."
+      ]
+    },
+    {
+      "lines": [
+        "Push it further: make the delete's one target row the exact same row the insert just added.",
+        "WriteSerializable still lets the delete through, by that same ordering trick — but Serializable now refuses it, because letting it through would mean a reader could see a table state the log itself never actually produced."
+      ]
+    },
+    {
+      "lines": [
+        "So why did any of this ever need a separate coordinating service in the first place?",
+        "Because for years, plain object storage had no conditional write at all — two writers could both successfully publish the same version number, and nothing on the storage side would ever notice or stop it. That's the exact gap Delta's DynamoDB-based coordinator was built to close."
+      ]
+    },
+    {
+      "lines": [
+        "Once a real conditional write existed, Delta didn't stop there — it moved the whole question of truth into the catalog itself.",
+        "Twenty twenty-five's preview makes the catalog the arbiter of whether a commit succeeded. One release then hands it the commit itself, and the next hands it everything else a table can do — not a bigger lock, but one place that finally answers for the whole table."
+      ]
+    },
+    {
+      "lines": [
+        "So: a commit is one atomic, winner-take-all write of the next version. An isolation level decides which non-overlapping stories about that write are even allowed to stand.",
+        "And a catalog-managed table is what happens when a storage system stops trusting any single file to settle that question by itself."
+      ]
+    }
+  ]
+}

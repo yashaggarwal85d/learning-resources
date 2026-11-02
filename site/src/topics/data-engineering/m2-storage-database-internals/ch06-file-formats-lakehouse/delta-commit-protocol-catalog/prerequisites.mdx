@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Object storage as a database substrate" domain="data-engineering" host="de.object-storage-as-database" by="Topic 10" />
+  <Resource kind="reel" title="Optimistic commits and conflict resolution" domain="data-engineering" host="de.optimistic-commits-conflict-resolution" by="Topic 13" />
+  <Resource kind="reel" title="The Delta transaction log" domain="data-engineering" host="de.delta-transaction-log" by="Topic 27" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Transaction Log Protocol" href="https://raw.githubusercontent.com/delta-io/delta/master/PROTOCOL.md" by="Delta Lake">Catalog-managed tables and the put-if-absent commit protocol.</Resource>
+  <Resource kind="reading" title="Isolation levels (WriteSerializable and Serializable)" href="https://docs.databricks.com/aws/en/optimizations/isolation/isolation-levels" by="Databricks">The default isolation level and its worked concurrent delete-and-insert example.</Resource>
+  <Resource kind="reading" title="Delta Lake 4.0" href="https://delta.io/blog/2025-09-25-delta-lake-40/" by="Delta Lake">The catalog-managed-tables preview announcement.</Resource>
+  <Resource kind="reading" title="Strengthening Catalog-Managed Delta Tables with the Unity Catalog Delta APIs" href="https://delta.io/blog/2026-06-22-delta-4-3-release" by="Delta Lake">The 4.2-to-4.3 rollout of catalog-routed table operations.</Resource>
+</ul>
+
+</section>

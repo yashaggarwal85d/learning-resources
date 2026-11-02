@@ -1,0 +1,71 @@
+{
+  "topic": "de.delta-commit-protocol-catalog",
+  "syllabus": [
+    {
+      "clause": "put-if-absent commits of the next log version (historically needing a DynamoDB LogStore on S3, now viable with conditional writes); Delta's isolation levels (WriteSerializable default vs Serializable); catalog-managed tables (the successor to \"coordinated commits\"): preview in 4.0 (June 2025), with commits and then all table operations routed through the catalog in 4.2–4.3, laying the ground for multi-table transactions.",
+      "at": [
+        { "step": "Reveal: a real put-if-absent commit, loser rejected with a real 412" },
+        { "step": "Reveal: the loser retries and wins the next version" },
+        { "step": "Reveal: WriteSerializable orders it; Serializable would refuse it" },
+        { "step": "Reveal: the overlapping case splits the two levels further" },
+        { "step": "Reveal: why S3 historically needed an external coordinator" },
+        { "step": "Reveal: catalog-managed tables take over the commit, then everything else" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Delta Lake, Transaction Log Protocol",
+      "items": [
+        { "item": "With this feature enabled, the catalog that manages the table becomes the source of truth for whether a given commit attempt succeeded", "at": [{ "step": "Reveal: catalog-managed tables take over the commit, then everything else" }] },
+        { "item": "Filesystem-based access to catalog-managed tables is not supported; Delta clients are expected to discover and access catalog-managed tables through the managing catalog", "at": [{ "deep": "Deep-dive" }] },
+        { "item": "Catalog implementations that use PUT-if-absent can ratify and publish all-in-one by atomically writing a published commit file in the _delta_log directory", "at": [{ "step": "Reveal: a real put-if-absent commit, loser rejected with a real 412" }] },
+        { "item": "This commit will be considered to have succeeded as soon as the file becomes visible in the filesystem, regardless of when or whether the catalog is made aware of the successful publish", "at": [{ "step": "Reveal: a real put-if-absent commit, loser rejected with a real 412" }] },
+        { "item": "A catalog must not ratify version v until it has ratified version v - 1, and it must ratify version v at most once", "at": [{ "step": "Reveal: the loser retries and wins the next version" }] }
+      ]
+    },
+    {
+      "source": "Databricks, Isolation levels (WriteSerializable and Serializable)",
+      "items": [
+        { "item": "Serializable is the strongest isolation level, ensuring that committed write operations and all reads are Serializable", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable would refuse it" }] },
+        { "item": "WriteSerializable is a weaker isolation level than Serializable, ensuring that only write operations (not reads) are serializable", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable would refuse it" }] },
+        { "item": "Under Serializable, a concurrent delete that did not see an insert is not allowed to commit; under WriteSerializable it is allowed because the transactions can be ordered", "at": [{ "step": "Reveal: the overlapping case splits the two levels further" }] },
+        { "item": "Under WriteSerializable a reader can see a table state that does not exist in the Delta log; under Serializable a reader always sees only tables that conform to the history", "at": [{ "deep": "Production" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Delta Lake 4.0",
+      "items": [
+        { "item": "Delta Lake 4.0 introduces catalog-managed tables as a preview feature, the foundation for a whole new set of possibilities beyond filesystem-managed tables", "at": [{ "step": "Reveal: catalog-managed tables take over the commit, then everything else" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake, Strengthening Catalog-Managed Delta Tables with the Unity Catalog Delta APIs",
+      "items": [
+        { "item": "Delta 4.2 makes commits catalog-coordinated while Delta 4.3 brings the rest of the operation surface under unified APIs", "at": [{ "step": "Reveal: catalog-managed tables take over the commit, then everything else" }] },
+        { "item": "Server-side commit validation rejects malformed or conflicting commits before they corrupt table state", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "The put-if-absent commit reuses topic 10's exact conditional-write primitive on a real moto S3 server, not a new simulated mechanism, and the loser's write is a real rejected HTTP request, not an asserted outcome.", "at": [{ "step": "Reveal: a real put-if-absent commit, loser rejected with a real 412" }] },
+      { "item": "The append retry correctly applies topic 13's own verified Iceberg retry rule (an append has no requirements) to a Delta commit, rather than inventing a new rule for Delta specifically.", "at": [{ "step": "Reveal: the loser retries and wins the next version" }] },
+      { "item": "The WriteSerializable/Serializable contrast is demonstrated on two distinct cases (non-overlapping and overlapping) against the same real committed log, not asserted from the docs alone.", "at": [{ "step": "Reveal: the overlapping case splits the two levels further" }] },
+      { "item": "The claim that catalog-managed tables moved commits under the catalog in 4.2 and everything else in 4.3 is sourced to the 4.3 release post's own explicit statement of that split, not inferred.", "at": [{ "step": "Reveal: catalog-managed tables take over the commit, then everything else" }] },
+      { "item": "CHAPTER.md's own stated date for the catalog-managed-tables preview (June 2025) was checked against the primary source's own dated URL and found to be wrong by about three months; the correct date (September 2025) is used in this topic's content instead of repeating the error, and both are disclosed in SOURCES.md.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The isolation-level decision function is explicitly disclosed as a reproduction of the documented decision rule, not Delta's real multi-file conflict detector, avoiding an overclaim about what the code actually models.", "at": [{ "deep": "Production" }] },
+      { "item": "No deltalake/delta-rs library is used; the demo is boto3 against a real local moto S3 server, matching the chapter's established from-scratch convention.", "at": [{ "deep": "Frontier" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 27's handoff (what makes a log entry atomic) and hands off cleanly to topic 29's Delta DML scope, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] },
+      { "item": "The overlapping-vs-non-overlapping isolation cases are tested as two distinct function calls with different committed-path arguments against the real log, not two assertions derived from the same single call.", "at": [{ "step": "Reveal: the overlapping case splits the two levels further" }] },
+      { "item": "The predict step at step 5 is answered correctly by the reveal that follows it (WriteSerializable allows the commit), and the predict step at step 2 is answered by the reveal that a put-if-absent loser is rejected outright, not merged.", "at": [{ "step": "Predict: does the delete commit under the default isolation level?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

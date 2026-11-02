@@ -10392,4 +10392,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A JSON log entry is only a commit once it's written atomically as the next version number. The next topic is exactly how Delta makes that atomic today, and where its catalog-managed-tables story is heading.",
   },
+  {
+    id: 'de.delta-commit-protocol-catalog',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/delta-commit-protocol-catalog',
+    title: 'Delta commit protocol and catalog-managed tables',
+    syllabusTitle: 'Delta commit protocol and catalog-managed tables',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.3.2' },
+    minutes: 20,
+    verified: '2026-11-02',
+    introduces: ['delta-commit-protocol'],
+    uses: ['delta-transaction-log', 'object-storage-guarantees', 'optimistic-commit-protocol'],
+    declared: [],
+    bridge:
+      "A JSON log entry is only a commit once it's written atomically as the next version number. This topic is exactly that: a real put-if-absent commit using the same conditional-write primitive topic 10 introduced, plus where Delta's catalog-managed-tables story is heading.",
+    handoff:
+      "A commit protocol only matters because of the operations that produce commits in the first place. The next topic is Delta's own DML: MERGE, UPDATE and DELETE.",
+  },
 ];
