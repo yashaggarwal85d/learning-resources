@@ -10612,4 +10612,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every engine so far reads a table this chapter built and owns itself. The next three topics turn to engines this sandbox can't run directly at all: the cloud data warehouses, starting with Snowflake's own proprietary storage design.",
   },
+  {
+    id: 'de.snowflake-storage-micro-partitions',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch06-file-formats-lakehouse/snowflake-storage-micro-partitions',
+    title: 'Snowflake storage, micro-partitions and pruning',
+    syllabusTitle: 'Snowflake storage, micro-partitions and pruning',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 6, title: 'File Formats, Lakehouse and Table Formats', section: '6.5' },
+    minutes: 15,
+    verified: '2026-11-02',
+    introduces: ['snowflake-micro-partitions'],
+    uses: ['table-snapshot-model', 'snapshot-lifecycle-gc', 'parquet-data-skipping'],
+    declared: [],
+    bridge:
+      "Every engine so far reads a table this chapter built and owns itself. This topic turns to the first engine this sandbox can't run directly at all: Snowflake's own proprietary micro-partition storage, explained and sourced from its current documentation, with every claim stated as sourced-only.",
+    handoff:
+      "Snowflake's immutability is one proprietary storage design. The next topic is a second, built on genuinely different infrastructure: BigQuery's Dremel execution over Colossus.",
+  },
 ];

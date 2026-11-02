@@ -1,0 +1,29 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this
+
+<ul class="resources">
+  <Resource kind="reel" title="Data skipping: statistics, page indexes, bloom filters" domain="data-engineering" host="de.data-skipping-statistics-page" by="Topic 7" />
+  <Resource kind="reel" title="Snapshot-based table metadata" domain="data-engineering" host="de.snapshot-based-table-metadata" by="Topic 12" />
+  <Resource kind="reel" title="Snapshot lifecycle: time travel to garbage collection" domain="data-engineering" host="de.snapshot-lifecycle-time-travel" by="Topic 17" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic reads and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Micro-Partitions & Data Clustering" href="https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions" by="Snowflake">Micro-partition size, metadata, pruning, clustering depth.</Resource>
+  <Resource kind="reading" title="Automatic Clustering" href="https://docs.snowflake.com/en/user-guide/tables-auto-reclustering" by="Snowflake">The background reclustering service.</Resource>
+  <Resource kind="reading" title="Speeding up queries of structured data with search optimization" href="https://docs.snowflake.com/en/user-guide/search-optimization/structured-queries" by="Snowflake">Point lookups and substring queries.</Resource>
+  <Resource kind="reading" title="Understanding & using Time Travel" href="https://docs.snowflake.com/en/user-guide/data-time-travel" by="Snowflake">Retention periods and historical queries.</Resource>
+  <Resource kind="reading" title="Understanding and viewing Fail-safe" href="https://docs.snowflake.com/en/user-guide/data-failsafe" by="Snowflake">The last-resort recovery window.</Resource>
+  <Resource kind="reading" title="Cloning considerations" href="https://docs.snowflake.com/en/user-guide/object-clone" by="Snowflake">Zero-copy cloning and shared storage.</Resource>
+  <Resource kind="reading" title="About Secure Data Sharing" href="https://docs.snowflake.com/en/user-guide/data-sharing-intro" by="Snowflake">Sharing without copying data.</Resource>
+</ul>
+
+</section>
