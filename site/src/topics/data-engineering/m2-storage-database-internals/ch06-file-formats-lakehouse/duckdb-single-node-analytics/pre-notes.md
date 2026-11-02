@@ -1,0 +1,4 @@
+- **Vectorized execution**: processing a whole batch ("vector") of column values per operation instead of one row at a time.
+- **Morsel-driven parallelism**: splitting a query's work into small chunks ("morsels") that worker threads pull and process independently.
+- **Out-of-core processing**: running a query whose data or intermediate results are larger than available memory, by spilling to disk.
+- **Replacement scan**: DuckDB's mechanism for letting SQL query an in-memory object (a DataFrame) directly, by name, with no export step.
