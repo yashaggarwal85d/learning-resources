@@ -1,0 +1,89 @@
+{
+  "topic": "de.duckdb-single-node-analytics",
+  "syllabus": [
+    {
+      "clause": "in-process vectorized execution, morsel-driven parallelism, out-of-core operators, zero-copy Arrow and pandas/Polars interop, extensions for Iceberg, Delta and DuckLake; the 1.4 LTS / 1.5 lines and the previewed 2.0 client-server mode; MotherDuck's hybrid execution; the \"most analytical data fits on one large node\" argument and where it stops holding.",
+      "at": [
+        { "step": "Reveal: direct DataFrame interop, for real" },
+        { "step": "Reveal: vectorized execution and morsel-driven parallelism" },
+        { "step": "Reveal: real out-of-core spilling" },
+        { "step": "Reveal: a real Iceberg table, queried directly" },
+        { "step": "Reveal: the identical shape for Delta" },
+        { "step": "Reveal: DuckLake, a catalog that is just SQL" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "DuckDB docs, Why DuckDB",
+      "items": [
+        { "item": "DuckDB uses a columnar-vectorized query execution engine, processing a batch of values per operation", "at": [{ "step": "Reveal: vectorized execution and morsel-driven parallelism" }] },
+        { "item": "DuckDB uses morsel-driven parallelism, inspired by the Leis et al. paper", "at": [{ "step": "Reveal: vectorized execution and morsel-driven parallelism" }] }
+      ]
+    },
+    {
+      "source": "DuckDB docs, Tuning Workloads",
+      "items": [
+        { "item": "DuckDB supports larger-than-memory (out-of-core) workloads, supported by spilling to disk", "at": [{ "step": "Reveal: real out-of-core spilling" }] }
+      ]
+    },
+    {
+      "source": "DuckDB docs, Python API / SQL on Pandas",
+      "items": [
+        { "item": "DuckDB can directly query Pandas DataFrames, Polars DataFrames and Arrow tables via replacement scans", "at": [{ "step": "Reveal: direct DataFrame interop, for real" }] }
+      ]
+    },
+    {
+      "source": "DuckDB docs, Iceberg Extension",
+      "items": [
+        { "item": "The iceberg extension reads an Iceberg table directly from storage with iceberg_scan, no catalog required", "at": [{ "step": "Reveal: a real Iceberg table, queried directly" }] }
+      ]
+    },
+    {
+      "source": "DuckDB docs, Delta Extension",
+      "items": [
+        { "item": "The delta extension is built on the Delta Kernel and reads/writes Delta tables, local and remote", "at": [{ "step": "Reveal: the identical shape for Delta" }] }
+      ]
+    },
+    {
+      "source": "DuckDB docs, DuckLake",
+      "items": [
+        { "item": "DuckLake attaches to databases stored in the DuckLake format, with its catalog stored as SQL tables", "at": [{ "step": "Reveal: DuckLake, a catalog that is just SQL" }] }
+      ]
+    },
+    {
+      "source": "DuckDB, Announcing DuckDB 1.4.0 LTS / 2.0.0 LTS",
+      "items": [
+        { "item": "DuckDB 1.4.0 'Andium' shipped as the first LTS release; DuckDB 2.0.0 'Cinnamon Teal' shipped a polished Quack client-server protocol, first introduced in 1.5.3", "at": [{ "step": "Hook" }] }
+      ]
+    },
+    {
+      "source": "MotherDuck docs, Running Dual Execution (or hybrid) queries",
+      "items": [
+        { "item": "MotherDuck's Dual Execution lets a single query mix local and remote data, planned by its optimizer", "at": [{ "step": "Recap" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      { "item": "Every number in the parallelism, spill, DataFrame, Iceberg, Delta and DuckLake reveals is this script's own real, executed output against DuckDB 2.0.0, not narrated or hand-computed.", "at": [{ "step": "Hook" }] },
+      { "item": "No Docker daemon or standalone server process is used anywhere -- DuckDB runs fully in-process, disclosed in examples.py's own docstring.", "at": [{ "step": "Hook" }] },
+      { "item": "The morsel-driven-parallelism speedup is wall-clock timing and varies run to run (observed 2.9x-5.6x); examples.py only asserts it stays comfortably above 1x, and the reveal states the finding qualitatively rather than one exact multiplier.", "at": [{ "step": "Reveal: vectorized execution and morsel-driven parallelism" }] },
+      { "item": "The Iceberg and Delta tables queried in steps 7 and 8 are both built by this script itself (pyiceberg SQL catalog; delta-rs) -- no pre-existing table from an earlier topic is reused, since those tables were not persisted across sessions.", "at": [{ "step": "Reveal: a real Iceberg table, queried directly" }] },
+      { "item": "CHAPTER.md's own outcome asks to compare DuckDB's real plan and bytes read against topic 34's Trino run on the identical query; topic 34 never built a literal Iceberg table (no Trino cluster available), so there is no real Trino bytes-read figure to compare against -- this topic gives DuckDB's own real plan and states the Trino comparison conceptually (no server process at all, versus a coordinator/worker cluster), disclosed in SOURCES.md's Red team section.", "at": [{ "step": "Reveal: a real Iceberg table, queried directly" }] },
+      { "item": "CHAPTER.md's own syllabus line calls DuckDB 2.0's client-server mode 'previewed'; DuckDB 2.0.0 LTS shipped as a full release on 2026-10-21, before this topic was built -- the syllabus clause is quoted as written, and the reveal states the now-released status instead.", "at": [{ "step": "Hook" }] },
+      { "item": "MotherDuck's hybrid Dual Execution claims are sourced-only; this sandbox has no MotherDuck account and the claims are not independently run here.", "at": [{ "step": "Recap" }] },
+      { "item": "The predict step at step 2 and the predict step at step 5 are both answered correctly by the reveal steps that immediately follow them.", "at": [{ "step": "Predict: export the DataFrame, or query it directly?" }] },
+      { "item": "The 'most analytical data fits on one large node' argument and where it stops holding is stated from DuckDB's and MotherDuck's own public material, not measured against a real concurrency/scale boundary in this sandbox -- disclosed as sourced-only in FACT-CHECK.md's scope boundary.", "at": [{ "step": "Recap" }] },
+      { "item": "DuckLake's two snapshots in step 9 come from two separate real writes (a CREATE TABLE AS and a separate INSERT) to the same real DuckLake-attached table, not from a single batched write.", "at": [{ "step": "Reveal: DuckLake, a catalog that is just SQL" }] },
+      { "item": "The bridge/handoff framing correctly answers topic 35's handoff (no server process at all) and hands off cleanly into topic 37's Snowflake opening, matching CHAPTER.md's chapter structure and closing §6.4.", "at": [{ "step": "Hook" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

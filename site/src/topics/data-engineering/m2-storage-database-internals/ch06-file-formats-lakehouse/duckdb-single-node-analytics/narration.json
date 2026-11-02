@@ -1,0 +1,83 @@
+{
+  "topic": "de.duckdb-single-node-analytics",
+  "steps": [
+    {
+      "lines": [
+        "A separate server process is still a system somebody has to run and keep alive.",
+        "What if the engine running your query was just... the process you're already in?",
+        "That's where this one goes."
+      ]
+    },
+    {
+      "lines": [
+        "A table already sits in memory, in the exact same process as the engine.",
+        "Before SQL can touch it, does that table need to be written out and reloaded first?",
+        "Or can the engine just reach into it, right where it already lives?"
+      ],
+      "answer": [
+        "It reaches right in.",
+        "Nothing gets written out or reloaded first."
+      ]
+    },
+    {
+      "lines": [
+        "Ask for a sum over that in-memory table, and the answer comes back correctly.",
+        "Same thing again, a different kind of in-memory table this time.",
+        "No conversion step ran in between either time -- the engine just read what was already there."
+      ]
+    },
+    {
+      "lines": [
+        "Values get processed in batches here, not one at a time.",
+        "Hand the same question to four workers instead of one, and time how long each takes.",
+        "Four comes back well ahead of one -- the batches split cleanly across them."
+      ]
+    },
+    {
+      "lines": [
+        "Now cap how much memory the engine's allowed to use, and ask it to sort more than that.",
+        "Does it refuse, or does it find somewhere else to put the overflow?",
+        "Watch the disk, not the error log."
+      ],
+      "answer": [
+        "It finds somewhere else.",
+        "The overflow spills to disk, and the sort keeps going."
+      ]
+    },
+    {
+      "lines": [
+        "New files actually appear on disk the moment memory runs out.",
+        "The sort still finishes, under the cap the whole time.",
+        "Count the rows at the end, and every single one is still there."
+      ]
+    },
+    {
+      "lines": [
+        "A table built by another tool entirely sits on this machine, no server attached to it.",
+        "Point this engine straight at it and ask a narrow question.",
+        "The plan it produces shows the narrowing happened before most of the file was ever touched."
+      ]
+    },
+    {
+      "lines": [
+        "Swap that table for one built by a completely different storage project.",
+        "Same narrow question, same direct connection, no in-between service of any kind.",
+        "The right rows come back again, just as directly."
+      ]
+    },
+    {
+      "lines": [
+        "This time the catalog that tracks table versions isn't a separate service at all.",
+        "It's rows in an ordinary table, sitting right next to the data.",
+        "Write to the table twice, and two separate, queryable versions exist afterward -- recorded as plain rows."
+      ]
+    },
+    {
+      "lines": [
+        "No service to start, no cluster to keep alive, and it still reads every format this chapter built.",
+        "Batches processed together, work split across workers, overflow handled without failing.",
+        "One sandbox left that can't run any of this directly at all. That one's next."
+      ]
+    }
+  ]
+}
