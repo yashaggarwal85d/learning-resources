@@ -1,0 +1,133 @@
+{
+  "topic": "de.metadata-platforms-active-catalogs",
+  "syllabus": [
+    {
+      "clause": "architecture of metadata graphs: pull crawlers vs push/event-based ingestion (change-log streams), search, usage statistics, glossary; open source (DataHub, OpenMetadata, Unity Catalog OSS, Apache Polaris — top-level ASF project since Feb 2026 — as technical catalogs) vs enterprise (Collibra, Atlan, Alation); technical vs business catalog; Amundsen is now low-activity.",
+      "at": [
+        { "step": "Reveal: a metadata graph -- tables, columns, a glossary term, an owner and a tag, as nodes; owns/derives-from/tagged-with as edges" },
+        { "step": "Reveal: push wins by the whole gap, measured directly -- push sees the rename immediately; crawl shows the old name until its next scheduled run" },
+        { "step": "Elaborate: search, usage statistics and a glossary are the three things a catalog is used for day to day" },
+        { "step": "Reveal: no -- measured directly, a crawl-based catalog never sees it at all; a push-based one sees both the create and the drop events" },
+        { "step": "Elaborate: a technical catalog answers where a table’s files are and who may read them; a business catalog answers what a column means, who owns it, and where it came from" },
+        { "step": "Reveal: open source splits along that line -- Unity Catalog OSS and Apache Polaris are technical catalogs; DataHub and OpenMetadata are business/discovery catalogs; Collibra, Atlan and Alation are commercial products covering the business side" },
+        { "step": "Reveal: Polaris graduated to a top-level Apache project in February 2026; Amundsen was archived for inactivity in September 2026 -- stronger than the syllabus’s own \"low-activity\"" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "DataHub documentation -- Ingestion Framework",
+      "items": [
+        {
+          "item": "metadata change proposals can be sent over Kafka for async publishing, or directly to the service tier's HTTP endpoint for a synchronous response; a Python-based system pulls metadata from sources on a schedule",
+          "at": [
+            { "step": "Reveal: a metadata graph -- tables, columns, a glossary term, an owner and a tag, as nodes; owns/derives-from/tagged-with as edges" },
+            { "step": "Reveal: push wins by the whole gap, measured directly -- push sees the rename immediately; crawl shows the old name until its next scheduled run" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OpenMetadata documentation -- High Level Design",
+      "items": [
+        {
+          "item": "an entity store holding real-time entity/relationship state, and a search engine indexing that metadata for discovery",
+          "at": [{ "step": "Reveal: a metadata graph -- tables, columns, a glossary term, an owner and a tag, as nodes; owns/derives-from/tagged-with as edges" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Polaris -- \"Apache Polaris Graduates to Top Level Project!\"",
+      "items": [
+        {
+          "item": "Polaris graduated from the Apache Incubator to a Top Level Project on 19 February 2026, and describes itself as a vendor-neutral implementation of the Apache Iceberg REST Catalog spec",
+          "at": [
+            { "step": "Reveal: open source splits along that line -- Unity Catalog OSS and Apache Polaris are technical catalogs; DataHub and OpenMetadata are business/discovery catalogs; Collibra, Atlan and Alation are commercial products covering the business side" },
+            { "step": "Reveal: Polaris graduated to a top-level Apache project in February 2026; Amundsen was archived for inactivity in September 2026 -- stronger than the syllabus’s own \"low-activity\"" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Databricks -- Unity Catalog OSS announcement",
+      "items": [
+        {
+          "item": "Unity Catalog OSS is an Apache-2.0-licensed, open-API catalog server interoperable across Delta Lake, Iceberg and Hudi via UniForm, and across tabular, non-tabular and AI assets",
+          "at": [{ "step": "Reveal: open source splits along that line -- Unity Catalog OSS and Apache Polaris are technical catalogs; DataHub and OpenMetadata are business/discovery catalogs; Collibra, Atlan and Alation are commercial products covering the business side" }]
+        }
+      ]
+    },
+    {
+      "source": "Amundsen repository README",
+      "items": [
+        {
+          "item": "the repository's own banner says it was archived due to inactivity in September 2026, with its contents kept for historical purposes",
+          "at": [{ "step": "Reveal: Polaris graduated to a top-level Apache project in February 2026; Amundsen was archived for inactivity in September 2026 -- stronger than the syllabus’s own \"low-activity\"" }]
+        }
+      ]
+    },
+    {
+      "source": "This course's own measurement (examples.py)",
+      "items": [
+        {
+          "item": "at the moment of a search, a push-based catalog already shows a rename that happened hours earlier; a crawl-based catalog still shows the pre-rename state and stays stale until its next scheduled run; a table created and dropped entirely between two crawl runs is never seen by the crawl-based catalog at all, while the push-based catalog records both its create and drop events",
+          "at": [
+            { "step": "Reveal: push wins by the whole gap, measured directly -- push sees the rename immediately; crawl shows the old name until its next scheduled run" },
+            { "step": "Reveal: no -- measured directly, a crawl-based catalog never sees it at all; a push-based one sees both the create and the drop events" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-11-02",
+    "items": [
+      {
+        "item": "A crawler's staleness window is bounded by its own schedule interval in the worst case (a change happening the instant after a crawl waits a full interval), but this topic's own measurement only demonstrates one concrete point in that range (a Wednesday change against a weekly Sunday schedule), not the general worst-case bound.",
+        "at": [{ "out": "the general worst-case staleness bound named only; this topic's own measurement fixes one specific change time and schedule rather than sweeping the full range" }]
+      },
+      {
+        "item": "A push-based pipeline's own event bus (Kafka, in DataHub's real architecture) can itself lag or drop events under backpressure, which would reintroduce a staleness window even in a design that is architecturally push-based -- this topic's toy model applies every event instantly and so cannot demonstrate that failure mode.",
+        "at": [{ "out": "event-bus lag/backpressure as a real push-pipeline failure mode named only; this topic's own toy PushCatalog applies events with zero latency by construction" }]
+      },
+      {
+        "item": "A hybrid architecture -- an initial crawl to bootstrap a catalog's state, then push events to keep it current afterward -- is how a real DataHub deployment is usually run in practice, rather than push or crawl operating alone; this topic's measurement treats the two as mutually exclusive to isolate the staleness and visibility difference each one produces on its own.",
+        "at": [{ "out": "the hybrid bootstrap-then-push deployment pattern named only; this topic's own measurement runs crawl and push as separate, non-combined catalogs" }]
+      },
+      {
+        "item": "Apache Polaris and Unity Catalog OSS both implement the Iceberg REST Catalog protocol (this chapter's own Chapter 6 §6.3.4 topic covers that protocol directly), which is what lets any REST-catalog-aware engine talk to either one interchangeably -- the technical-catalog category this topic names is defined by that shared protocol, not merely by vendor choice.",
+        "at": [{ "out": "the specific REST Catalog protocol mechanics named only; this topic names Polaris and Unity Catalog OSS as technical catalogs without re-teaching the protocol itself, which Chapter 6 §6.3.4 already covers" }]
+      },
+      {
+        "item": "A glossary term in a business catalog is itself a governed asset with its own ownership and review process (who may add or retire a term), not just a label attached to a column -- a detail this topic's own node/edge description of the metadata graph names but does not measure.",
+        "at": [{ "out": "glossary-term governance (ownership, review process for terms themselves) named only; this topic's own measurement covers catalog freshness, not glossary curation workflow" }]
+      },
+      {
+        "item": "DataHub's own architecture additionally supports a synchronous HTTP path for metadata changes alongside the asynchronous Kafka path named in this topic's own sources, which matters for a caller that needs an immediate success/failure response rather than fire-and-forget publishing -- a distinction this topic's toy PushCatalog collapses into one instantaneous apply_event call.",
+        "at": [{ "out": "DataHub's own sync-vs-async HTTP/Kafka distinction for push events named only; this topic's toy model applies every push event the same way regardless of transport" }]
+      },
+      {
+        "item": "A commercial catalog (Collibra, Atlan, Alation) typically bundles both technical-catalog-style access resolution and business-catalog-style discovery/governance in one product, rather than sitting purely on the business side of this topic's own technical-vs-business split -- the split is a useful lens for the open-source landscape this topic names, not an exhaustive classification of every commercial product.",
+        "at": [{ "out": "commercial-catalog products' own blended technical/business feature sets named only; this topic places them on the business/discovery side of the split as named only, without evaluating their technical-catalog capabilities" }]
+      },
+      {
+        "item": "This topic's own catalog entry is itself what topic 13 (the federated governance operating model) later registers an owner and a review cadence against -- the metadata graph this topic builds is not just descriptive, it is the object a later governance process operates on.",
+        "at": [{ "deep": "Frontier" }]
+      },
+      {
+        "item": "A crawler's inability to see a short-lived object is not limited to objects dropped before the next crawl; a crawler can also miss an object renamed and renamed back within one interval, showing no history of either rename at all -- a stronger version of the same blind spot this topic's own temp_export measurement demonstrates with a create-then-drop.",
+        "at": [{ "out": "the rename-and-rename-back variant of the crawl blind spot named only; this topic's own measurement demonstrates the create-then-drop variant specifically" }]
+      },
+      {
+        "item": "The syllabus's own \"low-activity\" wording for Amundsen predates the repository's actual archive notice; this topic explicitly flags that the syllabus is now understating the fact (archived, not merely low-activity) rather than silently teaching the weaker, now-outdated claim as current.",
+        "at": [{ "step": "Reveal: Polaris graduated to a top-level Apache project in February 2026; Amundsen was archived for inactivity in September 2026 -- stronger than the syllabus’s own \"low-activity\"" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-02",
+    "by": "self-review",
+    "open": []
+  }
+}

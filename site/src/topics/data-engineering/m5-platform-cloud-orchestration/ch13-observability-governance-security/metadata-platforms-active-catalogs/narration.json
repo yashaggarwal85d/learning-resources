@@ -1,0 +1,84 @@
+{
+  "topic": "de.metadata-platforms-active-catalogs",
+  "steps": [
+    {
+      "lines": [
+        "A catalog gets crawled on Sunday. By Wednesday, one table's dropped, a new one shows up, and a column gets renamed.",
+        "Thursday, somebody searches and finds the old table, still confidently marked certified. What would that catalog need to be built differently to be right within seconds, and who ends up doing the extra work to make that true?"
+      ]
+    },
+    {
+      "lines": [
+        "Underneath all the vendor names, a catalog is just a graph.",
+        "A table, a column, a dashboard, a person, a tag, a glossary term — those are all nodes. Owns, derives from, tagged with — those are the edges connecting them.",
+        "Keep that one picture in mind, because everything else in this topic is really about how that graph stays current."
+      ]
+    },
+    {
+      "lines": [
+        "Work this one out before I say it.",
+        "That Wednesday rename happens. Thursday's search comes along. Does a catalog that only crawls on a schedule know about it by then, or does a catalog built on events know first?"
+      ],
+      "answer": [
+        "The one built on events, every time.",
+        "It was never waiting for a scheduled run to begin with — the rename itself is what triggers the update, the instant it happens."
+      ]
+    },
+    {
+      "lines": [
+        "And that's exactly what measuring it shows.",
+        "Right at the moment of Thursday's search, the event-driven catalog already has the new name. The scheduled one is still showing the old name, and it's going to keep showing it for days, until its next run actually happens."
+      ]
+    },
+    {
+      "lines": [
+        "Step back from the architecture question for a second, because a catalog has to actually earn its keep day to day.",
+        "Three jobs. Search, ranked by how much something gets used, is how you find a dataset in the first place. Query counts and owners and freshness are how you decide whether to trust it.",
+        "And a glossary tying business terms to actual columns is how a whole company agrees on what something even means."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a nastier version of the same problem. Work it out first.",
+        "Something gets built and torn back down again, both well before the next scheduled sweep ever runs. Does a schedule-only catalog end up with any record that it ever happened?"
+      ],
+      "answer": [
+        "No — not ever, not even as something that used to exist and got deleted.",
+        "A crawl only ever sees the world as it is at the exact moment it runs. If the table's already gone by then, there's nothing left for that crawl to notice."
+      ]
+    },
+    {
+      "lines": [
+        "Measuring it makes that gap completely concrete.",
+        "The scheduled catalog's own records never contain that table at any point at all. Meanwhile the event-driven catalog caught both moments — the table being created, and then being dropped."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a completely different split worth knowing, because it decides which catalog answers which question.",
+        "One kind of catalog answers where a table's actual files live and who's allowed to read them. A completely different kind answers what a column actually means, who owns it, and where it originally came from."
+      ]
+    },
+    {
+      "lines": [
+        "Open source splits right along that same line.",
+        "Unity Catalog's open-source release and Apache Polaris both resolve a table down to its files and enforce who can touch them — that's the file-and-access side.",
+        "DataHub and OpenMetadata describe and connect assets across a whole company instead — that's the meaning-and-ownership side. A few commercial products do that same job as paid platforms."
+      ]
+    },
+    {
+      "lines": [
+        "Two facts worth getting exactly right, because the syllabus itself is already a little out of date on one of them.",
+        "Apache Polaris's own announcement says it graduated to a full top-level project at the Apache Software Foundation in February of this year.",
+        "And the open-source catalog called Amundsen didn't just slow down — its own repository says it was archived for inactivity that same year, which is a stronger fact than merely low-activity."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the whole shape of it.",
+        "A catalog is a graph of things and the relationships between them, and it only stays honest if something keeps pushing changes into it rather than waiting on a schedule.",
+        "And underneath every catalog debate sits one real split: a catalog that tells you where the files are, and a completely separate one that tells you what any of it actually means."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+- **Metadata**: data describing a dataset -- its schema, owner, freshness, lineage -- rather than the dataset's own rows. *Where you meet it:* the whole topic.
+- **Catalog**: a system that stores and serves metadata about an organization's datasets. *Where you meet it:* every reveal.
+- **Crawler**: a scheduled process that connects to a source and reads its current state. *Where you meet it:* the first predict-and-reveal pair.
+- **Event**: a message emitted the instant something changes, rather than discovered later by re-reading a source. *Where you meet it:* the push-based catalog throughout.
+- **Glossary**: a list of business terms, each linked to the columns that carry its meaning. *Where you meet it:* the daily-uses elaboration.
+- **Ownership**: (from earlier topics) who is accountable for a dataset's correctness and access. *Where you meet it:* named as part of what a business catalog answers.
+- **Asset**: anything a catalog tracks -- a table, a column, a dashboard, a glossary term, a person. *Where you meet it:* the metadata-graph reveal's own nodes.
+- **Technical vs business metadata**: where a table's files live and who may read them, versus what a column means and who owns it. *Where you meet it:* the technical-vs-business elaboration and the open-source-landscape reveal.
