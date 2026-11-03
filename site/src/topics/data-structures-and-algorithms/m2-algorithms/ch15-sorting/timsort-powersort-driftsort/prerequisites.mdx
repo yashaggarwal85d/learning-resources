@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Elementary sorts and sorting networks">Binary insertion sort and the small-sort cutoff this topic's own run-extension reuses.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Merge sort">The merge procedure and the stable-merge buffer this topic's own run merges build on.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Quicksort and partitioning schemes">The partition step driftsort falls back on for the stretches that aren't already a run.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Heapsort">The other introsort-style depth limit, falling back to heapsort rather than driftsort's own mergesort fallback.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Objects/listsort.txt" href="https://raw.githubusercontent.com/python/cpython/v3.11.0/Objects/listsort.txt" by="CPython">The real system's own account of run detection, minrun, galloping and the merge-policy invariant.</Resource>
+  <Resource kind="reading" title="OpenJDK's Java.utils.Collection.sort() Is Broken" href="https://ir.cwi.nl/pub/23709/23709A.pdf" by="de Gouw, Rot, de Boer, Bubel & Hähnle">The 2015 formal-verification paper that found the invariant bug this topic reproduces.</Resource>
+  <Resource kind="reading" title="Nearly-Optimal Mergesorts" href="https://arxiv.org/abs/1805.04154" by="Munro & Wild">The paper behind CPython 3.11's Powersort merge policy.</Resource>
+  <Resource kind="reading" title="driftsort introduction" href="https://raw.githubusercontent.com/Voultapher/sort-research-rs/main/writeup/driftsort_introduction/text.md" by="Bergdoll & Peters">The design document for Rust's own stable sort since 1.81.</Resource>
+</ul>
+
+</section>

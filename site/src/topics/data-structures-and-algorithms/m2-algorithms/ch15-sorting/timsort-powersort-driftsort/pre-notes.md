@@ -1,0 +1,7 @@
+- **Run**: a maximal stretch of an array that is already sorted (non-decreasing), or strictly decreasing and reversible in place without breaking stability. *Where you meet it:* the one thing every sort in this topic looks for before doing any new work.
+- **Minrun**: the shortest a run is allowed to be before a sort tops it up with a small sort instead of merging it as-is. *Where you meet it:* the threshold a binary insertion sort fills in up to.
+- **Merge policy**: the rule that decides which two adjacent pending runs to merge next, and when. *Where you meet it:* the part of Timsort that had a bug for years, and the part Powersort replaces.
+- **Run stack**: the list of runs found so far that haven't been merged into a larger one yet. *Where you meet it:* what the 2015 bug's invariant is a claim about.
+- **Invariant**: a condition a data structure is supposed to keep true after every operation. *Where you meet it:* the run-stack property the old merge policy's own code failed to fully restore.
+- **Binary search** (one line): find a value's position in a sorted range by repeatedly halving it. *Where you meet it:* the second half of galloping, once the rough neighborhood is found.
+- **Merge tree**: the binary tree you'd get by merging runs two at a time, drawn with the root as the final, whole-array merge. *Where you meet it:* what a run pair's "power" measures the depth of a node in.

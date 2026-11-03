@@ -1,0 +1,228 @@
+{
+  "topic": "dsa.timsort-powersort-driftsort",
+  "syllabus": [
+    {
+      "clause": "run detection, galloping merges and merge-policy invariants",
+      "at": [
+        {
+          "step": "Run detection: scan for the next non-decreasing stretch, or a strictly decreasing one, reversed in place. CPython's own worked example: a 3-element descending prefix reverses to an ascending run, then extends seamlessly into the ascending keys right after it."
+        },
+        {
+          "step": "Minrun and binary insertion sort: a run shorter than minrun is boosted up to minrun by a stable binary insertion sort. On random data, this makes every run close to minrun long, which is good for balanced merges."
+        },
+        {
+          "step": "Picking minrun, the old way: CPython's pre-2025 scheme measured directly on N=2,112, the one case the library's own file names — picking 33 instead of 32 avoids an unbalanced tail merge."
+        },
+        {
+          "step": "Galloping: once one side wins repeatedly, switch from one-pair-at-a-time to searching exponentially, then binary search the last gap. Measured directly: galloping first strictly beats linear search at i=6, and MIN_GALLOP is set to 7, just past where it starts reliably paying off."
+        },
+        {
+          "step": "Is there a case where galloping costs more comparisons than linear search ever would?"
+        },
+        {
+          "step": "The old merge-policy invariant: merging must stay on adjacent runs for stability, so the original Timsort kept each pending run bigger than the next two combined — the first thing that didn’t obviously suck, loosely based on Fibonacci growth, by CPython’s own words."
+        },
+        {
+          "step": "2025: Pochmann's minrun refinement. CPython's own current development branch describes a newer scheme: at every level of the merge tree, the number of runs is a power of 2, at most two run lengths appear, and they differ by at most one. Reproduced on CPython's own 315-element example."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    },
+    {
+      "clause": "the 2015 Timsort invariant bug found by formal verification",
+      "at": [
+        {
+          "step": "Run lengths 120, 80, 25, 20 and 30 sit on the stack; the code merges 25 and 20 and stops. Is the invariant \"each run is longer than the sum of the next two\" still true for 120?"
+        },
+        {
+          "step": "Why the hook's merge breaks it: mergeCollapse only re-checks the invariant on the top three stack entries, exactly enough to miss what just happened one level further down. The paper's own smallest crashing counterexample: over 67 million elements; the same bug sat unfixed in Python since the method was introduced."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "CPython 3.11's switch to the Powersort merge policy",
+      "at": [
+        {
+          "step": "CPython 3.11: Powersort. A run pair's power is the depth, in an ideal merge tree, of the node joining them. Measured: runs of 40 and 40 have power 1; runs of 10 and 10 have power 3, and 10 and 60 have power 1. Confirmed from source: the changelog entry sits under the 3.11.0a1 heading, dated 2021-09-01."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "driftsort as Rust's stable sort since Rust 1.81",
+      "at": [
+        {
+          "step": "Driftsort, named: Rust's stable sort since 1.81, by Peters and Bergdoll. The documentation calls it quicksort's average case with mergesort's fast worst case and partial run detection; its own source allocates scratch memory as max(n/2, min(n, 8MB)) and falls back to mergesort, not heapsort, past its own depth limit."
+        },
+        {
+          "deep": "In production"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "CPython, Objects/listsort.txt (v3.11.0 tag)",
+      "items": [
+        {
+          "item": "run-boosting via binary insertion sort, the old minrun scheme (range 32-65), the Fibonacci-inspired old invariant, and the full galloping citation trail (Demaine/López-Ortiz/Munro, McIlroy)",
+          "at": [
+            {
+              "step": "The old merge-policy invariant: merging must stay on adjacent runs for stability, so the original Timsort kept each pending run bigger than the next two combined — the first thing that didn’t obviously suck, loosely based on Fibonacci growth, by CPython’s own words."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "CPython, Objects/listsort.txt (main branch, unreleased)",
+      "items": [
+        {
+          "item": "Stefan Pochmann's 2025 minrun refinement and the 315-element worked example",
+          "at": [
+            {
+              "step": "2025: Pochmann's minrun refinement. CPython's own current development branch describes a newer scheme: at every level of the merge tree, the number of runs is a power of 2, at most two run lengths appear, and they differ by at most one. Reproduced on CPython's own 315-element example."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "de Gouw, Rot, de Boer, Bubel & Hähnle, CAV 2015",
+      "items": [
+        {
+          "item": "the exact run-length example (120, 80, 25, 20, 30), the top-three-only check, and the 67-million-element smallest counterexample",
+          "at": [
+            {
+              "step": "Why the hook's merge breaks it: mergeCollapse only re-checks the invariant on the top three stack entries, exactly enough to miss what just happened one level further down. The paper's own smallest crashing counterexample: over 67 million elements; the same bug sat unfixed in Python since the method was introduced."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "CPython, Misc/NEWS.d/3.11.0a1.rst (v3.11.0 tag)",
+      "items": [
+        {
+          "item": "bpo-34561, dated 2021-09-01, confirming the exact release Powersort landed in",
+          "at": [
+            {
+              "step": "CPython 3.11: Powersort. A run pair's power is the depth, in an ideal merge tree, of the node joining them. Measured: runs of 40 and 40 have power 1; runs of 10 and 10 have power 3, and 10 and 60 have power 1. Confirmed from source: the changelog entry sits under the 3.11.0a1 heading, dated 2021-09-01."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rust 1.81.0, slice/sort/stable/mod.rs and the std::primitive::slice documentation",
+      "items": [
+        {
+          "item": "driftsort's authorship, its max(n/2, min(n, 8MB)) allocation formula, and the documentation's own quicksort-average/mergesort-worst-case characterization",
+          "at": [
+            {
+              "step": "Driftsort, named: Rust's stable sort since 1.81, by Peters and Bergdoll. The documentation calls it quicksort's average case with mergesort's fast worst case and partial run detection; its own source allocates scratch memory as max(n/2, min(n, 8MB)) and falls back to mergesort, not heapsort, past its own depth limit."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-03",
+    "items": [
+      {
+        "item": "The galloping crossover (first strictly winning at i=6) is sensitive to the exact comparison-counting convention: CPython's own formula counts the gallop phase as 2*floor(lg(i))+2 and linear search as i+1, and the two formulas tie at i=0, 1, 3 and 5 rather than monotonically favoring one side as i grows from 0 — galloping actually loses at i=2 and i=4 before winning permanently from i=6 onward, a non-monotonic pattern easy to miss if only the asymptotic claim (\"galloping wins for large i\") is read without the small-i table.",
+        "at": [
+          {
+            "step": "Galloping: once one side wins repeatedly, switch from one-pair-at-a-time to searching exponentially, then binary search the last gap. Measured directly: galloping first strictly beats linear search at i=6, and MIN_GALLOP is set to 7, just past where it starts reliably paying off."
+          }
+        ]
+      },
+      {
+        "item": "MIN_GALLOP (7) is not the crossover point (6) — it is set one past it, which means CPython deliberately waits for one extra consecutive win beyond the point galloping would already be worthwhile, trading a small amount of missed opportunity for protection against a short, lucky winning streak that would trigger the costly \"broken leg\" case.",
+        "at": [
+          {
+            "step": "Galloping: once one side wins repeatedly, switch from one-pair-at-a-time to searching exponentially, then binary search the last gap. Measured directly: galloping first strictly beats linear search at i=6, and MIN_GALLOP is set to 7, just past where it starts reliably paying off."
+          }
+        ]
+      },
+      {
+        "item": "Powersort's node-power function depends on the *position* of a run pair within the whole array (via the total length n in the midpoint-fraction formula), not just the two run lengths in isolation — the same pair of run lengths (10 and 10) can have a different power depending on where in a larger array they sit, which is why the chapter's own two examples use the same n=80 for both pairs rather than treating each pair as a self-contained n=20 sub-problem.",
+        "at": [
+          {
+            "step": "CPython 3.11: Powersort. A run pair's power is the depth, in an ideal merge tree, of the node joining them. Measured: runs of 40 and 40 have power 1; runs of 10 and 10 have power 3, and 10 and 60 have power 1. Confirmed from source: the changelog entry sits under the 3.11.0a1 heading, dated 2021-09-01."
+          }
+        ]
+      },
+      {
+        "item": "The 2015 bug's fix (checking four stack entries instead of three) is the minimum fix, not an arbitrarily larger safety margin: a single merge operation only ever touches and could only ever break the invariant at the triple immediately below the one it just repaired, so checking exactly one level deeper than the original check is provably sufficient — checking five or more entries would cost more without catching any additional class of failure.",
+        "at": [
+          {
+            "step": "Why the hook's merge breaks it: mergeCollapse only re-checks the invariant on the top three stack entries, exactly enough to miss what just happened one level further down. The paper's own smallest crashing counterexample: over 67 million elements; the same bug sat unfixed in Python since the method was introduced."
+          }
+        ]
+      },
+      {
+        "item": "Pochmann's 2025 minrun refinement and Powersort are independent improvements to two different decisions (how long each run is, versus which adjacent runs to merge first) — a reader could mistakenly assume the 2025 change is an update to Powersort itself, when in fact Powersort (merge order) has been unchanged since 3.11 and only the earlier, separate minrun-selection step changed.",
+        "at": [
+          {
+            "step": "2025: Pochmann's minrun refinement. CPython's own current development branch describes a newer scheme: at every level of the merge tree, the number of runs is a power of 2, at most two run lengths appear, and they differ by at most one. Reproduced on CPython's own 315-element example."
+          }
+        ]
+      },
+      {
+        "item": "Driftsort's introsort-style depth limit falls back to mergesort rather than heapsort (unlike every quicksort fallback named in topic 51) specifically because driftsort is a *stable* sort — heapsort is not stable, so a stable sort's fallback cannot reuse it without breaking its own stability guarantee, which is why the two topics' otherwise-identical depth-limit mechanism necessarily lands on two different fallback algorithms.",
+        "at": [
+          {
+            "step": "Driftsort, named: Rust's stable sort since 1.81, by Peters and Bergdoll. The documentation calls it quicksort's average case with mergesort's fast worst case and partial run detection; its own source allocates scratch memory as max(n/2, min(n, 8MB)) and falls back to mergesort, not heapsort, past its own depth limit."
+          }
+        ]
+      },
+      {
+        "item": "The run-boosting rule (extending a short run to minrun via binary insertion sort) interacts with run detection in a way that is easy to read backwards: minrun is not a minimum run *length that gets detected* — count_run finds runs of any length, including length 1 — minrun is a minimum length that a *found* run gets padded up to after detection, via insertion sort, before it is treated as a mergeable unit.",
+        "at": [
+          {
+            "step": "Minrun and binary insertion sort: a run shorter than minrun is boosted up to minrun by a stable binary insertion sort. On random data, this makes every run close to minrun long, which is good for balanced merges."
+          }
+        ]
+      },
+      {
+        "item": "The old minrun scheme's N=2,112 example (CPython's own) is not a worst case constructed for the topic — it is CPython's own historical motivating example that led the original authors to choose the \"top 6 bits, round up if any lower bit is set\" rule in the first place, meaning the scheme was specifically tuned against this exact failure mode rather than discovered to handle it by coincidence.",
+        "at": [
+          {
+            "step": "Picking minrun, the old way: CPython's pre-2025 scheme measured directly on N=2,112, the one case the library's own file names — picking 33 instead of 32 avoids an unbalanced tail merge."
+          }
+        ]
+      },
+      {
+        "item": "The CAV 2015 paper's claim that the same bug exists in Python \"ever since the method was introduced\" is a claim about Python's own (separate, independently-implemented) Timsort port, not a claim that Python's bug and Java's bug share a root cause in the same source file — the two are independent ports of the same original algorithm design, each carrying the identical conceptual flaw in its own merge-policy check.",
+        "at": [
+          {
+            "step": "Why the hook's merge breaks it: mergeCollapse only re-checks the invariant on the top three stack entries, exactly enough to miss what just happened one level further down. The paper's own smallest crashing counterexample: over 67 million elements; the same bug sat unfixed in Python since the method was introduced."
+          }
+        ]
+      },
+      {
+        "item": "Run detection's stability-preserving trick (only strictly-decreasing runs are reversed, never non-increasing ones) is not an arbitrary choice — reversing a run containing a tie would swap two equal elements past each other, which is exactly the kind of reordering a stable sort must never do; the strict-inequality requirement is the one definition of \"descending\" that makes in-place reversal always safe.",
+        "at": [
+          {
+            "step": "Run detection: scan for the next non-decreasing stretch, or a strictly decreasing one, reversed in place. CPython's own worked example: a 3-element descending prefix reverses to an ascending run, then extends seamlessly into the ascending keys right after it."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-03",
+    "by": "self-review",
+    "open": []
+  }
+}

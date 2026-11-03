@@ -1,0 +1,102 @@
+{
+    "topic": "dsa.timsort-powersort-driftsort",
+    "steps": [
+        {
+            "lines": [
+                "Heapsort, merge sort and quicksort each treat the input as if it arrived in a random order, even when it almost never does.",
+                "In twenty fifteen, a team trying to formally prove that Java's sort never crashes found an input that does crash it, built on purpose to break a rule the code was supposed to keep."
+            ]
+        },
+        {
+            "lines": [
+                "Five pending runs sit on a stack, with lengths one hundred twenty, eighty, twenty five, twenty, and thirty. The sort merges the two smallest, twenty five and twenty, and moves on.",
+                {
+                    "beat": 0.3
+                },
+                "The rule was that each run has to be longer than the two after it combined. After that one merge, is that still true for the run of length one hundred twenty?"
+            ],
+            "answer": [
+                "No. Eighty plus forty five is one hundred twenty five, which is more than one hundred twenty. The check only looked at the three entries closest to the merge. It never looked back far enough to notice the rule had already broken further down."
+            ]
+        },
+        {
+            "lines": [
+                "Before merging anything, a run aware sort looks for a stretch that's already in order. A falling stretch gets flipped in place, which is safe here because nothing in a strictly falling stretch ties with anything else.",
+                "Watch what happens right after the flip: the next few keys keep climbing from exactly where the flipped stretch left off, so the two pieces become one longer run for free."
+            ]
+        },
+        {
+            "lines": [
+                "A run that's too short to bother merging gets padded out first, one key inserted at a time, each one placed by a search that halves its guess instead of scanning linearly.",
+                "The point of padding every short run up to the same rough length is that merging two runs of similar size is the cheapest way to merge at all."
+            ]
+        },
+        {
+            "lines": [
+                "Choosing that target length matters more than it sounds. Pick it carelessly and a huge array can split into a run of almost everything and one tiny leftover run.",
+                "The fix sounds strange at first: nudge the target length by one, deliberately, so that the division comes out even instead of almost even."
+            ]
+        },
+        {
+            "lines": [
+                "When one side of a merge keeps winning, comparing one pair at a time stops being the cheapest option. Searching ahead at doubling distances finds the same answer in far fewer steps, once a streak is long enough.",
+                "The threshold for switching into that search mode is tuned to sit just past the point where the search actually starts winning, not any earlier."
+            ]
+        },
+        {
+            "lines": [
+                "That searching strategy sounds like it should always help. Does it?",
+                {
+                    "beat": 0.3
+                },
+                "Could a short winning streak ever cost more comparisons than just checking one pair at a time would have?"
+            ],
+            "answer": [
+                "Yes. If the winner belongs only one or two spots ahead, the doubling search still has to pay for the act of searching, and ends up using more comparisons than simply checking pairs would have.",
+                "The library's own name for this failure mode translates to something like galloping on an injured leg."
+            ]
+        },
+        {
+            "lines": [
+                "Stability forces a rule on which pending runs are allowed to merge: only two that sit next to each other on the stack, never two with something unmerged between them.",
+                "The original scheme for deciding when to merge was, in the author's own words, the first thing that didn't obviously fail, loosely inspired by how a famous growing sequence of numbers behaves."
+            ]
+        },
+        {
+            "lines": [
+                "That loose rule only checks the handful of entries nearest to wherever a merge just happened.",
+                "A single merge can break the rule at an entry further down the stack that the check never revisits, and the real failing input the researchers eventually built needed well over sixty seven million elements before the broken rule actually crashed anything."
+            ]
+        },
+        {
+            "lines": [
+                "One major standard library eventually replaced that loose rule with a precise one: give every pair of neighboring runs a number describing how deep they'd sit in a perfectly balanced merge tree, and only merge while that number keeps shrinking down the stack.",
+                "Two runs of equal length sitting at the very middle of the array get the shallowest such number; two small runs tucked near one edge get a much deeper one, because a perfectly balanced tree would reach them far later."
+            ]
+        },
+        {
+            "lines": [
+                "Picking the target run length still has a wrinkle even with that fix: a fixed length can still split an array unevenly if the division doesn't come out clean.",
+                "A newer refinement lets the target length drift by exactly one key between runs, so that every split comes out as even as it can possibly be, no matter what the total length happens to be."
+            ]
+        },
+        {
+            "lines": [
+                "A newer systems language rebuilt its own stable sort around the same ideas: detect existing order first, fall back to a different, faster algorithm only for the parts that aren't already in order.",
+                "Its documentation describes the result as combining the quick average case of one classic algorithm with the dependable worst case of another, something this whole chapter has been building toward one sort at a time."
+            ]
+        },
+        {
+            "lines": [
+                "Three ideas from this topic are worth carrying forward. Look for order that's already there before doing new work. Treat a merge policy's own promise as something that needs checking as carefully as the merge itself.",
+                "And expect a production sort's fast case and its worst case to usually be two different algorithms, glued together by one counter."
+            ]
+        },
+        {
+            "lines": [
+                "Every sort built so far still pays for every single comparison between two whole keys.",
+                "But a key can be read differently: not compared as a whole, but broken into its individual digits and acted on one digit at a time, which opens a door no comparison sort can walk through."
+            ]
+        }
+    ]
+}
