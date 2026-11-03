@@ -1,0 +1,87 @@
+{
+  "topic": "dsa.quicksort-partitioning-schemes",
+  "syllabus": [
+    {
+      "clause": "Lomuto vs Hoare partitioning",
+      "at": [
+        { "step": "Lomuto: one scan, a boundary index, the last element as pivot — simple, correct, about n comparisons, as many as n swaps." },
+        { "step": "Hoare: two indices walking inward from both ends, swapping out-of-place pairs, stopping on equal keys. On random input, measured directly: far fewer swaps than Lomuto, and an all-equal range splits at the middle instead of shrinking by one." },
+        { "step": "Recurse on the smaller side, loop on the larger: measured directly on sorted input, Lomuto’s own worst case for comparisons, the recursion depth stays at zero. The call stack never grows past O(log n), whatever the pivot turns out to be." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "randomized and median-of-three pivots",
+      "at": [
+        { "step": "A random pivot's expected cost, 2(n + 1)H_n − 4n, measured directly by averaging many runs: the average lands within a tenth of a percent of the formula." },
+        { "step": "Median-of-three — the median of the first, middle and last keys — defeats sorted and reversed input cheaply. Measured directly, both stay far under a loose n log n ceiling." },
+        { "step": "The median-of-three killer: two ascending runs stitched together. Measured cost grows as a constant fraction of n² across a sixteen-fold range of sizes — a real quadratic blow-up, not merely a worse constant." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "three-way (Dutch national flag) partitioning for duplicates",
+      "at": [
+        { "step": "Three-way (Dutch national flag) partitioning: three indices, one pass, everything equal to the pivot already done. Measured on four distinct values, Lomuto, Hoare and three-way fall sharply in that order; on random distinct keys with no duplicates to collapse, three-way does more swaps than Hoare." },
+        { "deep": "In the lab" }
+      ]
+    },
+    {
+      "clause": "dual-pivot quicksort (Java primitives)",
+      "at": [
+        { "step": "Dual-pivot quicksort: two pivots split the range into three parts. The real system is the JDK's own DualPivotQuicksort, read directly: a depth limit falling back to heapsort, a pre-check for existing runs, counting sort for small primitive types. What it buys in theory and in practice is stated only from what those papers themselves say." },
+        { "deep": "In production" }
+      ]
+    },
+    {
+      "clause": "branchless block partitioning (BlockQuicksort, ESA 2016)",
+      "at": [
+        { "step": "Branchless block partitioning: a data-dependent branch on random input mispredicts about half the time. BlockQuicksort's own fix compares a fixed block of elements into a buffer first, then replays the swaps with no conditional branch on the outcome." },
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "OpenJDK, DualPivotQuicksort.java (jdk-21-ga)",
+      "items": [
+        { "item": "DELTA = 3 << 1 and MAX_RECURSION_DEPTH = 64 * DELTA (384); tryMergeRuns, heapSort and countingSort are all present and named", "at": [{ "step": "Dual-pivot quicksort: two pivots split the range into three parts. The real system is the JDK's own DualPivotQuicksort, read directly: a depth limit falling back to heapsort, a pre-check for existing runs, counting sort for small primitive types. What it buys in theory and in practice is stated only from what those papers themselves say." }] }
+      ]
+    },
+    {
+      "source": "Wild & Nebel, \"Average Case Analysis of Java 7's Dual Pivot Quicksort\"",
+      "items": [
+        { "item": "A random permutation of length n is sorted using 1.9n ln n comparisons on average, against classic one-pivot quicksort's own 2.0n ln n", "at": [{ "step": "Dual-pivot quicksort: two pivots split the range into three parts. The real system is the JDK's own DualPivotQuicksort, read directly: a depth limit falling back to heapsort, a pre-check for existing runs, counting sort for small primitive types. What it buys in theory and in practice is stated only from what those papers themselves say." }] }
+      ]
+    },
+    {
+      "source": "Kushagra, López-Ortiz, Munro & Qiao, \"Multi-Pivot Quicksort: Theory and Experiments\"",
+      "items": [
+        { "item": "Their own 3-pivot variant measured about 7-8% faster than Yaroslavskiy's shipped 2-pivot scheme, experimentally", "at": [{ "step": "Dual-pivot quicksort: two pivots split the range into three parts. The real system is the JDK's own DualPivotQuicksort, read directly: a depth limit falling back to heapsort, a pre-check for existing runs, counting sort for small primitive types. What it buys in theory and in practice is stated only from what those papers themselves say." }] }
+      ]
+    },
+    {
+      "source": "Edelkamp & Weiß, \"BlockQuicksort\"",
+      "items": [
+        { "item": "A proven bound of ε n log n + O(n) mispredictions, and a measured 80% speedup over GCC's std::sort on random integer data", "at": [{ "step": "Branchless block partitioning: a data-dependent branch on random input mispredicts about half the time. BlockQuicksort's own fix compares a fixed block of elements into a buffer first, then replays the swaps with no conditional branch on the outcome." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-03",
+    "items": [
+      { "item": "Lomuto and Hoare are not interchangeable drop-in replacements for each other in every codebase: Lomuto's own boundary-index scan makes it easy to extend to three-way partitioning directly, while Hoare's inward-walking indices make the three-way extension awkward, which is part of why this topic builds three-way as a Lomuto-style one-pass scan rather than a Hoare-style extension.", "at": [{ "step": "Three-way (Dutch national flag) partitioning: three indices, one pass, everything equal to the pivot already done. Measured on four distinct values, Lomuto, Hoare and three-way fall sharply in that order; on random distinct keys with no duplicates to collapse, three-way does more swaps than Hoare." }] },
+      { "item": "The 'recurse on smaller, loop on larger' stack bound is a property of the recursion structure alone — it holds even when the partition itself is adversarially bad (as in the median-of-three killer), which is worth stating explicitly since it's easy to conflate 'bounded stack depth' with 'bounded comparison count,' and this topic's own killer construction is the direct counterexample showing they are independent guarantees.", "at": [{ "step": "Recurse on the smaller side, loop on the larger: measured directly on sorted input, Lomuto’s own worst case for comparisons, the recursion depth stays at zero. The call stack never grows past O(log n), whatever the pivot turns out to be." }] },
+      { "item": "A random pivot's expected-cost guarantee is a statement about the average over the random choices, for a *fixed* input — it says nothing about the variance of any single run, and a production system that cares about tail latency (not just average throughput) still needs a depth limit as a backstop even with randomization, which is exactly why the JDK's own DualPivotQuicksort carries one despite also using randomized elements elsewhere in its selection.", "at": [{ "step": "A random pivot's expected cost, 2(n + 1)H_n − 4n, measured directly by averaging many runs: the average lands within a tenth of a percent of the formula." }] },
+      { "item": "The median-of-three killer's own quadratic verification (cost / n² flat across four sizes) is a strong empirical signal but not a formal proof of Θ(n²) for all n — a rigorous proof would need to show the recursion's own size-reduction factor is bounded below by a constant at every level, which this topic's own measurement is consistent with but does not itself derive.", "at": [{ "step": "The median-of-three killer: two ascending runs stitched together. Measured cost grows as a constant fraction of n² across a sixteen-fold range of sizes — a real quadratic blow-up, not merely a worse constant." }] },
+      { "item": "Three-way partitioning's extra swap cost on random distinct keys is not a flaw to be engineered away — it's an inherent cost of doing a three-way classification in one pass with swaps alone; a scheme that avoided it would need either a second pass or extra buffer space, which is exactly the kind of trade-off this chapter's earlier topic (merge sort) made in the other direction (buffer instead of in-place swaps).", "at": [{ "deep": "In the lab" }] },
+      { "item": "Dual-pivot quicksort's own three-way split (less than p, between, greater than q) looks superficially similar to this topic's own three-way Dutch-flag partition, but solves a different problem: dual-pivot splits by *value range* using two independent pivots chosen from the data, while three-way splits by *equality to one pivot* — conflating the two would be a real error this topic's own wording is careful to avoid.", "at": [{ "step": "Dual-pivot quicksort: two pivots split the range into three parts. The real system is the JDK's own DualPivotQuicksort, read directly: a depth limit falling back to heapsort, a pre-check for existing runs, counting sort for small primitive types. What it buys in theory and in practice is stated only from what those papers themselves say." }] },
+      { "item": "BlockQuicksort's own fixed block size (128 elements) is a measured, hardware-tuned constant, not a universal optimum — the paper's own abstract names this value as 'proposed,' with ε (the misprediction fraction) stated as depending on the block size, so a different cache/branch-predictor architecture would likely tune it differently; this topic names the paper's own number without implying it is architecture-independent.", "at": [{ "step": "Branchless block partitioning: a data-dependent branch on random input mispredicts about half the time. BlockQuicksort's own fix compares a fixed block of elements into a buffer first, then replays the swaps with no conditional branch on the outcome." }] },
+      { "item": "The stack-depth measurement (zero on sorted input) is specific to this topic's own Lomuto implementation's exact tie-breaking rule ('recurse on whichever side is smaller, with ties going to the right call'); a different but equally valid tie-break could in principle measure a nonzero depth on the identical input while still respecting the same O(log n) bound — the exact number zero is an artifact of this implementation, not a universal constant.", "at": [{ "step": "Recurse on the smaller side, loop on the larger: measured directly on sorted input, Lomuto’s own worst case for comparisons, the recursion depth stays at zero. The call stack never grows past O(log n), whatever the pivot turns out to be." }] },
+      { "item": "This topic's own median-of-three killer is a *static* construction (the full array is fixed before the sort ever runs), which is a strictly weaker adversary model than McIlroy's own *adaptive* one (where the adversary can answer comparisons as the algorithm asks them); the static construction found here, while genuinely quadratic, should not be presented as equivalent in power to the inaccessible paper's own technique.", "at": [{ "deep": "The frontier" }] },
+      { "item": "Hoare's own partition, as built here, chooses the middle element as pivot without first checking it against the ends (unlike median-of-three) — this topic's own measured swap-count advantage for Hoare over Lomuto on random input is therefore attributable to the partitioning mechanism itself (fewer swaps per out-of-place pair found), not to a better pivot choice, and the two effects (partition mechanism vs. pivot rule) are kept separate throughout this topic rather than conflated into a single 'Hoare is better' claim.", "at": [{ "step": "Hoare: two indices walking inward from both ends, swapping out-of-place pairs, stopping on equal keys. On random input, measured directly: far fewer swaps than Lomuto, and an all-equal range splits at the middle instead of shrinking by one." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-03", "by": "self-review", "open": [] }
+}

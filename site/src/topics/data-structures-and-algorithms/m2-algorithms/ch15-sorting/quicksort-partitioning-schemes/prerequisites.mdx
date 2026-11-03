@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Elementary sorts and sorting networks">Stability and in-place vocabulary, and the small-sort cutoff that becomes the leaf of this topic's own recursion.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Merge sort">The other way to divide: split first here instead of merging after, so the two halves never need to be put back together.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">Branch misprediction, the cost this topic's own branchless block partitioning exists to avoid.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Recurrences: Master theorem and Akra–Bazzi">The recursion-tree vocabulary this topic's own best- and worst-case recursions are read against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">The adversary-argument vocabulary this topic's own median-of-three killer is an example of.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="DualPivotQuicksort.java" href="https://raw.githubusercontent.com/openjdk/jdk/jdk-21-ga/src/java.base/share/classes/java/util/DualPivotQuicksort.java" by="OpenJDK">The real system behind dual-pivot quicksort: its own depth limit, run-merging pre-check, and counting sort for small types.</Resource>
+  <Resource kind="reading" title="Average Case Analysis of Java 7's Dual Pivot Quicksort" href="https://arxiv.org/abs/1310.7409" by="Wild & Nebel">The first rigorous comparison and swap counts for Yaroslavskiy's dual-pivot scheme.</Resource>
+  <Resource kind="reading" title="Multi-Pivot Quicksort: Theory and Experiments" href="https://cs.uwaterloo.ca/~skushagr/multipivotQuicksort.pdf" by="Kushagra, López-Ortiz, Munro & Qiao">The measured, experimental gap between a 3-pivot scheme and Yaroslavskiy's shipped 2-pivot scheme.</Resource>
+  <Resource kind="reading" title="BlockQuicksort: How Branch Mispredictions don't affect Quicksort" href="https://arxiv.org/abs/1604.06697" by="Edelkamp & Weiß">Branchless block partitioning's own proven misprediction bound and measured speedup.</Resource>
+</ul>
+
+</section>

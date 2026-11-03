@@ -1,0 +1,97 @@
+{
+  "topic": "dsa.quicksort-partitioning-schemes",
+  "steps": [
+    {
+      "lines": [
+        "Merge sort pays for its guarantee with a second array. There is another way to divide: split first, moving everything smaller to one side and everything larger to the other, so the two halves never need to be merged at all.",
+        "Watch what happens when every key is identical. A partition scheme that still treats this like the hardest possible input is paying for a danger that was never actually there."
+      ]
+    },
+    {
+      "lines": [
+        "A textbook partition, the one with a single boundary index and the last key as pivot, makes five hundred twenty three thousand, seven hundred seventy six comparisons on a thousand and twenty four equal keys.",
+        { "beat": 0.3 },
+        "Roughly how many comparisons is that, and why does equal input cost the same as the worst case?"
+      ],
+      "answer": [
+        "About five hundred twenty three thousand. Every key equals the pivot, so none of them ever counts as strictly smaller, and the boundary never advances past the pivot itself. The range only ever shrinks by one key at a time."
+      ]
+    },
+    {
+      "lines": [
+        "Every partition scheme follows the same contract: rearrange a range around a pivot so nothing on the left is larger and nothing on the right is smaller, then hand back where the split landed.",
+        "Everything that follows comes down to one choice. Which key becomes the pivot, and how does the range get rearranged around it?"
+      ]
+    },
+    {
+      "lines": [
+        "The simplest version: one scan, a single boundary index, the last element chosen as pivot. Everything at or below the pivot swaps behind that boundary as the scan passes over it.",
+        "Simple to write, simple to prove correct, and, as the opening just showed, simple to defeat."
+      ]
+    },
+    {
+      "lines": [
+        "A second version walks two indices inward from both ends instead, swapping pairs that are out of place, and stopping as soon as a key equals the pivot.",
+        "That single difference means an all equal range splits evenly down the middle, instead of shrinking by one key at a time. Measured directly, it also makes far fewer swaps than the first version on ordinary random input."
+      ]
+    },
+    {
+      "lines": [
+        "One rule keeps the recursion itself under control no matter which of these partitions is used: recurse on the smaller side, and simply loop on the larger one.",
+        "Measured directly on sorted input, the single worst case for the first version's comparison count, the recursion depth never leaves zero. The call stack stays shallow even when the comparison count does not."
+      ]
+    },
+    {
+      "lines": [
+        "Choosing the pivot at random changes the guarantee entirely. Its expected cost has a known closed form, and averaging many runs lands within a tenth of a percent of that formula.",
+        "Expected here means averaged over the coin flips, for every possible input, not a promise about any single run."
+      ]
+    },
+    {
+      "lines": [
+        "Taking the median of the first, middle and last key as the pivot defeats the two simplest attacks outright: sorted input and reversed input.",
+        "Measured directly, both stay far below a loose ceiling for how expensive sorting should ever get."
+      ]
+    },
+    {
+      "lines": [
+        "Sorted input failed to break it. Reversed input failed to break it. Is there anything that can defeat a fixed median of three rule at all?",
+        { "beat": 0.3 },
+        "Think about what the middle index actually samples when the input isn't one single run."
+      ],
+      "answer": [
+        "Yes, but it takes two runs stitched together, each one individually sorted, not one longer run. Once the middle index can land inside either run, the three sampled points stop tracking the true middle of the whole range."
+      ]
+    },
+    {
+      "lines": [
+        "Two ascending runs placed end to end do exactly that. Measured across a sixteen fold range of sizes, the cost divided by the input size squared stays almost perfectly flat, at about a quarter.",
+        "That is the signature of a genuine quadratic blow up, not merely a worse constant. It is the whole reason a depth limit or randomness still rides along with quicksort in production, on top of whatever fixed pivot rule is chosen."
+      ]
+    },
+    {
+      "lines": [
+        "A third partition, named for the flag of the Netherlands, uses three indices in one pass so that every key equal to the pivot is already done before the recursion even starts.",
+        "Measured on four distinct values, the three versions fall sharply in that order. On random distinct keys, with no duplicates to collapse, the three way version actually makes more swaps than the second one, which is why production sorts reach for it only when duplicates look likely."
+      ]
+    },
+    {
+      "lines": [
+        "A production sort can also use two pivots at once, splitting a range into three parts instead of two. The real system here is the Java platform's own sort for primitive arrays, read directly from its source.",
+        "It carries a depth limit that falls back to heap sort, a cheap check for runs the input already has, and counting sort for small value ranges. What two pivots buy, in theory and in measured practice, is stated only from what those two papers themselves report."
+      ]
+    },
+    {
+      "lines": [
+        "On random data, a comparison against the pivot is unpredictable, and about half of those branches get mispredicted by the processor.",
+        "One published fix compares a whole fixed block of elements against the pivot first, storing every outcome in a buffer, and only then replays the swaps, with no branch left to mispredict on the comparison itself."
+      ]
+    },
+    {
+      "lines": [
+        "Quicksort is usually the fastest comparison based sort there is, and every improvement to it, randomness, median of three, a depth counter, exists for the identical reason: an unlucky pivot makes it quadratic, and an adversary can arrange exactly that.",
+        "There is a sort that gives the faster guarantee outright, in place, with no spare array at all, built on the heap from an earlier chapter. Heapsort, next."
+      ]
+    }
+  ]
+}

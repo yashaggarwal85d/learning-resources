@@ -1,0 +1,6 @@
+- **Pivot**: the key a partition step chooses to rearrange everything else around. *Where you meet it:* every scheme in this topic is a different rule for picking it.
+- **Partition** (one line): split a range into a "small" side and a "large" side around a chosen key. *Where you meet it:* the contract every quicksort variant in this topic satisfies.
+- **Recursion depth and the call stack**: how many pending calls are waiting, one inside the next, before the first one returns. *Where you meet it:* the "recurse on the smaller side" rule this topic measures directly.
+- **Expected value** (one line): an average over every possible outcome, weighted by how likely each one is. *Where you meet it:* a random pivot's own cost guarantee is a statement about this average, not about any single run.
+- **Branch and branch predictor** (one line): a comparison that picks which instruction runs next, guessed in advance by the processor so it doesn't have to wait. *Where you meet it:* why a data-dependent comparison against the pivot costs more than the comparison itself, on random data.
+- **Duplicate keys**: two or more elements that compare equal. *Where you meet it:* the whole reason three-way partitioning exists.
