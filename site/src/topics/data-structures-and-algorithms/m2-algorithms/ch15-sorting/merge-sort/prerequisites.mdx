@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Elementary sorts and sorting networks">Stability and in-place vocabulary, and the Ω(n log n) lower bound this topic measures its own worst case against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Recurrences: Master theorem and Akra–Bazzi">The recurrence 2T(n/2) + n, cited here rather than re-derived.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">The information-theoretic bound this topic's own worst case is measured against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linked and intrusive lists">One frame only: why a merge on linked lists needs no buffer and the splice is O(1).</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Objects/listsort.txt" href="https://raw.githubusercontent.com/python/cpython/main/Objects/listsort.txt" by="CPython">Why a true in-place linear-time merge is impractical, and Timsort's own min(A, B) buffer refinement.</Resource>
+  <Resource kind="reading" title="Arrays (Java SE 21 & JDK 21)" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Arrays.html" by="Oracle">Arrays.sort's own stability guarantee and its n/2-object-reference worst-case buffer.</Resource>
+  <Resource kind="reading" title="slice" href="https://doc.rust-lang.org/std/primitive.slice.html" by="Rust">The sort/sort_unstable split, and the current stable sort's own self.len()/2 memory clamp.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,91 @@
+{
+  "topic": "dsa.merge-sort",
+  "steps": [
+    {
+      "lines": [
+        "Take two lists, each one already sorted, and merge them into one.",
+        "How many comparisons does that take? It depends entirely on how the two lists happen to interleave."
+      ]
+    },
+    {
+      "lines": [
+        "Here, every key in the first list is smaller than every key in the second.",
+        { "beat": 0.3 },
+        "Merge those two lists. How many comparisons does it actually take?"
+      ],
+      "answer": [
+        "Eight. Every key in the first list loses once to the smallest key still waiting in the second, and then the second list just empties out with nothing left to compare."
+      ]
+    },
+    {
+      "lines": [
+        "One pointer per list, one comparison each step, the smaller key copied out and its own pointer moved forward.",
+        "Interleave the two lists perfectly instead, and the cost climbs to one less than their combined length — the most a merge can ever ask for."
+      ]
+    },
+    {
+      "lines": [
+        "Split the range in half, sort each half the identical way, and merge whatever comes back.",
+        "Every single node of that recursion is a merge of two pieces already sorted below it."
+      ]
+    },
+    {
+      "lines": [
+        "Reach the identical sorted order with no recursion at all: merge every adjacent pair of single keys first, then every adjacent pair of those pairs, doubling each time.",
+        "Nothing here ever calls itself. It's the same merges, built from the bottom instead of the top."
+      ]
+    },
+    {
+      "lines": [
+        "At a size that's a clean power of two, every split either strategy makes lands exactly in half, so the two comparison counts always agree.",
+        "Away from that, the two strategies can divide some of the smaller pieces differently — and this time, the counts don't have to match."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what a merge does with two equal keys: it always takes the one from the left list first.",
+        "That single habit is the entire proof that merge sort is stable. Change it by one character, and two equal keys can come out in the opposite order they went in."
+      ]
+    },
+    {
+      "lines": [
+        "Merge sort is already stable, and it already guarantees n log n in the worst case, no matter the input.",
+        { "beat": 0.3 },
+        "Does any real comparison sort give you stable, n log n, and in place, all three at once?"
+      ],
+      "answer": [
+        "No. Every one gives up exactly one. Merge sort keeps its guarantee and its stability, and pays for both with a second array."
+      ]
+    },
+    {
+      "lines": [
+        "The simple way to pay for that array copies the entire input, every single merge.",
+        "A better way copies only the left half. And the cleverest real one copies only whichever of the two runs happens to be shorter — sometimes a lot less than half."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of splitting blindly down the middle, look at what the input already hands you: the long ascending stretches already sitting inside it.",
+        "Find those runs in a single pass, then merge the neighboring ones together. Give it input that's already fully sorted, and there's exactly one run — nothing left to merge at all."
+      ]
+    },
+    {
+      "lines": [
+        "Shuffle a deck at random, and it ends up with close to half as many runs as it has keys.",
+        "Hand it something already sorted, and that drops to one run. Hand it something reversed, and every single key starts its own run — the worst a detector like this can ever see."
+      ]
+    },
+    {
+      "lines": [
+        "Check every possible arrangement of up to eight keys, not just a handful: merge sort's own worst case lands exactly one comparison above the lowest number any comparison sort could ever manage.",
+        "Push that out to a thousand and twenty-four keys, and it's still only about five percent above that same floor — and that gap never grows any faster than the input itself does."
+      ]
+    },
+    {
+      "lines": [
+        "A guaranteed n log n, and equal keys that never trade places — merge sort pays for both of those with one extra array the size of the input.",
+        "There's another way to divide a list: choose a key first, and shove everything smaller to one side of it and everything larger to the other. Do that, and the two halves never need merging back together at all. Quicksort and partitioning schemes, next."
+      ]
+    }
+  ]
+}

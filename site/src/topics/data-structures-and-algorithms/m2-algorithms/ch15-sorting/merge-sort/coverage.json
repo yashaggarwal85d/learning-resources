@@ -1,0 +1,75 @@
+{
+  "topic": "dsa.merge-sort",
+  "syllabus": [
+    {
+      "clause": "top-down vs bottom-up",
+      "at": [
+        { "step": "Top-down: split the range at its midpoint, sort each half by the identical rule, then merge what comes back — the recursion tree already named for its own recurrence, a merge at every node instead of nothing." },
+        { "step": "Bottom-up reaches the identical sorted order with no recursion and no call stack at all: merge every adjacent pair of width-one runs, then every adjacent pair of width-two runs, doubling the width until one run is left." },
+        { "step": "At a power-of-two size, every split both strategies make lands exactly in half, so their comparison counts match exactly. Off a power of two, top-down's recursive midpoint and bottom-up's fixed doubling can split some of the smaller merges differently — and the counts can differ." },
+        { "step": "Checked against every possible input at small sizes, not assumed: merge sort's own worst case lands exactly one comparison above the information-theoretic floor at eight keys, and about five percent above it at a thousand and twenty-four — and that gap never grows faster than the input itself." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "stability",
+      "at": [
+        { "step": "A merge takes the left key on a tie — that single rule is the entire proof that merge sort is stable. Change that one comparison from taking-the-left-or-equal to taking-the-left-only-when-strictly-smaller, and two equal keys can come out in the opposite order they went in." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "O(n) buffer",
+      "at": [
+        { "step": "Does a comparison sort exist that is stable, sorts in place with no extra array, and always costs n log n in the worst case — all three guarantees at once?" },
+        { "step": "The buffer, three ways: the simple version copies the whole input range on every merge; the usual refinement copies only the left half, since the right half and the output can share the original array's own space; Timsort's own refinement copies only whichever run is shorter, which can be smaller still." },
+        { "deep": "In the lab" }
+      ]
+    },
+    {
+      "clause": "natural (run-adaptive) merging",
+      "at": [
+        { "step": "Natural merge sort does not split blindly: it finds the runs an input already has — maximal ascending stretches — in one linear pass, and merges adjacent runs pairwise until one remains. Already-sorted input is one single run, and nothing is ever merged at all." },
+        { "step": "Five shapes, five very different run counts: a random input has close to half as many runs as it has keys; sorted input has exactly one; reversed input has exactly as many runs as keys, the worst case for a detector that only looks for ascending stretches." },
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "CPython \"Objects/listsort.txt\"",
+      "items": [
+        { "item": "A true in-place, linear-time merge is a known but impractical theoretical construction; with temp memory equal to min(A, B) it becomes easy", "at": [{ "step": "The buffer, three ways: the simple version copies the whole input range on every merge; the usual refinement copies only the left half, since the right half and the output can share the original array's own space; Timsort's own refinement copies only whichever run is shorter, which can be smaller still." }] }
+      ]
+    },
+    {
+      "source": "Oracle, \"Arrays (Java SE 21 & JDK 21)\"",
+      "items": [
+        { "item": "Arrays.sort on object arrays is guaranteed stable, and is a stable, adaptive, iterative mergesort needing up to n/2 object references of temporary storage", "at": [{ "step": "Does a comparison sort exist that is stable, sorts in place with no extra array, and always costs n log n in the worst case — all three guarantees at once?" }] }
+      ]
+    },
+    {
+      "source": "Rust, std::primitive::slice documentation",
+      "items": [
+        { "item": "Rust's sort is stable and O(n log n) worst-case, distinct from sort_unstable; the current stable sort's own auxiliary memory clamps at self.len() / 2", "at": [{ "step": "The buffer, three ways: the simple version copies the whole input range on every merge; the usual refinement copies only the left half, since the right half and the output can share the original array's own space; Timsort's own refinement copies only whichever run is shorter, which can be smaller still." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-03",
+    "items": [
+      { "item": "Top-down and bottom-up merge sort are not two different algorithms with the identical cost by coincidence — on a power-of-two input they perform the exact same multiset of merges, just in a different order (recursive post-order against an iterative sweep), so the equal comparison count is a structural fact, not an empirical one.", "at": [{ "step": "At a power-of-two size, every split both strategies make lands exactly in half, so their comparison counts match exactly. Off a power of two, top-down's recursive midpoint and bottom-up's fixed doubling can split some of the smaller merges differently — and the counts can differ." }] },
+      { "item": "The merge's own stability (left key on a tie) is necessary but not sufficient on its own for the whole sort's stability; it also requires each recursive call to preserve the relative order of equal keys within its own half, which holds by induction (the base case, a single element, is trivially in order) rather than needing to be checked separately at every level.", "at": [{ "step": "A merge takes the left key on a tie — that single rule is the entire proof that merge sort is stable. Change that one comparison from taking-the-left-or-equal to taking-the-left-only-when-strictly-smaller, and two equal keys can come out in the opposite order they went in." }] },
+      { "item": "The worst-case formula's own brute-force verification only covers n up to eight (where exhaustive permutation search is tractable); the formula's own correctness at far larger n (1,024, 200,000) rests on the formula itself being applied, not on a fresh exhaustive check at that size — stated honestly in FACT-CHECK.md's own Red team rather than implied to be brute-force-verified at every scale.", "at": [{ "step": "Checked against every possible input at small sizes, not assumed: merge sort's own worst case lands exactly one comparison above the information-theoretic floor at eight keys, and about five percent above it at a thousand and twenty-four — and that gap never grows faster than the input itself." }] },
+      { "item": "Natural merge sort's own run-finding pass only detects ascending runs; a real production run-detector (topic 52) also reverses descending runs to use them, which is why reversed input is natural merge sort's own worst case here but would not be for that more complete detector — this distinction is named once, not silently elided.", "at": [{ "step": "Five shapes, five very different run counts: a random input has close to half as many runs as it has keys; sorted input has exactly one; reversed input has exactly as many runs as keys, the worst case for a detector that only looks for ascending stretches." }] },
+      { "item": "The three buffer strategies are not three unrelated choices; each one is a tighter bound on the identical idea (temporary space proportional to the smaller side of a merge), with the full-copy version being the loosest possible version of that idea and Timsort's min(A, B) being the tightest named here.", "at": [{ "step": "The buffer, three ways: the simple version copies the whole input range on every merge; the usual refinement copies only the left half, since the right half and the output can share the original array's own space; Timsort's own refinement copies only whichever run is shorter, which can be smaller still." }] },
+      { "item": "A linked-list merge needing no buffer and an O(1) splice (named in one frame, Chapter 2) is not a contradiction of this topic's own 'merge sort needs a buffer' claim — the buffer requirement is specific to the array representation, where elements cannot be relinked in place the way list nodes can.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The merge's own min(m, n)-to-(m+n-1) comparison bound holds for any two sorted ranges, not only equal-length ones; this topic's own examples both use equal-length (eight and eight) ranges for a clean side-by-side comparison, which is a presentational choice, not a limit of the bound itself.", "at": [{ "step": "The merge procedure: two pointers, one per sorted range, one comparison each step, the smaller key copied out and its own pointer advanced. A perfect interleaving of the identical two ranges costs one less than their combined length — the most a merge can ever cost." }] },
+      { "item": "Bottom-up merge sort's own fixed-width sweep still needs to know where each width's own runs start and end, which for an array is just arithmetic on the loop index — no explicit bookkeeping structure is needed, unlike a scenario where runs have genuinely irregular, data-dependent boundaries (natural merge sort, later in this same topic).", "at": [{ "step": "Bottom-up reaches the identical sorted order with no recursion and no call stack at all: merge every adjacent pair of width-one runs, then every adjacent pair of width-two runs, doubling the width until one run is left." }] },
+      { "item": "The three real systems cited (Python, Java, Rust) are evidence for the stability-and-buffer claims this topic makes, not evidence that merge sort by itself is what any of them ship — all three are Timsort-family hybrids with run detection this topic's own natural merge sort only approximates, a distinction FACT-CHECK.md's own Red team states explicitly rather than leaving implied.", "at": [{ "deep": "In production" }] },
+      { "item": "The gap between merge sort's own worst case and the information-theoretic bound being 'only' linear in n is still an absolute gap that grows without limit as n grows — 'linear growth' is not the same claim as 'the gap stays small,' and this topic's own ratio-based framing (under 0.53n) is the precise form of the claim, not a loose paraphrase of it.", "at": [{ "step": "Checked against every possible input at small sizes, not assumed: merge sort's own worst case lands exactly one comparison above the information-theoretic floor at eight keys, and about five percent above it at a thousand and twenty-four — and that gap never grows faster than the input itself." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-03", "by": "self-review", "open": [] }
+}

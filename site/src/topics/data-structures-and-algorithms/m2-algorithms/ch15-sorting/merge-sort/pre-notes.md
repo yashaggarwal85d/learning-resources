@@ -1,0 +1,6 @@
+- **Recursion and the call stack**: a function that calls a smaller copy of itself, with each pending call waiting its turn on the call stack. *Where you meet it:* top-down merge sort splits, recurses on both halves, then merges what comes back.
+- **Sorted range**: a stretch of a sequence already in non-decreasing order. *Where you meet it:* the merge procedure's only input requirement — it assumes both ranges are already sorted.
+- **Two-pointer scan**: walking two positions through two sequences at once, advancing one or the other each step. *Where you meet it:* exactly how the merge procedure compares and consumes its two ranges.
+- **Divide and conquer** (one line): split a problem into smaller pieces, solve each, combine the results. *Where you meet it:* split in half, sort each half, merge — the whole shape of top-down merge sort.
+- **Logarithm base two**: declared again here (Chapter 1); not re-taught. Every comparison-count formula on this topic's own table uses it.
+- **Auxiliary array**: extra memory set aside beyond the input itself. *Where you meet it:* the merge procedure's own output, and the whole subject of this topic's "O(n) buffer" clause.
