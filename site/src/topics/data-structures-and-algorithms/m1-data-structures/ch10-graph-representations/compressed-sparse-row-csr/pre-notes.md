@@ -1,0 +1,7 @@
+- **Adjacency list**: one short chain of out-neighbours stored per vertex. *Where you meet it:* topic 36's own structure, the one this topic's CSR arrays are checked against and built from.
+- **Edge list**: every edge stored once, as its own (source, target, weight) entry, with no per-vertex structure. *Where you meet it:* CSR's own two-pass construction starts from exactly this.
+- **Out-degree**: how many edges leave a vertex. *Where you meet it:* pass one counts every vertex's own out-degree before a single offset is computed.
+- **Prefix sum**: a running total, where each position holds the sum of every value before it. *Where you meet it:* CSR's own `offsets` array is a prefix sum of out-degrees, not the degrees themselves.
+- **Array slice**: a contiguous run of one array's own entries, identified by a start and an end index. *Where you meet it:* a vertex's own neighbours are exactly one slice of `targets`.
+- **Cache line**: a fixed-size block of nearby memory (commonly 64 bytes) a CPU fetches as one unit, even when only one value inside it was asked for. *Where you meet it:* the real, measured payoff of vertex reordering is stated directly in terms of how many distinct cache lines a set of vertices' own values occupy.
+- **Permutation**: a one-to-one relabelling of a fixed set of items, where every item gets exactly one new label and no two items share one. *Where you meet it:* vertex reordering is a permutation applied once, before CSR is built — it changes no edge, only which id each vertex owns.

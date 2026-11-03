@@ -110,7 +110,7 @@
 - **On screen:** "before: 1,995 cache lines" and "after: 250 cache lines" as two bars, the second visibly far shorter, with "8.0x fewer" between them.
 - **Moves:** `Bar` draws both bars growing from zero; a `cherry`→`crema` colour shift on the "after" bar once it lands.
 - **Final frame:** both bars, final numbers captioned, "8.0x fewer distinct cache lines."
-- **Narrator's line of thought:** before reordering, 2,000 hubs spread across 2,000,000 ids land in essentially 2,000 separate cache lines — one hub, one line, almost no sharing. After reordering, those same 2,000 hubs are packed into ids 0 through 1,999, which is exactly 250 cache lines of 8 each. Nothing about any hub's own value changed — only which id, and so which cache line, it lives at.
+- **Narrator's line of thought:** before reordering, 2,000 hubs spread across 2,000,000 ids land in essentially 2,000 separate cache lines — one hub, one line, almost no sharing. After reordering, those same 2,000 hubs are packed into ids 0 through 1,999, which is exactly 250 cache lines of 8 each. Nothing about any hub's own value changed — only which id, and so which cache line, it lives at. This is the same mechanism behind a published real-world result: degree-sort reordering, combined with a second technique over the same arrays, measured up to 4x on PageRank and Collaborative Filtering.
 - **Takeaway:** "Packing 2,000 hub vertices into contiguous ids cuts their own cache-line footprint from about 2,000 lines to 250 — an 8x drop, measured directly, not estimated."
 
 ### Step 12 — Recap
