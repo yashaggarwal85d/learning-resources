@@ -1,0 +1,23 @@
+{
+  "topic": "dsa.compressed-sparse-row-csr",
+  "syllabus": [],
+  "sources": [],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-03",
+    "items": [
+      { "item": "CSR is exactly two flat arrays over the edge list already built in topic 36 plus one more (offsets, targets, both derivable from the identical edge list) — not a new input, a new layout of the same data." },
+      { "item": "The offsets array has length V + 1, not V: the extra, final entry is the fictitious index one past the last edge, which is what makes 'slice from offsets[v] to offsets[v+1]' work uniformly for the last vertex too, with no special case." },
+      { "item": "CSR's two-pass construction is not arbitrary: pass one must finish counting every vertex's degree before any offset can be computed, because offsets[v] is a running total over all degrees before v (a prefix sum) — it cannot be filled in incrementally while edges are still being read in pass one." },
+      { "item": "The second pass needs a mutable write cursor per vertex, initialised from the offsets array itself (a copy, since the real offsets array must survive unmodified for later use) — this is the one implementation detail easy to get wrong (reusing offsets directly as the cursor would corrupt it for every later read)." },
+      { "item": "CSC is CSR transposed, not a different idea: the identical two-pass construction, run over the edge list with (source, target) swapped, answering 'who points at v' with the same asymptotic cost CSR answers 'who does v point at'." },
+      { "item": "Vertex reordering is an orthogonal second idea from the representation itself: CSR/CSC can be built over any vertex numbering, and reordering is strictly a pre-processing relabelling step before that construction, not a change to CSR's own two arrays or its two-pass algorithm." },
+      { "item": "Degree sort, RCM and community order all pursue the identical goal (put a vertex's own neighbours at numerically nearby labels, so their offsets/targets entries land physically close in memory) by three different signals: raw degree alone, breadth-first visiting order from a low-degree start, and detected cluster membership — not three unrelated techniques." },
+      { "item": "The measured cache-locality win is real but conditional, per the degree-sort paper itself: the paper reports its number against a specific baseline (the best published in-memory graph frameworks of 2016) and a specific pairing (degree sort plus CSR segmenting together) — this topic's own smaller-scale measurement should report its own real numbers, not assert the paper's 4x/2x figures as if they transfer unchanged.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "A degree-sort reordering can, on a graph with roughly uniform degree, do little for locality since sorting by a near-constant value is close to a random relabelling — the technique's benefit is real but graph-dependent, not universal across every sparse graph." },
+      { "item": "RCM's own first step (choose a peripheral, i.e. lowest-degree, vertex to start from) matters: starting BFS from an arbitrary vertex instead of a peripheral one changes which vertices end up with nearby labels and can produce a worse bandwidth reduction." },
+      { "item": "Reordering is a permutation applied once, before construction; it changes which array index a given vertex owns, never the vertex's own identity, out-edges, or any value already computed about the graph — a point easy to blur when the topic's own visuals redraw the \"same\" vertex at a new position." }
+    ]
+  },
+  "gapReview": { "date": "2026-11-03", "by": "self-review", "open": [] }
+}
