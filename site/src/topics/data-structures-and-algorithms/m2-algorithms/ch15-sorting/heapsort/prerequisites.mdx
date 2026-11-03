@@ -1,0 +1,36 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The two operations this topic runs in sequence: the linear bottom-up build and sift-down.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Elementary sorts and sorting networks">Stability and in-place vocabulary, read again on a sort that is in place but not stable.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Quicksort and partitioning schemes">The gap this topic closes: quicksort's own worst case, and the depth counter that hands it off.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">The cache-miss and prefetching vocabulary this topic's own locality claim is read against.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="stl_algo.h" href="https://raw.githubusercontent.com/gcc-mirror/gcc/master/libstdc%2B%2B-v3/include/bits/stl_algo.h" by="libstdc++">The depth-limited introsort loop and its fallback to a heap sort.</Resource>
+  <Resource kind="reading" title="DualPivotQuicksort.java" href="https://raw.githubusercontent.com/openjdk/jdk/jdk-21-ga/src/java.base/share/classes/java/util/DualPivotQuicksort.java" by="OpenJDK">The JDK's own depth counter and its own heapSort fallback.</Resource>
+  <Resource kind="reading" title="slice/sort/unstable/mod.rs" href="https://raw.githubusercontent.com/rust-lang/rust/1.81.0/library/core/src/slice/sort/unstable/mod.rs" by="Rust 1.81.0">The recursion limit Rust's unstable sort passes into its own quicksort.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="on-site">
+
+### <span class="n">03</span> On this site
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Timsort, Powersort and driftsort">A sort that notices the order already in the input, instead of starting from nothing the way heapsort does. Goes deeper later.</Resource>
+</ul>
+
+</section>

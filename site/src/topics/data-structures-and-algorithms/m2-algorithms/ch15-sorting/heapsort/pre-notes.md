@@ -1,0 +1,5 @@
+- **Max-heap** (one line): an array where every parent is at least as large as its children. *Where you meet it:* the structure this whole topic sorts inside of, built once and then drained.
+- **Sift-down**: push an element down past its children until the max-heap order holds again. *Where you meet it:* the one operation that both builds the heap and empties it.
+- **The implicit array layout of a heap** (index arithmetic, one line): a child of index i lives at 2i+1 and 2i+2, with no pointers stored. *Where you meet it:* why a sift-down's next step jumps to a distant index instead of the next one over.
+- **Worst case**: the input that costs an algorithm the most, over every input of a given size. *Where you meet it:* heapsort's whole point is that its worst case is the same as its typical case.
+- **Recursion depth**: how many pending calls are waiting, one inside the next, before the first returns. *Where you meet it:* the counter three real quicksorts watch before handing a range to heapsort instead.

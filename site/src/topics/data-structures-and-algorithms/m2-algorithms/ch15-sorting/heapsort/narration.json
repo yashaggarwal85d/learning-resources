@@ -1,0 +1,72 @@
+{
+    "topic": "dsa.heapsort",
+    "steps": [
+        {
+            "lines": [
+                "Quicksort is usually the fastest of the comparison sorts, but an unlucky pivot, chosen again and again, still drives it to quadratic time, and an adversary can arrange exactly that.",
+                "So where does the guarantee actually come from? Watch for a second algorithm, one far too slow to use by choice, standing by for exactly the moment quicksort can't be trusted."
+            ]
+        },
+        {
+            "lines": [
+                "A thousand and twenty four random keys. The fewest comparisons any comparison sort could possibly need is about eight thousand seven hundred seventy.",
+                {
+                    "beat": 0.3
+                },
+                "On random keys, about how many times that floor does heapsort actually use?"
+            ],
+            "answer": [
+                "About twice the floor. Two comparisons at every level of the heap, and about ten levels to walk through on every key that moves — that cost barely changes no matter what the input looks like."
+            ]
+        },
+        {
+            "lines": [
+                "Building the heap comes first: every parent key at least as large as its children, built from the bottom up in one linear pass. Chapter six's own method, run here again.",
+                "Measured directly, on the thousand and twenty four keys: under two thousand comparisons just to build it."
+            ]
+        },
+        {
+            "lines": [
+                "Then the sort itself. Pull the largest key, the root, out to the end of the live range. Shrink the heap by one. Sift the new root back down until the heap order holds again.",
+                "Repeat until nothing is left in the heap. The sorted part grows on one side exactly as the heap shrinks on the other, and no second array ever appears."
+            ]
+        },
+        {
+            "lines": [
+                "Measured on the same thousand and twenty four keys, three different shapes: random, already sorted, and fully reversed.",
+                "The three counts land within a fifth of each other. Nothing about the input's own order changes how hard heapsort has to work."
+            ]
+        },
+        {
+            "lines": [
+                "Set that cost against two numbers. The information theoretic floor, the fewest comparisons any comparison sort could need. And merge sort's own worst case, from two topics back.",
+                "Heapsort lands at roughly double the floor, and above merge sort's worst case, on every shape measured. Two comparisons a level, about ten levels — a real bound, just not a tight one."
+            ]
+        },
+        {
+            "lines": [
+                "Follow one path down a heap of a million keys. It starts at the root, and at every step it jumps to roughly twice as far an index as the one before.",
+                "Measured directly: about twenty steps down that path land on almost twenty different stretches of memory. A plain scan of the same twenty keys would touch only a handful."
+            ]
+        },
+        {
+            "lines": [
+                "Three keys, all holding the same value, placed into the heap in one order.",
+                "After the sort finishes, trace where those three tagged keys ended up. Their order coming out does not match their order going in — a sift down's distant swaps give no promise that equal keys stay put."
+            ]
+        },
+        {
+            "lines": [
+                "Quicksort's own worst case is still there, on the right adversarial input. Three real sorting libraries guard against it the same way: count how deep the recursion has gone.",
+                "Once that count crosses a limit tied to the logarithm of the size, the current range stops being partitioned at all, and heapsort finishes it instead.",
+                "One library calls this a depth limit; another calls it a round counter; a third simply calls its own fallback function. The mechanism is the same three times over."
+            ]
+        },
+        {
+            "lines": [
+                "Three comparison sorts now stand complete. Quicksort for speed. Heapsort for the guarantee. Merge sort for stability.",
+                "But every one of them treats the input as if it arrived in a random order, even when it almost never does. Real data tends to arrive with long stretches already in the right order, and the next family of sorts is built entirely around noticing that."
+            ]
+        }
+    ]
+}

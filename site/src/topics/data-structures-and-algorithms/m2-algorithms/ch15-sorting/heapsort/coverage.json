@@ -1,0 +1,208 @@
+{
+  "topic": "dsa.heapsort",
+  "syllabus": [
+    {
+      "clause": "in-place, worst-case O(n log n)",
+      "at": [
+        {
+          "step": "Build the max-heap: Chapter 6's linear bottom-up build, run here again. Sift every non-leaf down, from the last one to the root. Measured directly: 1,887 comparisons to build the heap of 1,024 keys."
+        },
+        {
+          "step": "Swap, shrink, sift: pull the root to the end of the live range, shrink the heap by one, sift the new root down. Repeat until the heap is empty — the sorted suffix grows where the heap shrinks, no second array anywhere."
+        },
+        {
+          "step": "The cost, on three shapes: measured directly on 1,024 keys, random 17,316 comparisons, sorted 18,060, reversed 16,407 — all within a fifth of each other."
+        },
+        {
+          "step": "Against the bounds: the information-theoretic minimum at 1,024 keys is 8,770 comparisons; heapsort lands at about twice that on every shape measured, and above merge sort’s own worst case of 9,217."
+        },
+        {
+          "step": "Unstable, in place: the tagged deck, three keys tied at 3, heapsort’s root-to-end swaps reorder them. Input order a, c, f becomes c, a, f — no stability promise survives a sift-down. In place: no second array, O(1) extra memory beyond the input."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "poor locality",
+      "at": [
+        {
+          "step": "Poor locality: a sift-down from the root of a heap of a million keys walks about 20 nodes, each one farther from the last in memory than the one before. Measured directly: that path touches 17.9 distinct 64-byte cache lines on average, where a sequential scan of the same 20 keys would touch about 3."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    },
+    {
+      "clause": "its role as the fallback in introsort",
+      "at": [
+        {
+          "step": "Its role as the fallback: quicksort's own worst case is still quadratic on an adversarial input; the fix three real systems share is a depth counter on the recursion, and when it crosses a bound proportional to lg n, the current range is finished by heapsort instead. libstdc++'s introsort loop falls back to a heap sort at depth limit zero; the JDK's DualPivotQuicksort calls its own heapSort once a partitioning-round counter crosses its own fixed bound; Rust's unstable sort passes its own quicksort a limit of 2 times floor(log2(len)), falling back the same way."
+        },
+        {
+          "deep": "In production"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "libstdc++, stl_algo.h (GCC master)",
+      "items": [
+        {
+          "item": "_S_threshold = 16; __introsort_loop falls back to __partial_sort (a heap sort) when __depth_limit reaches 0; __sort passes std::__lg(n) * 2 as the initial depth limit",
+          "at": [
+            {
+              "step": "Its role as the fallback: quicksort's own worst case is still quadratic on an adversarial input; the fix three real systems share is a depth counter on the recursion, and when it crosses a bound proportional to lg n, the current range is finished by heapsort instead. libstdc++'s introsort loop falls back to a heap sort at depth limit zero; the JDK's DualPivotQuicksort calls its own heapSort once a partitioning-round counter crosses its own fixed bound; Rust's unstable sort passes its own quicksort a limit of 2 times floor(log2(len)), falling back the same way."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OpenJDK, DualPivotQuicksort.java (jdk-21-ga)",
+      "items": [
+        {
+          "item": "DELTA = 3 << 1 (6) and MAX_RECURSION_DEPTH = 64 * DELTA (384); the partitioning-round counter bits exceeding that bound calls the file's own heapSort",
+          "at": [
+            {
+              "step": "Its role as the fallback: quicksort's own worst case is still quadratic on an adversarial input; the fix three real systems share is a depth counter on the recursion, and when it crosses a bound proportional to lg n, the current range is finished by heapsort instead. libstdc++'s introsort loop falls back to a heap sort at depth limit zero; the JDK's DualPivotQuicksort calls its own heapSort once a partitioning-round counter crosses its own fixed bound; Rust's unstable sort passes its own quicksort a limit of 2 times floor(log2(len)), falling back the same way."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rust 1.81.0, slice/sort/unstable/mod.rs",
+      "items": [
+        {
+          "item": "limit = 2 * (len | 1).ilog2(), passed into Rust's own unstable quicksort as the recursion limit before a heapsort fallback",
+          "at": [
+            {
+              "step": "Its role as the fallback: quicksort's own worst case is still quadratic on an adversarial input; the fix three real systems share is a depth counter on the recursion, and when it crosses a bound proportional to lg n, the current range is finished by heapsort instead. libstdc++'s introsort loop falls back to a heap sort at depth limit zero; the JDK's DualPivotQuicksort calls its own heapSort once a partitioning-round counter crosses its own fixed bound; Rust's unstable sort passes its own quicksort a limit of 2 times floor(log2(len)), falling back the same way."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rust std::primitive::slice docs, current implementation",
+      "items": [
+        {
+          "item": "ipnsort described as combining \"the fast average case of quicksort with the fast worst case of heapsort\"",
+          "at": [
+            {
+              "step": "Its role as the fallback: quicksort's own worst case is still quadratic on an adversarial input; the fix three real systems share is a depth counter on the recursion, and when it crosses a bound proportional to lg n, the current range is finished by heapsort instead. libstdc++'s introsort loop falls back to a heap sort at depth limit zero; the JDK's DualPivotQuicksort calls its own heapSort once a partitioning-round counter crosses its own fixed bound; Rust's unstable sort passes its own quicksort a limit of 2 times floor(log2(len)), falling back the same way."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Chapter 6 topic 30's own SOURCES.md (Wikipedia, Sedgewick & Wayne)",
+      "items": [
+        {
+          "item": "the linear bottom-up build (sink-based heap construction is linear time) and the sift-down procedure, reused rather than re-derived",
+          "at": [
+            {
+              "step": "Build the max-heap: Chapter 6's linear bottom-up build, run here again. Sift every non-leaf down, from the last one to the root. Measured directly: 1,887 comparisons to build the heap of 1,024 keys."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-03",
+    "items": [
+      {
+        "item": "Heapsort's own worst-case comparison count (about 2n lg n) is not a loose upper bound the way many textbook \"worst case\" statements are — the measured counts on random, sorted and reversed input in this topic's own examples.py all land within a fifth of that figure, which is a much stronger claim than \"never worse than\": the typical case and the worst case are close together, not merely bounded by the same formula.",
+        "at": [
+          {
+            "step": "The cost, on three shapes: measured directly on 1,024 keys, random 17,316 comparisons, sorted 18,060, reversed 16,407 — all within a fifth of each other."
+          }
+        ]
+      },
+      {
+        "item": "The 2-comparisons-per-level bound (one to find the larger child, one to compare it against the parent) is tight only when every sift-down runs to completion past every level; in practice many sift-downs during the build phase terminate early once the heap property is restored, which is why the measured build cost (1,887) is well under a naive n * lg(n) estimate (about 10,240) despite the per-level bound being correct.",
+        "at": [
+          {
+            "step": "Build the max-heap: Chapter 6's linear bottom-up build, run here again. Sift every non-leaf down, from the last one to the root. Measured directly: 1,887 comparisons to build the heap of 1,024 keys."
+          }
+        ]
+      },
+      {
+        "item": "The three real systems' depth-limit constants are not actually the same number once the unit is made explicit: libstdc++ and Rust both bound a *recursion-depth* counter at 2*lg(n), but the JDK bounds a *partitioning-round* counter (bits, incremented by DELTA=6 each round) at 384 — a different kind of count that happens to be roughly proportional to the same quantity, not a literal match of the other two formulas.",
+        "at": [
+          {
+            "step": "Its role as the fallback: quicksort's own worst case is still quadratic on an adversarial input; the fix three real systems share is a depth counter on the recursion, and when it crosses a bound proportional to lg n, the current range is finished by heapsort instead. libstdc++'s introsort loop falls back to a heap sort at depth limit zero; the JDK's DualPivotQuicksort calls its own heapSort once a partitioning-round counter crosses its own fixed bound; Rust's unstable sort passes its own quicksort a limit of 2 times floor(log2(len)), falling back the same way."
+          }
+        ]
+      },
+      {
+        "item": "The cache-line measurement (17.9 of about 20 nodes) is specific to this topic's own assumption of 8 keys per 64-byte line (8-byte keys); a heap of 4-byte keys would fit 16 per line and the same path would likely touch noticeably fewer distinct lines near the root, since more sibling and near-sibling indices would still share a line — the 17.9 figure is not a universal property of heaps, only of heaps at this specific key size.",
+        "at": [
+          {
+            "step": "Poor locality: a sift-down from the root of a heap of a million keys walks about 20 nodes, each one farther from the last in memory than the one before. Measured directly: that path touches 17.9 distinct 64-byte cache lines on average, where a sequential scan of the same 20 keys would touch about 3."
+          }
+        ]
+      },
+      {
+        "item": "Heapsort's instability is not a corner case that shows up only on adversarial or crafted input — the tagged-deck demonstration uses an ordinary small array with no special construction, which is worth stating explicitly since a learner could otherwise assume (wrongly) that only pathological inputs expose the instability.",
+        "at": [
+          {
+            "step": "Unstable, in place: the tagged deck, three keys tied at 3, heapsort’s root-to-end swaps reorder them. Input order a, c, f becomes c, a, f — no stability promise survives a sift-down. In place: no second array, O(1) extra memory beyond the input."
+          }
+        ]
+      },
+      {
+        "item": "\"In place\" for heapsort and for quicksort are not identical claims despite the chapter's shared vocabulary: heapsort's O(1) extra memory excludes nothing, since it has no recursion, while quicksort's O(1) claim (topic 50) is stated with the explicit exception of its O(log n) recursion stack. Heapsort is the strictly stronger in-place guarantee of the two.",
+        "at": [
+          {
+            "step": "Unstable, in place: the tagged deck, three keys tied at 3, heapsort’s root-to-end swaps reorder them. Input order a, c, f becomes c, a, f — no stability promise survives a sift-down. In place: no second array, O(1) extra memory beyond the input."
+          }
+        ]
+      },
+      {
+        "item": "The merge-sort-worst-case comparison (9,217 at n=1,024) is a meaningful floor for heapsort to beat, not an arbitrary target, since merge sort is already known (topic 49) to be close to the information-theoretic minimum — heapsort landing *above* merge sort's worst case, not merely above the information-theoretic floor, is the sharper and more surprising statement.",
+        "at": [
+          {
+            "step": "Against the bounds: the information-theoretic minimum at 1,024 keys is 8,770 comparisons; heapsort lands at about twice that on every shape measured, and above merge sort’s own worst case of 9,217."
+          }
+        ]
+      },
+      {
+        "item": "\"Not adaptive\" here means something narrower than it might sound: heapsort's cost does not fall when the input is already sorted the way insertion sort's does, but it also does not meaningfully rise on reversed input (16,407 is the lowest of the three measured counts, not the highest) — reversed input is mildly cheaper than random, not a worst case, which is a detail easy to miss if \"not adaptive\" is read as \"uniformly bad on every structured input.\"",
+        "at": [
+          {
+            "step": "The cost, on three shapes: measured directly on 1,024 keys, random 17,316 comparisons, sorted 18,060, reversed 16,407 — all within a fifth of each other."
+          }
+        ]
+      },
+      {
+        "item": "Rust's unstable sort (ipnsort) and Go's pdqsort (named only in post-notes) share one author's lineage (Orson Peters wrote pdqsort and co-authored ipnsort), which is why the two mechanisms this topic names from primary sources — a depth-limited quicksort falling back to heapsort — are the same underlying idea in both languages' standard libraries, not two independently discovered techniques.",
+        "at": [
+          {
+            "step": "Its role as the fallback: quicksort's own worst case is still quadratic on an adversarial input; the fix three real systems share is a depth counter on the recursion, and when it crosses a bound proportional to lg n, the current range is finished by heapsort instead. libstdc++'s introsort loop falls back to a heap sort at depth limit zero; the JDK's DualPivotQuicksort calls its own heapSort once a partitioning-round counter crosses its own fixed bound; Rust's unstable sort passes its own quicksort a limit of 2 times floor(log2(len)), falling back the same way."
+          }
+        ]
+      },
+      {
+        "item": "The information-theoretic floor (⌈lg n!⌉) is a bound on comparisons alone; it says nothing about moves or swaps, so heapsort's roughly 2x comparison overhead against that floor does not by itself say anything about its relative swap cost against merge sort or quicksort on the same input — a separate, unstated comparison this topic deliberately does not make.",
+        "at": [
+          {
+            "step": "Against the bounds: the information-theoretic minimum at 1,024 keys is 8,770 comparisons; heapsort lands at about twice that on every shape measured, and above merge sort’s own worst case of 9,217."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-03",
+    "by": "self-review",
+    "open": []
+  }
+}
