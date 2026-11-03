@@ -221,10 +221,13 @@ print(f"hub vertices' own cache lines: {lines_before} before reorder, {lines_aft
 
 # Before reordering, the hubs' own scattered ids fall into close to one distinct line each
 # (2,000 hubs spread across 2,000,000 ids, 8 ids per line): almost no two hubs share a line.
+# With this seed, the exact reproducible count is 1,995 distinct lines.
 assert lines_before > N_HUBS * 0.9
+assert lines_before == 1995
 # After reordering, all N_HUBS hubs are packed into ids [0, N_HUBS), so they fill only
-# ceil(N_HUBS / 8) lines — the exact count a packed, contiguous range produces.
+# ceil(N_HUBS / 8) lines — the exact count a packed, contiguous range produces: 250.
 assert lines_after == -(-N_HUBS // CACHE_LINE_VALUES)  # ceiling division
+assert lines_after == 250
 # The real, measured payoff this topic puts on screen: a large, exact drop in the number of
 # distinct cache lines the hub vertices' own reads depend on, from clustering their ids.
 assert cache_line_reduction > 7.0, f"expected a large cache-line reduction, measured {cache_line_reduction:.1f}x"

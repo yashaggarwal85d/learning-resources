@@ -4,30 +4,30 @@
     {
       "clause": "offsets + targets arrays",
       "at": [
-        { "step": "CSR replaces one allocation per edge with two flat arrays, sized V + 1 and E." },
-        { "step": "Offsets[v] is a running total of every degree before v, not v's own degree." },
-        { "deep": "Internals" }
+        { "step": "CSR replaces one allocation per edge with two flat arrays: offsets, length V + 1, and targets, length E." },
+        { "step": "Offsets[v] is a running total of every degree before v, not v's own degree — which is why it has to sweep left to right, only after every vertex's own out-degree is already counted." },
+        { "deep": "Into the internals" }
       ]
     },
     {
       "clause": "CSC for reverse edges",
       "at": [
         { "step": "CSC is CSR transposed: the same two-pass construction, indexed by destination instead of source." },
-        { "deep": "Internals" }
+        { "deep": "Into the internals" }
       ]
     },
     {
       "clause": "building CSR from an edge list in two passes",
       "at": [
-        { "step": "Offsets[v] is a running total of every degree before v, not v's own degree." },
-        { "step": "CSR's own slice for a vertex matches its adjacency list exactly — same neighbours, different layout." },
-        { "deep": "Internals" }
+        { "step": "Offsets[v] is a running total of every degree before v, not v's own degree — which is why it has to sweep left to right, only after every vertex's own out-degree is already counted." },
+        { "step": "CSR's own slice for a vertex matches its adjacency list exactly — same neighbours, different layout. Nothing here is a new graph; it's the identical one, laid out differently." },
+        { "deep": "Into the internals" }
       ]
     },
     {
       "clause": "vertex reordering (degree sort, BFS/RCM, community order)",
       "at": [
-        { "step": "CSR never fixes which id a vertex gets — reordering is a free choice CSR leaves open." },
+        { "step": "CSR never fixes which id a vertex gets — reordering is a free choice CSR leaves open. A vertex read constantly but sitting at a random, far-off id pays for that distance every single time." },
         { "step": "Degree sort, RCM and community order relabel by three different signals toward the identical goal: neighbours at nearby ids." }
       ]
     },
@@ -35,7 +35,7 @@
       "clause": "to improve locality on billion-edge graphs",
       "at": [
         { "step": "Packing 2,000 hub vertices into contiguous ids cuts their own cache-line footprint from about 2,000 lines to 250 — an 8x drop, measured directly, not estimated." },
-        { "deep": "Lab" }
+        { "deep": "In the lab" }
       ]
     }
   ],
@@ -43,8 +43,8 @@
     {
       "source": "\"Sparse matrix\" (Wikipedia)",
       "items": [
-        { "item": "CSR represents a matrix with three arrays: nonzero values, column indices, and row-start offsets", "at": [{ "step": "CSR replaces one allocation per edge with two flat arrays, sized V + 1 and E." }] },
-        { "item": "The row-offsets array has length m + 1, encoding the index where each row starts", "at": [{ "step": "Offsets[v] is a running total of every degree before v, not v's own degree." }] },
+        { "item": "CSR represents a matrix with three arrays: nonzero values, column indices, and row-start offsets", "at": [{ "step": "CSR replaces one allocation per edge with two flat arrays: offsets, length V + 1, and targets, length E." }] },
+        { "item": "The row-offsets array has length m + 1, encoding the index where each row starts", "at": [{ "step": "Offsets[v] is a running total of every degree before v, not v's own degree — which is why it has to sweep left to right, only after every vertex's own out-degree is already counted." }] },
         { "item": "CSC reads values column-first, with a row index per value and column-start pointers", "at": [{ "step": "CSC is CSR transposed: the same two-pass construction, indexed by destination instead of source." }] },
         { "item": "CSC is efficient for column slicing and matrix-vector products — the reverse-direction analogue of CSR's own strengths", "at": [{ "step": "CSC is CSR transposed: the same two-pass construction, indexed by destination instead of source." }] }
       ]
@@ -53,13 +53,13 @@
       "source": "\"Cuthill–McKee algorithm\" (Wikipedia)",
       "items": [
         { "item": "RCM relabels vertices to reduce adjacency-matrix bandwidth", "at": [{ "step": "Degree sort, RCM and community order relabel by three different signals toward the identical goal: neighbours at nearby ids." }] },
-        { "item": "The algorithm starts from a peripheral (lowest-degree) vertex and proceeds by a breadth-first visiting order", "at": [{ "deep": "Internals" }] }
+        { "item": "The algorithm starts from a peripheral (lowest-degree) vertex and proceeds by a breadth-first visiting order", "at": [{ "deep": "Into the internals" }] }
       ]
     },
     {
       "source": "\"Optimizing Cache Performance for Graph Analytics\" (Zhang et al., arXiv:1608.01362v2)",
       "items": [
-        { "item": "Degree-sort vertex reordering improves cache-line utilization with no runtime overhead", "at": [{ "step": "CSR never fixes which id a vertex gets — reordering is a free choice CSR leaves open." }] },
+        { "item": "Degree-sort vertex reordering improves cache-line utilization with no runtime overhead", "at": [{ "step": "CSR never fixes which id a vertex gets — reordering is a free choice CSR leaves open. A vertex read constantly but sitting at a random, far-off id pays for that distance every single time." }] },
         { "item": "Measured speedups (combined with a second technique): up to 4x on PageRank/Collaborative Filtering, 2x on Betweenness Centrality", "at": [{ "step": "Packing 2,000 hub vertices into contiguous ids cuts their own cache-line footprint from about 2,000 lines to 250 — an 8x drop, measured directly, not estimated." }] }
       ]
     },
@@ -74,16 +74,16 @@
     "by": "blind self-review, research stage",
     "date": "2026-11-03",
     "items": [
-      { "item": "CSR is exactly two flat arrays over the edge list already built in topic 36 plus one more (offsets, targets, both derivable from the identical edge list) — not a new input, a new layout of the same data.", "at": [{ "step": "CSR replaces one allocation per edge with two flat arrays, sized V + 1 and E." }] },
-      { "item": "The offsets array has length V + 1, not V: the extra, final entry is the fictitious index one past the last edge, which is what makes 'slice from offsets[v] to offsets[v+1]' work uniformly for the last vertex too, with no special case.", "at": [{ "step": "Offsets[v] is a running total of every degree before v, not v's own degree." }] },
-      { "item": "CSR's two-pass construction is not arbitrary: pass one must finish counting every vertex's degree before any offset can be computed, because offsets[v] is a running total over all degrees before v (a prefix sum) — it cannot be filled in incrementally while edges are still being read in pass one.", "at": [{ "step": "Offsets[v] is a running total of every degree before v, not v's own degree." }] },
-      { "item": "The second pass needs a mutable write cursor per vertex, initialised from the offsets array itself (a copy, since the real offsets array must survive unmodified for later use) — this is the one implementation detail easy to get wrong (reusing offsets directly as the cursor would corrupt it for every later read).", "at": [{ "step": "CSR's own slice for a vertex matches its adjacency list exactly — same neighbours, different layout." }] },
+      { "item": "CSR is exactly two flat arrays over the edge list already built in topic 36 plus one more (offsets, targets, both derivable from the identical edge list) — not a new input, a new layout of the same data.", "at": [{ "step": "CSR replaces one allocation per edge with two flat arrays: offsets, length V + 1, and targets, length E." }] },
+      { "item": "The offsets array has length V + 1, not V: the extra, final entry is the fictitious index one past the last edge, which is what makes 'slice from offsets[v] to offsets[v+1]' work uniformly for the last vertex too, with no special case.", "at": [{ "step": "Offsets[v] is a running total of every degree before v, not v's own degree — which is why it has to sweep left to right, only after every vertex's own out-degree is already counted." }] },
+      { "item": "CSR's two-pass construction is not arbitrary: pass one must finish counting every vertex's degree before any offset can be computed, because offsets[v] is a running total over all degrees before v (a prefix sum) — it cannot be filled in incrementally while edges are still being read in pass one.", "at": [{ "step": "Offsets[v] is a running total of every degree before v, not v's own degree — which is why it has to sweep left to right, only after every vertex's own out-degree is already counted." }] },
+      { "item": "The second pass needs a mutable write cursor per vertex, initialised from the offsets array itself (a copy, since the real offsets array must survive unmodified for later use) — this is the one implementation detail easy to get wrong (reusing offsets directly as the cursor would corrupt it for every later read).", "at": [{ "step": "CSR's own slice for a vertex matches its adjacency list exactly — same neighbours, different layout. Nothing here is a new graph; it's the identical one, laid out differently." }] },
       { "item": "CSC is CSR transposed, not a different idea: the identical two-pass construction, run over the edge list with (source, target) swapped, answering 'who points at v' with the same asymptotic cost CSR answers 'who does v point at'.", "at": [{ "step": "CSC is CSR transposed: the same two-pass construction, indexed by destination instead of source." }] },
-      { "item": "Vertex reordering is an orthogonal second idea from the representation itself: CSR/CSC can be built over any vertex numbering, and reordering is strictly a pre-processing relabelling step before that construction, not a change to CSR's own two arrays or its two-pass algorithm.", "at": [{ "step": "CSR never fixes which id a vertex gets — reordering is a free choice CSR leaves open." }] },
+      { "item": "Vertex reordering is an orthogonal second idea from the representation itself: CSR/CSC can be built over any vertex numbering, and reordering is strictly a pre-processing relabelling step before that construction, not a change to CSR's own two arrays or its two-pass algorithm.", "at": [{ "step": "CSR never fixes which id a vertex gets — reordering is a free choice CSR leaves open. A vertex read constantly but sitting at a random, far-off id pays for that distance every single time." }] },
       { "item": "Degree sort, RCM and community order all pursue the identical goal (put a vertex's own neighbours at numerically nearby labels, so their offsets/targets entries land physically close in memory) by three different signals: raw degree alone, breadth-first visiting order from a low-degree start, and detected cluster membership — not three unrelated techniques.", "at": [{ "step": "Degree sort, RCM and community order relabel by three different signals toward the identical goal: neighbours at nearby ids." }] },
-      { "item": "The measured cache-locality win is real but conditional, per the degree-sort paper itself: the paper reports its number against a specific baseline and a specific pairing (degree sort plus CSR segmenting together) — this topic's own smaller-scale measurement reports its own real, exact number (an 8.0x cache-line reduction), not the paper's 4x/2x figures as if they transfer unchanged.", "at": [{ "deep": "Where this goes next" }] },
-      { "item": "A degree-sort reordering can, on a graph with roughly uniform degree, do little for locality since sorting by a near-constant value is close to a random relabelling — the technique's benefit is real but graph-dependent, not universal across every sparse graph.", "at": [{ "deep": "Frontier" }] },
-      { "item": "RCM's own first step (choose a peripheral, i.e. lowest-degree, vertex to start from) matters: starting BFS from an arbitrary vertex instead of a peripheral one changes which vertices end up with nearby labels and can produce a worse bandwidth reduction.", "at": [{ "deep": "Internals" }] },
+      { "item": "The measured cache-locality win is real but conditional, per the degree-sort paper itself: the paper reports its number against a specific baseline and a specific pairing (degree sort plus CSR segmenting together) — this topic's own smaller-scale measurement reports its own real, exact number (an 8.0x cache-line reduction), not the paper's 4x/2x figures as if they transfer unchanged.", "at": [{ "deep": "In production" }] },
+      { "item": "A degree-sort reordering can, on a graph with roughly uniform degree, do little for locality since sorting by a near-constant value is close to a random relabelling — the technique's benefit is real but graph-dependent, not universal across every sparse graph.", "at": [{ "deep": "The frontier" }] },
+      { "item": "RCM's own first step (choose a peripheral, i.e. lowest-degree, vertex to start from) matters: starting BFS from an arbitrary vertex instead of a peripheral one changes which vertices end up with nearby labels and can produce a worse bandwidth reduction.", "at": [{ "deep": "Into the internals" }] },
       { "item": "Reordering is a permutation applied once, before construction; it changes which array index a given vertex owns, never the vertex's own identity, out-edges, or any value already computed about the graph — a point easy to blur when the topic's own visuals redraw the \"same\" vertex at a new position.", "at": [{ "step": "Packing 2,000 hub vertices into contiguous ids cuts their own cache-line footprint from about 2,000 lines to 250 — an 8x drop, measured directly, not estimated." }] }
     ]
   },
