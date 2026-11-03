@@ -1,0 +1,101 @@
+{
+  "topic": "dsa.compressed-sparse-row-csr",
+  "steps": [
+    {
+      "lines": [
+        "An adjacency list's own cost was never wrong, back when this graph had six vertices.",
+        "It never had to pay for a billion separate allocations, one heap allocation and one pointer, per edge. At that scale, it does."
+      ]
+    },
+    {
+      "lines": [
+        "No per-vertex allocation at all here. Just two flat arrays, sized by how many vertices there are, and how many edges there are.",
+        "One of those two arrays has one more slot than there are vertices. That extra slot looks like a mistake, until the next pass shows exactly what it's for."
+      ]
+    },
+    {
+      "lines": [
+        "Offsets isn't each vertex's own count. It's a running total of every count before it.",
+        "That's why it has to sweep left to right. The very last vertex's own entry only makes sense once every other vertex's degree has already been folded in."
+      ]
+    },
+    {
+      "lines": [
+        "The first pass just finished filling that running total in. A second pass still has to place every edge into its own slot.",
+        { "beat": 0.3 },
+        "Can that second pass just write straight into the array the first pass built, using it as its own moving cursor?"
+      ],
+      "answer": [
+        "No. That array has to keep meaning one thing forever after: where a vertex's own slice starts.",
+        "Writing into it directly as a cursor would corrupt the very thing every later lookup depends on."
+      ]
+    },
+    {
+      "lines": [
+        "So the second pass gets its own copy instead, a cursor, separate from the array it started from.",
+        "Watch it tick forward one slot at a time, one edge at a time, until every slot anyone claimed is filled.",
+        "Set this vertex's own finished slice beside the chain the earlier topic already built for it. Same three neighbours. Same multi-edge, twice. Just laid out differently."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question the array just built cannot answer in one step: who points at this vertex?",
+        { "beat": 0.3 },
+        "Which structure actually answers that in one lookup?"
+      ],
+      "answer": [
+        "Not the array already on screen — it was built to answer the other direction.",
+        "A second pair of arrays, indexed by destination instead of source, built the identical way."
+      ]
+    },
+    {
+      "lines": [
+        "Run the identical two passes, with source and destination swapped, and the reverse question gets just as cheap an answer.",
+        "This vertex's own slice, read backward, names exactly who sends it an edge — including both halves of the one pair that sends it twice."
+      ]
+    },
+    {
+      "lines": [
+        "Zoom out now, to a graph with a billion edges instead of ten.",
+        "A few vertices here get read constantly. Everyone else's edges keep pointing at them. But their own ids landed wherever the graph happened to list them first, scattered far apart.",
+        "Nothing about the arrays already on screen ever fixed which id a vertex gets. That choice is still sitting open."
+      ]
+    },
+    {
+      "lines": [
+        "Three different ways to make that choice, toward the identical goal.",
+        "Sort every vertex by its own degree alone. Or walk the graph breadth first, from its sparsest vertex, and number them in the order visited. Or find which cluster each vertex falls into, and number by cluster."
+      ]
+    },
+    {
+      "lines": [
+        "Say the first of those three gets run on the scattered vertices just shown, relabeling the busiest ones down into the smallest ids.",
+        { "beat": 0.3 },
+        "A cache fetches memory in fixed-size blocks, eight of these values at a time, not one value at a time. What happens to one of those blocks, once the busiest vertices are packed into the smallest ids?"
+      ],
+      "answer": [
+        "Most blocks in that tiny range now hold several busy vertices at once, not just one.",
+        "Fetching one of them for free brings several of the others along with it."
+      ]
+    },
+    {
+      "lines": [
+        "Before relabeling, two thousand busy vertices, spread across two million ids, land in essentially two thousand separate blocks. One each. Almost nothing shared.",
+        "After relabeling, those same two thousand vertices sit packed into the smallest two thousand ids. That's exactly two hundred fifty blocks, eight ids to a block.",
+        "Eight times fewer blocks. Nothing about any one of those vertices changed. Only which id, and so which block, it lives in now."
+      ]
+    },
+    {
+      "lines": [
+        "Every number here came from actually building these two arrays over this graph, checking every slice against the chain-based structure the earlier topic built, then doing it again at two million vertices.",
+        "Watch that cache-line count. Before relabeling, close to two thousand. After, two hundred fifty. Eight times fewer, measured directly, not timed."
+      ]
+    },
+    {
+      "lines": [
+        "Two flat arrays instead of a pointer per edge. The identical pair, transposed, for the reverse direction. And a relabeling, free to apply on top of either one, that decides how much either one actually costs to read at scale.",
+        "Three separate answers, to the one question this chapter opened on: how a graph's own edges actually sit in memory."
+      ]
+    }
+  ]
+}
