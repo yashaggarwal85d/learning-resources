@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bin packing and makespan scheduling">Before this.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Approximation ratios and greedy set cover">What a guarantee is, so this topic can say exactly what it's giving up.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Local search (optimization)" href="https://en.wikipedia.org/wiki/Local_search_(optimization)" by="Wikipedia">The definition of local search, a neighborhood and a local optimum.</Resource>
+  <Resource kind="reading" title="2-opt" href="https://en.wikipedia.org/wiki/2-opt" by="Wikipedia">The move itself, and its attribution to Croes (1958) and Flood.</Resource>
+  <Resource kind="reading" title="Simulated annealing" href="https://en.wikipedia.org/wiki/Simulated_annealing" by="Wikipedia">The acceptance-probability rule and its attribution to Kirkpatrick, Gelatt and Vecchi.</Resource>
+  <Resource kind="reading" title="Genetic algorithm" href="https://en.wikipedia.org/wiki/Genetic_algorithm" by="Wikipedia">Population, selection, crossover and mutation.</Resource>
+  <Resource kind="reading" title="61.1. Query Handling as a Complex Optimization Problem" href="https://www.postgresql.org/docs/current/geqo-intro.html" by="PostgreSQL 18 Documentation">Why join ordering is the hard part, in the planner's own words.</Resource>
+  <Resource kind="reading" title="61.3. Genetic Query Optimization (GEQO) in PostgreSQL" href="https://www.postgresql.org/docs/current/geqo-pg-intro.html" by="PostgreSQL 18 Documentation">The real genetic planner, its join-tree encoding, and its own documented caveat.</Resource>
+  <Resource kind="reading" title="19.7.3. Genetic Query Optimizer" href="https://www.postgresql.org/docs/current/runtime-config-query.html" by="PostgreSQL 18 Documentation">geqo_threshold and the other GEQO-tuning parameters, with their defaults.</Resource>
+</ul>
+
+</section>

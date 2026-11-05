@@ -1,0 +1,69 @@
+{
+  "topic": "dsa.local-search-metaheuristics",
+  "steps": [
+    {
+      "lines": [
+        "Every bound this chapter has proved up to now gets set aside, on purpose, starting right here.",
+        "Picture a query that joins a dozen tables. Count every possible order you could join them in, one after another, and the count alone already runs into the hundreds of millions.",
+        "Allow bushier shapes, not just one straight chain, and that count grows further still. No machine checks all of them one by one in any reasonable time."
+      ]
+    },
+    {
+      "lines": [
+        "Local search, taught on the problem it is famous for: visit a set of points once each and return home, as short as possible.",
+        "A neighborhood is every route one small change away from the one you are holding. The classic move removes two connections and reconnects them the other way, which untangles a route that crosses itself."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the honest number, not a guess. Twelve points, their true shortest route found by checking every single possibility that exists.",
+        "Start from a hundred different random routes and apply that one move over and over until nothing improves. It lands on the true best route well under half the time."
+      ]
+    },
+    {
+      "lines": [
+        "That search always stops somewhere. It never tells you whether where it stopped is any good.",
+        "Before the next method's own numbers: if a search were sometimes willing to accept a worse route on purpose, could that actually free it from a spot like this one, or would it just wander aimlessly forever?"
+      ],
+      "answer": [
+        "It can genuinely free it, done carefully. A method that occasionally accepts a worse move, with that willingness fading over time, measurably reaches the true best route far more often than the plain version ever does.",
+        "Measured directly on the identical instance, not assumed."
+      ]
+    },
+    {
+      "lines": [
+        "This method accepts a worse move with a probability that starts generous and fades as a control value is lowered, following a rule proposed in nineteen eighty-three.",
+        "Run on that same twelve-point case, it reaches the true best route far more often than the plain version did. A measured result, not a hoped-for one."
+      ]
+    },
+    {
+      "lines": [
+        "A different family entirely: keep many candidate routes at once, pick the fitter ones to survive, combine pieces of two parents, occasionally mutate one.",
+        "Run on the identical case, this particular version actually does worse than the plain version did. Not because this family of search is weak in general. Simply, no search here beats every other search on every case."
+      ]
+    },
+    {
+      "lines": [
+        "A real production database's own documentation names exactly this trade-off. Below a certain size, it checks every join order completely.",
+        "At or above that size, a population-based search takes over instead: a join order becomes a short string of numbers, two such strings combine into a new one, and the mutation step is turned off entirely on purpose, so nothing invalid can ever come out of it."
+      ]
+    },
+    {
+      "lines": [
+        "One query runs once an hour. Another runs thousands of times every single second. Both would cross the size where checking everything gets too slow.",
+        "Which one should actually be trusted to the population-based search instead of the complete check?"
+      ],
+      "answer": [
+        "The one that runs once an hour. It pays the planning cost only once, so even a weaker plan barely matters there.",
+        "The one running constantly pays that planning cost on every single run, which is exactly where a weaker plan does the most damage, repeated over and over."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation admits this plainly, in its own words: a route's cost per piece does not depend on the rest of the route, but a join's cost absolutely does depend on everything around it.",
+        "The honest engineering call: give up the guarantee only where checking everything costs more than the risk of a slightly worse answer, and say exactly that out loud, which is what this documentation does.",
+        "Every search in this topic can get stuck, and none of them promises where. That absence itself was the lesson. Next: a decision that has to be made before the future is even known. Online paging, next."
+      ]
+    }
+  ]
+}
