@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Recurrences: Master theorem and Akra–Bazzi">Reading a span off a recurrence uses exactly this tool.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">The big-O/Theta/Omega language the work and span bounds are stated in.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Stacks, queues and deques">What a deque is, before the work-stealing deque specializes it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Executing Multithreaded Programs Efficiently" href="https://ftp.mirrorservice.org/sites/www.bitsavers.org/pdf/mit/lcs/tr/MIT-LCS-TR-0677.pdf" by="Robert D. Blumofe">The greedy-scheduling theorem and the randomized work-stealing algorithm, in full.</Resource>
+  <Resource kind="reading" title="Analysis of parallel algorithms" href="https://en.wikipedia.org/wiki/Analysis_of_parallel_algorithms" by="Wikipedia">The work law, the span law, and Brent's law's citation.</Resource>
+  <Resource kind="reading" title="join in rayon" href="https://docs.rs/rayon/1.12.0/rayon/fn.join.html" by="docs.rs">Work stealing as a real, documented Rust API, with its own deadlock warning.</Resource>
+  <Resource kind="reading" title="OpenCilk" href="https://www.opencilk.org/" by="The OpenCilk project">The language this algorithm was designed for.</Resource>
+</ul>
+
+</section>
