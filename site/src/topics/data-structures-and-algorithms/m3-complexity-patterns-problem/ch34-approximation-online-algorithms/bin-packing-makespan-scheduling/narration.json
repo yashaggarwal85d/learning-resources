@@ -1,0 +1,82 @@
+{
+  "topic": "dsa.bin-packing-makespan-scheduling",
+  "steps": [
+    {
+      "lines": [
+        "The last topic bounded a covering problem against a lower bound nobody actually computes. Two more problems get the identical trick today, and the guarantee itself is about to change shape.",
+        "Not a ratio alone this time. A ratio with something extra bolted on top, and later, a flat ratio with nothing extra at all. Watch for which shape shows up where."
+      ]
+    },
+    {
+      "lines": [
+        "Fit a pile of items into as few same-sized bins as possible. The rule here could hardly be simpler: biggest item first, and each one goes into the earliest bin that still has room.",
+        "Open a brand new bin only once nothing already open will take it. That is the entire algorithm, nothing hidden."
+      ]
+    },
+    {
+      "lines": [
+        "A proof from two thousand seven pins down exactly how far this simple rule can drift: never more bins than eleven ninths of the true best answer, plus six ninths extra on top of that.",
+        "Here is a construction built specifically to hit that ceiling. Thirty items, four carefully chosen sizes, and the rule reaches for eleven bins, while the raw volume alone already demands at least nine."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a second case, small enough to check every possible arrangement by hand. Eight items only, and the simple rule reaches for four bins on this one.",
+        "Before checking everything by hand: is four bins already the best anyone could do here, or can a full check beat it?"
+      ],
+      "answer": [
+        "A full check beats it. Three bins turn out to be enough, not four.",
+        "That floor built from raw volume is not the same thing as a proven best answer, and this small case proves the difference directly."
+      ]
+    },
+    {
+      "lines": [
+        "Eight items only. Brute force proves three bins are enough. The simple rule still reaches for a fourth."
+      ]
+    },
+    {
+      "lines": [
+        "A second hard problem, declared the same honest way. Fixed machines, a pile of jobs, each job runs whole on one machine, and the goal is simply to finish as early as possible.",
+        "Whichever machine ends up carrying the most work decides the finishing time for everybody. That one machine is the whole story."
+      ]
+    },
+    {
+      "lines": [
+        "Sort every job longest first, then hand each one to whichever machine is currently carrying the least work. That is the sorted rule.",
+        "Plain, unsorted scheduling runs the identical handing-out step, but skips the sorting entirely and just takes jobs in whatever order they happen to show up.",
+        "One difference only: sorted first, or not. Does that one difference actually change the worst case this rule can be forced into?"
+      ],
+      "answer": [
+        "Yes, and by a wide margin. Sorting first guarantees four thirds of the best answer, minus a small amount that shrinks as more machines join.",
+        "Left unsorted, the identical handing-out rule only guarantees close to double the best answer, and that weaker guarantee gets worse, not better, as more machines are added."
+      ]
+    },
+    {
+      "lines": [
+        "A whole family of cases, built specifically to reach that promised ceiling, checked here at four different machine counts against a true best answer proved completely by brute force.",
+        "Every single one lands exactly on the promised bound, not approximately close to it. Four thirds, minus one over three times however many machines are running."
+      ]
+    },
+    {
+      "lines": [
+        "Now the classic trap for the unsorted rule. Load every machine evenly with small identical jobs first, then drop one large job in last, after every machine already looks tied.",
+        "That large job lands on whichever machine happens to be least loaded, which by then means it lands equally badly everywhere. The finishing time comes out close to double the true best answer.",
+        "Sort those same identical jobs first instead, and the identical handing-out rule lands precisely on the best possible answer."
+      ]
+    },
+    {
+      "lines": [
+        "A real production system's own source code names its algorithm directly in a comment. Not first fit decreasing. Next fit decreasing, a cheaper cousin.",
+        "Read the logic closely and it only ever checks the single most recently opened group for room. Every earlier group stays closed forever, never reconsidered.",
+        "That is a real difference from first fit, and the bound proven earlier in this topic does not automatically carry over to this cheaper cousin."
+      ]
+    },
+    {
+      "lines": [
+        "Two more proven guarantees, two different shapes entirely. A ratio with something extra added on top, for packing. A flat ratio with nothing extra, for scheduling.",
+        "Both still measured against a lower bound on the best answer that neither algorithm ever actually sits down and computes.",
+        "The next topic gives up that proof on purpose, for the first time in this chapter, because the search space gets too vast and the target itself is only ever a guess anyway. Local search and metaheuristics are next."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Approximation ratios and greedy set cover">The same trick this topic reuses: bound your answer against a computable lower bound on OPT, never against OPT itself.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Bin packing problem" href="https://en.wikipedia.org/wiki/Bin_packing_problem" by="Wikipedia">First-Fit Decreasing's rule and Dósa's 11/9·OPT + 6/9 tight bound.</Resource>
+  <Resource kind="reading" title="Longest-processing-time-first scheduling" href="https://en.wikipedia.org/wiki/Longest-processing-time-first_scheduling" by="Wikipedia">LPT's rule and Graham's 4/3 − 1/(3m) makespan bound.</Resource>
+  <Resource kind="reading" title="Multiprocessor scheduling" href="https://en.wikipedia.org/wiki/Multiprocessor_scheduling" by="Wikipedia">Identical-machines makespan scheduling's NP-hardness and plain list scheduling's 2 − 1/m bound.</Resource>
+  <Resource kind="reading" title="FilePartition.scala" href="https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/FilePartition.scala" by="Apache Spark (GitHub, master branch)">The real "Next Fit Decreasing" partitioning code a production system actually runs.</Resource>
+</ul>
+
+</section>

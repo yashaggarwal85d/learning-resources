@@ -1,0 +1,7 @@
+- **Bin packing**: pack a set of items, each with a size, into the fewest fixed-capacity bins possible. *Where you meet it:* First-Fit Decreasing's whole subject.
+- **First-Fit**: drop each item into the first open bin that still has room, opening a new bin only when none fits. *Where you meet it:* the placement rule First-Fit Decreasing runs after sorting.
+- **Makespan**: the finishing time of whichever machine finishes last, across all machines. *Where you meet it:* the quantity every scheduling algorithm in this topic tries to minimize.
+- **Asymptotic bound with an additive constant**: a guarantee of the shape ratio times OPT plus a fixed extra amount, not a flat ratio alone. *Where you meet it:* First-Fit Decreasing's 11/9 OPT + 6/9 bound, a different shape from a flat ratio.
+- **List scheduling**: assign jobs, in whatever order they arrive, to whichever machine currently has the least work. *Where you meet it:* the unsorted baseline LPT is compared against.
+- **Volume lower bound**: the ceiling of total item size divided by bin capacity — a cheap, always-valid, but not always tight, lower bound on the true optimum. *Where you meet it:* used to judge First-Fit Decreasing's bin count without computing the true optimum.
+- **Identical machines**: every machine runs at the same speed; a job takes the same time wherever it runs. *Where you meet it:* the one setting LPT's bound is proved for in this topic.
