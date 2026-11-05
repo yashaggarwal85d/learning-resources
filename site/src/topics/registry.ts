@@ -11425,4 +11425,22 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every engine in this chapter turned stored data into an answer, but none of them yet turned stored data into *more* stored data at real scale. The next chapter opens that: Apache Spark and distributed batch execution, starting with its own execution model.",
   },
+  {
+    id: 'dsa.backtracking-pruning',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m2-algorithms/ch23-backtracking-search-sat/backtracking-pruning',
+    title: 'Backtracking with pruning',
+    syllabusTitle: 'Backtracking with pruning',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Algorithms' },
+    chapter: { number: 23, title: 'Backtracking, Search and SAT', section: '23.1' },
+    minutes: 15,
+    verified: '2026-11-05',
+    introduces: ['backtracking-search', 'state-space-tree', 'pruning', 'choose-explore-undo', 'constraint-propagation', 'minimum-remaining-values', 'heavy-tailed-runtime'],
+    uses: ['recursion-tree', 'big-o-theta-omega', 'stack'],
+    declared: ['recursion', 'permutation-combination-subset', 'dp-state-design'],
+    bridge: "A table helps when the same subproblem keeps coming back. Place eight queens, or fill a Sudoku, and no two partial boards are alike: the table would never be read twice. What is left is to try, and the only question is how little you can afford to try.",
+    handoff: "Backtracking never made the problem polynomial. It made the tree small by refusing doomed branches early, choosing the branch that fails fastest and deducing before guessing, and on a bad day the tree is still enormous. The next chapter takes the opposite road for a different family of problems: arrays where the obvious program tries every pair or every subarray, and a single invariant lets you do it in one linear pass with no tree at all. Two pointers, next.",
+  },
 ];
