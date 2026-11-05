@@ -140,3 +140,25 @@ Contents: the session-window assigner's definition (gap of inactivity), the dyna
 configuration API, and the internal mechanics quoted above: every element starts in its own
 window and windows merge when closer than the gap — exactly the merge-intervals pass this topic
 teaches, used as the real-instance example (sessionization) in the topic's post-notes.
+
+## Swarthmore CS41, Lab 10 problem set — "Multiple-Interval-Scheduling (K&T 8.14)"
+
+URL: https://www.cs.swarthmore.edu/~fontes/cs41/23f/lab/lab10.pdf
+Version: CS41, fall 2023 lab handout, problem 2
+
+> Multiple-Interval-Scheduling (K&T 8.14) In this problem, there is a machine that is available to run jobs over some period of time, say 9AM to 5PM.
+
+> However, in this problem, each job requires a set of intervals of time during which it needs to use the machine.
+
+> In this problem, you are to show that Multiple-Interval-Scheduling P NP-complete.
+
+> Independent-Set ďP Multiple-Interval-Scheduling .
+
+Contents: a problem-set restatement of Kleinberg & Tardos's textbook exercise 8.14,
+"Multiple-Interval Job Scheduling" — the variant where each job needs a *set* of several
+disjoint time intervals rather than one, asked to accept at least k jobs with no overlap among
+any of the accepted jobs' intervals; shown NP-complete by a reduction from Independent Set
+(one job per graph vertex, one disjoint time interval per graph edge). Used only for the
+frontier contrast in post-notes: this topic's single-interval problems stay polynomial; the
+moment a job needs several intervals, the problem is NP-complete. The "three or more intervals"
+framing seen in Wikipedia at planning time is not supported by this source and is dropped.
