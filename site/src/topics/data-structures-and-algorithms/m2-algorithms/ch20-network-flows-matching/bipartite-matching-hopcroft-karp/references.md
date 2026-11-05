@@ -1,0 +1,12 @@
+Last verified: 2026-11-05.
+
+- Erickson, *Algorithms* (2019), Chapter 11 "Applications of Flows and Cuts", §11.2 "Bipartite Matching" — the matching-as-flow reduction and the alternating-path reading of an augmenting path. [source](https://jeffe.cs.illinois.edu/teaching/algorithms/book/11-maxflowapps.pdf)
+- SciPy Documentation, `scipy.sparse.csgraph.maximum_bipartite_matching` — König's theorem, stated directly, and confirmation that SciPy ships Hopcroft–Karp by name. [source](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csgraph.maximum_bipartite_matching.html)
+- NetworkX Documentation, `hopcroft_karp_matching` — confirmation that NetworkX ships the identical algorithm by name, aliased to `maximum_matching`. [source](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.matching.hopcroft_karp_matching.html)
+- J. E. Hopcroft and R. M. Karp, "An n^{5/2} algorithm for maximum matchings in bipartite graphs," *SIAM Journal on Computing* 2(4), 1973, pp. 225–231 — cited bibliographically, confirmed against Crossref and against both SciPy's and NetworkX's own reference lists, not opened or quoted beyond its own title.
+- C. Berge, "Two theorems in graph theory," *PNAS* 43(9), 1957, pp. 842–844 — cited bibliographically, confirmed against Crossref; Berge's lemma is stated from Erickson's own text.
+- H. W. Kuhn, "The Hungarian method for the assignment problem," *Naval Research Logistics Quarterly* 2(1–2), 1955, pp. 83–97 — cited bibliographically, confirmed against Crossref; named once for the weighted-assignment frontier, not built here.
+
+D. König's own 1931 paper is named only; its exact title, venue and year are left unverified this session (a Crossref search at planning time returned no record), per `CHAPTER.md`'s own instruction never to cite from memory. CLRS 4th ed.'s own bipartite-matching material is citation-only this session (paywalled, and its own exact chapter and section are themselves unconfirmed). Dinitz's own blocking-flow algorithm, the Hungarian algorithm, min-cost flow, general matching with Edmonds' blossoms, and stable matching (Gale–Shapley) are all named only, per `CHAPTER.md`'s own instruction, and built in neither this topic nor the last.
+
+Spotted an error? [Open an issue](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=bipartite-matching-hopcroft-karp:%20).

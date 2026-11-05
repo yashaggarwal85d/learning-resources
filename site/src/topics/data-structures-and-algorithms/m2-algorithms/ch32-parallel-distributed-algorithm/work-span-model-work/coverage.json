@@ -1,0 +1,184 @@
+{
+  "topic": "dsa.work-span-model-work",
+  "syllabus": [
+    {
+      "clause": "work T₁, span T∞, parallelism T₁/T∞",
+      "at": [
+        { "step": "Work is the total number of additions — what one worker alone would take. Span is the longest chain of additions that must happen in order. Parallelism is work divided by span: the most speed-up any worker count can ever buy." },
+        { "step": "The identical additions, redrawn as one chain instead of a tree, have a span equal to their own work. Nothing about the operations changed — only the order they are allowed to run in." }
+      ]
+    },
+    {
+      "clause": "Brent's bound",
+      "at": [
+        { "step": "A greedy schedule — one that never leaves a worker idle while a ready task waits — finishes within the work divided by the workers, plus the span. That guarantee holds for every greedy schedule, and lands within a factor of two of the best any schedule could possibly do." },
+        { "step": "The same sum DAG, greedily scheduled on one, a few, and many workers: the real step count always sits between the two laws’ floor and this bound — and once the worker count passes the span, more workers buy nothing further at all." }
+      ]
+    },
+    {
+      "clause": "randomized work stealing (Blumofe & Leiserson, JACM 1999)",
+      "at": [
+        { "step": "Each worker owns a deque: it pushes and pops its own end, running depth-first exactly as a lone worker would. An idle worker becomes a thief, picking another worker at random and taking from the far end of that worker’s deque — the oldest task there, the one most likely to still carry work beneath it." },
+        { "step": "For a fully strict computation — every dependency returning straight to its parent, the shape a plain recursive fork-and-join program already has — the expected running time on many workers is the work divided by the workers, plus a constant times the span: Brent’s bound again, reached with no coordinator at all." }
+      ]
+    },
+    {
+      "clause": "as in Cilk, Rayon and Tokio",
+      "at": [
+        { "step": "Cilk is the language this scheduler was designed for. Rayon’s join runs this exact protocol in Rust, warning that blocking one half on the other inside it can deadlock. Tokio also steals from per-worker queues, but for tasks that wait on the network, not a fork-and-join chain of pure computation — a different point on the same design." }
+      ]
+    },
+    {
+      "clause": "→ Rust Systems Engineering Ch.9",
+      "at": [
+        {
+          "topic": "Work stealing and cooperative budgeting",
+          "domain": "rust-systems-engineering",
+          "quote": "each worker has a local run queue plus a LIFO slot for message-passing locality; a global injection queue sits behind them, and idle workers steal half of a busy worker's queue."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Blumofe, \"Executing Multithreaded Programs Efficiently\" (MIT-LCS-TR-677)",
+      "items": [
+        {
+          "item": "the work law and the span law as lower bounds on TP",
+          "at": [
+            { "step": "Two floors no schedule beats: workers finish no faster than the work shared evenly among them, and no schedule — not even with unlimited workers — beats the span itself, because that chain happens in order regardless." }
+          ]
+        },
+        {
+          "item": "Theorem 2.1, the greedy-scheduling theorem, and its factor-of-two optimality",
+          "at": [
+            { "step": "A greedy schedule — one that never leaves a worker idle while a ready task waits — finishes within the work divided by the workers, plus the span. That guarantee holds for every greedy schedule, and lands within a factor of two of the best any schedule could possibly do." }
+          ]
+        },
+        {
+          "item": "the fully strict computation definition and the owner-pushes/pops-bottom, thief-steals-top deque mechanics",
+          "at": [
+            { "step": "Each worker owns a deque: it pushes and pops its own end, running depth-first exactly as a lone worker would. An idle worker becomes a thief, picking another worker at random and taking from the far end of that worker’s deque — the oldest task there, the one most likely to still carry work beneath it." }
+          ]
+        },
+        {
+          "item": "Theorems 4.2, 4.10 and 4.11: the space, expected-time, and communication bounds for randomized work stealing",
+          "at": [
+            { "step": "For a fully strict computation — every dependency returning straight to its parent, the shape a plain recursive fork-and-join program already has — the expected running time on many workers is the work divided by the workers, plus a constant times the span: Brent’s bound again, reached with no coordinator at all." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Analysis of parallel algorithms\"",
+      "items": [
+        {
+          "item": "the work law and span law restated independently, and Brent's law's citation",
+          "at": [
+            { "deep": "Into the internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OpenCilk project homepage",
+      "items": [
+        {
+          "item": "\"provably efficient scheduling tunes each execution... to its host environment\"",
+          "at": [
+            { "step": "Cilk is the language this scheduler was designed for. Rayon’s join runs this exact protocol in Rust, warning that blocking one half on the other inside it can deadlock. Tokio also steals from per-worker queues, but for tasks that wait on the network, not a fork-and-join chain of pure computation — a different point on the same design." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rayon documentation, join",
+      "items": [
+        {
+          "item": "the work-stealing protocol, the advertise-and-steal closure mechanic, and the blocking-inside-join deadlock warning",
+          "at": [
+            { "step": "Cilk is the language this scheduler was designed for. Rayon’s join runs this exact protocol in Rust, warning that blocking one half on the other inside it can deadlock. Tokio also steals from per-worker queues, but for tasks that wait on the network, not a fork-and-join chain of pure computation — a different point on the same design." }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "the sum DAG's work, span, and parallelism (fifteen, four, and their ratio) computed directly from a built binary tree, not asserted from the chapter plan's stated values alone",
+        "at": [
+          { "step": "Work is the total number of additions — what one worker alone would take. Span is the longest chain of additions that must happen in order. Parallelism is work divided by span: the most speed-up any worker count can ever buy." }
+        ]
+      },
+      {
+        "item": "Brent's bound (both the sharper and the looser form) checked against a real greedy-schedule simulation at five worker counts, not only stated as a formula",
+        "at": [
+          { "step": "The same sum DAG, greedily scheduled on one, a few, and many workers: the real step count always sits between the two laws’ floor and this bound — and once the worker count passes the span, more workers buy nothing further at all." }
+        ]
+      },
+      {
+        "item": "the merge sort's span and work read off their recurrences at every power of two up to 65,536, confirming linear span growth and super-linear work growth numerically, not only asymptotically asserted",
+        "at": [
+          { "step": "Doubling the input almost exactly doubles that sort’s span, the signature of a cost that grows in a straight line — while the total work grows faster still, so the parallelism between them keeps climbing as the input grows, not stuck at some small ceiling." }
+        ]
+      },
+      {
+        "item": "the work-stealing simulation's comparison against Brent's bound deliberately loosened to a constant-factor check, since the theorem bounds an expectation with a big-O term, not an exact ceiling for a non-ideal discrete-event scheduler",
+        "at": [
+          { "out": "checked in FACT-CHECK.md's red team, not stated on screen as an exact-bound claim" }
+        ]
+      },
+      {
+        "item": "the steal fraction's growth with worker count checked as a monotonic trend across five worker counts, not a single before/after snapshot",
+        "at": [
+          { "step": "A bigger version of the same tree, run through a simulation of this exact protocol: with one worker, nobody to steal from, so zero steals. As workers are added, the stolen share of the work rises — but stays a small fraction of the total, even with many workers running." }
+        ]
+      },
+      {
+        "item": "Tokio's scope explicitly limited to one sentence naming it, per CHAPTER.md's instruction not to claim the fully-strict bound for an I/O-task scheduler owned by a live topic in another domain",
+        "at": [
+          { "out": "checked against CHAPTER.md §105 and FACT-CHECK.md red team; not re-taught on screen" }
+        ]
+      },
+      {
+        "item": "the canonical JACM 1999 paper's unreachability documented honestly, with the MIT technical report used as a verified, attributed stand-in rather than silently substituted",
+        "at": [
+          { "out": "documented in SOURCES.md's opening note and OUTLINE.md's Changes from the chapter plan" }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for both predict steps",
+        "at": [
+          { "step": "Sixteen numbers summed as a balanced tree of additions, run with unlimited workers: how many steps does it take, and what is the most any machine could ever speed it up by?" },
+          { "step": "A scheduler with no central queue — every worker keeps only its own list of ready tasks. When a worker’s own list runs empty, what should it do?" }
+        ]
+      },
+      {
+        "item": "the bridge's use of the chapter plan's own fallback text (not a live Chapter 31 handoff) recorded explicitly, since Chapter 31 is not yet published",
+        "at": [
+          { "out": "recorded in OUTLINE.md's Changes from the chapter plan" }
+        ]
+      },
+      {
+        "item": "the handoff to topic 106 quoted word for word from CHAPTER.md",
+        "at": [
+          { "step": "Work, span, and parallelism say how fast any number of cores on one machine can possibly go; work stealing is the scheduler that gets there with no central queue at all. Next: what happens once the data no longer fits on one machine." }
+        ]
+      },
+      {
+        "item": "every number on screen (work, span, parallelism, the Brent-bound table, the sort's doubling ratios, the work-stealing simulation's steal fractions) computed fresh in examples.py, not copied from the chapter plan's own planning-time values",
+        "at": [
+          { "out": "checked, not restated on screen" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

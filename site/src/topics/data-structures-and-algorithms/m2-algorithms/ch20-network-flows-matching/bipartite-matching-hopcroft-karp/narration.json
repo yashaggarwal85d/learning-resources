@@ -1,0 +1,95 @@
+{
+    "topic": "dsa.bipartite-matching-hopcroft-karp",
+    "steps": [
+        {
+            "lines": [
+                "Four tasks, four machines, each task allowed on only some of them.",
+                "A scan that assigns tasks in the order they arrive leaves one task with no machine at all, even though every task could in fact be placed somewhere. Which single change to the existing assignment lets that last task in?"
+            ]
+        },
+        {
+            "lines": [
+                "Here is the trick that turns this into last topic's own problem.",
+                "Orient every task-machine edge from the tasks toward the machines, feed a source into every task, drain a sink out of every machine, and give every single edge a capacity of one. A matching is now exactly a flow of that same value."
+            ]
+        },
+        {
+            "lines": [
+                "Scanning the tasks in order and taking each one's first free machine matches three of the four tasks, leaving one machine sitting idle.",
+                "That assignment cannot be extended by adding a single new pair on top of it, yet a matching covering all four tasks still genuinely exists somewhere in this graph."
+            ]
+        },
+        {
+            "lines": [
+                "Here is the question worth answering before naming the actual mechanism.",
+                {
+                    "beat": 0.3
+                },
+                "Does reaching that true maximum need one small adjustment to the three existing pairs, or does it need starting over completely?"
+            ],
+            "answer": [
+                "One small adjustment is enough. The free task's own augmenting path in the unit network reads back as a chain of existing pairs, each handing its machine to the task right before it."
+            ]
+        },
+        {
+            "lines": [
+                "Here is that chain, read back in the original graph rather than the flow network.",
+                "The free task takes over a machine already given to another task, which takes over a second machine already given to a third task, and so on until a genuinely idle machine turns up. Flipping every edge on that one chain reaches all four tasks matched."
+            ]
+        },
+        {
+            "lines": [
+                "A matching turns out to be maximum exactly when no such chain, from a free vertex on one side to a free vertex on the other, exists anywhere in the whole graph.",
+                "The direction the algorithm actually relies on, no chain left meaning the matching is already maximum, follows in one line from the flow theorem already proved, rather than needing a fresh proof of its own."
+            ]
+        },
+        {
+            "lines": [
+                "Trying to extend the matching from each free task in turn, one search at a time, costs as much as the edge count for every single search performed.",
+                "There are never more searches than there are tasks, so the whole running time scales with the task count times the edge count. That is the baseline every faster method has to beat."
+            ]
+        },
+        {
+            "lines": [
+                "A single phase instead starts a search from every free task at once, building outward one layer at a time until some layer finally reaches a free machine.",
+                "A second search then pulls out as many chains of that identical, shortest length as can be found, never letting two chains share a single vertex, and flips every one of them together in the same beat."
+            ]
+        },
+        {
+            "lines": [
+                "One more question before naming the actual bound on how many phases this needs.",
+                {
+                    "beat": 0.3
+                },
+                "Should that phase count scale with how many tasks there are, how many edges there are, or something smaller than either count alone?"
+            ],
+            "answer": [
+                "Something smaller than either count alone. Each phase's own shortest chain is strictly longer than the one before it, and a chain cannot keep growing past the vertex count, which caps the whole phase count far below either count."
+            ]
+        },
+        {
+            "lines": [
+                "On a graph of one thousand tasks and one thousand machines, that strictly-growing shortest chain forces every further phase to be smaller than the one before.",
+                "A small handful of phases ends up reaching the identical matching that the one-search-at-a-time baseline needed hundreds of separate searches just to reach."
+            ]
+        },
+        {
+            "lines": [
+                "In a two-sided graph, the largest possible matching's own size always equals the smallest possible set of vertices that together touch every single edge.",
+                "That covering set is built directly from the very last search already run, with no further search needed at all: every task that search could not reach, together with every machine that search could reach."
+            ]
+        },
+        {
+            "lines": [
+                "Two tasks that can each only reach one single shared machine give a matching of exactly two.",
+                "Their covering set turns out to be that one shared machine together with one further task, a cover that points straight at the competing pair, unlike the earlier graph's own cover of every single task, which said nothing useful at all."
+            ]
+        },
+        {
+            "lines": [
+                "Watch what Hopcroft and Karp actually noticed to beat the general method: a unit-capacity network lets many equal-length chains be found and flipped together in one pass.",
+                "A count of phases replaces a count of chains entirely. That same habit, looking at a problem's own structure rather than reaching for the general method, carries straight into the next chapter. Divide-and-conquer design, next."
+            ]
+        }
+    ]
+}
