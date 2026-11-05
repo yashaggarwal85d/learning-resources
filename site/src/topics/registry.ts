@@ -3072,7 +3072,7 @@ export const TOPICS: TopicMeta[] = [
     kind: 'full',
     status: 'held',
     milestone: { number: 2, title: 'Algorithms' },
-    chapter: { number: 16, title: 'Searching and Selection' },
+    chapter: { number: 16, title: 'Searching and Selection', section: '16.1' },
     minutes: 14,
     verified: '2026-11-05',
     introduces: ['binary-search-on-answer', 'monotone-predicate', 'bisection', 'parametric-search'],
