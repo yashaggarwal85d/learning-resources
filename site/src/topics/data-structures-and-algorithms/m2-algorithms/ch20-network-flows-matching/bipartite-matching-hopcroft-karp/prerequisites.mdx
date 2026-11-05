@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Max-flow min-cut and Ford–Fulkerson">The residual graph, augmenting paths, integrality and the theorem this topic's matching form reuses.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Adjacency lists, matrices and edge lists">The layout every graph in this topic is read from.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Breadth-first search">The layer-building search a Hopcroft-Karp phase starts with.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Depth-first search and edge classification">The path-finding search a Hopcroft-Karp phase finishes with.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Applications of Flows and Cuts" href="https://jeffe.cs.illinois.edu/teaching/algorithms/book/11-maxflowapps.pdf" by="Jeff Erickson, 2019">The matching-as-flow reduction and the alternating-path reading of an augmenting path.</Resource>
+  <Resource kind="reading" title="scipy.sparse.csgraph.maximum_bipartite_matching" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csgraph.maximum_bipartite_matching.html" by="SciPy v1.18.0">König's theorem, stated directly, and confirmation that a real library ships Hopcroft-Karp by name.</Resource>
+</ul>
+
+</section>

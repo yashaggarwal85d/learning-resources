@@ -1,0 +1,204 @@
+{
+  "topic": "dsa.bipartite-matching-hopcroft-karp",
+  "syllabus": [
+    {
+      "clause": "matching as unit flow",
+      "at": [
+        {
+          "step": "Orient every task-machine edge from the tasks toward the machines, add a source feeding every task and a sink drained by every machine, and give every edge a capacity of one. A matching is now exactly a flow of that same value, and last topic's own integrality turns any whole-number maximum flow straight into a maximum matching."
+        },
+        {
+          "step": "Scanning the tasks in order and taking each one's first free machine matches three of the four tasks, leaving one machine idle. That assignment cannot be extended by adding a single new pair; it is already as large as a one-step-at-a-time scan can make it, yet a matching of all four tasks still exists."
+        },
+        {
+          "step": "Trying to extend the matching from each free task in turn, one search at a time, costs as much as the edge count per search, and there are never more searches than there are tasks. That gives a running time scaling with the task count times the edge count: the baseline every faster method has to beat."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "augmenting paths",
+      "at": [
+        {
+          "step": "The free task's augmenting path reads back in the original graph as a chain: the free task takes a machine already given to another task, which takes over a second machine already given to a third task, and so on until a genuinely idle machine is reached. Flipping every edge on that chain reaches a matching of all four tasks in one move."
+        },
+        {
+          "step": "A matching is maximum exactly when no such chain, from a free vertex on one side to a free vertex on the other, exists anywhere in the graph. The direction that matters for the algorithm, no chain left implies the matching is already maximum, follows in one line from the flow theorem already proved rather than needing its own separate proof."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "O(E√V) phases",
+      "at": [
+        {
+          "step": "A single phase instead starts a search from every free task at once, building outward one layer at a time until some layer reaches a free machine. A second search then pulls out as many chains of that identical, shortest length as can be found without two chains ever sharing a single vertex, and flips every one of them together."
+        },
+        {
+          "step": "On a graph of one thousand tasks and one thousand machines, each phase's own strictly-growing shortest chain forces every further phase smaller than the last. A handful of phases reaches the identical matching that the one-search-at-a-time baseline needed hundreds of separate searches to reach."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    },
+    {
+      "clause": "König's theorem relating matchings and vertex covers",
+      "at": [
+        {
+          "step": "In a two-sided graph, the largest possible matching's own size always equals the smallest possible set of vertices touching every single edge. That cover is built directly from the very last search already run, no further search needed: it is every task that search could not reach, together with every machine that search could reach."
+        },
+        {
+          "step": "Two tasks that can each only reach one single shared machine give a matching of two and a cover of exactly that one shared machine together with one further task: a cover that points straight at the competing pair, unlike the earlier graph's own cover of every task, which said nothing at all."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Erickson, Algorithms (2019), Chapter 11 \"Applications of Flows and Cuts\", §11.2 \"Bipartite Matching\"",
+      "items": [
+        {
+          "item": "the matching definition and the alternating-path reading of an augmenting path, including the stopping condition justified from the flow theorem",
+          "at": [
+            {
+              "step": "A matching is maximum exactly when no such chain, from a free vertex on one side to a free vertex on the other, exists anywhere in the graph. The direction that matters for the algorithm, no chain left implies the matching is already maximum, follows in one line from the flow theorem already proved rather than needing its own separate proof."
+            }
+          ]
+        },
+        {
+          "item": "the O(V E) running-time bound for the one-augmentation-at-a-time algorithm",
+          "at": [
+            {
+              "step": "Trying to extend the matching from each free task in turn, one search at a time, costs as much as the edge count per search, and there are never more searches than there are tasks. That gives a running time scaling with the task count times the edge count: the baseline every faster method has to beat."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "SciPy Documentation, scipy.sparse.csgraph.maximum_bipartite_matching",
+      "items": [
+        {
+          "item": "the direct statement of König's theorem relating matching size and minimum vertex cover size",
+          "at": [
+            {
+              "step": "In a two-sided graph, the largest possible matching's own size always equals the smallest possible set of vertices touching every single edge. That cover is built directly from the very last search already run, no further search needed: it is every task that search could not reach, together with every machine that search could reach."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "NetworkX Documentation, hopcroft_karp_matching",
+      "items": [
+        {
+          "item": "confirmation that a real library ships the named algorithm, aliased to a general maximum_matching call",
+          "at": [
+            {
+              "step": "A single phase instead starts a search from every free task at once, building outward one layer at a time until some layer reaches a free machine. A second search then pulls out as many chains of that identical, shortest length as can be found without two chains ever sharing a single vertex, and flips every one of them together."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "A greedy matching's own maximality (no single edge can extend it) is a strictly weaker property than maximum size, and the gap between the two is not a flaw in the greedy scan's own logic; it is a structural fact about matchings that no amount of smarter single-edge-at-a-time greediness can close, which is exactly why reaching the true maximum needs a chain of simultaneous reassignments rather than one more greedy step.",
+        "at": [
+          {
+            "step": "Scanning the tasks in order and taking each one's first free machine matches three of the four tasks, leaving one machine idle. That assignment cannot be extended by adding a single new pair; it is already as large as a one-step-at-a-time scan can make it, yet a matching of all four tasks still exists."
+          }
+        ]
+      },
+      {
+        "item": "The zig-zag reroute does not discard any of the three originally correct pairs as mistakes; each reassignment in the chain is itself a correct pair in the new, larger matching, which is why flipping an alternating path is a symmetric-difference operation rather than a delete-and-rebuild, and why no pair in the chain is ever 'wrong', only locally suboptimal given what came before it.",
+        "at": [
+          {
+            "step": "The free task's augmenting path reads back in the original graph as a chain: the free task takes a machine already given to another task, which takes over a second machine already given to a third task, and so on until a genuinely idle machine is reached. Flipping every edge on that chain reaches a matching of all four tasks in one move."
+          }
+        ]
+      },
+      {
+        "item": "Berge's lemma's own direction used by the algorithm (no augmenting path implies maximum) is the harder, more surprising direction; the easier direction (a maximum matching has no augmenting path, since one would contradict maximality by definition) is almost immediate, while the direction actually needed requires the flow-theoretic argument this topic deliberately reuses rather than re-derives.",
+        "at": [
+          {
+            "step": "A matching is maximum exactly when no such chain, from a free vertex on one side to a free vertex on the other, exists anywhere in the graph. The direction that matters for the algorithm, no chain left implies the matching is already maximum, follows in one line from the flow theorem already proved rather than needing its own separate proof."
+          }
+        ]
+      },
+      {
+        "item": "The one-augmentation-at-a-time algorithm's own O(V E) bound is tight in the sense that no single augmentation can be found faster than an edge-count search in general, but the bound is loose in a different sense: it assumes every one of the V searches actually succeeds in finding a path, when in a graph with a small maximum matching most searches after the first several fail quickly, which the chapter's own measured run shows as a cost that does not uniformly track the worst-case bound.",
+        "at": [
+          {
+            "step": "Trying to extend the matching from each free task in turn, one search at a time, costs as much as the edge count per search, and there are never more searches than there are tasks. That gives a running time scaling with the task count times the edge count: the baseline every faster method has to beat."
+          }
+        ]
+      },
+      {
+        "item": "Restricting a Hopcroft-Karp phase to vertex-disjoint paths is not an optimization layered on top of a correct algorithm; it is load-bearing for correctness itself, because flipping two augmenting paths that shared a vertex would attempt to match that one vertex twice, violating the matching property outright, so disjointness is a precondition for the simultaneous flip to even be a valid operation.",
+        "at": [
+          {
+            "step": "A single phase instead starts a search from every free task at once, building outward one layer at a time until some layer reaches a free machine. A second search then pulls out as many chains of that identical, shortest length as can be found without two chains ever sharing a single vertex, and flips every one of them together."
+          }
+        ]
+      },
+      {
+        "item": "The claim that each phase's shortest augmenting path is strictly longer than the previous phase's is not an empirical observation about typical graphs; it is a provable monotonicity property of the alternating-path distance structure, and it is the entire reason the phase count can be bounded independent of the edge count, which an empirical-only argument could never establish.",
+        "at": [
+          {
+            "step": "On a graph of one thousand tasks and one thousand machines, each phase's own strictly-growing shortest chain forces every further phase smaller than the last. A handful of phases reaches the identical matching that the one-search-at-a-time baseline needed hundreds of separate searches to reach."
+          }
+        ]
+      },
+      {
+        "item": "That examples.py's own measured phase count and augmentation count differ from CHAPTER.md's own planning-stage illustrative numbers (a different random seed and generator producing a different specific graph) is expected and not a discrepancy to resolve; the qualitative claim (a handful of phases against hundreds of one-at-a-time searches, both reaching the identical matching size) is the only claim this topic actually makes, and it holds under either set of numbers.",
+        "at": [
+          {
+            "step": "On a graph of one thousand tasks and one thousand machines, each phase's own strictly-growing shortest chain forces every further phase smaller than the last. A handful of phases reaches the identical matching that the one-search-at-a-time baseline needed hundreds of separate searches to reach."
+          }
+        ]
+      },
+      {
+        "item": "König's theorem's own construction (the cover is the unreachable left vertices plus the reachable right vertices from the final alternating search) produces a cover of exactly the matching's own size as a direct corollary of the max-flow min-cut theorem applied to the unit network, not as a separately-proved combinatorial fact; the cover is quite literally the same reachable set that proved the flow was maximum in the first place, read back in the bipartite graph's own vocabulary.",
+        "at": [
+          {
+            "step": "In a two-sided graph, the largest possible matching's own size always equals the smallest possible set of vertices touching every single edge. That cover is built directly from the very last search already run, no further search needed: it is every task that search could not reach, together with every machine that search could reach."
+          }
+        ]
+      },
+      {
+        "item": "The task-machine graph's own cover being trivial (every task, teaching nothing about which constraint actually binds) while the Hall-obstruction graph's own cover points precisely at the competing pair is not a coincidence of which example was chosen; it reflects that a cover is only informative when the graph actually contains a genuine bottleneck, which a graph with a perfect matching on one side, by definition, does not.",
+        "at": [
+          {
+            "step": "Two tasks that can each only reach one single shared machine give a matching of two and a cover of exactly that one shared machine together with one further task: a cover that points straight at the competing pair, unlike the earlier graph's own cover of every task, which said nothing at all."
+          }
+        ]
+      },
+      {
+        "item": "That König's theorem holds specifically because the graph is bipartite, and fails in general graphs, is not a minor caveat; odd cycles in a general graph defeat the alternating-path search's own assumption that the two sides of an edge can always be told apart, which is precisely why repairing the search for general graphs requires an entirely new mechanism (blossom contraction) rather than a straightforward extension of this topic's own algorithm.",
+        "at": [
+          {
+            "step": "Hopcroft and Karp beat the general method by noticing what a unit-capacity network allows: many augmenting paths of the same length can be found and flipped together, and a count of phases replaces a count of paths. That habit, looking at the structure of a problem and taking a different route from the general one, is what the next chapter is about. It steps back from graphs to the two paradigms behind most algorithms in this course. One splits a problem, solves the pieces and combines them, and reads its cost off a recurrence. The other makes the locally best choice and proves it safe, the way a cut did for spanning trees and failed to for flows. Divide-and-conquer design, next."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}
