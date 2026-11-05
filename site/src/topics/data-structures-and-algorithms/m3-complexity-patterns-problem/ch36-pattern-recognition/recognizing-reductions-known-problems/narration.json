@@ -1,0 +1,86 @@
+{
+  "topic": "dsa.recognizing-reductions-known-problems",
+  "steps": [
+    {
+      "lines": [
+        "Nothing about assigning reviewers to papers mentions a network or a capacity anywhere in the sentence.",
+        "The structure is hiding behind ordinary words like need and willing. Once you see the flow underneath, a fast, correct algorithm comes for free."
+      ]
+    },
+    {
+      "lines": [
+        "Three stories that sound almost identical on the surface, and only one of them is genuinely hard.",
+        "Watch for the detail that actually changes the structure: how many groups, and how many choices does each rule touch at once?"
+      ],
+      "answer": [
+        "Pairing across two groups is bipartite, so a flow algorithm handles it. Pairing within one group is still solvable, just by a different, harder-to-implement method.",
+        "The third one is the trap: three variables per rule instead of two is the jump from an easy problem to a famously hard one."
+      ]
+    },
+    {
+      "lines": [
+        "This is the first reduction run in the useful direction: toward an easy problem, to get a fast algorithm, rather than toward a hard one to prove difficulty.",
+        "Two independent checks landing on the identical number is the whole point. If a flow computation and a from-scratch search ever disagreed, one of them would have a bug."
+      ]
+    },
+    {
+      "lines": [
+        "The giveaway for this shape isn't the story, it's a yes-or-no test you can actually run on the graph: does every edge cross between two sides, with none staying inside one?",
+        "The moment that test fails, as it does for the odd cycle here, you're no longer looking at the easy version of this problem."
+      ]
+    },
+    {
+      "lines": [
+        "Watch how little this needs: no search over truth assignments at all, just following chains of implication through a graph and checking which ones loop back on themselves.",
+        "That's the whole trick behind why two choices per rule stays easy while three choices per rule becomes one of the hardest problems known."
+      ]
+    },
+    {
+      "lines": [
+        "The greedy rule here is almost suspiciously simple, finish earliest first, and yet it's provably as good as checking every possible combination.",
+        "That only holds because there's exactly one resource in play. The instant a second resource or a setup cost enters the story, this guarantee is gone."
+      ]
+    },
+    {
+      "lines": [
+        "Processing stages in an order where nothing ever points backward is what makes this relaxation correct and fast.",
+        "Add a single edge that loops back to an earlier stage, and you haven't just made this slower, you've left the territory where any fast, exact method is known to exist."
+      ]
+    },
+    {
+      "lines": [
+        "None of these six items are new ideas. Every one of them was built, proven and measured earlier in the course.",
+        "What's new is treating them as a lookup table: hear a question, and go straight to the technique that answers it, instead of reinventing it each time."
+      ]
+    },
+    {
+      "lines": [
+        "A small addition to the story, one cost for switching between jobs, and the clean guarantee from before quietly stops applying.",
+        "This is exactly the kind of detail a five-minute read has to catch, because the rest of the sentence can look completely unchanged."
+      ]
+      ,
+      "answer": [
+        "No, and the reason is structural, not just a matter of degree: the earlier guarantee relied on jobs being independent once ordered, with nothing coupling one job's finish to the next job's start.",
+        "Setup time breaks exactly that independence, which pushes the problem into the same hard family as bin packing and makespan scheduling."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this procedure ends on a falsifier, not on an answer. The last step is writing the one sentence that would prove the whole recognition wrong.",
+        "That habit is what keeps recognition honest. Anyone can spot a surface resemblance; writing down what would break it is what separates a real match from a near miss."
+      ]
+    },
+    {
+      "lines": [
+        "The point of scoring misses by what triggered them, rather than by whether the final answer was right, is that the same wrong trigger tends to repeat across many problems.",
+        "Fix the trigger once, and a whole category of future misses disappears with it."
+      ]
+    },
+    {
+      "lines": [
+        "Four topics, one underlying move: read the statement for what it actually permits, before reaching for any algorithm at all.",
+        "Everything from here was still a textbook object in a textbook problem. The next stretch of the course asks what each of these structures becomes once real stakes are attached to it. Hash tables inside hash joins, next."
+      ]
+    }
+  ]
+}

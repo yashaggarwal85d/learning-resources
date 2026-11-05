@@ -1,0 +1,186 @@
+{
+  "topic": "dsa.prim-s-algorithm",
+  "syllabus": [
+    {
+      "clause": "growing one tree with a priority queue",
+      "at": [
+        {
+          "step": "Prim's algorithm grows one tree outward from a single starting vertex. The cut is always the tree built so far against everything still outside it, and the lightest edge crossing that cut is added next. Correctness follows in one line from the cut property already proved: that cut always respects every edge already in the tree."
+        },
+        {
+          "step": "The lazy implementation: push every edge leaving a newly added vertex onto a priority queue, pop the minimum, and discard it on the spot if both its ends already sit inside the tree. Run on this chapter's own graph from the same starting site Kruskal's own run never needed: the identical weight, the identical five edges."
+        },
+        {
+          "step": "The eager implementation: every vertex still outside the tree holds only the cheapest edge into the tree seen so far, improved by a decrease-key, a sift-up on the identical binary heap, whenever a better edge turns up. Run on the identical graph: the identical tree, the identical order of vertices added, and never more entries pushed than the lazy version needed."
+        },
+        {
+          "step": "Prim's own loop and Dijkstra's own loop are the identical loop with one line changed: Prim's key is an edge's own weight; Dijkstra's key is the total path length so far. Everything else, the cut, the priority queue, the decrease-key, stays exactly the same."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "O(n²) array version for dense graphs vs heap version for sparse ones",
+      "at": [
+        {
+          "step": "The array version keeps no heap at all: a plain array of keys, a linear scan for the minimum, as many scans as there are vertices. Run on this chapter's own graph: twenty-one comparisons in total, a number fixed the moment the vertex count is fixed, however many edges the graph actually has."
+        },
+        {
+          "step": "Hold the same six vertices fixed and add far more edges between them. Does the array version's own comparison count change at all?"
+        },
+        {
+          "step": "The crossover, derived: the array version costs a number proportional to the vertex count squared; the heap version costs a number proportional to the edge count times the logarithm of the vertex count. The heap wins exactly while that second number stays below the first, which happens while the edge count stays below roughly the vertex count squared over the logarithm, base two, of the vertex count."
+        },
+        {
+          "step": "The crossover, measured directly: holding the vertex count fixed and sweeping the edge count upward on random graphs, the heap version's own cost first exceeds the array version's fixed cost at a point landing in the same broad range the derived ratio predicts. Big-O hides constant factors; this checks the order of magnitude, not an exact match."
+        },
+        {
+          "step": "Kruskal's own cost is keyed to how many edges the graph has, through its sort. Prim's array version is keyed only to how many vertices the graph has. On a dense graph, Prim's array version wins by the measured margin; on a sparse graph, or one whose edges already arrive sorted, Kruskal is competitive or better."
+        },
+        {
+          "step": "The array version wants an adjacency matrix or list but touches memory in one straight line. The heap version wants an adjacency list, or the compressed layout from earlier in this milestone, and pays for every heap operation it performs. Dense graphs, and complete graphs built from a set of points where every pair is an edge, are the array version's natural home."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "NetworkX Documentation, minimum_spanning_tree",
+      "items": [
+        {
+          "item": "NetworkX's own documented inclusion of 'prim' as a shipped, selectable algorithm choice",
+          "at": [
+            {
+              "step": "Prim's algorithm grows one tree outward from a single starting vertex. The cut is always the tree built so far against everything still outside it, and the lightest edge crossing that cut is added next. Correctness follows in one line from the cut property already proved: that cut always respects every edge already in the tree."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Erickson, Algorithms (2019), Chapter 7, §7.4 \"Jarník's ('Prim's') Algorithm\"",
+      "items": [
+        {
+          "item": "the shape of the forest Jarník's (\"Prim's\") algorithm grows: one nontrivial component, the rest isolated vertices",
+          "at": [
+            {
+              "step": "Prim's algorithm grows one tree outward from a single starting vertex. The cut is always the tree built so far against everything still outside it, and the lightest edge crossing that cut is added next. Correctness follows in one line from the cut property already proved: that cut always respects every edge already in the tree."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Sedgewick & Wayne, Algorithms 4th ed. booksite §4.3",
+      "items": [
+        {
+          "item": "the lazy-versus-eager implementation distinction and the stated big-O costs for each with a heap-backed priority queue",
+          "at": [
+            {
+              "step": "The lazy implementation: push every edge leaving a newly added vertex onto a priority queue, pop the minimum, and discard it on the spot if both its ends already sit inside the tree. Run on this chapter's own graph from the same starting site Kruskal's own run never needed: the identical weight, the identical five edges."
+            },
+            {
+              "step": "The eager implementation: every vertex still outside the tree holds only the cheapest edge into the tree seen so far, improved by a decrease-key, a sift-up on the identical binary heap, whenever a better edge turns up. Run on the identical graph: the identical tree, the identical order of vertices added, and never more entries pushed than the lazy version needed."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "The lazy and eager implementations compute the identical tree because both are correct applications of the identical cut property; they differ only in how much wasted bookkeeping the priority queue carries, which is an implementation detail with no bearing on correctness, only on cost.",
+        "at": [
+          {
+            "step": "The lazy implementation: push every edge leaving a newly added vertex onto a priority queue, pop the minimum, and discard it on the spot if both its ends already sit inside the tree. Run on this chapter's own graph from the same starting site Kruskal's own run never needed: the identical weight, the identical five edges."
+          }
+        ]
+      },
+      {
+        "item": "The eager version's own guarantee (at most one entry per outside vertex) is a structural fact about the algorithm, not a property that depends on this particular graph's shape; it holds on any graph, which is exactly why the eager version's own priority queue never exceeds the vertex count in size, while the lazy version's own queue can grow to the full edge count.",
+        "at": [
+          {
+            "step": "The eager implementation: every vertex still outside the tree holds only the cheapest edge into the tree seen so far, improved by a decrease-key, a sift-up on the identical binary heap, whenever a better edge turns up. Run on the identical graph: the identical tree, the identical order of vertices added, and never more entries pushed than the lazy version needed."
+          }
+        ]
+      },
+      {
+        "item": "Prim's algorithm and Dijkstra's algorithm sharing a loop is not a coincidence of implementation convenience; both are instances of the identical generic greedy-growth pattern over a priority queue, differing only in which quantity the key tracks, which is exactly the kind of fact a learner who has seen only one of the two algorithms would otherwise miss.",
+        "at": [
+          {
+            "step": "Prim's own loop and Dijkstra's own loop are the identical loop with one line changed: Prim's key is an edge's own weight; Dijkstra's key is the total path length so far. Everything else, the cut, the priority queue, the decrease-key, stays exactly the same."
+          }
+        ]
+      },
+      {
+        "item": "The array version's Θ(n²) cost is not a weakness to be apologized for; it is a different trade entirely, trading away any sensitivity to the edge count for a memory-access pattern (a straight linear scan) that real hardware rewards, which is why it is the right choice on dense graphs rather than merely a simpler fallback for when a heap is unavailable.",
+        "at": [
+          {
+            "step": "The array version keeps no heap at all: a plain array of keys, a linear scan for the minimum, as many scans as there are vertices. Run on this chapter's own graph: twenty-one comparisons in total, a number fixed the moment the vertex count is fixed, however many edges the graph actually has."
+          }
+        ]
+      },
+      {
+        "item": "That the array version's cost is independent of the edge count is not an approximation that happens to hold most of the time; it is exact and by construction, because every scan iterates over the fixed set of vertices not yet in the tree regardless of how many edges exist between them, which is confirmed in examples.py by running the identical scan at two very different edge counts on the same two-hundred-vertex graph and getting the identical comparison count both times.",
+        "at": [
+          {
+            "step": "Hold the same six vertices fixed and add far more edges between them. Does the array version's own comparison count change at all?"
+          }
+        ]
+      },
+      {
+        "item": "The derived crossover (m roughly n squared over log base two of n) is a statement about where two asymptotic cost formulas cross, not a prediction of where two real running times cross; the measured crossover in examples.py lands at a smaller edge count than the formula predicts precisely because the formula's own hidden constant factors (the per-operation cost of a real binary heap push or pop versus a real array comparison) are not equal to one, which is the entire reason Big-O notation hides them in the first place.",
+        "at": [
+          {
+            "step": "The crossover, measured directly: holding the vertex count fixed and sweeping the edge count upward on random graphs, the heap version's own cost first exceeds the array version's fixed cost at a point landing in the same broad range the derived ratio predicts. Big-O hides constant factors; this checks the order of magnitude, not an exact match."
+          }
+        ]
+      },
+      {
+        "item": "Kruskal's own cost and Prim's array-version cost being keyed to different quantities (edges versus vertices) is precisely why no single answer to \"which algorithm is faster\" exists independent of the graph's own density; the comparison only resolves once a specific edge count and vertex count are named, which is the same reason the chapter frames this as a density-dependent choice rather than a universal ranking.",
+        "at": [
+          {
+            "step": "Kruskal's own cost is keyed to how many edges the graph has, through its sort. Prim's array version is keyed only to how many vertices the graph has. On a dense graph, Prim's array version wins by the measured margin; on a sparse graph, or one whose edges already arrive sorted, Kruskal is competitive or better."
+          }
+        ]
+      },
+      {
+        "item": "The implementation-facts step's claim that complete graphs built from geometric point sets favor the array version is a statement about one common real-world source of dense graphs, not a claim that every dense graph arises this way; an arbitrary dense graph with no geometric structure is still a candidate for the array version purely on the strength of its edge count, with geometric completeness being a sufficient but not necessary condition.",
+        "at": [
+          {
+            "step": "The array version wants an adjacency matrix or list but touches memory in one straight line. The heap version wants an adjacency list, or the compressed layout from earlier in this milestone, and pays for every heap operation it performs. Dense graphs, and complete graphs built from a set of points where every pair is an edge, are the array version's natural home."
+          }
+        ]
+      },
+      {
+        "item": "The hook's twenty-thousand-point complete graph is used only to motivate the question of which structure wins, not as the scale examples.py actually measures at; the real measurement runs at a much smaller, script-tractable vertex count, and the topic is explicit that the hook's own scale is never claimed as a timing result, only an edge count.",
+        "at": [
+          {
+            "step": "A complete graph on twenty thousand points: nearly two hundred million candidate edges. Sorting them all for Kruskal is the slow part before a single decision is made. A heap-based Prim touches every edge and pays a heap operation only for the useful ones. A plain array with no heap at all, doing many scans of many entries, looks wasteful yet may be the one that wins. Which structure wins, and why?"
+          }
+        ]
+      },
+      {
+        "item": "Prim's own name for this algorithm is a matter of convention, not strict historical priority — Jarník described the identical algorithm first, in a letter to Borůvka, published the following year — which matters pedagogically because a learner who assumes an algorithm's name always tracks who discovered it first will be wrong on this one, and on several others in the same chapter.",
+        "at": [
+          {
+            "step": "Prim's algorithm grows one tree outward from a single starting vertex. The cut is always the tree built so far against everything still outside it, and the lightest edge crossing that cut is added next. Correctness follows in one line from the cut property already proved: that cut always respects every edge already in the tree."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

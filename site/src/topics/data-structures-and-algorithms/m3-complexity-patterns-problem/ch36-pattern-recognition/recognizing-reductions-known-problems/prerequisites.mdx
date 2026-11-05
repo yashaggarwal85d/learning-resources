@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Modelling problems as graphs">Before this: state, move, question, and the near-miss this topic's shortest-path shape reuses.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Complexity budgeting from constraints">Before this: reading size and limit as a budget, before matching a shape.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Choosing the structure for the operation mix">Before this: reading the operations, the second of the four reading skills.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Monotonic stacks and queues">Before this: the next-greater-element pattern on the catalogue page.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">Before this: the heap behind top-k via a heap.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Tournament and loser trees">Before this: the k-way-merge bound on the catalogue page.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Interval merging and scheduling">Before this: earliest-finish greedy, the interval-scheduling shape.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Sweep-line algorithms">Before this: a second technique over intervals on a line.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Approximation ratios and greedy set cover">Before this: the vertex-cover link to König's theorem, named in this topic's matching shape.</Resource>
+</ul>
+
+Chapter 17's strongly connected components, Chapter 18's DAG shortest and longest paths, Chapter 20's flow and matching algorithms, Chapter 22's DP state design, Chapter 24's fast and slow pointers, and Chapter 33's P, NP and polynomial reductions are assumed informally in this topic — none of those chapters is live yet, so this topic implements every algorithm it needs directly in `examples.py` rather than linking to a not-yet-published topic.
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Hamiltonian Cycle (Jeff Erickson, Algorithms, Ch. 12)" href="http://jeffe.cs.illinois.edu/teaching/algorithms/book/12-nphard.pdf" by="Jeff Erickson">The shortest-path shape's near-miss, reused from topic 115.</Resource>
+  <Resource kind="reading" title="2-satisfiability" href="https://en.wikipedia.org/wiki/2-satisfiability" by="Wikipedia">The implication-graph and strongly-connected-components criterion behind the two-SAT shape.</Resource>
+</ul>
+
+</section>
