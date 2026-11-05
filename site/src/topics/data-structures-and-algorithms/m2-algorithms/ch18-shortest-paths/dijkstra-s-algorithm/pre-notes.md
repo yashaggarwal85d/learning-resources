@@ -1,0 +1,4 @@
+- **Weighted graph (recap)**: a graph where every edge carries a number, its cost. *Where you meet it:* every algorithm in this chapter operates on one.
+- **Priority queue (recap from Chapter 6)**: a structure that always returns its smallest (or largest) stored item first. *Where you meet it:* the structure this topic's algorithm pops the next-closest vertex from.
+- **Shortest path**: the path between two vertices whose edge weights sum to the least. *Where you meet it:* the exact quantity this topic's algorithm computes from one source to every other vertex.
+- **Relaxation**: checking whether going through one more edge improves the current best distance estimate to a vertex. *Where you meet it:* the single operation every algorithm in this chapter, including this one, is built from.
