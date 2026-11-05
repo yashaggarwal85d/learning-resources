@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Expectation and indicator variables">Linearity of expectation and the harmonic number this topic's Algorithm L draw count uses.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The min-heap the weighted reservoir keeps as its active structure.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Reservoir sampling" href="https://en.wikipedia.org/wiki/Reservoir_sampling" by="Wikipedia">Algorithm R's history, its correctness proof, and Algorithm L's skip-based pseudocode.</Resource>
+  <Resource kind="reading" title="Weighted Random Sampling over Data Streams" href="https://arxiv.org/abs/1012.0256" by="Efraimidis (arXiv:1012.0256)">The u^(1/w) key construction and the two interpretations of "weight" in weighted sampling.</Resource>
+  <Resource kind="reading" title="SamplingUtils.scala" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/scala/org/apache/spark/util/random/SamplingUtils.scala" by="Apache Spark">Algorithm R as it is actually implemented in a real distributed engine.</Resource>
+  <Resource kind="reading" title="Partitioner.scala" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/scala/org/apache/spark/Partitioner.scala" by="Apache Spark">RangePartitioner's sketch step, where a reservoir's count travels with its sample.</Resource>
+</ul>
+
+</section>

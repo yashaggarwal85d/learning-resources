@@ -1,0 +1,101 @@
+{
+  "topic": "dsa.reservoir-sampling",
+  "steps": [
+    {
+      "lines": [
+        "A log keeps flowing past, longer than anyone told you in advance, and there is room to keep only a small fixed slice of it.",
+        "The promise this topic has to keep is that every single line in the whole file ends up with exactly the same chance of surviving into that slice."
+      ]
+    },
+    {
+      "lines": [
+        "Whatever rule decides replacement has to work the same way whether this is the tenth line or the millionth."
+      ],
+      "answer": [
+        "The reservoir size divided by how many lines have arrived so far is the only rule that keeps every line equally likely, and it naturally shrinks as the stream grows."
+      ]
+    },
+    {
+      "lines": [
+        "Fill the reservoir with the first arrivals outright, no randomness needed yet.",
+        "After that, every new arrival draws a number across everything seen so far, and only a number landing inside the reservoir's own size causes a replacement."
+      ]
+    },
+    {
+      "lines": [
+        "Assume every earlier arrival was already uniformly likely to be sitting in the reservoir, and watch what one more step does to that.",
+        "Each survivor's chance multiplies by one factor for not being evicted this round, and multiplying all those factors together collapses into the exact same simple ratio every time."
+      ]
+    },
+    {
+      "lines": [
+        "A rule based on knowing the total count ahead of time cannot run on a stream that never announces its own length.",
+        "A rule that only ever looks at the first arrivals ignores everyone who comes later, and a rule that flips a fixed coin on every arrival favors whichever arrivals happen to come late."
+      ]
+    },
+    {
+      "lines": [
+        "Once the reservoir is full, almost every single arrival after it still has to generate one random number and ask whether it belongs in the reservoir.",
+        "At a huge stream length against a modest reservoir size, that adds up to a random decision for nearly every item that ever goes by."
+      ]
+    },
+    {
+      "lines": [
+        "The question is whether all of that random-number generation is actually necessary, or whether most of it is wasted effort."
+      ],
+      "answer": [
+        "The number of items skipped before the next real replacement follows a predictable distribution, so that count can be generated directly instead of asking item by item."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of asking every arriving item whether it replaces something, compute how many items will be skipped before the next replacement happens, in one step.",
+        "Only the items that actually end up entering the reservoir ever cost any random numbers at all; everything in between is skipped without a second look."
+      ]
+    },
+    {
+      "lines": [
+        "Run both approaches side by side at the same huge scale and the difference in how many random numbers each one generates is enormous.",
+        "The skip-based approach's cost tracks the reservoir size times roughly the logarithm of how many times larger the stream is, nowhere near the size of the stream itself."
+      ]
+    },
+    {
+      "lines": [
+        "On a stream that can only be read one item at a time in order, skipping ahead in the random-number sense still means reading every item in between.",
+        "Only when the underlying source can itself jump directly to a position does the skip also avoid that reading cost, not merely the randomness."
+      ]
+    },
+    {
+      "lines": [
+        "A reservoir can also favor some items more than others by weight, but that single word hides a real ambiguity worth pinning down first."
+      ],
+      "answer": [
+        "The weight that actually drives this construction is the chance an item wins at each individual draw, not the chance it ends up in the final sample overall."
+      ]
+    },
+    {
+      "lines": [
+        "Give every item a uniformly random number, then raise that number to a power that depends inversely on the item's own weight.",
+        "Keep only the handful of items whose resulting numbers come out largest, held in a structure that always exposes the current smallest one for comparison."
+      ]
+    },
+    {
+      "lines": [
+        "Make one item ten times as heavy as four ordinary items and sample just two, and that one heavy item ends up included almost every single time.",
+        "The naive instinct of taking its share of the total weight and simply doubling it for two draws produces a number larger than one, which cannot be a probability at all."
+      ]
+    },
+    {
+      "lines": [
+        "Combining two separately sampled reservoirs fairly means favoring whichever stream actually contributed more items, in exact proportion to how many each one saw.",
+        "A real large-scale system's range partitioner keeps exactly that count alongside every sample it draws, while its simpler all-at-once sampling routine solves a completely different problem by counting first and retrying if needed."
+      ]
+    },
+    {
+      "lines": [
+        "Every item ending up with the same chance of survival, from a stream read exactly once, is what this whole topic has been proving one way after another.",
+        "The next question is not which items survive but what order they end up in, where every possible ordering has to be equally likely instead."
+      ]
+    }
+  ]
+}
