@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Topological sort">The ordering this topic's entire single-pass algorithm is built from.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Dijkstra's algorithm">The relaxation mechanism this topic reuses, without the priority queue.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bellman–Ford and negative cycles">The slower, more general algorithm this topic's single pass is confirmed against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Floyd–Warshall and Johnson's algorithm">The all-pairs case for a general graph, contrasted with this topic's acyclic special case.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Shortest path problem" href="https://en.wikipedia.org/wiki/Shortest_path_problem" by="Wikipedia">The linear-time, topological-order algorithm for DAG shortest paths.</Resource>
+  <Resource kind="reading" title="Topological sorting" href="https://en.wikipedia.org/wiki/Topological_sorting" by="Wikipedia">The same mechanism restated, and its own link to critical-path scheduling.</Resource>
+  <Resource kind="reading" title="Longest path problem" href="https://en.wikipedia.org/wiki/Longest_path_problem" by="Wikipedia">Why this problem is NP-hard in general but linear on a DAG.</Resource>
+  <Resource kind="reading" title="Critical path method" href="https://en.wikipedia.org/wiki/Critical_path_method" by="Wikipedia">The project-scheduling technique this topic's longest-path worked example is.</Resource>
+</ul>
+
+</section>

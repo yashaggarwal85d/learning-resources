@@ -1,0 +1,68 @@
+{
+  "topic": "dsa.dag-shortest-longest-paths",
+  "syllabus": [
+    {
+      "clause": "relaxation in topological order in O(n + m)",
+      "at": [
+        { "step": "Visit every vertex in topological order. At each one, relax its outgoing edges exactly once — the moment a vertex is reached, every edge into it has already been relaxed by every predecessor that could possibly improve it." },
+        { "step": "Relax the identical edges on the identical graph, but visit the vertices in some other order instead — and one vertex ends up with a distance that is simply wrong, with no error, no crash, and no warning that anything went amiss." }
+      ]
+    },
+    {
+      "clause": "longest path and critical path in schedules",
+      "at": [
+        { "step": "Negating every edge weight and running the identical single pass turns the shortest-path answer into the longest-path answer. Does that same substitution correctly find the longest path on any graph at all, or only on this kind?" },
+        { "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Shortest path problem\"",
+      "items": [
+        { "item": "Topological sorting solves the single-source shortest path problem in linear time on an arbitrarily-weighted DAG", "at": [{ "step": "Visit every vertex in topological order. At each one, relax its outgoing edges exactly once — the moment a vertex is reached, every edge into it has already been relaxed by every predecessor that could possibly improve it." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Topological sorting\"",
+      "items": [
+        { "item": "The topological ordering can be used to quickly compute shortest paths through a weighted DAG, and the resulting pass takes linear (n + m) time", "at": [{ "step": "Visit every vertex in topological order. At each one, relax its outgoing edges exactly once — the moment a vertex is reached, every edge into it has already been relaxed by every predecessor that could possibly improve it." }] },
+        { "item": "Topological sorting forms the basis of linear-time algorithms for finding a project's critical path", "at": [{ "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Longest path problem\"",
+      "items": [
+        { "item": "The longest path problem is NP-hard on general graphs, but has a linear-time solution on directed acyclic graphs", "at": [{ "step": "Negating every edge weight and running the identical single pass turns the shortest-path answer into the longest-path answer. Does that same substitution correctly find the longest path on any graph at all, or only on this kind?" }] },
+        { "item": "A longest path is the same thing as a shortest path in the graph with every weight negated, valid on a DAG because negation there can never create a negative cycle", "at": [{ "step": "Negating every edge weight and running the identical single pass turns the shortest-path answer into the longest-path answer. Does that same substitution correctly find the longest path on any graph at all, or only on this kind?" }] },
+        { "item": "The longest path ending at each vertex can be computed directly in topological order, without negation, by maximising over each vertex's incoming neighbours", "at": [{ "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }] },
+        { "item": "In a project's milestone-and-activity graph, the longest path from the first milestone to the last is the critical path", "at": [{ "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Critical path method\"",
+      "items": [
+        { "item": "The critical path method's own definition, and its restatement that a critical path is the longest stretch of dependent activities", "at": [{ "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }] },
+        { "item": "The method's historical attribution (Walker, DuPont; Kelley, Remington Rand; the late 1950s)", "at": [{ "deep": "Where this goes next" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "A topological order is not merely a convenient visiting order for this algorithm — it is the correctness proof itself, since 'every predecessor already relaxed before this vertex is visited' is exactly what a topological order guarantees and nothing else does", "at": [{ "step": "Visit every vertex in topological order. At each one, relax its outgoing edges exactly once — the moment a vertex is reached, every edge into it has already been relaxed by every predecessor that could possibly improve it." }] },
+      { "item": "This topic's single pass relaxes each edge exactly once, total work O(n + m); Dijkstra relaxes each edge at most once too but pays an extra O(log n) per relaxation for the priority queue, and Bellman-Ford relaxes every edge up to n minus one times — the acyclic precondition is what removes both the queue and the repeated rounds, not a cleverer relaxation rule", "at": [{ "step": "Relax the identical edges on the identical graph, but visit the vertices in some other order instead — and one vertex ends up with a distance that is simply wrong, with no error, no crash, and no warning that anything went amiss." }] },
+      { "item": "The wrong-order failure is silent specifically because relaxation only ever lowers a distance, never raises it back up for inspection — a vertex settled too early simply keeps whatever value it had at that moment, with no later check that would catch the mistake", "at": [{ "step": "Relax the identical edges on the identical graph, but visit the vertices in some other order instead — and one vertex ends up with a distance that is simply wrong, with no error, no crash, and no warning that anything went amiss." }] },
+      { "item": "Negating weights and re-running the identical pass works because relaxation's own comparison (less-than) is reversed consistently by negation (less-than becomes greater-than under negation, and negation's own double-reversal restores the original comparison) — it is not a coincidence specific to this one graph", "at": [{ "step": "Negating every edge weight and running the identical single pass turns the shortest-path answer into the longest-path answer. Does that same substitution correctly find the longest path on any graph at all, or only on this kind?" }] },
+      { "item": "The longest path problem being NP-hard in general and trivial on a DAG is the same pattern this chapter has shown twice already: a restriction on the input (non-negative weights for Dijkstra, no cycle at all here) turns an otherwise-hard or otherwise-slow problem into an easy one, rather than needing a fundamentally different algorithm", "at": [{ "step": "Negating every edge weight and running the identical single pass turns the shortest-path answer into the longest-path answer. Does that same substitution correctly find the longest path on any graph at all, or only on this kind?" }] },
+      { "item": "A task-dependency graph is acyclic by construction, not by luck — a dependency cycle (task A needs B, B needs A) describes a schedule that can never start, so every legitimate project schedule is automatically the one kind of graph this topic's trick applies to", "at": [{ "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }] },
+      { "item": "The critical path's own total length is also the minimum possible project duration, not merely its longest chain of tasks — every other path through the schedule is shorter, so none of them can be the bottleneck that determines when the project is done", "at": [{ "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }] },
+      { "item": "This topic's own task-dependency worked example is confirmed two independent ways: the longest-path-via-negation pass, and a direct hand trace of each candidate path's total duration — both agreeing the critical path is the one this topic reports, not merely trusting the algorithm's own output", "at": [{ "step": "A schedule's own milestone-and-task graph has no cycle by its very nature — a task cannot depend on its own completion — so its critical path is exactly the longest path from the project's start to its end, read directly off the identical single pass." }] },
+      { "item": "Every algorithm this chapter built (Dijkstra's priority queue, Bellman-Ford's repeated rounds, Floyd-Warshall's dynamic program, Johnson's reweighting) exists specifically to handle a graph shape or weight pattern this topic's own precondition rules out by definition — this topic is not a fifth, unrelated algorithm but the limiting case where none of that machinery is needed at all", "at": [{ "step": "Every algorithm in this chapter answered a question between two vertices, or from one vertex to every other, on a graph that could have any shape at all. A graph with no cycle made the same question strictly easier than any of them needed to allow for." }] },
+      { "item": "This topic closes Chapter 18's own question (shortest and longest paths, for every kind of graph the chapter considers); the next chapter asks a different question about the same weighted graph, not about one vertex's route to the rest but about the cheapest set of edges connecting every vertex to every other", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The critical path method's own attribution names 1959 only in its cited conference paper, not in the lead sentence itself, which only commits to 'the late 1950s' — a reminder that a source's own precision has a limit, and restating beyond that limit would be a claim this topic cannot actually verify", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

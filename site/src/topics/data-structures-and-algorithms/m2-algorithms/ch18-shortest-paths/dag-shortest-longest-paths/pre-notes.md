@@ -1,0 +1,4 @@
+- **Critical path**: the longest chain of dependent tasks in a schedule, which sets the schedule's minimum possible length. *Where you meet it:* the direct payoff of this topic's longest-path computation.
+- **Topological order (recap from topic 61)**: an ordering of a DAG's vertices where every edge points forward. *Where you meet it:* the exact order this topic's single pass relaxes edges in.
+- **Relaxation (recap from topic 63)**: for an edge, if going through it beats the current best estimate, update the estimate. *Where you meet it:* the one operation this topic's entire algorithm is built from.
+- **Directed acyclic graph (recap from Chapter 10)**: a directed graph with no cycle. *Where you meet it:* the single precondition that makes this topic's algorithm both correct and far cheaper than any earlier one in the chapter.
