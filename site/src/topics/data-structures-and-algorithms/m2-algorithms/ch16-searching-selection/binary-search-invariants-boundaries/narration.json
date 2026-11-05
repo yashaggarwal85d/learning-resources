@@ -1,0 +1,72 @@
+{
+  "topic": "dsa.binary-search-invariants-boundaries",
+  "steps": [
+    {
+      "lines": [
+        "A sorted order turns a search that costs everything into one that costs almost nothing.",
+        "The question this topic answers is exactly how little, and exactly where that promise can quietly break."
+      ]
+    },
+    {
+      "lines": [
+        "Take a million keys, and notice that every comparison you make throws away half of whatever is still left.",
+        { "beat": 0.3 },
+        "How many comparisons before you are down to nothing, whether the key is found or not?"
+      ],
+      "answer": [
+        "Twenty. Each comparison halves the range, and a million only survives so many halvings before none remain.",
+        "The exact count is the ceiling of the logarithm, base two, of one more than the size, not of the size itself. That extra one matters right at a clean power of two."
+      ]
+    },
+    {
+      "lines": [
+        "Write every range here with the low end always a candidate, and the high end always one step past the last candidate.",
+        "That single convention buys you something simple: the range is empty exactly when the two ends meet, nothing trickier to check."
+      ]
+    },
+    {
+      "lines": [
+        "Two tiny loops, differing in exactly one comparison, answer four different questions at once: where a key first appears, where it last appears, and how many times it appears at all.",
+        "Watch what happens on a run of three equal keys, and notice the two loops land on either side of the whole run, never inside it."
+      ]
+    },
+    {
+      "lines": [
+        "Now take a key that simply is not in the array at all.",
+        { "beat": 0.3 },
+        "What do the two loops return, and how do they compare to each other?"
+      ],
+      "answer": [
+        "They land on exactly the same position: the first place something larger would have to go.",
+        "The two loops only ever disagree when the key you searched for is actually present."
+      ]
+    },
+    {
+      "lines": [
+        "The simplest possible way to split a range in two shipped broken, for years, in more than one respected piece of software.",
+        "In one case it was written by the very engineer who, years later, found the mistake sitting in his own code.",
+        "Add two numbers that are each perfectly reasonable on their own, and if the machine's integer type is too narrow for their sum, the result silently wraps around to something nonsensical, often negative."
+      ]
+    },
+    {
+      "lines": [
+        "Shrink the identical mistake down to a width small enough to check by hand.",
+        "Seventy and ninety are each perfectly ordinary. Added together on a narrow enough integer, their sum doesn't fit, and it wraps around to a negative number entirely.",
+        "The safe version never sums two large numbers in the first place. It only ever adds the small gap between them to a value already known to be safe."
+      ]
+    },
+    {
+      "lines": [
+        "Every single pass through this loop either finishes the search, or makes the range that's left strictly smaller than it was a moment before.",
+        "That alone is the whole proof the loop has to end, no cleverness required beyond counting how many times something that only shrinks can shrink.",
+        "For a million keys, the count comes out to twenty, and never once more."
+      ]
+    },
+    {
+      "lines": [
+        "Three small habits now travel with you into every search that follows: write the range half open, build the midpoint so it never sums two large numbers, and know in advance exactly how many steps the loop can possibly need.",
+        "The next topic hands this identical loop a very different kind of question."
+      ]
+    }
+  ]
+}

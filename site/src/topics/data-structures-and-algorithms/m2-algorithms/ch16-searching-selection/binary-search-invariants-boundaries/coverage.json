@@ -1,28 +1,70 @@
 {
-  "topic": "Binary search invariants and boundaries",
-  "syllabus": [],
-  "sources": [],
+  "topic": "dsa.binary-search-invariants-boundaries",
+  "syllabus": [
+    {
+      "clause": "half-open intervals",
+      "at": [
+        { "step": "Every range in this topic is written as a half-open interval [lo, hi): lo is always a candidate, hi is always one past the last candidate, and the loop invariant is kept at the top of every iteration — the answer, if it exists, lies in [lo, hi). A closed [lo, hi] version needs a fiddlier termination check, lo > hi instead of just lo == hi." }
+      ]
+    },
+    {
+      "clause": "lower/upper bound, first/last occurrence",
+      "at": [
+        { "step": "lower_bound is the first index with a[i] >= x; upper_bound is the first index with a[i] > x — the same loop with one comparison flipped. First and last occurrence of a key, and the count of a key, all reduce to one or both of them: on three equal 3s, lower_bound lands on the first, upper_bound one past the last, and their difference is the count." },
+        { "step": "A key that is absent entirely from the array: what do lower_bound and upper_bound return, and how do the two relate to each other?" }
+      ]
+    },
+    {
+      "clause": "the overflow-safe midpoint (the bug found in many libraries in 2006)",
+      "at": [
+        { "step": "The naive midpoint, (low + high) / 2, shipped in Bentley's Programming Pearls and in the JDK's own Arrays.binarySearch — written by the engineer, Joshua Bloch, who later found the bug in his own code. Once low + high exceeds the maximum value a fixed-width signed integer can hold, the sum wraps negative, and the bug sat unnoticed for about nine years before it broke someone's program and was reported." },
+        { "step": "The identical overflow, reproduced on an eight-bit signed integer so the wraparound lands on indices small enough to read by hand: 70 + 90 = 160 exceeds the eight-bit signed maximum of 127, wraps to −96, and the naive midpoint comes out negative, −48, an out-of-bounds index. The safe line, low + ((high − low) / 2), never sums two large values and gives the correct 80." }
+      ]
+    },
+    {
+      "clause": "proving termination by invariant",
+      "at": [
+        { "step": "Every iteration either returns or strictly shrinks hi − lo, since lo <= mid < hi whenever lo < hi: the range width can only fall, never stay put or rise, and it starts at n. That proves termination by itself — at most ⌈log₂(n + 1)⌉ iterations, twenty for a million keys, checked directly against every possible target, not assumed." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "cplusplus.com — std::lower_bound / std::upper_bound",
+      "items": [
+        { "item": "lower_bound: first element in [first,last) not less than val", "at": [{ "step": "lower_bound is the first index with a[i] >= x; upper_bound is the first index with a[i] > x — the same loop with one comparison flipped. First and last occurrence of a key, and the count of a key, all reduce to one or both of them: on three equal 3s, lower_bound lands on the first, upper_bound one past the last, and their difference is the count." }] },
+        { "item": "upper_bound: first element in [first,last) greater than val, or last if none", "at": [{ "step": "lower_bound is the first index with a[i] >= x; upper_bound is the first index with a[i] > x — the same loop with one comparison flipped. First and last occurrence of a key, and the count of a key, all reduce to one or both of them: on three equal 3s, lower_bound lands on the first, upper_bound one past the last, and their difference is the count." }] }
+      ]
+    },
+    {
+      "source": "Bloch — \"Extra, Extra — Read All About It: Nearly All Binary Searches and Mergesorts are Broken\" (2006)",
+      "items": [
+        { "item": "Bentley's Programming Pearls binary search and Bloch's own JDK binary search both carried the overflow bug, undetected for about nine years", "at": [{ "step": "The naive midpoint, (low + high) / 2, shipped in Bentley's Programming Pearls and in the JDK's own Arrays.binarySearch — written by the engineer, Joshua Bloch, who later found the bug in his own code. Once low + high exceeds the maximum value a fixed-width signed integer can hold, the sum wraps negative, and the bug sat unnoticed for about nine years before it broke someone's program and was reported." }] },
+        { "item": "The naive line (low + high) / 2 overflows for arrays of 2^30 or more elements; the portable fix is low + ((high - low) / 2); the JDK's own shipped fix is the unsigned shift (low + high) >>> 1", "at": [{ "step": "The identical overflow, reproduced on an eight-bit signed integer so the wraparound lands on indices small enough to read by hand: 70 + 90 = 160 exceeds the eight-bit signed maximum of 127, wraps to −96, and the naive midpoint comes out negative, −48, an out-of-bounds index. The safe line, low + ((high − low) / 2), never sums two large values and gives the correct 80." }, { "deep": "Where this goes next" }] }
+      ]
+    }
+  ],
   "expert": {
     "by": "self-review, from the syllabus line and the fetched sources only",
     "date": "2026-11-05",
     "items": [
-      { "item": "The half-open range convention [lo, hi): lo is always a candidate, hi is always one past the last candidate", "at": [{ "step": "The half-open invariant" }] },
-      { "item": "A loop invariant for binary search must be stated and kept true at the top of every iteration, not just argued informally", "at": [{ "step": "The half-open invariant" }] },
-      { "item": "lower_bound: first index i with a[i] >= x", "at": [{ "step": "Four questions, one loop" }] },
-      { "item": "upper_bound: first index i with a[i] > x (or the end of the range if none)", "at": [{ "step": "Four questions, one loop" }] },
-      { "item": "First and last occurrence of x reduce to lower_bound(x) and upper_bound(x) - 1", "at": [{ "step": "Four questions, one loop" }] },
-      { "item": "The count of x in a sorted range equals upper_bound(x) - lower_bound(x)", "at": [{ "step": "Four questions, one loop" }] },
-      { "item": "The naive midpoint (low + high) / 2 overflows a fixed-width signed integer for large enough low and high", "at": [{ "step": "The bug that waited nine years" }] },
-      { "item": "The portable, overflow-safe midpoint is low + ((high - low) / 2)", "at": [{ "step": "The bug that waited nine years" }] },
-      { "item": "The same bug sat undetected in Bentley's Programming Pearls binary search and in the JDK's own Arrays.binarySearch for about nine years before it was reported", "at": [{ "step": "The bug that waited nine years" }] },
-      { "item": "The bug manifests only at array lengths around 2^30 (roughly a billion elements), which is why it went unnoticed for two decades", "at": [{ "step": "The bug that waited nine years" }] },
-      { "item": "Java's own shipped fix uses an unsigned right shift (low + high) >>> 1, a language-specific alternative to the portable form", "at": [{ "deep": "Where this goes next" }] },
-      { "item": "Termination: each iteration strictly shrinks hi - lo (by at least one), so the loop ends in at most ceil(lg(n+1)) iterations for an array of n elements", "at": [{ "step": "Proving it ends" }] },
-      { "item": "The exact number of iterations for n = 1,000,000 is 20", "at": [{ "step": "Proving it ends" }] },
-      { "item": "A closed-range [lo, hi] formulation of the same algorithm needs a different, easier-to-break empty-range and termination check, which is why this topic standardises on half-open", "at": [{ "step": "The half-open invariant" }] },
+      { "item": "The half-open range convention [lo, hi): lo is always a candidate, hi is always one past the last candidate", "at": [{ "step": "Every range in this topic is written as a half-open interval [lo, hi): lo is always a candidate, hi is always one past the last candidate, and the loop invariant is kept at the top of every iteration — the answer, if it exists, lies in [lo, hi). A closed [lo, hi] version needs a fiddlier termination check, lo > hi instead of just lo == hi." }] },
+      { "item": "A loop invariant for binary search must be stated and kept true at the top of every iteration, not just argued informally", "at": [{ "step": "Every range in this topic is written as a half-open interval [lo, hi): lo is always a candidate, hi is always one past the last candidate, and the loop invariant is kept at the top of every iteration — the answer, if it exists, lies in [lo, hi). A closed [lo, hi] version needs a fiddlier termination check, lo > hi instead of just lo == hi." }] },
+      { "item": "lower_bound: first index i with a[i] >= x", "at": [{ "step": "lower_bound is the first index with a[i] >= x; upper_bound is the first index with a[i] > x — the same loop with one comparison flipped. First and last occurrence of a key, and the count of a key, all reduce to one or both of them: on three equal 3s, lower_bound lands on the first, upper_bound one past the last, and their difference is the count." }] },
+      { "item": "upper_bound: first index i with a[i] > x (or the end of the range if none)", "at": [{ "step": "lower_bound is the first index with a[i] >= x; upper_bound is the first index with a[i] > x — the same loop with one comparison flipped. First and last occurrence of a key, and the count of a key, all reduce to one or both of them: on three equal 3s, lower_bound lands on the first, upper_bound one past the last, and their difference is the count." }] },
+      { "item": "First and last occurrence of x reduce to lower_bound(x) and upper_bound(x) - 1", "at": [{ "step": "lower_bound is the first index with a[i] >= x; upper_bound is the first index with a[i] > x — the same loop with one comparison flipped. First and last occurrence of a key, and the count of a key, all reduce to one or both of them: on three equal 3s, lower_bound lands on the first, upper_bound one past the last, and their difference is the count." }] },
+      { "item": "The count of x in a sorted range equals upper_bound(x) - lower_bound(x)", "at": [{ "step": "lower_bound is the first index with a[i] >= x; upper_bound is the first index with a[i] > x — the same loop with one comparison flipped. First and last occurrence of a key, and the count of a key, all reduce to one or both of them: on three equal 3s, lower_bound lands on the first, upper_bound one past the last, and their difference is the count." }] },
+      { "item": "The naive midpoint (low + high) / 2 overflows a fixed-width signed integer for large enough low and high", "at": [{ "step": "The naive midpoint, (low + high) / 2, shipped in Bentley's Programming Pearls and in the JDK's own Arrays.binarySearch — written by the engineer, Joshua Bloch, who later found the bug in his own code. Once low + high exceeds the maximum value a fixed-width signed integer can hold, the sum wraps negative, and the bug sat unnoticed for about nine years before it broke someone's program and was reported." }] },
+      { "item": "The portable, overflow-safe midpoint is low + ((high - low) / 2)", "at": [{ "step": "The identical overflow, reproduced on an eight-bit signed integer so the wraparound lands on indices small enough to read by hand: 70 + 90 = 160 exceeds the eight-bit signed maximum of 127, wraps to −96, and the naive midpoint comes out negative, −48, an out-of-bounds index. The safe line, low + ((high − low) / 2), never sums two large values and gives the correct 80." }] },
+      { "item": "The same bug sat undetected in Bentley's Programming Pearls binary search and in the JDK's own Arrays.binarySearch for about nine years before it was reported", "at": [{ "step": "The naive midpoint, (low + high) / 2, shipped in Bentley's Programming Pearls and in the JDK's own Arrays.binarySearch — written by the engineer, Joshua Bloch, who later found the bug in his own code. Once low + high exceeds the maximum value a fixed-width signed integer can hold, the sum wraps negative, and the bug sat unnoticed for about nine years before it broke someone's program and was reported." }] },
+      { "item": "The bug manifests only at array lengths around 2^30 (roughly a billion elements), which is why it went unnoticed for two decades", "at": [{ "step": "The naive midpoint, (low + high) / 2, shipped in Bentley's Programming Pearls and in the JDK's own Arrays.binarySearch — written by the engineer, Joshua Bloch, who later found the bug in his own code. Once low + high exceeds the maximum value a fixed-width signed integer can hold, the sum wraps negative, and the bug sat unnoticed for about nine years before it broke someone's program and was reported." }] },
+      { "item": "Java's own shipped fix uses an unsigned right shift (low + high) >>> 1, a language-specific alternative to the portable form", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Termination: each iteration strictly shrinks hi - lo (by at least one), so the loop ends in at most ceil(lg(n+1)) iterations for an array of n elements", "at": [{ "step": "Every iteration either returns or strictly shrinks hi − lo, since lo <= mid < hi whenever lo < hi: the range width can only fall, never stay put or rise, and it starts at n. That proves termination by itself — at most ⌈log₂(n + 1)⌉ iterations, twenty for a million keys, checked directly against every possible target, not assumed." }] },
+      { "item": "The exact number of iterations for n = 1,000,000 is 20", "at": [{ "step": "Every iteration either returns or strictly shrinks hi − lo, since lo <= mid < hi whenever lo < hi: the range width can only fall, never stay put or rise, and it starts at n. That proves termination by itself — at most ⌈log₂(n + 1)⌉ iterations, twenty for a million keys, checked directly against every possible target, not assumed." }] },
+      { "item": "A closed-range [lo, hi] formulation of the same algorithm needs a different, easier-to-break empty-range and termination check, which is why this topic standardises on half-open", "at": [{ "step": "Every range in this topic is written as a half-open interval [lo, hi): lo is always a candidate, hi is always one past the last candidate, and the loop invariant is kept at the top of every iteration — the answer, if it exists, lies in [lo, hi). A closed [lo, hi] version needs a fiddlier termination check, lo > hi instead of just lo == hi." }] },
       { "item": "Binary search needs random access to the range (an array, not a linked list), a precondition named but not explored here", "at": [{ "out": "random-access precondition is a one-line aside in pre-notes; the data-structure contrast belongs to Chapter 2's lists, already live, not this topic" }] },
-      { "item": "A recursive formulation has the same invariant but costs O(log n) stack frames, against the iterative version's O(1) extra space", "at": [{ "deep": "Internals" }] }
+      { "item": "A recursive formulation has the same invariant but costs O(log n) stack frames, against the iterative version's O(1) extra space", "at": [{ "deep": "Into the internals" }] }
     ]
   },
-  "gapReview": { "date": "", "by": "", "open": [] }
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
 }

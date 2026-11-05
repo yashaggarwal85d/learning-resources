@@ -157,12 +157,12 @@ assert raw > SIGNED_MAX  # the true sum genuinely overflows an 8-bit signed int
 
 wrapped_sum = to_signed(raw, BITS)
 assert wrapped_sum < 0  # the wraparound Bloch's post describes: the sum goes negative
-assert wrapped_sum == raw - 256  # exactly one width subtracted, two's-complement wraparound
+assert wrapped_sum == raw - 256 == -96  # exactly one width subtracted, two's-complement wraparound
 
 bad_mid = naive_mid(LOW, HIGH)
 good_mid = safe_mid(LOW, HIGH)
 
-assert bad_mid < 0  # the naive midpoint is now a negative "index" -- out of bounds
+assert bad_mid == -48  # the naive midpoint is now a negative "index" -- out of bounds
 assert LOW <= good_mid <= HIGH  # the safe midpoint always stays inside the range it was given
 assert good_mid == 80  # 70 + (90 - 70) // 2 = 80, the true midpoint
 

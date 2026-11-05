@@ -1,0 +1,6 @@
+- **Array and index**: a fixed-size sequence read by position, each position numbered from zero. *Where you meet it:* every range in this topic is a slice of an array by index.
+- **Sorted order**: the array's values are arranged so each one is no smaller than the one before it. *Where you meet it:* every search in this topic requires the input already be sorted; it says nothing about unsorted data.
+- **Comparison**: asking whether one value is less than, equal to, or greater than another, for a total order where every pair can be compared. *Where you meet it:* each step of the loop makes exactly one.
+- **Integer overflow**: a fixed-width integer, added past its maximum representable value, wraps around to a small or negative number instead of growing further. *Where you meet it:* the whole subject of this topic's own midpoint bug.
+- **Loop**: code that repeats a block of steps until some condition stops it. *Where you meet it:* every search in this topic is one loop, narrowing a range each time around.
+- **Invariant** (one line): a statement that is true at the start of every repetition of a loop, used to prove the loop does what it claims. *Where you meet it:* "the answer, if it exists, lies in [lo, hi)" — kept true every iteration, and the basis for proving the loop both correct and finite.
