@@ -1,0 +1,95 @@
+{
+    "topic": "dsa.cut-property-kruskal-s",
+    "steps": [
+        {
+            "lines": [
+                "A board wants every one of six sites reachable, at the lowest total cost, out of ten candidate links.",
+                "Taking the cheapest link first feels obviously right, and that identical instinct is wrong for coin change, for knapsack, for the travelling salesman. Something specific about this problem makes greedy correct here."
+            ]
+        },
+        {
+            "lines": [
+                "Here is a question worth pausing on before the mechanism arrives.",
+                {
+                    "beat": 0.3
+                },
+                "Is the cheapest network connecting every site the same tree as the cheapest routes out from one head office site?"
+            ],
+            "answer": [
+                "No. One prices the cheapest set of links keeping everyone connected to everyone. The other prices the cheapest route from one particular site. On this graph the two trees really do differ, and by a measurable amount."
+            ]
+        },
+        {
+            "lines": [
+                "Every correct minimum spanning tree algorithm is one generic shape: start with no edges picked, repeatedly add any edge that is safe, meaning it still belongs to some minimum spanning tree, and stop once the tree has enough edges to span every vertex.",
+                "What changes from one algorithm to the next is only the fast rule for finding a safe edge."
+            ]
+        },
+        {
+            "lines": [
+                "Here is that rule, the cut property: slice the vertices into two sides, in a way that respects the edges already picked. A lightest edge crossing that slice is always safe.",
+                "Cut two vertices away from the rest of this graph, and the lightest edge crossing that cut is exactly one of the edges the minimum spanning tree keeps."
+            ]
+        },
+        {
+            "lines": [
+                "The cycle property is the cut property's mirror image: on any cycle, an edge that is strictly heavier than every other edge on that cycle belongs to no minimum spanning tree.",
+                "A triangle sitting inside this graph confirms it directly. Its heaviest edge is absent from the computed minimum spanning tree."
+            ]
+        },
+        {
+            "lines": [
+                "Suppose two edges tie for lightest across some cut.",
+                {
+                    "beat": 0.3
+                },
+                "Does the cut property still single out one safe edge?"
+            ],
+            "answer": [
+                "No single edge is forced. The proof only ever needed a lightest crossing edge, not the unique one, so every edge achieving that tied minimum weight is safe for some minimum spanning tree. A tie just means more than one tree is minimum."
+            ]
+        },
+        {
+            "lines": [
+                "Kruskal's algorithm turns the cut property into a procedure: sort every edge by weight, scan them in that order, and let union find answer one question per edge, would accepting it close a cycle.",
+                "Accept when the answer is no, reject when it is yes, and stop once the tree is complete. On this graph, half the edges get accepted and half get rejected, each rejected edge caught closing a cycle at the exact moment it is reached."
+            ]
+        },
+        {
+            "lines": [
+                "Kruskal's own cost splits cleanly in two: sorting the edges, and then a near linear scan where union find answers each cycle test.",
+                "The sort is the part that grows with how many edges there are. Union find's own share barely grows at all, so a pre-sorted edge list, or integer weights run through a radix sort, changes which half of the cost actually matters."
+            ]
+        },
+        {
+            "lines": [
+                "Here is the trap a tie can spring. Take a cycle of four vertices where every edge carries the identical weight.",
+                "That one small graph has four different minimum spanning trees, every one of them tied at the same total weight. A tie at the lightest weight never breaks the cut property, it just means the minimum is not unique."
+            ]
+        },
+        {
+            "lines": [
+                "Counting every spanning tree of this chapter's own graph by brute force turns up a large number of them, most at a higher weight than the minimum.",
+                "Exactly one of those trees achieves the minimum weight, and the next cheapest tree costs just one more. A graph can carry dozens of spanning trees at many different weights. The cut property is what singles out the minimum one."
+            ]
+        },
+        {
+            "lines": [
+                "Here is the reveal promised at the start. This graph's minimum spanning tree weighs strictly less than the shortest path tree computed from the same starting site.",
+                "The minimum spanning tree keeps an edge the shortest path tree would never choose, because pricing a whole network is not the same question as pricing routes out from one site."
+            ]
+        },
+        {
+            "lines": [
+                "Shift every single edge weight by the same amount, even down into negative numbers, and nothing about the relative order between any two edges changes.",
+                "Kruskal's run is completely untouched: the identical edges get accepted after every weight goes negative, because only the order between edges, never their sign, ever mattered."
+            ]
+        },
+        {
+            "lines": [
+                "Kruskal needs the whole edge list sorted before it starts, but nothing in the cut property actually demands that.",
+                "The cut can just as well be the tree already built, measured against everything still outside it, with the cheapest edge leaving that tree taken next. That is Prim's algorithm, next."
+            ]
+        }
+    ]
+}
