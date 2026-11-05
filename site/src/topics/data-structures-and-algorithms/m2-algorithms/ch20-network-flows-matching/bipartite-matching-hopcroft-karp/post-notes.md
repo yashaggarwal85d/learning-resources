@@ -1,6 +1,6 @@
 ---
 id: dsa.bipartite-matching-hopcroft-karp
-title: Bipartite matching and Hopcroft-Karp
+title: Bipartite matching and Hopcroft–Karp
 ---
 
 <section data-section="outcomes">
