@@ -1,0 +1,12 @@
+Last verified: 2026-11-05.
+
+- Kevin Wayne, "Greedy Algorithms I" (revised lecture slides for Kleinberg & Tardos, *Algorithm Design*) — interval scheduling, interval partitioning, the exchange-argument optimality proof, and the min-heap room algorithm. [source](https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/04GreedyAlgorithmsI.pdf)
+- Kevin Wayne, "Dynamic Programming I" (revised lecture slides for Kleinberg & Tardos, *Algorithm Design*) — weighted interval scheduling, the `OPT(j)` recurrence, the predecessor function `p(j)`, and reconstructing the chosen set. [source](https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/06DynamicProgrammingI.pdf)
+- Jeff Erickson, *Algorithms*, Chapter 4 "Greedy Algorithms" — a second, independent "greedy stays ahead" proof of earliest-finish-time-first's optimality, used only to cross-check the proof shape. [source](https://jeffe.cs.illinois.edu/teaching/algorithms/book/04-greedy.pdf)
+- PostgreSQL Global Development Group, "8.17. Range Types" — the `[)` canonical form the built-in range types use, confirmed as a real database's default half-open convention. [source](https://www.postgresql.org/docs/current/rangetypes.html)
+- Apache Flink documentation, "Windows," v2.3.0 — the session-window assigner's merge mechanism, the real instance of this topic's merge pass. [source](https://nightlies.apache.org/flink/flink-docs-release-2.3/docs/dev/datastream/operators/windows/)
+- Swarthmore CS41, Lab 10 — a problem-set restatement of Kleinberg & Tardos's exercise 8.14, Multiple-Interval Job Scheduling, and its NP-completeness via a reduction from Independent Set; used only for the frontier contrast in post-notes. [source](https://www.cs.swarthmore.edu/~fontes/cs41/23f/lab/lab10.pdf)
+
+Kleinberg & Tardos's own textbook (*Algorithm Design*, Chapters 4 and 6, and exercise 8.14) is the canonical reference behind every slide above; its exercise text was read through the Swarthmore problem set that restates it, not from the book itself, since the book is not freely available online. Wikipedia's "Interval scheduling" article was read at planning time for framing only; its "three or more intervals" claim about Multiple-Interval Job Scheduling was checked against the primary-source-adjacent Swarthmore statement and found unsupported, so it is not repeated on screen (see `FACT-CHECK.md`).
+
+Spotted an error? [Open an issue](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=interval-merging-scheduling:%20).

@@ -1,0 +1,112 @@
+{
+  "topic": "dsa.interval-merging-scheduling",
+  "steps": [
+    {
+      "lines": [
+        "A pattern you scanned for in a line of text was one dimensional in an obvious way. A booking, a lease or a session is also one dimensional, but it is a pair of numbers, a start and an end.",
+        "The question of which ones collide looks like it needs every pair checked.",
+        "It does not. Sort the endpoints once, and that quadratic question turns into a single walk. Everything in this topic is one version or another of that single idea."
+      ]
+    },
+    {
+      "lines": [
+        "Four rules sound equally sensible for picking the most bookings. Start earliest. Take the shortest one. Avoid the one that fights with the most others. Finish earliest.",
+        { "beat": 0.3 },
+        "Only one of these four is safe on every input, and the other three can each be made to fail. Which one survives?"
+      ],
+      "answer": [
+        "Finishing earliest. Starting earliest can pick one long booking that blocks everything after it. Shortest first can still land exactly where it blocks something more valuable. A rule that is safe needs a proof, not just a winning example, and that proof is next."
+      ]
+    },
+    {
+      "lines": [
+        "Here is why starting earliest fails. The very first booking it takes is a long one, and once that room is committed, every booking that overlaps it is gone, even if four of them together would have filled the day better."
+      ]
+    },
+    {
+      "lines": [
+        "Taking the shortest booking first sounds like it wastes the least room, but a short booking can still sit in exactly the wrong place, blocking two longer bookings that would have fit together perfectly well."
+      ]
+    },
+    {
+      "lines": [
+        "Finishing earliest survives both of the traps that just caught the other rules. It also survives a third one, a rule that avoids whichever booking conflicts with the most others.",
+        "That rule, counted once before anything is picked, can still lose to finishing earliest on a smaller set built just to catch it.",
+        "The pattern across every losing rule is the same. Each one can be beaten by some input, built specifically to beat it. A rule that is actually safe needs an argument that covers every input at once."
+      ]
+    },
+    {
+      "lines": [
+        "Here is that argument. Take any optimal schedule and look at its very first booking. Swap it for the one finishing earliest instead. The earliest-finishing booking, by definition, ends no later, so nothing scheduled after it can suddenly start colliding with it.",
+        "Repeat that same swap down the rest of the list, one booking at a time, and the optimal schedule turns into the greedy one without ever losing a single booking along the way. That is the whole proof, and it works for any input, not just the one on screen."
+      ]
+    },
+    {
+      "lines": [
+        "Merging works differently from picking a subset. Sort every interval by its start, then walk through them once. If the next one begins before the current merged interval ends, stretch the current one to cover it. Otherwise, close it off and start a fresh one.",
+        "The reason this single pass is enough, and not a guess that happens to work, is that everything to the left of where the walk currently stands can never change again. Nothing later in the sorted order can reach backward and affect it."
+      ]
+    },
+    {
+      "lines": [
+        "Dropping one more interval into an already-merged list does not need to redo the whole pass. Find the first merged interval that ends after the new one begins, swallow everything it overlaps, and splice the result back in.",
+        "Finding that place by a binary search is fast, logarithmic in the number of intervals, but do not mistake that for the whole cost. The array still has to make room for the change, and shifting everything after it still takes time proportional to how many intervals there are."
+      ]
+    },
+    {
+      "lines": [
+        "A real stream processor runs this exact merge continuously. Every record that arrives starts its own tiny window, and whenever two windows end up closer together than a configured gap, they merge into one, live, as the stream keeps flowing.",
+        "Nothing about that mechanism is new. It is the same sorted walk from a few steps ago, just running forever instead of once."
+      ]
+    },
+    {
+      "lines": [
+        "Switch questions entirely. Forget picking a subset. Suppose every booking must be honored, and ask instead how many rooms that requires, so that no two bookings sharing a room ever overlap.",
+        { "beat": 0.3 },
+        "Somewhere during the day, some number of bookings are open at the exact same moment. How many rooms does that busiest moment force you to have?"
+      ],
+      "answer": [
+        "Three. At the busiest moment, three bookings are open simultaneously, and no schedule, however clever, can serve that moment with fewer than three rooms. What is worth checking next is whether three rooms are also enough, not just necessary."
+      ]
+    },
+    {
+      "lines": [
+        "Sort the bookings by start time, and keep a small structure that always gives you the earliest end time among the rooms currently in use. Whenever a new booking's start is at or after that earliest end time, reuse that room. Otherwise, open a new one.",
+        "Three rooms turns out to be exactly enough, and here is why that is not a coincidence. The only moment a new room ever opens is when every room already in use is still genuinely busy.",
+        "That moment is itself proof that at least that many bookings are open at once. The algorithm never opens a room it didn't have to."
+      ]
+    },
+    {
+      "lines": [
+        "There is a second, plainer way to reach the exact same number. Turn every start into a plus one and every end into a minus one, sort all of those marks together, and walk through them once, keeping a running total.",
+        "The highest point that running total ever reaches is the same three, reached without any structure at all beyond a sort.",
+        "Keeping only what is open right now, and nothing about its history, is a method that goes much further than this one count, and it is exactly where this topic is heading next."
+      ]
+    },
+    {
+      "lines": [
+        "Up to now, every rule comparison has gone the same way: finishing earliest always wins. Suppose each booking is no longer worth the same amount. Some matter far more than others.",
+        { "beat": 0.3 },
+        "Does finishing earliest still produce the most valuable schedule once value, not just a count of bookings, is the goal?"
+      ],
+      "answer": [
+        "No. A different, smaller set of bookings is worth more overall, even though it keeps fewer or different bookings than the rule that was safe for counting alone. Counting bookings and valuing them turn out to be two different problems, and only one of today's methods survives the switch."
+      ]
+    },
+    {
+      "lines": [
+        "The schedule that finishing earliest produces is worth a modest total. A table filled in, one booking at a time in finish order, considers two choices at every step.",
+        "Skip this booking and keep whatever the table already found, or take it and add its value to the best total available before it started.",
+        "That table reaches a strictly larger total than the earliest-finishing schedule ever could, using a different set of bookings entirely.",
+        "Finding which earlier booking is still compatible, at every step, is itself answered by the same binary search from a few steps back, now searching finish times instead of merged intervals."
+      ]
+    },
+    {
+      "lines": [
+        "Four different problems, four different-looking algorithms, and underneath every one of them, the same single idea. Sort the endpoints once, then walk them, keeping track only of what is open right now: a running count, a heap of end times, or a table built in sorted order.",
+        "That is not a trick that happens to work for intervals specifically. It is a method with a name of its own, and it reaches much further than anything counted today.",
+        "The shape of a skyline, the area covered by overlapping rectangles, every crossing among a thousand line segments. The sweep line, coming next."
+      ]
+    }
+  ]
+}
