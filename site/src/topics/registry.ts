@@ -3198,7 +3198,7 @@ export const TOPICS: TopicMeta[] = [
     kind: 'full',
     status: 'held',
     milestone: { number: 2, title: 'Algorithms' },
-    chapter: { number: 18, title: 'Shortest Paths' },
+    chapter: { number: 18, title: 'Shortest Paths', section: '18.1' },
     minutes: 14,
     verified: '2026-11-05',
     introduces: ['dijkstra-algorithm', 'relaxation', 'label-setting', 'lazy-deletion', 'decrease-key'],
