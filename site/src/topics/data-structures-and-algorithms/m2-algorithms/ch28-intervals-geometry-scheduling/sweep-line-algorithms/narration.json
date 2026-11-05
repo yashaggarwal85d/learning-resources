@@ -1,0 +1,101 @@
+{
+  "topic": "dsa.sweep-line-algorithms",
+  "steps": [
+    {
+      "lines": [
+        "Testing every pair of a thousand segments means testing nearly half a million pairs, most of which never cross.",
+        "On eight segments that waste is already visible: twenty-eight pairs, and only two of them actually meet."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what a crossing requires: two segments have to be adjacent in some ordering before they can swap places."
+      ],
+      "answer": [
+        "Only a pair that becomes neighbors in that ordering can ever cross, so a sweep only ever has to test those."
+      ]
+    },
+    {
+      "lines": [
+        "Call the coordinates where anything could change events, and call whatever the line currently touches the active set.",
+        "Between two consecutive events nothing changes, so the whole algorithm is just: handle the next event, update, move on."
+      ]
+    },
+    {
+      "lines": [
+        "A half-open interval excludes its own right end, so at a shared coordinate the ending interval has to leave first.",
+        "Reverse that order and the algorithm briefly believes two intervals that only touch are actually overlapping."
+      ]
+    },
+    {
+      "lines": [
+        "A heap that always hands back the tallest live building needs a way to forget buildings that already ended.",
+        "Lazy deletion postpones that forgetting until the stale entry would otherwise be read, instead of removing it immediately."
+      ]
+    },
+    {
+      "lines": [
+        "Every one of those seven points is a moment the tallest building in view changed, nothing more.",
+        "A fixed sliding window would use a deque; this window's membership depends on when a building ends, not its position."
+      ]
+    },
+    {
+      "lines": [
+        "A running count only ever answers one question: is anything covered. It cannot say where the coverage changed."
+      ],
+      "answer": [
+        "A tree that tracks a cover count per node answers both questions in logarithmic time, which a plain count cannot."
+      ]
+    },
+    {
+      "lines": [
+        "Thirty-four counts every rectangle's area once each, so wherever two rectangles overlap, that strip gets counted twice.",
+        "Subtract the double-counted strips and the true union, twenty-nine, is what a vertical sweep recovers without ever drawing the shape."
+      ]
+    },
+    {
+      "lines": [
+        "A segment's left endpoint inserts it into the active set; its right endpoint removes it, same as the depth sweep before it.",
+        "A crossing is not known in advance, so the algorithm has to discover it and insert it as a new event."
+      ]
+    },
+    {
+      "lines": [
+        "If two segments were never adjacent in the ordering, there is no way for them to swap places without a third segment moving first.",
+        "So testing only newly-adjacent pairs is not a shortcut that might miss something; it is the entire set of ways a crossing can occur."
+      ]
+    },
+    {
+      "lines": [
+        "The whole appeal of this algorithm was spending less work when there are few crossings to report."
+      ],
+      "answer": [
+        "Once crossings are as dense as a quadratic number, the extra logarithm in the sweep's cost outweighs that saving entirely."
+      ]
+    },
+    {
+      "lines": [
+        "A thousand segments scattered loosely enough to rarely cross still only produce forty-eight crossings, nowhere near a quadratic count.",
+        "The pairs a naive scan tests, though, grow with the square of the segment count regardless of how many actually meet."
+      ]
+    },
+    {
+      "lines": [
+        "Deciding which side of a line a point sits on reduces to the sign of one arithmetic expression, computed once.",
+        "That sign is exact when the coordinates are integers, but rounds unpredictably near zero once the coordinates are floating point."
+      ]
+    },
+    {
+      "lines": [
+        "A database join with two inequality conditions faces the same shape of problem this topic just swept through, one layer down.",
+        "Sorting each side once and merging the two orders turns a quadratic comparison into something closer to the cost of sorting."
+      ]
+    },
+    {
+      "lines": [
+        "Three different problems, three different active-set structures, and the same two design questions asked of each: what changes, and what structure holds it.",
+        "Every bound shown here held for every input; the next milestone's algorithms instead make promises about an average over many random ones."
+      ]
+    }
+  ]
+}

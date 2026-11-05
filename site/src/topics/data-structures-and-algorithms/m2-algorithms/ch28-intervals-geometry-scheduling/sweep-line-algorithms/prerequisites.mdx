@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Interval merging and scheduling">The depth sweep (a running count as the active set) that this topic generalises into the full skeleton.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The lazy-deletion max-heap the skyline sweep keeps as its active set.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Red-black trees">The balanced, ordered active set Bentley–Ottmann keeps for the segments crossing the sweep line.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Segment trees and lazy propagation">The cover-count structure this topic's union-area sweep uses without lazy push-down.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Bentley–Ottmann algorithm" href="https://en.wikipedia.org/wiki/Bentley%E2%80%93Ottmann_algorithm" by="Wikipedia">The skeleton, the two data structures, and the output-sensitive bound this topic builds.</Resource>
+  <Resource kind="reading" title="Klee's measure problem" href="https://en.wikipedia.org/wiki/Klee%27s_measure_problem" by="Wikipedia">Klee's 1977 interval-union problem and Bentley's 2-D sweep that this topic's union-area step uses.</Resource>
+  <Resource kind="reading" title="Sweep line algorithm" href="https://en.wikipedia.org/wiki/Sweep_line_algorithm" by="Wikipedia">The paradigm itself, and the Shamos–Hoey algorithm Bentley–Ottmann extends.</Resource>
+  <Resource kind="reading" title="Range Joins in DuckDB" href="https://duckdb.org/2022/05/27/iejoin.html" by="DuckDB">IEJoin: sorting on two predicates, the real system this topic's recap points to.</Resource>
+</ul>
+
+</section>
