@@ -1,0 +1,7 @@
+- **Priority queue**: a structure that always returns the smallest remaining key. *Where you meet it:* both Prim implementations in this topic use one.
+- **Binary heap**: a priority queue laid out as an array, with sift-up and sift-down keeping the smallest key on top. *Where you meet it:* the eager version's decrease-key is a sift-up on this exact structure.
+- **Adjacency matrix**: an n-by-n grid recording whether each pair of vertices is an edge. *Where you meet it:* the array version of Prim is built to read this layout.
+- **Adjacency list**: each vertex's own list of its neighbors. *Where you meet it:* the heap version of Prim walks this layout instead.
+- **Dense graph**: a graph where the edge count is close to the largest possible, n squared. *Where you meet it:* this topic's own crossover names the density at which the array version wins.
+- **Sparse graph**: a graph where the edge count is close to the vertex count. *Where you meet it:* the heap version's own advantage is strongest here.
+- **Decrease-key**: lowering a key already stored in a priority queue, cheaper than removing and re-inserting it. *Where you meet it:* the eager version's whole advantage over the lazy version is built on this one operation.
