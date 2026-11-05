@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Work–span model and work stealing">Work, span and the idea that a computation's phases can each be independent, before this topic adds communication as a resource.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="MapReduce: Simplified Data Processing on Large Clusters" href="https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf" by="Dean and Ghemawat">The map/shuffle/reduce pattern, the partitioning function, the combiner, and backup tasks.</Resource>
+  <Resource kind="reading" title="Communication Steps for Parallel Query Processing" href="https://arxiv.org/abs/1306.5972" by="Beame, Koutris and Suciu">The MPC model's definition, and the round-complexity bounds for joins.</Resource>
+  <Resource kind="reading" title="PairRDDFunctions.scala" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/scala/org/apache/spark/rdd/PairRDDFunctions.scala" by="Apache Spark">`reduceByKey`'s own documented associative-and-commutative contract.</Resource>
+  <Resource kind="reading" title="MapReduce Tutorial" href="https://hadoop.apache.org/docs/stable/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html" by="Apache Hadoop">A second, independent implementation's partitioner and combiner.</Resource>
+</ul>
+
+</section>

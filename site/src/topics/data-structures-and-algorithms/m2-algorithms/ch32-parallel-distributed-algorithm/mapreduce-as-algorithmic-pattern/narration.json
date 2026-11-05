@@ -1,0 +1,99 @@
+{
+  "topic": "dsa.mapreduce-as-algorithmic-pattern",
+  "steps": [
+    {
+      "lines": [
+        "A count of every word in a huge body of text can be written so that each occurrence of every word becomes its own separate record, sent across the network exactly as it was found.",
+        "Collapsing duplicate records before they ever leave their own machine fixes that waste in one line — but changing which sums get collapsed early, in a different one-line change, can quietly produce the wrong answer instead."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about what changes when the thing being combined early stops being a plain sum and becomes an average of several numbers instead."
+      ],
+      "answer": [
+        "The gap this introduces has no fixed size and no fixed direction — it depends entirely on how the values happened to be split up before anyone averaged anything, which makes it far more dangerous than a sum that is simply too big or too small."
+      ]
+    },
+    {
+      "lines": [
+        "Every record gets processed completely independently of every other record first, producing a new key and value for each one.",
+        "Those new records then travel, each one routed by its own key to exactly one of several waiting collection points, using nothing more than that key's own hash."
+      ]
+    },
+    {
+      "lines": [
+        "Walk through counting words with this in mind: the independent step hands back a one for every single word it sees, and the collection step simply adds up every one that lands under the same word.",
+        "Neither of those two steps, taken by itself, forces anything to wait on anything else — the only place where every piece of work has to actually meet every other piece is the routing step sitting between them."
+      ]
+    },
+    {
+      "lines": [
+        "That routing step is also the only place in this whole computation where data has to leave the machine it started on and travel somewhere else entirely.",
+        "Everything on either side of that one step is already free in the sense that matters here, so whatever gets measured about the cost of this kind of computation is really measuring that one routing step and nothing else."
+      ]
+    },
+    {
+      "lines": [
+        "When whatever is being combined does not care what order it arrives in or how it gets grouped along the way, there is no reason to wait until everything has arrived somewhere central before starting to combine it.",
+        "A single independent task can fold its own duplicate records together right where they were produced, well before any of them are sent anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "Running the identical word count twice, once letting records fold together early and once forcing every single one to travel untouched, shows a dramatic difference in how much data actually crosses the network.",
+        "Despite that difference in traffic, both versions land on exactly the same final counts for every word — folding records together early changed nothing about correctness, only how much had to move."
+      ]
+    },
+    {
+      "lines": [
+        "That safety is not a lucky coincidence of this one example — it only works because nothing in this setup promises which pieces will be folded together first or in what sequence they will arrive.",
+        "Anything combined early has to produce the same answer no matter how it gets grouped and no matter what order its pieces show up in, because those two things are genuinely left up to chance here."
+      ]
+    },
+    {
+      "lines": [
+        "Now put that same early-folding trick on a function that is supposed to compute an average instead of a running total, and ask what happens to several of those averages once they themselves get averaged together."
+      ],
+      "answer": [
+        "Averaging a handful of averages together is not the same calculation as averaging every original value directly, and exactly how far off it lands depends entirely on how many values went into each of those smaller averages."
+      ]
+    },
+    {
+      "lines": [
+        "A small worked example makes the gap concrete: average three very differently sized groups of numbers by first averaging each group and then averaging those three results, and compare that to averaging every number together directly.",
+        "The fix keeps a running total and a running count separately all the way through, only dividing one by the other at the very last possible moment, which turns out to always land on the correct answer."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the whole computation instead as a sequence of rounds, where each round means every machine computes locally for a while and then everyone exchanges data with everyone else exactly once.",
+        "A formal way of costing this kind of computation counts only two things about it: how many of those rounds it takes, and the largest amount of data that any single machine ever has to receive during any one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Joining two different sets of records together, by routing records with matching keys from each set onto the same machine, turns out to need only one round and no duplication of any record at all.",
+        "Joining three different sets together instead, each one connected to the next in a cycle, forces some amount of genuine duplication if the whole thing is still going to finish in that same single round."
+      ]
+    },
+    {
+      "lines": [
+        "Now follow a connection through a long sequence of links, where reaching the far end requires having already confirmed every single link along the way.",
+        "Doubling how far each round can see, starting from wherever the previous round left off, still needs more rounds the longer that sequence of links happens to be, which no fixed number of rounds can ever cover once the sequence grows past it."
+      ]
+    },
+    {
+      "lines": [
+        "Matching records from two different sources by a shared key, routing by that key and then combining whatever lands together, is exactly the same underlying idea as splitting data into pieces small enough to fit in one machine's memory and joining each piece there.",
+        "A single enormously popular key that routes almost everything toward one particular machine causes the exact same kind of trouble here that an enormously popular value caused back when everything still fit on one machine — the currency being spent has simply changed from disk time to network time."
+      ]
+    },
+    {
+      "lines": [
+        "A handful of rounds of work that can genuinely run independently still finishes in a handful of rounds no matter how many additional machines join in to help.",
+        "A problem whose fastest known solution fundamentally requires an amount of work that explodes as its input grows stays exactly that explosive no matter how many machines end up sharing that same exploding amount of work."
+      ]
+    }
+  ]
+}
