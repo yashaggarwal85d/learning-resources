@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The heap of end times this topic's room-scheduling algorithm keeps, pushed and popped in log n.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">Why sorting the endpoints cannot be skipped — this topic's whole cost is that one sort.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Greedy Algorithms I (lecture slides)" href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/04GreedyAlgorithmsI.pdf" by="Kevin Wayne, for Kleinberg & Tardos's Algorithm Design">Interval scheduling and interval partitioning: the greedy rules, the exchange-argument proof, and the min-heap room algorithm.</Resource>
+  <Resource kind="reading" title="Dynamic Programming I (lecture slides)" href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/06DynamicProgrammingI.pdf" by="Kevin Wayne, for Kleinberg & Tardos's Algorithm Design">Weighted interval scheduling: the OPT(j) recurrence, the predecessor function p(j), and reconstructing the chosen set.</Resource>
+  <Resource kind="reading" title="Algorithms, Chapter 4: Greedy Algorithms" href="https://jeffe.cs.illinois.edu/teaching/algorithms/book/04-greedy.pdf" by="Jeff Erickson">A second, independent proof that the earliest-finish-time-first schedule is optimal.</Resource>
+  <Resource kind="reading" title="8.17. Range Types" href="https://www.postgresql.org/docs/current/rangetypes.html" by="PostgreSQL Global Development Group">The half-open `[)` convention this topic uses, confirmed as a real database's own canonical form.</Resource>
+  <Resource kind="reading" title="Windows" href="https://nightlies.apache.org/flink/flink-docs-release-2.3/docs/dev/datastream/operators/windows/" by="Apache Flink, v2.3.0">Session windows: the real-world instance of this topic's merge pass.</Resource>
+</ul>
+
+</section>
