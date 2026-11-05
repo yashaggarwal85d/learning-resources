@@ -1,0 +1,8 @@
+- **Flow network**: a graph with capacities on its edges, a source and a sink. *Where you meet it:* the shape behind the reviewer-assignment hook.
+- **Cut**: a set of edges whose removal disconnects the source from the sink. *Where you meet it:* the certificate that a flow answer is already the best possible.
+- **Bipartite graph**: vertices split into two sides, with every edge crossing from one side to the other. *Where you meet it:* the structural test that tells a real matching problem from its near-miss.
+- **Strongly connected component**: a maximal set of vertices all reachable from one another. *Where you meet it:* how a two-choice constraint problem is solved without checking any truth assignment directly.
+- **Clause and literal**: a clause is an OR of literals; a literal is a variable or its negation. *Where you meet it:* the vocabulary a two-choice or three-choice constraint is written in.
+- **Interval**: a start and an end time on one line. *Where you meet it:* what the earliest-finish greedy sorts and scans.
+- **Directed acyclic graph** (one line, already Chapter 10): a graph with no cycles, letting every vertex be processed after all of its dependencies.
+- **Monotone predicate**: a yes-or-no test whose answer flips at most once as its input grows. *Where you meet it:* binary search on the answer, named on the pattern catalogue but built in an earlier topic.
