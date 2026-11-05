@@ -1,0 +1,188 @@
+{
+  "topic": "dsa.random-shuffling",
+  "syllabus": [
+    {
+      "clause": "Fisher–Yates and the classic biased implementations",
+      "at": [
+        { "step": "Fisher-Yates: for each position from the last down to the second, draw a position uniformly from everything not yet placed, and swap." },
+        { "step": "Swap each position with any position at all, not just the unplaced ones: that is far more choice chains than orderings, and the extra chains cannot divide evenly across them." },
+        { "step": "Sorting with a comparator that returns a random value is not a consistent ordering, so the result leans on the sorting algorithm’s own internals. A real browser-choice ballot shipped exactly this comparator." },
+        { "step": "A generator cannot produce more outcomes than it has internal states, however the shuffle uses its numbers — and taking a draw by remainder is biased whenever the generator’s own range does not split evenly by the size wanted." }
+      ]
+    },
+    {
+      "clause": "Sattolo's cyclic variant",
+      "at": [
+        { "step": "Sattolo’s algorithm: the same loop, but the draw is strictly below the current position instead of at or below it. That one change forces a single cycle through every item, never the starting arrangement." },
+        { "step": "Write that same stricter draw where an ordinary shuffle was meant, and the bug hides in plain sight: the result is never the starting arrangement and never leaves anything in its own place, which a true shuffle would do once in a while." }
+      ]
+    },
+    {
+      "clause": "shuffling data too large for memory",
+      "at": [
+        { "step": "Three honest options once memory runs out: key every record and sort externally; split into buckets at random and shuffle each bucket in memory; or stream through a buffer, trading uniformity for a bounded window." },
+        { "step": "A buffer of a few slots, holding the stream and swapping a random slot each step: an item can leave only a little earlier than it arrived, but it can leave much later than it arrived, with shrinking odds the longer it waits." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Fisher–Yates shuffle\"",
+      "items": [
+        {
+          "item": "the modern (Durstenfeld) in-place algorithm, correctness by counting, and Sattolo's one-line variant",
+          "at": [
+            { "deep": "Into the internals" }
+          ]
+        },
+        {
+          "item": "the naive swap-with-any-position method is biased",
+          "at": [
+            { "step": "Swap each position with any position at all, not just the unplaced ones: that is far more choice chains than orderings, and the extra chains cannot divide evenly across them." }
+          ]
+        },
+        {
+          "item": "sorting with a random comparator is \"very likely to produce highly non-uniform distributions\" depending on the sort algorithm",
+          "at": [
+            { "step": "Sorting with a comparator that returns a random value is not a consistent ordering, so the result leans on the sorting algorithm’s own internals. A real browser-choice ballot shipped exactly this comparator." }
+          ]
+        },
+        {
+          "item": "modulo bias: dividing by a range that does not evenly divide the generator's range skews toward small remainders",
+          "at": [
+            { "step": "A generator cannot produce more outcomes than it has internal states, however the shuffle uses its numbers — and taking a draw by remainder is biased whenever the generator’s own range does not split evenly by the size wanted." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Mike Bostock, \"Fisher–Yates Shuffle\"",
+      "items": [
+        {
+          "item": "the in-place derivation: shuffled count plus remaining count always equals the total, so no extra space is needed",
+          "at": [
+            { "step": "Fisher-Yates: for each position from the last down to the second, draw a position uniformly from everything not yet placed, and swap." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rob Weir, \"Doing the Microsoft Shuffle\"",
+      "items": [
+        {
+          "item": "the measured raw-count table: Internet Explorer in the last position in 5,034 of 10,000 runs",
+          "at": [
+            { "step": "Sorting with a comparator that returns a random value is not a consistent ordering, so the result leans on the sorting algorithm’s own internals. A real browser-choice ballot shipped exactly this comparator." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Python documentation, random module",
+      "items": [
+        {
+          "item": "a sequence of length 2,080 is the largest whose every permutation fits within the Mersenne Twister's period",
+          "at": [
+            { "step": "A full deck’s orderings need far more bits than a common generator’s period can offer: past a certain length, almost every ordering of the deck is one that generator could never have produced, no matter how it looked in testing." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "TensorFlow and Hugging Face documentation",
+      "items": [
+        {
+          "item": "both document a fixed-size shuffle buffer that samples and replaces, non-uniform unless the buffer covers the whole dataset",
+          "at": [
+            { "step": "Three honest options once memory runs out: key every record and sort externally; split into buckets at random and shuffle each bucket in memory; or stream through a buffer, trading uniformity for a bounded window." }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "the naive shuffle's bias demonstrated by exact enumeration (27 choices, counts 4/4/4/5/5/5), not only by simulation",
+        "at": [
+          { "step": "Out of sixty thousand shuffles of three cards with that rule, how do the six orderings come out?" }
+        ]
+      },
+      {
+        "item": "nⁿ mod n! computed and confirmed nonzero for n = 3, 4, 5, 6, backing the general counting argument rather than one example alone",
+        "at": [
+          { "out": "checked in FACT-CHECK.md's red team, not stated on screen with its full table" }
+        ]
+      },
+      {
+        "item": "the chi-squared comparison's statistics (naive far above critical, Fisher-Yates comfortably below) checked against a 5% critical value",
+        "at": [
+          { "step": "Out of sixty thousand shuffles of three cards with that rule, how do the six orderings come out?" }
+        ]
+      },
+      {
+        "item": "the Weir \"about half the time\" figure read from the raw published table, not a rounded headline claim",
+        "at": [
+          { "step": "Sorting with a comparator that returns a random value is not a consistent ordering, so the result leans on the sorting algorithm’s own internals. A real browser-choice ballot shipped exactly this comparator." }
+        ]
+      },
+      {
+        "item": "the 2,080/2,081 factorial-crossing computed directly rather than taken on the Python documentation's word alone",
+        "at": [
+          { "step": "A full deck’s orderings need far more bits than a common generator’s period can offer: past a certain length, almost every ordering of the deck is one that generator could never have produced, no matter how it looked in testing." }
+        ]
+      },
+      {
+        "item": "Sattolo's single-cycle guarantee and Fisher-Yates' own fixed-point expectation (reused from topic 95) checked together as the bug-detecting pair",
+        "at": [
+          { "step": "Write that same stricter draw where an ordinary shuffle was meant, and the bug hides in plain sight: the result is never the starting arrangement and never leaves anything in its own place, which a true shuffle would do once in a while." }
+        ]
+      },
+      {
+        "item": "this topic's account of Sattolo's algorithm checked against measuring-memory-hierarchy's own account for consistency, not independently re-derived",
+        "at": [
+          { "out": "checked against SOURCES.md §10, not restated on screen beyond what both topics already agree on" }
+        ]
+      },
+      {
+        "item": "the buffered-shuffle emission table computed by exact enumeration over every random choice, not simulated, per the chapter plan's own instruction",
+        "at": [
+          { "step": "A buffer of a few slots, holding the stream and swapping a random slot each step: an item can leave only a little earlier than it arrived, but it can leave much later than it arrived, with shrinking odds the longer it waits." }
+        ]
+      },
+      {
+        "item": "the three too-large-for-memory options distinguished by what each actually trades away, not treated as interchangeable",
+        "at": [
+          { "step": "Three honest options once memory runs out: key every record and sort externally; split into buckets at random and shuffle each bucket in memory; or stream through a buffer, trading uniformity for a bounded window." }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for all three predict steps",
+        "at": [
+          { "step": "Out of sixty thousand shuffles of three cards with that rule, how do the six orderings come out?" },
+          { "step": "A pseudo-random generator has a fixed number of internal states. How many orderings of a full deck can it ever reach?" },
+          { "step": "The data no longer fits in memory for swapping. What is the honest way to put it in a random order?" }
+        ]
+      },
+      {
+        "item": "recap and handoff to the streaming model, quoted word for word from CHAPTER.md",
+        "at": [
+          { "step": "A permutation of everything, one item and one draw at a time, provably uniform by counting the choice chains themselves. Next: what happens when even a single pass is too much to hold." }
+        ]
+      },
+      {
+        "item": "every number in this topic computed fresh in examples.py (the chi-squared statistics, the divisibility table, Sattolo's cycle counts, the factorial crossing, the exact buffered-shuffle matrices), not copied from the chapter plan as fact",
+        "at": [
+          { "out": "checked, not stated on screen" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

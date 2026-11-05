@@ -1,0 +1,102 @@
+{
+  "topic": "dsa.random-shuffling",
+  "steps": [
+    {
+      "lines": [
+        "Here is a shuffle that sounds perfectly reasonable: for every position, swap it with some other position chosen at random.",
+        "On just three cards that rule makes a fixed count of equally likely random choices, and that count simply does not split evenly across every possible ordering."
+      ]
+    },
+    {
+      "lines": [
+        "Before seeing a single run, ask what shape the imbalance has to take, given that the count of choices and the count of orderings are not multiples of each other."
+      ],
+      "answer": [
+        "Some orderings end up slightly favored and others slightly starved, in a pattern that repeats the same way every time this exact rule runs, not something a fresh seed smooths away."
+      ]
+    },
+    {
+      "lines": [
+        "Work from the far end toward the front: at each position, draw only from what has not been placed yet, and swap it into position.",
+        "Every position after the first makes its draw from a strictly smaller range than the one before it."
+      ]
+    },
+    {
+      "lines": [
+        "Think of the whole run as one long chain of draws, each one narrower than the last, and ask how many distinct chains are even possible.",
+        "Multiply the sizes of every draw's range together and the total matches the count of orderings exactly, with no ordering reachable by more than one chain."
+      ]
+    },
+    {
+      "lines": [
+        "Now loosen the rule so each position can swap with absolutely anywhere, not just what remains unplaced, and count the chains again.",
+        "That loosened rule produces far more chains than there are orderings to land on, and a count that does not divide evenly can never spread evenly."
+      ]
+    },
+    {
+      "lines": [
+        "A different wrong idea skips counting entirely and leans on an existing sorting routine, handing it a comparison rule that just answers randomly.",
+        "A comparison that contradicts itself from one call to the next breaks the sorting routine's own assumptions, and the lopsided order that falls out depends on exactly how that routine happens to be written."
+      ]
+    },
+    {
+      "lines": [
+        "Every one of these algorithms eventually needs a source of random numbers underneath it, and that source itself has a hidden limitation worth asking about."
+      ],
+      "answer": [
+        "Whatever is generating the randomness only ever has so many internal configurations it can be in, and no clever algorithm built on top can produce more distinct results than that."
+      ]
+    },
+    {
+      "lines": [
+        "A generator with a fixed number of internal configurations can never be coaxed into producing more distinct outcomes than it has configurations to begin with.",
+        "A second, separate failure shows up when a draw is squeezed into a smaller range by taking a remainder: unless that range divides the generator's own range evenly, some remainders come up more often than others."
+      ]
+    },
+    {
+      "lines": [
+        "A full deck has an enormous count of possible orderings, and a common everyday generator's own cycle length, while large, is nowhere near large enough to cover them all.",
+        "Passing a battery of casual tests proves nothing about covering every ordering; it only proves the handful of orderings actually tested came out looking plausible."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same careful algorithm and make one small change: forbid a position from ever swapping with itself.",
+        "Forbidding that one self-swap collapses every possible outcome down into a single sweeping cycle through every item, with nothing ever left sitting in its own spot."
+      ]
+    },
+    {
+      "lines": [
+        "That exact change is also one of the easiest accidental bugs to write, if the self-swap was meant to stay allowed and got forbidden by mistake.",
+        "An ordinary shuffle leaves something in its original spot occasionally, by pure chance; a shuffle that never once does that over many, many attempts has almost certainly had that one line changed."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose the dataset no longer fits anywhere near memory, so an in-place swap between two positions is simply off the table.",
+        "The question becomes what still produces every ordering with the same likelihood when random access itself has been taken away."
+      ],
+      "answer": [
+        "Attach an independent random value to each record and let an ordinary sort put those values in order; the sort does the work random access used to do."
+      ]
+    },
+    {
+      "lines": [
+        "That keyed-and-sorted approach is one honest answer; a second splits everything into separate buckets at random first, then finishes each bucket the ordinary way once it fits.",
+        "A third answer gives up on touching everything at once and instead streams through a small holding area, trading away a guarantee of perfect evenness for something that still runs in one pass."
+      ]
+    },
+    {
+      "lines": [
+        "That small holding area has a lopsided personality: an item cannot leave much earlier than when it showed up, but it can absolutely linger and leave far later than expected.",
+        "Working out exactly how early and how late, slot by slot, for a short stream and a tiny holding area, makes that lopsidedness impossible to miss."
+      ]
+    },
+    {
+      "lines": [
+        "Counting the chains of choices turned out to prove something stronger than any amount of running and eyeballing results ever could, for every ordering of everything at once.",
+        "Having proved that for arrangements, the next question drops the promise of reading things more than once at all, and asks what can still be said about a single pass."
+      ]
+    }
+  ]
+}
