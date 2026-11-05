@@ -1,0 +1,6 @@
+- **Bipartite graph**: vertices split into two sides, every edge running between the sides and never within one. *Where you meet it:* every task-machine graph in this topic.
+- **Matching**: a set of edges where no two share an endpoint. *Where you meet it:* what this topic's whole algorithm grows, one piece at a time.
+- **Free vertex**: a vertex touched by no edge of the current matching. *Where you meet it:* the alternating path always starts and ends at one.
+- **Symmetric difference of two edge sets**: the edges in exactly one of the two sets, not both. *Where you meet it:* flipping an alternating path is exactly this operation on the matching.
+- **Vertex cover**: a set of vertices touching every edge in the graph. *Where you meet it:* König's theorem names this topic's own certificate.
+- **Layer**: the set of vertices at a given distance, in edges, from a starting set. *Where you meet it:* Hopcroft-Karp's own phase builds one layer at a time before searching it.
