@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Depth-first search and edge classification">Both SCC algorithms are built from this topic's own DFS, discovery/finish times, and its iterative-stack construction.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Topological sort">The condensation graph's own ordering reuses this topic's topological sort directly.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Stacks, queues and deques">The explicit stack Tarjan's algorithm maintains alongside the DFS call stack.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Tarjan's strongly connected components algorithm" href="https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm" by="Wikipedia">The low-link value's own definition and the single-pass pop rule.</Resource>
+  <Resource kind="reading" title="Kosaraju's algorithm" href="https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm" by="Wikipedia">The two-pass, transpose-graph construction and its attribution.</Resource>
+  <Resource kind="reading" title="2-satisfiability" href="https://en.wikipedia.org/wiki/2-satisfiability" by="Wikipedia">The implication-graph reduction and the satisfiability-iff-no-shared-SCC theorem.</Resource>
+</ul>
+
+</section>

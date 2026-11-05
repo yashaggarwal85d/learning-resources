@@ -1,0 +1,63 @@
+{
+  "topic": "dsa.strongly-connected-components",
+  "steps": [
+    {
+      "lines": [
+        "A graph where every vertex can reach every other looks, from a distance, exactly like one where only small pockets can reach each other.",
+        "Telling the two apart, even on a graph with a billion edges, takes exactly one more depth-first search.",
+        "Just one extra number carried alongside each vertex."
+      ]
+    },
+    {
+      "lines": [
+        "Take any directed graph, find every one of these mutually-reachable groups, and shrink each one down to a single point.",
+        { "beat": 0.3 },
+        "Is what's left always acyclic, sometimes acyclic, or never acyclic?"
+      ],
+      "answer": [
+        "Always.",
+        "If those shrunken points still formed a cycle, it would mean their original groups could all reach each other — forward and back. But then they weren't separate groups to begin with. They'd already have been one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first way to find these groups: one single pass of depth-first search.",
+        "Alongside the usual discovery order, carry one more number for each vertex — the smallest discovery number reachable from it, through the search tree and through edges back up to something still active.",
+        "The instant that number catches back up to the vertex's own discovery number, pop everything above it off the stack. That's a complete group, found on the spot."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second way, simpler to describe: run depth-first search once, just to get a finishing order.",
+        "Reverse every edge in the graph.",
+        "Run depth-first search again, in that reversed finishing order — and every new tree this second pass builds is exactly one of these groups. Simpler to picture, but it costs a second full pass and a reversed copy of the graph, against the first method's single pass."
+      ]
+    },
+    {
+      "lines": [
+        "Shrink every one of those groups down to a point, on this same graph.",
+        "What's left has no cycle in it — not by assumption, but checked directly, with the exact same cycle test built earlier in this chapter.",
+        "A cycle among the shrunken points would mean they were never really separate to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Now take a hard-looking logic problem instead: a formula built from pairs of either-or clauses, and the question of whether any assignment of true and false can satisfy every one of them.",
+        "Turn each clause into a pair of implications, and look at the resulting graph's own groups.",
+        { "beat": 0.3 },
+        "If some variable and its own opposite end up in the same group, is that formula satisfiable, unsatisfiable, or does it depend on everything else in the formula?"
+      ],
+      "answer": [
+        "Unsatisfiable. Always, no matter what else is in the formula.",
+        "Landing in the same group means each one forces the other to carry the same value. But a variable and its own opposite can never share a value — one is true exactly when the other is false. No assignment can get around that."
+      ]
+    },
+    {
+      "lines": [
+        "One key, one boundary, one order statistic — that was the last chapter's whole business.",
+        "This chapter asked something different about a graph with no weights anywhere: what can reach what, and which groups can all reach each other.",
+        "Every single answer cost exactly one pass over the graph. The next question puts a cost on every edge, and asks for the cheapest way through."
+      ]
+    }
+  ]
+}
