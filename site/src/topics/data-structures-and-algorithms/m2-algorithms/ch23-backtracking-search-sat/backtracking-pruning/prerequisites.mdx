@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Recurrences: Master theorem and Akra–Bazzi">The recursion tree: a recursive call's own cost, read off by counting nodes — the same picture a search tree is.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Stacks, queues and deques">The stack: a recursion's call stack is the stack of undo points this topic's choose–explore–undo relies on.</Resource>
+</ul>
+
+<p class="self-check">Self-check before you start: what does <code>f(n) = n · f(n − 1)</code> unwind to? How many ways are there to choose 2 of 4 elements?</p>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Solving Every Sudoku Puzzle" href="https://norvig.com/sudoku.html" by="Peter Norvig, 2006">The hard grid, the two propagation rules, minimum remaining values, and the heavy-tail run-time experiments.</Resource>
+  <Resource kind="reading" title="Eight queens puzzle" href="https://en.wikipedia.org/wiki/Eight_queens_puzzle" by="Wikipedia">The 4,426,165,368 → 16,777,216 → 40,320 progression and the 92/12 solution counts.</Resource>
+</ul>
+
+</section>

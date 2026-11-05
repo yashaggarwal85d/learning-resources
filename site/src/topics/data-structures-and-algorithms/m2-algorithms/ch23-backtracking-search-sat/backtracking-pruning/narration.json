@@ -1,0 +1,95 @@
+{
+  "topic": "dsa.backtracking-pruning",
+  "steps": [
+    {
+      "lines": [
+        "Eight queens, four billion placements on the board, and only ninety-two of them actually work.",
+        "A program that tests every single one makes four billion checks. Watch this one instead: two thousand fifty-seven calls, and it finds all ninety-two."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the one habit every search in this topic shares: choose a piece of the answer, explore what follows, then undo it and try something else.",
+        "Run that habit on the same four elements three different ways and the tree it draws has a different shape each time: sixteen leaves for every subset, twenty-four for every ordering, six for every pair."
+      ]
+    },
+    {
+      "lines": [
+        "Before any rule at all, placing eight queens on an eight by eight board has four billion four hundred twenty-six million arrangements.",
+        "One rule, one queen per row, drops that to sixteen million seven hundred seventy-seven thousand. A second rule, no shared column, drops it again to forty thousand three hundred twenty. Only then does a diagonal check become the first genuine prune."
+      ]
+    },
+    {
+      "lines": [
+        "Before that pruned search runs on four queens, guess its size.",
+        {
+          "beat": 0.3
+        },
+        "Does it visit seventeen nodes, twenty-four, or two hundred fifty-six?"
+      ],
+      "answer": [
+        "Seventeen. Twenty-four is just the ordering tree's own leaf count, and two hundred fifty-six is four to the fourth. Neither one accounts for a single failed check throwing away a whole branch at once."
+      ]
+    },
+    {
+      "lines": [
+        "Four queens, drawn in full: seventeen nodes, two solutions, nothing hidden.",
+        "Scale that same idea up to eight queens and it still only costs two thousand fifty-seven calls for all ninety-two solutions, with the very first one landing after just one hundred fourteen."
+      ]
+    },
+    {
+      "lines": [
+        "That first-solution count does not climb smoothly as the board grows: one hundred fourteen calls at eight queens, but only two hundred sixty-two at twelve.",
+        "Now watch what happens if the prune itself is wrong: refuse any queen too close to the board's edge, and every one of the ninety-two solutions at eight queens disappears. A prune has to be provably safe, or it is just a bug that happens to run fast."
+      ]
+    },
+    {
+      "lines": [
+        "A Sudoku grid is eighty-one squares, and every single one of them shares a unit with exactly twenty others.",
+        "Checking one placement against its own peers misses the point entirely: filling in that one square should also tell you something about those twenty others, immediately."
+      ]
+    },
+    {
+      "lines": [
+        "Two rules capture that: a decided square clears its digit from every peer, and a unit with only one open spot for a digit gets that digit placed there.",
+        "Run both to a standstill on this chapter's hard grid and twenty squares fall into place, but sixty-one still sit open, with more candidate combinations between them than atoms have any business accounting for."
+      ]
+    },
+    {
+      "lines": [
+        "So search still has work to do, just on top of propagation instead of instead of it: branch on one square, try a candidate, propagate again, recurse.",
+        "On that same hard grid, this costs only twenty-five possibilities tried, and only nine squares ever explicitly branched on. Propagation handles everything else."
+      ]
+    },
+    {
+      "lines": [
+        "One more guess, now that propagation is already doing real work on every branch.",
+        {
+          "beat": 0.3
+        },
+        "Does the order the search picks its next square in still matter at all?"
+      ],
+      "answer": [
+        "Enormously. Propagation shrinks what is possible at a square; it never decides which square to look at next, and that choice turns out to be most of what is left to pay for."
+      ]
+    },
+    {
+      "lines": [
+        "Same grid, same propagation turned off so the comparison is fair: just a plain check against each square's own peers.",
+        "Pick the first open square every time and it is still unsolved after three million placements. Pick the square with the fewest remaining candidates instead, and it is solved after four hundred eighty-one."
+      ]
+    },
+    {
+      "lines": [
+        "Even the smarter order has bad days. Shuffle only which candidate gets tried first on one hard puzzle, and the original author's own experiment split cleanly: twenty-seven runs under a fifth of a second, three runs near two hundred seconds.",
+        "Run that same idea across a million puzzles and the shape holds at scale, not just on one unlucky grid. This topic's own much smaller run, thirty seeds on the chapter's own grid, shows the identical shape, only less extreme."
+      ]
+    },
+    {
+      "lines": [
+        "The tree is the whole algorithm here, and what actually decides how big that tree gets is where you prune and which variable you branch on next, never the code that just walks it.",
+        "None of that makes the search itself run in polynomial time; it only keeps the tree as small as refusing a doomed branch early, and guessing right first, can manage. Two pointers picks up next, with no tree at all."
+      ]
+    }
+  ]
+}
