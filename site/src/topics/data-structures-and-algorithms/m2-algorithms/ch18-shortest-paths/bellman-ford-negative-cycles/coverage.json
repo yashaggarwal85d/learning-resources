@@ -1,0 +1,59 @@
+{
+  "topic": "dsa.bellman-ford-negative-cycles",
+  "syllabus": [
+    {
+      "clause": "|V| − 1 relaxation rounds",
+      "at": [
+        { "step": "Bellman-Ford relaxes every edge in the graph on every round, not just the edges leaving one vertex, and repeats that full pass a number of times tied to how many vertices the graph has, minus one, before every distance is guaranteed correct." },
+        { "step": "On a chain built so each edge only helps the round after its neighbor already improved, the correct distances only finish settling on the very last permitted round — confirming the bound is tight, not merely a safe overestimate." }
+      ]
+    },
+    {
+      "clause": "negative-cycle detection and extraction (currency arbitrage)",
+      "at": [
+        { "step": "If Bellman-Ford runs one more full round of relaxation beyond what the vertex count already guarantees is enough, and nothing anywhere improves, does that prove the graph has no negative cycle at all?" },
+        { "step": "A loop of currency conversions, each edge weighted by the negative logarithm of its exchange rate, where trading all the way around leaves more money than the trip started with — turned into a negative cycle, detected, and traced back edge by edge to the currencies that make it up." }
+      ]
+    },
+    {
+      "clause": "the queue-based SPFA variant and its worst case",
+      "at": [
+        { "step": "A queue-driven variant only re-relaxes a vertex's outgoing edges when that vertex's own distance has just improved. In the worst case over every possible graph, does this ever cost strictly less than plain Bellman-Ford's fixed sweeps, or exactly the same amount?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Bellman–Ford algorithm\"",
+      "items": [
+        { "item": "The |V|−1 relaxation-round mechanism itself, and why relaxing every edge replaces Dijkstra's priority-queue selection", "at": [{ "step": "Bellman-Ford relaxes every edge in the graph on every round, not just the edges leaving one vertex, and repeats that full pass a number of times tied to how many vertices the graph has, minus one, before every distance is guaranteed correct." }] },
+        { "item": "The general negative-cycle definition and the claim that the algorithm can detect and report one", "at": [{ "step": "If Bellman-Ford runs one more full round of relaxation beyond what the vertex count already guarantees is enough, and nothing anywhere improves, does that prove the graph has no negative cycle at all?" }] },
+        { "item": "The predecessor-trail-following mechanism needed to extract the actual cycle once a negative cycle is detected", "at": [{ "step": "A loop of currency conversions, each edge weighted by the negative logarithm of its exchange rate, where trading all the way around leaves more money than the trip started with — turned into a negative cycle, detected, and traced back edge by edge to the currencies that make it up." }] },
+        { "item": "The Moore/SPFA variant's own mechanism (re-relax only a vertex whose distance has just improved) and its retained O(|V|·|E|) worst-case bound", "at": [{ "step": "A queue-driven variant only re-relaxes a vertex's outgoing edges when that vertex's own distance has just improved. In the worst case over every possible graph, does this ever cost strictly less than plain Bellman-Ford's fixed sweeps, or exactly the same amount?" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Shortest path problem\"",
+      "items": [
+        { "item": "Dijkstra's own restriction to non-negative weights, restated here only to contrast with Bellman-Ford's wider scope", "at": [{ "topic": "Dijkstra's algorithm", "domain": "data-structures-and-algorithms", "quote": "why non-negative weights are required" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The |V|−1 bound comes from the longest possible simple path in a graph with no negative cycle having at most |V|−1 edges — not from any property of this topic's own particular example graphs", "at": [{ "step": "Bellman-Ford relaxes every edge in the graph on every round, not just the edges leaving one vertex, and repeats that full pass a number of times tied to how many vertices the graph has, minus one, before every distance is guaranteed correct." }] },
+      { "item": "A |V|-th round that still finds an improving edge cannot be explained by any simple path, since a simple path has at most |V|−1 edges — the only remaining explanation is a cycle, and only a negative-weight one would still be improving after every simple path has already stabilised", "at": [{ "step": "If Bellman-Ford runs one more full round of relaxation beyond what the vertex count already guarantees is enough, and nothing anywhere improves, does that prove the graph has no negative cycle at all?" }] },
+      { "item": "Taking the negative logarithm of an exchange rate turns a multiplicative round-trip profit condition (the product of rates exceeds one) into an additive one (the sum of edge weights is negative) — the one piece of arithmetic that makes the arbitrage question answerable by a shortest-path algorithm at all", "at": [{ "step": "A loop of currency conversions, each edge weighted by the negative logarithm of its exchange rate, where trading all the way around leaves more money than the trip started with — turned into a negative cycle, detected, and traced back edge by edge to the currencies that make it up." }] },
+      { "item": "Following predecessor pointers backward from the vertex that is flagged is not guaranteed to immediately land on the cycle — that vertex may only be reachable from the cycle, which is exactly why the walk continues until a vertex repeats", "at": [{ "step": "A loop of currency conversions, each edge weighted by the negative logarithm of its exchange rate, where trading all the way around leaves more money than the trip started with — turned into a negative cycle, detected, and traced back edge by edge to the currencies that make it up." }] },
+      { "item": "SPFA's saving is proportional to how many vertices never need re-relaxing after their first correct distance — a graph engineered so every vertex gets corrected late, after its own children are already relaxed with a wrong value, removes that saving and compounds it into extra work instead", "at": [{ "step": "A queue-driven variant only re-relaxes a vertex's outgoing edges when that vertex's own distance has just improved. In the worst case over every possible graph, does this ever cost strictly less than plain Bellman-Ford's fixed sweeps, or exactly the same amount?" }] },
+      { "item": "Both plain Bellman-Ford and SPFA still compute identical final distances on every graph in this topic, negative cycles aside — the difference measured here is purely in total relaxation work, never in correctness", "at": [{ "step": "A queue-driven variant only re-relaxes a vertex's outgoing edges when that vertex's own distance has just improved. In the worst case over every possible graph, does this ever cost strictly less than plain Bellman-Ford's fixed sweeps, or exactly the same amount?" }] },
+      { "item": "Bellman-Ford's own relaxation mechanism is identical to Dijkstra's (topic 63) — the only difference is which edges get relaxed in what order, not a new primitive operation", "at": [{ "step": "Bellman-Ford answers the single-source question for any graph with a well-defined answer at all, negative edges included — the one restriction Dijkstra needed is gone, at the cost of relaxing every edge instead of only the closest vertex's." }] },
+      { "item": "This topic closes the chapter's single-source question for every kind of graph with a well-defined answer — the next topic's all-pairs question runs either algorithm from every vertex in turn, at a cost this chapter's own composition (topic 65) avoids paying from scratch", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "The worst-order chain and the arbitrage graph both still compute correct distances once a negative cycle is absent — the chain's own distances are confirmed against an independent brute-force relaxation, not merely asserted to be tight in round count alone", "at": [{ "step": "On a chain built so each edge only helps the round after its neighbor already improved, the correct distances only finish settling on the very last permitted round — confirming the bound is tight, not merely a safe overestimate." }] },
+      { "item": "An early-termination optimisation (stop once a full round makes no change) is a free win on any graph without a negative cycle, but cannot be the negative-cycle check itself, since a graph that never stabilises needs exactly one more round run to confirm that", "at": [{ "step": "If Bellman-Ford runs one more full round of relaxation beyond what the vertex count already guarantees is enough, and nothing anywhere improves, does that prove the graph has no negative cycle at all?" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

@@ -1,0 +1,63 @@
+{
+  "topic": "dsa.bellman-ford-negative-cycles",
+  "steps": [
+    {
+      "lines": [
+        "Picture a loop of currency conversions — dollars to euros, euros to pounds, pounds back to dollars.",
+        "Followed all the way around, it leaves more money at the end than the trip started with.",
+        "A real possibility for a few seconds on a real exchange. And exactly what a negative cycle means."
+      ]
+    },
+    {
+      "lines": [
+        "Bellman-Ford runs one more full round of relaxation, beyond what the vertex count already guarantees is enough.",
+        "Nothing anywhere improves.",
+        { "beat": 0.3 },
+        "Does that prove the graph has no negative cycle at all?"
+      ],
+      "answer": [
+        "Yes. A negative cycle would always find one more improving edge.",
+        "Every simple path has already stabilized by the time the guaranteed rounds are spent. One more round still improving something can only mean a cycle — and only a negative one keeps paying off forever."
+      ]
+    },
+    {
+      "lines": [
+        "Bellman-Ford relaxes every edge in the graph, on every round — not just the edges leaving one vertex.",
+        "It repeats that full pass a number of times tied to how many vertices the graph has, minus one.",
+        "No priority queue. No closest-first order. Just every edge, every round, until the count runs out."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a chain built so each edge only helps the round after its neighbor already improved.",
+        "The correct distances only finish settling on the very last permitted round.",
+        "Proof the bound is tight, not just a safe overestimate."
+      ]
+    },
+    {
+      "lines": [
+        "Take that currency loop again, but weight each edge by the negative logarithm of its exchange rate.",
+        "A multiplying profit becomes an adding-up weight — one a shortest-path algorithm can actually read.",
+        "Run the algorithm, and the loop shows up as a negative cycle. Detected, and traced back edge by edge."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a queue-driven variant. It only re-relaxes a vertex's outgoing edges when that vertex's own distance has just improved.",
+        { "beat": 0.3 },
+        "In the worst case, over every possible graph, does this ever cost strictly less than plain Bellman-Ford's fixed sweeps — or exactly the same amount?"
+      ],
+      "answer": [
+        "No. Its worst case is the identical bound as plain Bellman-Ford's.",
+        "On most graphs this skips a lot of wasted work. But build a graph where every correction arrives just late enough, and that rework compounds — until this variant relaxes more edges in total than the plain version ever would."
+      ]
+    },
+    {
+      "lines": [
+        "Bellman-Ford answers the single-source question for any graph with a well-defined answer at all, negative edges included.",
+        "The one restriction Dijkstra needed is gone, at the cost of relaxing every edge instead of only the closest vertex's.",
+        "Running either algorithm once per vertex would answer a bigger question — but a cheaper way to pay that cost once, for the whole graph at once, is coming up next."
+      ]
+    }
+  ]
+}

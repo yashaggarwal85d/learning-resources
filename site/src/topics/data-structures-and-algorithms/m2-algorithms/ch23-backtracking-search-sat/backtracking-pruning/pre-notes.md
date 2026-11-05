@@ -1,0 +1,8 @@
+- **Recursion**: a function that calls itself on a smaller case, until a base case stops it. *Where you meet it:* choose–explore–undo is a recursive function; the search tree is its call tree drawn out.
+- **Call stack**: the stack of pending calls a recursion builds, one frame per unfinished call. *Where you meet it:* a backtracking function's own undo step is exactly popping back to where that call's choice was made.
+- **Permutation**: an ordering of a set of elements; n elements have n! permutations. *Where you meet it:* placing n queens one per row, one per column, is searching permutations.
+- **Combination**: a choice of k elements from n with no order; C(n, k) of them. *Where you meet it:* choosing which k of n elements go into a subset.
+- **Subset**: any selection of a set's elements, including none or all; 2ⁿ of them. *Where you meet it:* the first enumeration tree this topic draws.
+- **A queen's moves in chess**: any number of squares along its row, column, or either diagonal. *Where you meet it:* two queens attack each other exactly when they share a row, column, or diagonal.
+- **Sudoku's rules**: a digit 1–9 in every cell so that no row, column, or 3×3 box repeats a digit. *Where you meet it:* every square this topic fills in obeys exactly this rule.
+- **Candidate set**: the digits a square could still legally hold, given what is filled in so far. *Where you meet it:* what shrinks every time this topic's search makes progress.

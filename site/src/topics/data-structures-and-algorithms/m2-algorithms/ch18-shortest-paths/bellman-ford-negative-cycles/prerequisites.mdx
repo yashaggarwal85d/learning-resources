@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Dijkstra's algorithm">The one restriction (non-negative weights) this topic's algorithm is built to drop, and the relaxation mechanism both algorithms share.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Bellman–Ford algorithm" href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm" by="Wikipedia">The relaxation-round bound, negative-cycle detection, and the SPFA variant.</Resource>
+  <Resource kind="reading" title="Shortest path problem" href="https://en.wikipedia.org/wiki/Shortest_path_problem" by="Wikipedia">Dijkstra's own non-negative-weight restriction, restated here for contrast.</Resource>
+</ul>
+
+</section>

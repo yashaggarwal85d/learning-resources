@@ -1,0 +1,4 @@
+- **Relaxation (recap from topic 63)**: checking whether going through one more edge improves the current best distance estimate to a vertex. *Where you meet it:* the one mechanism this topic's algorithm, and Dijkstra's before it, are both built from.
+- **Negative cycle**: a cycle whose total edge weight is negative, making a shortest path along it undefined — you can always walk around it once more and come out ahead. *Where you meet it:* the exact structure this topic's algorithm detects.
+- **Queue (recap)**: a first-in, first-out structure. *Where you meet it:* the SPFA variant's own mechanism for deciding which vertex to re-relax next.
+- **Logarithm (recap)**: the power a fixed base must be raised to, to produce a given number; turns multiplication into addition. *Where you meet it:* the one piece of arithmetic that turns a currency arbitrage's multiplying profit into an adding-up negative cycle.

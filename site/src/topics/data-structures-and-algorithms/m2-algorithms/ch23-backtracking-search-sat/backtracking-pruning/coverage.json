@@ -1,0 +1,212 @@
+{
+  "topic": "dsa.backtracking-pruning",
+  "syllabus": [
+    {
+      "clause": "subsets, permutations and combinations",
+      "at": [
+        {
+          "step": "One recursive function, choose, explore, undo, drawn as a tree for the same four-element set three ways: every subset, in or out at each element, sixteen leaves; every permutation, any unused element next, twenty-four leaves; every combination of two, increasing indices only, six leaves. Nothing is pruned yet."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    },
+    {
+      "clause": "N-queens",
+      "at": [
+        {
+          "step": "Eight queens without any rule: four billion four hundred twenty-six million one hundred sixty-five thousand three hundred sixty-eight placements. One queen per row: sixteen million seven hundred seventy-seven thousand two hundred sixteen. No two sharing a column: forty thousand three hundred twenty. Then the first real prune, refusing a placement that shares a diagonal with an earlier queen."
+        },
+        {
+          "step": "Four queens: seventeen nodes, two solutions, drawn in full. Eight queens: two thousand fifty-seven calls, ninety-two solutions, the first one found after one hundred fourteen calls — against the four-billion-placement baseline on a shared log axis."
+        },
+        {
+          "step": "The node count is not smooth as n grows: the first solution comes after one hundred fourteen calls at eight queens, but after only two hundred sixty-two calls at twelve. A prune that is not sound — refusing a queen too near the board's edge — loses every one of the ninety-two solutions at eight queens."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "constraint propagation (Sudoku)",
+      "at": [
+        {
+          "step": "Sudoku's eighty-one-square grid, twenty-seven units, twenty peers per square. A placed digit can rule out digits for many other squares at once; a bare legality check against one square's own peers never looks at what else follows from it."
+        },
+        {
+          "step": "Two rules run to a fixed point: a decided square empties that digit from its peers; a unit with one place left for a digit gets it there. On the chapter's hard grid, propagation alone leaves sixty-one of the sixty-four empty squares uncertain, with over four times ten to the thirty-eighth power candidate combinations remaining between them."
+        },
+        {
+          "step": "Branching on a copy of the grid, trying each candidate, propagating, recursing: the same hard grid is solved after looking at only twenty-five possibilities, branching explicitly on just nine of the sixty-one uncertain squares."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "variable-ordering heuristics as the difference between seconds and years",
+      "at": [
+        {
+          "step": "The same grid, checked only against peers, no propagation: first-empty-square order is still unsolved after three million placements. Fewest-candidates-first is solved after four hundred eighty-one. The order decides everything once propagation is held fixed."
+        },
+        {
+          "step": "Even a good order has bad days. Norvig's own randomized-value-order runs on one hard puzzle split twenty-seven fast and three near one hundred ninety seconds apiece, and his own run across a million puzzles shows the identical shape at scale. This topic's own thirty-seeded run on the chapter's grid shows the same shape, smaller: a real spread between a typical run and its worst, not a smooth one."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Peter Norvig, \"Solving Every Sudoku Puzzle\" (norvig.com, 2006)",
+      "items": [
+        {
+          "item": "the grid, the two propagation rules, and the post-propagation 61-uncertain-squares and 25-possibilities/9-squares search figures",
+          "at": [
+            {
+              "step": "Two rules run to a fixed point: a decided square empties that digit from its peers; a unit with one place left for a digit gets it there. On the chapter's hard grid, propagation alone leaves sixty-one of the sixty-four empty squares uncertain, with over four times ten to the thirty-eighth power candidate combinations remaining between them."
+            }
+          ]
+        },
+        {
+          "item": "the minimum remaining values heuristic, its name and its justification",
+          "at": [
+            {
+              "step": "Before the measurement: once propagation is already running, does the order the search branches in matter at all — first empty square, or fewest candidates first?"
+            }
+          ]
+        },
+        {
+          "item": "the 27-out-of-30/190-seconds heavy-tail experiment and the million-puzzle tail statistics",
+          "at": [
+            {
+              "step": "Even a good order has bad days. Norvig's own randomized-value-order runs on one hard puzzle split twenty-seven fast and three near one hundred ninety seconds apiece, and his own run across a million puzzles shows the identical shape at scale. This topic's own thirty-seeded run on the chapter's grid shows the same shape, smaller: a real spread between a typical run and its worst, not a smooth one."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Eight queens puzzle\"",
+      "items": [
+        {
+          "item": "the 4,426,165,368 → 16,777,216 → 40,320 progression and the 92/12 solution counts",
+          "at": [
+            {
+              "step": "Eight queens without any rule: four billion four hundred twenty-six million one hundred sixty-five thousand three hundred sixty-eight placements. One queen per row: sixteen million seven hundred seventy-seven thousand two hundred sixteen. No two sharing a column: forty thousand three hundred twenty. Then the first real prune, refusing a placement that shares a diagonal with an earlier queen."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OEIS A000170",
+      "items": [
+        {
+          "item": "independent cross-check of every N-queens solution count this topic's own pruned search produces",
+          "at": [
+            {
+              "step": "Four queens: seventeen nodes, two solutions, drawn in full. Eight queens: two thousand fifty-seven calls, ninety-two solutions, the first one found after one hundred fourteen calls — against the four-billion-placement baseline on a shared log axis."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "The jump from 24 leaves (every ordering of four elements) to 16 leaves (every subset) to 6 leaves (every pair) is not an arbitrary set of examples; each count follows directly from a different choice rule inside the identical choose-explore-undo skeleton, which is the entire point: the tree's shape is a direct, mechanical consequence of what counts as a legal next choice, not a separate fact about each problem.",
+        "at": [
+          {
+            "step": "One recursive function, choose, explore, undo, drawn as a tree for the same four-element set three ways: every subset, in or out at each element, sixteen leaves; every permutation, any unused element next, twenty-four leaves; every combination of two, increasing indices only, six leaves. Nothing is pruned yet."
+          }
+        ]
+      },
+      {
+        "item": "The three-stage shrink from 4,426,165,368 to 16,777,216 to 40,320 is not itself pruning; each stage is a structural rule applied uniformly before any single placement is examined (one queen per row, then no shared column), and the real prune, refusing a placement that attacks an existing queen, only starts after all three uniform rules are already in force.",
+        "at": [
+          {
+            "step": "Eight queens without any rule: four billion four hundred twenty-six million one hundred sixty-five thousand three hundred sixty-eight placements. One queen per row: sixteen million seven hundred seventy-seven thousand two hundred sixteen. No two sharing a column: forty thousand three hundred twenty. Then the first real prune, refusing a placement that shares a diagonal with an earlier queen."
+          }
+        ]
+      },
+      {
+        "item": "That the pruned search's own node count (2,057 at n=8) is nowhere close to the unpruned enumeration (4,426,165,368) is not evidence that pruning is merely helpful; the ratio between the two numbers is itself the entire quantitative argument for why backtracking is a different algorithm from brute force, not a faster implementation of the same one.",
+        "at": [
+          {
+            "step": "Four queens: seventeen nodes, two solutions, drawn in full. Eight queens: two thousand fifty-seven calls, ninety-two solutions, the first one found after one hundred fourteen calls — against the four-billion-placement baseline on a shared log axis."
+          }
+        ]
+      },
+      {
+        "item": "The unsound \"too near the edge\" prune does not merely reduce the solution count; on n=8 it reduces it to exactly zero, which is a stronger and more useful demonstration than a partial loss would be, because a partial loss could be mistaken for a pruning algorithm working imperfectly rather than for an unsound rule invalidating the search's own correctness guarantee entirely.",
+        "at": [
+          {
+            "step": "The node count is not smooth as n grows: the first solution comes after one hundred fourteen calls at eight queens, but after only two hundred sixty-two calls at twelve. A prune that is not sound — refusing a queen too near the board's edge — loses every one of the ninety-two solutions at eight queens."
+          }
+        ]
+      },
+      {
+        "item": "Twenty peers per square is not an approximation or a rule of thumb; it is an exact, provable count (eight others in the row, eight others in the column, and four more in the box not already counted in the row or column), and Sudoku's entire propagation mechanism depends on this count being exact, not merely large.",
+        "at": [
+          {
+            "step": "Sudoku's eighty-one-square grid, twenty-seven units, twenty peers per square. A placed digit can rule out digits for many other squares at once; a bare legality check against one square's own peers never looks at what else follows from it."
+          }
+        ]
+      },
+      {
+        "item": "The two propagation rules (eliminate from peers; assign a unit's last open place) are both strictly sound, never discarding a real solution, which is exactly why propagation alone can decide 20 of 64 squares with full confidence and still legitimately leave 61 squares undecided: soundness bounds how much a rule can conclude, not how little it can leave undetermined.",
+        "at": [
+          {
+            "step": "Two rules run to a fixed point: a decided square empties that digit from its peers; a unit with one place left for a digit gets it there. On the chapter's hard grid, propagation alone leaves sixty-one of the sixty-four empty squares uncertain, with over four times ten to the thirty-eighth power candidate combinations remaining between them."
+          }
+        ]
+      },
+      {
+        "item": "That only 9 of the 61 uncertain squares are ever explicitly branched on is not a measurement of how good the search's guesses were; it is a measurement of how much propagation accomplishes after each single guess, since every branch triggers a fresh propagation pass that resolves many squares the search itself never had to choose a value for.",
+        "at": [
+          {
+            "step": "Branching on a copy of the grid, trying each candidate, propagating, recursing: the same hard grid is solved after looking at only twenty-five possibilities, branching explicitly on just nine of the sixty-one uncertain squares."
+          }
+        ]
+      },
+      {
+        "item": "The three-million-placements-unsolved result for first-empty-square order is not evidence that propagation-free backtracking cannot solve this puzzle at all; it is evidence that this specific order is catastrophically bad for it, which is the entire reason the comparison holds propagation fixed (off, in both arms) so that the gap measured is attributable to ordering alone, not to the presence or absence of propagation.",
+        "at": [
+          {
+            "step": "The same grid, checked only against peers, no propagation: first-empty-square order is still unsolved after three million placements. Fewest-candidates-first is solved after four hundred eighty-one. The order decides everything once propagation is held fixed."
+          }
+        ]
+      },
+      {
+        "item": "Norvig's own 27-out-of-30/190-seconds split and this topic's own thirty-seeded, roughly two-times spread are two different measurements of the same underlying phenomenon at two different scales, not a successful and an unsuccessful reproduction of one claim; the honest report of a smaller observed ratio is itself the correct scientific outcome of running fewer trials on a less adversarially-chosen puzzle, not a discrepancy to explain away.",
+        "at": [
+          {
+            "step": "Even a good order has bad days. Norvig's own randomized-value-order runs on one hard puzzle split twenty-seven fast and three near one hundred ninety seconds apiece, and his own run across a million puzzles shows the identical shape at scale. This topic's own thirty-seeded run on the chapter's grid shows the same shape, smaller: a real spread between a typical run and its worst, not a smooth one."
+            }
+        ]
+      },
+      {
+        "item": "The heavy-tailed distribution is explicitly not a normal distribution, and the difference is not merely qualitative: a normal distribution's maximum over a million samples lands only a handful of standard deviations from the mean, while the measured Sudoku maximum lands roughly a thousand standard deviations out, a gap no amount of additional normally-distributed sampling could ever produce.",
+        "at": [
+          {
+            "step": "Even a good order has bad days. Norvig's own randomized-value-order runs on one hard puzzle split twenty-seven fast and three near one hundred ninety seconds apiece, and his own run across a million puzzles shows the identical shape at scale. This topic's own thirty-seeded run on the chapter's grid shows the same shape, smaller: a real spread between a typical run and its worst, not a smooth one."
+            }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}
