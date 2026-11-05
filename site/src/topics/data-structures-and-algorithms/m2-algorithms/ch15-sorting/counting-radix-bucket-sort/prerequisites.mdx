@@ -1,0 +1,37 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Elementary sorts and sorting networks">Stability and insertion sort, read again as radix sort's own stability proof and its small-bucket fallback.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Quicksort and partitioning schemes">The Dutch national flag problem, generalized from three piles to as many as there are digit values.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">The model this topic's own escape (reading a key's digits instead of comparing it whole) leaves behind.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">The scope of the n log n bound this topic shows a real exit from, and why that exit isn't a contradiction.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Fastest Table Sort in the West" href="https://duckdb.org/2021/08/27/external-sorting.html" by="DuckDB, 2021">The multi-column byte encoding this topic reworks by hand.</Resource>
+  <Resource kind="reading" title="These Rows Are Made for Sorting" href="https://hannes.muehleisen.org/publications/ICDE2023-sorting.pdf" by="Kuiper & Mühleisen, ICDE 2023">The later, fuller account of DuckDB's own row-sorting approach.</Resource>
+  <Resource kind="reading" title="Engineering Radix Sort" href="https://static.usenix.org/publications/compsystems/1993/win_mcilroy.pdf" by="McIlroy, Bostic & McIlroy, 1993">The paper that names American flag sort and its cycle-leader permutation.</Resource>
+  <Resource kind="reading" title="Radix Tricks" href="https://stereopsis.com/radix.html" by="Michael Herf">The IEEE 754 float bit-flip transform this topic reproduces exactly.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="on-site">
+
+### <span class="n">03</span> On this site
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="External merge sort">What happens to this chapter's sorts once the data no longer fits in memory. Goes deeper later.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,95 @@
+{
+    "topic": "dsa.counting-radix-bucket-sort",
+    "steps": [
+        {
+            "lines": [
+                "Heapsort, merge sort, quicksort and timsort all pay for comparing two whole keys, even when most of a key never needs reading.",
+                "A database sorting ten million rows by country and then birth year calls a comparator that loops over both columns, on every single one of roughly two hundred million comparisons."
+            ]
+        },
+        {
+            "lines": [
+                "Split a thirty two bit key into eight bit digits.",
+                {
+                    "beat": 0.3
+                },
+                "How many passes over the data does that take?"
+            ],
+            "answer": [
+                "Four. Thirty two divided by eight is four, fixed, no matter what the keys look like. A comparison sort goes about twenty levels deep instead, at a million keys."
+            ]
+        },
+        {
+            "lines": [
+                "Counting sort starts by counting how many keys have each value, then turns those counts into starting positions with a running total.",
+                "The scatter step walks the input left to right, so keys that tie on value keep whatever order they arrived in. That one property is what the next few algorithms build on."
+            ]
+        },
+        {
+            "lines": [
+                "Least significant digit radix sort runs counting sort once per digit, starting from the last digit and working toward the first.",
+                "Each individual pass is stable, and that is the entire proof that the composed result ends up fully sorted, not just sorted within one digit."
+            ]
+        },
+        {
+            "lines": [
+                "Most significant digit radix sort goes the other way: split by the first digit into buckets, then recurse into each bucket on the next digit.",
+                "Once a bucket gets small, recursing further costs more than it saves, so the algorithm hands that bucket to a plain insertion sort instead."
+            ]
+        },
+        {
+            "lines": [
+                "Doing most significant digit radix sort without a second array means permuting the same array in place.",
+                "Each out of place key gets swapped straight into its own bucket, displacing whatever key was already sitting there, and that displaced key keeps the chain going until a cycle closes."
+            ]
+        },
+        {
+            "lines": [
+                "Watch what happens to two keys that land in the same bucket.",
+                "They go in one order and come out the other way around. Nothing about following a permutation's cycles has any reason to respect which key arrived first."
+            ]
+        },
+        {
+            "lines": [
+                "A database wants to sort by several columns at once without a slow, branching comparator, so it converts each row into one fixed length string of bytes.",
+                "A column sorted in reverse gets every one of its bits flipped. A signed number gets its sign bit flipped, so negative values land before positive ones in byte order."
+            ]
+        },
+        {
+            "lines": [
+                "The same encoding that makes comparing two rows cheap turns out to make comparing them unnecessary in the first place.",
+                "Flip a float's sign bit, and if it was already negative, flip every other bit too. Do that, and the bit pattern now sorts exactly the way the number does."
+            ]
+        },
+        {
+            "lines": [
+                "Reading digits instead of comparing keys sounds like it should always win.",
+                {
+                    "beat": 0.3
+                },
+                "Does it ever lose to a comparison sort?"
+            ],
+            "answer": [
+                "Yes. Once a key gets long enough, or the digit counting array stops fitting comfortably in cache, the comparison sort can come out ahead. This is a real escape from one model, not a universal rule."
+            ]
+        },
+        {
+            "lines": [
+                "On fifty thousand random keys, radix sort's total key moves land well under a comparison sort's total comparisons on the exact same input.",
+                "Radix sort also never adapts to existing order the way timsort does: a fully sorted array still costs every pass, in full, every time."
+            ]
+        },
+        {
+            "lines": [
+                "Bucket sort spreads keys drawn evenly across a range into that many buckets, then finishes each bucket with insertion sort.",
+                "Give it keys that are not actually spread evenly, and almost everything piles into one bucket, and the whole promise collapses to whatever that one bucket's own inner sort costs."
+            ]
+        },
+        {
+            "lines": [
+                "Every sort this chapter has built, up to this point, has paid for comparing keys as whole values. Reading one digit at a time is a door none of them can walk through.",
+                "Every one of them has also assumed the data fits in memory, and a lot of real data does not."
+            ]
+        }
+    ]
+}
