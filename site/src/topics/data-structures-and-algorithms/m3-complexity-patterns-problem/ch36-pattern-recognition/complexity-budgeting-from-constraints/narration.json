@@ -1,0 +1,71 @@
+{
+  "topic": "dsa.complexity-budgeting-from-constraints",
+  "steps": [
+    {
+      "lines": [
+        "A problem says n is at most a hundred thousand, and the time limit is one second.",
+        "The obvious double loop over every pair costs ten billion steps, something like a hundred seconds. The limit already answered this, before anyone read what the problem is even asking."
+      ]
+    },
+    {
+      "lines": [
+        "Every such estimate starts from one plain fact: an ordinary machine does somewhere around a hundred million simple operations in a second.",
+        "Multiply a time limit by that rate, and it turns into a budget measured in operations, something to check an algorithm against before writing a single line of it."
+      ]
+    },
+    {
+      "lines": [
+        "At that size and that limit, which growth rate actually survives: one that costs n squared operations, or one that costs n log n?"
+      ],
+      "answer": [
+        "Only n log n survives. At a hundred thousand, n squared costs about ten billion operations there, something like a hundred seconds, far past a one second limit.",
+        "Run the same size through n log n instead, and the cost drops to well under two million operations, comfortably inside that same one second."
+      ]
+    },
+    {
+      "lines": [
+        "That one division, done once for every growth rate, is the entire table people seem to carry around memorized.",
+        "Ten allows roughly a factorial amount of work. Twenty allows two to the n. Five hundred allows n cubed. Five thousand allows n squared. A million allows n log n or better. Past that, only constant or logarithmic work survives."
+      ]
+    },
+    {
+      "lines": [
+        "A smaller input size doesn't only forbid algorithms, it can hand you ones that a bigger size made completely hopeless.",
+        "At forty choices, trying every one of two to the n outright runs well past a trillion operations. Split those forty into two halves of twenty, combine the two results, and each half costs only two to the twenty, a few million instead."
+      ]
+    },
+    {
+      "lines": [
+        "That hundred million operations a second was quietly assuming every single one of them hits the cache.",
+        "Near the top of the budget the work has to be one pass in order, because a random touch per element misses the cache, and that assumption just breaks. Measured directly, the same count of reads done in order and done at random, and the random pass runs reliably slower."
+      ]
+    },
+    {
+      "lines": [
+        "Four words in a statement each point toward a technique, each checked here against a plain brute force on a small case.",
+        "The word sorted points at binary search. K-th points at a heap. All pairs asks whether n squared is even affordable. Minimum maximum points at binary search over the answer itself, a predicate that only ever moves one direction."
+      ]
+    },
+    {
+      "lines": [
+        "When an exact algorithm still misses the budget, even at a small input size kept deliberately small, is that only ever a statement about speed?"
+      ],
+      "answer": [
+        "Not only. A deliberately small size paired with an exponential budget is often a tell that the problem itself is hard, not just the algorithm chosen for it.",
+        "When that's the case, the way out isn't a faster exact algorithm. It's an approximation or a heuristic, trading a weaker guarantee for actually fitting the budget."
+      ]
+    },
+    {
+      "lines": [
+        "A budget only ever rules algorithms out. Fitting inside it is necessary, and it is never sufficient on its own.",
+        "An algorithm that fits the budget perfectly can still be the wrong algorithm, computing a wrong answer quickly instead of a right one slowly."
+      ]
+    },
+    {
+      "lines": [
+        "Three questions close every statement before any algorithm gets chosen: what is n, and what are the values? What does the limit allow? What do the signal words point at?",
+        "The budget only says how much work is allowed. It says nothing about how to organise the data to actually do that work. That question comes next."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "topic": "dsa.complexity-budgeting-from-constraints",
+  "syllabus": [
+    {
+      "clause": "reading n, value ranges and time limits as a budget",
+      "at": [
+        { "step": "A statement says n is at most a hundred thousand and the time limit is one second. The obvious double loop over every pair costs ten billion steps, about a hundred seconds on an ordinary machine. The limit has already answered the question, before the problem itself is even understood." },
+        { "step": "The starting point for every such estimate is one fact: an ordinary modern machine performs on the order of a hundred million simple operations in a second. A time limit, multiplied by that rate, turns into a budget of operations — a number to compare an algorithm against before writing a line of it." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "(n ≤ 20 → 2ⁿ; n ≤ 10⁵ → n log n; n ≤ 10⁸ → linear, cache-friendly)",
+      "at": [
+        { "step": "That single division, repeated for every growth rate, is the whole table: n at ten allows a factorial amount of work; twenty allows two to the n; five hundred allows n cubed; five thousand allows n squared; a million allows n log n or better; and once n is large, only constant or logarithmic work fits. Nothing here is memorised — every row falls out of the same division." },
+        { "step": "The rule of thumb's hundred million operations a second quietly assumed every operation hits the cache. Near the top of the budget, around a hundred million elements, the work has to be one sequential pass — because a random access per element is a cache miss, and that assumption breaks. Measured directly: the same count of reads, done once in order and once in random order, and the random pass runs reliably slower." },
+        { "step": "A smaller input size does not just forbid algorithms, it can permit ones that were hopeless at a larger size. At n of forty, trying two to the n choices outright costs well over a trillion operations. Splitting the forty choices into two halves of twenty, and combining the two results, costs only two to the twenty per half — a few million, not a trillion." },
+        { "step": "Predict: when an exact algorithm still fails to fit the budget, even at a small input size, and the input size looks deliberately kept small, is that only a statement about speed — or can it also be a signal about the problem itself?" },
+        { "step": "A budget only ever rules algorithms out. Fitting inside it is a necessary condition, never a sufficient one — an algorithm that fits the budget can still be the wrong algorithm, computing the wrong answer quickly." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "signals like \"sorted\", \"k-th\", \"all pairs\", \"minimum maximum\"",
+      "at": [
+        { "step": "Four words in a statement each hint at a technique, each checked here against a brute force on a small case: \"sorted\" points at binary search; \"k-th\" points at a heap; \"all pairs\" asks whether n squared is even affordable; \"minimum maximum\" points at binary search over the answer itself, a monotone predicate." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Competitive Programmer's Handbook (Laaksonen)",
+      "items": [
+        { "item": "The rule of thumb: hundreds of millions of operations a second", "at": [{ "step": "The starting point for every such estimate is one fact: an ordinary modern machine performs on the order of a hundred million simple operations in a second. A time limit, multiplied by that rate, turns into a budget of operations — a number to compare an algorithm against before writing a line of it." }] },
+        { "item": "The n-to-complexity table, printed exactly", "at": [{ "step": "That single division, repeated for every growth rate, is the whole table: n at ten allows a factorial amount of work; twenty allows two to the n; five hundred allows n cubed; five thousand allows n squared; a million allows n log n or better; and once n is large, only constant or logarithmic work fits. Nothing here is memorised — every row falls out of the same division." }] },
+        { "item": "The hedge that time complexity hides constant factors", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "Time complexity (Wikipedia)",
+      "items": [
+        { "item": "Time complexity defined as the amount of computer time it takes to run an algorithm", "at": [{ "step": "The starting point for every such estimate is one fact: an ordinary modern machine performs on the order of a hundred million simple operations in a second. A time limit, multiplied by that rate, turns into a budget of operations — a number to compare an algorithm against before writing a line of it." }] },
+        { "item": "Time complexity estimated by counting elementary operations, each taking a fixed amount of time", "at": [{ "step": "The starting point for every such estimate is one fact: an ordinary modern machine performs on the order of a hundred million simple operations in a second. A time limit, multiplied by that rate, turns into a budget of operations — a number to compare an algorithm against before writing a line of it." }] },
+        { "item": "Algorithmic complexities classified by the function in the big O notation (linear time, polynomial time named as examples)", "at": [{ "step": "That single division, repeated for every growth rate, is the whole table: n at ten allows a factorial amount of work; twenty allows two to the n; five hundred allows n cubed; five thousand allows n squared; a million allows n log n or better; and once n is large, only constant or logarithmic work fits. Nothing here is memorised — every row falls out of the same division." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The rule of thumb's 'hundreds of millions of operations a second' is Laaksonen's own stated estimate, not a universal physical constant — a slower or faster machine, or an algorithm with a larger constant factor hidden inside its own stated growth rate, shifts every row of the table by the same multiplicative amount without changing which row wins at a given n, which is why this topic frames the table as a derivation rather than a fact about hardware in general.", "at": [{ "step": "The starting point for every such estimate is one fact: an ordinary modern machine performs on the order of a hundred million simple operations in a second. A time limit, multiplied by that rate, turns into a budget of operations — a number to compare an algorithm against before writing a line of it." }] },
+      { "item": "The cache-friendliness measurement in examples.py times a Python loop, not a compiled language's raw memory access; the measured ratio between the sequential and random passes is run- and machine-dependent and is not asserted as a specific number, only as the qualitative fact that random access is reliably slower, which is the claim the topic actually makes on screen.", "at": [{ "step": "The rule of thumb's hundred million operations a second quietly assumed every operation hits the cache. Near the top of the budget, around a hundred million elements, the work has to be one sequential pass — because a random access per element is a cache miss, and that assumption breaks. Measured directly: the same count of reads, done once in order and once in random order, and the random pass runs reliably slower." }] },
+      { "item": "The meet-in-the-middle saving (splitting n choices into two halves of n/2 each) depends on the two halves' partial results being combinable cheaply, typically by sorting one half and searching it from the other — this topic names the threshold arithmetic only and does not build or claim the technique works for every exponential problem regardless of its combining step.", "at": [{ "step": "A smaller input size does not just forbid algorithms, it can permit ones that were hopeless at a larger size. At n of forty, trying two to the n choices outright costs well over a trillion operations. Splitting the forty choices into two halves of twenty, and combining the two results, costs only two to the twenty per half — a few million, not a trillion." }] },
+      { "item": "The four signal words demonstrated ('sorted', 'k-th', 'all pairs', 'minimum maximum') are the syllabus's own named examples, not an exhaustive list of every signal word in competitive programming; the topic is explicit on screen that a signal is a hint with a failure rate, not a guarantee, precisely so a learner does not treat the four as a complete lookup table.", "at": [{ "step": "Four words in a statement each hint at a technique, each checked here against a brute force on a small case: \"sorted\" points at binary search; \"k-th\" points at a heap; \"all pairs\" asks whether n squared is even affordable; \"minimum maximum\" points at binary search over the answer itself, a monotone predicate." }] },
+      { "item": "The 'minimum maximum' signal's binary-search-on-the-answer technique requires the predicate 'is there a solution with maximum at most x' to be monotone in x (true for all x above some threshold, false below it) — this topic's own examples.py verifies this for the specific split-into-k-pieces predicate it builds, by brute force on small instances, rather than asserting monotonicity holds for every problem that superficially resembles a 'minimum maximum' statement.", "at": [{ "step": "Four words in a statement each hint at a technique, each checked here against a brute force on a small case: \"sorted\" points at binary search; \"k-th\" points at a heap; \"all pairs\" asks whether n squared is even affordable; \"minimum maximum\" points at binary search over the answer itself, a monotone predicate." }] },
+      { "item": "An exact algorithm failing to fit the budget at a deliberately small n is evidence consistent with NP-hardness, not proof of it on its own — this topic's predict step frames the connection as a signal worth checking against Chapter 33's own machinery, not as a shortcut that replaces an actual hardness proof.", "at": [{ "step": "Predict: when an exact algorithm still fails to fit the budget, even at a small input size, and the input size looks deliberately kept small, is that only a statement about speed — or can it also be a signal about the problem itself?" }] },
+      { "item": "'Necessary, never sufficient' describes the budget's logical relationship to correctness precisely: an algorithm fitting the budget tells you nothing about whether it computes the right answer, and an algorithm failing the budget is ruled out regardless of whether it would have been correct — the topic's own three-question routine at the close is explicitly a filter, not a design procedure that produces a correct algorithm by itself.", "at": [{ "step": "A budget only ever rules algorithms out. Fitting inside it is a necessary condition, never a sufficient one — an algorithm that fits the budget can still be the wrong algorithm, computing the wrong answer quickly." }] },
+      { "item": "This topic declares `logarithms` for its own narrow use (used only to state the binary-search-on-the-answer iteration count) rather than reproducing Chapter 29 topic 95's own full treatment of logarithms as a structural tool; the two topics own genuinely different questions about the same concept.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Complexity budgeting is the cheapest of the chapter's four reading skills specifically because it is checkable from the statement alone, before the problem's actual content (what it is asking, what structure fits it) is understood at all — the topic's own ordering (budget first, structure second, graph third, reduction fourth) mirrors the cost of applying each check, not an arbitrary syllabus sequence.", "at": [{ "step": "A statement says n is at most a hundred thousand and the time limit is one second. The obvious double loop over every pair costs ten billion steps, about a hundred seconds on an ordinary machine. The limit has already answered the question, before the problem itself is even understood." }] },
+      { "item": "The rule of thumb and the table it generates are themselves a necessary-condition filter nested inside the chapter's larger necessary-condition theme (stated explicitly in CHAPTER.md's own 'thread through all four' sentence): a budget check that rules out O(n squared) has done real engineering work before any specific algorithm, structure or graph model is even proposed.", "at": [{ "step": "A budget only ever rules algorithms out. Fitting inside it is a necessary condition, never a sufficient one — an algorithm that fits the budget can still be the wrong algorithm, computing the wrong answer quickly." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

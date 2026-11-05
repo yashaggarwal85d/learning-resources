@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">Before this: what an operation's count actually measures.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">Before this: what one simple operation is, on the machine the budget assumes.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">Before this: why a random access is not free, the reason behind the cache-friendly correction.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Approximation ratios and greedy set cover">Before this: the exit, when the budget rules out an exact algorithm for a hard problem.</Resource>
+</ul>
+
+Chapter 33's "Pseudo-polynomial time and strong NP-hardness" (not yet published as a reel) is the source, in the published syllabus, for treating a statement's value range as a second parameter alongside n; this topic's own "what the budget cannot say" step names that connection in one sentence without a link, until that topic exists.
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Competitive Programmer's Handbook" href="https://cses.fi/book/book.pdf" by="Antti Laaksonen">Chapter 2, "Estimating efficiency": the rule of thumb, the budget table, and its own hedge about constant factors.</Resource>
+  <Resource kind="reading" title="Time complexity" href="https://en.wikipedia.org/wiki/Time_complexity" by="Wikipedia">Time complexity defined, and growth rates classified by the function inside the big O notation.</Resource>
+</ul>
+
+</section>
