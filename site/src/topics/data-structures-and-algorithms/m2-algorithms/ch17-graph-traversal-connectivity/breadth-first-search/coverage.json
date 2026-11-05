@@ -1,0 +1,86 @@
+{
+  "topic": "dsa.breadth-first-search",
+  "syllabus": [
+    {
+      "clause": "level-by-level frontier",
+      "at": [
+        { "step": "A FIFO queue holds the current frontier: dequeue a vertex, enqueue every neighbour not yet seen. Every vertex at distance d is dequeued before any vertex at distance d+1 is ever enqueued, so the first time a vertex is reached, its distance is already final — the proof the chapter's opening question asked for." }
+      ]
+    },
+    {
+      "clause": "unweighted shortest paths",
+      "at": [
+        { "step": "Starting breadth-first search from one vertex, is the first time a vertex is reached always its shortest distance from the source, or can a vertex be reached again later by a shorter path?" },
+        { "step": "A FIFO queue holds the current frontier: dequeue a vertex, enqueue every neighbour not yet seen. Every vertex at distance d is dequeued before any vertex at distance d+1 is ever enqueued, so the first time a vertex is reached, its distance is already final — the proof the chapter's opening question asked for." }
+      ]
+    },
+    {
+      "clause": "multi-source BFS",
+      "at": [
+        { "step": "Seed the queue with several sources at once instead of one, and the result is, for every vertex, the distance to the nearest of them — one pass, not one pass per source. A grid with three spreading fires answers 'when does the fire reach this cell' in a single multi-source sweep." }
+      ]
+    },
+    {
+      "clause": "0-1 BFS with a deque",
+      "at": [
+        { "step": "Edges weighted only 0 or 1 need no priority queue at all: push a 0-weight edge's endpoint to the front of a deque, a 1-weight edge's endpoint to the back. The deque's own order stays non-decreasing in distance, and the answer matches Dijkstra's algorithm on the identical graph." }
+      ]
+    },
+    {
+      "clause": "bipartiteness and odd-cycle detection by 2-colouring",
+      "at": [
+        { "step": "Two-colour a five-cycle, alternating colour outward from one vertex — can it finish without ever giving two neighbours the same colour?" },
+        { "step": "BFS 2-colours a graph by alternating colour at each frontier step; it is bipartite exactly when this never assigns the same colour to both endpoints of an edge. The first edge where it does, together with the BFS-tree paths back to their common ancestor, is itself an odd cycle — a witness, not just a verdict." }
+      ]
+    },
+    {
+      "clause": "direction-optimizing BFS (Beamer et al., SC 2012) for low-diameter graphs",
+      "at": [
+        { "step": "On a low-diameter, high-degree graph — a social network, not a road network — the frontier can become most of the graph in a single step, and scanning its own many outgoing edges gets expensive fast. Direction-optimizing BFS switches: once the frontier is large, unvisited vertices scan for a frontier neighbour instead, examining far fewer edges for the same step." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Breadth-first search\"",
+      "items": [
+        { "item": "BFS's own origin: invented by Konrad Zuse in 1945 (unpublished until 1972), reinvented by Edward F. Moore in 1959 for maze shortest-paths, later developed by C. Y. Lee into a wire-routing algorithm (1961)", "at": [{ "deep": "The frontier" }] },
+        { "item": "The parent-pointer technique for reconstructing a shortest path from a completed BFS", "at": [{ "step": "A FIFO queue holds the current frontier: dequeue a vertex, enqueue every neighbour not yet seen. Every vertex at distance d is dequeued before any vertex at distance d+1 is ever enqueued, so the first time a vertex is reached, its distance is already final — the proof the chapter's opening question asked for." }] },
+        { "item": "BFS's own stated advantage over DFS: finding the shortest path between two vertices by edge count", "at": [{ "step": "A breadth-first frontier answers one question well: the fewest edges to reach a vertex. It says nothing about which vertex to visit next when the graph has structure a single widening ring can't see — a dependency that must come before another, a group of vertices that can all reach each other and nothing outside the group. Those answers come from visiting as deep as possible before backtracking, not level by level." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Bipartite graph\"",
+      "items": [
+        { "item": "A graph is bipartite if and only if it has no odd cycle", "at": [{ "step": "Two-colour a five-cycle, alternating colour outward from one vertex — can it finish without ever giving two neighbours the same colour?" }] },
+        { "item": "A graph is bipartite if and only if it is 2-colourable", "at": [{ "step": "BFS 2-colours a graph by alternating colour at each frontier step; it is bipartite exactly when this never assigns the same colour to both endpoints of an edge. The first edge where it does, together with the BFS-tree paths back to their common ancestor, is itself an odd cycle — a witness, not just a verdict." }] },
+        { "item": "The BFS-based 2-colouring procedure and its constructive odd-cycle witness (the clashing edge plus the two BFS-tree paths to the lowest common ancestor)", "at": [{ "step": "BFS 2-colours a graph by alternating colour at each frontier step; it is bipartite exactly when this never assigns the same colour to both endpoints of an edge. The first edge where it does, together with the BFS-tree paths back to their common ancestor, is itself an odd cycle — a witness, not just a verdict." }] }
+      ]
+    },
+    {
+      "source": "Beamer, Asanović and Patterson — \"Direction-Optimizing Breadth-First Search\"",
+      "items": [
+        { "item": "The hybrid top-down/bottom-up algorithm and its reported speedups (3.3-7.8x synthetic graphs, 2.4-4.6x real social-network graphs)", "at": [{ "step": "On a low-diameter, high-degree graph — a social network, not a road network — the frontier can become most of the graph in a single step, and scanning its own many outgoing edges gets expensive fast. Direction-optimizing BFS switches: once the frontier is large, unvisited vertices scan for a frontier neighbour instead, examining far fewer edges for the same step." }] },
+        { "item": "The structural reason bottom-up wins: it is advantageous when the active frontier is a substantial fraction of the total graph", "at": [{ "step": "On a low-diameter, high-degree graph — a social network, not a road network — the frontier can become most of the graph in a single step, and scanning its own many outgoing edges gets expensive fast. Direction-optimizing BFS switches: once the frontier is large, unvisited vertices scan for a frontier neighbour instead, examining far fewer edges for the same step." }] },
+        { "item": "The dynamic per-step switching heuristic between top-down and bottom-up", "at": [{ "step": "On a low-diameter, high-degree graph — a social network, not a road network — the frontier can become most of the graph in a single step, and scanning its own many outgoing edges gets expensive fast. Direction-optimizing BFS switches: once the frontier is large, unvisited vertices scan for a frontier neighbour instead, examining far fewer edges for the same step." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "BFS's shortest-path guarantee follows purely from the FIFO queue's own ordering: a vertex at distance d is enqueued only after every vertex at distance d-1 has already been dequeued, so no shorter path can arrive later", "at": [{ "step": "A FIFO queue holds the current frontier: dequeue a vertex, enqueue every neighbour not yet seen. Every vertex at distance d is dequeued before any vertex at distance d+1 is ever enqueued, so the first time a vertex is reached, its distance is already final — the proof the chapter's opening question asked for." }] },
+      { "item": "Multi-source BFS is not k separate searches merged afterward — seeding the queue with every source at distance zero simultaneously gives, for every vertex, the distance to its nearest source in one pass costing O(n+m), not O(k(n+m))", "at": [{ "step": "Seed the queue with several sources at once instead of one, and the result is, for every vertex, the distance to the nearest of them — one pass, not one pass per source. A grid with three spreading fires answers 'when does the fire reach this cell' in a single multi-source sweep." }] },
+      { "item": "0-1 BFS's deque ordering is a special case of the general principle behind Dijkstra's priority queue: it keeps the frontier processed in non-decreasing distance order, but a deque suffices only because every edge weight is 0 or 1, never a general non-negative weight", "at": [{ "step": "Edges weighted only 0 or 1 need no priority queue at all: push a 0-weight edge's endpoint to the front of a deque, a 1-weight edge's endpoint to the back. The deque's own order stays non-decreasing in distance, and the answer matches Dijkstra's algorithm on the identical graph." }] },
+      { "item": "The bipartiteness-by-2-colouring test works with either BFS or DFS as the underlying traversal; BFS's version alternates colour by frontier layer, which is why the witness uses BFS-tree paths rather than DFS discovery order", "at": [{ "step": "BFS 2-colours a graph by alternating colour at each frontier step; it is bipartite exactly when this never assigns the same colour to both endpoints of an edge. The first edge where it does, together with the BFS-tree paths back to their common ancestor, is itself an odd cycle — a witness, not just a verdict." }] },
+      { "item": "Direction-optimizing BFS changes only which vertices scan which edges each round, never the algorithm's own answer (still the same unweighted shortest distances) — the speedup is purely in edges examined, not a different result", "at": [{ "step": "On a low-diameter, high-degree graph — a social network, not a road network — the frontier can become most of the graph in a single step, and scanning its own many outgoing edges gets expensive fast. Direction-optimizing BFS switches: once the frontier is large, unvisited vertices scan for a frontier neighbour instead, examining far fewer edges for the same step." }] },
+      { "item": "The same FIFO-frontier idea underlies every variant in this topic: multi-source BFS only changes the queue's seeding, 0-1 BFS only changes which end of the container an edge's endpoint is pushed to, and bipartiteness only adds a colour label — none of them are new algorithms", "at": [{ "step": "A graph with a billion edges can still answer 'how many people separate you from this stranger' in a handful of steps, because the people worth checking next are never more than one step past the people already checked — a widening ring, never a wrong turn." }] },
+      { "item": "An undirected graph's BFS tree has no forward or cross edges in the DFS sense, since every edge either joins two vertices in the same or adjacent layers — a fact topic 60's edge classification will state in full for DFS, used here only informally to justify the 2-colouring witness construction", "at": [{ "step": "BFS 2-colours a graph by alternating colour at each frontier step; it is bipartite exactly when this never assigns the same colour to both endpoints of an edge. The first edge where it does, together with the BFS-tree paths back to their common ancestor, is itself an odd cycle — a witness, not just a verdict." }] },
+      { "item": "Direction-optimizing BFS's bottom-up step needs the inverse graph when the input is directed, since 'does any neighbour of mine belong to the frontier' is itself a query over incoming edges, not outgoing ones", "at": [{ "deep": "The frontier" }] },
+      { "item": "0-1 BFS generalises to k-weight BFS with k+1 buckets (a bucket queue) rather than a plain deque, the structural reason the deque trick is specific to the 0/1 case and not a general substitute for Dijkstra's heap", "at": [{ "step": "Edges weighted only 0 or 1 need no priority queue at all: push a 0-weight edge's endpoint to the front of a deque, a 1-weight edge's endpoint to the back. The deque's own order stays non-decreasing in distance, and the answer matches Dijkstra's algorithm on the identical graph." }] },
+      { "item": "BFS and DFS both run in O(n+m) and both visit every vertex exactly once, so the chapter's real contrast between them is not cost but order — level by level versus as deep as possible before backtracking — which is exactly the handoff to topic 60", "at": [{ "step": "A breadth-first frontier answers one question well: the fewest edges to reach a vertex. It says nothing about which vertex to visit next when the graph has structure a single widening ring can't see — a dependency that must come before another, a group of vertices that can all reach each other and nothing outside the group. Those answers come from visiting as deep as possible before backtracking, not level by level." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

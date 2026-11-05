@@ -1,0 +1,7 @@
+- **Directed graph**: edges that point one way only. *Where you meet it:* every pipe in this topic's network carries flow in one direction only.
+- **Path**: a sequence of edges, each starting where the last one ended. *Where you meet it:* every augmenting path and every route the greedy dispatcher follows is one of these.
+- **Partition of a set**: splitting a set into two groups that together hold everything and share nothing. *Where you meet it:* a cut is a partition of the vertices into the source's side and the sink's side.
+- **Capacity as an upper limit**: a number an edge's own flow may never exceed. *Where you meet it:* every pipe's own width.
+- **Search by distance (breadth-first)**: visiting vertices in order of how many edges away from the start they are. *Where you meet it:* the fix for Ford–Fulkerson's own slow case chooses the augmenting path this way.
+- **Pseudo-polynomial time**: a running time that is polynomial in the numeric value of the input, not in the number of bits used to write it down. *Where you meet it:* Ford–Fulkerson's own running time bound, restated from Chapter 1.
+- **Conservation**: whatever flows into a vertex must flow back out, except at the two special vertices. *Where you meet it:* the rule every vertex but the source and sink must obey.

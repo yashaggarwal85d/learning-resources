@@ -1,0 +1,95 @@
+{
+    "topic": "dsa.max-flow-min-cut",
+    "steps": [
+        {
+            "lines": [
+                "Six depots, pipes between them, and a dispatcher who keeps sending shipments down whichever route still has room.",
+                "That dispatcher stops at seven units and reports no more routes left. Two more units could still go through, but only by taking back some of what already shipped. What kind of algorithm can undo its own earlier work?"
+            ]
+        },
+        {
+            "lines": [
+                "Formally, a flow network is a directed graph with one source, one sink, and a capacity sitting on every edge.",
+                "At every other vertex, conservation holds: whatever comes in must go back out. This chapter's own six-vertex graph becomes six directed pipes, read exactly that way."
+            ]
+        },
+        {
+            "lines": [
+                "Before naming what actually fixes the stuck dispatcher, answer this one directly.",
+                {
+                    "beat": 0.3
+                },
+                "Could some other forward-only route ever beat that stuck count of seven, without undoing anything already sent?"
+            ],
+            "answer": [
+                "No. Every forward-only route the dispatcher could ever try is already covered by the stuck run. Beating it needs a route that crosses one pipe backward, undoing flow already sent through it."
+            ]
+        },
+        {
+            "lines": [
+                "Here is that stuck run, four routes taken one after another.",
+                "Two units down the first, one down the second, one down the third, three down the fourth. Seven units total, and every route still open now runs into a pipe that is already completely full."
+            ]
+        },
+        {
+            "lines": [
+                "Every pipe already carrying flow keeps a second number hiding beside its forward one.",
+                "That second number says how much of its own flow could still be undone. Underneath this stuck network, three separate pipes each hide a backward number greater than nothing at all."
+            ]
+        },
+        {
+            "lines": [
+                "One route through that undo-aware graph crosses a single pipe backward, pulling back exactly what was pushed through it earlier.",
+                "From there it keeps going forward the rest of the way to the sink. Pushing as much as that route allows lands on the true maximum: nine units in total."
+            ]
+        },
+        {
+            "lines": [
+                "Stated as a loop, the whole algorithm is short: find any route with room left in either direction, push as much as it allows, repeat until none remains.",
+                "A completely different order of five routes reaches that identical maximum directly, and its own final route crosses that same pipe backward one more time."
+            ]
+        },
+        {
+            "lines": [
+                "Once no route remains, look at exactly which depots are still reachable from the source.",
+                "Those depots form one side of a split. Every pipe leaving that side is completely full, and every pipe crossing back into it carries nothing at all. The flow's own total matches that split's own capacity exactly."
+            ]
+        },
+        {
+            "lines": [
+                "That match is not a coincidence of this one network; it holds everywhere.",
+                "The value of a maximum flow always equals the capacity of a minimum cut. Checked here, both numbers lock onto nine. Checked on a second, entirely separate network, both numbers lock onto twenty-three instead."
+            ]
+        },
+        {
+            "lines": [
+                "One more consequence falls out for free when every capacity happens to be a whole number.",
+                "Every single push the algorithm makes is then a whole number too, so the final flow ends up whole-number everywhere. Give every pipe a capacity of exactly one, and the resulting flow on each pipe turns out to be nothing or one."
+            ]
+        },
+        {
+            "lines": [
+                "One more question before naming how slow this loop can actually get.",
+                {
+                    "beat": 0.3
+                },
+                "Could a maximum flow ever need a closed loop of its own flow just to reach its largest possible value?"
+            ],
+            "answer": [
+                "No. Removing a closed loop of flow changes no depot's own balance of in against out, and it never changes the total value either, so a maximum flow with no such loop always exists."
+            ]
+        },
+        {
+            "lines": [
+                "For whole-number capacities, the running time scales with the pipe count times the flow's own final value, and that bound can be exponential in how the input is written down.",
+                "One particular four-depot network forces a careless choice of route into millions of one-unit pushes, where choosing routes by breadth-first search instead finishes in just two. Fractional capacities still terminate; capacities that are irrational, named only here, can loop forever."
+            ]
+        },
+        {
+            "lines": [
+                "Watch what carries over to the very next problem: an edge either gets used or it does not, with nothing in between.",
+                "That whole-number guarantee is exactly the missing piece a pairing problem needs, because a pair is either chosen or it is not. Bipartite matching and Hopcroft-Karp, next."
+            ]
+        }
+    ]
+}

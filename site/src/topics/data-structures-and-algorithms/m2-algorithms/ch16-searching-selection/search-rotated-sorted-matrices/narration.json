@@ -1,0 +1,71 @@
+{
+  "topic": "dsa.search-rotated-sorted-matrices",
+  "steps": [
+    {
+      "lines": [
+        "Take a sorted sequence, cut it at some point nobody tells you, and swap the two pieces around.",
+        "Your gut says that breaks the search. It doesn't. It only breaks the lazy version of the search."
+      ]
+    },
+    {
+      "lines": [
+        "Look at the middle value here, and compare it with where the range starts.",
+        { "beat": 0.3 },
+        "Which side of that middle is still climbing in order, and which side would you actually search next?"
+      ],
+      "answer": [
+        "The side that starts lower than its own middle is the one still in order.",
+        "Once you know the target isn't sitting inside that orderly side's own range, you throw the whole thing away and search the other half instead."
+      ]
+    },
+    {
+      "lines": [
+        "One comparison tells you which half still climbs in order. One more tells you whether what you want could even be hiding in it.",
+        "Get both answers, and you already know which half to throw away."
+      ]
+    },
+    {
+      "lines": [
+        "The point where the order actually broke is itself just another target to narrow in on.",
+        "Ask the same halving question, aimed at a different thing: has this stopped climbing yet?"
+      ]
+    },
+    {
+      "lines": [
+        "Now make the start, the middle and the end of the range all read the same value.",
+        "Suddenly neither comparison tells you anything, because a run of repeats looks identical no matter which side it sits on.",
+        "Build a long run of one repeated value with a single different value buried near the end, and watching this loop crawl toward it one step at a time is the whole lesson."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a grid where every row climbs left to right, and every column climbs top to bottom, but there's no single line you could draw through the whole thing in sorted order.",
+        { "beat": 0.3 },
+        "Does the same halving trick from a moment ago still apply here?"
+      ],
+      "answer": [
+        "No, and for a specific reason: there's no one question whose answer flips exactly once across the whole grid.",
+        "Two separate orders are running at once, and halving needs exactly one."
+      ]
+    },
+    {
+      "lines": [
+        "Start from the corner where one direction only grows and the other only shrinks.",
+        "Every single comparison throws an entire row or an entire column away for good — never just one cell."
+      ]
+    },
+    {
+      "lines": [
+        "Add one more rule: every row has to end lower than the next row begins.",
+        "Do that, and reading the whole grid one row after another becomes a single climbing line again, which means the halving trick is back, in full.",
+        "Take that same rule away, even though every row and column still climbs on its own, and the line breaks, and halving stops working."
+      ]
+    },
+    {
+      "lines": [
+        "Three different grids, three different reasons a question like \"which half do I keep\" has a different answer each time.",
+        "Up to now, every search in this chapter has leaned on an order that was already there to find. The next question starts with no order at all."
+      ]
+    }
+  ]
+}

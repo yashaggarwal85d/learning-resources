@@ -1,0 +1,266 @@
+{
+  "topic": "dsa.reservoir-sampling",
+  "syllabus": [
+    {
+      "clause": "Algorithm R",
+      "at": [
+        {
+          "step": "Algorithm R: keep the first k items. For every item after that, draw a number uniformly from one through how many items have been seen, and if it lands at k or below, replace that slot."
+        },
+        {
+          "step": "By induction: if every item was uniformly in the reservoir after n items, then after the next item each survivor’s probability multiplies by one minus a shrinking fraction, and the product telescopes to exactly k over n plus one."
+        }
+      ]
+    },
+    {
+      "clause": "the skip-based Algorithm L",
+      "at": [
+        {
+          "step": "Algorithm L draws the skip length itself from a geometric distribution, then jumps straight to the next item that enters the reservoir — three random numbers for every item that enters, nothing spent on the rest."
+        },
+        {
+          "step": "At the same million-item scale, a seeded run of Algorithm L makes a few thousand draws against Algorithm R’s hundreds of thousands — on the order of k times one plus the log of n over k, not n minus k."
+        }
+      ]
+    },
+    {
+      "clause": "weighted sampling (Efraimidis–Spirakis)",
+      "at": [
+        {
+          "step": "Each item draws a key: a uniform random number raised to the power of one over its own weight. The sample is the k items whose keys are largest, held in a min-heap of size k."
+        },
+        {
+          "step": "Four items of equal weight and one item ten times as heavy, sampling two: the heavy item is kept nearly every time, not by the naive share of the total weight doubled — that guess is not even a valid probability."
+        }
+      ]
+    },
+    {
+      "clause": "distributed merging of reservoirs",
+      "at": [
+        {
+          "step": "Two uniform reservoirs merge into one by sending each output slot to the larger stream’s reservoir more often, in proportion to how many items that stream actually saw — so a reservoir without its own count cannot be merged. A real range partitioner carries exactly that count with every sample it takes."
+        }
+      ]
+    },
+    {
+      "clause": "Data Engineering §5.6",
+      "at": [
+        { "topic": "Stream sampling: reservoir and weighted", "domain": "data-engineering", "quote": "Algorithm R and weighted reservoir sampling" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Reservoir sampling\"",
+      "items": [
+        {
+          "item": "Algorithm R's history (1962, Fan/Muller/Rezucha; independently Waterman and McLeod & Bellhouse) and its Fisher–Yates kinship",
+          "at": [
+            { "deep": "Into the internals" }
+          ]
+        },
+        {
+          "item": "Vitter's sublinear skip-based bound O(k(1+log(n/k))) and its optimality",
+          "at": [
+            {
+              "step": "At the same million-item scale, a seeded run of Algorithm L makes a few thousand draws against Algorithm R’s hundreds of thousands — on the order of k times one plus the log of n over k, not n minus k."
+            }
+          ]
+        },
+        {
+          "item": "Algorithm L's pseudocode (the geometric skip, the three random numbers per entering item)",
+          "at": [
+            {
+              "step": "Algorithm L draws the skip length itself from a geometric distribution, then jumps straight to the next item that enters the reservoir — three random numbers for every item that enters, nothing spent on the rest."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Efraimidis, \"Weighted Random Sampling over Data Streams\" (arXiv:1012.0256)",
+      "items": [
+        {
+          "item": "the key construction u^(1/w), the m-largest-keys rule, named \"A-ES\" in this source",
+          "at": [
+            {
+              "step": "Each item draws a key: a uniform random number raised to the power of one over its own weight. The sample is the k items whose keys are largest, held in a min-heap of size k."
+            }
+          ]
+        },
+        {
+          "item": "the two interpretations of item weight in weighted sampling without replacement",
+          "at": [
+            {
+              "step": "A reservoir can also sample by weight, favoring some items over others. What does an item’s weight actually mean here?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark source, SamplingUtils.scala",
+      "items": [
+        {
+          "item": "reservoirSampleAndCount: \"there are k elements in the reservoir ... chosen with probability k/l\"",
+          "at": [
+            { "deep": "In production" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark source, Partitioner.scala",
+      "items": [
+        {
+          "item": "RangePartitioner.sketch carries each partition's item count alongside its sample",
+          "at": [
+            {
+              "step": "Two uniform reservoirs merge into one by sending each output slot to the larger stream’s reservoir more often, in proportion to how many items that stream actually saw — so a reservoir without its own count cannot be merged. A real range partitioner carries exactly that count with every sample it takes."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark source, RDD.scala",
+      "items": [
+        {
+          "item": "takeSample is count-fraction-retry, not a reservoir sample",
+          "at": [
+            {
+              "step": "Two uniform reservoirs merge into one by sending each output slot to the larger stream’s reservoir more often, in proportion to how many items that stream actually saw — so a reservoir without its own count cannot be merged. A real range partitioner carries exactly that count with every sample it takes."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "Algorithm R's rule (k/n, shrinking) is the only one that keeps every item equally likely, whatever the predict step's distractors suggest",
+        "at": [
+          {
+            "step": "When a new line arrives, with what probability should it replace something already in the sample?"
+          }
+        ]
+      },
+      {
+        "item": "the induction proof's telescoping product, stated without copying the chapter plan's own wording",
+        "at": [
+          {
+            "step": "By induction: if every item was uniformly in the reservoir after n items, then after the next item each survivor’s probability multiplies by one minus a shrinking fraction, and the product telescopes to exactly k over n plus one."
+          }
+        ]
+      },
+      {
+        "item": "three tempting wrong rules and the specific reason each fails",
+        "at": [
+          {
+            "step": "Sampling with probability k over n needs knowing n in advance, which a stream never gives up front. Keeping only the first k is not uniform. Replacing a random slot with probability one half is not either."
+          }
+        ]
+      },
+      {
+        "item": "Algorithm R's cost (one draw per item after the k-th) measured and asserted, not assumed",
+        "at": [
+          {
+            "step": "A million items with a reservoir of a hundred costs one random draw for every item after the hundredth — nine hundred ninety-nine thousand, nine hundred draws, every one of them touching the stream."
+          }
+        ]
+      },
+      {
+        "item": "Algorithm L's draw count measured at the same scale, confirmed far below Algorithm R's",
+        "at": [
+          {
+            "step": "At the same million-item scale, a seeded run of Algorithm L makes a few thousand draws against Algorithm R’s hundreds of thousands — on the order of k times one plus the log of n over k, not n minus k."
+          }
+        ]
+      },
+      {
+        "item": "what the skip actually saves differs between a sequential stream and a seekable source",
+        "at": [
+          {
+            "step": "The skip saves random draws either way, but on a stream read item by item it saves only that — the reading itself still happens one item at a time. Only an indexed, seekable source lets the skip save the reads too."
+          }
+        ]
+      },
+      {
+        "item": "the weighted example's two independent checks (simulation and the invalid-probability arithmetic argument)",
+        "at": [
+          {
+            "step": "Four items of equal weight and one item ten times as heavy, sampling two: the heavy item is kept nearly every time, not by the naive share of the total weight doubled — that guess is not even a valid probability."
+          }
+        ]
+      },
+      {
+        "item": "the merge rule depends on both reservoirs' stream counts, not either one alone",
+        "at": [
+          { "out": "checked in FACT-CHECK.md's red team, not stated on screen" }
+        ]
+      },
+      {
+        "item": "Spark's RangePartitioner.sketch vs. takeSample: two genuinely different sampling mechanisms, stated as the fetched source states each",
+        "at": [
+          {
+            "step": "Two uniform reservoirs merge into one by sending each output slot to the larger stream’s reservoir more often, in proportion to how many items that stream actually saw — so a reservoir without its own count cannot be merged. A real range partitioner carries exactly that count with every sample it takes."
+          }
+        ]
+      },
+      {
+        "item": "the Efraimidis–Spirakis algorithm named only \"A-ES\" (the confirmed source's own name), not the chapter plan's unconfirmed \"A-Res\"/\"A-ExpJ\"",
+        "at": [
+          { "out": "recorded in SOURCES.md, OUTLINE.md and FACT-CHECK.md's red team" }
+        ]
+      },
+      {
+        "item": "Data Engineering §5.6's matching reservoir topic is itself skipped there, so this is the only reel on the subject anywhere in the course",
+        "at": [
+          { "deep": "The frontier" }
+        ]
+      },
+      {
+        "item": "stratified sampling and sampling-versus-sketching named once, with no claim promised on Data Engineering's behalf",
+        "at": [
+          { "deep": "The frontier" }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for all three predict steps",
+        "at": [
+          {
+            "step": "When a new line arrives, with what probability should it replace something already in the sample?"
+          },
+          {
+            "step": "Can an algorithm stay exactly uniform while touching fewer than all n items?"
+          },
+          {
+            "step": "A reservoir can also sample by weight, favoring some items over others. What does an item’s weight actually mean here?"
+          }
+        ]
+      },
+      {
+        "item": "recap and handoff to random shuffling, quoted word for word from CHAPTER.md",
+        "at": [
+          {
+            "step": "A reservoir answers one question: give me k items, each equally likely, from a stream read exactly once. Its cousin wants every item, in an order where every ordering is equally likely."
+          }
+        ]
+      },
+      {
+        "item": "every number in this topic computed fresh in examples.py (n=10/k=3 frequencies, the million-item R-vs-L comparison, the weighted example, the merge frequencies), not copied from the chapter plan as fact",
+        "at": [
+          { "out": "checked, not stated on screen" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

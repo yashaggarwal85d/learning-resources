@@ -1,0 +1,78 @@
+{
+  "topic": "dsa.quickselect-median-medians",
+  "steps": [
+    {
+      "lines": [
+        "Every answer this chapter has built so far has leaned on order that was already sitting there.",
+        "This last question has none of that. You just want one rank out of a pile with no order at all."
+      ]
+    },
+    {
+      "lines": [
+        "Sorting the whole pile first would answer a question nobody asked: the rank of every single value.",
+        { "beat": 0.3 },
+        "Only one rank was ever wanted. Roughly how much work should that actually take?"
+      ],
+      "answer": [
+        "A small constant times the size of the pile. Not the size times its own logarithm, and nowhere near the size squared.",
+        "Most of the pile gets thrown away, round after round, before it's ever looked at twice."
+      ]
+    },
+    {
+      "lines": [
+        "Partition around some value, exactly the way you would to sort it.",
+        "But now keep only the one side that could possibly hold the rank you're after, and throw the other side away for good.",
+        "No second look, no sorting it, nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Pick the worst possible value to partition around, every single time, on a pile that's already in order.",
+        "Watch the amount you throw away shrink to almost nothing, round after round. You've seen this exact failure before, on a different algorithm."
+      ]
+    },
+    {
+      "lines": [
+        "Split the pile into little groups of five, and take just the middle value out of each one.",
+        "Now find the middle of those middle values, and use that as your pivot instead of a plain guess.",
+        "Three in every ten values are now provably below it, and three in ten provably above it, every single round, not just usually."
+      ]
+    },
+    {
+      "lines": [
+        "That guarantee is real, and it's also not free: sorting all those little groups of five costs something, every round.",
+        "Run both approaches on the very same pile, after the same rank, and watch which one actually does less work."
+      ]
+    },
+    {
+      "lines": [
+        "There's a third way that commits to neither extreme: peek at a small random handful first.",
+        "Use that handful to guess roughly where the answer sits, narrow down to just the sliver around that guess, and only then do the usual work, but on something far smaller."
+      ]
+    },
+    {
+      "lines": [
+        "A library you might actually call promises a guaranteed worst case for exactly this operation.",
+        { "beat": 0.3 },
+        "Does it really fall back on the fix you just learned to keep that promise?"
+      ],
+      "answer": [
+        "Not necessarily. Go open the header this machine actually ships, and look.",
+        "Plenty of real libraries quietly swap in a different fallback instead, one that trades away a bit of that guarantee for less overhead."
+      ]
+    },
+    {
+      "lines": [
+        "The paper's own answer: run the fast approach by default, and only switch once it's clearly spinning its wheels.",
+        "Read the header actually sitting on this machine, and the fallback it switches to isn't the one the paper describes at all.",
+        "The textbook answer and the answer sitting in your own standard library have quietly drifted apart."
+      ]
+    },
+    {
+      "lines": [
+        "Every answer this chapter has produced has been one value: one key, one boundary, one rank.",
+        "What comes next isn't a value to find anymore. It's a whole structure to explore, one connection at a time."
+      ]
+    }
+  ]
+}

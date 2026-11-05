@@ -1,0 +1,220 @@
+{
+  "topic": "dsa.max-flow-min-cut",
+  "syllabus": [
+    {
+      "clause": "residual graphs, augmenting paths",
+      "at": [
+        {
+          "step": "A flow network is a directed graph with a source and a sink and a capacity on every edge. At every other vertex, whatever flows in must flow back out. The chapter's own six-vertex graph, now read as six pipes running from a source to a sink."
+        },
+        {
+          "step": "The dispatcher's own four routes, taken in order: two units down the first, one unit down the second, one unit down the third, three units down the fourth. Seven units shipped in total, and every remaining route now has at least one pipe already full."
+        },
+        {
+          "step": "Every pipe that already carries flow keeps a second, undo-shaped number beside its forward one: how much of that flow could still be pulled back. Drawn beneath the stuck network, three of its pipes each hide a backward number greater than nothing at all."
+        },
+        {
+          "step": "A path through this undo-aware graph crosses one pipe backward, pulling back exactly what was sent through it, then keeps going forward the rest of the way to the sink. Pushing as much as that path allows reaches the true maximum: nine units, two more than the stuck count."
+        },
+        {
+          "step": "Stated as a loop: find any route through the undo-aware graph with room left in either direction, push as much as that route allows, and repeat until no such route remains. A different order of five routes reaches the identical maximum directly, its own last route crossing that identical pipe backward."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "the max-flow min-cut theorem",
+      "at": [
+        {
+          "step": "When no route remains, the depots still reachable from the source form one side of a split. Every pipe crossing out of that side is completely full; every pipe crossing back carries nothing at all. The flow's own total exactly equals that split's own capacity."
+        },
+        {
+          "step": "The value of a maximum flow always equals the capacity of a minimum cut. Checked on the chapter's own network, where both numbers lock onto nine, and independently on a second, differently sourced network, where both numbers lock onto twenty-three instead."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "integrality",
+      "at": [
+        {
+          "step": "If every capacity is a whole number, every route's own push is a whole number too, so the algorithm always ends with a flow that is whole-number everywhere. The consequence used next: give every pipe a capacity of one, and the resulting flow turns out to be either nothing or one on every single pipe."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    },
+    {
+      "clause": "and non-termination with irrational capacities",
+      "at": [
+        {
+          "step": "For whole-number capacities the running time is proportional to the pipe count times the flow's own final value, a bound that can be exponential in the size of the input. One particular four-depot network forces an arbitrary choice of route to take two million one-unit pushes, where a breadth-first choice of route finishes in two. Capacities that are fractions still finish; capacities that are irrational, named only, can loop forever without ever reaching the true maximum."
+        },
+        {
+          "deep": "The frontier"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Erickson, Algorithms (2019), Chapter 10 \"Maximum Flows & Minimum Cuts\"",
+      "items": [
+        {
+          "item": "the Maxflow-Mincut theorem's own statement, word for word",
+          "at": [
+            {
+              "step": "The value of a maximum flow always equals the capacity of a minimum cut. Checked on the chapter's own network, where both numbers lock onto nine, and independently on a second, differently sourced network, where both numbers lock onto twenty-three instead."
+            }
+          ]
+        },
+        {
+          "item": "the Integrality Theorem's own statement, word for word",
+          "at": [
+            {
+              "step": "If every capacity is a whole number, every route's own push is a whole number too, so the algorithm always ends with a flow that is whole-number everywhere. The consequence used next: give every pipe a capacity of one, and the resulting flow turns out to be either nothing or one on every single pipe."
+            }
+          ]
+        },
+        {
+          "item": "Ford and Fulkerson's own one-sentence description of their augmenting-path algorithm",
+          "at": [
+            {
+              "step": "Stated as a loop: find any route through the undo-aware graph with room left in either direction, push as much as that route allows, and repeat until no such route remains. A different order of five routes reaches the identical maximum directly, its own last route crossing that identical pipe backward."
+            }
+          ]
+        },
+        {
+          "item": "the Edmonds-Karp shortest-augmenting-path rule and its own claim of a running time independent of the edge capacities",
+          "at": [
+            {
+              "step": "For whole-number capacities the running time is proportional to the pipe count times the flow's own final value, a bound that can be exponential in the size of the input. One particular four-depot network forces an arbitrary choice of route to take two million one-unit pushes, where a breadth-first choice of route finishes in two. Capacities that are fractions still finish; capacities that are irrational, named only, can loop forever without ever reaching the true maximum."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "SciPy Documentation, scipy.sparse.csgraph.maximum_flow",
+      "items": [
+        {
+          "item": "the restatement of the max-flow min-cut theorem and the documented CLRS-credited cross-check network with its own maximum flow value",
+          "at": [
+            {
+              "step": "The value of a maximum flow always equals the capacity of a minimum cut. Checked on the chapter's own network, where both numbers lock onto nine, and independently on a second, differently sourced network, where both numbers lock onto twenty-three instead."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "NetworkX Documentation, maximum_flow",
+      "items": [
+        {
+          "item": "the note that a resulting maximum flow may contain flow cycles, used to motivate the acyclic-flow predict step",
+          "at": [
+            {
+              "step": "Before naming the running-time bound: could a maximum flow ever need to send flow around in a closed loop to reach its own largest value, or can any such loop always be stripped away for free?"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "A forward-only, no-undo view of a flow network is not merely a worse implementation of the correct algorithm; it is a fundamentally different search that can terminate at a value strictly below the true maximum, because it never considers the one move (crossing a pipe backward) that a correct residual-graph search always has available.",
+        "at": [
+          {
+            "step": "A path through this undo-aware graph crosses one pipe backward, pulling back exactly what was sent through it, then keeps going forward the rest of the way to the sink. Pushing as much as that path allows reaches the true maximum: nine units, two more than the stuck count."
+          }
+        ]
+      },
+      {
+        "item": "That the algorithm's own stopping condition (no augmenting path left) and the cut it reads off at that point are the same fact, not two separate things that happen to agree, is the entire content of the constructive half of the max-flow min-cut theorem; the cut is not searched for afterward, it falls out of the reachability computation the algorithm already needed to run to decide whether to stop.",
+        "at": [
+          {
+            "step": "When no route remains, the depots still reachable from the source form one side of a split. Every pipe crossing out of that side is completely full; every pipe crossing back carries nothing at all. The flow's own total exactly equals that split's own capacity."
+          }
+        ]
+      },
+      {
+        "item": "The theorem's own universality (every flow network, not just well-behaved ones) is why checking it on a second, independently sourced network with an entirely different topology and a different answer (twenty-three rather than nine) is meaningful evidence rather than a redundant re-confirmation of the same fact once.",
+        "at": [
+          {
+            "step": "The value of a maximum flow always equals the capacity of a minimum cut. Checked on the chapter's own network, where both numbers lock onto nine, and independently on a second, differently sourced network, where both numbers lock onto twenty-three instead."
+          }
+        ]
+      },
+      {
+        "item": "Integrality is not a property of the final flow discovered by accident; it is an invariant preserved by every single step of the algorithm (each augmentation's own bottleneck is provably a whole number whenever every residual capacity already is), which is why induction on the number of augmentations, not inspection of the final answer, is the right way to prove it.",
+        "at": [
+          {
+            "step": "If every capacity is a whole number, every route's own push is a whole number too, so the algorithm always ends with a flow that is whole-number everywhere. The consequence used next: give every pipe a capacity of one, and the resulting flow turns out to be either nothing or one on every single pipe."
+          }
+        ]
+      },
+      {
+        "item": "A maximum flow's own value being achievable without any flow-carrying cycle is not obvious from the definition of a flow (which permits cycles freely) but follows from a cancellation argument: removing a cycle's own flow changes no vertex's own conservation balance and strictly cannot increase the network's maximum achievable value, so no cycle is ever load-bearing for optimality.",
+        "at": [
+          {
+            "step": "Before naming the running-time bound: could a maximum flow ever need to send flow around in a closed loop to reach its own largest value, or can any such loop always be stripped away for free?"
+          }
+        ]
+      },
+      {
+        "item": "The Edmonds-Karp pathological network's own bad behavior is not a pathology of large capacities in general; it is specifically a pathology of letting the algorithm pick an arbitrary augmenting path, since the identical network under a breadth-first path rule finishes in a constant number of steps regardless of how large the capacity parameter is set.",
+        "at": [
+          {
+            "step": "For whole-number capacities the running time is proportional to the pipe count times the flow's own final value, a bound that can be exponential in the size of the input. One particular four-depot network forces an arbitrary choice of route to take two million one-unit pushes, where a breadth-first choice of route finishes in two. Capacities that are fractions still finish; capacities that are irrational, named only, can loop forever without ever reaching the true maximum."
+          }
+        ]
+      },
+      {
+        "item": "Pseudo-polynomial running time is not merely 'slow'; a bound proportional to the flow's own numeric value is polynomial in that value but can be exponential in the number of bits needed to write the input down, which is exactly the distinction Chapter 1's own definition of pseudo-polynomial time exists to make precise.",
+        "at": [
+          {
+            "step": "For whole-number capacities the running time is proportional to the pipe count times the flow's own final value, a bound that can be exponential in the size of the input. One particular four-depot network forces an arbitrary choice of route to take two million one-unit pushes, where a breadth-first choice of route finishes in two. Capacities that are fractions still finish; capacities that are irrational, named only, can loop forever without ever reaching the true maximum."
+          }
+        ]
+      },
+      {
+        "item": "That rational capacities still terminate (after scaling to a common integer denominator) while irrational ones can fail to converge even in the limit is not a minor technical footnote; it shows the algorithm's own correctness guarantee depends on a discreteness assumption that has no analogue once the capacities are allowed to be arbitrary real numbers.",
+        "at": [
+          {
+            "step": "For whole-number capacities the running time is proportional to the pipe count times the flow's own final value, a bound that can be exponential in the size of the input. One particular four-depot network forces an arbitrary choice of route to take two million one-unit pushes, where a breadth-first choice of route finishes in two. Capacities that are fractions still finish; capacities that are irrational, named only, can loop forever without ever reaching the true maximum."
+          }
+        ]
+      },
+      {
+        "item": "SciPy's own requirement that capacities be integral 'to ensure convergence' is independent, real-system confirmation of the identical fact the chapter's own irrational-capacity claim makes in theory; a library author who has to ship working code hit the same mathematical wall and wrote a runtime check for it.",
+        "at": [
+          {
+            "step": "The value of a maximum flow always equals the capacity of a minimum cut. Checked on the chapter's own network, where both numbers lock onto nine, and independently on a second, differently sourced network, where both numbers lock onto twenty-three instead."
+          }
+        ]
+      },
+      {
+        "item": "This chapter's own reduction of a pairing problem to a unit-capacity flow problem (named in the handoff, built in the next topic) depends specifically on integrality, not merely on the max-flow min-cut theorem alone; without integrality, a maximum flow of value k on a unit-capacity network would not by itself guarantee a matching of k edges, since a fractional flow spread thinly across many edges could achieve the same value.",
+        "at": [
+          {
+            "step": "Ford-Fulkerson ends with a flow and a cut that prove each other optimal, and integrality guarantees that with whole-number capacities the flow is made of whole units. That is exactly what a pairing problem needs. Give every edge capacity one, put a source in front of one side and a sink behind the other, and a maximum flow is a largest set of pairs. How fast can that be done, and what does the cut look like when the capacities are all one? Bipartite matching and Hopcroft–Karp, next."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}
