@@ -1,0 +1,23 @@
+# Fact-check: Complexity budgeting from constraints
+
+| # | Claim | Source / verification | Status |
+|---|---|---|---|
+| 1 | "A modern computer can perform some hundreds of millions of operations in a second" | Laaksonen, *Competitive Programmer's Handbook*, §2.3, quoted verbatim in `SOURCES.md`, verified word-for-word by `scripts/sources.mjs check` | Verified |
+| 2 | The budget table: n ≤ 10 → O(n!), n ≤ 20 → O(2ⁿ), n ≤ 500 → O(n³), n ≤ 5000 → O(n²), n ≤ 10⁶ → O(n log n) or O(n), n large → O(1) or O(log n) | Laaksonen, same section, table reproduced in `SOURCES.md` exactly as printed | Verified |
+| 3 | n² at n = 10⁵ costs 10¹⁰ operations, about 100 seconds at 10⁸ ops/s | Computed and asserted in `examples.py` (`SQUARE_AT_1E5`, `SQUARE_AT_1E5_SECONDS`) | Verified (computed) |
+| 4 | n log₂n at n = 10⁵ costs 1,660,964 operations, about 0.017 seconds | Computed and asserted in `examples.py` (`NLOGN_AT_1E5`) | Verified (computed) |
+| 5 | 2²⁰ = 1,048,576; two halves of 2²⁰ cost 2,097,152 total, versus 2⁴⁰ = 1,099,511,627,776 outright | Computed and asserted in `examples.py` | Verified (computed) |
+| 6 | A binary search on the answer over a range of 10⁹ takes 30 iterations; over 10¹⁸, 60 iterations | Computed and asserted in `examples.py` (ceiling of log₂ of the range) | Verified (computed) |
+| 7 | "A time complexity is only an estimate of efficiency, because it hides the constant factors" | Laaksonen, same section, quoted verbatim, verified by `scripts/sources.mjs check` | Verified |
+| 8 | A sequential pass over n elements is measurably faster than a random-access pass over the same n reads | Measured directly in `examples.py` (`measure_sequential_vs_random`); asserted qualitatively (`RANDOM_ACCESS_TIME > SEQUENTIAL_TIME`), not as a fixed ratio, since timing varies by run and machine | Verified (measured, qualitative) |
+| 9 | Binary search matches a linear scan's presence/absence result on random sorted arrays; a size-k heap's k-th smallest matches a full sort's; a two-pointer scan's pair count by fixed difference matches a brute-force all-pairs count; binary search on the answer for "minimum possible maximum of k contiguous pieces" matches brute force | All four checked directly against brute force in `examples.py`, with assertions that fail loudly on any mismatch (30, 20, 20, and 20 random trials respectively) | Verified (computed) |
+| 10 | The meet-in-the-middle technique and "binary search on the answer" are named as Chapter 23's and Chapter 16's own topics respectively, not built here | `CHAPTER.md`'s own scope section for topic 113; this topic names both only by title/number, per the chapter plan's own rule that it builds no algorithm | Consistent with plan, not independently verified against those (as yet unpublished or not-yet-confirmed-live) topics' own content |
+
+## Red-team pass
+
+- **Is the "hundreds of millions of operations a second" rate still accurate for 2026 hardware?** The topic frames it explicitly as a rule of thumb from a named source, not a claim about current hardware, and the narration says "an ordinary machine" without pinning an exact figure beyond the source's own wording — this avoids overclaiming a number that depends heavily on what counts as "an operation" and on the specific machine.
+- **Could the cache-friendliness measurement be an artifact of Python's own interpreter overhead rather than a real cache effect?** Likely both contribute; the topic only claims the qualitative result (random access is slower) and does not attribute the measured ratio to cache misses specifically as a precise mechanism, deferring the mechanism's detail to Chapter 1 topic 9's own treatment (named in `references.md`).
+- **Does "necessary, never sufficient" correctly describe the logical relationship, or is it overstated?** Checked: fitting the budget is indeed necessary (an algorithm over budget cannot meet the limit) and not sufficient (a budget-fitting algorithm can still be wrong), so the claim holds as a strict logical statement, not an approximation.
+- **Is the "minimum maximum" example's predicate actually monotone for every input, or only the ones tested?** The predicate `can_split_within_cap` is monotone by construction for any array of positive numbers (a larger cap can only make splitting easier, never harder), which is checked indirectly by the 20 random-trial agreement with brute force rather than proven algebraically on screen; this is adequate for the topic's own claim (binary search on the answer requires monotonicity, and this instance has it) without needing a separate on-screen proof.
+
+## Corrections applied: None.

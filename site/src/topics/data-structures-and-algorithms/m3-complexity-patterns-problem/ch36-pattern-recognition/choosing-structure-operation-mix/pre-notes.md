@@ -1,0 +1,9 @@
+- **Operation frequency**: how often each kind of question (lookup, range, insert, top-k, membership, group) is actually asked of the data. *Where you meet it:* the "mix" the whole topic is named for.
+- **Point lookup versus range query**: asking for one exact key against asking for every key between two bounds. *Where you meet it:* the dispatch row where a hash table and a tree part ways.
+- **Predecessor and successor**: the next key smaller, or larger, than a given one. *Where you meet it:* what a hash table cannot answer and an ordered structure can.
+- **Top-k**: the k largest or smallest values in a collection. *Where you meet it:* the row decided by a heap or by quickselect.
+- **Set membership**: a yes-or-no test for whether a value belongs to a set. *Where you meet it:* the row a Bloom filter answers approximately, at a fraction of the space.
+- **Equivalence classes**: a partition of items into groups, where every item in a group is considered the same for some purpose. *Where you meet it:* what union-find maintains, and cannot split back apart.
+- **Prefix of a string**: its first few characters, as a unit. *Where you meet it:* what a trie is built to answer quickly, and a substring is not.
+- **Associative operation**: one where grouping the terms differently never changes the result (as with maximum, but not with subtraction). *Where you meet it:* the property a segment tree needs and a Fenwick tree's own trick does not have.
+- **Amortised cost** (one line, since Chapter 1 taught it): the average cost per operation over a whole run, even when some individual operations cost more than others. *Where you meet it:* how union-find's near-constant time is actually stated.

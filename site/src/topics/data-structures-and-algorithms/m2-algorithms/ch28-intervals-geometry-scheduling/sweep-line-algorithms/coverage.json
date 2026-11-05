@@ -1,0 +1,345 @@
+{
+  "topic": "dsa.sweep-line-algorithms",
+  "syllabus": [
+    {
+      "clause": "event queues and active-set structures",
+      "at": [
+        {
+          "step": "A thousand segments could cross in nearly half a million places, and a scan tests every pair. Eight segments have twenty-eight pairs, and only two of them cross."
+        },
+        {
+          "step": "How many of the twenty-eight pairs does a sweep actually need to test, to find both crossings?"
+        },
+        {
+          "step": "The sweep skeleton: events are the only coordinates where the answer can change, and an active set holds what the line currently crosses between them. For each event in order, update the active set and record what changed."
+        },
+        {
+          "step": "Tie-breaking at equal coordinates is where sweeps go wrong: with half-open intervals, an end is processed before a start at the same x, or an interval is wrongly counted as overlapping its neighbor."
+        }
+      ]
+    },
+    {
+      "clause": "skyline",
+      "at": [
+        {
+          "step": "The skyline problem: given buildings as left edge, right edge and height, output the outline. Events are left and right edges; the active set is a max-heap of heights, with lazy deletion."
+        },
+        {
+          "step": "The skyline walk produces seven key points as the maximum in the heap changes. A monotonic deque, from an earlier chapter, handles a window of fixed order, not a heap of arbitrary expiry like this one."
+        }
+      ]
+    },
+    {
+      "clause": "rectangle union area",
+      "at": [
+        {
+          "step": "What structure holds the active set for the area of a rectangle union, updated at every left or right edge?"
+        },
+        {
+          "step": "Three rectangles sum to thirty-four in area; their union is twenty-nine. Victor Klee posed the one-dimensional version in nineteen seventy-seven; Jon Bentley extended it to this two-dimensional sweep the same year."
+        }
+      ]
+    },
+    {
+      "clause": "Bentley–Ottmann segment intersection in O((n + k) log n)",
+      "at": [
+        {
+          "step": "Bentley–Ottmann reports every crossing among n segments: events are endpoints, known up front, plus crossings, discovered as the sweep proceeds. The active set is a balanced search tree ordered by height at the current sweep position."
+        },
+        {
+          "step": "The order of the tree is always the true vertical order at the sweep position, and two segments can only cross after becoming neighbors in it, so every crossing is found before the sweep reaches it."
+        },
+        {
+          "step": "If the number of crossings k grows as large as n squared, does a sweep costing n plus k, times log n, still beat an all-pairs scan costing n squared?"
+        },
+        {
+          "step": "Scaling up: at n of fifty, two hundred and a thousand sparse segments, crossings grow to three, five and forty-eight, while the pairs a scan would test grow to twelve hundred, nineteen thousand and near half a million."
+        },
+        {
+          "step": "The one geometric primitive this needs is the sign of a cross product, exact on integer coordinates, deciding which side of a segment a point falls on. Shared endpoints, three segments through one point, or floating-point coordinates all break it."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Bentley–Ottmann algorithm\"",
+      "items": [
+        {
+          "item": "the sweep skeleton and the two data structures",
+          "at": [
+            {
+              "step": "The sweep skeleton: events are the only coordinates where the answer can change, and an active set holds what the line currently crosses between them. For each event in order, update the active set and record what changed."
+            },
+            {
+              "step": "Bentley–Ottmann reports every crossing among n segments: events are endpoints, known up front, plus crossings, discovered as the sweep proceeds. The active set is a balanced search tree ordered by height at the current sweep position."
+            }
+          ]
+        },
+        {
+          "item": "the O((n+k) log n) bound and its O(n log n) lower bound in algebraic decision-tree models",
+          "at": [
+            {
+              "step": "If the number of crossings k grows as large as n squared, does a sweep costing n plus k, times log n, still beat an all-pairs scan costing n squared?"
+            },
+            {
+              "deep": "Into the internals"
+            }
+          ]
+        },
+        {
+          "item": "faster algorithms named (Clarkson, Mulmuley, Chazelle and Edelsbrunner, Balaban)",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Klee's measure problem\"",
+      "items": [
+        {
+          "item": "Klee 1977 and Bentley 1977, the 1-D and 2-D union problems",
+          "at": [
+            {
+              "step": "Three rectangles sum to thirty-four in area; their union is twenty-nine. Victor Klee posed the one-dimensional version in nineteen seventy-seven; Jon Bentley extended it to this two-dimensional sweep the same year."
+            }
+          ]
+        },
+        {
+          "item": "the d-dimensional O(n^(d-1) log n) running time",
+          "at": [
+            {
+              "out": "named only, not built on screen"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Sweep line algorithm\"",
+      "items": [
+        {
+          "item": "Shamos and Hoey 1976, the ancestor algorithm",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "the O(N log N) and O((N+K) log N) bounds restated",
+          "at": [
+            {
+              "step": "Bentley–Ottmann reports every crossing among n segments: events are endpoints, known up front, plus crossings, discovered as the sweep proceeds. The active set is a balanced search tree ordered by height at the current sweep position."
+            },
+            {
+              "step": "If the number of crossings k grows as large as n squared, does a sweep costing n plus k, times log n, still beat an all-pairs scan costing n squared?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "DuckDB blog, \"Range Joins in DuckDB\"",
+      "items": [
+        {
+          "item": "IEJoin sorts on two conditions and merges the sort keys",
+          "at": [
+            {
+              "step": "DuckDB IEJoin sorts two tables on one inequality, merges the sort keys, then sorts the combined positions on a second inequality — the same sort-the-endpoints idea, one layer down in a query engine."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "the sweep skeleton: events + active set + tie rule, generalized from the previous topic's depth sweep",
+        "at": [
+          {
+            "step": "The sweep skeleton: events are the only coordinates where the answer can change, and an active set holds what the line currently crosses between them. For each event in order, update the active set and record what changed."
+          }
+        ]
+      },
+      {
+        "item": "half-open tie-breaking: ends before starts at a shared coordinate",
+        "at": [
+          {
+            "step": "Tie-breaking at equal coordinates is where sweeps go wrong: with half-open intervals, an end is processed before a start at the same x, or an interval is wrongly counted as overlapping its neighbor."
+          }
+        ]
+      },
+      {
+        "item": "skyline: left/right edges as events, a lazy-deletion max-heap as the active set",
+        "at": [
+          {
+            "step": "The skyline problem: given buildings as left edge, right edge and height, output the outline. Events are left and right edges; the active set is a max-heap of heights, with lazy deletion."
+          }
+        ]
+      },
+      {
+        "item": "skyline key points as changes in the heap's maximum",
+        "at": [
+          {
+            "step": "The skyline walk produces seven key points as the maximum in the heap changes. A monotonic deque, from an earlier chapter, handles a window of fixed order, not a heap of arbitrary expiry like this one."
+          }
+        ]
+      },
+      {
+        "item": "contrast with a monotonic deque: fixed window order vs. arbitrary expiry",
+        "at": [
+          {
+            "step": "The skyline walk produces seven key points as the maximum in the heap changes. A monotonic deque, from an earlier chapter, handles a window of fixed order, not a heap of arbitrary expiry like this one."
+          }
+        ]
+      },
+      {
+        "item": "rectangle union area: a cover-count segment tree over compressed y-coordinates",
+        "at": [
+          {
+            "step": "What structure holds the active set for the area of a rectangle union, updated at every left or right edge?"
+          },
+          {
+            "step": "Three rectangles sum to thirty-four in area; their union is twenty-nine. Victor Klee posed the one-dimensional version in nineteen seventy-seven; Jon Bentley extended it to this two-dimensional sweep the same year."
+          }
+        ]
+      },
+      {
+        "item": "Klee's measure problem and Bentley's 1977 2-D extension",
+        "at": [
+          {
+            "step": "Three rectangles sum to thirty-four in area; their union is twenty-nine. Victor Klee posed the one-dimensional version in nineteen seventy-seven; Jon Bentley extended it to this two-dimensional sweep the same year."
+          }
+        ]
+      },
+      {
+        "item": "Bentley-Ottmann: a balanced BST ordered by height at the sweep position",
+        "at": [
+          {
+            "step": "Bentley–Ottmann reports every crossing among n segments: events are endpoints, known up front, plus crossings, discovered as the sweep proceeds. The active set is a balanced search tree ordered by height at the current sweep position."
+          }
+        ]
+      },
+      {
+        "item": "correctness invariant: only newly-adjacent pairs can ever cross",
+        "at": [
+          {
+            "step": "The order of the tree is always the true vertical order at the sweep position, and two segments can only cross after becoming neighbors in it, so every crossing is found before the sweep reaches it."
+          }
+        ]
+      },
+      {
+        "item": "output-sensitive bound O((n+k) log n) and when the all-pairs scan wins instead",
+        "at": [
+          {
+            "step": "If the number of crossings k grows as large as n squared, does a sweep costing n plus k, times log n, still beat an all-pairs scan costing n squared?"
+          },
+          {
+            "step": "Scaling up: at n of fifty, two hundred and a thousand sparse segments, crossings grow to three, five and forty-eight, while the pairs a scan would test grow to twelve hundred, nineteen thousand and near half a million."
+          }
+        ]
+      },
+      {
+        "item": "the cross-product sign as the one geometric primitive, and what breaks it",
+        "at": [
+          {
+            "step": "The one geometric primitive this needs is the sign of a cross product, exact on integer coordinates, deciding which side of a segment a point falls on. Shared endpoints, three segments through one point, or floating-point coordinates all break it."
+          }
+        ]
+      },
+      {
+        "item": "DuckDB's IEJoin as a real system sorting two endpoint orders",
+        "at": [
+          {
+            "step": "DuckDB IEJoin sorts two tables on one inequality, merges the sort keys, then sorts the combined positions on a second inequality — the same sort-the-endpoints idea, one layer down in a query engine."
+          }
+        ]
+      },
+      {
+        "item": "element-distinctness reduction dropped: not confirmed by the fetched source",
+        "at": [
+          {
+            "out": "checked, not stated on screen"
+          }
+        ]
+      },
+      {
+        "item": "orientation tests, convex hulls and Voronoi diagrams named as the chapter's skipped half",
+        "at": [
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Shewchuk's robust predicates named only, for the floating-point failure mode",
+        "at": [
+          {
+            "step": "The one geometric primitive this needs is the sign of a cross product, exact on integer coordinates, deciding which side of a segment a point falls on. Shared endpoints, three segments through one point, or floating-point coordinates all break it."
+          },
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "recap: one skeleton, three active-set structures, three problems solved",
+        "at": [
+          {
+            "step": "One skeleton — events, an active set, a tie rule — produced a skyline, a union area and every segment crossing, each with its own active-set structure. Every bound here was a promise about every possible input."
+          }
+        ]
+      },
+      {
+        "item": "handoff to Chapter 29: a sweep's bound is about every input, not a distribution",
+        "at": [
+          {
+            "step": "One skeleton — events, an active set, a tie rule — produced a skyline, a union area and every segment crossing, each with its own active-set structure. Every bound here was a promise about every possible input."
+          }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for all three predict steps",
+        "at": [
+          {
+            "step": "How many of the twenty-eight pairs does a sweep actually need to test, to find both crossings?"
+          },
+          {
+            "step": "What structure holds the active set for the area of a rectangle union, updated at every left or right edge?"
+          },
+          {
+            "step": "If the number of crossings k grows as large as n squared, does a sweep costing n plus k, times log n, still beat an all-pairs scan costing n squared?"
+          }
+        ]
+      },
+      {
+        "item": "the 8-segment anecdote (28 pairs, 2 crossings) reproduced exactly from CHAPTER.md's own seed",
+        "at": [
+          {
+            "step": "A thousand segments could cross in nearly half a million places, and a scan tests every pair. Eight segments have twenty-eight pairs, and only two of them cross."
+          }
+        ]
+      },
+      {
+        "item": "scaling data (n=50,200,1000) computed fresh, not asserted from the chapter plan",
+        "at": [
+          {
+            "step": "Scaling up: at n of fifty, two hundred and a thousand sparse segments, crossings grow to three, five and forty-eight, while the pairs a scan would test grow to twelve hundred, nineteen thousand and near half a million."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

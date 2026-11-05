@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Complexity budgeting from constraints">Before this: how much work is allowed, before asking how to organise the data to do it.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Separate chaining">Before this: the hash table's own cost and collision handling.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="BST operations and rotations">Before this: a balanced tree's ordered operations.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Order-statistic trees">Before this: the structure that answers "the k-th smallest in the middle," which a heap cannot.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">Before this: ordered access when data is paged or on disk.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">Before this: the heap's own top-k cost.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Tries and node representations">Before this: the trie's prefix bound.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Fenwick trees">Before this: the prefix-sum trick this topic shows does not generalize to maximum.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Segment trees and lazy propagation">Before this: the associative-combine structure that answers what a Fenwick tree cannot.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Union–find">Before this: incremental grouping and its own missing split.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bloom filters and false-positive math">Before this: the bits-per-key arithmetic this topic prices against an exact set, not re-derives.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Associative array" href="https://en.wikipedia.org/wiki/Associative_array" by="Wikipedia">Hash tables against self-balancing search trees: the cost trade-off this topic's dispatch table is built on.</Resource>
+  <Resource kind="reading" title="Redis sorted sets" href="https://redis.io/docs/latest/develop/data-types/sorted-sets/" by="Redis">A hash table and a skip list kept together over one collection: the "two structures in sync" case.</Resource>
+</ul>
+
+</section>

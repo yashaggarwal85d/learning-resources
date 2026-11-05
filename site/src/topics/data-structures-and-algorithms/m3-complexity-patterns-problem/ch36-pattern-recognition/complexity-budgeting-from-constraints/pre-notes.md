@@ -1,0 +1,7 @@
+- **Input size n, and value range**: n is the count of items a statement gives (possibly several parameters: n, m, q, a bound W); a value range bounds the size of the numbers themselves, not the count of them. *Where you meet it:* the two numbers this topic reads off a statement before choosing anything.
+- **Time limit**: the maximum running time a problem allows, stated in seconds. *Where you meet it:* multiplied by a machine's operation rate to get a budget.
+- **Simple operation**: one arithmetic operation or comparison on a single machine word. *Where you meet it:* the unit the whole budget is counted in.
+- **Growth rate**: how an algorithm's operation count scales with n (constant, logarithmic, linear, n log n, quadratic, cubic, exponential, factorial). *Where you meet it:* the thing the budget rules in or out, one row at a time.
+- **Sequential access versus random access**: reading memory in address order against reading it in an unpredictable order. *Where you meet it:* the correction this topic makes to the rule of thumb near the top of the budget.
+- **Binary search**: repeatedly halving a sorted range to find a target or a boundary. *Where you meet it:* what the signal word "sorted" points at, and the technique behind "binary search on the answer".
+- **Predicate**: a yes-or-no test over some value. *Where you meet it:* the thing "binary search on the answer" searches over, once it is known to only ever flip one way as the value grows.
