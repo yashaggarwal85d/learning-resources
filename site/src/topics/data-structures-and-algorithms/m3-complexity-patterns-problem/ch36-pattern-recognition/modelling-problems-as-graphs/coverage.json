@@ -1,0 +1,58 @@
+{
+  "topic": "dsa.modelling-problems-as-graphs",
+  "syllabus": [
+    {
+      "clause": "states as vertices and moves as edges (word ladders, puzzles, lock combinations)",
+      "at": [
+        { "step": "A chain of real words: head, heal, teal, tell, tall, tail. Each step swaps exactly one letter and lands on a word that already exists, nothing invented along the way." },
+        { "step": "Every combination is a vertex, every single-wheel turn is an edge, and every forbidden code is removed as a vertex before the search starts: ten thousand states, eighty thousand edges. The shortest path avoiding every forbidden code is nine moves, found by ordinary breadth-first search." }
+      ]
+    },
+    {
+      "clause": "implicit graphs",
+      "at": [
+        { "step": "The eight-puzzle has a hundred eighty-one thousand four hundred forty reachable states, deepest one thirty-one moves away — both found by a real breadth-first search. The fifteen puzzle has ten trillion four hundred sixty-one billion three hundred ninety-four million nine hundred forty-four thousand states, a count reached by arithmetic, never by listing a single one." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "layered graphs for constraints such as \"at most k discounts\"",
+      "at": [
+        { "step": "A road network has a handful of discounted edges, usable at most k times. The state can no longer be just the vertex: it has to be the vertex together with how many discounts have been spent so far — four stacked copies of the same map, one per discount count, with discounted edges crossing up into the next layer." },
+        { "deep": "Into the internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Jeff Erickson, Algorithms",
+      "items": [
+        { "item": "A Hamiltonian cycle visits every vertex exactly once and is NP-hard; an Euler circuit visits every edge exactly once and is easy, linear-time", "at": [{ "step": "An Euler circuit uses every edge exactly once and is easy, built in linear time with depth-first search. A Hamiltonian cycle visits every vertex exactly once and is NP-hard. Two problems that differ by one word in the statement, and sit on opposite sides of easy and NP-hard." }] }
+      ]
+    },
+    {
+      "source": "Word ladder (Wikipedia)",
+      "items": [
+        { "item": "A word ladder links two words through a chain where adjacent words differ by exactly one letter", "at": [{ "step": "A chain of real words: head, heal, teal, tell, tall, tail. Each step swaps exactly one letter and lands on a word that already exists, nothing invented along the way." }] },
+        { "item": "The number of steps in a word ladder must be at least the Hamming distance between the two words", "at": [{ "step": "A chain of real words: head, heal, teal, tell, tall, tail. Each step swaps exactly one letter and lands on a word that already exists, nothing invented along the way." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The fifteen-puzzle's state count (16!/2) is derived from the parity argument (every slide is a transposition with the blank, which flips permutation parity, so only half of all arrangements are reachable from a fixed start) rather than asserted as a bare fact; the eight-puzzle's matching count and max depth are found by an independent, real breadth-first search over its full state space, not approximated.", "at": [{ "step": "The eight-puzzle has a hundred eighty-one thousand four hundred forty reachable states, deepest one thirty-one moves away — both found by a real breadth-first search. The fifteen puzzle has ten trillion four hundred sixty-one billion three hundred ninety-four million nine hundred forty-four thousand states, a count reached by arithmetic, never by listing a single one." }] },
+      { "item": "The wildcard-bucket trick's correctness is checked directly in examples.py by comparing the full neighbour sets it produces against a brute-force all-pairs Hamming-distance check on the same dictionary, not merely by comparing edge counts, since two different edge sets could coincidentally have the same size.", "at": [{ "step": "Blank one letter of a word at a time and drop it into a bucket keyed by the blanked pattern. Two words sharing a bucket differ by exactly that one letter, so every edge of the word-ladder graph appears without ever comparing one word against another." }] },
+      { "item": "The lock's state-too-small claim is illustrated with a specific hand-built forbidden-code set and start/target pair, not argued in the abstract; the shortest path of nine moves is cross-checked against an independent breadth-first search that removes forbidden codes as vertices before searching, in examples.py.", "at": [{ "step": "Every combination is a vertex, every single-wheel turn is an edge, and every forbidden code is removed as a vertex before the search starts: ten thousand states, eighty thousand edges. The shortest path avoiding every forbidden code is nine moves, found by ordinary breadth-first search." }] },
+      { "item": "The layered-graph vertex and edge counts (400,000 vertices, 2,100,000 edges at V=100,000, E=300,000, k=3) follow directly from the stated formulas ((k+1) times V, and roughly (2k+1) times E for edges that can stay within or cross one layer up); this topic states the formula explicitly in examples.py rather than only asserting the final numbers.", "at": [{ "step": "A direct route costs thirty and never needs a discount. A four-edge discounted detour costs thirty with no discounts allowed, falls to twenty-five past three, and twenty past four — the detour only wins once enough discounts are allowed. At a hundred thousand vertices, three hundred thousand edges and k equal to three, the layered graph has four hundred thousand vertices and two million one hundred thousand edges." }] },
+      { "item": "The discount-graph's cost-by-k table is cross-checked against an independent brute-force search over every simple path in the small hand-built graph, not only against the layered-Dijkstra implementation that produced the headline numbers, so the two methods catching the same answer rules out a shared bug in one search strategy.", "at": [{ "step": "A direct route costs thirty and never needs a discount. A four-edge discounted detour costs thirty with no discounts allowed, falls to twenty-five past three, and twenty past four — the detour only wins once enough discounts are allowed. At a hundred thousand vertices, three hundred thousand edges and k equal to three, the layered graph has four hundred thousand vertices and two million one hundred thousand edges." }] },
+      { "item": "The Hamiltonian-cycle/Euler-circuit near-miss is sourced directly from Erickson's own textbook statement rather than paraphrased from memory, and the topic is careful to state only the easy direction (Euler circuits are linear-time) as a fact and the hard direction (Hamiltonian cycle is NP-hard) as Erickson's own stated result, without attempting an independent proof of NP-hardness on screen.", "at": [{ "step": "An Euler circuit uses every edge exactly once and is easy, built in linear time with depth-first search. A Hamiltonian cycle visits every vertex exactly once and is NP-hard. Two problems that differ by one word in the statement, and sit on opposite sides of easy and NP-hard." }] },
+      { "item": "The word-ladder dictionary used throughout examples.py is the topic's own small, hand-written word list rather than a well-known standard list (such as Knuth's Stanford GraphBase), a deliberate choice documented in OUTLINE.md to avoid any licensing question, and large enough to produce a genuine six-word ladder and a non-trivial wildcard-bucket demonstration.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Breadth-first search, Dijkstra's algorithm and the P/NP/NP-hard vocabulary are all used informally in this topic without a declared prerequisite topic, since Chapters 17, 18 and 33 are not live in the registry yet; this topic implements the search algorithms it needs directly rather than assuming an earlier topic taught them, and sources its one hardness claim directly rather than assuming the vocabulary was already taught.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The claim that folding a count constraint into the move itself (rather than the state) breaks the graph model is argued structurally in post-notes (an edge's validity would then depend on history beyond its two endpoints), not merely asserted as a rule of thumb.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "This topic's own thesis (state, move, question turns any situation into a graph) is illustrated with four genuinely different kinds of situation (a word puzzle, a sliding-tile puzzle, a combinatorial lock, a constrained shortest path), not one example generalized by assertion, specifically to support the recap's claim that the pattern holds 'whatever the story.'", "at": [{ "step": "A word ladder, a sliding puzzle, a lock with forbidden codes, a route with a limited number of discounts: none of them hand over a graph. Writing down the state, the move between states, and the question being asked turns each one into a graph question. Once it is a graph, the next skill is recognizing which graph problem it actually is. Recognizing reductions to known problems, next." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

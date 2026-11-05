@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Choosing the structure for the operation mix">Before this: a structure holds data and answers questions about it; this topic asks what to do when there is no data, only a situation.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Adjacency lists, matrices and edge lists">Before this: a graph's own vertices and edges, the plainest layout for the ones this topic builds.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Compressed sparse row (CSR) and reordering">Before this: a graph representation built for scale, relevant once an implicit graph's visited set itself grows large.</Resource>
+</ul>
+
+Breadth-first search (Chapter 17), Dijkstra's algorithm (Chapter 18) and the vocabulary of P, NP and NP-hardness (Chapter 33) are assumed informally in this topic — none of those chapters is live yet, so this topic implements the search it needs directly in `examples.py` and sources its one NP-hardness claim straight from Erickson's textbook rather than an earlier topic.
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Hamiltonian Cycle (Jeff Erickson, Algorithms, Ch. 12)" href="http://jeffe.cs.illinois.edu/teaching/algorithms/book/12-nphard.pdf" by="Jeff Erickson">The Hamiltonian-cycle-versus-Euler-circuit near-miss this topic ends on.</Resource>
+  <Resource kind="reading" title="Word ladder" href="https://en.wikipedia.org/wiki/Word_ladder" by="Wikipedia">The puzzle's own rules and Lewis Carroll's invention of it, behind the hook.</Resource>
+</ul>
+
+</section>

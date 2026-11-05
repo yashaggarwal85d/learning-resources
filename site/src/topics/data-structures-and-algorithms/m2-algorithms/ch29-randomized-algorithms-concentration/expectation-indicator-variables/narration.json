@@ -1,0 +1,73 @@
+{
+  "topic": "dsa.expectation-indicator-variables",
+  "steps": [
+    {
+      "lines": [
+        "A random pivot means quicksort takes a different number of comparisons on the very same input, run after run.",
+        "What this topic computes is the exact average of that number, in one line, with nothing solved recursively."
+      ]
+    },
+    {
+      "lines": [
+        "Think about the shape of the answer before the exact number arrives: does doubling the size roughly double the cost, or square it?"
+      ],
+      "answer": [
+        "Two n times the natural log of n is the right shape; what comes next is the exact correction sitting on top of it."
+      ]
+    },
+    {
+      "lines": [
+        "The expectation of a sum always equals the sum of the expectations, and that holds whether or not the pieces are related.",
+        "Two draws from an urn without replacement are related, since the first draw changes what is left for the second, and the rule still holds."
+      ]
+    },
+    {
+      "lines": [
+        "Give one event a variable that is one when it happens and zero otherwise, and that variable's average is just the event's probability.",
+        "Any count built out of such variables turns, by linearity, into nothing more than a sum of probabilities."
+      ]
+    },
+    {
+      "lines": [
+        "Shuffle anything and ask how many items land back in their own starting spot: on average, exactly one does, no matter how large the set is.",
+        "Whether one position staying fixed makes another position more or less likely to stay fixed does not matter at all to this sum."
+      ]
+    },
+    {
+      "lines": [
+        "Line the keys up by rank, and ask when two of them, however far apart in rank, ever get compared to each other.",
+        "They get compared exactly when the very first pivot chosen from everything ranked between them turns out to be one of the two themselves."
+      ]
+    },
+    {
+      "lines": [
+        "Add that probability up over every possible pair of ranks, and the sum is the exact expected number of comparisons, not an estimate of it.",
+        "It sits close to the earlier guess of two n times the natural log of n, but with a correction that is exact rather than approximate."
+      ]
+    },
+    {
+      "lines": [
+        "An earlier topic reached this identical number by writing down a recurrence over how the algorithm recurses on smaller pieces.",
+        "Reaching the same number from a probability per pair, with no recursion at all, is confirmation that both routes describe one real quantity."
+      ]
+    },
+    {
+      "lines": [
+        "Draw coupons with replacement and keep going until every distinct one has turned up at least once.",
+        "Split that wait into one phase per newly seen coupon; each phase waits geometrically, and linearity adds all those waits into a single harmonic sum."
+      ]
+    },
+    {
+      "lines": [
+        "That average describes the whole population of runs, not the particular run you happen to be watching.",
+        "It says nothing by itself about how far a single run can land from the average, or how rarely that happens."
+      ]
+    },
+    {
+      "lines": [
+        "Fixed points, quicksort's comparisons, and the coupon collector's draws are three unrelated-looking counts.",
+        "Every one of them turned into a sum of probabilities the moment it was written as a sum of indicator variables, dependence or none."
+      ]
+    }
+  ]
+}

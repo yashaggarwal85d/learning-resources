@@ -1,0 +1,270 @@
+{
+  "topic": "dsa.expectation-indicator-variables",
+  "syllabus": [
+    {
+      "clause": "linearity of expectation",
+      "at": [
+        {
+          "step": "The tool underneath every result here: the expectation of a sum is the sum of the expectations, for any random variables at all, whether or not they depend on each other. Two draws from an urn without replacement are visibly dependent, and the rule still holds."
+        },
+        {
+          "step": "Summing that probability over every pair gives the exact expected comparison count, and it answers the earlier predict: close to two n ln n, but with a correction that is visible and exact, not approximate."
+        },
+        {
+          "step": "Draw coupons with replacement until every one has been seen. Split the wait into phases, one per new coupon: each phase is a geometric wait, and linearity adds their expectations into one harmonic sum."
+        }
+      ]
+    },
+    {
+      "clause": "indicators",
+      "at": [
+        {
+          "step": "An indicator variable is zero or one, standing for one event: its expectation is exactly that event’s probability. Write a count as a sum of indicators, and linearity turns the whole count into a sum of probabilities."
+        },
+        {
+          "step": "A random permutation has, on average, exactly one fixed point — every time, for every size. One indicator per position, each with the same small probability, summed by linearity, however those positions depend on each other."
+        }
+      ]
+    },
+    {
+      "clause": "expected comparisons in randomized quicksort",
+      "at": [
+        {
+          "step": "Randomized quicksort picks pivots by coin flip, so its cost is a different number every run. On a thousand keys the exact expectation is computed in one line, with no recurrence, and a simulation of two hundred runs lands close to it."
+        },
+        {
+          "step": "Rank the keys first through last. Two ranked elements are ever compared exactly when the first pivot chosen among everything ranked between them lands on one of those two elements themselves."
+        },
+        {
+          "step": "Summing that probability over every pair gives the exact expected comparison count, and it answers the earlier predict: close to two n ln n, but with a correction that is visible and exact, not approximate."
+        },
+        {
+          "step": "An earlier topic already found this exact number by solving a recurrence on the algorithm’s own recursive structure. This is the second way to reach it, needing only a probability per pair, and the two numbers agree."
+        }
+      ]
+    },
+    {
+      "clause": "the coupon collector",
+      "at": [
+        {
+          "step": "Draw coupons with replacement until every one has been seen. Split the wait into phases, one per new coupon: each phase is a geometric wait, and linearity adds their expectations into one harmonic sum."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Coupon collector's problem\"",
+      "items": [
+        {
+          "item": "the n times H_n expected draw count, by splitting the wait into geometric phases",
+          "at": [
+            {
+              "step": "Draw coupons with replacement until every one has been seen. Split the wait into phases, one per new coupon: each phase is a geometric wait, and linearity adds their expectations into one harmonic sum."
+            }
+          ]
+        },
+        {
+          "item": "the Theta(n log n) growth rate and the n=50 example (about 225 trials)",
+          "at": [
+            { "deep": "Into the internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Expected value\"",
+      "items": [
+        {
+          "item": "linearity of expectation, stated for any random variables with no independence clause",
+          "at": [
+            {
+              "step": "The tool underneath every result here: the expectation of a sum is the sum of the expectations, for any random variables at all, whether or not they depend on each other. Two draws from an urn without replacement are visibly dependent, and the rule still holds."
+            }
+          ]
+        },
+        {
+          "item": "non-multiplicativity: E[XY] = E[X]E[Y] only holds when X and Y are independent",
+          "at": [
+            { "deep": "Into the internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Ben Lynn, \"Probability — Quicksort\"",
+      "items": [
+        {
+          "item": "the pair-indicator proof: Pr = 2/(j-i+1), summed to 2(n+1)H_n - 4n",
+          "at": [
+            {
+              "step": "Rank the keys first through last. Two ranked elements are ever compared exactly when the first pivot chosen among everything ranked between them lands on one of those two elements themselves."
+            },
+            {
+              "step": "Summing that probability over every pair gives the exact expected comparison count, and it answers the earlier predict: close to two n ln n, but with a correction that is visible and exact, not approximate."
+            }
+          ]
+        },
+        {
+          "item": "the 2n log n upper bound via H_n's asymptotics",
+          "at": [
+            { "deep": "Into the internals" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Rencontres numbers\"",
+      "items": [
+        {
+          "item": "the expected number of fixed points is exactly 1, following from linearity",
+          "at": [
+            {
+              "step": "A random permutation has, on average, exactly one fixed point — every time, for every size. One indicator per position, each with the same small probability, summed by linearity, however those positions depend on each other."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Fisher–Yates shuffle\" (Sattolo's algorithm section)",
+      "items": [
+        {
+          "item": "Sattolo's variant (random index strictly below i) always produces a single cycle, hence zero fixed points",
+          "at": [
+            { "out": "named in post-notes only, as the test that catches an accidental Sattolo bug" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "linearity of expectation holds for any random variables, dependent or not",
+        "at": [
+          {
+            "step": "The tool underneath every result here: the expectation of a sum is the sum of the expectations, for any random variables at all, whether or not they depend on each other. Two draws from an urn without replacement are visibly dependent, and the rule still holds."
+          }
+        ]
+      },
+      {
+        "item": "the urn-without-replacement example is a genuine case of dependent indicators, checked against the hypergeometric covariance, not a disguised independent case",
+        "at": [
+          { "out": "checked in FACT-CHECK.md's red team, not stated on screen" }
+        ]
+      },
+      {
+        "item": "an indicator variable's expectation equals its event's probability",
+        "at": [
+          {
+            "step": "An indicator variable is zero or one, standing for one event: its expectation is exactly that event’s probability. Write a count as a sum of indicators, and linearity turns the whole count into a sum of probabilities."
+          }
+        ]
+      },
+      {
+        "item": "expected fixed points of a random permutation is exactly one, via n indicators of probability 1/n",
+        "at": [
+          {
+            "step": "A random permutation has, on average, exactly one fixed point — every time, for every size. One indicator per position, each with the same small probability, summed by linearity, however those positions depend on each other."
+          }
+        ]
+      },
+      {
+        "item": "the fixed-point indicators are genuinely dependent (checked: Pr[I1=1,I2=1] = 1/12, not 1/16)",
+        "at": [
+          { "out": "checked in FACT-CHECK.md's red team, not stated on screen" }
+        ]
+      },
+      {
+        "item": "the quicksort pair argument: compared iff the first pivot among the ranks between them is an endpoint",
+        "at": [
+          {
+            "step": "Rank the keys first through last. Two ranked elements are ever compared exactly when the first pivot chosen among everything ranked between them lands on one of those two elements themselves."
+          }
+        ]
+      },
+      {
+        "item": "the exact closed form 2(n+1)H_n - 4n, measured at three sizes and against a simulation",
+        "at": [
+          {
+            "step": "Summing that probability over every pair gives the exact expected comparison count, and it answers the earlier predict: close to two n ln n, but with a correction that is visible and exact, not approximate."
+          }
+        ]
+      },
+      {
+        "item": "agreement with the live topic's own recurrence-based derivation of the same number",
+        "at": [
+          {
+            "step": "An earlier topic already found this exact number by solving a recurrence on the algorithm’s own recursive structure. This is the second way to reach it, needing only a probability per pair, and the two numbers agree."
+          }
+        ]
+      },
+      {
+        "item": "the coupon-collector phase argument and its n times H_n closed form, checked against simulation",
+        "at": [
+          {
+            "step": "Draw coupons with replacement until every one has been seen. Split the wait into phases, one per new coupon: each phase is a geometric wait, and linearity adds their expectations into one harmonic sum."
+          }
+        ]
+      },
+      {
+        "item": "what linearity does not give: a tail bound or a variance, named but not built",
+        "at": [
+          {
+            "step": "An expectation is an average over every possible run, not a promise about the one run in front of you. It says nothing about how far a single run can land from that average, or how often."
+          }
+        ]
+      },
+      {
+        "item": "Markov, Chebyshev and Chernoff named as the next tool, deferred to the chapter's own skipped topics",
+        "at": [
+          { "deep": "The frontier" }
+        ]
+      },
+      {
+        "item": "recap: three unrelated-looking counts, one technique, no independence required anywhere",
+        "at": [
+          {
+            "step": "Three different messy counts — fixed points, comparisons, coupon draws — each became a sum of probabilities, and linearity never once needed the pieces to be independent."
+          }
+        ]
+      },
+      {
+        "item": "handoff to Chapter 29's reservoir sampling, quoted word for word from CHAPTER.md",
+        "at": [
+          {
+            "step": "Three different messy counts — fixed points, comparisons, coupon draws — each became a sum of probabilities, and linearity never once needed the pieces to be independent."
+          }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for the one predict step",
+        "at": [
+          {
+            "step": "Is the expected number of comparisons closer to n times log base two of n, two n times the natural log of n, or n squared over four?"
+          }
+        ]
+      },
+      {
+        "item": "the quicksort and coupon-collector numbers are freshly computed and asserted in examples.py, not copied from the chapter plan as fact",
+        "at": [
+          { "out": "checked, not stated on screen" }
+        ]
+      },
+      {
+        "item": "Har-Peled and Erickson's lecture notes still return errors at research time; the Stanford quicksort page used in their place, recorded in SOURCES.md",
+        "at": [
+          { "out": "recorded in SOURCES.md and OUTLINE.md's Changes from the chapter plan" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

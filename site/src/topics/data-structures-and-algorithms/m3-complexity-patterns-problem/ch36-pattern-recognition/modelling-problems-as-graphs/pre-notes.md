@@ -1,0 +1,8 @@
+- **Graph**: a set of vertices and the edges connecting them. *Where you meet it:* the picture every situation in this topic turns into.
+- **Path and its length**: a sequence of edges joining one vertex to another, and the number of edges it uses. *Where you meet it:* the word ladder, and the lock's shortest sequence of turns.
+- **Breadth-first search**: the standard way to find a shortest path in an unweighted graph, by exploring one layer of distance at a time. *Where you meet it:* finding the 8-puzzle's state count and the lock's shortest path.
+- **Shortest path, unweighted versus weighted**: breadth-first search answers the unweighted case; a weighted graph (different edges costing different amounts) needs a different algorithm. *Where you meet it:* the discount-graph example, where edges have real costs.
+- **Hash set**: a structure answering "have I already visited this state" in near-constant time. *Where you meet it:* the cost every implicit-graph search has to pay, named directly in this topic.
+- **State**: everything that needs remembering to know what happens next and to answer the question being asked, no more and no less. *Where you meet it:* the single idea this whole topic turns around.
+- **Hamming distance**: the number of positions at which two equal-length strings differ. *Where you meet it:* the lower bound on how many steps a word ladder needs.
+- **A count constraint**: a limit on how many times some special move may be used over the whole path, such as "at most k discounts." *Where you meet it:* the reason a state sometimes has to carry a number along with it.
