@@ -1,0 +1,61 @@
+{
+  "topic": "dsa.floyd-warshall-johnson-s",
+  "syllabus": [
+    {
+      "clause": "O(n³) DP over intermediate vertices",
+      "at": [
+        { "step": "The dynamic program fills an entire distance matrix one allowed waypoint at a time — for every pair of vertices, it checks whether routing through the current waypoint beats the best route found using only the waypoints already considered." }
+      ]
+    },
+    {
+      "clause": "transitive closure, path reconstruction",
+      "at": [
+        { "step": "Alongside every shortest distance, a second matrix records the vertex visited just before the destination on that shortest route — enough, followed backward one step at a time, to recover the actual path, not merely how long it is." },
+        { "step": "Replace every distance with a plain yes-or-no reachability flag, replace adding weights with requiring both legs to already be reachable, and replace keeping the smaller distance with allowing either leg to supply that reachability — the identical waypoint-by-waypoint sweep now answers which vertex can reach which." }
+      ]
+    },
+    {
+      "clause": "Johnson's potential reweighting for all-pairs on sparse graphs with negative edges",
+      "at": [
+        { "step": "For a graph with many vertices but comparatively few edges, does running the single-source algorithm from every vertex do less total work than the fixed dynamic program whose own cost never depends on how many edges the graph has — or more?" },
+        { "step": "Reweighting every edge by the difference between the shortest distances of its two endpoints from an added source vertex removes every negative weight from the graph entirely. Does that reweighting ever change which route between two vertices is the cheapest one?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Floyd–Warshall algorithm\"",
+      "items": [
+        { "item": "The algorithm's own general description, non-negative-cycle restriction, and attribution (Floyd 1962, Roy 1959, Warshall 1962)", "at": [{ "step": "A network of a few hundred cities where every pair's fastest route is wanted at once, not one pair at a time — answered either by one dynamic program over every possible waypoint, or by running the single-source algorithm already built from every city, once a one-time trick removes every negative road." }] },
+        { "item": "The triple-nested-loop pseudocode itself, computing shortest distances by considering each vertex in turn as an allowed intermediate", "at": [{ "step": "The dynamic program fills an entire distance matrix one allowed waypoint at a time — for every pair of vertices, it checks whether routing through the current waypoint beats the best route found using only the waypoints already considered." }] },
+        { "item": "The path-reconstruction mechanism (a prev matrix of penultimate vertices, updated alongside the distance matrix)", "at": [{ "step": "Alongside every shortest distance, a second matrix records the vertex visited just before the destination on that shortest route — enough, followed backward one step at a time, to recover the actual path, not merely how long it is." }] },
+        { "item": "Warshall's own transitive-closure formulation (Boolean matrix, AND/OR in place of add/min)", "at": [{ "step": "Replace every distance with a plain yes-or-no reachability flag, replace adding weights with requiring both legs to already be reachable, and replace keeping the smaller distance with allowing either leg to supply that reachability — the identical waypoint-by-waypoint sweep now answers which vertex can reach which." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Johnson's algorithm\"",
+      "items": [
+        { "item": "The algorithm's own general description, restriction (no negative cycles), and attribution (Johnson, 1977)", "at": [{ "step": "Reweighting every edge by the difference between the shortest distances of its two endpoints from an added source vertex removes every negative weight from the graph entirely. Does that reweighting ever change which route between two vertices is the cheapest one?" }] },
+        { "item": "The exact reweighting mechanism (an added source vertex, a Bellman-Ford pass to compute each vertex's potential, every edge reweighted by it, then Dijkstra from every vertex)", "at": [{ "step": "Reweighting every edge by the difference between the shortest distances of its two endpoints from an added source vertex removes every negative weight from the graph entirely. Does that reweighting ever change which route between two vertices is the cheapest one?" }] },
+        { "item": "The sparse-graph trade-off against Floyd-Warshall's fixed cost", "at": [{ "step": "For a graph with many vertices but comparatively few edges, does running the single-source algorithm from every vertex do less total work than the fixed dynamic program whose own cost never depends on how many edges the graph has — or more?" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The dynamic program's own recurrence is a direct generalisation of relaxation: the question for each pair and each candidate waypoint is still 'does going through this one more vertex improve the current best estimate', exactly the operation every other algorithm in this chapter is built from", "at": [{ "step": "The dynamic program fills an entire distance matrix one allowed waypoint at a time — for every pair of vertices, it checks whether routing through the current waypoint beats the best route found using only the waypoints already considered." }] },
+      { "item": "The order of the three nested loops matters: the waypoint loop must be the outermost one, since allowing a waypoint before considering all pairs through it (not after) is what makes each successive matrix correct", "at": [{ "step": "The dynamic program fills an entire distance matrix one allowed waypoint at a time — for every pair of vertices, it checks whether routing through the current waypoint beats the best route found using only the waypoints already considered." }] },
+      { "item": "A shortest distance alone is not reversible into a path — two entirely different routes can sum to the identical weight, which is exactly why a separate predecessor structure, not a recomputation from the distance matrix, is necessary", "at": [{ "step": "Alongside every shortest distance, a second matrix records the vertex visited just before the destination on that shortest route — enough, followed backward one step at a time, to recover the actual path, not merely how long it is." }] },
+      { "item": "Transitive closure only needs the unweighted version of the identical recurrence, confirming the dynamic program's own mechanism is independent of weights being numbers at all, rather than two unrelated algorithms that happen to share a name", "at": [{ "step": "Replace every distance with a plain yes-or-no reachability flag, replace adding weights with requiring both legs to already be reachable, and replace keeping the smaller distance with allowing either leg to supply that reachability — the identical waypoint-by-waypoint sweep now answers which vertex can reach which." }] },
+      { "item": "Johnson's added source vertex must connect to every other vertex with a zero-weight edge, not merely some of them, since the potential this step computes has to be defined for every vertex before reweighting can remove every negative edge", "at": [{ "step": "Reweighting every edge by the difference between the shortest distances of its two endpoints from an added source vertex removes every negative weight from the graph entirely. Does that reweighting ever change which route between two vertices is the cheapest one?" }] },
+      { "item": "Johnson's reweighting step itself must detect a negative cycle during its Bellman-Ford pass and refuse to continue, since no potential value could possibly be well-defined once a cycle keeps improving forever", "at": [{ "step": "Reweighting every edge by the difference between the shortest distances of its two endpoints from an added source vertex removes every negative weight from the graph entirely. Does that reweighting ever change which route between two vertices is the cheapest one?" }] },
+      { "item": "Floyd-Warshall's own fixed cost makes it the simpler, more reliable default; Johnson's algorithm only pays off once a graph's edge count is small enough relative to its vertex count that the saving exceeds the extra bookkeeping of reweighting and n separate single-source runs", "at": [{ "step": "For a graph with many vertices but comparatively few edges, does running the single-source algorithm from every vertex do less total work than the fixed dynamic program whose own cost never depends on how many edges the graph has — or more?" }] },
+      { "item": "Both algorithms in this topic are confirmed against each other on the identical graph, not merely each confirmed separately against a brute-force computation — the stronger claim that two independently-built algorithms converge on one answer", "at": [{ "step": "A network of a few hundred cities where every pair's fastest route is wanted at once, not one pair at a time — answered either by one dynamic program over every possible waypoint, or by running the single-source algorithm already built from every city, once a one-time trick removes every negative road." }] },
+      { "item": "Neither algorithm in this topic introduces a new primitive operation — Floyd-Warshall's recurrence is relaxation generalised across a third dimension of allowed waypoints, and Johnson's algorithm is a direct composition of Bellman-Ford and Dijkstra, both already fully built in earlier topics of this chapter", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "This topic closes the all-pairs question for every kind of graph this chapter considers; the next topic shows that a directed acyclic graph answers both the single-source and all-pairs questions with no priority queue, no repeated passes, and no cycle check at all", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

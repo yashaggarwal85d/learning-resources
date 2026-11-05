@@ -1,0 +1,4 @@
+- **All-pairs shortest paths**: every vertex's shortest distance to every other vertex, computed together. *Where you meet it:* the exact question both algorithms in this topic answer.
+- **Transitive closure (recap)**: which vertices can reach which, ignoring weights. *Where you meet it:* the boolean version of this topic's own dynamic program.
+- **Dynamic programming (recap)**: building a solution from solutions to smaller subproblems. *Where you meet it:* Floyd-Warshall's own recurrence over an increasing set of allowed waypoints.
+- **Adjacency matrix (recap from Chapter 10)**: an n-by-n table of edge weights. *Where you meet it:* the shape both the distance matrix and the predecessor matrix take in this topic.
