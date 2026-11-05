@@ -1,0 +1,4 @@
+- **Strongly connected (recap in one line)**: every vertex in the set can reach every other vertex in it, and reach it back. *Where you meet it:* this is exactly what both algorithms in this topic partition a graph into.
+- **Satisfiability (one line)**: an assignment of true or false to variables that makes every clause of a formula true. *Where you meet it:* the question this topic's 2-SAT reduction decides.
+- **Implication**: a statement of the form "if one thing holds, then another must too." *Where you meet it:* every clause of a 2-SAT formula becomes a pair of implications, drawn as edges.
+- **Maximal set (recap)**: a set that cannot be made any larger while still satisfying its defining property. *Where you meet it:* a strongly connected component is a maximal mutually-reachable set — the fact this topic's condensation-DAG proof relies on.
