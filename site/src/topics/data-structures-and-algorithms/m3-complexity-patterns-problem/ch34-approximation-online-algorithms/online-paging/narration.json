@@ -1,0 +1,73 @@
+{
+  "topic": "dsa.online-paging",
+  "steps": [
+    {
+      "lines": [
+        "A cache holds four pages. The stream of requests cycles endlessly through five different ones, and every single request asks for exactly the page the cache just threw out.",
+        "Run that for two thousand requests straight, and the cache faults on every single one of them, without exception."
+      ]
+    },
+    {
+      "lines": [
+        "Deciding with only the past means choosing what to throw away right now, with no idea what gets asked for next.",
+        "Deciding with the whole future in hand is a different game entirely. That second kind of decision is never available to a real running system."
+      ]
+    },
+    {
+      "lines": [
+        "Here is why that gap can never be closed by a cleverer rule. Give a cache room for k pages, and an opponent needs only one page more than that to trap it completely.",
+        "That opponent simply asks, every single time, for whichever page the cache just gave up. There is always exactly one such page, because the cache can never hold all of them."
+      ]
+    },
+    {
+      "lines": [
+        "Every fixed rule, however clever its logic, faults on every single request built this way.",
+        "Before the actual escape route: could some other fixed, predictable rule simply dodge this particular trap, or does getting out require something else entirely?"
+      ],
+      "answer": [
+        "No fixed, predictable rule escapes it, because the trap is built directly out of whatever that rule just did. It always has its next move ready.",
+        "What actually changes the picture is unpredictability itself: a rule that sometimes decides differently, even facing an identical history, gives nothing fixed for the opponent to target ahead of time."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the one rule that always wins: on every fault, throw away whichever page sits furthest away in the future before it's needed again.",
+        "No real system can run this rule, because no real system knows the future. It exists purely as the yardstick everything else gets measured against."
+      ]
+    },
+    {
+      "lines": [
+        "Mark a page the moment it's first asked for in the current run of distinct requests, and never throw away a marked page before that run ends.",
+        "One familiar policy always obeys that rule by its very nature. A second, equally familiar policy does not, and will cheerfully throw away a page marked only moments earlier."
+      ]
+    },
+    {
+      "lines": [
+        "One more question before the next measured result. Can handing a cache more room ever make its own fault count climb, instead of fall?"
+      ],
+      "answer": [
+        "Yes, genuinely, and this has a name: it's a documented anomaly. On one specific sequence, measured directly, one policy's own fault count actually goes up when its cache grows larger.",
+        "Two other policies, measured on the identical sequence, never do this. Both only ever improve or hold steady as their cache grows."
+      ]
+    },
+    {
+      "lines": [
+        "On the classic sequence, computed directly: the policy that only tracks arrival order faults nine times with a small cache, then ten times with a slightly bigger one. More room, more faults.",
+        "The policy that tracks recent use faults ten times, then eight. The one rule that sees the whole future faults seven times, then six. Both of those only ever get better with more room, exactly as claimed."
+      ]
+    },
+    {
+      "lines": [
+        "A proven worst case and genuinely excellent everyday behavior are not in tension with each other at all.",
+        "That worst case describes the single most hostile sequence imaginable, built specifically to maximize the damage. An ordinary real request pattern was never built that way, and sits far below that ceiling in practice."
+      ]
+    },
+    {
+      "lines": [
+        "A promise that holds against every possible input, however hostile, is what a competitive ratio actually is. And the best any fixed, predictable cache rule can ever promise is that same ratio this whole topic has been proving.",
+        "That tells you plainly where a cleverer fixed rule will not help you. Every single guarantee in this chapter has had that same shape: true of the worst possible input, which is rarely the one actually sitting in front of you.",
+        "What you're actually handed is one problem, with its own size, its own limits, and its own shape. Reading those off correctly, before reaching for any algorithm at all, is the very next skill. Complexity budgeting from constraints, next."
+      ]
+    }
+  ]
+}

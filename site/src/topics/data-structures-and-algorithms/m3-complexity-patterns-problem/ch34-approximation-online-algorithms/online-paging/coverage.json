@@ -1,0 +1,88 @@
+{
+  "topic": "dsa.online-paging",
+  "syllabus": [
+    {
+      "clause": "LRU and FIFO are k-competitive (Sleator & Tarjan, 1985)",
+      "at": [
+        { "step": "Here is why no deterministic online policy can ever do better than this: with a cache of k pages, an adversary needs only k plus one distinct pages. It always asks for exactly the one page the policy just evicted — the one page guaranteed not to be sitting in the cache." },
+        { "step": "Mark a page the moment it is first requested in the current stretch of distinct pages; never evict a marked page before the stretch ends and the marks clear. LRU always obeys this rule. FIFO does not — it can and does evict a page marked only moments ago." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "Bélády's offline optimum",
+      "at": [
+        { "step": "Bélády's offline optimum: on a fault, evict whichever cached page's next use lies furthest in the future. It cannot be implemented in any real system, because no real system knows the future — it exists purely as the benchmark no online policy is measured against." },
+        { "step": "On the classic reference string, computed directly: FIFO faults nine times with three frames, and ten times with four — more memory, more faults. LRU faults ten times and then eight; the true optimum faults seven times and then six. Both of those are monotone, exactly as claimed." }
+      ]
+    },
+    {
+      "clause": "randomized marking at O(log k)",
+      "at": [{ "deep": "The frontier" }]
+    },
+    {
+      "clause": "connecting the theory to the policies in Ch.11",
+      "at": [
+        { "step": "LRU's proven worst-case ratio of k and its excellent practical behavior do not contradict each other. The ratio is a worst case over every possible adversarial sequence; an ordinary real request trace was never built by an adversary, and sits far below that ceiling in practice." },
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Page replacement algorithm (Wikipedia)",
+      "items": [
+        { "item": "Paging as an online problem; Bélády's optimal algorithm defined", "at": [{ "step": "Bélády's offline optimum: on a fault, evict whichever cached page's next use lies furthest in the future. It cannot be implemented in any real system, because no real system knows the future — it exists purely as the benchmark no online policy is measured against." }] },
+        { "item": "Marking algorithms defined; LRU is one, FIFO is not", "at": [{ "step": "Mark a page the moment it is first requested in the current stretch of distinct pages; never evict a marked page before the stretch ends and the marks clear. LRU always obeys this rule. FIFO does not — it can and does evict a page marked only moments ago." }] }
+      ]
+    },
+    {
+      "source": "Bélády's anomaly (Wikipedia)",
+      "items": [
+        { "item": "The anomaly defined: more frames, more faults, for FIFO specifically", "at": [{ "step": "On the classic reference string, computed directly: FIFO faults nine times with three frames, and ten times with four — more memory, more faults. LRU faults ten times and then eight; the true optimum faults seven times and then six. Both of those are monotone, exactly as claimed." }] },
+        { "item": "The anomaly shown unbounded (Fornai and Iványi, 2010)", "at": [{ "deep": "More questions" }] }
+      ]
+    },
+    {
+      "source": "Online algorithm (Wikipedia)",
+      "items": [
+        { "item": "Online vs. offline algorithms; the competitive ratio defined", "at": [{ "step": "An online algorithm decides with only the past: on a fault, it must choose what to evict right now, with no knowledge of what gets requested next. An offline algorithm, by contrast, sees the entire request stream in advance before deciding anything." }] }
+      ]
+    },
+    {
+      "source": "Competitive analysis (online algorithm) (Wikipedia)",
+      "items": [
+        { "item": "The adversary, defined as deliberately choosing difficult data", "at": [{ "step": "Here is why no deterministic online policy can ever do better than this: with a cache of k pages, an adversary needs only k plus one distinct pages. It always asks for exactly the one page the policy just evicted — the one page guaranteed not to be sitting in the cache." }] }
+      ]
+    },
+    {
+      "source": "Adversary model (Wikipedia)",
+      "items": [
+        { "item": "Oblivious adversary; determinism erases the adversary distinction", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "K-server problem (Wikipedia)",
+      "items": [
+        { "item": "Paging as the k-server problem's special case, with a known k-competitive algorithm (Sleator and Tarjan 1985)", "at": [{ "deep": "Into the internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The adversary argument's ratio of k is an upper bound no deterministic algorithm can beat, not a claim that every algorithm actually achieves exactly k on every input — LRU's own measured ratio on the cyclic trace (3.98 at k equals 4, approaching but never reaching 4) illustrates the bound from below rather than contradicting it.", "at": [{ "step": "Every deterministic policy, whatever its rule, faults on every single request of a trace built this way. Before naming what actually changes this picture: could a cleverer deterministic rule dodge this particular trap, or does escaping it take something else entirely?" }] },
+      { "item": "The randomized marking algorithm's O(log k) bound holds specifically against an oblivious adversary (one that fixes its request sequence in advance, without seeing the algorithm's random choices) — against an adaptive adversary that can see the algorithm's coin flips as they happen, no such improvement over the deterministic ratio of k is claimed by this topic.", "at": [{ "deep": "The frontier" }] },
+      { "item": "This topic's exact fault counts for the anomaly reference string and the adversary trace are both reproducible deterministically from `examples.py`'s own simulation code, not estimated or approximated — every number shown on screen is the literal output of running the stated policy against the stated sequence, which is why the topic states them as exact counts rather than typical or expected values.", "at": [{ "step": "On the classic reference string, computed directly: FIFO faults nine times with three frames, and ten times with four — more memory, more faults. LRU faults ten times and then eight; the true optimum faults seven times and then six. Both of those are monotone, exactly as claimed." }] },
+      { "item": "Bélády's anomaly is specific to algorithms like FIFO that are not stack algorithms (an algorithm whose cache contents at size k are always a subset of its own cache contents at a larger size, on the identical sequence); LRU is a stack algorithm and is therefore immune to this particular anomaly by construction, not by coincidence on this one example.", "at": [{ "step": "On the classic reference string, computed directly: FIFO faults nine times with three frames, and ten times with four — more memory, more faults. LRU faults ten times and then eight; the true optimum faults seven times and then six. Both of those are monotone, exactly as claimed." }] },
+      { "item": "The k/(k−h+1)-competitive bound for a marking algorithm against a smaller offline cache (named in post-notes, not in the main storyboard) assumes the offline comparison cache is itself of a fixed, named size h less than or equal to k — it is not a claim about an online algorithm's cache size changing, which is the separate, unrelated phenomenon Bélády's anomaly describes.", "at": [{ "deep": "The frontier" }] },
+      { "item": "Paging is presented in this topic's sources as a special case of the more general k-server problem (all distances between points in the metric space are equal); the topic does not build or teach the general k-server problem itself, only states the specialization relationship as a named fact from its source.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The practical gap between LRU's worst-case ratio and its real behavior is not itself proof that any particular real workload is safe from adversarial behavior — a workload with a tight, repeatedly-scanned working set larger than the cache is exactly the kind of structure the adversary argument formalizes, which is why Chapter 11's own scan-resistant policies exist as a direct, practical response to this topic's worst case, not a refutation of it.", "at": [{ "step": "LRU's proven worst-case ratio of k and its excellent practical behavior do not contradict each other. The ratio is a worst case over every possible adversarial sequence; an ordinary real request trace was never built by an adversary, and sits far below that ceiling in practice." }] },
+      { "item": "The adversary trace's exact ratio (3.98 at k equals 4, 2000 requests) depends on the specific starting configuration and trace length chosen in examples.py; the general claim the topic makes is about the limiting behavior as the trace grows, confirmed at several values of k and request counts during fact-checking, not a claim that 3.98 is itself a universal constant.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "This topic declares `lru-policy` and `fifo-policy` for its own narrow use (stating each mechanism in one line) rather than re-teaching Chapter 11's own treatment of these policies as real, tunable mechanisms with measured miss ratios — the two chapters own genuinely different questions about the identical two algorithms.", "at": [{ "deep": "In production" }] },
+      { "item": "Online paging is the fourth and final kind of guarantee this chapter builds, after an asymptotic ratio with a constant, a flat approximation ratio, and the explicit absence of a guarantee in local search — a competitive ratio is its own fourth shape, measured against a benchmark (the offline optimum) that, unlike the earlier chapter's lower bounds, the algorithm being measured can never itself compute even in principle.", "at": [{ "step": "A competitive ratio of k is a promise about every possible input, and the best deterministic cache can promise only k — which says a cleverer deterministic policy is not where the next real gain sits. Every guarantee in this chapter has had that same character: true of the worst input, which is rarely the one actually in front of you." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}
