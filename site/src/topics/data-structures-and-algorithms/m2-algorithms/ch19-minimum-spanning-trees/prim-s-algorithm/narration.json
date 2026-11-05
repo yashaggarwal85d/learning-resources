@@ -1,0 +1,95 @@
+{
+    "topic": "dsa.prim-s-algorithm",
+    "steps": [
+        {
+            "lines": [
+                "Picture a complete graph on twenty thousand points, every single pair joined by an edge.",
+                "Sorting that whole edge list for Kruskal is the slow part before a single decision gets made. A heap pays an operation for every useful edge. A plain array, with no heap at all, scans and scans and somehow still might win."
+            ]
+        },
+        {
+            "lines": [
+                "Here is the question worth answering before the mechanism arrives.",
+                {
+                    "beat": 0.3
+                },
+                "On a dense graph, does the fancier structure, the heap, beat a plain array that carries no heap at all?"
+            ],
+            "answer": [
+                "No. The array's own cost never depends on how many edges the graph has, only on how many vertices it has. Once a graph is dense enough, paying one fixed cost per vertex beats paying a heap operation for every single edge."
+            ]
+        },
+        {
+            "lines": [
+                "Prim's algorithm grows one tree outward from a single starting vertex.",
+                "The cut is always the tree built so far against everything still outside it, and the lightest edge crossing that cut gets added next. Correctness follows in one line from the cut property already proved, because that cut always respects every edge already sitting in the tree."
+            ]
+        },
+        {
+            "lines": [
+                "The lazy implementation pushes every edge leaving a newly added vertex onto a priority queue, then pops the minimum.",
+                "If both ends of that popped edge already sit inside the tree, it gets thrown away on the spot. Run on this chapter's own graph, it builds the identical tree Kruskal already built, from the very first vertex Kruskal's own run never even needed to pick."
+            ]
+        },
+        {
+            "lines": [
+                "The eager implementation keeps only one entry per vertex still outside the tree, the cheapest edge into the tree seen so far.",
+                "A decrease-key, which is just a sift-up on the identical binary heap, improves that entry whenever a better edge turns up. Run on the same graph, it builds the identical tree, in the identical order, and it never needs to push more entries than the lazy version did."
+            ]
+        },
+        {
+            "lines": [
+                "Prim's own loop and Dijkstra's own loop are the identical loop, with exactly one line changed.",
+                "Prim's key is an edge's own weight. Dijkstra's key is the whole path length travelled so far. Everything else about the loop, the cut, the priority queue, the decrease-key, stays exactly the same."
+            ]
+        },
+        {
+            "lines": [
+                "The array version keeps no heap at all. It is a plain array of keys, scanned from end to end for the minimum, once for every vertex added.",
+                "Run on this chapter's own graph, that comes to twenty-one comparisons in total, a number that gets fixed the moment the vertex count is fixed, no matter how many edges the graph actually ends up with."
+            ]
+        },
+        {
+            "lines": [
+                "Hold the same six vertices fixed, and add far more edges between them.",
+                {
+                    "beat": 0.3
+                },
+                "Does the array version's own comparison count change at all?"
+            ],
+            "answer": [
+                "No. Every scan still walks the identical list of vertices not yet in the tree. More edges change which keys get updated during a scan, never how many cells that scan actually visits."
+            ]
+        },
+        {
+            "lines": [
+                "Here is the crossover, derived from first principles. The array version's cost is proportional to the vertex count, squared.",
+                "The heap version's cost is proportional to the edge count, times a logarithm of the vertex count. The heap wins exactly while that second number stays below the first, and that boundary names one clean ratio between edges and vertices."
+            ]
+        },
+        {
+            "lines": [
+                "Now the crossover, measured directly rather than only derived.",
+                "Sweeping the edge count upward on random graphs, the heap version's own cost first climbs past the array version's fixed cost near where the derived ratio predicted. Big O hides constant factors, so this checks the order of magnitude, never an exact match."
+            ]
+        },
+        {
+            "lines": [
+                "Kruskal's own cost is keyed to how many edges the graph has, through its sort.",
+                "Prim's array version is keyed only to how many vertices the graph has. On a dense graph, Prim's array version wins by the measured margin. On a sparse graph, or one whose edges already arrive sorted, Kruskal stays competitive or wins outright."
+            ]
+        },
+        {
+            "lines": [
+                "The array version wants an adjacency matrix or list, but it touches memory in one straight line as it scans.",
+                "The heap version wants an adjacency list, or the compressed layout from earlier in this milestone, and pays real overhead per heap operation. A dense or complete graph, where nearly every pair of points counts as an edge, is the array version's natural home."
+            ]
+        },
+        {
+            "lines": [
+                "A minimum spanning tree was certified by one single lemma about cuts: look at any cut, and the lightest edge crossing it is always safe.",
+                "The next chapter keeps the cuts, but changes what the edges mean. Now an edge is a pipe with a capacity, and a cut is a bottleneck whose capacity is whatever crosses it. Max flow, min cut, next."
+            ]
+        }
+    ]
+}
