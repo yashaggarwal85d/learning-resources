@@ -1,0 +1,71 @@
+{
+  "topic": "dsa.binary-search-on-answer",
+  "steps": [
+    {
+      "lines": [
+        "The loop you just learned never actually cared that it was looking at an array.",
+        "It only ever cared about one thing: a question whose answer flips, once, as you move along some range."
+      ]
+    },
+    {
+      "lines": [
+        "A packing check like this one only behaves if giving it more room never turns a working plan back into a broken one.",
+        { "beat": 0.3 },
+        "Suppose that promise doesn't actually hold. What does the loop do about it?"
+      ],
+      "answer": [
+        "Nothing. It keeps going exactly as before, and it hands back an answer with exactly the same confidence.",
+        "The loop never checks the one assumption its whole correctness proof depends on."
+      ]
+    },
+    {
+      "lines": [
+        "Swap out what the loop is comparing, and the identical machine still runs.",
+        "The two ends of the range are now capacities instead of positions, and the middle value is a candidate worth testing, not a slot worth reading."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a question that only looks like the kind this loop can answer: true, then false, then true again twice, then false.",
+        "Hand it to the identical loop anyway, and it still finishes, and still reports a position, confidently.",
+        "But the very first true position in that list is one the loop never even visits."
+      ]
+    },
+    {
+      "lines": [
+        "Now stretch the identical idea across a continuous range instead of whole numbers.",
+        "There's no next number to land on exactly, the way there was a next array slot, so the loop has to settle for a range narrow enough to call close enough."
+      ]
+    },
+    {
+      "lines": [
+        "Ask for twice the precision you had a moment ago.",
+        { "beat": 0.3 },
+        "Does that cost you twice the work?"
+      ],
+      "answer": [
+        "No. It costs exactly one more pass through the loop.",
+        "Each pass cuts whatever is left clean in half, so reaching a target half the previous size only ever needs one more cut."
+      ]
+    },
+    {
+      "lines": [
+        "Write down how many passes that takes, and notice something about the formula: nowhere in it does it say what you were actually testing.",
+        "It only cares how far apart the two ends started, and how close is close enough to stop."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the whole pattern, given a name by the researcher who first wrote it down in the early nineteen eighties.",
+        "Take any question that only tells you yes or no for a given value, wrap an outer search like this one around it, and you get an algorithm that finds the best value, not just a feasible one.",
+        "Even its own inventor was careful to say this isn't always the fastest way to get there — only, often, the best one known."
+      ]
+    },
+    {
+      "lines": [
+        "Up to now, every search in this chapter has leaned on an order that was already sitting there, waiting to be used.",
+        "The next question hides its order somewhere less obvious, and the first real job is noticing exactly where."
+      ]
+    }
+  ]
+}

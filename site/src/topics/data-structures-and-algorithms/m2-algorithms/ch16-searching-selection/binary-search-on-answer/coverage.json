@@ -1,0 +1,62 @@
+{
+  "topic": "dsa.binary-search-on-answer",
+  "syllabus": [
+    {
+      "clause": "searching a monotone predicate over the answer space (capacity, rate, threshold)",
+      "at": [
+        { "step": "The candidate space is now capacities, not array indices; the predicate is \"is this capacity enough,\" checked by a greedy packing pass instead of a comparison. The half-open range, the loop invariant and the overflow-safe midpoint all carry over from the previous topic unchanged — only what counts as the predicate is different." },
+        { "step": "A packing feasibility check — does this capacity need at most this many trips — is monotone in capacity, so binary search on it is safe. What happens if a caller hands binary search a predicate that isn't actually monotone?" },
+        { "step": "A genuinely non-monotone predicate — true, false, true, true, false — handed to the identical loop: the loop still terminates and returns index two, confidently. But the array's first true position is index zero, which the search never even examines, because the loop's own correctness proof assumes a single boundary that this predicate doesn't have." }
+      ]
+    },
+    {
+      "clause": "real-valued bisection and its iteration count",
+      "at": [
+        { "step": "The same idea over a continuous range instead of integers: there is no \"next\" real number to converge to exactly, so the loop stops at a precision bound instead of an empty range. Bisecting for the square root of two, narrowing from one and two toward one point four one four two." },
+        { "step": "Halve the required precision — does the number of iterations double, stay the same, or something else entirely?" },
+        { "step": "The iteration count to reach a given precision on a real-valued range is the ceiling of log base two of the span divided by epsilon — the identical halving argument from the previous topic, now over a continuous range, and completely indifferent to how expensive the predicate itself is to evaluate." }
+      ]
+    },
+    {
+      "clause": "parametric search",
+      "at": [
+        { "step": "Megiddo's own framing, from 1983: a decision procedure — does a value at least this good exist — composed with an outer binary search over candidate values gives an optimisation procedure that finds the best one. Every worked example in this topic has been an instance of exactly this pattern, which Megiddo himself notes is not always the fastest route to a given answer, only often the best known one for harder problems." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Parametric search\"",
+      "items": [
+        { "item": "Parametric search (Megiddo, 1983): transforms a decision algorithm into an optimisation algorithm", "at": [{ "step": "Megiddo's own framing, from 1983: a decision procedure — does a value at least this good exist — composed with an outer binary search over candidate values gives an optimisation procedure that finds the best one. Every worked example in this topic has been an instance of exactly this pattern, which Megiddo himself notes is not always the fastest route to a given answer, only often the best known one for harder problems." }] },
+        { "item": "Megiddo's own caveat: the technique does not always give the fastest algorithm, but often matches or beats the best known running time for harder problems", "at": [{ "step": "Megiddo's own framing, from 1983: a decision procedure — does a value at least this good exist — composed with an outer binary search over candidate values gives an optimisation procedure that finds the best one. Every worked example in this topic has been an instance of exactly this pattern, which Megiddo himself notes is not always the fastest route to a given answer, only often the best known one for harder problems." }] },
+        { "item": "The advanced parallel refinement (simulating a PRAM decision algorithm)", "at": [{ "out": "named once in post-notes as the direction the technique generalises; not built, since this topic's own worked examples use the basic sequential form" }] }
+      ]
+    },
+    {
+      "source": "cp-algorithms.com — \"Binary Search\"",
+      "items": [
+        { "item": "Binary search generalises from an array-index lookup to an arbitrary monotone boolean predicate over a domain of candidates", "at": [{ "step": "The candidate space is now capacities, not array indices; the predicate is \"is this capacity enough,\" checked by a greedy packing pass instead of a comparison. The half-open range, the loop invariant and the overflow-safe midpoint all carry over from the previous topic unchanged — only what counts as the predicate is different." }] },
+        { "item": "The technique is particularly useful when evaluating the predicate itself is expensive", "at": [{ "step": "The iteration count to reach a given precision on a real-valued range is the ceiling of log base two of the span divided by epsilon — the identical halving argument from the previous topic, now over a continuous range, and completely indifferent to how expensive the predicate itself is to evaluate." }] },
+        { "item": "Continuous search generalises binary search to a real-valued, continuous function over a segment [L, R]", "at": [{ "step": "The same idea over a continuous range instead of integers: there is no \"next\" real number to converge to exactly, so the loop stops at a precision bound instead of an empty range. Bisecting for the square root of two, narrowing from one and two toward one point four one four two." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched source only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "A feasibility question (can we achieve at least this quality) can be reframed as searching the space of candidate answers for the boundary of a monotone predicate, instead of searching an array for a value", "at": [{ "step": "The candidate space is now capacities, not array indices; the predicate is \"is this capacity enough,\" checked by a greedy packing pass instead of a comparison. The half-open range, the loop invariant and the overflow-safe midpoint all carry over from the previous topic unchanged — only what counts as the predicate is different." }] },
+      { "item": "The predicate's monotonicity is a precondition the caller must establish; binary search on a non-monotone predicate silently returns a wrong boundary with no error", "at": [{ "step": "A genuinely non-monotone predicate — true, false, true, true, false — handed to the identical loop: the loop still terminates and returns index two, confidently. But the array's first true position is index zero, which the search never even examines, because the loop's own correctness proof assumes a single boundary that this predicate doesn't have." }] },
+      { "item": "The same half-open loop and overflow-safe midpoint from topic 55 apply unchanged; only what counts as 'the predicate' changes", "at": [{ "step": "The candidate space is now capacities, not array indices; the predicate is \"is this capacity enough,\" checked by a greedy packing pass instead of a comparison. The half-open range, the loop invariant and the overflow-safe midpoint all carry over from the previous topic unchanged — only what counts as the predicate is different." }] },
+      { "item": "Real-valued bisection stops by a precision bound (hi - lo < epsilon) instead of lo == hi, since a continuous range has no next representable value to converge to exactly", "at": [{ "step": "The same idea over a continuous range instead of integers: there is no \"next\" real number to converge to exactly, so the loop stops at a precision bound instead of an empty range. Bisecting for the square root of two, narrowing from one and two toward one point four one four two." }] },
+      { "item": "The iteration count to reach a given precision on a real-valued range is ceil(lg((hi0 - lo0) / epsilon)), independent of what the predicate itself computes", "at": [{ "step": "The iteration count to reach a given precision on a real-valued range is the ceiling of log base two of the span divided by epsilon — the identical halving argument from the previous topic, now over a continuous range, and completely indifferent to how expensive the predicate itself is to evaluate." }] },
+      { "item": "Doubling the required precision costs exactly one more iteration, not twice the work", "at": [{ "step": "Halve the required precision — does the number of iterations double, stay the same, or something else entirely?" }] },
+      { "item": "Parametric search (Megiddo, 1983) is the general pattern: a decision procedure composed with an outer binary search over the answer gives an optimisation algorithm", "at": [{ "step": "Megiddo's own framing, from 1983: a decision procedure — does a value at least this good exist — composed with an outer binary search over candidate values gives an optimisation procedure that finds the best one. Every worked example in this topic has been an instance of exactly this pattern, which Megiddo himself notes is not always the fastest route to a given answer, only often the best known one for harder problems." }] },
+      { "item": "Megiddo's own paper states the technique does not always give the fastest algorithm for a given problem, only that it often matches or beats the best known running time for harder problems", "at": [{ "out": "named once from the primary source; not built as a worked claim this topic measures" }] },
+      { "item": "The parallel refinement (simulating a PRAM decision algorithm, Megiddo 1983 and Cole 1987) is a named pointer only, not built here", "at": [{ "out": "out of scope; CHAPTER.md leaves the parallel machinery as a pointer" }] },
+      { "item": "This topic's own worked examples use a plain sequential decision procedure plus an outer binary search -- the basic form of parametric search, not the advanced parallel form", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}
