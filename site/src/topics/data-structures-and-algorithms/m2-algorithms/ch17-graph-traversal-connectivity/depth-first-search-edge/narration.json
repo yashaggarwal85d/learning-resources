@@ -1,0 +1,71 @@
+{
+  "topic": "dsa.depth-first-search-edge",
+  "steps": [
+    {
+      "lines": [
+        "A widening frontier is good at one thing: telling you the fewest steps to somewhere.",
+        "It has nothing useful to say when the real structure is a dependency, or a cluster that can only reach itself. For that you need to go the other way entirely.",
+        "Push one path as deep as it will go, before you ever try anything else."
+      ]
+    },
+    {
+      "lines": [
+        "Here's an edge pointing from some vertex straight back to one of its own ancestors, still sitting on the current path.",
+        { "beat": 0.3 },
+        "What kind of edge is that?"
+      ],
+      "answer": [
+        "A back edge. And that alone already means there's a cycle.",
+        "The ancestor can already reach this vertex going forward, through the tree. The back edge just closes the loop."
+      ]
+    },
+    {
+      "lines": [
+        "Give every vertex two numbers: when it was first found, and when the search finished exploring everything underneath it.",
+        "Take any two vertices and look at those two ranges. They're either completely separate from each other, or one sits entirely inside the other.",
+        "They can never partly overlap. And whenever one range nests fully inside another, that's exactly when one vertex is a true descendant of the other."
+      ]
+    },
+    {
+      "lines": [
+        "A tree edge is simply part of the search tree itself.",
+        "A back edge points up to an ancestor, and that's what closes a cycle.",
+        "A forward edge points down to something already fully finished.",
+        "Everything else — a different branch entirely, maybe even a different starting point — that's a cross edge.",
+        "All four of those come straight out of comparing two numbers per vertex. Nothing else is needed."
+      ]
+    },
+    {
+      "lines": [
+        "Every edge in an undirected graph eventually gets walked from both of its ends.",
+        { "beat": 0.3 },
+        "So can its search ever produce a forward edge, or a cross edge, the way a directed one can?"
+      ],
+      "answer": [
+        "No — only tree and back edges are possible.",
+        "A forward edge would need that same connection to already exist from the other direction, which forces it to be a back edge instead. A cross edge would need two separate branches, and an undirected graph's own edges rule that out."
+      ]
+    },
+    {
+      "lines": [
+        "In a directed graph, a cycle shows up the moment the search finds an edge to a vertex still actively being explored right now.",
+        "An undirected graph doesn't even need that bookkeeping. If you bump into a vertex you've already visited, and it isn't the one you just came from, that's already a cycle.",
+        "The two tests look different because an undirected search can never produce that third kind of edge, the one that would otherwise confuse things."
+      ]
+    },
+    {
+      "lines": [
+        "Write the search the natural, recursive way, and point it at a dependency chain a few hundred thousand steps long.",
+        "It crashes. Not because the logic is wrong, but because every one of those nested calls has to live somewhere, and the language's own call stack runs out of room.",
+        "Swap that call stack for one you manage yourself, and the exact same search finishes, visiting every single one of those vertices, no crash at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run this same search on a graph with no cycle anywhere, and something falls out almost for free.",
+        "Read off the order vertices finished in, reversed, and you already have an order where nothing comes before something it depends on.",
+        "That's not a new algorithm. It's the traversal you just built, read a particular way."
+      ]
+    }
+  ]
+}
