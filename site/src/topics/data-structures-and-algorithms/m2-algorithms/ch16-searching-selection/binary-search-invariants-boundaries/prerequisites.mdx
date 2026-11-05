@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Merge sort">A sorted range is this topic's own precondition — nothing here works on unsorted data.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">The notation behind this topic's own ⌈log₂(n + 1)⌉ iteration bound.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Extra, Extra — Read All About It: Nearly All Binary Searches and Mergesorts are Broken" href="https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/" by="Joshua Bloch, Google Research">The 2006 midpoint-overflow bug, where it hid, and both of its fixes.</Resource>
+  <Resource kind="reading" title="std::lower_bound" href="https://cplusplus.com/reference/algorithm/lower_bound/" by="cplusplus.com">The exact contract this topic's own lower_bound follows.</Resource>
+  <Resource kind="reading" title="std::upper_bound" href="https://cplusplus.com/reference/algorithm/upper_bound/" by="cplusplus.com">The exact contract this topic's own upper_bound follows.</Resource>
+</ul>
+
+</section>
