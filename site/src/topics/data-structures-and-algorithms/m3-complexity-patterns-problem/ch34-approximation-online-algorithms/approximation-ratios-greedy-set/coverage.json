@@ -1,0 +1,69 @@
+{
+  "topic": "dsa.approximation-ratios-greedy-set",
+  "syllabus": [
+    {
+      "clause": "the ln n-approximation for set cover and why it is essentially optimal",
+      "at": [
+        { "step": "Greedy set cover's rule: at each step, pick the set that covers the most elements still uncovered. Nothing cleverer than that — and the proof behind it charges each newly covered element a cost of one over however many elements that step covered, so the charges telescope into a harmonic sum." },
+        { "step": "Measured directly at four scales: n = 28, 124, 1,020, 16,380 elements, greedy needs 3, 5, 8, 12 sets against an optimum of 2 every time — ratios 1.5, 2.5, 4.0, 6.0, climbing alongside ln(n) = 3.33, 4.82, 6.93, 9.70." },
+        { "step": "This isn't a weak proof waiting to be improved. Feige showed in 1998 that no polynomial-time algorithm beats (one minus epsilon) times the natural log of n, for any epsilon greater than zero, unless P equals NP. Greedy's own harmonic bound sits right at that ceiling." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "2-approximate vertex cover via maximal matching",
+      "at": [
+        { "step": "Find any maximal matching — a greedy scan that takes an edge, removes both its endpoints, and repeats — and build the cover from every one of that matching's endpoints. Maximal only, never the harder maximum matching: maximality alone is what the proof needs. The construction covers every edge, because if it missed one, that edge could have joined the matching, contradicting maximality. And the optimal cover itself must contain at least one endpoint of every edge in the matching, since the matching's edges share no endpoints with each other — so the matching's size is itself a lower bound on the optimum, and the built cover, with exactly twice as many vertices as the matching has edges, is at most twice the optimum." },
+        { "step": "And it's not only the tight example: measured directly on sixty random graphs of four to thirteen vertices, checked against the true optimum found by brute force, the built cover never exceeded twice the optimum — not once, on any of them. The worst ratio actually observed was exactly 2.0." },
+        { "deep": "Into the internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Set cover problem (Wikipedia)",
+      "items": [
+        { "item": "Greedy's rule: pick the set with the most uncovered elements at each step", "at": [{ "step": "Greedy set cover's rule: at each step, pick the set that covers the most elements still uncovered. Nothing cleverer than that — and the proof behind it charges each newly covered element a cost of one over however many elements that step covered, so the charges telescope into a harmonic sum." }] },
+        { "item": "Running time: linear in the sum of input set sizes, via a bucket queue", "at": [{ "deep": "Into the internals" }] },
+        { "item": "Approximation ratio H(s), the harmonic number of the covered set's size", "at": [{ "step": "Measured directly at four scales: n = 28, 124, 1,020, 16,380 elements, greedy needs 3, 5, 8, 12 sets against an optimum of 2 every time — ratios 1.5, 2.5, 4.0, 6.0, climbing alongside ln(n) = 3.33, 4.82, 6.93, 9.70." }] },
+        { "item": "Feige (1998): no polynomial algorithm beats (1 − ε)ln n unless P = NP", "at": [{ "step": "This isn't a weak proof waiting to be improved. Feige showed in 1998 that no polynomial-time algorithm beats (one minus epsilon) times the natural log of n, for any epsilon greater than zero, unless P equals NP. Greedy's own harmonic bound sits right at that ceiling." }] }
+      ]
+    },
+    {
+      "source": "Vertex cover (Wikipedia)",
+      "items": [
+        { "item": "NP-hard; no better than factor-2 approximation known for general graphs; below 2 impossible under the unique games conjecture", "at": [{ "step": "A second NP-hard problem, a very different shape of guarantee: vertex cover asks for the fewest vertices that touch every edge of a graph. Also declared NP-hard, also with no exact polynomial algorithm unless P equals NP — and also with a simple algorithm that comes with a proof." }] },
+        { "item": "The endpoints of any maximal matching form a vertex cover, at most 2x the optimum", "at": [{ "step": "Find any maximal matching — a greedy scan that takes an edge, removes both its endpoints, and repeats — and build the cover from every one of that matching's endpoints. Maximal only, never the harder maximum matching: maximality alone is what the proof needs. The construction covers every edge, because if it missed one, that edge could have joined the matching, contradicting maximality. And the optimal cover itself must contain at least one endpoint of every edge in the matching, since the matching's edges share no endpoints with each other — so the matching's size is itself a lower bound on the optimum, and the built cover, with exactly twice as many vertices as the matching has edges, is at most twice the optimum." }] }
+      ]
+    },
+    {
+      "source": "Matching (graph theory) (Wikipedia)",
+      "items": [
+        { "item": "Maximal vs. maximum matching: every maximum matching is maximal, not every maximal is maximum", "at": [{ "step": "Find any maximal matching — a greedy scan that takes an edge, removes both its endpoints, and repeats — and build the cover from every one of that matching's endpoints. Maximal only, never the harder maximum matching: maximality alone is what the proof needs. The construction covers every edge, because if it missed one, that edge could have joined the matching, contradicting maximality. And the optimal cover itself must contain at least one endpoint of every edge in the matching, since the matching's edges share no endpoints with each other — so the matching's size is itself a lower bound on the optimum, and the built cover, with exactly twice as many vertices as the matching has edges, is at most twice the optimum." }] }
+      ]
+    },
+    {
+      "source": "Approximation algorithm (Wikipedia)",
+      "items": [
+        { "item": "An approximation algorithm's guarantee is a proved multiplicative bound, distinct from a heuristic's no-guarantee behaviour", "at": [{ "step": "An approximation algorithm's guarantee is a multiplicative bound against the optimum, proved for every instance — not measured on a few, not a rule of thumb. That is what sets it apart from a heuristic: a heuristic can work well in practice and still give no indication, in advance, of when it might fail badly." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "An approximation ratio is defined over every instance of a problem, not an average or a typical case — a single bad instance, found or constructed, is enough to establish the ratio's tightness, which is why a 'tight example' (the growing-ratio family, K(m,m)) is the heart of every proof in this topic, not an afterthought.", "at": [{ "step": "Measured directly at four scales: n = 28, 124, 1,020, 16,380 elements, greedy needs 3, 5, 8, 12 sets against an optimum of 2 every time — ratios 1.5, 2.5, 4.0, 6.0, climbing alongside ln(n) = 3.33, 4.82, 6.93, 9.70." }] },
+      { "item": "The harmonic-charging proof technique (charge each covered element 1/gain at the step it is covered) generalizes directly to the weighted set cover problem, giving the same H(n) ratio against total weight rather than count — this topic covers only the unweighted case, leaving the weighted generalization named but not built.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The vertex cover proof's two halves are logically independent and worth keeping separate: 'C covers every edge' depends only on M's maximality, while '|M| <= OPT' depends only on M's edges being pairwise disjoint — a matching that happened to be maximal but somehow not disjoint (not actually possible for a matching by definition, but worth stating why) would break the second half, not the first.", "at": [{ "step": "Find any maximal matching — a greedy scan that takes an edge, removes both its endpoints, and repeats — and build the cover from every one of that matching's endpoints. Maximal only, never the harder maximum matching: maximality alone is what the proof needs. The construction covers every edge, because if it missed one, that edge could have joined the matching, contradicting maximality. And the optimal cover itself must contain at least one endpoint of every edge in the matching, since the matching's edges share no endpoints with each other — so the matching's size is itself a lower bound on the optimum, and the built cover, with exactly twice as many vertices as the matching has edges, is at most twice the optimum." }] },
+      { "item": "The vertex cover algorithm's result depends on which maximal matching the greedy scan happens to find — different edge orderings can give different matchings and therefore different (but always <= 2*OPT) covers; this topic's examples.py shuffles the edge order across trials specifically to show the bound holds regardless of which maximal matching is found, not just a favourable one.", "at": [{ "step": "And it's not only the tight example: measured directly on sixty random graphs of four to thirteen vertices, checked against the true optimum found by brute force, the built cover never exceeded twice the optimum — not once, on any of them. The worst ratio actually observed was exactly 2.0." }] },
+      { "item": "Unique games conjecture-based inapproximability (vertex cover cannot beat 2) is a conditional result, unlike Feige's set cover threshold which rests on the standard P != NP assumption — the two 'essentially optimal' claims in this topic rest on different strengths of unproven hypothesis, and the topic should not blur that distinction.", "at": [{ "step": "A second NP-hard problem, a very different shape of guarantee: vertex cover asks for the fewest vertices that touch every edge of a graph. Also declared NP-hard, also with no exact polynomial algorithm unless P equals NP — and also with a simple algorithm that comes with a proof." }] },
+      { "item": "The growing-ratio family's optimum of 2 (the two row sets) must itself be verified, not assumed: it's easy to construct a family where greedy looks bad but the claimed optimum is actually wrong (too small). This topic's examples.py confirms the two row sets really do cover the whole universe (their union is exactly 'universe' by construction), which is a cheap but necessary check.", "at": [{ "step": "On a family built from two row sets, each covering half the universe, plus k blocks that double in size, does greedy's ratio against the optimum of two stay bounded by some fixed constant as k grows, or does it keep growing with k?" }] },
+      { "item": "Set cover's inapproximability and vertex cover's are proved by entirely different machinery (PCP-based gap amplification for the former, the unique games conjecture and a different reduction for the latter) — the topic states both results but does not imply they share a proof technique, only that both are examples of a lower bound matching an upper bound.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "A 2-approximation 'via maximal matching' is the simplest of several known vertex cover algorithms; a separate semidefinite-programming-based algorithm achieves a slightly better constant (Karakostas 2009, cited in SOURCES.md but not built here) — naming that there is a better-known algorithm, without building it, keeps the topic from overstating that 2 is provably the best known.", "at": [{ "step": "A second NP-hard problem, a very different shape of guarantee: vertex cover asks for the fewest vertices that touch every edge of a graph. Also declared NP-hard, also with no exact polynomial algorithm unless P equals NP — and also with a simple algorithm that comes with a proof." }] },
+      { "item": "Greedy set cover is not 'the' set cover algorithm — a primal-dual LP-based algorithm achieves the same H(n)-type bound via a different, more generalizable technique (useful for the weighted case and for other covering problems); this topic names greedy specifically because its combinatorial proof is the clearest first example of the chapter's shared trick.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The distinction between an 'absolute' approximation ratio (true on every instance, as both proofs in this topic are) and an 'asymptotic' one (true up to an additive constant, which the next topic's First-Fit-Decreasing bound actually is) is a real and sometimes blurred one — this topic's own two guarantees are both absolute, which is itself worth stating since the next topic's isn't.", "at": [{ "step": "Set cover's ratio grows with the input, tracking the natural log of n upward without any ceiling. Vertex cover's ratio does not — a flat factor of two, on every graph, forever. Both are called approximation ratios, both are proved the identical way, and telling them apart by their shape, not just their number, is the real skill." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

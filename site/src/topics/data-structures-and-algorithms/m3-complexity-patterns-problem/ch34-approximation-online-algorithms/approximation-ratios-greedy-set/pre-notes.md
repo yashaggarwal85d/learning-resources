@@ -1,0 +1,6 @@
+- **NP-hard**: a problem believed to have no exact polynomial-time algorithm, unless P = NP. *Where you meet it:* both problems in this topic, set cover and vertex cover, are NP-hard — stated once here, not re-derived.
+- **Optimum (OPT)**: the best possible answer to an instance, which an NP-hard problem's own exact value usually can't be computed quickly. *Where you meet it:* every proof here bounds an algorithm's answer against OPT, never computes OPT directly.
+- **Harmonic number H(n)**: the sum 1 + 1/2 + 1/3 + ... + 1/n, which grows like the natural log of n. *Where you meet it:* greedy set cover's whole approximation ratio is this number.
+- **Maximal matching**: a set of edges sharing no endpoints that can't have one more edge added to it. *Where you meet it:* the vertex cover algorithm builds its answer from one of these.
+- **Graph, vertex, edge**: a set of points (vertices) and the pairs of them connected (edges). *Where you meet it:* vertex cover's whole setting.
+- **Polynomial time**: an algorithm whose running time is bounded by a fixed power of the input size. *Where you meet it:* every algorithm in this topic runs in polynomial time; only finding the true optimum is believed not to.

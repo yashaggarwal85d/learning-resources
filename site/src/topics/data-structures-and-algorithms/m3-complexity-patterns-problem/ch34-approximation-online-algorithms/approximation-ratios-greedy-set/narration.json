@@ -1,0 +1,88 @@
+{
+  "topic": "dsa.approximation-ratios-greedy-set",
+  "steps": [
+    {
+      "lines": [
+        "Here is a problem nobody can solve exactly in reasonable time, and a cheap rule that still comes with a signed guarantee. That combination is the whole point of this chapter.",
+        "The rule itself is almost insultingly simple: at every step, grab whichever option covers the most ground still left uncovered. What makes it worth studying is the proof riding along with it."
+      ]
+    },
+    {
+      "lines": [
+        "Notice the word proved. This is not a claim that the rule tends to work, checked on a handful of examples and trusted from there.",
+        "It is a statement that holds on every single instance, including ones nobody has ever tried, which is exactly what separates it from a heuristic that simply seems to do well."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the rule in action: three candidate choices, each covering a different amount of what is still missing. The rule always takes the biggest bite, never the cleverest-looking one.",
+        "The proof behind that simple-minded choice works by handing out a small cost for every element as it gets covered, and those small costs add up to something surprisingly tame."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the test. Two sets alone would finish this job completely. Now I keep adding more and more choices that each cover a little more than the last.",
+        { "beat": 0.3 },
+        "Does the greedy rule's own gap to that two-set answer stay put, however many extra choices I add, or does the gap keep opening wider the more I add?"
+      ],
+      "answer": [
+        "It keeps opening wider, with no ceiling in sight. Every time the extra choices double in size, greedy needs one more pick than it did before, while the true answer never moves off two.",
+        "That is not a flaw in the rule. It is a fact about the problem itself."
+      ]
+    },
+    {
+      "lines": [
+        "Four runs of the same experiment, each one bigger than the last, and the gap between greedy and the true answer climbs every single time, never settling down.",
+        "Line that gap up against the natural logarithm of how big the job is, and the two track each other almost exactly. That is not a coincidence — it is what the proof predicted."
+      ]
+    },
+    {
+      "lines": [
+        "Somebody might ask whether a cleverer rule could close that gap. The answer, proved separately and the hard way, is essentially no.",
+        "Nothing running in reasonable time can guarantee meaningfully better than this logarithmic gap, unless a famous and almost certainly false assumption turns out to be true after all."
+      ]
+    },
+    {
+      "lines": [
+        "Switch problems entirely. Instead of covering elements with sets, now the job is to touch every connecting line in a network with as few chosen points as possible.",
+        "Same opening line as before: nobody has a fast exact method for this either. But watch — the shape of the guarantee we get this time is going to look completely different."
+      ]
+    },
+    {
+      "lines": [
+        "Grab any collection of connections that share no endpoints and cannot be grown any further, then take every single point those connections touch. That is the whole answer.",
+        "Why does it work? Leave out one connecting line, and it could have joined that collection too, which breaks the rule that nothing more can be added.",
+        "And here is the clever half: the true best answer has to touch each of those non-overlapping connections separately, so it can never do better than half of what we just built."
+      ]
+    },
+    {
+      "lines": [
+        "I want to know something sharper than just a worst case on paper. Does any actual network ever force this gap of exactly double, or is that only a theoretical ceiling nothing real reaches?",
+        { "beat": 0.3 },
+        "Picture two equal-sized groups of points with every possible connection running between them. Does the doubling actually happen there, or only get approached?"
+      ],
+      "answer": [
+        "It happens exactly, not approximately. Every point on one side alone already touches every connection, so the true answer is small, while the collection our rule finds is forced to use every point on both sides.",
+        "The gap of exactly double shows up on the nose, measured directly, not approached in some limit."
+      ]
+    },
+    {
+      "lines": [
+        "That carefully built example is not some special trap rigged against the rule. Running the identical check on dozens of ordinary, randomly generated networks, checked against their own true best answer found by brute force, the same ceiling held every single time.",
+        "Not once did the chosen points exceed double the true answer, and the worst gap actually seen across all of them landed right at that same double."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and compare the two guarantees side by side. One of them keeps climbing, tracking the logarithm of the job's size upward with no ceiling in sight.",
+        "The other sits dead flat at double, forever, no matter how the network grows. Both get called an approximation guarantee. Learning to tell their shapes apart is the real skill here."
+      ]
+    },
+    {
+      "lines": [
+        "Strip away the specifics and one trick survives both proofs: find something you can actually calculate quickly that is guaranteed to sit below the true best answer, then measure your own result against that instead.",
+        "Two more guarantees built on that exact same trick are coming next, on two more problems with no fast exact method of their own: packing files into bins, and scheduling jobs onto machines."
+      ]
+    }
+  ]
+}

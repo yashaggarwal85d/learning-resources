@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">Big-O, Theta and Omega: the language every ratio and bound in this topic is written in.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The bucket-queue idea the greedy set cover algorithm's own linear-time implementation is named after, in passing.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Set cover problem" href="https://en.wikipedia.org/wiki/Set_cover_problem" by="Wikipedia">Greedy set cover's rule, its harmonic-number approximation ratio, and the Feige inapproximability threshold.</Resource>
+  <Resource kind="reading" title="Vertex cover" href="https://en.wikipedia.org/wiki/Vertex_cover" by="Wikipedia">The maximal-matching construction and its full 2-approximation proof.</Resource>
+  <Resource kind="reading" title="Matching (graph theory)" href="https://en.wikipedia.org/wiki/Matching_(graph_theory)" by="Wikipedia">The maximal-vs-maximum matching distinction the vertex cover proof depends on.</Resource>
+  <Resource kind="reading" title="Approximation algorithm" href="https://en.wikipedia.org/wiki/Approximation_algorithm" by="Wikipedia">The formal definition of an approximation ratio and its contrast with a heuristic's weaker guarantee.</Resource>
+</ul>
+
+</section>
