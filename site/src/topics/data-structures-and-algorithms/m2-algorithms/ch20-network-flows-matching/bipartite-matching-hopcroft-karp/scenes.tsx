@@ -12,8 +12,8 @@ import { C, Svg, T } from '../../../../../reels/kit';
 
 type LPos = Record<string, [number, number]>;
 
-const TASKS: LPos = { t1: [120, 60], t2: [120, 140], t3: [120, 220], t4: [120, 300] };
-const MACHINES: LPos = { m1: [480, 60], m2: [480, 140], m3: [480, 220], m4: [480, 300] };
+const TASKS: LPos = { t1: [120, 50], t2: [120, 120], t3: [120, 190], t4: [120, 260] };
+const MACHINES: LPos = { m1: [480, 50], m2: [480, 120], m3: [480, 190], m4: [480, 260] };
 
 const TASK_MACHINE: Record<string, string[]> = {
   t1: ['m1', 'm2'],
@@ -27,7 +27,7 @@ function dot(id: string, pos: [number, number], colour: string = C.crema, filled
   return (
     <g key={id}>
       <circle cx={x} cy={y} r={14} fill={filled ? colour : 'none'} stroke={colour} strokeWidth={1.8} />
-      <T x={x} y={y + 5} s={12} a="middle" f={filled ? C.taupe : colour}>{id}</T>
+      <T x={x} y={y + 5} s={13} a="middle" f={filled ? C.taupe : colour}>{id}</T>
     </g>
   );
 }
