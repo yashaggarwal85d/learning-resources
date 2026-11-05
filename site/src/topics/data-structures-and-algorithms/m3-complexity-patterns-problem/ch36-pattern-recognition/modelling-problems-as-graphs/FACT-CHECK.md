@@ -1,0 +1,27 @@
+# Fact-check: Modelling problems as graphs
+
+| # | Claim | Source / verification | Status |
+|---|---|---|---|
+| 1 | "A word ladder puzzle begins with two words, and to solve the puzzle one must find a chain of other words to link the two, in which two adjacent words... differ by exactly one letter." | Wikipedia, Word ladder, quoted verbatim in `SOURCES.md`, verified word-for-word by `scripts/sources.mjs check` | Verified |
+| 2 | "Lewis Carroll says that he invented the game on Christmas in 1877." | Wikipedia, Word ladder, quoted verbatim, verified | Verified |
+| 3 | "The first mention of the game in Carroll's diary was on 12 March 1878, which he originally called 'Word-links', and described as a two-player game." | Wikipedia, Word ladder, quoted verbatim, verified | Verified |
+| 4 | "As each step changes only one letter, the number of steps must be at least the Hamming distance between the two words" | Wikipedia, Word ladder, quoted verbatim, verified | Verified |
+| 5 | "A Hamiltonian cycle in a graph is a cycle that visits every vertex exactly once... Euler circuits are easy to find and construct in linear time using depth-first search... the Hamiltonian cycle problem in directed graphs is NP-hard." | Jeff Erickson, Algorithms, Ch.12 §12.7, quoted verbatim, verified | Verified |
+| 6 | A real breadth-first search from the eight-puzzle's goal state reaches exactly 181,440 states, matching 9!/2, with a maximum distance of 31 moves | Computed and asserted in `examples.py` (`breadth_first_search_from_goal`, `EIGHT_PUZZLE_REACHABLE_STATES`, `EIGHT_PUZZLE_MAX_DISTANCE`) | Verified (computed) |
+| 7 | The fifteen puzzle has exactly 10,461,394,944,000 reachable states, equal to 16!/2 | Computed and asserted in `examples.py` (`FIFTEEN_PUZZLE_STATE_COUNT`), never enumerated | Verified (computed) |
+| 8 | A naive all-pairs comparison and the wildcard-bucket trick find the identical set of word-ladder edges (200 edges, same neighbour sets per word) on the topic's hand-written dictionary | Computed and asserted in `examples.py` (`ladder_neighbors_naive`, `ladder_neighbors_by_bucket`) | Verified (computed) |
+| 9 | The shortest ladder from "head" to "tail" on the topic's dictionary is five steps, at least the Hamming distance of four between the two words | Computed and asserted in `examples.py` (`shortest_ladder`, `hamming_distance`) | Verified (computed) |
+| 10 | A hand-built four-wheel, ten-digit combination lock has exactly 10,000 states and 80,000 edges | Computed and asserted in `examples.py` | Verified (computed) |
+| 11 | The shortest path on that lock avoiding three forbidden codes is nine moves | Computed and asserted in `examples.py` (`lock_shortest_path`), a breadth-first search with forbidden codes removed as vertices | Verified (computed) |
+| 12 | A layered graph for "at most k discounts" at V=100,000, E=300,000, k=3 has 400,000 vertices and 2,100,000 edges | Computed and asserted in `examples.py` (`layered_graph_size`) from the stated (k+1)·V and (2k+1)·E formulas | Verified (computed) |
+| 13 | On a hand-built 7-vertex road graph, the cheapest route from source to target costs 30 at k=0,1,2 discounts, 25 at k=3, and 20 at k=4 | Computed and asserted in `examples.py` (`layered_dijkstra`), cross-checked against an independent brute-force search over every simple path (`discount_graph_bruteforce`) | Verified (computed, two independent methods agree) |
+
+## Red-team pass
+
+- **Is the fifteen-puzzle state count asserted or derived?** Derived: `examples.py` states the parity argument directly (every slide is a transposition with the blank, which flips permutation parity, so only half of 16! arrangements are reachable from a fixed start) rather than only asserting the final number; `post-notes.md`'s internals section restates the argument in prose.
+- **Could the wildcard-bucket trick's edge count matching the naive count be a coincidence (same count, different edges)?** Checked directly: `examples.py` compares the actual neighbour *sets* per word between the two methods, not just the totals, so a coincidental count match would not pass.
+- **Is "two problems that differ in one word" an overstatement of Erickson's own text?** No — the quoted passage itself states the Euler-circuit case is easy and linear-time in the very same parenthetical that defines the Hamiltonian cycle, which is the structural pairing this topic's near-miss step relies on; no claim beyond what the quote itself supports is made on screen.
+- **Does the discount-graph example generalize, or is the k=3 crossover an artifact of the specific numbers chosen (cost 10 per edge, 4-edge detour vs. 3-edge direct route)?** The specific crossover point is an artifact of this topic's own hand-built numbers, chosen deliberately so a crossover exists at all within a small, presentable k; the topic does not claim the crossover happens at k=3 in general, only that a crossover of this shape is possible and that the layered graph is how to search for it.
+- **Does the lock's "state too small" claim depend on a specific forbidden-code set, or is the general point (two paths to the same state can have different histories) argued structurally?** Argued structurally in `post-notes.md`'s internals section (an edge's validity would depend on history beyond its two endpoints, which breaks the graph model), with the specific forbidden-code set used only to make the point concrete and checkable.
+
+## Corrections applied: None.

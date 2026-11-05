@@ -1,0 +1,79 @@
+{
+  "topic": "dsa.modelling-problems-as-graphs",
+  "steps": [
+    {
+      "lines": [
+        "Watch the middle letters shift, one at a time: heal, then teal, then tell, then tall, before landing on tail.",
+        "Every one of those in-between words is a real word on its own. That's the whole rule: one letter changes, and every stop along the chain still has to be a word that exists."
+      ]
+    },
+    {
+      "lines": [
+        "The fifteen puzzle has about ten trillion arrangements. Each arrangement is a state, and sliding a tile is a move.",
+        "Before any search even starts, can that many states ever be stored, and can a full search ever finish?"
+      ],
+      "answer": [
+        "Neither. That many states is too large to hold in memory all at once, and a full search over all of them would never finish.",
+        "The only way through is to generate each state's neighbours the moment they're needed, and never write the graph down at all."
+      ]
+    },
+    {
+      "lines": [
+        "The eight puzzle has a hundred eighty one thousand four hundred forty reachable states, deepest one thirty one moves away, both found by a real breadth first search.",
+        "The fifteen puzzle's state count is reached by arithmetic alone, never by listing a single one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Blank one letter of a word at a time, and drop it into a bucket keyed by the blanked pattern.",
+        "Two words sharing a bucket differ by exactly that one letter, so every edge of the word ladder graph turns up without ever comparing one word against another."
+      ]
+    },
+    {
+      "lines": [
+        "A combination lock with four wheels: if the state remembers only the current combination, two different paths that reach that same combination look identical.",
+        "That's true even when one of those paths already passed through a forbidden code the other one avoided."
+      ]
+    },
+    {
+      "lines": [
+        "Every combination is a vertex, every single wheel turn is an edge, and every forbidden code is removed as a vertex before the search even starts.",
+        "The shortest path avoiding every forbidden code comes out of an ordinary breadth first search."
+      ]
+    },
+    {
+      "lines": [
+        "A road network has a handful of discounted edges, usable only up to a limited number of times.",
+        "The state can no longer be just the vertex. It has to be the vertex together with how many discounts have been spent so far, as if the map were stacked into several copies, one per discount count."
+      ]
+    },
+    {
+      "lines": [
+        "A direct route never needs a discount at all. A discounted detour only pays off once enough discounts are allowed along the way.",
+        "Folding a count limit into the state multiplies the whole graph by one extra layer for every discount the limit allows."
+      ]
+    },
+    {
+      "lines": [
+        "A circuit that uses every edge exactly once is easy, and runs in linear time.",
+        "Here's the question worth pausing on: swap that one word in the statement, edge for vertex, and ask whether the easy answer still holds."
+      ],
+      "answer": [
+        "No. Visiting every vertex exactly once turns out to be a much harder question, even though using every edge exactly once stays easy.",
+        "Swapping edge for vertex in the statement swaps an easy problem for a hard one."
+      ]
+    },
+    {
+      "lines": [
+        "A circuit using every edge exactly once is easy, built in linear time with depth first search.",
+        "A cycle visiting every vertex exactly once is hard, with no known fast algorithm at all. Two problems that differ by one word in the statement, and land on opposite sides of easy and hard."
+      ]
+    },
+    {
+      "lines": [
+        "A word ladder, a sliding puzzle, a lock with forbidden codes, a route with a limited number of discounts: none of them hand over a graph on their own.",
+        "Writing down the state, the move between states, and the question being asked turns every one of them into a graph question. Once it's a graph, the next skill is recognizing which graph problem it actually is. Recognizing reductions to known problems, next."
+      ]
+    }
+  ]
+}
