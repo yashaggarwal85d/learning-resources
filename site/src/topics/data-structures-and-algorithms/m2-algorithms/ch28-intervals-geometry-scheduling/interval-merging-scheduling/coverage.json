@@ -1,24 +1,77 @@
 {
   "topic": "dsa.interval-merging-scheduling",
+  "syllabus": [
+    {
+      "clause": "sort-by-start merging and insertion",
+      "at": [
+        { "step": "Merging intervals: sort by start, extend the open interval or start a new one." },
+        { "step": "Inserting one interval into an already-merged list absorbs the run it overlaps." },
+        { "step": "Apache Flink's session windows merge exactly this way in a real stream." }
+      ]
+    },
+    {
+      "clause": "earliest-finish-time greedy for maximum non-overlapping intervals",
+      "at": [
+        { "step": "Ten bookings want one room, and only non-overlapping ones may be kept." },
+        { "step": "Earliest-start-first books three, blocked by an early long booking." },
+        { "step": "Shortest-first books four, still short of the best." },
+        { "step": "Earliest-finish-first books five, and a smaller set traps the fewest-conflicts rule at three against four." },
+        { "step": "The exchange argument: any optimal schedule can swap in the greedy choice without getting worse." }
+      ]
+    },
+    {
+      "clause": "minimum rooms via a min-heap of end times",
+      "at": [
+        { "step": "A min-heap of end times schedules the ten bookings into three rooms." },
+        { "step": "A simpler plus-one, minus-one sweep over sorted endpoints finds the same three rooms." }
+      ]
+    },
+    {
+      "clause": "weighted interval scheduling by DP",
+      "at": [
+        { "step": "Weights turn the five-booking greedy set, worth twenty-eight, into the wrong answer: the DP table reaches twenty-nine." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wayne, Greedy Algorithms I slides (Kleinberg & Tardos)",
+      "items": [
+        { "item": "Interval scheduling problem statement and three candidate greedy rules", "at": { "step": "Ten bookings want one room, and only non-overlapping ones may be kept." } },
+        { "item": "Earliest-finish-time-first algorithm and its O(n log n) implementation", "at": { "step": "Earliest-finish-first books five, and a smaller set traps the fewest-conflicts rule at three against four." } },
+        { "item": "Optimality proof by contradiction / exchange", "at": { "step": "The exchange argument: any optimal schedule can swap in the greedy choice without getting worse." } },
+        { "item": "Interval partitioning problem statement and depth as a lower bound", "at": { "step": "A min-heap of end times schedules the ten bookings into three rooms." } },
+        { "item": "Earliest-start-time-first algorithm with a priority queue of end times, and its optimality proof", "at": { "step": "A min-heap of end times schedules the ten bookings into three rooms." } }
+      ]
+    },
+    {
+      "source": "Wayne, Dynamic Programming I slides (Kleinberg & Tardos)",
+      "items": [
+        { "item": "Weighted interval scheduling problem statement and the counter-example defeating greedy", "at": { "step": "Weights turn the five-booking greedy set, worth twenty-eight, into the wrong answer: the DP table reaches twenty-nine." } },
+        { "item": "The predecessor function p(j) and the OPT(j) recurrence", "at": { "step": "Weights turn the five-booking greedy set, worth twenty-eight, into the wrong answer: the DP table reaches twenty-nine." } },
+        { "item": "Brute-force recursion, memoization, running time, reconstructing the chosen set, bottom-up tabulation", "at": "post-notes" }
+      ]
+    }
+  ],
   "expert": [
-    { "item": "Merge n intervals into the minimal disjoint set by sorting on start and extending or starting a new interval; the correctness invariant is that everything left of the cursor is already final.", "at": "here" },
-    { "item": "The half-open overlap predicate s1 < e2 and s2 < e1, and the one tie rule it needs at a shared endpoint.", "at": "here" },
-    { "item": "Inserting one interval into an already-merged, sorted list: find the first interval ending after the new one's start, absorb the run it overlaps, splice; O(n) by linear scan, O(log n + r) to find the place by binary search with the shifting still O(n).", "at": "here" },
-    { "item": "Apache Flink's session windows as a real production instance of exactly this merge pass.", "at": "here" },
-    { "item": "Maximum non-overlapping intervals: the earliest-finish-time greedy rule is optimal; earliest-start and shortest-first are not, and need running counter-examples.", "at": "here" },
-    { "item": "The exchange argument that proves earliest-finish-time-first optimal (swap the optimal's first choice for the greedy one without losing size or creating overlap, then induct).", "at": "here" },
-    { "item": "The fewest-conflicts-first rule also fails, on a separate, smaller counter-example than the one that beats earliest-start and shortest-first.", "at": "here" },
-    { "item": "Unweighted maximum non-overlapping intervals is the unweighted case of maximum independent set in an interval graph.", "at": "here" },
-    { "item": "Minimum number of rooms (interval partitioning) via a min-heap of end times: sort by start, reuse the earliest-ending room if it has already ended, else open a new one; the heap's final size is the answer.", "at": "here" },
-    { "item": "Depth (the maximum overlap at any point) is a lower bound on rooms needed, and the heap algorithm always meets it, which is why it is optimal.", "at": "here" },
-    { "item": "The same room count is produced by a simpler +1/-1 sweep over sorted endpoints with a running count; this is the bridge to the sweep line (topic 94).", "at": "here" },
-    { "item": "Weighted interval scheduling: earliest-finish greedy fails once weights differ; the DP recurrence OPT(j) = max(OPT(j-1), w_j + OPT(p(j))) over intervals sorted by finish, with p(j) found by binary search, reconstructed by walking back; O(n log n) overall.", "at": "here" },
-    { "item": "Optimal substructure and overlapping subproblems (named with Chapter 22's vocabulary, declared here, not re-taught) and the exponential blow-up of the naive recursion against the memoised table.", "at": "here" },
-    { "item": "Maximum-weight non-overlapping interval selection is polynomial, but the variant where each job offers several alternative time slots is NP-complete for three or more slots per job (claim to be confirmed against a primary source, not just Wikipedia, before it is stated on screen).", "at": "here" },
-    { "item": "Interval trees answer a different, per-query question (which stored intervals overlap this query interval) than the batch questions this topic answers; named in post-notes, not built (Chapter 4, skipped).", "at": "post-notes" },
+    { "item": "Merge n intervals into the minimal disjoint set by sorting on start and extending or starting a new interval; the correctness invariant is that everything left of the cursor is already final.", "at": { "step": "Merging intervals: sort by start, extend the open interval or start a new one." } },
+    { "item": "The half-open overlap predicate s1 < e2 and s2 < e1, and the one tie rule it needs at a shared endpoint.", "at": { "step": "Merging intervals: sort by start, extend the open interval or start a new one." } },
+    { "item": "Inserting one interval into an already-merged, sorted list: find the first interval ending after the new one's start, absorb the run it overlaps, splice; O(n) by linear scan, O(log n + r) to find the place by binary search with the shifting still O(n).", "at": { "step": "Inserting one interval into an already-merged list absorbs the run it overlaps." } },
+    { "item": "Apache Flink's session windows as a real production instance of exactly this merge pass.", "at": { "step": "Apache Flink's session windows merge exactly this way in a real stream." } },
+    { "item": "Maximum non-overlapping intervals: the earliest-finish-time greedy rule is optimal; earliest-start and shortest-first are not, and need running counter-examples.", "at": { "step": "Earliest-finish-first books five, and a smaller set traps the fewest-conflicts rule at three against four." } },
+    { "item": "The exchange argument that proves earliest-finish-time-first optimal.", "at": { "step": "The exchange argument: any optimal schedule can swap in the greedy choice without getting worse." } },
+    { "item": "The fewest-conflicts-first rule also fails, on a separate, smaller counter-example than the one that beats earliest-start and shortest-first.", "at": { "step": "Earliest-finish-first books five, and a smaller set traps the fewest-conflicts rule at three against four." } },
+    { "item": "Unweighted maximum non-overlapping intervals is the unweighted case of maximum independent set in an interval graph.", "at": "post-notes" },
+    { "item": "Minimum number of rooms via a min-heap of end times: sort by start, reuse the earliest-ending room if it has already ended, else open a new one; the heap's final size is the answer.", "at": { "step": "A min-heap of end times schedules the ten bookings into three rooms." } },
+    { "item": "Depth (the maximum overlap at any point) is a lower bound on rooms needed, and the heap algorithm always meets it.", "at": { "step": "A min-heap of end times schedules the ten bookings into three rooms." } },
+    { "item": "The same room count is produced by a simpler +1/-1 sweep over sorted endpoints; this is the bridge to the sweep line (topic 94).", "at": { "step": "A simpler plus-one, minus-one sweep over sorted endpoints finds the same three rooms." } },
+    { "item": "Weighted interval scheduling: earliest-finish greedy fails once weights differ; the DP recurrence OPT(j) = max(OPT(j-1), w_j + OPT(p(j))), with p(j) found by binary search, reconstructed by walking back; O(n log n) overall.", "at": { "step": "Weights turn the five-booking greedy set, worth twenty-eight, into the wrong answer: the DP table reaches twenty-nine." } },
+    { "item": "Optimal substructure and overlapping subproblems (declared here, not re-taught) and the exponential blow-up of the naive recursion against the memoised table.", "at": "post-notes" },
+    { "item": "Single-interval scheduling stays polynomial; multiple-interval job scheduling (a job needing a set of intervals) is NP-complete by a reduction from Independent Set (Kleinberg & Tardos exercise 8.14).", "at": "post-notes" },
+    { "item": "Interval trees answer a different, per-query question than the batch questions this topic answers.", "at": "post-notes", "note": "named only, Chapter 4, skipped" },
     { "item": "Closed-interval conventions and other tie rules beyond the one this topic picks.", "at": "post-notes" },
     { "item": "Interval joins in a database (IEJoin, sort-merge on two inequalities) and `de.point-in-time-as-of-joins` belong to Data Engineering.", "at": "out", "reason": "cross-domain: Data Engineering §2.3 owns interval/range join algorithms; this topic shows only the 1-D merge/greedy/DP, not a query plan" },
-    { "item": "Flink's event-time semantics (watermarks, lateness) for session windows.", "at": "out", "reason": "Data Engineering's windowing-semantics topics own event time and watermarks; this topic uses the session-window merge mechanism only, not the streaming semantics around it" },
+    { "item": "Flink's event-time semantics (watermarks, lateness) for session windows.", "at": "out", "reason": "Data Engineering's windowing-semantics topics own event time and watermarks; this topic uses the session-window merge mechanism only" },
     { "item": "Matroids and exchange arguments in general.", "at": "out", "reason": "declared here (used, not taught); Chapter 21 teaches exchange arguments and matroids in general" },
     { "item": "Classic DP state design beyond this one recurrence.", "at": "out", "reason": "declared here (used, not taught); Chapter 22 teaches DP state design and the standard recurrences" }
   ]
