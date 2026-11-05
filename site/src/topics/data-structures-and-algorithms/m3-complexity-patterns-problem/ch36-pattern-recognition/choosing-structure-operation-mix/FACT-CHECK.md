@@ -1,0 +1,25 @@
+# Fact-check: Choosing the structure for the operation mix
+
+| # | Claim | Source / verification | Status |
+|---|---|---|---|
+| 1 | "The basic idea behind a hash table is that accessing an element of an array via its index is a simple, constant-time operation... hash tables usually perform in O(1) time, and usually outperform alternative implementations" | Wikipedia, Associative array, quoted verbatim in `SOURCES.md`, verified word-for-word by `scripts/sources.mjs check` | Verified |
+| 2 | Self-balancing trees are O(log n) worst case, keep elements in order, and can answer range queries a hash table cannot | Wikipedia, Associative array, quoted verbatim, verified | Verified |
+| 3 | "Sorted sets are implemented via a dual-ported data structure containing both a skip list and a hash table" | Redis sorted sets documentation, quoted verbatim, verified | Verified |
+| 4 | At a zero range-query share, a hash table's lookup beats a tree's; at a share of one tenth of one percent, the tree already wins | Measured directly in `examples.py` (`measure_range_share_crossover`) | Verified (measured) |
+| 5 | A heap wins top-k at ten percent of n; sorting the whole array wins at twenty percent of n | Measured directly in `examples.py` (`best_of`, `topk_by_heap`, `topk_by_sort`) | Verified (measured) |
+| 6 | A Bloom filter at 10 bits/key with the optimal k uses about 12.5 MB for ten million keys, against an exact set's 80 MB | Computed and asserted in `examples.py`, reusing Chapter 12's own `bloom_optimal_k`/`bloom_false_positive_rate` formulas | Verified (computed) |
+| 7 | Union-find correctly groups and distinguishes equivalence classes on a small test case; it has no `split` method | Computed and asserted in `examples.py` (`UnionFind`) | Verified (computed) |
+| 8 | A trie finds the prefix "ca" and the word "cart," but not "art" as a substring, even though "art" is present in "cart" by a brute-force scan | Computed and asserted in `examples.py` (`Trie`, `has_prefix`, `has_word`) | Verified (computed) |
+| 9 | A Fenwick tree's `range_sum` matches brute force on 20 random ranges of a 20-element array | Computed and asserted in `examples.py` (`check_fenwick_range_sum`) | Verified (computed) |
+| 10 | The Fenwick-style prefix-maximum trick gives the wrong answer (999) on a constructed array where the true range maximum of the target range is 7; a segment tree gets the identical case right | Computed and asserted in `examples.py` (`PrefixMaxOnly`, `SegmentTree`) | Verified (computed) |
+| 11 | A segment tree's range-max query matches brute force on 20 random ranges of the same constructed array | Computed and asserted in `examples.py` (`check_segment_tree_range_max`) | Verified (computed) |
+| 12 | An analytic cost model (growth-rate formulas, not wall-clock timing) at n = 10,000,000 and k = 10 gives a different winning structure (hash, tree, heap respectively) for each of three named mixes | Computed and asserted in `examples.py` (`COST_HASH`, `COST_TREE`, `COST_HEAP`, `MIX_TOTALS`) | Verified (computed, explicitly a model — see OUTLINE.md) |
+
+## Red-team pass
+
+- **Is it fair to call the three-mix table's result "measured" when it's an analytic model, not a timed benchmark?** No — and the topic is careful not to. The reel's own narration calls it a weighted sum and a cost model, never "measured," and OUTLINE.md documents explicitly why wall-clock timing was abandoned for this specific comparison (Python's list insert is too fast via memmove to be a faithful stand-in for a real balanced tree's O(log n) insert).
+- **Does the range-share crossover generalize, or is "well under one percent" an artifact of this exact setup?** The qualitative claim (a hash table's range-query fallback is drastically more expensive than a tree's, because it must scan every key rather than just the range) is structural and generalizes; the specific percentage is tied to this topic's own n, range width and machine, which `coverage.json`'s own expert review states explicitly.
+- **Is the trie's substring failure really a structural limitation, or just an unimplemented feature?** Checked: the standard trie `has_prefix`/`has_word` search only ever walks downward from the root by consuming characters from the start of the query — there is no path through the data structure that begins matching partway through a stored key, so no amount of additional code added to `has_prefix` alone fixes it; a genuine substring search needs a different structure entirely (suffix structures or Aho–Corasick, both named as *(skipped)* in Chapter 27).
+- **Does the union-find "no split" claim hold for every union-find variant, or only the one built here?** The standard union-find with path compression and union by rank, as built here, has no efficient split; this is a well-known structural property of the data structure in general, not a limitation unique to this topic's own minimal implementation — no claim is made that no disjoint-set variant anywhere supports splitting, only that this standard one does not.
+
+## Corrections applied: None.

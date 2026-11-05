@@ -1,0 +1,81 @@
+{
+  "topic": "dsa.choosing-structure-operation-mix",
+  "syllabus": [
+    {
+      "clause": "lookup → hash",
+      "at": [
+        { "step": "A hash table answers equality lookup in constant time and nothing about order. Ask it for the next key larger than a given one, or for every key between two bounds, and it has no order to consult — the table itself has nothing to answer that question with." }
+      ]
+    },
+    {
+      "clause": "ordered/range → balanced tree or B-tree",
+      "at": [
+        { "step": "Measured directly: a hash table's range query costs a full scan of every key it holds, because it has no order to narrow the search. A tree's range query costs only the width of the range, because the tree is already in order. That asymmetry is why such a tiny share is enough." },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "top-k → heap or quickselect",
+      "at": [
+        { "step": "For the top few of a large collection, a small heap beats sorting the whole thing. Measured directly: at ten percent of the collection, the heap wins. At twenty percent, sorting everything has already won instead, because the heap bookkeeping itself grows larger as it is asked to keep more." }
+      ]
+    },
+    {
+      "clause": "membership at scale → filter",
+      "at": [
+        { "step": "For membership at a scale too large to hold exactly, a Bloom filter answers in a handful of bits per key, where a wrong yes happens rarely and a wrong no never happens at all. Priced against an exact set at the identical key count, the filter is a small fraction of the size — using the bits-per-key arithmetic a different topic already verified, not re-derived here." }
+      ]
+    },
+    {
+      "clause": "grouping → union–find",
+      "at": [
+        { "step": "For grouping by an equivalence that only ever merges, union-find answers in near-constant amortised time per operation. Its one missing operation is splitting a group back apart once it has been merged — there simply is no such operation, by the structure's own design." }
+      ]
+    },
+    {
+      "clause": "prefixes → trie",
+      "at": [
+        { "step": "A trie answers a prefix query bounded only by the length of the key, not by how many keys it holds. Ask it instead for a substring buried in the middle of a word — not a prefix at all — and its own search, which only ever walks downward from the root, has no way to find it." }
+      ]
+    },
+    {
+      "clause": "range aggregates → Fenwick/segment tree",
+      "at": [
+        { "step": "Confirmed directly on a constructed case: the prefix-maximum trick returns the wrong answer for a range that excludes an early, larger value, while a segment tree, built on nothing more than an associative combining rule, returns the correct one on the identical case." },
+        { "deep": "Into the internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Associative array (Wikipedia)",
+      "items": [
+        { "item": "A hash table's basic idea and O(1) average cost", "at": [{ "step": "A hash table answers equality lookup in constant time and nothing about order. Ask it for the next key larger than a given one, or for every key between two bounds, and it has no order to consult — the table itself has nothing to answer that question with." }] },
+        { "item": "A self-balancing tree's O(log n) worst case, and its ability to satisfy range queries a hash table cannot", "at": [{ "step": "Measured directly: a hash table's range query costs a full scan of every key it holds, because it has no order to narrow the search. A tree's range query costs only the width of the range, because the tree is already in order. That asymmetry is why such a tiny share is enough." }] }
+      ]
+    },
+    {
+      "source": "Redis sorted sets (Redis documentation)",
+      "items": [
+        { "item": "A sorted set implemented as both a skip list and a hash table together", "at": [{ "step": "The structure is chosen by the mix, not by the single biggest operation: total cost is a weighted sum over every operation, frequency times its own cost, and that ranking changes as the mix changes. The same ten million keys, the same three structures, and three different mixes each choose a different winner — and when the mix genuinely needs two things, the answer is sometimes two structures kept in sync over the identical data, the way a well known in-memory store keeps a hash table and a skip list together over one sorted collection." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The range-share crossover measured in this topic (well under one percent) is specific to the fifty-element range width, the twenty-thousand-key count and the machine used; it is a real measurement illustrating that the asymmetry is large, not a universal constant that applies at every range width or key count.", "at": [{ "step": "Predict: mix a small sliver of range queries into a stream that is otherwise all equality lookups. How large does that sliver have to get before a tree, kept in order the whole time, beats the hash table outright?" }] },
+      { "item": "The heap-versus-sort top-k crossover (roughly between ten and twenty percent of n) depends on Python's own constant factors for `heapq.nlargest` against `sorted`; the qualitative shape (a heap wins for small k, sorting wins back as k grows toward n) is the structural claim, not the exact percentage.", "at": [{ "step": "For the top few of a large collection, a small heap beats sorting the whole thing. Measured directly: at ten percent of the collection, the heap wins. At twenty percent, sorting everything has already won instead, because the heap bookkeeping itself grows larger as it is asked to keep more." }] },
+      { "item": "The Bloom filter's bits-per-key and false-positive-rate formulas are reused directly from Chapter 12's own topic rather than re-derived here; this topic's own contribution is pricing the filter's bytes against an exact set's bytes at one representative key count, not re-proving the formula.", "at": [{ "step": "For membership at a scale too large to hold exactly, a Bloom filter answers in a handful of bits per key, where a wrong yes happens rarely and a wrong no never happens at all. Priced against an exact set at the identical key count, the filter is a small fraction of the size — using the bits-per-key arithmetic a different topic already verified, not re-derived here." }] },
+      { "item": "Union-find's missing split operation is not an implementation gap this topic's own code happens to leave out — no efficient split operation is known for the standard union-find structure at all; the breaking condition is structural, not an oversight.", "at": [{ "step": "For grouping by an equivalence that only ever merges, union-find answers in near-constant amortised time per operation. Its one missing operation is splitting a group back apart once it has been merged — there simply is no such operation, by the structure's own design." }] },
+      { "item": "\"Grouping\" as this topic's union-find row and \"grouping\" as group-by aggregation over a dataset (counting or summing per group) are genuinely different operations answered by genuinely different structures (union-find for incremental equivalence, a hash table for aggregation by key) — the topic is explicit that the same English word covers two different questions.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The trie's breaking condition (a substring query is not a prefix query) is not merely \"the trie is slow at this\" — the trie's own search procedure, which only ever walks from the root downward by character, has no path to a match that does not start at position zero of some stored key, so it genuinely cannot answer the question at all, not just slowly.", "at": [{ "step": "A trie answers a prefix query bounded only by the length of the key, not by how many keys it holds. Ask it instead for a substring buried in the middle of a word — not a prefix at all — and its own search, which only ever walks downward from the root, has no way to find it." }] },
+      { "item": "The Fenwick-style prefix-maximum trick's failure is proven by one concrete constructed counter-example in examples.py, not by a general argument on screen; the general reason (maximum has no inverse operation, unlike addition) is stated in post-notes' own internals section as the structural explanation for why the concrete example fails.", "at": [{ "step": "Confirmed directly on a constructed case: the prefix-maximum trick returns the wrong answer for a range that excludes an early, larger value, while a segment tree, built on nothing more than an associative combining rule, returns the correct one on the identical case." }] },
+      { "item": "The three-mix weighted-cost table in this topic's own examples.py is an explicit analytic cost model (growth-rate formulas at a fixed n and k), not a wall-clock benchmark, documented as such in OUTLINE.md; the two genuinely measured wall-clock experiments in this topic are the range-share crossover and the top-k crossover specifically.", "at": [{ "step": "The structure is chosen by the mix, not by the single biggest operation: total cost is a weighted sum over every operation, frequency times its own cost, and that ranking changes as the mix changes. The same ten million keys, the same three structures, and three different mixes each choose a different winner — and when the mix genuinely needs two things, the answer is sometimes two structures kept in sync over the identical data, the way a well known in-memory store keeps a hash table and a skip list together over one sorted collection." }] },
+      { "item": "This topic builds no structure itself beyond what examples.py needs to demonstrate a breaking condition (a minimal trie, union-find, Fenwick tree and segment tree) — every cost and correctness claim about the structures named in the dispatch table points to the Milestone 1 topic that actually builds and proves that structure, per the chapter plan's own rule that this is a synthesis chapter.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The dispatch table's seven rows are necessary-condition heuristics (\"this operation suggests this structure\"), not an exhaustive decision procedure — the topic's own thesis step states explicitly that a cheap common operation and an expensive rare one can make the naive row-by-row reading wrong, which is why the weighted-sum model, not the table alone, is the topic's actual deliverable.", "at": [{ "step": "The structure is chosen by the mix, not by the single biggest operation: total cost is a weighted sum over every operation, frequency times its own cost, and that ranking changes as the mix changes. The same ten million keys, the same three structures, and three different mixes each choose a different winner — and when the mix genuinely needs two things, the answer is sometimes two structures kept in sync over the identical data, the way a well known in-memory store keeps a hash table and a skip list together over one sorted collection." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

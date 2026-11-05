@@ -1,0 +1,85 @@
+{
+  "topic": "dsa.choosing-structure-operation-mix",
+  "steps": [
+    {
+      "lines": [
+        "One table, ten million keys, one question asked over and over at a different mix each time.",
+        "At ninety-five lookups out of every hundred operations, a hash table wins by a wide margin. Shift that mix toward range queries, and the very same hash table loses to a tree it had just beaten."
+      ]
+    },
+    {
+      "lines": [
+        "A hash table answers an equality lookup in constant time and says nothing at all about order.",
+        "Ask it for the next key larger than a given one, or for every key between two bounds, and there's simply no order in there to consult. The table has nothing to answer that question with."
+      ]
+    },
+    {
+      "lines": [
+        "Mix a small sliver of range queries into a stream that's otherwise all equality lookups. How large does that sliver have to get before a tree, kept in order the whole time, beats the hash table outright?"
+      ],
+      "answer": [
+        "Well under one percent. A hash table has no order at all, so answering even a single range query means scanning every key it holds.",
+        "That cost dwarfs a tree's own range query, which only ever costs the width of the range itself. The natural guess badly underestimates how lopsided that one operation's cost really is."
+      ]
+    },
+    {
+      "lines": [
+        "Measured directly: a hash table's range query costs a full scan of every key it holds, because it has no order to narrow the search with.",
+        "A tree's range query costs only the width of the range, because the tree is already sitting in order. That asymmetry is exactly why such a tiny share is enough to flip things."
+      ]
+    },
+    {
+      "lines": [
+        "For the top few of a large collection, a small heap beats sorting the whole thing outright.",
+        "Measured directly: at ten percent of the collection, the heap wins. By twenty percent, sorting everything has already taken the lead back, because the heap's own bookkeeping grows larger the more it's asked to keep."
+      ]
+    },
+    {
+      "lines": [
+        "For membership at a scale too large to hold exactly, a Bloom filter answers using only a handful of bits per key.",
+        "A wrong yes happens rarely, and a wrong no never happens at all. Priced against an exact set at the identical key count, the filter comes out a small fraction of the size, using arithmetic a different topic already verified rather than rederiving it here."
+      ]
+    },
+    {
+      "lines": [
+        "For grouping by an equivalence that only ever merges, union-find answers in near-constant amortised time per operation.",
+        "Its one missing move is splitting a group back apart once it's been merged. There simply is no such operation, by the structure's own design, from the ground up."
+      ]
+    },
+    {
+      "lines": [
+        "A trie answers a prefix query bounded only by the length of the key itself, never by how many keys it's holding.",
+        "Ask it instead for a substring sitting in the middle of a word, not a prefix at all, and its own search, which only ever walks downward from the root, has no way to reach it."
+      ]
+    },
+    {
+      "lines": [
+        "A range sum is one prefix sum minus an earlier one, because subtraction undoes addition exactly.",
+        "Does that identical trick, a running prefix maximum minus an earlier one, give the correct maximum of a range sitting strictly inside the array?"
+      ],
+      "answer": [
+        "No. Subtraction undoes addition, which is exactly why that trick recovers a range sum correctly in the first place.",
+        "Maximum has no such inverse. A running prefix maximum gives a wrong answer for a range that excludes an earlier, larger value, confirmed directly. A segment tree, built on an associative rule instead of an invertible one, gets it right."
+      ]
+    },
+    {
+      "lines": [
+        "Confirmed directly, on a constructed case: the prefix-maximum trick returns the wrong answer for a range that excludes an earlier, larger value.",
+        "A segment tree, built on nothing more than an associative combining rule, returns the correct answer on that exact same case."
+      ]
+    },
+    {
+      "lines": [
+        "The structure gets chosen by the mix, never by the single biggest operation sitting in it.",
+        "Total cost is a weighted sum across every operation, its own frequency times its own cost, and that ranking moves as the mix moves. The identical ten million keys, the identical three structures, three different mixes, three different winners each time.",
+        "When a mix genuinely needs two things at once, the answer is sometimes two structures kept in sync over the identical data, the way a well known in-memory store keeps a hash table and a skip list together over one sorted collection."
+      ]
+    },
+    {
+      "lines": [
+        "A structure holds data and answers questions about it. Some problems hand you no data at all, they hand you a situation instead: a position, a set of legal moves, a goal.",
+        "There's no table to put a situation in, because what's actually being searched over is the set of situations itself, and that's usually far too large to write down. Modelling problems as graphs, next."
+      ]
+    }
+  ]
+}
