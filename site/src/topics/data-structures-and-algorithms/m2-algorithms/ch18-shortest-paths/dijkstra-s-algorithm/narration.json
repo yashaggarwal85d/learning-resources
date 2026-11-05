@@ -1,0 +1,58 @@
+{
+  "topic": "dsa.dijkstra-s-algorithm",
+  "steps": [
+    {
+      "lines": [
+        "Picture a road network where every road has its own drive time, and the question is the fastest way from one city to every other city at once.",
+        "There's a way to answer that without ever reconsidering a city once its fastest time is known.",
+        "But that only holds under one condition: no road can ever make a trip shorter by being driven."
+      ]
+    },
+    {
+      "lines": [
+        "Take a graph with just one negative-weight edge sitting somewhere in it.",
+        { "beat": 0.3 },
+        "Does this algorithm still find the correct shortest distances, or does that one edge break it?"
+      ],
+      "answer": [
+        "No. A negative edge can make an already-settled vertex wrong.",
+        "The algorithm settles the closest unsettled vertex and never looks at it again.",
+        "If a cheaper route to that vertex only shows up later, through a negative edge, the algorithm has already moved on. It settled that vertex at a distance a later relaxation could have beaten, and it never finds out."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the mechanism. Pop the closest unsettled vertex from a priority queue.",
+        "Settle it — treat its distance as final.",
+        "Relax every one of its outgoing edges, checking whether going through this vertex improves the distance to each neighbor.",
+        "Repeat until the queue is empty. One settled vertex per round, and each one is final the moment it's popped."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch this go wrong, on the exact graph where it does.",
+        "The algorithm settles a vertex at some distance — final, as far as it's concerned.",
+        "But a negative edge, reached only later in the search, could have beaten that distance. The vertex is never revisited, so the wrong distance stands."
+      ]
+    },
+    {
+      "lines": [
+        "Lazy deletion and a true decrease-key operation give the identical final distances, on any graph.",
+        { "beat": 0.3 },
+        "Do they also do the identical amount of work inside the priority queue, or does one of them do strictly more?"
+      ],
+      "answer": [
+        "Lazy deletion does strictly more work. It pushes duplicate entries it has to discard later.",
+        "Lazy deletion never removes a stale entry when a vertex's distance improves. It just pushes a smaller one and leaves the old one sitting in the queue.",
+        "Every one of those old entries still has to be popped and thrown away later, as stale. Decrease-key updates a vertex's one existing entry in place, so that extra work never gets created to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "This algorithm settles the closest vertex first, and that greedy choice is only safe because no edge can ever make a path shorter by being added to it.",
+        "The moment even one edge weight can turn negative, that safety breaks completely, and the closest-first order can no longer be trusted.",
+        "Handling that case — and telling when it makes the whole question unanswerable — is next."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Breadth-first search">The unweighted special case this topic's algorithm generalises: a plain queue becomes a priority queue, arrival order becomes distance order.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The priority queue this topic's algorithm pops the next-closest vertex from.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Dijkstra's algorithm" href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm" by="Wikipedia">The negative-edge counterexample, the complexity bound, and the lazy-insertion variant.</Resource>
+  <Resource kind="reading" title="Shortest path problem" href="https://en.wikipedia.org/wiki/Shortest_path_problem" by="Wikipedia">The general statement of Dijkstra's own non-negative-weight restriction.</Resource>
+</ul>
+
+</section>
