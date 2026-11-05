@@ -1,0 +1,7 @@
+- **Half-open interval**: a range `[start, end)` that includes its start but not its end. *Where you meet it:* every booking, lecture and job in this topic is one, and the overlap rule depends on it.
+- **Overlap**: two intervals share at least one point in time. *Where you meet it:* the one predicate every algorithm here tests.
+- **Greedy algorithm**: a rule that commits to the locally best choice and never revisits it. *Where you meet it:* four candidate rules for picking bookings, only one of them safe.
+- **Min-heap**: a structure that always gives you its smallest element, in log n time to push or pop. *Where you meet it:* the room-scheduling algorithm keeps one of end times.
+- **Binary search over a sorted array**: finding a value's place in log n steps by repeatedly halving the search range. *Where you meet it:* finding the predecessor job in the weighted schedule.
+- **Dynamic-programming recurrence**: a table filled from smaller cases, each cell computed once. *Where you meet it:* the weighted schedule's own table.
+- **Independent set**, in plain words: a set of things, none of which conflict with any other. *Where you meet it:* a one-line connection between unweighted interval scheduling and this general idea, not taught here.
