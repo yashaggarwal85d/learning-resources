@@ -1,0 +1,91 @@
+{
+  "topic": "dsa.hash-tables-inside-hash",
+  "steps": [
+    {
+      "lines": [
+        "A textbook hash join assumes the smaller table fits in memory. Here it does not, by a factor of twenty, and the join still produces the right answer.",
+        "Hold the three numbers in your head before the reveal: how many pieces does the table split into, how much of the other side has to wait on disk, and how cheap is the filter that keeps rows out before they arrive."
+      ],
+      "answer": [
+        "Dozens of pieces, almost all of the probing side waiting on disk, and a filter spending under ten bits for every row on the smaller side.",
+        "None of those numbers come from a textbook formula here. They come from running the real splitting rule on this exact budget."
+      ]
+    },
+    {
+      "lines": [
+        "Draw the ordinary hash table first, the one with no box around it, because everything that follows is a constraint added on top of exactly this picture.",
+        "A production table never gets to forget that picture. It is the same buckets, the same chains, just forced to live inside a box someone else sized."
+      ]
+    },
+    {
+      "lines": [
+        "One number does two jobs here, and the trick is in how it is read. Take the low end of the number for one answer, spin the whole number around and take a different end for the other.",
+        "Nothing about this requires two separate hashes. A single well-mixed number has enough independent information hiding in its different bit positions to answer two unrelated questions at once."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the count climb by doubling, not by one at a time, because a table this size only cares about staying inside its box, not about hitting an exact number of pieces.",
+        "Doubling is cheap to reason about and cheap to implement: every old piece becomes exactly two new ones, so nothing about the existing layout has to be rebuilt from scratch."
+      ]
+    },
+    {
+      "lines": [
+        "Before the executor's actual answer, think about what hashing even promises you. The same key always produces the same number, every single time, with no exceptions.",
+        "If that is true, then splitting the group that one key lives in can never put different copies of it in different places. The split changes nothing for that key at all."
+      ],
+      "answer": [
+        "No, every row that shares one key shares one hash value, so it always lands in the same half of any split, no matter how many times you split.",
+        "A rule that keeps splitting here would just burn memory forever without ever fixing the problem, which is exactly why the real executor refuses to keep going."
+      ]
+    },
+    {
+      "lines": [
+        "This is the engine protecting itself from an infinite loop, not from a crash. Nothing breaks if it kept doubling; it would simply never finish.",
+        "Notice the scope of the fix: the whole table stops growing, not just the one stuck piece. One frequent key is treated as evidence that growing further will not help anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "That number is the entire cost of this constraint laid bare. Almost everything on the probing side has to make a round trip to disk before it can even be compared.",
+        "This is the price of a build side that does not fit, paid up front, in exchange for still getting a correct join at the end."
+      ]
+    },
+    {
+      "lines": [
+        "A tiny table, kept separate from all the splitting, exists purely because a handful of keys are so common that losing them to disk even once would be wasteful.",
+        "The size of that table is capped on purpose. It is meant to catch only the most extreme few, not to quietly become a second full table."
+      ]
+    },
+    {
+      "lines": [
+        "Two engines solve the identical collision problem with opposite instincts, and both are right for what they are given.",
+        "A variable-size entry wants room to grow sideways in a chain. A single fixed-size number wants a compact array where there is nothing extra to chase through memory."
+      ]
+    },
+    {
+      "lines": [
+        "The whole point of this filter is that it runs before the expensive work, not alongside it. A row that can never match is removed at the cheapest possible moment: the scan.",
+        "Notice which side builds the filter and which side uses it. The side that already knows which values are possible hands that knowledge to the side that has not looked yet."
+      ]
+    },
+    {
+      "lines": [
+        "Fix the ratio of space to items, and the error rate is no longer a guess, it is arithmetic you can run yourself and then go check against a real built filter.",
+        "That agreement between the formula and the built filter is the whole argument for trusting the formula on a table this engine will build for you without ever showing you its insides."
+      ]
+    },
+    {
+      "lines": [
+        "Compare this against the filter you just watched work. Exactness is not free, and once the input grows past a line someone drew, the engine gives up detail on purpose.",
+        "A minimum and a maximum still rule out plenty of rows. It is a worse filter than before, deliberately, in exchange for a filter that costs almost nothing to keep around."
+      ]
+    },
+    {
+      "lines": [
+        "Every piece you just watched, the splitting, the tiny resident table, the filter, is one engine's answer to a single missing resource: memory.",
+        "The next structure answers the identical shortage with a completely different move: instead of splitting into pieces kept in memory, it writes its own sorted pieces straight to disk."
+      ]
+    }
+  ]
+}

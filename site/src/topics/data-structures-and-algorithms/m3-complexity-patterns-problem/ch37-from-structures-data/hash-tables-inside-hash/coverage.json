@@ -1,0 +1,81 @@
+{
+  "topic": "dsa.hash-tables-inside-hash",
+  "syllabus": [
+    {
+      "clause": "build/probe phases",
+      "at": [
+        { "step": "A hash join's build side is twenty times the memory budget. A textbook hash table cannot hold it, yet the join finishes, counting every row it must write to a temporary file before it is read back. Predict: with the budget at one twentieth of the build side, how many batches does the join need, what fraction of order rows goes to temporary files, and how many bits per customer does a runtime filter spend?" },
+        { "step": "PostgreSQL's probe-side table chains tuples of any size in buckets sized for one tuple each on average. Spark's table for a single long-integer key is a different family entirely: open addressing, with quadratic probing and triangular numbers choosing the next slot, compact and cache-friendly because the key is one fixed-size number." }
+      ]
+    },
+    {
+      "clause": "partitioning for cache and memory (Ch.31)",
+      "at": [
+        { "step": "One 32-bit hash value answers two unrelated questions. Its low bits, masked against the bucket count, give the bucket inside the current batch. The same value, rotated right by the bucket count's log base two and masked against the batch count, gives the batch. Bucket and batch come from non-overlapping views of one hash." },
+        { "step": "The executor starts with one batch and doubles the count whenever a batch outgrows the memory budget. On the shop's instance, at a budget of one twentieth of the build side, doubling runs from one batch to thirty-two before every batch finally fits." },
+        { "deep": "Partitioning is also a cache and TLB decision" },
+        { "topic": "Partitioned hash joins: Grace and hybrid", "domain": "data-structures-and-algorithms", "quote": "recursive partitioning until each build side fits in memory" }
+      ]
+    },
+    {
+      "clause": "Bloom-filter pushdown",
+      "at": [
+        { "step": "Before the join reads a single order, a Bloom filter built from the customers side, the side with a selective predicate, travels to the orders side's scan and drops any order whose customer cannot possibly match. The rule's own names: the customers side is the creation side, the orders side is the application side." },
+        { "step": "Spark's default filter spends 8,388,608 bits on 1,000,000 expected items: 8.4 bits per item. The same ratio, run through the engine's own formula, chooses six hash functions. A filter actually built at this ratio and probed with keys it never inserted measures a false-positive rate matching what the formula predicts for those six hash functions." }
+      ]
+    },
+    {
+      "clause": "and spilling when the build side outgrows memory → Data Engineering §2.3, Ch.7.",
+      "at": [
+        { "step": "Measured on the shop's instance: about ninety-two percent of order rows must be written to a temporary file before they can be probed, because their customer hashes to a batch other than the one batch that stays resident in memory throughout the build." },
+        { "step": "A separate skew table, capped at two percent of the memory budget, gives the handful of busiest customers a dedicated, always-resident bucket that batching never touches. On the shop's instance that is four customers, and they already carry about a sixth of every order placed." },
+        { "topic": "Memory budgets, spilling and grace hash join", "domain": "data-engineering", "quote": "grace and hybrid hash joins that partition to disk" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL nodeHash.c, nodeHashjoin.c, hashjoin.h",
+      "items": [
+        { "item": "NTUP_PER_BUCKET is 1: the executor sizes the bucket array for an average load of one tuple per bucket", "at": [{ "step": "The textbook contract, and the system's addition, side by side: chapter three's chained hash table on the left, exactly as drawn there, and the join's own table on the right, boxed by a fixed memory budget it was never designed to respect." }] },
+        { "item": "ExecHashGetBucketAndBatch takes the low bits of the hash for the bucket and a rotate-right-then-mask of the same hash for the batch", "at": [{ "step": "One 32-bit hash value answers two unrelated questions. Its low bits, masked against the bucket count, give the bucket inside the current batch. The same value, rotated right by the bucket count's log base two and masked against the batch count, gives the batch. Bucket and batch come from non-overlapping views of one hash." }] },
+        { "item": "The number of batches is always a power of two; an increase doubles it", "at": [{ "step": "The executor starts with one batch and doubles the count whenever a batch outgrows the memory budget. On the shop's instance, at a budget of one twentieth of the build side, doubling runs from one batch to thirty-two before every batch finally fits." }] },
+        { "item": "Growth in the number of batches is disabled globally once a split retains all or none of a batch's tuples", "at": [{ "step": "PostgreSQL watches for exactly this case: a split that leaves a batch keeping all, or none, of its tuples. When that happens the executor disables further growth in the number of batches globally, not only for that one batch, because the same key would defeat every later split just as it defeated this one." }] },
+        { "item": "Every stored tuple keeps its own hashvalue field, so it is never rehashed", "at": [{ "deep": "One hash value, two unrelated questions" }] },
+        { "item": "The skew hashtable is capped at SKEW_HASH_MEM_PERCENT (2) percent of the allowed memory", "at": [{ "step": "A separate skew table, capped at two percent of the memory budget, gives the handful of busiest customers a dedicated, always-resident bucket that batching never touches. On the shop's instance that is four customers, and they already carry about a sixth of every order placed." }] }
+      ]
+    },
+    {
+      "source": "Spark HashedRelation.scala, InjectRuntimeFilter.scala, configuration page, BloomFilter.java",
+      "items": [
+        { "item": "LongToUnsafeRowMap uses open addressing with quadratic probing and triangular numbers", "at": [{ "step": "PostgreSQL's probe-side table chains tuples of any size in buckets sized for one tuple each on average. Spark's table for a single long-integer key is a different family entirely: open addressing, with quadratic probing and triangular numbers choosing the next slot, compact and cache-friendly because the key is one fixed-size number." }] },
+        { "item": "A runtime filter is inserted on the application side if one can be extracted from the creation side", "at": [{ "step": "Before the join reads a single order, a Bloom filter built from the customers side, the side with a selective predicate, travels to the orders side's scan and drops any order whose customer cannot possibly match. The rule's own names: the customers side is the creation side, the orders side is the application side." }] },
+        { "item": "Spark's default is 8,388,608 bits for 1,000,000 expected items, read from the live Spark 4.3.0 configuration page", "at": [{ "step": "Spark's default filter spends 8,388,608 bits on 1,000,000 expected items: 8.4 bits per item. The same ratio, run through the engine's own formula, chooses six hash functions. A filter actually built at this ratio and probed with keys it never inserted measures a false-positive rate matching what the formula predicts for those six hash functions." }] },
+        { "item": "optimalNumOfHashFunctions rounds m/n times the natural log of two, at least one", "at": [{ "deep": "Why growth stops, not just slows" }, { "step": "Spark's default filter spends 8,388,608 bits on 1,000,000 expected items: 8.4 bits per item. The same ratio, run through the engine's own formula, chooses six hash functions. A filter actually built at this ratio and probed with keys it never inserted measures a false-positive rate matching what the formula predicts for those six hash functions." }] }
+      ]
+    },
+    {
+      "source": "Trino dynamic filtering documentation",
+      "items": [
+        { "item": "Trino's dynamic filter switches from exact distinct values to per-column min and max once the build side exceeds a size threshold", "at": [{ "step": "Trino's dynamic filter starts as the exact set of distinct keys on the build side. Past a size threshold it switches to collecting only a minimum and a maximum value per column, a coarser filter than a fixed-size Bloom filter, trading precision for a bound on how much the filter itself can cost to build and ship." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The bucket/batch split is verified, not asserted, by simulating ExecHashGetBucketAndBatch's exact bit operations (low-bit mask for bucket, rotate-right by log2(nbuckets) then mask for batch) over a real customer-id set and checking the batch-size distribution the real doubling rule produces, rather than quoting the source's own claim of independence.", "at": [{ "step": "One 32-bit hash value answers two unrelated questions. Its low bits, masked against the bucket count, give the bucket inside the current batch. The same value, rotated right by the bucket count's log base two and masked against the batch count, gives the batch. Bucket and batch come from non-overlapping views of one hash." }] },
+      { "item": "The batch-doubling simulation grows the batch count exactly as the executor does (double, re-check, repeat) rather than computing a closed-form estimate, so the reported count of 32 batches is what the real stopping rule produces on this instance, not a back-of-envelope guess.", "at": [{ "step": "The executor starts with one batch and doubles the count whenever a batch outgrows the memory budget. On the shop's instance, at a budget of one twentieth of the build side, doubling runs from one batch to thirty-two before every batch finally fits." }] },
+      { "item": "The fraction of order rows spilled (92%) is measured by assigning every one of eighty thousand simulated orders to its real batch via the same hash and bit operations as the build side, not estimated from the batch count alone, so a non-uniform key distribution's effect on the spilled fraction is actually captured.", "at": [{ "step": "Measured on the shop's instance: about ninety-two percent of order rows must be written to a temporary file before they can be probed, because their customer hashes to a batch other than the one batch that stays resident in memory throughout the build." }] },
+      { "item": "The skew table's four-row capacity is derived literally from SKEW_HASH_MEM_PERCENT (2) applied to the chosen budget, and the fraction of orders it actually keeps off disk is measured against the real order-frequency distribution the simulated stream produces, not asserted from the cap alone.", "at": [{ "step": "A separate skew table, capped at two percent of the memory budget, gives the handful of busiest customers a dedicated, always-resident bucket that batching never touches. On the shop's instance that is four customers, and they already carry about a sixth of every order placed." }] },
+      { "item": "Spark's cited configuration defaults were read from the live spark.apache.org/docs/latest page at research time (Spark 4.3.0), not assumed unchanged from the 4.2.0 version the chapter plan was written against, and confirmed identical for the three settings this topic cites.", "at": [{ "step": "Spark's default filter spends 8,388,608 bits on 1,000,000 expected items: 8.4 bits per item. The same ratio, run through the engine's own formula, chooses six hash functions. A filter actually built at this ratio and probed with keys it never inserted measures a false-positive rate matching what the formula predicts for those six hash functions." }] },
+      { "item": "The Bloom filter's optimal hash count (six) is computed from Spark's own optimalNumOfHashFunctions formula, not assumed from a textbook rule of thumb, and the false-positive rate is independently cross-checked by actually building a filter at the same bits-per-item ratio and probing it with keys never inserted, rather than trusting the formula alone.", "at": [{ "step": "Spark's default filter spends 8,388,608 bits on 1,000,000 expected items: 8.4 bits per item. The same ratio, run through the engine's own formula, chooses six hash functions. A filter actually built at this ratio and probed with keys it never inserted measures a false-positive rate matching what the formula predicts for those six hash functions." }] },
+      { "item": "The scaled-down Bloom filter test (one hundred times smaller) keeps the exact bits-per-item ratio and hash count of Spark's real default, documented explicitly in OUTLINE.md as a deliberate scaling choice for runtime, not a different filter being substituted for the real one.", "at": [{ "deep": "Why growth stops, not just slows" }] },
+      { "item": "Chapter 31's topic 'Partitioned hash joins: Grace and hybrid' was confirmed not live in the registry at build time by grepping registry.ts directly, so this topic builds its own batching simulation from the PostgreSQL source rather than assuming an earlier topic already built it.", "at": [{ "deep": "At the frontier" }] },
+      { "item": "The cache and translation-lookaside-buffer motivation for partitioning (named in the syllabus clause but not the topic's measured numbers) is explicitly scoped to Chapter 31's own radix-partitioning topic in post-notes.md, rather than silently dropped or falsely claimed as measured here.", "at": [{ "deep": "Partitioning is also a cache and TLB decision" }] },
+      { "item": "PostgreSQL's chained hash table and Spark's open-addressed long-key map are presented as two different, equally valid engineering choices for different constraints (variable-size tuples versus one fixed-size key), not as one being an improvement on the other, matching what each source's own comment actually argues.", "at": [{ "step": "PostgreSQL's probe-side table chains tuples of any size in buckets sized for one tuple each on average. Spark's table for a single long-integer key is a different family entirely: open addressing, with quadratic probing and triangular numbers choosing the next slot, compact and cache-friendly because the key is one fixed-size number." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

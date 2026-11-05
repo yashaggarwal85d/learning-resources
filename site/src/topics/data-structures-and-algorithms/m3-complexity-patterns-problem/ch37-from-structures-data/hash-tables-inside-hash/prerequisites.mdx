@@ -1,0 +1,38 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Practical hash functions and HashDoS">Before this: the hash function and its avalanche property, behind every bucket and batch assignment.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Separate chaining">Before this: the bucket and load-factor mechanics the join's table reuses.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linear probing and open addressing">Before this: quadratic probing, the family Spark's long-key map belongs to.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Resizing and incremental rehashing">Before this: the resize machinery the hash table's growth is a variant of.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">Before this: the translation lookaside buffer's reach, behind why partitioning also helps the cache.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bloom filters and false-positive math">Before this: the false-positive formula this topic's runtime filter is checked against.</Resource>
+</ul>
+
+Chapter 31's "Partitioned hash joins: Grace and hybrid" is assumed informally, as the general
+recursive-partitioning algorithm this topic's production executor is one instance of; it was
+confirmed not live in the registry at build time, so this topic's batching simulation is built
+directly from the PostgreSQL source rather than linking to a not-yet-published topic.
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="nodeHash.c" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/executor/nodeHash.c" by="PostgreSQL">The bucket/batch split, NTUP_PER_BUCKET and the skew-table sizing.</Resource>
+  <Resource kind="reading" title="nodeHashjoin.c" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/executor/nodeHashjoin.c" by="PostgreSQL">Why the batch count only ever doubles, and when it stops.</Resource>
+  <Resource kind="reading" title="hashjoin.h" href="https://raw.githubusercontent.com/postgres/postgres/master/src/include/executor/hashjoin.h" by="PostgreSQL">The per-tuple hash value and the skew hashtable's memory cap.</Resource>
+  <Resource kind="reading" title="HashedRelation.scala" href="https://raw.githubusercontent.com/apache/spark/master/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/HashedRelation.scala" by="Apache Spark">The open-addressed, quadratic-probing table for a single long-integer key.</Resource>
+  <Resource kind="reading" title="InjectRuntimeFilter.scala" href="https://raw.githubusercontent.com/apache/spark/master/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/InjectRuntimeFilter.scala" by="Apache Spark">The application side and creation side of a runtime Bloom filter.</Resource>
+  <Resource kind="reading" title="Configuration" href="https://spark.apache.org/docs/latest/configuration.html" by="Apache Spark">The runtime Bloom filter's default size and expected item count.</Resource>
+  <Resource kind="reading" title="BloomFilter.java" href="https://raw.githubusercontent.com/apache/spark/master/common/sketch/src/main/java/org/apache/spark/util/sketch/BloomFilter.java" by="Apache Spark">The optimal-hash-count formula this topic's filter uses.</Resource>
+  <Resource kind="reading" title="Dynamic filtering" href="https://trino.io/docs/current/admin/dynamic-filtering.html" by="Trino">The coarser min/max filter Trino falls back to, named for contrast.</Resource>
+</ul>
+
+</section>
