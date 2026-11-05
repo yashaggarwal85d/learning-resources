@@ -1,0 +1,5 @@
+- **Graph**: a set of vertices connected by edges, with no inherent order the way an array has. *Where you meet it:* every structure this chapter and the next explore.
+- **Vertex and edge**: a vertex is one node of the graph; an edge connects two of them. *Where you meet it:* the frontier the whole reel moves across.
+- **Directed vs undirected**: a directed edge can be followed in only one direction; an undirected edge can be followed either way. *Where you meet it:* this topic's graphs are undirected; later topics state which they mean.
+- **Queue (recap)**: a FIFO (first-in, first-out) container — the first thing added is the first thing removed. *Where you meet it:* the frontier BFS holds.
+- **Neighbour**: a vertex directly connected to another by one edge. *Where you meet it:* every step of the traversal, enqueuing a vertex's neighbours.

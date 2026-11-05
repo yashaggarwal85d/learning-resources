@@ -1,0 +1,75 @@
+{
+  "topic": "dsa.breadth-first-search",
+  "steps": [
+    {
+      "lines": [
+        "A graph with a billion edges can still tell you how many people separate you from a total stranger, in just a handful of steps.",
+        "The trick is never checking the wrong thing next. Every vertex worth looking at is never more than one step past something you've already confirmed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question. The very first time you reach some vertex, is that already its shortest distance from the source?",
+        { "beat": 0.3 },
+        "Or could a shorter path sneak in and reach it again later, after you've moved on?"
+      ],
+      "answer": [
+        "Always shortest, the first time. There's no way a longer route gets explored before a shorter one even finishes.",
+        "Everything one step closer than it gets fully handled before anything one step farther even joins the line."
+      ]
+    },
+    {
+      "lines": [
+        "Hold the current frontier in a plain first-in, first-out line. Take the next one off the front, add every neighbour you haven't seen yet to the back.",
+        "Everything at a given distance gets handled completely before anything one step farther ever joins that line.",
+        "So the first time you reach a vertex, its distance is already locked in. That's the proof, straight from how the line itself behaves."
+      ]
+    },
+    {
+      "lines": [
+        "Now start that same search from several places at once instead of just one.",
+        "What comes out is, for every vertex, the distance to whichever of those sources is nearest, all in one single pass.",
+        "Running the single-source version separately for each source gets the same answer, but it costs as many times more work as there are sources."
+      ]
+    },
+    {
+      "lines": [
+        "Say every connection costs either nothing or one step. You don't need a priority queue for that at all.",
+        "A free connection gets pushed to the very front of a two-ended line; a costly one gets pushed to the back.",
+        "The line's own order already stays sorted by distance, and it lands on exactly the same answer a full priority-queue search would."
+      ]
+    },
+    {
+      "lines": [
+        "Take a cycle with an odd number of vertices, and try to colour it with just two colours, alternating as you go around.",
+        { "beat": 0.3 },
+        "Can you make it all the way around without ever giving two neighbours the same colour?"
+      ],
+      "answer": [
+        "No. Walk around an odd cycle alternating colour, and the last step always lands back on the colour you started with.",
+        "That clash is exactly the signature of an odd cycle, and it's unavoidable."
+      ]
+    },
+    {
+      "lines": [
+        "Colour each vertex the opposite of its parent, one frontier layer at a time.",
+        "The graph fails to be two-colourable exactly when some edge connects two vertices that already got the same colour.",
+        "And that failure hands you more than a verdict. The clashing edge, plus the two paths back to where they split, is itself an odd cycle you can point to."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a social network, not a road map. One step out from a single person can already be most of the graph.",
+        "At that point, having the frontier scan all of its own outgoing connections gets expensive fast.",
+        "So flip it. Once the frontier is that big, have everyone who hasn't been reached yet check whether any one of their own connections happens to be in the frontier. Far fewer connections get examined for the exact same result."
+      ]
+    },
+    {
+      "lines": [
+        "A widening frontier like this answers one question well: the fewest steps to reach somewhere.",
+        "It has nothing to say about which vertex matters most to visit next, when the real structure is something a single widening ring can't see at all — one thing that has to come before another, or a whole cluster that can all reach each other and nothing beyond it.",
+        "Those answers come from going as deep as you can before ever backing up, not from spreading out layer by layer."
+      ]
+    }
+  ]
+}
