@@ -38,8 +38,11 @@
 
 ## Looks review
 
-Pending: reel smoke test (`tests/reels.mjs`) to be run after this review, same as the ship
-sequence for every other topic in this chapter.
+Reel smoke test (`tests/reels.mjs`) run at both phone and desktop sizes: passed. First run
+caught two phone-viewport text overflows (step 15's compare-and-swap label running past the
+drawing, step 16's recap labels running into each other); both fixed by shortening/repositioning
+the `scenes.tsx` text, and the re-run passed clean (`Reel smoke test passed: 1 live reel(s) at
+desktop and phone sizes`).
 
 ## Changes from the chapter plan
 
