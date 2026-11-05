@@ -1,0 +1,222 @@
+{
+  "topic": "dsa.counting-radix-bucket-sort",
+  "syllabus": [
+    {
+      "clause": "LSD vs MSD radix sort",
+      "at": [
+        {
+          "step": "Counting sort: count how many keys have each value, turn the counts into starting positions by a running sum, then scatter each key into its slot by walking the input in order. Measured directly: 12 keys, 12 moves. The scatter walks the input in order, so three keys tied at value 5 come out in their original order — the stability the next step depends on."
+        },
+        {
+          "step": "LSD radix sort: counting-sort by the last digit, then the next, and so on. Each pass's own stability is exactly why the composed result ends up sorted. Measured directly: 3 passes on 3-digit keys, 24 total moves. At a million 32-bit keys with 8-bit digits: 4 passes, against roughly 20 comparison levels."
+        },
+        {
+          "step": "MSD radix sort: partition by the first digit into buckets, then recurse on each bucket by the next digit, falling back to insertion sort once a bucket is small. It touches only distinguishing prefixes, but its memory access is irregular and it recurses into many small buckets."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "American-flag in-place MSD",
+      "at": [
+        {
+          "step": "American flag sort, named by McIlroy, Bostic and McIlroy in 1993, by analogy with the Dutch national flag problem scaled from three piles to as many as there are digit values: count the digit values, turn the counts into each bucket's own slot range, then permute in place by following cycle-leader swaps. Measured directly: 6 swaps on an 8-key deck."
+        },
+        {
+          "step": "Instability, shown: two keys sharing a digit value, tagged h and i on entry, come out as i then h. Nothing in the in-place permutation preserves which displaced key arrived first."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "key normalization of multi-column keys to byte strings (as in DuckDB's sort)",
+      "at": [
+        {
+          "step": "DuckDB's own three-row worked example, encoded by hand: a descending string's bits all inverted, a signed year's sign bit flipped and bytes swapped to big-endian, a shorter string padded with zero bytes that the descending inversion turns to all-ones. Comparing the three encoded byte strings reproduces the post's own row order with one comparison, no per-column loop."
+        },
+        {
+          "step": "Binary strings that give the right order under byte comparison give the right order under a byte-by-byte radix sort too, DuckDB's own stated connection: the encoding bought a cheap comparator, and then a comparator-free sort for free. IEEE 754 floats get the identical treatment: always flip the sign bit, and if it was set, flip every other bit too."
+        },
+        {
+          "deep": "In production"
+        }
+      ]
+    },
+    {
+      "clause": "and when O(n·w/log n) beats O(n log n)",
+      "at": [
+        {
+          "step": "The crossover, measured: at 50,000 random 32-bit keys with 8-bit digits, LSD radix sort makes exactly 4 times n, 200,000, key moves in total; a comparison sort makes exactly 718,346 comparisons on the same keys. Radix sort is also not adaptive: an already-sorted array still costs all 4 passes and n moves per pass."
+        },
+        {
+          "step": "Bucket sort: n keys drawn uniformly from the unit interval into n buckets, each sorted by insertion sort. Measured directly at 100,000 keys: the largest bucket held 8 keys, and 36.7% of buckets were empty, against the predicted e to the minus one, 36.8%. On a clustered, non-uniform input, nearly every key lands in the same handful of buckets, and the cost collapses to the inner sort's own cost on a near-full-size array."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Kuiper, \"Fastest Table Sort in the West\" (duckdb.org, 2021)",
+      "items": [
+        {
+          "item": "the three-row worked example (NETHERLANDS/1991, NETHERLANDS/1992, GERMANY/1924), the comparator-overhead and random-access motivation for the encoding, and the statement that a byte-comparable encoding also enables radix sort",
+          "at": [
+            {
+              "step": "DuckDB's own three-row worked example, encoded by hand: a descending string's bits all inverted, a signed year's sign bit flipped and bytes swapped to big-endian, a shorter string padded with zero bytes that the descending inversion turns to all-ones. Comparing the three encoded byte strings reproduces the post's own row order with one comparison, no per-column loop."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Kuiper & Mühleisen, ICDE 2023 paper",
+      "items": [
+        {
+          "item": "the paper's own title, authors and headline finding (row-based sorting beats columnar sorting even after a conversion cost), cited as the fuller, later account the 2021 post itself links to",
+          "at": [
+            {
+              "step": "Binary strings that give the right order under byte comparison give the right order under a byte-by-byte radix sort too, DuckDB's own stated connection: the encoding bought a cheap comparator, and then a comparator-free sort for free. IEEE 754 floats get the identical treatment: always flip the sign bit, and if it was set, flip every other bit too."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "McIlroy, Bostic & McIlroy, \"Engineering Radix Sort\" (1993)",
+      "items": [
+        {
+          "item": "the paper's own coining of \"American flag sort\" by analogy with the Dutch national flag problem, and its recommendation of the algorithm for general use",
+          "at": [
+            {
+              "step": "American flag sort, named by McIlroy, Bostic and McIlroy in 1993, by analogy with the Dutch national flag problem scaled from three piles to as many as there are digit values: count the digit values, turn the counts into each bucket's own slot range, then permute in place by following cycle-leader swaps. Measured directly: 6 swaps on an 8-key deck."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Sedgewick & Wayne, Algorithms 4th ed. booksite §5.1",
+      "items": [
+        {
+          "item": "an independent confirmation of American flag sort's name and its count-array-driven, in-place swap mechanism, used because the 1993 paper's own code listings are OCR-damaged in the fetched text",
+          "at": [
+            {
+              "step": "American flag sort, named by McIlroy, Bostic and McIlroy in 1993, by analogy with the Dutch national flag problem scaled from three piles to as many as there are digit values: count the digit values, turn the counts into each bucket's own slot range, then permute in place by following cycle-leader swaps. Measured directly: 6 swaps on an 8-key deck."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Herf, \"Radix Tricks\" (stereopsis.com)",
+      "items": [
+        {
+          "item": "the exact IEEE 754 order-preserving bit-flip rule (always flip the sign bit; flip every other bit too if it was set)",
+          "at": [
+            {
+              "step": "Binary strings that give the right order under byte comparison give the right order under a byte-by-byte radix sort too, DuckDB's own stated connection: the encoding bought a cheap comparator, and then a comparator-free sort for free. IEEE 754 floats get the identical treatment: always flip the sign bit, and if it was set, flip every other bit too."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "Counting sort's stability is not an incidental nice property of this particular implementation — it is the entire correctness argument for LSD radix sort, which has no other mechanism keeping digit passes from undoing each other's work. A counting sort that scattered in any other order (say, by iterating the count array instead of the input) would still sort correctly on a single pass but would break LSD radix sort's multi-pass composition.",
+        "at": [
+          {
+            "step": "Counting sort: count how many keys have each value, turn the counts into starting positions by a running sum, then scatter each key into its slot by walking the input in order. Measured directly: 12 keys, 12 moves. The scatter walks the input in order, so three keys tied at value 5 come out in their original order — the stability the next step depends on."
+          }
+        ]
+      },
+      {
+        "item": "LSD radix sort's digit order (least significant first) is not an arbitrary convention — it is forced by the stability argument. Sorting most-significant-digit first with a stable per-pass sort would let a later pass on a less significant digit reorder keys that an earlier, more significant pass had already correctly separated, undoing the earlier pass's work.",
+        "at": [
+          {
+            "step": "LSD radix sort: counting-sort by the last digit, then the next, and so on. Each pass's own stability is exactly why the composed result ends up sorted. Measured directly: 3 passes on 3-digit keys, 24 total moves. At a million 32-bit keys with 8-bit digits: 4 passes, against roughly 20 comparison levels."
+          }
+        ]
+      },
+      {
+        "item": "MSD radix sort's early-stopping advantage over LSD is conditional on the data, not structural: on keys that are mostly distinct from the first digit (e.g. random keys), MSD can stop almost immediately per bucket, but on keys that share a long common prefix, MSD degrades toward touching every digit of every key anyway, the same total work LSD always does.",
+        "at": [
+          {
+            "step": "MSD radix sort: partition by the first digit into buckets, then recurse on each bucket by the next digit, falling back to insertion sort once a bucket is small. It touches only distinguishing prefixes, but its memory access is irregular and it recurses into many small buckets."
+          }
+        ]
+      },
+      {
+        "item": "American flag sort's swap count (6 swaps moving 8 keys into place) is lower than the 8 moves the two-array version would make, which is not a general property of the algorithm — a key already sitting in its own bucket costs 0 swaps, so the swap count depends on how many keys are already near their final position, not just on n.",
+        "at": [
+          {
+            "step": "American flag sort, named by McIlroy, Bostic and McIlroy in 1993, by analogy with the Dutch national flag problem scaled from three piles to as many as there are digit values: count the digit values, turn the counts into each bucket's own slot range, then permute in place by following cycle-leader swaps. Measured directly: 6 swaps on an 8-key deck."
+          }
+        ]
+      },
+      {
+        "item": "The instability demonstration's particular reordering (h, i becoming i, h) is a product of which bucket processing order the algorithm happens to use (ascending digit value, left to right through the array) — a different implementation detail (e.g. processing buckets in a different order) would still be unstable, but could produce a different specific reordering on the same input, so the exact output here is not itself a property worth memorizing, only the fact that some reordering happens.",
+        "at": [
+          {
+            "step": "Instability, shown: two keys sharing a digit value, tagged h and i on entry, come out as i then h. Nothing in the in-place permutation preserves which displaced key arrived first."
+          }
+        ]
+      },
+      {
+        "item": "DuckDB's byte encoding trick only works because memcmp compares bytes as unsigned values left to right — the entire scheme (sign-bit flipping, bit inversion for descending order, big-endian byte swapping) exists specifically to translate each column's own native ordering into that one fixed comparison rule, not because memcmp is special in any other way.",
+        "at": [
+          {
+            "step": "DuckDB's own three-row worked example, encoded by hand: a descending string's bits all inverted, a signed year's sign bit flipped and bytes swapped to big-endian, a shorter string padded with zero bytes that the descending inversion turns to all-ones. Comparing the three encoded byte strings reproduces the post's own row order with one comparison, no per-column loop."
+          }
+        ]
+      },
+      {
+        "item": "The claim that the same encoding \"also enables radix sort\" is specifically about byte-by-byte radix sort on the encoded string, not about running radix sort on the original, unencoded columns — radix sort on a raw signed integer or a raw descending string would need its own separate fix (the exact fixes this topic builds), so the encoding and the radix-sort compatibility are the same fix applied once, not two independent facts that happen to coincide.",
+        "at": [
+          {
+            "step": "Binary strings that give the right order under byte comparison give the right order under a byte-by-byte radix sort too, DuckDB's own stated connection: the encoding bought a cheap comparator, and then a comparator-free sort for free. IEEE 754 floats get the identical treatment: always flip the sign bit, and if it was set, flip every other bit too."
+          }
+        ]
+      },
+      {
+        "item": "The measured crossover (200,000 radix moves vs 718,346 comparisons at n=50,000) compares two different units of work — a key move and a key comparison are not the same cost on real hardware — so the comparison is suggestive of radix sort's asymptotic advantage, not a wall-clock proof; CHAPTER.md's own instruction reserves wall-clock claims for the post-notes lab's compiled benchmark, which this topic's own in-reel numbers are not a substitute for.",
+        "at": [
+          {
+            "step": "The crossover, measured: at 50,000 random 32-bit keys with 8-bit digits, LSD radix sort makes exactly 4 times n, 200,000, key moves in total; a comparison sort makes exactly 718,346 comparisons on the same keys. Radix sort is also not adaptive: an already-sorted array still costs all 4 passes and n moves per pass."
+          }
+        ]
+      },
+      {
+        "item": "Radix sort's own non-adaptiveness (full cost on sorted input) is a sharp contrast with topic 52's Timsort precisely because both are presented in the same chapter: a learner could otherwise assume every \"modern\" or \"advanced\" sort adapts to existing order, but adaptiveness is a property of the algorithm's own design (Timsort explicitly looks for runs), not a general benefit of sophistication.",
+        "at": [
+          {
+            "step": "The crossover, measured: at 50,000 random 32-bit keys with 8-bit digits, LSD radix sort makes exactly 4 times n, 200,000, key moves in total; a comparison sort makes exactly 718,346 comparisons on the same keys. Radix sort is also not adaptive: an already-sorted array still costs all 4 passes and n moves per pass."
+          }
+        ]
+      },
+      {
+        "item": "Bucket sort's expected O(n) bound relies specifically on the variance of bucket occupancy staying low under the uniform assumption (each bucket's expected size is 1, and the sum of squared bucket sizes stays linear in n), not merely on the average bucket size being small — the clustered-input demonstration shows average bucket size is a misleading summary on its own, since a single oversized bucket can dominate the total cost even while most buckets stay empty.",
+        "at": [
+          {
+            "step": "Bucket sort: n keys drawn uniformly from the unit interval into n buckets, each sorted by insertion sort. Measured directly at 100,000 keys: the largest bucket held 8 keys, and 36.7% of buckets were empty, against the predicted e to the minus one, 36.8%. On a clustered, non-uniform input, nearly every key lands in the same handful of buckets, and the cost collapses to the inner sort's own cost on a near-full-size array."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}
