@@ -1,0 +1,28 @@
+{
+  "topic": "Binary search invariants and boundaries",
+  "syllabus": [],
+  "sources": [],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The half-open range convention [lo, hi): lo is always a candidate, hi is always one past the last candidate", "at": [{ "step": "The half-open invariant" }] },
+      { "item": "A loop invariant for binary search must be stated and kept true at the top of every iteration, not just argued informally", "at": [{ "step": "The half-open invariant" }] },
+      { "item": "lower_bound: first index i with a[i] >= x", "at": [{ "step": "Four questions, one loop" }] },
+      { "item": "upper_bound: first index i with a[i] > x (or the end of the range if none)", "at": [{ "step": "Four questions, one loop" }] },
+      { "item": "First and last occurrence of x reduce to lower_bound(x) and upper_bound(x) - 1", "at": [{ "step": "Four questions, one loop" }] },
+      { "item": "The count of x in a sorted range equals upper_bound(x) - lower_bound(x)", "at": [{ "step": "Four questions, one loop" }] },
+      { "item": "The naive midpoint (low + high) / 2 overflows a fixed-width signed integer for large enough low and high", "at": [{ "step": "The bug that waited nine years" }] },
+      { "item": "The portable, overflow-safe midpoint is low + ((high - low) / 2)", "at": [{ "step": "The bug that waited nine years" }] },
+      { "item": "The same bug sat undetected in Bentley's Programming Pearls binary search and in the JDK's own Arrays.binarySearch for about nine years before it was reported", "at": [{ "step": "The bug that waited nine years" }] },
+      { "item": "The bug manifests only at array lengths around 2^30 (roughly a billion elements), which is why it went unnoticed for two decades", "at": [{ "step": "The bug that waited nine years" }] },
+      { "item": "Java's own shipped fix uses an unsigned right shift (low + high) >>> 1, a language-specific alternative to the portable form", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "Termination: each iteration strictly shrinks hi - lo (by at least one), so the loop ends in at most ceil(lg(n+1)) iterations for an array of n elements", "at": [{ "step": "Proving it ends" }] },
+      { "item": "The exact number of iterations for n = 1,000,000 is 20", "at": [{ "step": "Proving it ends" }] },
+      { "item": "A closed-range [lo, hi] formulation of the same algorithm needs a different, easier-to-break empty-range and termination check, which is why this topic standardises on half-open", "at": [{ "step": "The half-open invariant" }] },
+      { "item": "Binary search needs random access to the range (an array, not a linked list), a precondition named but not explored here", "at": [{ "out": "random-access precondition is a one-line aside in pre-notes; the data-structure contrast belongs to Chapter 2's lists, already live, not this topic" }] },
+      { "item": "A recursive formulation has the same invariant but costs O(log n) stack frames, against the iterative version's O(1) extra space", "at": [{ "deep": "Internals" }] }
+    ]
+  },
+  "gapReview": { "date": "", "by": "", "open": [] }
+}
