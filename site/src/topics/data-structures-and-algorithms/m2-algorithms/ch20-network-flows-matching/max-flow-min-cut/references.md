@@ -1,0 +1,15 @@
+Last verified: 2026-11-05.
+
+- Erickson, *Algorithms* (2019), Chapter 10 "Maximum Flows & Minimum Cuts" — the Maxflow-Mincut theorem, the integrality theorem, Ford and Fulkerson's own algorithm, and the Edmonds–Karp bad example. [source](https://jeffe.cs.illinois.edu/teaching/algorithms/book/10-maxflow.pdf)
+- SciPy Documentation, `scipy.sparse.csgraph.maximum_flow` — the integer-capacity requirement and the CLRS-credited cross-check network this topic reuses directly. [source](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csgraph.maximum_flow.html)
+- NetworkX Documentation, `maximum_flow` — the note that a maximum flow need not be acyclic. [source](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.flow.maximum_flow.html)
+- L. R. Ford Jr. and D. R. Fulkerson, "Maximal flow through a network," *Canadian Journal of Mathematics* 8, 1956, pp. 399–404 — cited bibliographically, confirmed against Crossref, not opened or quoted.
+- P. Elias, A. Feinstein, and C. E. Shannon, "A note on the maximum flow through a network," *IRE Transactions on Information Theory* 2(4), 1956, pp. 117–119 — cited bibliographically, confirmed against Crossref, not opened or quoted; the theorem's independent co-discoverers.
+- A. Schrijver, "On the history of the transportation and maximum flow problems," *Mathematical Programming* 91(3), 2002, pp. 437–445 — cited bibliographically, named as Erickson's own source for the declassified Harris-Ross rail-network story.
+- J. Edmonds and R. M. Karp, "Theoretical improvements in algorithmic efficiency for network flow problems," *Journal of the ACM* 19(2), 1972, pp. 248–264 — cited bibliographically, confirmed against Crossref; the fattest-path and shortest-path augmenting-path rules are named only.
+- U. Zwick, "The smallest networks on which the Ford–Fulkerson maximum flow procedure may fail to terminate," *Theoretical Computer Science* 148(1), 1995, pp. 165–170 — cited bibliographically; its own network is drawn and named only, never simulated to a number.
+- Y. Boykov and V. Kolmogorov, "An experimental comparison of min-cut/max-flow algorithms for energy minimization in vision," *IEEE TPAMI* 26(9), 2004, pp. 1124–1137 — cited bibliographically, named once for the computer-vision use of max-flow/min-cut.
+
+CLRS 4th ed.'s own maximum-flow chapter is citation-only this session (paywalled, not independently opened); this topic's only use of CLRS is the network and flow value SciPy's own documentation already attributes to it and reproduces directly. Dinitz's own blocking-flow algorithm, push–relabel, Stoer–Wagner and Karger's global minimum cut, and the almost-linear-time flows frontier are named only, per `CHAPTER.md`'s own instruction; their own bibliographic details were checked against Crossref at planning time (where checked) and are not claimed beyond that.
+
+Spotted an error? [Open an issue](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=max-flow-min-cut:%20).
