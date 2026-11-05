@@ -1,0 +1,204 @@
+{
+  "topic": "dsa.cut-property-kruskal-s",
+  "syllabus": [
+    {
+      "clause": "cut and cycle properties as the correctness proof",
+      "at": [
+        {
+          "step": "The generic algorithm behind every correct minimum-spanning-tree method: start with no edges picked, repeatedly add any edge that is safe, meaning still part of some minimum spanning tree, and stop once n minus one edges are picked. Every algorithm in this chapter is this generic algorithm with a different, fast rule for finding a safe edge."
+        },
+        {
+          "step": "The cut property: for any cut that respects the edges already picked, a lightest edge crossing that cut is safe. Demonstrated directly on this topic's own graph: cutting two vertices away from the rest, the lightest edge crossing that cut turns out to be exactly one of the five edges the minimum spanning tree keeps."
+        },
+        {
+          "step": "The cycle property, the cut property's mirror: on any cycle, a strictly heaviest edge belongs to no minimum spanning tree. Demonstrated directly on a triangle inside this topic's own graph: its heaviest edge is confirmed absent from the computed minimum spanning tree."
+        },
+        {
+          "step": "Two edges tie for lightest across some cut. Does the cut property still name one single safe edge?"
+        },
+        {
+          "step": "The tie-trap: a four-cycle where all four edges share the identical weight has four different minimum spanning trees, every one of the same total weight. Demonstrated directly: brute-force enumeration confirms all four trees exist and all four tie."
+        },
+        {
+          "step": "Counting every spanning tree of this topic's own graph by brute force: eighty-nine in total, counting both of the two parallel edges between the same pair of sites; dropping the heavier of that pair drops the count to fifty-five. Exactly one of those eighty-nine trees achieves the minimum weight; the next cheapest tree costs one more."
+        },
+        {
+          "step": "Shifting every single edge weight by the identical amount, even into negative numbers, changes no relative order between any two edges, so Kruskal's run, and the cut property's own argument, are completely untouched. Confirmed directly: the identical five edges are accepted after every weight is shifted negative."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "sorting edges plus union–find (Ch.11)",
+      "at": [
+        {
+          "step": "Kruskal's algorithm: sort every edge by weight, scan them in that order, and let union-find answer one question per edge, does accepting it close a cycle. Accept if not, reject if so, stop once five edges are accepted. Measured directly: five edges accepted, five rejected, each rejected edge closing a cycle at the exact moment it is reached."
+        },
+        {
+          "step": "Kruskal's own cost: sorting the edges, then a near-linear scan with union-find. The sort is the part that grows with the size of the edge list; the union-find part barely grows at all. A pre-sorted edge list, or integer weights fed through this chapter's own radix sort, changes which part of the cost actually matters."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Minimum spanning tree\"",
+      "items": [
+        {
+          "item": "the cut property and cycle property, stated and proved by those exact names, and the tie corollary that more than one edge can be safe",
+          "at": [
+            {
+              "step": "The cut property: for any cut that respects the edges already picked, a lightest edge crossing that cut is safe. Demonstrated directly on this topic's own graph: cutting two vertices away from the rest, the lightest edge crossing that cut turns out to be exactly one of the five edges the minimum spanning tree keeps."
+            },
+            {
+              "step": "The cycle property, the cut property's mirror: on any cycle, a strictly heaviest edge belongs to no minimum spanning tree. Demonstrated directly on a triangle inside this topic's own graph: its heaviest edge is confirmed absent from the computed minimum spanning tree."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Erickson, Algorithms (2019), Chapter 7 \"Minimum Spanning Trees\"",
+      "items": [
+        {
+          "item": "an independent statement of the cut property's own fact under a different name, the \"safe edge\" lemma, attributed by Erickson to Prim",
+          "at": [
+            {
+              "step": "The generic algorithm behind every correct minimum-spanning-tree method: start with no edges picked, repeatedly add any edge that is safe, meaning still part of some minimum spanning tree, and stop once n minus one edges are picked. Every algorithm in this chapter is this generic algorithm with a different, fast rule for finding a safe edge."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "SciPy Documentation, scipy.sparse.csgraph.minimum_spanning_tree",
+      "items": [
+        {
+          "item": "SciPy's own stated choice of Kruskal's algorithm to compute the minimum spanning tree",
+          "at": [
+            {
+              "step": "Kruskal's algorithm: sort every edge by weight, scan them in that order, and let union-find answer one question per edge, does accepting it close a cycle. Accept if not, reject if so, stop once five edges are accepted. Measured directly: five edges accepted, five rejected, each rejected edge closing a cycle at the exact moment it is reached."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "NetworkX Documentation, minimum_spanning_tree",
+      "items": [
+        {
+          "item": "NetworkX's own three named algorithm choices (Kruskal, Prim, Borůvka), with Kruskal the default",
+          "at": [
+            {
+              "step": "Kruskal's own cost: sorting the edges, then a near-linear scan with union-find. The sort is the part that grows with the size of the edge list; the union-find part barely grows at all. A pre-sorted edge list, or integer weights fed through this chapter's own radix sort, changes which part of the cost actually matters."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "The cut property is stated for a cut that respects the edges already accepted. Picking a cut that slices through an already-accepted edge breaks the exchange argument: swapping the lighter crossing edge for a heavier one on the same side as an accepted edge could disconnect the partial tree built so far, which the proof never allows.",
+        "at": [
+          {
+            "step": "The cut property: for any cut that respects the edges already picked, a lightest edge crossing that cut is safe. Demonstrated directly on this topic's own graph: cutting two vertices away from the rest, the lightest edge crossing that cut turns out to be exactly one of the five edges the minimum spanning tree keeps."
+          }
+        ]
+      },
+      {
+        "item": "The cycle property's \"strictly heavier\" qualifier is load-bearing, not decorative: with a tie at the heaviest weight on a cycle, that tied edge can still be safe for some minimum spanning tree, so the cycle property only forbids an edge that is unambiguously the sole heaviest, exactly mirroring why the cut property only needs a lightest, not the unique lightest, crossing edge.",
+        "at": [
+          {
+            "step": "The cycle property, the cut property's mirror: on any cycle, a strictly heaviest edge belongs to no minimum spanning tree. Demonstrated directly on a triangle inside this topic's own graph: its heaviest edge is confirmed absent from the computed minimum spanning tree."
+          }
+        ]
+      },
+      {
+        "item": "A tie producing multiple minimum spanning trees is a fact about the set of minimum-weight trees, not about Kruskal's own behavior: any consistent tie-breaking rule inside the sort (by input order, by vertex label, by anything else) still produces a correct minimum spanning tree, just not necessarily the same one another tie-break would produce.",
+        "at": [
+          {
+            "step": "Two edges tie for lightest across some cut. Does the cut property still name one single safe edge?"
+          }
+        ]
+      },
+      {
+        "item": "The tie-trap's four tied trees are not four equally good answers to different questions; they are four distinct edge sets, every one spanning the same four vertices at the same total weight, which is exactly the scenario the cut property predicts and permits rather than something the correctness proof has to work around.",
+        "at": [
+          {
+            "step": "The tie-trap: a four-cycle where all four edges share the identical weight has four different minimum spanning trees, every one of the same total weight. Demonstrated directly: brute-force enumeration confirms all four trees exist and all four tie."
+          }
+        ]
+      },
+      {
+        "item": "Counting eighty-nine spanning trees by brute force (dropping to fifty-five without the heavier parallel edge) is a statement about this one six-vertex, ten-edge graph, not a general formula; Cayley's n to the n minus two count and the Matrix-Tree theorem are the tools that scale, and brute-force enumeration here is deliberately a check against a small, fully countable instance, not a method meant to generalize.",
+        "at": [
+          {
+            "step": "Counting every spanning tree of this topic's own graph by brute force: eighty-nine in total, counting both of the two parallel edges between the same pair of sites; dropping the heavier of that pair drops the count to fifty-five. Exactly one of those eighty-nine trees achieves the minimum weight; the next cheapest tree costs one more."
+          }
+        ]
+      },
+      {
+        "item": "Shifting every weight by a constant preserves every pairwise order between edges, which is the only thing both the cut property's proof and Kruskal's sort ever consult; this is a sharp, worked contrast with shortest-path algorithms, where a negative edge can break the non-negative-weight assumption Dijkstra's relaxation depends on even though the same shift leaves a minimum spanning tree's own answer untouched.",
+        "at": [
+          {
+            "step": "Shifting every single edge weight by the identical amount, even into negative numbers, changes no relative order between any two edges, so Kruskal's run, and the cut property's own argument, are completely untouched. Confirmed directly: the identical five edges are accepted after every weight is shifted negative."
+          }
+        ]
+      },
+      {
+        "item": "Kruskal's correctness is a corollary of the cut property rather than a separate proof: the cut it implicitly uses at each accepted edge is the one between the two components that edge joins, which respects every edge accepted so far by construction, and the accepted edge is a lightest crossing edge precisely because any cheaper edge between those two components was already handled earlier in sorted order.",
+        "at": [
+          {
+            "step": "Kruskal's algorithm: sort every edge by weight, scan them in that order, and let union-find answer one question per edge, does accepting it close a cycle. Accept if not, reject if so, stop once five edges are accepted. Measured directly: five edges accepted, five rejected, each rejected edge closing a cycle at the exact moment it is reached."
+          }
+        ]
+      },
+      {
+        "item": "The rejected-edge reading as \"the heaviest edge on the cycle it would close\" only holds cleanly for distinct weights; under a tie, the edge Kruskal rejects is merely one of possibly several heaviest edges on that cycle, which is the same tie caveat the predict step raises, now showing up inside Kruskal's own correctness argument rather than only in the abstract lemma.",
+        "at": [
+          {
+            "step": "Kruskal's algorithm: sort every edge by weight, scan them in that order, and let union-find answer one question per edge, does accepting it close a cycle. Accept if not, reject if so, stop once five edges are accepted. Measured directly: five edges accepted, five rejected, each rejected edge closing a cycle at the exact moment it is reached."
+          }
+        ]
+      },
+      {
+        "item": "\"The sort dominates\" is conditional on the input, not a property of Kruskal's algorithm in general: an edge list that already arrives sorted, or integer weights small enough for a linear-time radix sort, removes the sorting bottleneck entirely and leaves the near-linear union-find scan as the whole cost, which is exactly why the chapter's own radix sort topic matters here rather than being an unrelated aside.",
+        "at": [
+          {
+            "step": "Kruskal's own cost: sorting the edges, then a near-linear scan with union-find. The sort is the part that grows with the size of the edge list; the union-find part barely grows at all. A pre-sorted edge list, or integer weights fed through this chapter's own radix sort, changes which part of the cost actually matters."
+          }
+        ]
+      },
+      {
+        "item": "The minimum spanning tree and the shortest-path tree from the same vertex differing by one unit of weight on this graph is a worked instance of a general fact, not a coincidence of this graph's numbers: the two trees answer different optimization problems (minimizing total tree weight versus minimizing each individual root-to-vertex distance), and nothing forces their optimal solutions to coincide even when they happen to overlap on most edges.",
+        "at": [
+          {
+            "step": "The reveal: this topic's own minimum spanning tree weighs one less than the shortest-path tree from the same starting site, computed on the identical graph. The minimum spanning tree keeps an edge the shortest-path tree never would, because pricing a network is not the same question as pricing routes from one site."
+          }
+        ]
+      },
+      {
+        "item": "The parallel A-B edge at the higher weight being rejected by Kruskal is not a special case needing its own code: union-find's cycle test treats a second edge between an already-connected pair exactly like any other edge that would close a cycle, so multi-edges and the general cycle rejection are the identical mechanism, not two separate rules.",
+        "at": [
+          {
+            "step": "Counting every spanning tree of this topic's own graph by brute force: eighty-nine in total, counting both of the two parallel edges between the same pair of sites; dropping the heavier of that pair drops the count to fifty-five. Exactly one of those eighty-nine trees achieves the minimum weight; the next cheapest tree costs one more."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}
