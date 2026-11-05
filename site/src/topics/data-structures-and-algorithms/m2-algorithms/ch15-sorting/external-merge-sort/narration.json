@@ -1,0 +1,95 @@
+{
+    "topic": "dsa.external-merge-sort",
+    "steps": [
+        {
+            "lines": [
+                "Every sort this chapter has built so far assumes the whole file fits in memory at once, and a file ten times larger than memory breaks that assumption completely.",
+                "Sorting it still costs surprisingly little: with memory for thousands of buffers, a handful of runs merge into one sorted file in a single pass over the disk."
+            ]
+        },
+        {
+            "lines": [
+                "Cut the memory in half, but keep the file exactly the same size.",
+                {
+                    "beat": 0.3
+                },
+                "Does the number of merge passes double?"
+            ],
+            "answer": [
+                "Usually not at all. The pass count is a logarithm in the ratio of memory to block size, not a straight line in memory, so it only climbs once that ratio crosses a real threshold."
+            ]
+        },
+        {
+            "lines": [
+                "The simple way to make sorted runs out of an unsorted file: read as much as fits in memory, sort that block with any in-memory sort from earlier in this chapter, write it out, and repeat.",
+                "A million keys at a tight memory limit come out as exactly as many runs as the file is multiples of that limit."
+            ]
+        },
+        {
+            "lines": [
+                "Replacement selection, the technique Knuth nicknamed the snowplow, keeps a heap's worth of items in memory instead of a plain sorted block.",
+                "It keeps outputting the smallest key that is not smaller than the last key it already wrote, and holds back anything too small for the current run until the next one starts."
+            ]
+        },
+        {
+            "lines": [
+                "On random input, that held-back trick lets a single run grow to almost twice the size of memory on average, so replacement selection roughly halves how many runs the file breaks into.",
+                "Sorted input never triggers a hold-back at all, so the whole file becomes one run. Reverse-sorted input holds back every single key, so it does no better than the simple method."
+            ]
+        },
+        {
+            "lines": [
+                "Merging comes next, and merging many runs at once needs a way to find the smallest of several next-keys without comparing every pair.",
+                "A loser tree, already built in an earlier chapter, answers that in about the logarithm of the number of runs, comparisons per output item, not the full count of runs itself."
+            ]
+        },
+        {
+            "lines": [
+                "How many runs can be merged at once is limited by buffers, one for each run being read plus one for the output, and all of them have to fit in memory together.",
+                "A database working entirely in memory skips this limit by merging only two runs at a time instead, since it never has to pay for disk seeks per run in the first place."
+            ]
+        },
+        {
+            "lines": [
+                "On the chapter's own running example, a handful of runs easily fit inside one merge's fan-in limit, so a single merge pass finishes the whole file.",
+                "Counted block by block, the total cost comes out to about four times what one plain scan of the file would cost: one scan to write the runs, one more to merge them."
+            ]
+        },
+        {
+            "lines": [
+                "Taking the same sixteen runs and trying three different fan-ins side by side makes the pattern concrete: a small fan-in needs several merge passes, and a large one finishes in a single pass.",
+                "The exact same formula produces every one of those pass counts, whether the fan-in is small, middling, or large enough to merge everything at once."
+            ]
+        },
+        {
+            "lines": [
+                "Picture memory being cut in half again and again, six times over, while the file size and the block size both stay exactly fixed.",
+                {
+                    "beat": 0.3
+                },
+                "How often does the merge-pass count actually change?"
+            ],
+            "answer": [
+                "Only once, near the end. The run count and the fan-in both shrink together as memory shrinks, and the pass count only climbs when the run count finally crosses the fan-in's own threshold."
+            ]
+        },
+        {
+            "lines": [
+                "Computed step by step, the table shows the pass count holding perfectly steady for most of those halvings, then jumping by exactly one once the threshold is finally crossed.",
+                "That is the whole lesson in one picture: the pass count behaves like a logarithm, not like a straight line falling as memory falls."
+            ]
+        },
+        {
+            "lines": [
+                "This exact mechanism, not a cousin of it, runs inside real systems for real reasons: a database's own sort operator, a sort-merge join, and a spilling aggregation all generate runs and merge them this same way.",
+                "A log-structured storage engine's own background compaction runs the identical kind of merge, just compacting sorted files instead of sorting one from scratch."
+            ]
+        },
+        {
+            "lines": [
+                "Paying for a handful of passes over a disk turns out to be worth it, because of what a sorted file buys afterward: finding one key among a million takes only a few steps once the keys are in order, and a full scan if they are not.",
+                "That search is binary search, and it is next."
+            ]
+        }
+    ]
+}

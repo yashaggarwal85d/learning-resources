@@ -1,0 +1,212 @@
+{
+  "topic": "dsa.external-merge-sort",
+  "syllabus": [
+    {
+      "clause": "run generation (replacement selection gives runs ~2M long)",
+      "at": [
+        {
+          "step": "The simple way to turn an unsorted file into sorted runs: read as many items as fit in memory, sort them with any of this chapter's in-memory sorts, write the sorted block out as a run, repeat. Measured directly: one million keys at a memory limit of four thousand give exactly two hundred fifty runs."
+        },
+        {
+          "step": "Replacement selection, Knuth's own snowplow technique: keep a heap's worth of items in memory, repeatedly output the smallest key not smaller than the last key already written to the current run, replace it with the next input item, and hold back anything too small for the current run until the next one. Measured directly on two hundred thousand random keys at a memory limit of one thousand: interior runs average almost exactly twice the memory limit."
+        },
+        {
+          "step": "The same heap adapts to order on the input it is given. Ten thousand already-sorted keys at a memory limit of one hundred give exactly one run: nothing is ever too small for the current run. Ten thousand reverse-sorted keys at the same limit give exactly one hundred runs of one hundred: every new key is always too small, so replacement selection does no better than the simple method."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "multi-way merging with loser trees (Ch.6)",
+      "at": [
+        {
+          "step": "Pass one and onward merges up to k runs at a time, keeping the next key of each run in a tournament. Chapter 6's own loser tree gives ceiling of log base two of k comparisons per output item, used here, not rebuilt: a fan-in of up to sixteen thousand three hundred eighty-three costs only fourteen comparisons per item."
+        },
+        {
+          "step": "Fan-in is bounded by block buffers: one input buffer per run plus one for output, so k is at most memory over block size, minus one. A larger fan-in means smaller buffers and, on a disk, more seeks per item. DuckDB's own post states the contrast plainly: k-way merge is traditionally used for external sorting because it minimizes I/O, while cascade (two-way) merge is used for in-memory sorting because it is more efficient."
+        },
+        {
+          "deep": "In the lab"
+        }
+      ]
+    },
+    {
+      "clause": "number of passes log_{M/B}(N/M)",
+      "at": [
+        {
+          "step": "On the chapter's own running example, N over M gives sixteen runs, and a fan-in up to sixteen thousand three hundred eighty-three merges them all in one pass. Measured directly: one million forty-eight thousand five hundred seventy-six block transfers in all, run generation and the one merge pass together, against two hundred sixty-two thousand one hundred forty-four for a single scan — four times a scan."
+        },
+        {
+          "step": "A small instance, worked in full: sixteen runs, three different fan-ins. A fan-in of two needs four merge passes; a fan-in of four needs two; a fan-in of sixteen finishes in one. The formula and the worked numbers agree exactly, every time."
+        },
+        {
+          "step": "The table, computed: across six steps of halving memory, the merge-pass count stays at one for five of them, then jumps to two only on the last step, once the fan-in finally drops below the run count. The pass count is a logarithm, not a line — memory can shrink a long way before the number of passes actually changes."
+        },
+        {
+          "deep": "Into the internals"
+        }
+      ]
+    },
+    {
+      "clause": "and the spill path of large sorts, joins and aggregations → Data Engineering §1.3, Ch.7.",
+      "at": [
+        {
+          "step": "This same mechanism runs inside real systems for real reasons, each named, not reimplemented here: a query engine's sort operator, a sort-merge join, and a spilling aggregation all generate runs and merge them exactly this way. DuckDB's own buffer manager spills by unloading blocks to disk and swizzling pointers to the heap blocks during the merge. Spark's shuffle merges and LSM compaction run the identical k-way merge; the Data Engineering reel on this exact topic covers the engine-side detail by name."
+        },
+        {
+          "deep": "In production"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Vitter, \"Algorithms and Data Structures for External Memory\" (2008)",
+      "items": [
+        {
+          "item": "the replacement-selection run-length claim (runs of about 2M items on average)",
+          "at": [
+            {
+              "step": "Replacement selection, Knuth's own snowplow technique: keep a heap's worth of items in memory, repeatedly output the smallest key not smaller than the last key already written to the current run, replace it with the next input item, and hold back anything too small for the current run until the next one. Measured directly on two hundred thousand random keys at a memory limit of one thousand: interior runs average almost exactly twice the memory limit."
+            }
+          ]
+        },
+        {
+          "item": "the merge-pass-count claim (at most R = Theta(m) runs merged at a time, giving O(log_m n) passes)",
+          "at": [
+            {
+              "step": "On the chapter's own running example, N over M gives sixteen runs, and a fan-in up to sixteen thousand three hundred eighty-three merges them all in one pass. Measured directly: one million forty-eight thousand five hundred seventy-six block transfers in all, run generation and the one merge pass together, against two hundred sixty-two thousand one hundred forty-four for a single scan — four times a scan."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Kuiper, \"Fastest Table Sort in the West\" (duckdb.org, 2021)",
+      "items": [
+        {
+          "item": "the post's own stated reason K-way merge is the external-sorting choice (it minimizes I/O) while cascade merge is the in-memory choice",
+          "at": [
+            {
+              "step": "Fan-in is bounded by block buffers: one input buffer per run plus one for output, so k is at most memory over block size, minus one. A larger fan-in means smaller buffers and, on a disk, more seeks per item. DuckDB's own post states the contrast plainly: k-way merge is traditionally used for external sorting because it minimizes I/O, while cascade (two-way) merge is used for in-memory sorting because it is more efficient."
+            }
+          ]
+        },
+        {
+          "item": "the buffer manager's own unload-to-disk behavior and pointer swizzling during the merge",
+          "at": [
+            {
+              "step": "This same mechanism runs inside real systems for real reasons, each named, not reimplemented here: a query engine's sort operator, a sort-merge join, and a spilling aggregation all generate runs and merge them exactly this way. DuckDB's own buffer manager spills by unloading blocks to disk and swizzling pointers to the heap blocks during the merge. Spark's shuffle merges and LSM compaction run the identical k-way merge; the Data Engineering reel on this exact topic covers the engine-side detail by name."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, Resource Consumption",
+      "items": [
+        {
+          "item": "the work_mem setting's own documented role as the memory budget a sort operation gets before spilling to disk",
+          "at": [
+            {
+              "deep": "In production"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "Replacement selection's expected run length of about 2M is a statement about random input specifically; its real value is not that it is twice as good on average, but that its worst case (reverse-sorted input) matches the simple method exactly, so it is never a strictly worse choice to use in place of the simple method.",
+        "at": [
+          {
+            "step": "The same heap adapts to order on the input it is given. Ten thousand already-sorted keys at a memory limit of one hundred give exactly one run: nothing is ever too small for the current run. Ten thousand reverse-sorted keys at the same limit give exactly one hundred runs of one hundred: every new key is always too small, so replacement selection does no better than the simple method."
+          }
+        ]
+      },
+      {
+        "item": "The heap in replacement selection does strictly more comparison work per item than a plain in-memory sort of the same M items would, since every output and every replacement is a heap operation; the run-length win is a trade of more CPU work per item for fewer, longer runs and therefore fewer merge passes later — not a free improvement.",
+        "at": [
+          {
+            "step": "Replacement selection, Knuth's own snowplow technique: keep a heap's worth of items in memory, repeatedly output the smallest key not smaller than the last key already written to the current run, replace it with the next input item, and hold back anything too small for the current run until the next one. Measured directly on two hundred thousand random keys at a memory limit of one thousand: interior runs average almost exactly twice the memory limit."
+          }
+        ]
+      },
+      {
+        "item": "The loser tree's ceiling-of-log-k comparisons per output item is a claim about CPU comparisons only; it says nothing about I/O, since every one of the k runs still needs its own block buffer resident in memory regardless of how cheap comparing their heads is. A large k is cheap in CPU and expensive in memory at the same time, which is exactly why the fan-in limit is a separate, buffer-driven constraint and not derived from the loser tree's own cost.",
+        "at": [
+          {
+            "step": "Pass one and onward merges up to k runs at a time, keeping the next key of each run in a tournament. Chapter 6's own loser tree gives ceiling of log base two of k comparisons per output item, used here, not rebuilt: a fan-in of up to sixteen thousand three hundred eighty-three costs only fourteen comparisons per item."
+          }
+        ]
+      },
+      {
+        "item": "DuckDB's own K-way-versus-cascade contrast is not a claim that k-way merge is universally better; it is scoped to the I/O setting specifically. In memory, where there is no per-run seek cost to amortize, a simpler cascade of two-way merges can beat a k-way merge on raw CPU cost, so the two systems are optimizing for genuinely different bottlenecks, not disagreeing about which algorithm is \"better.\"",
+        "at": [
+          {
+            "step": "Fan-in is bounded by block buffers: one input buffer per run plus one for output, so k is at most memory over block size, minus one. A larger fan-in means smaller buffers and, on a disk, more seeks per item. DuckDB's own post states the contrast plainly: k-way merge is traditionally used for external sorting because it minimizes I/O, while cascade (two-way) merge is used for in-memory sorting because it is more efficient."
+          }
+        ]
+      },
+      {
+        "item": "The running example's one-merge-pass result is specific to its own numbers (sixteen runs against a fan-in in the thousands); it is not evidence that external merge sort generally finishes in one pass. A file a thousand times larger than memory, with the same block size, would produce far more runs and could easily need two or three passes even with the same generous fan-in.",
+        "at": [
+          {
+            "step": "On the chapter's own running example, N over M gives sixteen runs, and a fan-in up to sixteen thousand three hundred eighty-three merges them all in one pass. Measured directly: one million forty-eight thousand five hundred seventy-six block transfers in all, run generation and the one merge pass together, against two hundred sixty-two thousand one hundred forty-four for a single scan — four times a scan."
+          }
+        ]
+      },
+      {
+        "item": "The four-times-a-scan figure counts only run generation plus one merge pass; it is not the total cost formula in general. With more than one merge pass, every additional pass adds two more scan-equivalents (one read, one write), so the real formula is two times the number of passes plus one, times a scan, not a fixed constant.",
+        "at": [
+          {
+            "step": "On the chapter's own running example, N over M gives sixteen runs, and a fan-in up to sixteen thousand three hundred eighty-three merges them all in one pass. Measured directly: one million forty-eight thousand five hundred seventy-six block transfers in all, run generation and the one merge pass together, against two hundred sixty-two thousand one hundred forty-four for a single scan — four times a scan."
+          }
+        ]
+      },
+      {
+        "item": "The small worked instance (sixteen runs at fan-ins two, four and sixteen) is deliberately chosen so that sixteen is an exact power of each fan-in, giving clean pass counts of four, two and one; a fan-in that does not divide the run count evenly would still follow the same ceiling-of-log formula, but the worked numbers would include a partially-filled final merge group rather than landing on an exact power.",
+        "at": [
+          {
+            "step": "A small instance, worked in full: sixteen runs, three different fan-ins. A fan-in of two needs four merge passes; a fan-in of four needs two; a fan-in of sixteen finishes in one. The formula and the worked numbers agree exactly, every time."
+          }
+        ]
+      },
+      {
+        "item": "The threshold table's step-function shape is a property of the ceiling function in the pass-count formula, not a coincidence of the particular numbers chosen; any fixed N and B will produce a table where most memory halvings leave the pass count unchanged, because a ceiling only increases when its argument actually crosses an integer boundary, which a single halving of memory usually does not force.",
+        "at": [
+          {
+            "step": "The table, computed: across six steps of halving memory, the merge-pass count stays at one for five of them, then jumps to two only on the last step, once the fan-in finally drops below the run count. The pass count is a logarithm, not a line — memory can shrink a long way before the number of passes actually changes."
+          }
+        ]
+      },
+      {
+        "item": "Saying this topic's block-transfer formula \"realizes\" the Aggarwal-Vitter sort bound means the upper bound meets the lower bound asymptotically, in Theta notation; it does not mean the exact constant (four times a scan in the running example) is the same constant the lower bound's own proof produces, since the lower bound is stated up to a constant factor and this topic's own worked numbers are a single concrete instance, not a general constant-matching proof.",
+        "at": [
+          {
+            "step": "On the chapter's own running example, N over M gives sixteen runs, and a fan-in up to sixteen thousand three hundred eighty-three merges them all in one pass. Measured directly: one million forty-eight thousand five hundred seventy-six block transfers in all, run generation and the one merge pass together, against two hundred sixty-two thousand one hundred forty-four for a single scan — four times a scan."
+          }
+        ]
+      },
+      {
+        "item": "Naming LSM compaction and a sort-merge join as places the \"same\" k-way merge runs is a claim about the mechanism (generate sorted runs, merge with a bounded fan-in), not about identical inputs or purposes: compaction merges already-sorted SSTables that were never a single unsorted file to begin with, while this topic's own algorithm starts from one unsorted file, so the shared mechanism is the merge step, not the whole pipeline around it.",
+        "at": [
+          {
+            "step": "This same mechanism runs inside real systems for real reasons, each named, not reimplemented here: a query engine's sort operator, a sort-merge join, and a spilling aggregation all generate runs and merge them exactly this way. DuckDB's own buffer manager spills by unloading blocks to disk and swizzling pointers to the heap blocks during the merge. Spark's shuffle merges and LSM compaction run the identical k-way merge; the Data Engineering reel on this exact topic covers the engine-side detail by name."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}
