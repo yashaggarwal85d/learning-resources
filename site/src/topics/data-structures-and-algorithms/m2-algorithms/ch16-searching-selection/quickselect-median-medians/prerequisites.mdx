@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Search in rotated and sorted matrices">The chapter's last search before this topic breaks from the "order already exists" thread on purpose.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Quicksort and partitioning schemes">The partition step this topic reuses exactly, without rebuilding it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Median of medians" href="https://en.wikipedia.org/wiki/Median_of_medians" by="Wikipedia">The guaranteed worst-case discard fraction behind the BFPRT (1973) algorithm.</Resource>
+  <Resource kind="reading" title="Introselect" href="https://en.wikipedia.org/wiki/Introselect" by="Wikipedia">Musser's 1997 fallback strategy, and why most real standard libraries use a different one.</Resource>
+</ul>
+
+</section>

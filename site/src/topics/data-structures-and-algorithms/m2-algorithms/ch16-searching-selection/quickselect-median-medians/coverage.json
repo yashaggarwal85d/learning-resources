@@ -1,0 +1,80 @@
+{
+  "topic": "dsa.quickselect-median-medians",
+  "syllabus": [
+    {
+      "clause": "expected O(n) quickselect",
+      "at": [
+        { "step": "On a million random keys, does finding the median by quickselect take roughly n comparisons, n log n comparisons, or n squared comparisons, in the typical case?" },
+        { "step": "Quickselect partitions around a pivot, exactly as quicksort does, but recurses into only the side that contains the target rank — the other side is discarded outright, never sorted, never visited again. Finding the median of a million random keys this way costs a small constant times n comparisons, against n log n for a full sort of the same keys." },
+        { "step": "An adversarial or always-unlucky pivot — the first element, on data that is already sorted — degrades quickselect to the same quadratic blow-up unguarded quicksort suffered: each partition shrinks the range by only one element instead of roughly half, so the work adds up like a triangle, not a shrinking geometric sum." }
+      ]
+    },
+    {
+      "clause": "deterministic BFPRT with groups of five",
+      "at": [
+        { "step": "Median-of-medians: split into groups of five, sort each tiny group, take each group's median, then recursively find the median of those group-medians and use that as the pivot. At least three in ten elements are provably smaller than that pivot, and at least three in ten are provably larger — so at most seven in ten survive to the next round, worst case, not merely on average." },
+        { "step": "The constant hidden inside that worst-case linear bound is large enough — sorting every group of five, two recursive calls every round instead of one — that median-of-medians measurably loses to ordinary randomised quickselect on the same everyday input. A worst-case guarantee, bought at a real and measurable price." }
+      ]
+    },
+    {
+      "clause": "introselect",
+      "at": [
+        { "step": "A real standard library promises a worst-case bound for exactly this operation. Does it actually fall back to median-of-medians to deliver that guarantee?" },
+        { "step": "Musser's own 1997 introselect: run quickselect, and only switch to median-of-medians once the recursion depth passes a bound proportional to log n, keeping quickselect's good average case while still guaranteeing linear worst-case time. But reading this machine's own installed standard library header directly shows its actual fallback is a heap-based selection, not median-of-medians at all — the textbook algorithm and the one actually shipped have quietly diverged." }
+      ]
+    },
+    {
+      "clause": "Floyd–Rivest sampling for fewer comparisons in practice",
+      "at": [
+        { "step": "A third option trades neither way: take a small random sample first, use it to estimate two bounds around the target rank, and split the whole array against those two bounds in a single pass before finishing with ordinary quickselect on only the much smaller band left over. Averaged over several random inputs, this measurably beats plain randomised quickselect on the same inputs." }
+      ]
+    },
+    {
+      "clause": "nth_element-style top-k",
+      "at": [
+        { "deep": "nth_element's contract and the one-line extension to top-k" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Median of medians\"",
+      "items": [
+        { "item": "Median-of-medians guarantees worst-case O(n) by discarding at least 30% of the array at every step", "at": [{ "step": "Median-of-medians: split into groups of five, sort each tiny group, take each group's median, then recursively find the median of those group-medians and use that as the pivot. At least three in ten elements are provably smaller than that pivot, and at least three in ten are provably larger — so at most seven in ten survive to the next round, worst case, not merely on average." }] },
+        { "item": "The chosen pivot is guaranteed to lie between the 30th and 70th percentiles, since it is the median of the group-medians", "at": [{ "step": "Median-of-medians: split into groups of five, sort each tiny group, take each group's median, then recursively find the median of those group-medians and use that as the pivot. At least three in ten elements are provably smaller than that pivot, and at least three in ten are provably larger — so at most seven in ten survive to the next round, worst case, not merely on average." }] },
+        { "item": "The algorithm's own name (BFPRT) and authorship (Blum, Floyd, Pratt, Rivest, Tarjan, 1973), and its own original name PICK (with quickselect named FIND)", "at": [{ "step": "Median-of-medians: split into groups of five, sort each tiny group, take each group's median, then recursively find the median of those group-medians and use that as the pivot. At least three in ten elements are provably smaller than that pivot, and at least three in ten are provably larger — so at most seven in ten survive to the next round, worst case, not merely on average." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Introselect\"",
+      "items": [
+        { "item": "Introselect starts with quickselect and only switches to median-of-medians once recursion depth exceeds a bound without sufficient progress", "at": [{ "step": "Musser's own 1997 introselect: run quickselect, and only switch to median-of-medians once the recursion depth passes a bound proportional to log n, keeping quickselect's good average case while still guaranteeing linear worst-case time. But reading this machine's own installed standard library header directly shows its actual fallback is a heap-based selection, not median-of-medians at all — the textbook algorithm and the one actually shipped have quietly diverged." }] },
+        { "item": "Most real C++ standard library implementations use a different introselect, combining quickselect and heapselect, with worst-case O(n log n), not Musser's median-of-medians version", "at": [{ "step": "A real standard library promises a worst-case bound for exactly this operation. Does it actually fall back to median-of-medians to deliver that guarantee?" }] }
+      ]
+    },
+    {
+      "source": "GCC 13's own installed bits/stl_algo.h (read directly, this session's container)",
+      "items": [
+        { "item": "nth_element's actual depth limit is 2 * floor(log2(n)), read from std::__lg(n) * 2 in the real header", "at": [{ "step": "Musser's own 1997 introselect: run quickselect, and only switch to median-of-medians once the recursion depth passes a bound proportional to log n, keeping quickselect's good average case while still guaranteeing linear worst-case time. But reading this machine's own installed standard library header directly shows its actual fallback is a heap-based selection, not median-of-medians at all — the textbook algorithm and the one actually shipped have quietly diverged." }] },
+        { "item": "The real fallback branch calls __heap_select, not any median-of-medians routine, confirming the Introselect page's own correction against the actual installed source", "at": [{ "step": "Musser's own 1997 introselect: run quickselect, and only switch to median-of-medians once the recursion depth passes a bound proportional to log n, keeping quickselect's good average case while still guaranteeing linear worst-case time. But reading this machine's own installed standard library header directly shows its actual fallback is a heap-based selection, not median-of-medians at all — the textbook algorithm and the one actually shipped have quietly diverged." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "Quickselect's expected linear time comes from discarding one whole side of the partition every round, the same geometric-shrinkage argument quicksort's own expected-case analysis uses", "at": [{ "step": "Quickselect partitions around a pivot, exactly as quicksort does, but recurses into only the side that contains the target rank — the other side is discarded outright, never sorted, never visited again. Finding the median of a million random keys this way costs a small constant times n comparisons, against n log n for a full sort of the same keys." }] },
+      { "item": "An always-unlucky pivot on sorted input degrades quickselect to Theta(n^2) for the identical structural reason unguarded quicksort degrades: the range shrinks by only one element per round instead of a constant fraction", "at": [{ "step": "An adversarial or always-unlucky pivot — the first element, on data that is already sorted — degrades quickselect to the same quadratic blow-up unguarded quicksort suffered: each partition shrinks the range by only one element instead of roughly half, so the work adds up like a triangle, not a shrinking geometric sum." }] },
+      { "item": "Median-of-medians' recurrence T(n) = T(n/5) + T(7n/10) + O(n) solves to Theta(n) because the two recursive terms' sizes sum to less than n (1/5 + 7/10 < 1), which is the structural reason the worst case stays linear despite two recursive calls per round", "at": [{ "step": "The constant hidden inside that worst-case linear bound is large enough — sorting every group of five, two recursive calls every round instead of one — that median-of-medians measurably loses to ordinary randomised quickselect on the same everyday input. A worst-case guarantee, bought at a real and measurable price." }] },
+      { "item": "Floyd-Rivest sampling's saving comes from doing most of its comparisons against a small sample rather than the full array, deferring the expensive full-array partition to only the narrow band the sample suggests", "at": [{ "step": "A third option trades neither way: take a small random sample first, use it to estimate two bounds around the target rank, and split the whole array against those two bounds in a single pass before finishing with ordinary quickselect on only the much smaller band left over. Averaged over several random inputs, this measurably beats plain randomised quickselect on the same inputs." }] },
+      { "item": "nth_element's contract (the element at the given position holds its final sorted value, with everything before it no larger and everything after no smaller, but neither side itself sorted) is weaker than a full sort's guarantee by design, which is exactly what lets it run faster", "at": [{ "deep": "nth_element's contract and the one-line extension to top-k" }] },
+      { "item": "Calling a quickselect-style routine once and taking the prefix before the found rank gives the k smallest elements unordered, without the cost of sorting them — the standard extension from one order statistic to an unordered top-k list", "at": [{ "deep": "nth_element's contract and the one-line extension to top-k" }] },
+      { "item": "This topic's own Floyd-Rivest implementation is a simplified version of the real algorithm (it does not adaptively re-narrow u and v the way the original paper does), built to show the same shape of saving rather than to reproduce the paper's own tighter comparison bound exactly", "at": [{ "step": "A third option trades neither way: take a small random sample first, use it to estimate two bounds around the target rank, and split the whole array against those two bounds in a single pass before finishing with ordinary quickselect on only the much smaller band left over. Averaged over several random inputs, this measurably beats plain randomised quickselect on the same inputs." }] },
+      { "item": "The gap between the textbook's introselect (median-of-medians fallback) and most real C++ standard libraries' actual introselect (heapselect fallback) is a real, verifiable divergence between a named algorithm and its common implementation, not a naming coincidence", "at": [{ "step": "A real standard library promises a worst-case bound for exactly this operation. Does it actually fall back to median-of-medians to deliver that guarantee?" }] },
+      { "item": "Quickselect, median-of-medians and Floyd-Rivest sampling are all instances of the same basic shape (partition, discard a side, recurse into the rest) differing only in how the pivot is chosen", "at": [{ "step": "Every algorithm this chapter has built answers a question about one value — a key, a boundary, an order statistic — in time that scales with the logarithm of n, or, for selection, with n itself. The next chapter leaves arrays behind: not a value to find, but a structure to explore, node by node. Breadth-first search, next." }] },
+      { "item": "A worst-case linear selection algorithm existing at all (median-of-medians) is itself a nontrivial result, since the naive expectation before BFPRT's 1973 paper might have been that exact selection without full sorting requires more than linear time in the worst case", "at": [{ "step": "Median-of-medians: split into groups of five, sort each tiny group, take each group's median, then recursively find the median of those group-medians and use that as the pivot. At least three in ten elements are provably smaller than that pivot, and at least three in ten are provably larger — so at most seven in ten survive to the next round, worst case, not merely on average." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}
