@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
 import { C, SERIF, Svg, T } from '../../../../../reels/kit';
@@ -7,6 +7,26 @@ import { RefresherList } from '../refreshers';
 // Every number drawn here is computed or asserted in examples.py. Each scene is a pure function of time.
 // Staging: things arrive in the order the narration says them (DESIGN.md "steady beat"); `duration` in reel.tsx ends on the last one.
 const fade = (t: number, a: number, b: number) => easeOut(seg(t, a, b));
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = () => {
+      const v = (performance.now() - t0) / 1000;
+      setS(v);
+      if (v < 6) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
 const commas = (n: number) => Math.round(n).toLocaleString('en-US');
 
 // The notation glyphs are always the serif ones (the mono font has no Θ), and a logarithm's base is a real subscript.
@@ -66,29 +86,49 @@ export function RatioBand({ t, portrait }: StepCtx) {
       </g>
       <g opacity={axes}>
         <line x1={X0} y1={bot} x2={X0 + W} y2={bot} stroke={C.taupe} />
-        <T x={X0} y={bot + 20} s={13} f={C.taupe}>2</T>
-        <T x={xs(16)} y={bot + 20} s={13} f={C.taupe} a="middle">65,536</T>
-        <T x={X0 + W} y={bot + 20} s={13} f={C.taupe} a="end">100 M</T>
-        <T x={X0 + W / 2} y={bot + 42} s={13} f={C.taupe} a="middle">n (log scale)</T>
+        <T x={X0} y={bot + 20} s={13} f={C.taupe}>
+          2
+        </T>
+        <T x={xs(16)} y={bot + 20} s={13} f={C.taupe} a="middle">
+          65,536
+        </T>
+        <T x={X0 + W} y={bot + 20} s={13} f={C.taupe} a="end">
+          100 M
+        </T>
+        <T x={X0 + W / 2} y={bot + 42} s={13} f={C.taupe} a="middle">
+          n (log scale)
+        </T>
       </g>
       <g opacity={ceil}>
         <line x1={X0} y1={ys(4)} x2={X0 + W} y2={ys(4)} stroke={C.caramel} strokeDasharray="6 5" />
-        <T x={X0 - 8} y={ys(4) + 5} s={13} f={C.caramel} a="end">4</T>
-        <T x={x256 + 8} y={ys(4) - 8} s={13} f={C.caramel}>{Big}: ceiling c = 4</T>
+        <T x={X0 - 8} y={ys(4) + 5} s={13} f={C.caramel} a="end">
+          4
+        </T>
+        <T x={x256 + 8} y={ys(4) - 8} s={13} f={C.caramel}>
+          {Big}: ceiling c = 4
+        </T>
       </g>
       <g opacity={floor}>
         <line x1={X0} y1={ys(3)} x2={X0 + W} y2={ys(3)} stroke={C.latte} strokeDasharray="6 5" />
-        <T x={X0 - 8} y={ys(3) + 5} s={13} f={C.latte} a="end">3</T>
-        <T x={x256 + 8} y={ys(3) + 18} s={13} f={C.latte}>{Om}: floor c = 3</T>
+        <T x={X0 - 8} y={ys(3) + 5} s={13} f={C.latte} a="end">
+          3
+        </T>
+        <T x={x256 + 8} y={ys(3) + 18} s={13} f={C.latte}>
+          {Om}: floor c = 3
+        </T>
       </g>
       <g opacity={curve}>
         <line x1={x256} y1={top} x2={x256} y2={bot} stroke={crossed ? C.caramel : C.taupe} strokeDasharray="2 5" strokeWidth={crossed ? 2 : 1} />
-        <T x={x256 + 8} y={top + 12} s={13} f={crossed ? C.caramel : C.taupe}>n₀ = 256</T>
+        <T x={x256 + 8} y={top + 12} s={13} f={crossed ? C.caramel : C.taupe}>
+          n₀ = 256
+        </T>
         <polyline points={pts.join(' ')} fill="none" stroke={C.crema} strokeWidth={3} strokeLinejoin="round" />
         <circle cx={xs(lgTip)} cy={ys(rTip)} r={6} fill={C.crema} />
       </g>
       <rect x={x256} y={ys(4)} width={X0 + W - x256} height={ys(3) - ys(4)} fill={C.caramel} opacity={0.18 * band} />
-      <T x={X0 + W - 24} y={ys(4) - 22} s={20} f={C.caramel} a="end" serif o={band}>Θ(n log n)</T>
+      <T x={X0 + W - 24} y={ys(4) - 22} s={20} f={C.caramel} a="end" serif o={band}>
+        Θ(n log n)
+      </T>
     </Svg>
   );
 }
@@ -96,7 +136,9 @@ export function RatioBand({ t, portrait }: StepCtx) {
 // 3 · Is it also O(n²)? A predict step; the answer frame is a complete still.
 export function LooseCeiling({ t, answer, portrait }: StepCtx) {
   const H = portrait ? 340 : 320;
+  const sa = useSinceAnswer(answer !== null);
   if (answer === null) {
+    const drop = 40 * (1 - easeOut(seg(t, 0.6, 1.2)));
     const a = fade(t, 0.2, 0.6);
     const b = fade(t, 0.6, 1.0);
     return (
@@ -104,38 +146,66 @@ export function LooseCeiling({ t, answer, portrait }: StepCtx) {
         {portrait ? (
           <>
             <rect x={50} y={60} width={500} height={70} rx={14} fill="none" stroke={C.mocha} opacity={a} />
-            <T x={300} y={103} s={17} f={C.crema} a="middle" o={a}>job: 3·n·log₂n + 8n steps</T>
-            <rect x={150} y={160} width={300} height={80} rx={14} fill="none" stroke={C.caramel} strokeWidth={2} opacity={b} />
-            <T x={300} y={209} s={22} f={C.caramel} a="middle" o={b}>{Big}(n²) ?</T>
-            <T x={300} y={290} s={13} f={C.taupe} a="middle" o={b}>{Th}(n log n), from the last step</T>
+            <T x={300} y={103} s={17} f={C.crema} a="middle" o={a}>
+              job: 3·n·log₂n + 8n steps
+            </T>
+            <g transform={`translate(0 ${drop})`}>
+              <rect x={150} y={160} width={300} height={80} rx={14} fill="none" stroke={C.caramel} strokeWidth={2} opacity={b} />
+              <T x={300} y={209} s={22} f={C.caramel} a="middle" o={b}>
+                {Big}(n²) ?
+              </T>
+            </g>
+            <T x={300} y={290} s={13} f={C.taupe} a="middle" o={b}>
+              {Th}(n log n), from the last step
+            </T>
           </>
         ) : (
           <>
             <rect x={24} y={60} width={290} height={70} rx={14} fill="none" stroke={C.mocha} opacity={a} />
-            <T x={169} y={103} s={15} f={C.crema} a="middle" o={a}>job: 3·n·log₂n + 8n steps</T>
-            <rect x={334} y={60} width={196} height={70} rx={14} fill="none" stroke={C.caramel} strokeWidth={2} opacity={b} />
-            <T x={432} y={105} s={22} f={C.caramel} a="middle" o={b}>{Big}(n²) ?</T>
-            <T x={277} y={190} s={13} f={C.taupe} a="middle" o={b}>{Th}(n log n), from the last step</T>
+            <T x={169} y={103} s={15} f={C.crema} a="middle" o={a}>
+              job: 3·n·log₂n + 8n steps
+            </T>
+            <g transform={`translate(${drop} 0)`}>
+              <rect x={334} y={60} width={196} height={70} rx={14} fill="none" stroke={C.caramel} strokeWidth={2} opacity={b} />
+              <T x={432} y={105} s={22} f={C.caramel} a="middle" o={b}>
+                {Big}(n²) ?
+              </T>
+            </g>
+            <T x={277} y={190} s={13} f={C.taupe} a="middle" o={b}>
+              {Th}(n log n), from the last step
+            </T>
           </>
         )}
       </Svg>
     );
   }
   // Answer frame: two bars at n = 100,000,000 on a log₁₀ axis from 1 billion to 10 quadrillion.
-  const jobW = (((Math.log10(8_772_627_428) - 9) / 7) * 500);
+  const jobW = ((Math.log10(8_772_627_428) - 9) / 7) * 500;
   const r0 = portrait ? 40 : 40;
   const gap = portrait ? 78 : 78;
   return (
     <Svg label="At 100 million rows the job needs about 9 billion steps; n squared is 10 quadrillion, 1,139,909 times more" h={H}>
-      <T x={40} y={r0} s={15} f={C.crema}>job: 8,772,627,428 steps</T>
+      <T x={40} y={r0} s={15} f={C.crema}>
+        job: 8,772,627,428 steps
+      </T>
       <rect x={40} y={r0 + 12} width={500} height={26} rx={7} fill={C.cocoa} />
-      <rect x={40} y={r0 + 12} width={jobW} height={26} rx={7} fill={C.crema} />
-      <T x={40} y={r0 + gap} s={15} f={C.crema}>n²: 10,000,000,000,000,000 steps</T>
-      <rect x={40} y={r0 + gap + 12} width={500} height={26} rx={7} fill={C.cinnamon} />
-      <T x={536} y={r0 + gap + 60} s={13} f={C.cinnamon} a="end">10 quadrillion</T>
-      <T x={40} y={r0 + gap + 60} s={13} f={C.taupe}>log scale from 1 billion</T>
-      <T x={300} y={r0 + gap + 100} s={15} f={C.crema} a="middle">true: a ceiling, 1,139,909× too high</T>
-      <T x={300} y={r0 + gap + 126} s={13} f={C.taupe} a="middle">c = 11 works from n = 1</T>
+      <rect x={40} y={r0 + 12} width={jobW * easeInOut(seg(sa, 0.2, 0.9))} height={26} rx={7} fill={C.crema} />
+      <T x={40} y={r0 + gap} s={15} f={C.crema}>
+        n²: 10,000,000,000,000,000 steps
+      </T>
+      <rect x={40} y={r0 + gap + 12} width={500 * easeInOut(seg(sa, 0.8, 1.8))} height={26} rx={7} fill={C.cinnamon} />
+      <T x={536} y={r0 + gap + 60} s={13} f={C.cinnamon} a="end">
+        10 quadrillion
+      </T>
+      <T x={40} y={r0 + gap + 60} s={13} f={C.taupe}>
+        log scale from 1 billion
+      </T>
+      <T x={300} y={r0 + gap + 100} s={15} f={C.crema} a="middle" o={fade(sa, 1.9, 2.3)}>
+        true: a ceiling, 1,139,909× too high
+      </T>
+      <T x={300} y={r0 + gap + 126} s={13} f={C.taupe} a="middle" o={fade(sa, 2.3, 2.7)}>
+        c = 11 works from n = 1
+      </T>
     </Svg>
   );
 }
@@ -166,8 +236,12 @@ export function Race({ t, portrait }: StepCtx) {
   const axisY = ys[2] + 44;
   return (
     <Svg label="n, n log n and n squared at a thousand, a million and 100 million orders, then at double that" h={H}>
-      <T x={300} y={portrait ? 44 : 36} s={24} f={C.crema} a="middle" serif>{COUNT[stage]}</T>
-      <T x={300} y={portrait ? 72 : 60} s={13} f={C.taupe} a="middle">at 1,000,000,000 steps per second (a round assumption)</T>
+      <T x={300} y={portrait ? 44 : 36} s={24} f={C.crema} a="middle" serif>
+        {COUNT[stage]}
+      </T>
+      <T x={300} y={portrait ? 72 : 60} s={13} f={C.taupe} a="middle">
+        at 1,000,000,000 steps per second (a round assumption)
+      </T>
       {LANES.map((lane, i) => {
         const y = ys[i];
         const s2 = Math.min(stage, 2);
@@ -182,7 +256,9 @@ export function Race({ t, portrait }: StepCtx) {
         const tk = easeInOut(seg(t, starts[3], starts[3] + 0.9));
         return (
           <g key={lane.name} opacity={lanesIn}>
-            <T x={40} y={y - 6} s={15} f={C.latte}>{lane.name}</T>
+            <T x={40} y={y - 6} s={15} f={C.latte}>
+              {lane.name}
+            </T>
             {shown && (
               <T x={540} y={y - 6} s={17} f={stage === 3 ? (i === 2 ? C.cherryText : C.crema) : over ? C.cherryText : C.crema} a="end" w={700}>
                 {stage === 3 ? lane.grow : lane.text[stage]}
@@ -195,26 +271,50 @@ export function Race({ t, portrait }: StepCtx) {
         );
       })}
       <g opacity={lanesIn}>
-        {ys.map((y) =>
-          TICKS.map((k) => (
-            <line key={`${y}${k.label}`} x1={40 + 500 * logFrac(k.s)} y1={y} x2={40 + 500 * logFrac(k.s)} y2={y + 26} stroke={C.taupe} strokeWidth={1.5} opacity={0.7} />
-          )),
-        )}
+        {ys.map((y) => TICKS.map((k) => <line key={`${y}${k.label}`} x1={40 + 500 * logFrac(k.s)} y1={y} x2={40 + 500 * logFrac(k.s)} y2={y + 26} stroke={C.taupe} strokeWidth={1.5} opacity={0.7} />))}
         {TICKS.map((k) => (
           <line key={k.label} x1={40 + 500 * logFrac(k.s)} y1={axisY - 6} x2={40 + 500 * logFrac(k.s)} y2={axisY + 4} stroke={C.taupe} />
         ))}
         <line x1={40} y1={axisY} x2={540} y2={axisY} stroke={C.taupe} />
         {TICKS.map((k) => (
-          <T key={k.label} x={40 + 500 * logFrac(k.s)} y={axisY + 22} s={13} f={C.taupe} a="middle">{k.label}</T>
+          <T key={k.label} x={40 + 500 * logFrac(k.s)} y={axisY + 22} s={13} f={C.taupe} a="middle">
+            {k.label}
+          </T>
         ))}
-        <T x={290} y={axisY + 48} s={15} f={C.taupe} a="middle">log scale: 1 µs to 1 year</T>
+        <T x={290} y={axisY + 48} s={15} f={C.taupe} a="middle">
+          log scale: 1 µs to 1 year
+        </T>
       </g>
     </Svg>
   );
 }
 
 // A tower is a stack of equal-height blocks; its height is the number of divisions (the logarithm).
-function Tower({ cx, base, unit, width, blocks, sliver, fill, builtAt, gapT, t, o = 1 }: { cx: number; base: number; unit: number; width: number; blocks: number; sliver: number; fill: string; builtAt: number; gapT: number; t: number; o?: number }) {
+function Tower({
+  cx,
+  base,
+  unit,
+  width,
+  blocks,
+  sliver,
+  fill,
+  builtAt,
+  gapT,
+  t,
+  o = 1,
+}: {
+  cx: number;
+  base: number;
+  unit: number;
+  width: number;
+  blocks: number;
+  sliver: number;
+  fill: string;
+  builtAt: number;
+  gapT: number;
+  t: number;
+  o?: number;
+}) {
   const parts = [];
   for (let i = 0; i < blocks; i++) {
     const k = fade(t, builtAt + i * gapT, builtAt + i * gapT + 0.2);
@@ -240,20 +340,34 @@ export function Halvings({ t, answer, portrait }: StepCtx) {
   return (
     <Svg label="A staircase of 10 halvings for 1,000 commits, and a taller one for a billion; each slab is one halving" h={H}>
       <Tower cx={lx} base={base} unit={dy} width={40} blocks={10} sliver={0} fill={C.caramel} builtAt={0.2} gapT={0.03} t={t} />
-      <T x={lx} y={base - 10 * dy - 66} s={15} f={C.latte} a="middle" o={a}>1,000 commits</T>
-      <T x={lx} y={base - 10 * dy - 40} s={15} f={C.latte} a="middle" o={a}>10 tests</T>
-      <T x={lx} y={base - 10 * dy - 14} s={15} f={C.latte} a="middle" o={a}>(Git refresher)</T>
-      <T x={rx} y={base + 22} s={17} f={C.crema} a="middle" o={b}>1,000,000,000</T>
-      <T x={rx} y={base + 44} s={13} f={C.taupe} a="middle" o={b}>1 slab = 1 halving</T>
+      <T x={lx} y={base - 10 * dy - 66} s={15} f={C.latte} a="middle" o={a}>
+        1,000 commits
+      </T>
+      <T x={lx} y={base - 10 * dy - 40} s={15} f={C.latte} a="middle" o={a}>
+        10 tests
+      </T>
+      <T x={lx} y={base - 10 * dy - 14} s={15} f={C.latte} a="middle" o={a}>
+        (Git refresher)
+      </T>
+      <T x={rx} y={base + 22} s={17} f={C.crema} a="middle" o={b}>
+        1,000,000,000
+      </T>
+      <T x={rx} y={base + 44} s={13} f={C.taupe} a="middle" o={b}>
+        1 slab = 1 halving
+      </T>
       {answer === null ? (
         <>
           <rect x={rx - 22} y={topY} width={44} height={30 * dy} rx={4} fill="none" stroke={C.taupe} strokeDasharray="5 6" opacity={b} />
-          <T x={rx} y={topY - 12} s={20} f={C.caramel} a="middle" o={b}>?</T>
+          <T x={rx} y={topY - 12} s={20} f={C.caramel} a="middle" o={b}>
+            ?
+          </T>
         </>
       ) : (
         <>
           <Tower cx={rx} base={base} unit={dy} width={40} blocks={30} sliver={0} fill={C.caramel} builtAt={0} gapT={0} t={9} />
-          <T x={rx} y={topY - 16} s={28} f={C.caramel} a="middle" serif>30</T>
+          <T x={rx} y={topY - 16} s={28} f={C.caramel} a="middle" serif>
+            30
+          </T>
           {[
             [10, 'after 10: 976,563'],
             [20, 'after 20: 954'],
@@ -261,11 +375,17 @@ export function Halvings({ t, answer, portrait }: StepCtx) {
           ].map(([k, label]) => (
             <g key={String(k)}>
               <line x1={rx + 24} y1={base - Number(k) * dy + dy / 2} x2={rx + 36} y2={base - Number(k) * dy + dy / 2} stroke={C.taupe} />
-              <T x={rx + 42} y={base - Number(k) * dy + dy / 2 + 5} s={15} f={C.crema}>{String(label)}</T>
-              <T x={rx + 42} y={base - (Number(k) - 5) * dy + 4} s={13} f={C.taupe}>÷ 1,024</T>
+              <T x={rx + 42} y={base - Number(k) * dy + dy / 2 + 5} s={15} f={C.crema}>
+                {String(label)}
+              </T>
+              <T x={rx + 42} y={base - (Number(k) - 5) * dy + 4} s={13} f={C.taupe}>
+                ÷ 1,024
+              </T>
             </g>
           ))}
-          <T x={rx} y={base + 66} s={15} f={C.taupe} a="middle">log₂ of a billion = 29.9</T>
+          <T x={rx} y={base + 66} s={15} f={C.taupe} a="middle">
+            log₂ of a billion = 29.9
+          </T>
         </>
       )}
     </Svg>
@@ -289,7 +409,9 @@ export function Rulers({ t, portrait }: StepCtx) {
       <T x={40} y={portrait ? 36 : 30} s={20} f={C.crema} serif o={intro}>
         <LogB rest="x = ln x / ln b" />
       </T>
-      <T x={40} y={portrait ? 66 : 56} s={15} f={C.crema} o={intro}>ln(1,000,000,000) = 20.72</T>
+      <T x={40} y={portrait ? 66 : 56} s={15} f={C.crema} o={intro}>
+        ln(1,000,000,000) = 20.72
+      </T>
       {rows.map((r, i) => {
         const y = ys[i];
         const sweep = seg(t, r.t0, r.t0 + 0.9);
@@ -298,18 +420,27 @@ export function Rulers({ t, portrait }: StepCtx) {
         for (let j = 1; j * r.step < total - 1e-6; j++) ticks.push(j);
         return (
           <g key={r.label}>
-            <T x={40} y={y - 6} s={15} f={C.latte} o={appear}>{r.label}</T>
-            <T x={540} y={y - 6} s={17} f={C.caramel} a="end" w={700} o={fade(t, r.t0 + 0.9, r.t0 + 1.3)}>{r.count}</T>
+            <T x={40} y={y - 6} s={15} f={C.latte} o={appear}>
+              {r.label}
+            </T>
+            <T x={540} y={y - 6} s={17} f={C.caramel} a="end" w={700} o={fade(t, r.t0 + 0.9, r.t0 + 1.3)}>
+              {r.count}
+            </T>
             <rect x={40} y={y} width={500} height={bh} rx={7} fill={C.mocha} opacity={appear} />
             {ticks.map((j) => {
               const x = 40 + (j * r.step * 500) / total;
               return <line key={j} x1={x} y1={y} x2={x} y2={y + bh} stroke={C.latte} strokeWidth={2.5} opacity={x - 40 <= sweep * 500 ? 1 : 0} />;
             })}
-            <T x={40} y={y + bh + 18} s={13} f={C.taupe} o={appear}>{r.sub}</T>
+            {sweep > 0 && sweep < 1 && <path d={`M ${40 + sweep * 500} ${y - 2} l -6 -9 h 12 Z`} fill={C.caramel} />}
+            <T x={40} y={y + bh + 18} s={13} f={C.taupe} o={appear}>
+              {r.sub}
+            </T>
           </g>
         );
       })}
-      <T x={540} y={ys[1] + bh + 18} s={13} f={C.latte} a="end" o={fade(t, 6.0, 6.4)}>29.9 ÷ 9 = 3.32</T>
+      <T x={540} y={ys[1] + bh + 18} s={13} f={C.latte} a="end" o={fade(t, 6.0, 6.4)}>
+        29.9 ÷ 9 = 3.32
+      </T>
     </Svg>
   );
 }
@@ -335,16 +466,22 @@ export function Divisions({ t }: StepCtx) {
         const done = r.t0 + (whole + 1) * r.gap + 0.2;
         return (
           <g key={r.label}>
-            <T x={40} y={y - 8} s={15} f={C.latte} o={fade(t, r.t0 - 0.2, r.t0)}>{r.label}</T>
+            <T x={40} y={y - 8} s={15} f={C.latte} o={fade(t, r.t0 - 0.2, r.t0)}>
+              {r.label}
+            </T>
             {Array.from({ length: whole }, (_, j) => (
-              <rect key={j} x={40 + j * w + 1} y={y} width={w - 2} height={cellH} rx={3} fill={r.fill} opacity={fade(t, r.t0 + j * r.gap, r.t0 + j * r.gap + 0.2)} />
+              <rect key={j} x={40 + j * w + 1} y={y} width={Math.max(0, (w - 2) * fade(t, r.t0 + j * r.gap, r.t0 + j * r.gap + 0.2))} height={cellH} rx={3} fill={r.fill} />
             ))}
-            {frac > 0.01 && <rect x={40 + whole * w + 1} y={y} width={frac * w - 2} height={cellH} rx={3} fill={r.fill} opacity={fade(t, r.t0 + whole * r.gap, r.t0 + whole * r.gap + 0.2)} />}
-            <T x={540} y={y - 8} s={22} f={C.crema} a="end" serif o={fade(t, done, done + 0.4)}>{r.count}</T>
+            {frac > 0.01 && <rect x={40 + whole * w + 1} y={y} width={Math.max(0, (frac * w - 2) * fade(t, r.t0 + whole * r.gap, r.t0 + whole * r.gap + 0.2))} height={cellH} rx={3} fill={r.fill} />}
+            <T x={540} y={y - 8} s={22} f={C.crema} a="end" serif o={fade(t, done, done + 0.4)}>
+              {r.count}
+            </T>
           </g>
         );
       })}
-      <T x={300} y={ys[2] + cellH + 32} s={13} f={C.taupe} a="middle" o={fade(t, 5.4, 5.8)}>a bigger base needs fewer divisions</T>
+      <T x={300} y={ys[2] + cellH + 32} s={13} f={C.taupe} a="middle" o={fade(t, 5.4, 5.8)}>
+        a bigger base needs fewer divisions
+      </T>
     </Svg>
   );
 }
@@ -352,6 +489,7 @@ export function Divisions({ t }: StepCtx) {
 // 8 · How tall is the orders index? A predict step.
 export function IndexLevels({ t, answer }: StepCtx) {
   const H = 350;
+  const sa = useSinceAnswer(answer !== null);
   if (answer === null) {
     const a = fade(t, 0.2, 0.6);
     const b = fade(t, 0.6, 1.0);
@@ -363,12 +501,26 @@ export function IndexLevels({ t, answer }: StepCtx) {
     return (
       <Svg label="100 million order ids at the bottom, a tree of pages above, and a question mark for the number of levels" h={H}>
         <rect x={40} y={bandY} width={500} height={34} rx={8} fill={C.crema} opacity={0.9 * a} />
-        <T x={290} y={bandY + 23} s={15} f={C.espresso} a="middle" w={600} o={a}>100,000,000 order ids</T>
+        <T x={290} y={bandY + 23} s={15} f={C.espresso} a="middle" w={600} o={a}>
+          100,000,000 order ids
+        </T>
         <rect x={40} y={40} width={22} height={28} rx={4} fill="none" stroke={C.latte} opacity={b} />
-        <T x={74} y={60} s={13} f={C.latte} o={b}>1 page: 8 KB, about 400 entries</T>
+        <T x={74} y={60} s={13} f={C.latte} o={b}>
+          1 page: 8 KB, about 400 entries
+        </T>
         <path d={`M ${290 - apexW / 2} ${topY} L ${290 + apexW / 2} ${topY} L 540 ${botY} L 40 ${botY} Z`} fill="none" stroke={C.taupe} strokeDasharray="5 6" opacity={b} />
-        <T x={290} y={(topY + botY) / 2 + 20} s={20} f={C.caramel} a="middle" o={c}>? levels</T>
-        <T x={290} y={(topY + botY) / 2 + 46} s={13} f={C.taupe} a="middle" o={c}>each level × 400</T>
+        {[1, 2, 3].map((l) => {
+          const k = easeInOut(seg(t, 0.6 + l * 0.25, 0.9 + l * 0.25));
+          const y = topY + ((botY - topY) * l) / 4;
+          const half = 20 + ((250 - 20) * l) / 4;
+          return <line key={l} x1={290 - half * k} y1={y} x2={290 + half * k} y2={y} stroke={C.latte} strokeWidth={1.5} />;
+        })}
+        <T x={290} y={(topY + botY) / 2 + 20} s={20} f={C.caramel} a="middle" o={c}>
+          ? levels
+        </T>
+        <T x={290} y={(topY + botY) / 2 + 46} s={13} f={C.taupe} a="middle" o={c}>
+          each level × 400
+        </T>
       </Svg>
     );
   }
@@ -387,20 +539,30 @@ export function IndexLevels({ t, answer }: StepCtx) {
   const lastBar = y0 + 3 * pitch + 8 + barH;
   return (
     <Svg label="Three levels of 400 reach only 64 million keys, short of the 100 million orders; four levels reach 25.6 billion: the index has 4 levels" h={H}>
-      <T x={40} y={44} s={28} f={C.caramel} serif>4</T>
-      <T x={tx} y={44} s={13} f={C.caramel} a="middle">target: 100,000,000</T>
+      <T x={40} y={44} s={28} f={C.caramel} serif>{`${Math.max(1, Math.min(4, Math.ceil(seg(sa, 0.1, 2.5) * 4)))}`}</T>
+      <T x={tx} y={44} s={13} f={C.caramel} a="middle">
+        target: 100,000,000
+      </T>
       <line x1={tx} y1={y0 - 18} x2={tx} y2={lastBar + 8} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" />
       {rows.map((r, i) => (
         <g key={r.text}>
-          <T x={40} y={y0 + i * pitch} s={15} f={r.ink} w={600}>{r.text}</T>
-          <rect x={40} y={y0 + i * pitch + 8} width={Math.log10(r.reach) * scale} height={barH} rx={5} fill={r.fill} />
+          <T x={40} y={y0 + i * pitch} s={15} f={r.ink} w={600} o={fade(sa, 0.1 + i * 0.6, 0.4 + i * 0.6)}>
+            {r.text}
+          </T>
+          <rect x={40} y={y0 + i * pitch + 8} width={Math.log10(r.reach) * scale * easeInOut(seg(sa, 0.1 + i * 0.6, 0.6 + i * 0.6))} height={barH} rx={5} fill={r.fill} />
           {i < 3 && (
-            <T x={540} y={y0 + i * pitch + 8 + barH + 18} s={13} f={C.taupe} a="end">× 400</T>
+            <T x={540} y={y0 + i * pitch + 8 + barH + 18} s={13} f={C.taupe} a="end" o={fade(sa, 0.5 + i * 0.6, 0.7 + i * 0.6)}>
+              × 400
+            </T>
           )}
         </g>
       ))}
-      <T x={40} y={lastBar + 30} s={13} f={C.taupe}>bar length: log scale</T>
-      <T x={540} y={lastBar + 30} s={15} f={C.cinnamon} a="end">binary tree: 27 levels</T>
+      <T x={40} y={lastBar + 30} s={13} f={C.taupe}>
+        bar length: log scale
+      </T>
+      <T x={540} y={lastBar + 30} s={15} f={C.cinnamon} a="end" o={fade(sa, 2.8, 3.2)}>
+        binary tree: 27 levels
+      </T>
     </Svg>
   );
 }
@@ -415,18 +577,34 @@ export function SortPasses({ t }: StepCtx) {
   const fin = fade(t, 4.0, 4.4);
   return (
     <Svg label="Sorting 1 TiB with 16 GiB of memory takes 2 whole passes, each reading and writing the whole terabyte; merging two at a time would take 7" h={H}>
-      <T x={40} y={24} s={15} f={C.crema} o={a}>1,048,576 blocks (1 TiB ÷ 1 MiB)</T>
-      <T x={40} y={46} s={13} f={C.taupe} o={a}>memory holds 16,384 blocks (16 GiB ÷ 1 MiB)</T>
-      <T x={40} y={86} s={15} f={C.crema} o={fade(t, 0.8, 1.1)}>pass 1: 1 TiB → 64 runs</T>
+      <T x={40} y={24} s={15} f={C.crema} o={a}>
+        1,048,576 blocks (1 TiB ÷ 1 MiB)
+      </T>
+      <T x={40} y={46} s={13} f={C.taupe} o={a}>
+        memory holds 16,384 blocks (16 GiB ÷ 1 MiB)
+      </T>
+      <T x={40} y={86} s={15} f={C.crema} o={fade(t, 0.8, 1.1)}>
+        pass 1: 1 TiB → 64 runs
+      </T>
       {Array.from({ length: 64 }, (_, i) => (
         <rect key={i} x={40 + i * cellW} y={94} width={cellW - 1.5} height={16} rx={1.5} fill={C.caramel} opacity={fade(t, 1.0 + i * 0.02, 1.0 + i * 0.02 + 0.2)} />
       ))}
-      <T x={40} y={142} s={15} f={C.crema} o={fade(t, 2.8, 3.1)}>pass 2: 64 runs → 1 file</T>
+      <T x={40} y={142} s={15} f={C.crema} o={fade(t, 2.8, 3.1)}>
+        pass 2: 64 runs → 1 file
+      </T>
       <rect x={40} y={150} width={500 * p2} height={16} rx={3} fill={C.caramel} />
-      <T x={40} y={202} s={24} f={C.caramel} serif o={fin}>2 passes</T>
-      <T x={540} y={200} s={17} f={C.crema} a="end" w={600} o={fin}>4 TiB of I/O</T>
-      <T x={40} y={222} s={13} f={C.taupe} o={fin}>each pass reads and writes the whole 1 TiB</T>
-      <T x={40} y={262} s={15} f={C.cinnamon} w={600} o={fade(t, 4.8, 5.1)}>two at a time: 7 passes</T>
+      <T x={40} y={202} s={24} f={C.caramel} serif o={fin}>
+        2 passes
+      </T>
+      <T x={540} y={200} s={17} f={C.crema} a="end" w={600} o={fin}>
+        4 TiB of I/O
+      </T>
+      <T x={40} y={222} s={13} f={C.taupe} o={fin}>
+        each pass reads and writes the whole 1 TiB
+      </T>
+      <T x={40} y={262} s={15} f={C.cinnamon} w={600} o={fade(t, 4.8, 5.1)}>
+        two at a time: 7 passes
+      </T>
       {Array.from({ length: 7 }, (_, i) => (
         <rect key={i} x={40} y={270 + i * 16} width={500} height={12} rx={3} fill={C.cinnamon} opacity={fade(t, 5.0 + i * 0.2, 5.0 + i * 0.2 + 0.2)} />
       ))}
@@ -443,15 +621,28 @@ export function SameSteps({ t }: StepCtx) {
   const timeA = t >= 1.9;
   const timeB = t >= 4.4;
   return (
-    <Svg label="Two scans of the same 100,000,000 rows: same step count, same Theta of n; scan A finds its data in cache and takes about 0.1 seconds, scan B waits on disk and takes about 2.8 hours" h={H}>
-      <T x={40} y={yA - 8} s={15} f={C.latte} o={labels}>scan A: 100,000,000 steps</T>
-      <T x={540} y={yA - 8} s={17} f={C.crema} a="end" w={700} o={labels}>{timeA ? '0.1 s' : 'time: ?'}</T>
+    <Svg
+      label="Two scans of the same 100,000,000 rows: same step count, same Theta of n; scan A finds its data in cache and takes about 0.1 seconds, scan B waits on disk and takes about 2.8 hours"
+      h={H}
+    >
+      <T x={40} y={yA - 8} s={15} f={C.latte} o={labels}>
+        scan A: 100,000,000 steps
+      </T>
+      <T x={540} y={yA - 8} s={17} f={C.crema} a="end" w={700} o={labels}>
+        {timeA ? '0.1 s' : 'time: ?'}
+      </T>
       {Array.from({ length: 24 }, (_, i) => (
-        <rect key={i} x={40 + i * 6.8} y={yA} width={4} height={26} rx={1} fill={C.caramel} opacity={t > 0.6 + (i / 24) ? 1 : 0} />
+        <rect key={i} x={40 + i * 6.8} y={yA} width={4} height={26} rx={1} fill={C.caramel} opacity={t > 0.6 + i / 24 ? 1 : 0} />
       ))}
-      <T x={40} y={yA + 48} s={13} f={C.taupe} o={fade(t, 1.4, 1.8)}>data in cache: about 1 ns a step</T>
-      <T x={40} y={yB - 8} s={15} f={C.latte} o={labels}>scan B: 100,000,000 steps</T>
-      <T x={540} y={yB - 8} s={17} f={C.crema} a="end" w={700} o={labels}>{timeB ? '2.8 hours' : 'time: ?'}</T>
+      <T x={40} y={yA + 48} s={13} f={C.taupe} o={fade(t, 1.4, 1.8)}>
+        data in cache: about 1 ns a step
+      </T>
+      <T x={40} y={yB - 8} s={15} f={C.latte} o={labels}>
+        scan B: 100,000,000 steps
+      </T>
+      <T x={540} y={yB - 8} s={17} f={C.crema} a="end" w={700} o={labels}>
+        {timeB ? '2.8 hours' : 'time: ?'}
+      </T>
       {Array.from({ length: 6 }, (_, i) => {
         const x = 40 + i * 83;
         const t0 = 2.4 + i * 0.3;
@@ -462,10 +653,16 @@ export function SameSteps({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={40} y={yB + 48} s={13} f={C.taupe} o={fade(t, 2.4, 2.8)}>data on disk: each step waits, about 100 µs</T>
+      <T x={40} y={yB + 48} s={13} f={C.taupe} o={fade(t, 2.4, 2.8)}>
+        data on disk: each step waits, about 100 µs
+      </T>
       <g opacity={fade(t, 4.6, 5.0)}>
-        <T x={300} y={yB + 98} s={17} f={C.crema} a="middle">same count, same {Th}(n):</T>
-        <T x={300} y={yB + 124} s={17} f={C.crema} a="middle">the price of a step isn't in the {Big}</T>
+        <T x={300} y={yB + 98} s={17} f={C.crema} a="middle">
+          same count, same {Th}(n):
+        </T>
+        <T x={300} y={yB + 124} s={17} f={C.crema} a="middle">
+          the price of a step isn't in the {Big}
+        </T>
       </g>
     </Svg>
   );
@@ -522,8 +719,10 @@ export function Recap({ t, portrait }: StepCtx) {
         return (
           <g key={i}>
             <Icon kind={i} cy={y0 + i * pitch - 5} o={k} />
-            <g opacity={k}>
-              <T x={84} y={y0 + i * pitch} s={16} f={C.crema}>{r}</T>
+            <g opacity={k} transform={`translate(${30 * (1 - k)} 0)`}>
+              <T x={84} y={y0 + i * pitch} s={16} f={C.crema}>
+                {r}
+              </T>
             </g>
           </g>
         );
