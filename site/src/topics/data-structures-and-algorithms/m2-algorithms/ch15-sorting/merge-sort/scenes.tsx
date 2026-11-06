@@ -65,7 +65,8 @@ export function MergeProcedure({ t }: StepCtx) {
       {worst.left.map((v, i) => <KeyBar key={`wl${i}`} x={40 + i * 26} y={140} v={v} w={22} color={C.cinnamon} />)}
       {worst.right.map((v, i) => <KeyBar key={`wr${i}`} x={40 + i * 26} y={168} v={v} w={22} color={C.cinnamon} />)}
       <T x={320} y={155} s={14} f={C.caramel}>{worst.cmp} comparisons</T>
-      <T x={30} y={230} s={13} f={C.latte}>never fewer than the smaller list, never more than one short of both combined</T>
+      <T x={30} y={222} s={13} f={C.latte}>never fewer than the smaller list,</T>
+      <T x={30} y={240} s={13} f={C.latte}>never more than one short of both</T>
     </Svg>
   );
 }
@@ -121,14 +122,14 @@ export function PowerOfTwo({ t }: StepCtx) {
     <Svg label="Two bars of equal height at sixteen keys (top-down and bottom-up agree); two bars of different height at a non-power-of-two size" h={260}>
       <T x={30} y={30} s={13} f={C.quiet}>sixteen keys</T>
       <rect x={40} y={50} width={50} height={60} fill={C.crema} opacity={0.5 * a} />
-      <rect x={100} y={50} width={50} height={60} fill={C.crema} opacity={0.5 * a} />
+      <rect x={130} y={50} width={50} height={60} fill={C.crema} opacity={0.5 * a} />
       <T x={65} y={125} s={11} f={C.quiet} a="middle">top-down</T>
-      <T x={125} y={125} s={11} f={C.quiet} a="middle">bottom-up</T>
-      <T x={30} y={170} s={13} f={C.quiet}>a non-power-of-two size</T>
-      <rect x={40} y={190} width={50} height={40} fill={C.cinnamon} opacity={0.6 * a} />
-      <rect x={100} y={190} width={50} height={52} fill={C.cinnamon} opacity={0.6 * a} />
-      <T x={65} y={238} s={11} f={C.quiet} a="middle">top-down</T>
-      <T x={125} y={238} s={11} f={C.quiet} a="middle">bottom-up</T>
+      <T x={155} y={125} s={11} f={C.quiet} a="middle">bottom-up</T>
+      <T x={30} y={155} s={13} f={C.quiet}>a non-power-of-two size</T>
+      <rect x={40} y={175} width={50} height={40} fill={C.cinnamon} opacity={0.6 * a} />
+      <rect x={130} y={175} width={50} height={52} fill={C.cinnamon} opacity={0.6 * a} />
+      <T x={65} y={232} s={11} f={C.quiet} a="middle">top-down</T>
+      <T x={155} y={232} s={11} f={C.quiet} a="middle">bottom-up</T>
     </Svg>
   );
 }
@@ -192,7 +193,8 @@ export function BufferStrategies({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={30} y={230} s={13} f={C.latte}>the identical guarantee, three different amounts of spare memory</T>
+      <T x={30} y={222} s={13} f={C.latte}>the identical guarantee, three</T>
+      <T x={30} y={240} s={13} f={C.latte}>different amounts of spare memory</T>
     </Svg>
   );
 }
@@ -218,8 +220,9 @@ export function NaturalMergeSort({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={30} y={130} s={13} f={C.latte}>seven runs, found in one linear pass — fewer than one per key</T>
-      <T x={30} y={156} s={13} f={C.latte}>sorted input: one run, no merge pass needed at all</T>
+      <T x={30} y={130} s={13} f={C.latte}>seven runs, found in one linear pass</T>
+      <T x={30} y={148} s={13} f={C.latte}>fewer than one run per key</T>
+      <T x={30} y={172} s={13} f={C.latte}>sorted input: one run, no merge pass at all</T>
     </Svg>
   );
 }
@@ -256,8 +259,9 @@ export function WorstCaseGap({ t }: StepCtx) {
       <rect x={60} y={50} width={40} height={17 * 8 * a} fill={C.caramel} opacity={0.6} />
       <rect x={30} y={50 + (160 - 16 * 8)} width={160} height={1.5} fill={C.cherryText} />
       <T x={200} y={120} s={12} f={C.quiet}>seventeen against a floor of sixteen</T>
-      <T x={30} y={200} s={13} f={C.latte}>brute force confirms every case up to eight keys exactly</T>
-      <T x={30} y={226} s={13} f={C.latte}>the gap stays a small, bounded share of the input as it grows</T>
+      <T x={30} y={198} s={13} f={C.latte}>brute force confirms every case up to eight keys</T>
+      <T x={30} y={216} s={13} f={C.latte}>the gap stays a small, bounded</T>
+      <T x={30} y={234} s={13} f={C.latte}>share of the input as it grows</T>
     </Svg>
   );
 }

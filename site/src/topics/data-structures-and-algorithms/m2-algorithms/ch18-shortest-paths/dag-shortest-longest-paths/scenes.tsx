@@ -88,9 +88,10 @@ export function TopoRelaxation({ t }: StepCtx) {
   const labels = POS.map((_, v) => (v <= step ? String(dist[v]) : null));
   const litEdge = step < 5 ? EDGES.findIndex(([u]) => u === step) : -1;
   return (
-    <Svg label="Every vertex, strictly in topological order, relaxing its own outgoing edges exactly once" h={300}>
+    <Svg label="Every vertex, strictly in topological order, relaxing its own outgoing edges exactly once" h={320}>
       <Graph litVertex={step} litEdge={litEdge} labels={labels} />
-      <T x={310} y={280} s={13} f={C.latte} a="middle">one pass, left to right in the topological order — no repeats, no priority queue</T>
+      <T x={310} y={280} s={13} f={C.latte} a="middle">one pass, left to right in the topological order —</T>
+      <T x={310} y={302} s={13} f={C.latte} a="middle">no repeats, no priority queue</T>
     </Svg>
   );
 }
@@ -99,9 +100,10 @@ export function TopoRelaxation({ t }: StepCtx) {
 export function WhyOrderMatters({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="The identical graph, relaxed in a non-topological order, settling vertex five too early" h={260}>
+    <Svg label="The identical graph, relaxed in a non-topological order, settling vertex five too early" h={300}>
       <Graph litVertex={5} litEdge={-1} labels={[null, null, null, null, null, 'nine']} />
-      <T x={310} y={250} s={13} f={C.cherryText} a="middle" o={a}>vertex five locked in at nine, before vertex two's better route even arrives</T>
+      <T x={310} y={270} s={13} f={C.cherryText} a="middle" o={a}>vertex five locked in at nine, before vertex</T>
+      <T x={310} y={292} s={13} f={C.cherryText} a="middle" o={a}>two's better route even arrives</T>
     </Svg>
   );
 }
@@ -110,10 +112,12 @@ export function WhyOrderMatters({ t }: StepCtx) {
 export function PredictLongestPathGeneral({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="Negate every weight, run the identical pass — asked whether that finds the longest path on any graph" h={240}>
-      <T x={300} y={90} s={13} f={C.latte} a="middle" o={a}>negative weights, and on any graph with a cycle, a negative cycle too</T>
-      <T x={300} y={180} s={13} f={C.latte} a="middle" o={a}>does negation find the longest path everywhere, or only here?</T>
-      {answer !== null && <T x={300} y={202} s={14} f={C.focus} a="middle">only on a graph with no cycle at all</T>}
+    <Svg label="Negate every weight, run the identical pass — asked whether that finds the longest path on any graph" h={260}>
+      <T x={300} y={78} s={13} f={C.latte} a="middle" o={a}>negative weights, and on any graph with a cycle,</T>
+      <T x={300} y={100} s={13} f={C.latte} a="middle" o={a}>a negative cycle too</T>
+      <T x={300} y={185} s={13} f={C.latte} a="middle" o={a}>does negation find the longest path</T>
+      <T x={300} y={207} s={13} f={C.latte} a="middle" o={a}>everywhere, or only here?</T>
+      {answer !== null && <T x={300} y={234} s={14} f={C.focus} a="middle">only on a graph with no cycle at all</T>}
     </Svg>
   );
 }
@@ -121,15 +125,15 @@ export function PredictLongestPathGeneral({ t, answer }: StepCtx) {
 // 6 · CriticalPath: the task-dependency DAG, longest path read off directly.
 export function CriticalPath({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
-  const names = ['start', 'design', 'build-frame', 'wiring', 'paint', 'inspect', 'ship'];
+  const names = ['start', 'design', 'frame', 'wiring', 'paint', 'inspect', 'ship'];
   const critical = [0, 1, 2, 4, 6];
   return (
-    <Svg label="A seven-task schedule, its critical path the longest chain from start to ship" h={260}>
+    <Svg label="A seven-task schedule, its critical path the longest chain from start to ship" h={280}>
       {names.map((n, i) => (
         <T
           key={n}
-          x={90 + i * 75}
-          y={130}
+          x={70 + i * 80}
+          y={i % 2 === 0 ? 120 : 145}
           s={11}
           f={critical.includes(i) ? C.caramel : C.latte}
           a="middle"
@@ -138,7 +142,8 @@ export function CriticalPath({ t }: StepCtx) {
           {n}
         </T>
       ))}
-      <T x={310} y={220} s={13} f={C.latte} a="middle" o={a}>the longest chain of dependent tasks sets the whole project's minimum length</T>
+      <T x={310} y={235} s={13} f={C.latte} a="middle" o={a}>the longest chain of dependent tasks sets</T>
+      <T x={310} y={257} s={13} f={C.latte} a="middle" o={a}>the whole project's minimum length</T>
     </Svg>
   );
 }
@@ -147,9 +152,11 @@ export function CriticalPath({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="The cheapest algorithm in the chapter, carrying the strongest precondition of all four" h={260}>
-      <T x={310} y={130} s={13} f={C.latte} a="middle" o={a}>no priority queue, no repeated rounds, no cycle to ever worry about</T>
-      <T x={310} y={200} s={13} f={C.latte} a="middle" o={a}>exactly because the graph is guaranteed to have none</T>
+    <Svg label="The cheapest algorithm in the chapter, carrying the strongest precondition of all four" h={280}>
+      <T x={310} y={120} s={13} f={C.latte} a="middle" o={a}>no priority queue, no repeated rounds,</T>
+      <T x={310} y={142} s={13} f={C.latte} a="middle" o={a}>no cycle to ever worry about</T>
+      <T x={310} y={205} s={13} f={C.latte} a="middle" o={a}>exactly because the graph is</T>
+      <T x={310} y={227} s={13} f={C.latte} a="middle" o={a}>guaranteed to have none</T>
     </Svg>
   );
 }

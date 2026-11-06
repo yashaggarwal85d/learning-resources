@@ -74,11 +74,18 @@ export function Opening({ t }: StepCtx) {
 export function PredictSparse({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A sparse graph (many vertices, comparatively few edges), asking which approach does less total work" h={240}>
-      <T x={150} y={90} s={13} f={C.crema} a="middle" o={a}>fixed cost: ignores how sparse the graph is</T>
-      <T x={450} y={90} s={13} f={C.focus} a="middle" o={a}>cost tied to edge count: rewards sparsity</T>
+    <Svg label="A sparse graph (many vertices, comparatively few edges), asking which approach does less total work" h={300}>
+      <T x={150} y={70} s={13} f={C.crema} a="middle" o={a}>fixed cost: ignores how</T>
+      <T x={150} y={94} s={13} f={C.crema} a="middle" o={a}>sparse the graph is</T>
+      <T x={450} y={70} s={13} f={C.focus} a="middle" o={a}>cost tied to edge count:</T>
+      <T x={450} y={94} s={13} f={C.focus} a="middle" o={a}>rewards sparsity</T>
       <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>which does less total work on a sparse graph?</T>
-      {answer !== null && <T x={300} y={222} s={14} f={C.focus} a="middle">the edge-count-driven approach — it has less work to do</T>}
+      {answer !== null && (
+        <>
+          <T x={300} y={234} s={14} f={C.focus} a="middle">the edge-count-driven approach —</T>
+          <T x={300} y={258} s={14} f={C.focus} a="middle">it has less work to do</T>
+        </>
+      )}
     </Svg>
   );
 }
@@ -88,9 +95,10 @@ export function DPMechanism({ t }: StepCtx) {
   const k = Math.min(4, Math.floor(easeOut(seg(t, 0.3, 2.8)) * 5));
   const filled = VERTS.map(() => VERTS.map(() => true));
   return (
-    <Svg label="The distance matrix filled one allowed waypoint at a time, column and row lit for the current one" h={320}>
+    <Svg label="The distance matrix filled one allowed waypoint at a time, column and row lit for the current one" h={340}>
       <Matrix highlightK={k} filled={filled} />
-      <T x={340} y={300} s={13} f={C.latte} a="middle">waypoint column {k} — does routing through it beat the best route so far?</T>
+      <T x={340} y={300} s={13} f={C.latte} a="middle">waypoint column {k} — does routing through it</T>
+      <T x={340} y={320} s={13} f={C.latte} a="middle">beat the best route so far?</T>
     </Svg>
   );
 }
@@ -112,9 +120,10 @@ export function TransitiveClosure({ t }: StepCtx) {
   const k = Math.min(4, Math.floor(easeOut(seg(t, 0.3, 2.8)) * 5));
   const filled = VERTS.map(() => VERTS.map(() => true));
   return (
-    <Svg label="The identical waypoint-by-waypoint sweep, with reachable-or-not in place of a distance" h={320}>
+    <Svg label="The identical waypoint-by-waypoint sweep, with reachable-or-not in place of a distance" h={340}>
       <Matrix highlightK={k} filled={filled} />
-      <T x={340} y={300} s={13} f={C.latte} a="middle">same sweep, same waypoints — a yes-or-no flag instead of a number</T>
+      <T x={340} y={300} s={13} f={C.latte} a="middle">same sweep, same waypoints —</T>
+      <T x={340} y={320} s={13} f={C.latte} a="middle">a yes-or-no flag instead of a number</T>
     </Svg>
   );
 }
@@ -123,10 +132,11 @@ export function TransitiveClosure({ t }: StepCtx) {
 export function JohnsonsMechanism({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="Every edge reweighted by a potential from an added source vertex, asked whether that ever changes the cheapest route" h={260}>
-      <T x={300} y={90} s={13} f={C.latte} a="middle" o={a}>every edge now zero or positive — no negative weight survives</T>
-      <T x={300} y={180} s={13} f={C.latte} a="middle" o={a}>does reweighting ever change which route is cheapest?</T>
-      {answer !== null && <T x={300} y={202} s={14} f={C.focus} a="middle">no — every route shifts by the identical amount</T>}
+    <Svg label="Every edge reweighted by a potential from an added source vertex, asked whether that ever changes the cheapest route" h={280}>
+      <T x={300} y={70} s={13} f={C.latte} a="middle" o={a}>every edge now zero or positive —</T>
+      <T x={300} y={94} s={13} f={C.latte} a="middle" o={a}>no negative weight survives</T>
+      <T x={300} y={190} s={13} f={C.latte} a="middle" o={a}>does reweighting ever change which route is cheapest?</T>
+      {answer !== null && <T x={300} y={222} s={14} f={C.focus} a="middle">no — every route shifts by the identical amount</T>}
     </Svg>
   );
 }
@@ -135,9 +145,11 @@ export function JohnsonsMechanism({ t, answer }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="The all-pairs question fully answered two ways, handed off to a graph with no cycle at all" h={260}>
-      <T x={340} y={130} s={13} f={C.latte} a="middle" o={a}>one dynamic program, or a composition of the two single-source algorithms already built</T>
-      <T x={340} y={200} s={13} f={C.latte} a="middle" o={a}>neither needed a new primitive — only a new way to combine the old ones</T>
+    <Svg label="The all-pairs question fully answered two ways, handed off to a graph with no cycle at all" h={280}>
+      <T x={340} y={120} s={13} f={C.latte} a="middle" o={a}>one dynamic program, or a composition of</T>
+      <T x={340} y={144} s={13} f={C.latte} a="middle" o={a}>the two single-source algorithms already built</T>
+      <T x={340} y={210} s={13} f={C.latte} a="middle" o={a}>neither needed a new primitive —</T>
+      <T x={340} y={234} s={13} f={C.latte} a="middle" o={a}>only a new way to combine the old ones</T>
     </Svg>
   );
 }

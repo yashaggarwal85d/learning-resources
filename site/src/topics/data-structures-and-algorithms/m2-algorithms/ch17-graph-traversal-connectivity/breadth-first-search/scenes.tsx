@@ -26,7 +26,7 @@ function Node({ i, fill, label, o = 1 }: { i: number; fill: string; label?: stri
     <g opacity={o}>
       <circle cx={x} cy={y} r={14} fill={C.band} stroke={fill} strokeWidth={2.5} />
       <T x={x} y={y + 5} s={13} f={fill} a="middle">{String(i)}</T>
-      {label && <T x={x} y={y - 20} s={12} f={C.latte} a="middle">{label}</T>}
+      {label && <T x={x} y={y - 20} s={13} f={C.latte} a="middle">{label}</T>}
     </g>
   );
 }
@@ -50,12 +50,13 @@ export function Opening({ t }: StepCtx) {
   const reveal = easeOut(seg(t, 0.6, 2.2));
   const maxLayer = Math.floor(reveal * 4.3);
   return (
-    <Svg label="A graph with a widening ring of visited vertices spreading outward from a source" h={260}>
+    <Svg label="A graph with a widening ring of visited vertices spreading outward from a source" h={320}>
       <Edges o={0.9} />
       {Array.from({ length: RING_N }, (_, i) => (
         <Node key={i} i={i} fill={LAYER[i] <= maxLayer ? C.focus : C.crema} />
       ))}
-      <T x={300} y={230} s={13} f={C.latte} a="middle" o={a}>never more than one step past what's already checked</T>
+      <T x={300} y={290} s={13} f={C.latte} a="middle" o={a}>never more than one step past</T>
+      <T x={300} y={308} s={13} f={C.latte} a="middle" o={a}>what's already checked</T>
     </Svg>
   );
 }
@@ -64,12 +65,13 @@ export function Opening({ t }: StepCtx) {
 export function PredictShortestPath({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A source vertex with the question of whether the first time a vertex is reached is always its shortest distance" h={220}>
+    <Svg label="A source vertex with the question of whether the first time a vertex is reached is always its shortest distance" h={360}>
       <Edges o={0.5} />
       <Node i={0} fill={C.focus} label="source" />
       {Array.from({ length: RING_N }, (_, i) => i !== 0 && <Node key={i} i={i} fill={C.crema} />)}
-      <T x={300} y={225} s={14} f={C.latte} a="middle" o={a}>first reached — always shortest, or can a shorter path arrive later?</T>
-      {answer !== null && <T x={300} y={245} s={15} f={C.caramel} a="middle">always shortest, the first time</T>}
+      <T x={300} y={290} s={14} f={C.latte} a="middle" o={a}>first reached — always shortest, or</T>
+      <T x={300} y={308} s={14} f={C.latte} a="middle" o={a}>can a shorter path arrive later?</T>
+      {answer !== null && <T x={300} y={332} s={15} f={C.caramel} a="middle">always shortest, the first time</T>}
     </Svg>
   );
 }
@@ -79,7 +81,7 @@ export function BFSMechanism({ t }: StepCtx) {
   const layerTime = (L: number) => 0.3 + L * 0.6;
   const curLayer = Math.max(0, Math.floor((t - 0.2) / 0.6));
   return (
-    <Svg label="The BFS frontier widening one layer at a time, each vertex's distance locking in the moment it is first reached" h={280}>
+    <Svg label="The BFS frontier widening one layer at a time, each vertex's distance locking in the moment it is first reached" h={340}>
       <Edges o={0.8} highlight={curLayer >= 1 ? new Set(['0-1', '0-7']) : undefined} />
       {Array.from({ length: RING_N }, (_, i) => {
         const L = LAYER[i];
@@ -87,7 +89,8 @@ export function BFSMechanism({ t }: StepCtx) {
         const justNow = L === curLayer;
         return <Node key={i} i={i} fill={reached ? (justNow ? C.focus : C.crema) : C.band} label={reached ? `d=${L}` : undefined} o={1} />;
       })}
-      <T x={300} y={250} s={13} f={C.latte} a="middle">a FIFO queue: every vertex at distance d is dequeued before any vertex at distance d+1 is enqueued</T>
+      <T x={300} y={295} s={13} f={C.latte} a="middle">a FIFO queue: every vertex at distance d is</T>
+      <T x={300} y={313} s={13} f={C.latte} a="middle">dequeued before any vertex at d+1 is enqueued</T>
     </Svg>
   );
 }
@@ -105,7 +108,7 @@ export function MultiSource({ t }: StepCtx) {
     return Math.min(...sources.map(([sr, sc]) => Math.abs(r - sr) + Math.abs(c - sc)));
   }
   return (
-    <Svg label="A grid with three fire sources spreading simultaneously, each cell lit the moment the nearest fire reaches it" h={330}>
+    <Svg label="A grid with three fire sources spreading simultaneously, each cell lit the moment the nearest fire reaches it" h={390}>
       {Array.from({ length: GRID }, (_, r) =>
         Array.from({ length: GRID }, (_, c) => {
           const d = dist(r, c);
@@ -116,7 +119,8 @@ export function MultiSource({ t }: StepCtx) {
           );
         })
       )}
-      <T x={300} y={oy + GRID * cell + 28} s={13} f={C.latte} a="middle" o={a}>one pass, three seeds — the distance to the nearest source, everywhere at once</T>
+      <T x={300} y={oy + GRID * cell + 28} s={13} f={C.latte} a="middle" o={a}>one pass, three seeds — the distance</T>
+      <T x={300} y={oy + GRID * cell + 46} s={13} f={C.latte} a="middle" o={a}>to the nearest source, everywhere at once</T>
     </Svg>
   );
 }
@@ -128,7 +132,7 @@ export function ZeroOneBFS({ t }: StepCtx) {
   const slotW = 70;
   const startX = 300 - (items.length * slotW) / 2;
   return (
-    <Svg label="A deque holding the current frontier, zero-weight edges pushed to the front, one-weight edges pushed to the back" h={240}>
+    <Svg label="A deque holding the current frontier, zero-weight edges pushed to the front, one-weight edges pushed to the back" h={260}>
       <T x={300} y={40} s={14} f={C.latte} a="middle" o={a}>deque — front</T>
       <line x1={50} y1={120} x2={550} y2={120} stroke={C.line} strokeWidth={2} />
       {items.map((it, i) => (
@@ -138,7 +142,8 @@ export function ZeroOneBFS({ t }: StepCtx) {
           <T x={startX + i * slotW + (slotW - 8) / 2} y={145} s={11} f={C.latte} a="middle">w={it.w}</T>
         </g>
       ))}
-      <T x={300} y={185} s={13} f={C.latte} a="middle" o={a}>the deque's own order already shows non-decreasing distance — no heap needed</T>
+      <T x={300} y={185} s={13} f={C.latte} a="middle" o={a}>the deque's own order already shows</T>
+      <T x={300} y={203} s={13} f={C.latte} a="middle" o={a}>non-decreasing distance — no heap needed</T>
     </Svg>
   );
 }
@@ -147,7 +152,7 @@ export function ZeroOneBFS({ t }: StepCtx) {
 export function PredictBipartite({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A five-cycle, an odd length, with the question of whether it can be two-coloured without a clash" h={220}>
+    <Svg label="A five-cycle, an odd length, with the question of whether it can be two-coloured without a clash" h={330}>
       {[0, 1, 2, 3, 4].map((i) => {
         const ang = -Math.PI / 2 + (i / 5) * Math.PI * 2;
         const x = 300 + 90 * Math.cos(ang), y = 130 + 90 * Math.sin(ang);
@@ -159,8 +164,9 @@ export function PredictBipartite({ t, answer }: StepCtx) {
         const x = 300 + 90 * Math.cos(ang), y = 130 + 90 * Math.sin(ang);
         return <circle key={i} cx={x} cy={y} r={13} fill={C.band} stroke={C.crema} strokeWidth={2} />;
       })}
-      <T x={300} y={225} s={13} f={C.latte} a="middle" o={a}>a 5-cycle — two colours, alternating, with no two neighbours the same?</T>
-      {answer !== null && <T x={300} y={245} s={14} f={C.caramel} a="middle">no — an odd cycle always clashes</T>}
+      <T x={300} y={265} s={13} f={C.latte} a="middle" o={a}>a 5-cycle — two colours, alternating,</T>
+      <T x={300} y={283} s={13} f={C.latte} a="middle" o={a}>with no two neighbours the same?</T>
+      {answer !== null && <T x={300} y={305} s={14} f={C.caramel} a="middle">no — an odd cycle always clashes</T>}
     </Svg>
   );
 }
@@ -172,7 +178,7 @@ export function Bipartiteness({ t }: StepCtx) {
   const coloured = Math.floor(colourAt * (n + 1));
   const clashAt = easeInOut(seg(t, 2.1, 2.7));
   return (
-    <Svg label="A five-cycle coloured alternately until the last edge clashes two same-coloured neighbours, the witness of an odd cycle" h={260}>
+    <Svg label="A five-cycle coloured alternately until the last edge clashes two same-coloured neighbours, the witness of an odd cycle" h={320}>
       {Array.from({ length: n }, (_, i) => {
         const ang = -Math.PI / 2 + (i / n) * Math.PI * 2;
         const x = 300 + 90 * Math.cos(ang), y = 140 + 90 * Math.sin(ang);
@@ -192,9 +198,14 @@ export function Bipartiteness({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={300} y={245} s={13} f={clashAt > 0.3 ? C.cherryText : C.latte} a="middle">
-        {clashAt > 0.3 ? 'vertices 0 and 4 land the same colour — the path between them is the odd cycle' : 'alternating colour at each frontier step'}
-      </T>
+      {clashAt > 0.3 ? (
+        <>
+          <T x={300} y={273} s={13} f={C.cherryText} a="middle">vertices 0 and 4 land the same colour —</T>
+          <T x={300} y={298} s={13} f={C.cherryText} a="middle">the path between them is the odd cycle</T>
+        </>
+      ) : (
+        <T x={300} y={275} s={13} f={C.latte} a="middle">alternating colour at each frontier step</T>
+      )}
     </Svg>
   );
 }
@@ -205,13 +216,14 @@ export function DirectionOptimizing({ t }: StepCtx) {
   const topDownBar = easeOut(seg(t, 0.4, 1.6));
   const bottomUpBar = easeOut(seg(t, 1.0, 2.2));
   return (
-    <Svg label="A bar chart contrasting the edges examined by top-down and bottom-up BFS once the frontier is a large fraction of a low-diameter graph" h={240}>
-      <T x={60} y={50} s={13} f={C.latte} o={a}>edges examined, same step, same large frontier</T>
+    <Svg label="A bar chart contrasting the edges examined by top-down and bottom-up BFS once the frontier is a large fraction of a low-diameter graph" h={280}>
+      <T x={300} y={40} s={13} f={C.latte} a="middle" o={a}>edges examined, same step, same large frontier</T>
       <T x={60} y={100} s={13} f={C.crema}>top-down</T>
       <rect x={160} y={85} width={320 * topDownBar} height={22} fill={C.cherryText} />
       <T x={60} y={150} s={13} f={C.crema}>bottom-up</T>
       <rect x={160} y={135} width={320 * 0.14 * bottomUpBar} height={22} fill={C.focus} />
-      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>the frontier scanning its own many edges vs. the rest scanning for one neighbour each</T>
+      <T x={300} y={210} s={13} f={C.latte} a="middle" o={a}>the frontier scanning its own many edges</T>
+      <T x={300} y={228} s={13} f={C.latte} a="middle" o={a}>vs. the rest scanning for one neighbour each</T>
     </Svg>
   );
 }
@@ -220,10 +232,11 @@ export function DirectionOptimizing({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="The chapter's closing frame: a frontier widening ring, handed off to a single deep path for the next topic" h={240}>
+    <Svg label="The chapter's closing frame: a frontier widening ring, handed off to a single deep path for the next topic" h={320}>
       <Edges o={0.6} />
       {Array.from({ length: RING_N }, (_, i) => <Node key={i} i={i} fill={C.crema} />)}
-      <T x={300} y={230} s={13} f={C.latte} a="middle" o={a}>one frontier, every vertex once — depth-first search goes the other way next</T>
+      <T x={300} y={290} s={13} f={C.latte} a="middle" o={a}>one frontier, every vertex once —</T>
+      <T x={300} y={308} s={13} f={C.latte} a="middle" o={a}>depth-first search goes the other way next</T>
     </Svg>
   );
 }

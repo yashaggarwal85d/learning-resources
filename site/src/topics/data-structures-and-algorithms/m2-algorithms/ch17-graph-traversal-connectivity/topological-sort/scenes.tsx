@@ -24,7 +24,7 @@ function Node({ i, fill, label, o = 1 }: { i: number; fill: string; label?: stri
     <g opacity={o}>
       <circle cx={x} cy={y} r={16} fill={C.band} stroke={fill} strokeWidth={2.5} />
       <T x={x} y={y + 5} s={13} f={fill} a="middle">{String(i)}</T>
-      {label && <T x={x} y={y - 24} s={11} f={C.latte} a="middle">{label}</T>}
+      {label && <T x={x} y={y - 24} s={13} f={C.latte} a="middle">{label}</T>}
     </g>
   );
 }
@@ -68,7 +68,7 @@ export function Opening({ t }: StepCtx) {
 export function PredictCycle({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A directed cycle with the question of whether any valid topological order could exist for it" h={240}>
+    <Svg label="A directed cycle with the question of whether any valid topological order could exist for it" h={300}>
       <ArrowDefs />
       <Edge a={0} b={1} />
       <Edge a={1} b={2} />
@@ -77,7 +77,7 @@ export function PredictCycle({ t, answer }: StepCtx) {
       <Node i={1} fill={C.crema} />
       <Node i={2} fill={C.crema} />
       <T x={300} y={260} s={13} f={C.latte} a="middle" o={a}>a cycle — any valid order at all?</T>
-      {answer !== null && <T x={300} y={280} s={14} f={C.caramel} a="middle">no — none can exist</T>}
+      {answer !== null && <T x={300} y={285} s={14} f={C.caramel} a="middle">no — none can exist</T>}
     </Svg>
   );
 }
@@ -107,7 +107,7 @@ export function ReverseDFS({ t }: StepCtx) {
   const reveal = easeOut(seg(t, 0.3, 2.2));
   const shown = Math.floor(reveal * (finishOrder.length + 0.3));
   return (
-    <Svg label="DFS finish order read off and then reversed into a second, independently valid topological order" h={260}>
+    <Svg label="DFS finish order read off and then reversed into a second, independently valid topological order" h={280}>
       <T x={300} y={40} s={13} f={C.latte} a="middle" o={a}>finish order (left to right): {finishOrder.slice(0, Math.min(finishOrder.length, shown)).join(', ')}</T>
       {finishOrder.map((v, i) => (
         <g key={v} opacity={i < shown ? 1 : 0.25}>
@@ -115,7 +115,8 @@ export function ReverseDFS({ t }: StepCtx) {
           <T x={90 + i * 90} y={145} s={13} f={C.crema} a="middle">{String(v)}</T>
         </g>
       ))}
-      <T x={300} y={220} s={13} f={C.latte} a="middle" o={a}>reversed, this is a second valid topological order — not identical to Kahn's, equally correct</T>
+      <T x={300} y={220} s={13} f={C.latte} a="middle" o={a}>reversed, this is a second valid topological order —</T>
+      <T x={300} y={238} s={13} f={C.latte} a="middle" o={a}>not identical to Kahn's, equally correct</T>
     </Svg>
   );
 }
@@ -124,7 +125,7 @@ export function ReverseDFS({ t }: StepCtx) {
 export function StuckGraph({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A cyclic graph where Kahn's algorithm stalls with every remaining vertex stuck at positive in-degree" h={260}>
+    <Svg label="A cyclic graph where Kahn's algorithm stalls with every remaining vertex stuck at positive in-degree" h={300}>
       <ArrowDefs />
       <Edge a={0} b={1} color={C.cherryText} />
       <Edge a={1} b={2} color={C.cherryText} />
@@ -132,7 +133,8 @@ export function StuckGraph({ t }: StepCtx) {
       <Node i={0} fill={C.cherryText} label="in=1" />
       <Node i={1} fill={C.cherryText} label="in=1" />
       <Node i={2} fill={C.cherryText} label="in=1" />
-      <T x={300} y={260} s={13} f={C.latte} a="middle" o={a}>the queue runs dry — every remaining vertex still has positive in-degree</T>
+      <T x={300} y={258} s={13} f={C.latte} a="middle" o={a}>the queue runs dry — every remaining</T>
+      <T x={300} y={283} s={13} f={C.latte} a="middle" o={a}>vertex still has positive in-degree</T>
     </Svg>
   );
 }
@@ -141,10 +143,11 @@ export function StuckGraph({ t }: StepCtx) {
 export function LexicographicHeap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A plain FIFO queue's order against a min-heap's lexicographically smallest order on the same small graph" h={260}>
+    <Svg label="A plain FIFO queue's order against a min-heap's lexicographically smallest order on the same small graph" h={280}>
       <T x={150} y={60} s={14} f={C.crema} a="middle" o={a}>plain queue: 0, 2, 1</T>
       <T x={450} y={60} s={14} f={C.focus} a="middle" o={a}>min-heap: 0, 1, 2</T>
-      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>vertex 2 is available immediately, but the heap holds it back for the smaller label 1</T>
+      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>vertex 2 is available immediately, but the</T>
+      <T x={300} y={218} s={13} f={C.latte} a="middle" o={a}>heap holds it back for the smaller label 1</T>
     </Svg>
   );
 }
@@ -157,7 +160,8 @@ export function Recap({ t }: StepCtx) {
       <ArrowDefs />
       {EDGES.map(([x, y], i) => <Edge key={i} a={x} b={y} />)}
       {[0, 1, 2, 3, 4].map((v) => <Node key={v} i={v} fill={C.crema} />)}
-      <T x={300} y={260} s={13} f={C.latte} a="middle" o={a}>no order exists without acyclicity — strongly connected components, next</T>
+      <T x={300} y={260} s={13} f={C.latte} a="middle" o={a}>no order exists without acyclicity —</T>
+      <T x={300} y={278} s={13} f={C.latte} a="middle" o={a}>strongly connected components, next</T>
     </Svg>
   );
 }

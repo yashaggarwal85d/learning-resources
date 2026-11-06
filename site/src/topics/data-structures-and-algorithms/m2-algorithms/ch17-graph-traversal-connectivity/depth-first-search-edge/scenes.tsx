@@ -23,7 +23,7 @@ function Node({ i, fill, label, o = 1 }: { i: number; fill: string; label?: stri
     <g opacity={o}>
       <circle cx={x} cy={y} r={16} fill={C.band} stroke={fill} strokeWidth={2.5} />
       <T x={x} y={y + 5} s={13} f={fill} a="middle">{String(i)}</T>
-      {label && <T x={x} y={y - 24} s={11} f={C.latte} a="middle">{label}</T>}
+      {label && <T x={x} y={y - 24} s={13} f={C.latte} a="middle">{label}</T>}
     </g>
   );
 }
@@ -72,7 +72,7 @@ export function Opening({ t }: StepCtx) {
 export function PredictBackEdge({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="An edge from a vertex back to one of its own ancestors in the DFS tree, with the question of which edge type it is" h={260}>
+    <Svg label="An edge from a vertex back to one of its own ancestors in the DFS tree, with the question of which edge type it is" h={300}>
       <ArrowDefs />
       <Edge a={0} b={1} />
       <Edge a={1} b={2} />
@@ -81,7 +81,7 @@ export function PredictBackEdge({ t, answer }: StepCtx) {
       <Node i={1} fill={C.crema} />
       <Node i={2} fill={C.crema} />
       <T x={300} y={260} s={13} f={C.latte} a="middle" o={a}>tree, back, forward, or cross?</T>
-      {answer !== null && <T x={300} y={280} s={14} f={C.caramel} a="middle">a back edge — and a cycle</T>}
+      {answer !== null && <T x={300} y={285} s={14} f={C.caramel} a="middle">a back edge — and a cycle</T>}
     </Svg>
   );
 }
@@ -127,7 +127,7 @@ export function EdgeTypes({ t }: StepCtx) {
 export function PredictUndirectedEdges({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="An undirected triangle with the question of whether its DFS can ever produce a forward or a cross edge" h={240}>
+    <Svg label="An undirected triangle with the question of whether its DFS can ever produce a forward or a cross edge" h={300}>
       <ArrowDefs />
       <Edge a={0} b={1} />
       <Edge a={1} b={2} />
@@ -136,7 +136,7 @@ export function PredictUndirectedEdges({ t, answer }: StepCtx) {
       <Node i={1} fill={C.crema} />
       <Node i={2} fill={C.crema} />
       <T x={300} y={260} s={13} f={C.latte} a="middle" o={a}>forward or cross edges — possible here, or not?</T>
-      {answer !== null && <T x={300} y={280} s={14} f={C.caramel} a="middle">no — only tree and back edges</T>}
+      {answer !== null && <T x={300} y={285} s={14} f={C.caramel} a="middle">no — only tree and back edges</T>}
     </Svg>
   );
 }
@@ -145,16 +145,19 @@ export function PredictUndirectedEdges({ t, answer }: StepCtx) {
 export function CycleDetection({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A directed graph tested by three colours against an undirected graph tested by a parent check, side by side" h={280}>
-      <T x={150} y={40} s={14} f={C.crema} a="middle" o={a}>directed: grey neighbour?</T>
+    <Svg label="A directed graph tested by three colours against an undirected graph tested by a parent check, side by side" h={300}>
+      <T x={150} y={28} s={13} f={C.crema} a="middle" o={a}>directed:</T>
+      <T x={150} y={50} s={13} f={C.crema} a="middle" o={a}>grey neighbour?</T>
       <Node i={0} fill={C.taupe} />
       <Node i={1} fill={C.focus} label="grey" />
       {(() => { const [x, y] = POS[2]; return <circle cx={x} cy={y} r={16} fill={C.band} stroke={C.cherryText} strokeWidth={2.5} />; })()}
       <ArrowDefs />
       <Edge a={0} b={1} />
       <Edge a={1} b={2} color={C.cherryText} w={2.5} />
-      <T x={450} y={40} s={14} f={C.crema} a="middle" o={a}>undirected: visited, not the parent?</T>
-      <T x={450} y={275} s={12} f={C.latte} a="middle" o={a}>no colours needed — a non-parent visited neighbour is already a cycle</T>
+      <T x={450} y={28} s={13} f={C.crema} a="middle" o={a}>undirected: visited,</T>
+      <T x={450} y={50} s={13} f={C.crema} a="middle" o={a}>not the parent?</T>
+      <T x={300} y={265} s={12} f={C.latte} a="middle" o={a}>no colours needed — a non-parent</T>
+      <T x={300} y={283} s={12} f={C.latte} a="middle" o={a}>visited neighbour is already a cycle</T>
     </Svg>
   );
 }
@@ -165,13 +168,19 @@ export function IterativeDFS({ t }: StepCtx) {
   const surviveAt = easeOut(seg(t, 1.8, 3.2));
   const barMax = 240;
   return (
-    <Svg label="A long chain overflowing a recursive call stack against an explicit stack completing the identical traversal" h={280}>
+    <Svg label="A long chain overflowing a recursive call stack against an explicit stack completing the identical traversal" h={300}>
       <T x={60} y={50} s={13} f={C.crema}>recursive call stack</T>
       <rect x={60} y={65} width={24} height={Math.min(barMax, barMax * crashAt * 1.4)} fill={crashAt > 0.7 ? C.cherry : C.focus} />
       {crashAt > 0.75 && <T x={100} y={110} s={13} f={C.cherryText}>RecursionError</T>}
-      <T x={320} y={50} s={13} f={C.crema}>explicit stack (vertex, iterator)</T>
-      <rect x={320} y={65} width={24} height={Math.min(barMax, barMax * surviveAt * 0.3)} fill={C.focus} />
-      {surviveAt > 0.8 && <T x={360} y={110} s={13} f={C.crema}>completes — fifty thousand vertices</T>}
+      <T x={320} y={50} s={12} f={C.crema}>explicit stack</T>
+      <T x={320} y={66} s={12} f={C.crema}>(vertex, iterator)</T>
+      <rect x={320} y={82} width={24} height={Math.min(barMax, barMax * surviveAt * 0.3)} fill={C.focus} />
+      {surviveAt > 0.8 && (
+        <>
+          <T x={320} y={140} s={12} f={C.crema}>completes —</T>
+          <T x={320} y={156} s={12} f={C.crema}>fifty thousand vertices</T>
+        </>
+      )}
     </Svg>
   );
 }
@@ -180,11 +189,12 @@ export function IterativeDFS({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="The directed graph once more, every edge now labelled with its type, handed off to the next topic's use of the same classification" h={300}>
+    <Svg label="The directed graph once more, every edge now labelled with its type, handed off to the next topic's use of the same classification" h={320}>
       <ArrowDefs />
       {EDGES.map(([x, y], i) => <Edge key={i} a={x} b={y} color={i === 2 ? C.cherryText : C.line} />)}
       {[0, 1, 2, 3, 4].map((v) => <Node key={v} i={v} fill={C.crema} />)}
-      <T x={300} y={275} s={13} f={C.latte} a="middle" o={a}>a DAG's reverse finish order is a dependency order — topological sort, next</T>
+      <T x={300} y={273} s={13} f={C.latte} a="middle" o={a}>a DAG's reverse finish order is a dependency order —</T>
+      <T x={300} y={298} s={13} f={C.latte} a="middle" o={a}>topological sort, next</T>
     </Svg>
   );
 }
