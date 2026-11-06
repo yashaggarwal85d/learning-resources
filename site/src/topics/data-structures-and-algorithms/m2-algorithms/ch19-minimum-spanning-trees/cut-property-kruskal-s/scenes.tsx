@@ -70,7 +70,7 @@ function edgeLine(key: EKey, colour: string = C.taupe, dashed = false, thick = f
   return (
     <g key={`${key}-line`} opacity={opacity}>
       <path d={d} stroke={colour} strokeWidth={thick ? 2.6 : 1.4} strokeDasharray={dashed ? '5 4' : undefined} fill="none" />
-      <T x={labelX} y={labelY} s={11} a="middle" f={C.latte}>{EDGE_WEIGHT[key]}</T>
+      <T x={labelX} y={labelY} s={13} a="middle" f={C.latte}>{EDGE_WEIGHT[key]}</T>
     </g>
   );
 }
@@ -136,7 +136,8 @@ export function CutProperty({ t }: StepCtx) {
   const c = easeOut(seg(t, 2.1, 2.8));
   return (
     <Svg label="A closed curve cuts A and C away from the rest; the lightest crossing edge locks on" h={320}>
-      {baseGraph(() => C.taupe)}
+      {ALL_EDGES.filter((k) => k !== 'CD1' && k !== 'BC3').map((k) => edgeLine(k, MST_EDGES.includes(k) ? C.crema : C.taupe, !MST_EDGES.includes(k), MST_EDGES.includes(k)))}
+      {Object.keys(POS).map((v) => vertex(v))}
       <ellipse cx={160} cy={200} rx={110} ry={95} fill="none" stroke={C.caramel} strokeWidth={1.6} strokeDasharray="4 3" opacity={a} />
       <g opacity={b}>
         {edgeLine('CD1', C.caramel, false, true)}
@@ -153,7 +154,8 @@ export function CycleProperty({ t }: StepCtx) {
   const b = easeOut(seg(t, 1.1, 2.0));
   return (
     <Svg label="Triangle A, B, C; its heaviest edge A-B is absent from the minimum spanning tree" h={320}>
-      {baseGraph(() => C.taupe)}
+      {ALL_EDGES.filter((k) => k !== 'AB4' && k !== 'AC2' && k !== 'BC3').map((k) => edgeLine(k, MST_EDGES.includes(k) ? C.crema : C.taupe, !MST_EDGES.includes(k), MST_EDGES.includes(k)))}
+      {Object.keys(POS).map((v) => vertex(v))}
       <g opacity={a}>
         {edgeLine('AB4', C.cherry, false, true)}
         {edgeLine('AC2', C.caramel, false, true)}
@@ -295,10 +297,10 @@ export function NegativeWeights({ t }: StepCtx) {
   return (
     <Svg label="Every weight shifted by the same amount, even into negative numbers; the identical five edges are accepted" h={300}>
       <g opacity={a}>
-        <T x={150} y={60} s={12} f={C.latte}>weights: one, two, two, three, three, &hellip;</T>
+        <T x={300} y={60} s={12} a="middle" f={C.latte}>weights: one, two, two, three, three, &hellip;</T>
       </g>
       <g opacity={b}>
-        <T x={400} y={60} s={12} f={C.caramel}>shifted: negative nineteen, &hellip;</T>
+        <T x={300} y={84} s={12} a="middle" f={C.caramel}>shifted: negative nineteen, &hellip;</T>
       </g>
       <T x={300} y={260} s={13} a="middle" f={C.latte}>relative order unchanged &mdash; the same tree wins</T>
     </Svg>
@@ -312,10 +314,10 @@ export function Handoff({ t }: StepCtx) {
   return (
     <Svg label="The whole edge list sorted first, against a cut that is simply the tree already built" h={280}>
       <g opacity={a}>
-        <T x={150} y={100} s={12} a="middle" f={C.caramel}>Kruskal: sort the whole edge list first</T>
+        <T x={300} y={100} s={12} a="middle" f={C.caramel}>Kruskal: sort the whole edge list first</T>
       </g>
       <g opacity={b}>
-        <T x={450} y={100} s={12} a="middle" f={C.latte}>the cut can be the tree already built</T>
+        <T x={300} y={124} s={12} a="middle" f={C.latte}>the cut can be the tree already built</T>
       </g>
       <T x={300} y={240} s={13} a="middle" f={C.latte}>Prim's algorithm, next</T>
     </Svg>

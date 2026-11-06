@@ -56,10 +56,11 @@ export function PredictRotated({ t, answer }: StepCtx) {
 export function SortedHalf({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="The rotated array with the sorted half coloured and the target range check drawn beside it" h={260}>
+    <Svg label="The rotated array with the sorted half coloured and the target range check drawn beside it" h={280}>
       {ROTATED.map((v, i) => <Cell key={i} x={40 + i * 60} y={60} v={v} highlight={i <= 3} />)}
       <T x={30} y={130} s={13} f={C.latte} o={a}>a[lo] ≤ a[mid] → the left half is sorted</T>
-      <T x={30} y={156} s={13} f={C.crema} o={a}>is the target within [a[lo], a[mid])? one comparison, then recurse</T>
+      <T x={30} y={156} s={13} f={C.crema} o={a}>is the target within [a[lo], a[mid])?</T>
+      <T x={30} y={174} s={13} f={C.crema} o={a}>one comparison, then recurse</T>
     </Svg>
   );
 }
@@ -85,7 +86,7 @@ export function Duplicates({ t }: StepCtx) {
       {Array.from({ length: n }, (_, i) => (
         <rect key={i} x={30 + i * 30} y={70} width={25} height={25} rx={2} fill="none" stroke={i === n - 2 ? C.cherry : C.quiet} strokeWidth={i === n - 2 ? 1.8 : 1} />
       ))}
-      <T x={30 + (n - 2) * 30 + 12} y={60} s={11} f={C.cherryText} a="middle" o={a}>the one different value</T>
+      <T x={450} y={60} s={11} f={C.cherryText} a="middle" o={a}>the one different value</T>
       <T x={300} y={140} s={13} f={C.latte} a="middle" o={a}>a[lo] == a[mid] == a[hi] → can't tell which half is sorted</T>
       <T x={300} y={166} s={13} f={C.cherryText} a="middle" o={a}>200 elements, 198 comparisons to find it</T>
     </Svg>
@@ -127,10 +128,12 @@ export function RowMajorContrast({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.3));
   const ROW_MAJOR = [1, 3, 5, 7, 10, 11, 16, 20, 23, 30, 34, 60];
   return (
-    <Svg label="A row-major matrix flattened into one ascending row, contrasted with the staircase matrix which cannot flatten the same way" h={260}>
+    <Svg label="A row-major matrix flattened into one ascending row, contrasted with the staircase matrix which cannot flatten the same way" h={280}>
       {ROW_MAJOR.map((v, i) => <Cell key={i} x={20 + i * 46} y={50} v={v} w={40} highlight={i === 6} />)}
-      <T x={300} y={110} s={13} f={C.latte} a="middle" o={a}>row-major: one ascending sequence — ordinary binary search, O(log(mn))</T>
-      <T x={300} y={150} s={13} f={C.cherryText} a="middle" o={a}>staircase: row 1 starts at 2, below row 0's last value 15 — not one sequence</T>
+      <T x={300} y={110} s={13} f={C.latte} a="middle" o={a}>row-major: one ascending sequence —</T>
+      <T x={300} y={128} s={13} f={C.latte} a="middle" o={a}>ordinary binary search, O(log(mn))</T>
+      <T x={300} y={160} s={13} f={C.cherryText} a="middle" o={a}>staircase: row 1 starts at 2, below</T>
+      <T x={300} y={178} s={13} f={C.cherryText} a="middle" o={a}>row 0's last value 15 — not one sequence</T>
     </Svg>
   );
 }
@@ -138,9 +141,9 @@ export function RowMajorContrast({ t }: StepCtx) {
 // 9 · Recap.
 export function Recap({ t }: StepCtx) {
   const panels = [
-    { l1: 'rotated array', l2: 'which half is sorted' },
-    { l1: 'staircase matrix', l2: 'which direction shrinks' },
-    { l1: 'row-major matrix', l2: 'one flattened order?' },
+    { l1: 'rotated array', l2: 'half is sorted' },
+    { l1: 'staircase matrix', l2: 'direction shrinks' },
+    { l1: 'row-major matrix', l2: 'flattened order?' },
   ];
   return (
     <Svg label="Three panels recapping the topic: the rotated array, the staircase matrix, and the row-major matrix" h={260}>

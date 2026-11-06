@@ -55,11 +55,12 @@ const GROUP_COLOR = [C.crema, C.focus, C.taupe];
 export function Opening({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.3, 1.4));
   return (
-    <Svg label="A graph where small pockets of vertices can each reach every other member of the pocket and nothing outside it" h={240}>
+    <Svg label="A graph where small pockets of vertices can each reach every other member of the pocket and nothing outside it" h={260}>
       <ArrowDefs />
       {EDGES.map(([x, y], i) => <Edge key={i} a={x} b={y} />)}
       {[0, 1, 2, 3, 4, 5].map((v) => <Node key={v} i={v} fill={GROUP_COLOR[GROUPS[v]]} />)}
-      <T x={310} y={220} s={13} f={C.latte} a="middle" o={a}>from a distance, every vertex looks reachable from every other</T>
+      <T x={310} y={220} s={13} f={C.latte} a="middle" o={a}>from a distance, every vertex</T>
+      <T x={310} y={238} s={13} f={C.latte} a="middle" o={a}>looks reachable from every other</T>
     </Svg>
   );
 }
@@ -92,7 +93,8 @@ export function TarjanMechanism({ t }: StepCtx) {
         const isPopped = popped.has(v);
         return <Node key={v} i={v} fill={!visited ? C.crema : isPopped ? C.taupe : C.caramel} label={visited ? `low=${Math.min(0, v)}` : undefined} />;
       })}
-      <T x={310} y={275} s={13} f={C.latte} a="middle">one stack, one DFS — a pop happens the moment low-link catches up to index</T>
+      <T x={310} y={273} s={13} f={C.latte} a="middle">one stack, one DFS — a pop happens</T>
+      <T x={310} y={298} s={13} f={C.latte} a="middle">the moment low-link catches up to index</T>
     </Svg>
   );
 }
@@ -101,10 +103,13 @@ export function TarjanMechanism({ t }: StepCtx) {
 export function KosarajuMechanism({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="Kosaraju's algorithm: one depth-first search for a finish order, the edges reversed, a second depth-first search in that order" h={260}>
-      <T x={150} y={60} s={13} f={C.crema} a="middle" o={a}>pass 1: finish order on the original graph</T>
-      <T x={450} y={60} s={13} f={C.focus} a="middle" o={a}>pass 2: DFS on the transpose, in reverse finish order</T>
-      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>each new DFS tree in pass 2 is exactly one strongly connected component</T>
+    <Svg label="Kosaraju's algorithm: one depth-first search for a finish order, the edges reversed, a second depth-first search in that order" h={320}>
+      <T x={150} y={48} s={13} f={C.crema} a="middle" o={a}>pass 1: finish order</T>
+      <T x={150} y={73} s={13} f={C.crema} a="middle" o={a}>on the original graph</T>
+      <T x={450} y={48} s={13} f={C.focus} a="middle" o={a}>pass 2: DFS on the transpose,</T>
+      <T x={450} y={73} s={13} f={C.focus} a="middle" o={a}>in reverse finish order</T>
+      <T x={300} y={233} s={13} f={C.latte} a="middle" o={a}>each new DFS tree in pass 2 is exactly</T>
+      <T x={300} y={258} s={13} f={C.latte} a="middle" o={a}>one strongly connected component</T>
     </Svg>
   );
 }
@@ -113,11 +118,12 @@ export function KosarajuMechanism({ t }: StepCtx) {
 export function CondensationGraph({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="The original graph beside its condensation graph, visibly acyclic" h={260}>
+    <Svg label="The original graph beside its condensation graph, visibly acyclic" h={300}>
       <ArrowDefs />
       {EDGES.map(([x, y], i) => <Edge key={i} a={x} b={y} />)}
       {[0, 1, 2, 3, 4, 5].map((v) => <Node key={v} i={v} fill={GROUP_COLOR[GROUPS[v]]} />)}
-      <T x={310} y={220} s={13} f={C.latte} a="middle" o={a}>contract each group to one vertex — the result has no cycle, confirmed directly</T>
+      <T x={310} y={218} s={13} f={C.latte} a="middle" o={a}>contract each group to one vertex —</T>
+      <T x={310} y={243} s={13} f={C.latte} a="middle" o={a}>the result has no cycle, confirmed directly</T>
     </Svg>
   );
 }
@@ -126,10 +132,13 @@ export function CondensationGraph({ t }: StepCtx) {
 export function TwoSAT({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A small two-SAT implication graph: a satisfiable instance keeping a variable's two literals in separate components, against an unsatisfiable one merging them" h={260}>
-      <T x={160} y={70} s={13} f={C.crema} a="middle" o={a}>satisfiable: x and not-x stay in different components</T>
-      <T x={450} y={70} s={13} f={C.cherryText} a="middle" o={a}>unsatisfiable: x and not-x merge into one component</T>
-      <T x={300} y={210} s={13} f={C.latte} a="middle" o={a}>a hard-looking logic problem, reduced entirely to a traversal already built</T>
+    <Svg label="A small two-SAT implication graph: a satisfiable instance keeping a variable's two literals in separate components, against an unsatisfiable one merging them" h={320}>
+      <T x={160} y={48} s={13} f={C.crema} a="middle" o={a}>satisfiable: x and not-x</T>
+      <T x={160} y={73} s={13} f={C.crema} a="middle" o={a}>stay in different components</T>
+      <T x={450} y={48} s={13} f={C.cherryText} a="middle" o={a}>unsatisfiable: x and not-x</T>
+      <T x={450} y={73} s={13} f={C.cherryText} a="middle" o={a}>merge into one component</T>
+      <T x={300} y={233} s={13} f={C.latte} a="middle" o={a}>a hard-looking logic problem, reduced</T>
+      <T x={300} y={258} s={13} f={C.latte} a="middle" o={a}>entirely to a traversal already built</T>
     </Svg>
   );
 }
@@ -138,11 +147,12 @@ export function TwoSAT({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="Every vertex visited, ranked and grouped by what it can reach, handed off to a graph with weighted edges and a cheapest path to find" h={260}>
+    <Svg label="Every vertex visited, ranked and grouped by what it can reach, handed off to a graph with weighted edges and a cheapest path to find" h={280}>
       <ArrowDefs />
       {EDGES.map(([x, y], i) => <Edge key={i} a={x} b={y} />)}
       {[0, 1, 2, 3, 4, 5].map((v) => <Node key={v} i={v} fill={GROUP_COLOR[GROUPS[v]]} />)}
-      <T x={310} y={220} s={13} f={C.latte} a="middle" o={a}>every edge cost one step — the next question puts a cost on each one</T>
+      <T x={310} y={220} s={13} f={C.latte} a="middle" o={a}>every edge cost one step —</T>
+      <T x={310} y={238} s={13} f={C.latte} a="middle" o={a}>the next question puts a cost on each one</T>
     </Svg>
   );
 }

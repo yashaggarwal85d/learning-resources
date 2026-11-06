@@ -11,11 +11,11 @@ import { C, Svg, T } from '../../../../../reels/kit';
 // adversarial diamond chain (build_spfa_adversary).
 
 const CHAIN_POS: Record<number, readonly [number, number]> = {
-  0: [70, 140],
-  1: [210, 140],
-  2: [350, 140],
-  3: [490, 140],
-  4: [630, 140],
+  0: [60, 140],
+  1: [175, 140],
+  2: [290, 140],
+  3: [405, 140],
+  4: [520, 140],
 };
 const CHAIN_EDGES: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 4]];
 
@@ -74,12 +74,18 @@ export function Opening({ t }: StepCtx) {
 export function PredictNegativeCycle({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A final relaxation round finding no improvement anywhere, asking what that proves about negative cycles" h={220}>
+    <Svg label="A final relaxation round finding no improvement anywhere, asking what that proves about negative cycles" h={280}>
       <ArrowDefs />
       {CHAIN_EDGES.map(([x, y], i) => <ChainEdge key={i} a={x} b={y} />)}
       {[0, 1, 2, 3, 4].map((v) => <ChainNode key={v} i={v} fill={C.crema} />)}
-      <T x={350} y={190} s={13} f={C.latte} a="middle" o={a}>a clean final round — proof of no negative cycle, or not?</T>
-      {answer !== null && <T x={350} y={210} s={14} f={C.focus} a="middle">yes — a negative cycle would always find one more improvement</T>}
+      <T x={290} y={190} s={13} f={C.latte} a="middle" o={a}>a clean final round —</T>
+      <T x={290} y={212} s={13} f={C.latte} a="middle" o={a}>proof of no negative cycle, or not?</T>
+      {answer !== null && (
+        <>
+          <T x={290} y={238} s={14} f={C.focus} a="middle">yes — a negative cycle would always</T>
+          <T x={290} y={260} s={14} f={C.focus} a="middle">find one more improvement</T>
+        </>
+      )}
     </Svg>
   );
 }
@@ -89,11 +95,12 @@ export function RelaxationMechanism({ t }: StepCtx) {
   const round = Math.min(4, Math.floor(easeOut(seg(t, 0.3, 2.8)) * 4.3));
   const settled = [0, 1, 2, 3, 4].filter((v) => v <= round);
   return (
-    <Svg label="Every edge relaxed on every round, repeated up to |V| minus one times" h={260}>
+    <Svg label="Every edge relaxed on every round, repeated up to |V| minus one times" h={280}>
       <ArrowDefs />
       {CHAIN_EDGES.map(([x, y], i) => <ChainEdge key={i} a={x} b={y} color={i < round ? C.caramel : C.line} />)}
       {[0, 1, 2, 3, 4].map((v) => <ChainNode key={v} i={v} fill={settled.includes(v) ? C.taupe : C.crema} label={settled.includes(v) ? 'settled' : undefined} />)}
-      <T x={350} y={220} s={13} f={C.latte} a="middle">round {Math.max(1, round)} of up to 4 — every edge relaxed, not just one vertex's</T>
+      <T x={290} y={225} s={13} f={C.latte} a="middle">round {Math.max(1, round)} of up to 4 — every edge relaxed,</T>
+      <T x={290} y={247} s={13} f={C.latte} a="middle">not just one vertex's</T>
     </Svg>
   );
 }
@@ -102,11 +109,12 @@ export function RelaxationMechanism({ t }: StepCtx) {
 export function WorstOrderTightness({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="A chain built so the correct distances only finish settling on the very last permitted round" h={240}>
+    <Svg label="A chain built so the correct distances only finish settling on the very last permitted round" h={260}>
       <ArrowDefs />
       {CHAIN_EDGES.map(([x, y], i) => <ChainEdge key={i} a={x} b={y} color={C.cherryText} />)}
       {[0, 1, 2, 3, 4].map((v) => <ChainNode key={v} i={v} fill={C.crema} />)}
-      <T x={350} y={210} s={13} f={C.latte} a="middle" o={a}>stabilises only on round four of four — the bound is tight, not just safe</T>
+      <T x={290} y={215} s={13} f={C.latte} a="middle" o={a}>stabilises only on round four of four —</T>
+      <T x={290} y={237} s={13} f={C.latte} a="middle" o={a}>the bound is tight, not just safe</T>
     </Svg>
   );
 }
@@ -117,7 +125,7 @@ export function ArbitrageDetection({ t }: StepCtx) {
   const CUR_POS: Record<string, readonly [number, number]> = { USD: [350, 90], EUR: [200, 220], GBP: [500, 220] };
   const pairs: [string, string][] = [['USD', 'EUR'], ['EUR', 'GBP'], ['GBP', 'USD']];
   return (
-    <Svg label="The currency loop reduced to edge weights, detected as a negative cycle, and traced back edge by edge" h={280}>
+    <Svg label="The currency loop reduced to edge weights, detected as a negative cycle, and traced back edge by edge" h={300}>
       <ArrowDefs />
       {pairs.map(([x, y], i) => {
         const [x1, y1] = CUR_POS[x];
@@ -130,7 +138,8 @@ export function ArbitrageDetection({ t }: StepCtx) {
           <T x={x} y={y + 5} s={12} f={C.cherryText} a="middle">{name}</T>
         </g>
       ))}
-      <T x={350} y={260} s={13} f={C.latte} a="middle" o={a}>weight = negative log of the exchange rate; the loop sums negative</T>
+      <T x={350} y={262} s={13} f={C.latte} a="middle" o={a}>weight = negative log of the exchange rate;</T>
+      <T x={350} y={284} s={13} f={C.latte} a="middle" o={a}>the loop sums negative</T>
     </Svg>
   );
 }
@@ -139,11 +148,21 @@ export function ArbitrageDetection({ t }: StepCtx) {
 export function SPFAPredict({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A queue-driven variant that only re-relaxes a vertex whose own distance just improved, asked about its own worst case" h={260}>
-      <T x={150} y={90} s={13} f={C.crema} a="middle" o={a}>favourable graph: most vertices settle once, never re-queued</T>
-      <T x={450} y={90} s={13} f={C.cherryText} a="middle" o={a}>built-to-order graph: every vertex re-queued, over and over</T>
-      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>does the worst case ever beat plain Bellman-Ford's own bound?</T>
-      {answer !== null && <T x={300} y={222} s={14} f={C.focus} a="middle">no — the worst case is the identical bound, not a better one</T>}
+    <Svg label="A queue-driven variant that only re-relaxes a vertex whose own distance just improved, asked about its own worst case" h={340}>
+      <T x={150} y={70} s={13} f={C.crema} a="middle" o={a}>favourable graph:</T>
+      <T x={150} y={92} s={13} f={C.crema} a="middle" o={a}>most vertices settle once,</T>
+      <T x={150} y={114} s={13} f={C.crema} a="middle" o={a}>never re-queued</T>
+      <T x={450} y={70} s={13} f={C.cherryText} a="middle" o={a}>built-to-order graph:</T>
+      <T x={450} y={92} s={13} f={C.cherryText} a="middle" o={a}>every vertex re-queued,</T>
+      <T x={450} y={114} s={13} f={C.cherryText} a="middle" o={a}>over and over</T>
+      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>does the worst case ever beat</T>
+      <T x={300} y={222} s={13} f={C.latte} a="middle" o={a}>plain Bellman-Ford's own bound?</T>
+      {answer !== null && (
+        <>
+          <T x={300} y={254} s={14} f={C.focus} a="middle">no — the worst case is the identical bound,</T>
+          <T x={300} y={276} s={14} f={C.focus} a="middle">not a better one</T>
+        </>
+      )}
     </Svg>
   );
 }
@@ -152,11 +171,12 @@ export function SPFAPredict({ t, answer }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.2));
   return (
-    <Svg label="The relaxation mechanism shared by every algorithm in this chapter, handed off to the all-pairs question" h={240}>
+    <Svg label="The relaxation mechanism shared by every algorithm in this chapter, handed off to the all-pairs question" h={260}>
       <ArrowDefs />
       {CHAIN_EDGES.map(([x, y], i) => <ChainEdge key={i} a={x} b={y} />)}
       {[0, 1, 2, 3, 4].map((v) => <ChainNode key={v} i={v} fill={C.taupe} />)}
-      <T x={350} y={210} s={13} f={C.latte} a="middle" o={a}>one shared mechanism, two different rules for when to stop trusting it</T>
+      <T x={290} y={215} s={13} f={C.latte} a="middle" o={a}>one shared mechanism, two different rules</T>
+      <T x={290} y={237} s={13} f={C.latte} a="middle" o={a}>for when to stop trusting it</T>
     </Svg>
   );
 }

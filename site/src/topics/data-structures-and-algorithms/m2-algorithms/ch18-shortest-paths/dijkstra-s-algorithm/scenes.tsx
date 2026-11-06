@@ -24,7 +24,7 @@ function Node({ i, fill, label, o = 1 }: { i: number; fill: string; label?: stri
     <g opacity={o}>
       <circle cx={x} cy={y} r={16} fill={C.band} stroke={fill} strokeWidth={2.5} />
       <T x={x} y={y + 5} s={13} f={fill} a="middle">{String(i)}</T>
-      {label && <T x={x} y={y - 24} s={11} f={C.latte} a="middle">{label}</T>}
+      {label && <T x={x} y={y - 24} s={13} f={C.latte} a="middle">{label}</T>}
     </g>
   );
 }
@@ -70,7 +70,7 @@ export function Opening({ t }: StepCtx) {
 export function PredictNegative({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A graph with one negative-weight edge, asking whether the algorithm still finds the correct shortest distances" h={240}>
+    <Svg label="A graph with one negative-weight edge, asking whether the algorithm still finds the correct shortest distances" h={300}>
       <ArrowDefs />
       <Edge a={0} b={1} w="" />
       <Edge a={0} b={2} w="" />
@@ -78,8 +78,9 @@ export function PredictNegative({ t, answer }: StepCtx) {
       <Node i={0} fill={C.crema} />
       <Node i={1} fill={C.crema} />
       <Node i={2} fill={C.crema} />
-      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>still correct, or broken by the one negative edge?</T>
-      {answer !== null && <T x={300} y={220} s={14} f={C.cherryText} a="middle">broken — a vertex gets finalized too early</T>}
+      <T x={300} y={245} s={13} f={C.latte} a="middle" o={a}>still correct, or broken</T>
+      <T x={300} y={267} s={13} f={C.latte} a="middle" o={a}>by the one negative edge?</T>
+      {answer !== null && <T x={300} y={291} s={14} f={C.cherryText} a="middle">broken — a vertex gets finalized too early</T>}
     </Svg>
   );
 }
@@ -108,7 +109,7 @@ export function DijkstraMechanism({ t }: StepCtx) {
 export function NegativeFailure({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="The exact counterexample graph where a negative edge makes the greedy choice wrong" h={260}>
+    <Svg label="The exact counterexample graph where a negative edge makes the greedy choice wrong" h={300}>
       <ArrowDefs />
       <Edge a={0} b={1} w="" />
       <Edge a={0} b={2} w="" />
@@ -116,7 +117,8 @@ export function NegativeFailure({ t }: StepCtx) {
       <Node i={0} fill={C.crema} />
       <Node i={1} fill={C.cherryText} label="settled wrong" />
       <Node i={2} fill={C.crema} />
-      <T x={300} y={220} s={13} f={C.latte} a="middle" o={a}>the shorter path through the negative edge arrives too late</T>
+      <T x={300} y={252} s={13} f={C.latte} a="middle" o={a}>the shorter path through the negative edge</T>
+      <T x={300} y={276} s={13} f={C.latte} a="middle" o={a}>arrives too late</T>
     </Svg>
   );
 }
@@ -125,10 +127,15 @@ export function NegativeFailure({ t }: StepCtx) {
 export function LazyVsDecreaseKey({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="Lazy deletion's own duplicate queue entries against decrease-key's single entry per vertex, on the same graph" h={260}>
-      <T x={150} y={70} s={13} f={C.crema} a="middle" o={a}>lazy deletion: push again, skip stale pops later</T>
-      <T x={450} y={70} s={13} f={C.focus} a="middle" o={a}>decrease-key: one entry per vertex, updated in place</T>
-      <T x={300} y={210} s={13} f={C.latte} a="middle" o={a}>same final distances, different amount of queue bookkeeping</T>
+    <Svg label="Lazy deletion's own duplicate queue entries against decrease-key's single entry per vertex, on the same graph" h={300}>
+      <T x={150} y={60} s={13} f={C.crema} a="middle" o={a}>lazy deletion:</T>
+      <T x={150} y={84} s={13} f={C.crema} a="middle" o={a}>push again, skip</T>
+      <T x={150} y={108} s={13} f={C.crema} a="middle" o={a}>stale pops later</T>
+      <T x={450} y={60} s={13} f={C.focus} a="middle" o={a}>decrease-key: one entry</T>
+      <T x={450} y={84} s={13} f={C.focus} a="middle" o={a}>per vertex, updated</T>
+      <T x={450} y={108} s={13} f={C.focus} a="middle" o={a}>in place</T>
+      <T x={300} y={220} s={13} f={C.latte} a="middle" o={a}>same final distances, different amount</T>
+      <T x={300} y={244} s={13} f={C.latte} a="middle" o={a}>of queue bookkeeping</T>
     </Svg>
   );
 }

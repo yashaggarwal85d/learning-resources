@@ -18,8 +18,14 @@ function CapacityLine({ lo, hi, mid, min = 10, max = 32 }: { lo: number; hi: num
       <rect x={scale(hi)} y={54} width={scale(max) - scale(hi)} height={12} fill={C.quiet} opacity={0.35} />
       <rect x={scale(lo)} y={54} width={Math.max(2, scale(hi) - scale(lo))} height={12} fill={C.crema} opacity={0.6} />
       {mid !== undefined && <circle cx={scale(mid)} cy={60} r={6} fill={C.caramel} />}
-      <T x={scale(lo)} y={44} s={11} f={C.latte} a="middle">{lo}</T>
-      <T x={scale(hi)} y={44} s={11} f={C.latte} a="middle">{hi}</T>
+      {lo === hi ? (
+        <T x={scale(lo)} y={44} s={11} f={C.latte} a="middle">{lo}</T>
+      ) : (
+        <>
+          <T x={scale(lo)} y={44} s={11} f={C.latte} a="middle">{lo}</T>
+          <T x={scale(hi)} y={44} s={11} f={C.latte} a="middle">{hi}</T>
+        </>
+      )}
     </g>
   );
 }
@@ -42,11 +48,14 @@ export function Opening({ t }: StepCtx) {
 export function PredictMonotone({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1));
   return (
-    <Svg label="A line of capacities with a false-true boundary, and a question of what happens if that boundary isn't really there" h={220}>
+    <Svg label="A line of capacities with a false-true boundary, and a question of what happens if that boundary isn't really there" h={260}>
       <CapacityLine lo={18} hi={18} />
       <T x={30} y={110} s={13} f={C.latte} o={a}>the predicate here is false below 18, true at and above it</T>
       {answer !== null && (
-        <T x={30} y={160} s={14} f={C.crema}>if it weren't monotone, the search would still run — and still answer</T>
+        <>
+          <T x={30} y={160} s={14} f={C.crema}>if it weren't monotone, the search would</T>
+          <T x={30} y={182} s={14} f={C.crema}>still run — and still answer</T>
+        </>
       )}
     </Svg>
   );
@@ -56,11 +65,12 @@ export function PredictMonotone({ t, answer }: StepCtx) {
 export function Reframe({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="A capacity line narrowing exactly as an array range did, lo and hi now capacities, mid now a candidate capacity to test" h={260}>
-      <T x={30} y={34} s={12} f={C.quiet}>candidates: capacities, not indices</T>
+    <Svg label="A capacity line narrowing exactly as an array range did, lo and hi now capacities, mid now a candidate capacity to test" h={280}>
+      <T x={300} y={16} s={12} f={C.quiet} a="middle">candidates: capacities, not indices</T>
       <CapacityLine lo={10} hi={32} mid={21} />
-      <T x={30} y={150} s={13} f={C.latte} o={a}>feasible(mid) — a greedy packing pass, not an array comparison</T>
-      <T x={30} y={176} s={13} f={C.latte} o={a}>same half-open loop, same overflow-safe midpoint</T>
+      <T x={30} y={150} s={13} f={C.latte} o={a}>feasible(mid) — a greedy packing pass,</T>
+      <T x={30} y={168} s={13} f={C.latte} o={a}>not an array comparison</T>
+      <T x={30} y={200} s={13} f={C.latte} o={a}>same half-open loop, same overflow-safe midpoint</T>
     </Svg>
   );
 }
@@ -70,15 +80,16 @@ export function BrokenPrecondition({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.3));
   const vals = [true, false, true, true, false];
   return (
-    <Svg label="Five positions, true false true true false, with the search landing on index two while the first true position is index zero" h={260}>
+    <Svg label="Five positions, true false true true false, with the search landing on index two while the first true position is index zero" h={280}>
       {vals.map((v, i) => (
         <g key={i}>
           <rect x={40 + i * 100} y={50} width={70} height={30} rx={3} fill="none" stroke={v ? C.caramel : C.quiet} strokeWidth={1.3} />
-          <T x={40 + i * 35} y={70} s={13} f={v ? C.caramel : C.quiet} a="middle">{v ? 'true' : 'false'}</T>
+          <T x={40 + i * 100 + 35} y={70} s={13} f={v ? C.caramel : C.quiet} a="middle">{v ? 'true' : 'false'}</T>
         </g>
       ))}
       <T x={40 + 2 * 100 + 35} y={110} s={12} f={C.crema} a="middle" o={a}>search returns index 2</T>
-      <T x={40 + 0 * 100 + 35} y={130} s={12} f={C.cherryText} a="middle" o={a}>but index 0 is also true — the real first true position</T>
+      <T x={300} y={140} s={12} f={C.cherryText} a="middle" o={a}>but index 0 is also true —</T>
+      <T x={300} y={158} s={12} f={C.cherryText} a="middle" o={a}>the real first true position</T>
     </Svg>
   );
 }
@@ -87,7 +98,7 @@ export function BrokenPrecondition({ t }: StepCtx) {
 export function RealValuedBisection({ t }: StepCtx) {
   const steps = [[1, 2], [1, 1.5], [1.25, 1.5], [1.375, 1.5], [1.375, 1.4375]];
   return (
-    <Svg label="A real-valued range from one to two narrowing step by step toward the square root of two" h={240}>
+    <Svg label="A real-valued range from one to two narrowing step by step toward the square root of two" h={250}>
       {steps.map(([lo, hi], i) => {
         const k = easeOut(seg(t, 0.15 + i * 0.25, 0.6 + i * 0.25));
         return (
@@ -97,7 +108,8 @@ export function RealValuedBisection({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={30} y={220} s={13} f={C.latte}>no "next" real number to converge to exactly — stop at a precision bound</T>
+      <T x={30} y={212} s={13} f={C.latte}>no "next" real number to converge to exactly —</T>
+      <T x={30} y={230} s={13} f={C.latte}>stop at a precision bound</T>
     </Svg>
   );
 }
@@ -132,12 +144,12 @@ export function IterationCountIndependent({ t }: StepCtx) {
 export function ParametricSearch({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="A decision procedure feeding an outer binary search, labelled as Megiddo's parametric search pattern" h={240}>
-      <T x={30} y={40} s={13} f={C.latte}>decision: "is value v feasible?"</T>
-      <T x={300} y={40} s={13} f={C.latte} a="middle">+</T>
-      <T x={330} y={40} s={13} f={C.latte}>outer binary search over v</T>
+    <Svg label="A decision procedure feeding an outer binary search, labelled as Megiddo's parametric search pattern" h={260}>
+      <T x={300} y={40} s={13} f={C.latte} a="middle">decision: "is value v feasible?"</T>
+      <T x={300} y={58} s={13} f={C.latte} a="middle">+ outer binary search over v</T>
       <T x={300} y={110} s={14} f={C.caramel} a="middle">= an optimisation algorithm</T>
-      <T x={30} y={170} s={12} f={C.quiet} o={a}>Megiddo, 1983 — not always the fastest route, often the best known one</T>
+      <T x={30} y={170} s={12} f={C.quiet} o={a}>Megiddo, 1983 — not always the fastest route,</T>
+      <T x={30} y={192} s={12} f={C.quiet} o={a}>often the best known one</T>
     </Svg>
   );
 }

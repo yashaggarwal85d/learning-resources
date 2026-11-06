@@ -62,7 +62,7 @@ function edgeLine(key: EKey, colour: string = C.taupe, dashed = false, thick = f
   return (
     <g key={`${key}-line`} opacity={opacity}>
       <path d={d} stroke={colour} strokeWidth={thick ? 2.6 : 1.4} strokeDasharray={dashed ? '5 4' : undefined} fill="none" />
-      <T x={labelX} y={labelY} s={11} a="middle" f={C.latte}>{EDGE_WEIGHT[key]}</T>
+      <T x={labelX} y={labelY} s={13} a="middle" f={C.latte}>{EDGE_WEIGHT[key]}</T>
     </g>
   );
 }
@@ -201,12 +201,12 @@ export function ArrayVersion({ t }: StepCtx) {
 export function PredictArrayCost({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 1.4));
   return (
-    <Svg label="The same six vertices, far more edges between them" h={280}>
+    <Svg label="The same six vertices, far more edges between them" h={310}>
       <g opacity={a}>
         {Object.keys(POS).map((v) => vertex(v, C.taupe))}
         <T x={300} y={30} s={12} a="middle" f={C.caramel}>many more edges added</T>
       </g>
-      <T x={300} y={260} s={13} a="middle" f={C.latte}>does the scan's own cost change?</T>
+      <T x={300} y={290} s={13} a="middle" f={C.latte}>does the scan's own cost change?</T>
     </Svg>
   );
 }
@@ -247,10 +247,12 @@ export function KruskalAgainstPrim({ t }: StepCtx) {
   return (
     <Svg label="Kruskal's cost tracks the edge count; Prim's array version tracks only the vertex count" h={280}>
       <g opacity={a}>
-        <T x={150} y={90} s={13} a="middle" f={C.cinnamon}>Kruskal: scales with edges</T>
+        <T x={150} y={82} s={13} a="middle" f={C.cinnamon}>Kruskal:</T>
+        <T x={150} y={104} s={13} a="middle" f={C.cinnamon}>scales with edges</T>
       </g>
       <g opacity={b}>
-        <T x={450} y={90} s={13} a="middle" f={C.caramel}>Prim (array): scales with vertices alone</T>
+        <T x={450} y={82} s={13} a="middle" f={C.caramel}>Prim (array):</T>
+        <T x={450} y={104} s={13} a="middle" f={C.caramel}>scales with vertices alone</T>
       </g>
       <T x={300} y={240} s={13} a="middle" f={C.latte}>density decides which one wins</T>
     </Svg>
