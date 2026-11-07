@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A length read from untrusted input is a real security boundary
 // whether or not anyone decided to treat it as one; checking it first
@@ -57,14 +57,23 @@ export function PolicyPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: naive accepts it, checked rejects it (takeaway) ──────
 export function PolicyReveal({ t }: StepCtx) {
+  const naive = easeOut(seg(t, 0.2, 0.55));
+  const checked = easeOut(seg(t, 0.35, 0.6));
   return (
-    <Svg label="parser_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a length that fits, but breaks the policy</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>naive: accepted. checked: rejected</T>
+    <Svg label="parser_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>a length that fits, but breaks the policy</T>
+      <Draw pts={[[40, 55], [320, 55]]} t={t} from={0.2} to={0.55} stroke={C.caramel} w={2} pen />
+      <circle cx={40 + naive * 280} cy={55} r={5} fill={C.caramel} opacity={fa(t, 0.2, 0.15)} />
+      <T x={330} y={58} s={10} f={C.latte}>naive</T>
+      <Draw pts={[[40, 90], [200, 90]]} t={t} from={0.35} to={0.6} stroke={C.latte} w={2} pen />
+      <circle cx={40 + checked * 160} cy={90} r={5} fill="none" stroke={C.cherry} strokeWidth={1.5} opacity={fa(t, 0.35, 0.15)} />
+      <rect x={200} y={75} width={2} height={30} fill={C.cherry} opacity={fa(t, 0.6, 0.15)} />
+      <T x={210} y={100} s={10} f={C.latte}>checked: policy limit</T>
+      <g opacity={fa(t, 0.85, 0.3)}>
+        <rect x={60} y={125} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={147} s={12} a="middle" f={C.mocha}>naive: accepted. checked: rejected</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>fitting the buffer is not the same as safe</T>
+      <T x={60} y={175} s={12} f={C.latte} o={fa(t, 1.3, 0.3)}>fitting the buffer is not the same as safe</T>
     </Svg>
   );
 }
@@ -87,14 +96,22 @@ export function OverflowPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the sum wraps silently to a small number ─────────────
 export function OverflowReveal({ t }: StepCtx) {
+  const sumUp = easeOut(seg(t, 0.2, 0.45));
+  const wrap = easeOut(seg(t, 0.5, 0.7));
+  const naiveH = sumUp * 55 * (1 - wrap) + wrap * 6;
   return (
-    <Svg label="parser_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a real overflow, in a real release build</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>naive: wraps small. checked: catches it</T>
+    <Svg label="parser_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>a real overflow, in a real release build</T>
+      <T x={30} y={45} s={10} f={C.latte} o={fa(t, 0.1, 0.2)}>header_len + payload_len, both large</T>
+      <rect x={60} y={95 - naiveH} width={40} height={naiveH} fill={naiveH < 10 ? C.cherry : C.caramel} opacity={fa(t, 0.2, 0.15)} />
+      <T x={80} y={110} s={10} a="middle" f={C.latte}>naive: wraps small</T>
+      <circle cx={210} cy={70} r={6} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.6, 0.15)} />
+      <T x={225} y={74} s={10} f={C.latte}>checked: catches it</T>
+      <g opacity={fa(t, 0.9, 0.3)}>
+        <rect x={60} y={125} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={147} s={12} a="middle" f={C.mocha}>naive: wraps small. checked: catches it</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>silent wraparound looks perfectly safe</T>
+      <T x={60} y={175} s={12} f={C.latte} o={fa(t, 1.3, 0.3)}>silent wraparound looks perfectly safe</T>
     </Svg>
   );
 }
