@@ -1,184 +1,456 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
 import { C, Svg, T } from '../../../../../reels/kit';
 
-// Colour grammar (CHAPTER.md): crema = a state as it is (a word, a board, four digits); latte =
-// secondary labels (a count, a cost); caramel = the thing to look at (the move, the condition
-// being tested); cinnamon (rare) = the alternative being compared (a near-miss, a second route);
-// cherry/cherryText = the bad outcome (a graph too large to store, a near-miss that is NP-hard).
+// Colour grammar (CHAPTER.md): crema = a state or structure as it is; latte = secondary labels;
+// caramel = the thing to look at (the move, the state being chosen); cinnamon (rare) = the
+// alternative compared against; cherry/cherryText = the breaking condition (a forbidden code, the
+// hard problem, a state that forgot something it needed).
+//
+// Every printed word and number is examples.py's: the ladder head, heal, teal, tell, tall, tail
+// (5 moves, 4 letters apart); the wildcard buckets of its own dictionary; 200 neighbour links found
+// both ways; the eight puzzle's breadth-first search, 181,440 states, deepest 31, and the states at
+// each depth; 16!/2 = 10,461,394,944,000; the lock's 10,000 states and 80,000 moves, forbidden
+// 1337, 6666, 0001, and the breadth-first path 0000 to 1338 in 9 turns; the discount graph's costs
+// 30, 30, 30, 25, 20 at k = 0 to 4; the layered size at V = 100,000, E = 300,000, k = 3.
+
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
+
+/** Which of n beats spread over [a, b] has started: -1 before a, then 0 to n - 1. */
+const stepIdx = (x: number, a: number, b: number, n: number) => (x < a ? -1 : Math.min(n - 1, Math.floor(((x - a) / (b - a)) * n)));
+
+const LADDER = ['head', 'heal', 'teal', 'tell', 'tall', 'tail'];
+const changed = (i: number) => (i === 0 ? -1 : [...LADDER[i]].findIndex((ch, j) => ch !== LADDER[i - 1][j]));
 
 // 1 · Hook: a word ladder, one letter at a time
 export function WordLadderHook({ t }: StepCtx) {
-  const words = ['head', 'heal', 'teal', 'tell', 'tall', 'tail'];
+  const k = stepIdx(t, 0.2, 3.2, 6);
+  const end = easeOut(seg(t, 3.5, 4.0));
   return (
-    <Svg label="A chain of words, each differing from the last by exactly one letter, head changing into tail" h={260}>
-      {words.map((w, i) => {
-        const a = easeOut(seg(t, 0.2 + i * 0.4, 0.7 + i * 0.4));
+    <Svg label="A word ladder: head, heal, teal, tell, tall, tail, each a real word, each one letter different from the last. Five moves, though head and tail differ in only four letters" h={290}>
+      {LADDER.map((w, i) => {
+        const y = 30 + i * 38;
+        const c = changed(i);
         return (
-          <T key={w} x={300} y={60 + i * 32} s={14} a="middle" f={i === 0 || i === words.length - 1 ? C.caramel : C.crema} o={a}>
-            {w}
-          </T>
+          <g key={w} opacity={i <= k ? 1 : 0}>
+            {[...w].map((ch, j) => (
+              <g key={j}>
+                <rect x={180 + j * 40} y={y} width={32} height={30} fill="none" stroke={j === c ? C.caramel : C.mocha} strokeWidth={j === c ? 2 : 1} />
+                <T x={196 + j * 40} y={y + 21} s={15} a="middle" f={j === c ? C.caramel : C.crema}>{ch}</T>
+              </g>
+            ))}
+            <T x={370} y={y + 20} s={11} f={C.latte}>a word</T>
+          </g>
         );
       })}
+      <T x={300} y={278} s={12} a="middle" f={C.caramel} o={end}>5 moves, though only 4 letters differ</T>
     </Svg>
   );
 }
 
-// 2 · Predict: can the 15-puzzle's graph be stored, and can breadth-first search finish?
-export function PredictFifteenPuzzle({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.3));
+// 2 · Predict: can the fifteen puzzle's states be stored, or searched in full?
+export function PredictFifteenPuzzle({ t, answer }: StepCtx) {
+  const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const a = easeOut(seg(t, 0.1, 0.6));
+  const mv = stepIdx(t, 0.6, 2.4, 4);
+  const cnt = easeOut(seg(t, 2.0, 2.5));
+  const ask = easeOut(seg(t, 2.8, 3.3));
+  const rev = answered ? easeOut(seg(s, 0.2, 1.0)) : 0;
+  // the blank walks 15 → 14 → 10 → 9 → 13 (cell indices), each a legal slide
+  const blanks = [15, 14, 10, 9, 13];
+  const board = Array.from({ length: 16 }, (_, i) => (i < 15 ? i + 1 : 0));
+  for (let m = 0; m <= mv; m++) {
+    const from = blanks[m];
+    const to = blanks[m + 1];
+    [board[from], board[to]] = [board[to], board[from]];
+  }
+  const blank = board.indexOf(0);
+  const nb = [blank - 4, blank + 4, blank % 4 ? blank - 1 : -1, blank % 4 < 3 ? blank + 1 : -1].filter((i) => i >= 0 && i < 16);
   return (
-    <Svg label="A sixteen-tile puzzle with a question mark over whether its graph can be stored or fully searched" h={250}>
+    <Svg label="A fifteen puzzle, its blank sliding a few times: each arrangement a state, each slide a move. 10,461,394,944,000 states. After answering: neither stored nor searched in full; the neighbours of the current state are generated only when needed" h={270}>
       <g opacity={a}>
-        <rect x={180} y={80} width={240} height={60} fill="none" stroke={C.taupe} strokeWidth={1.6} />
-        <T x={300} y={115} s={11} a="middle" f={C.latte}>about ten trillion states</T>
+        {board.map((v, i) => (
+          <g key={i}>
+            <rect x={40 + (i % 4) * 44} y={40 + Math.floor(i / 4) * 44} width={40} height={40} fill="none" stroke={v === 0 ? C.caramel : rev > 0.5 && nb.includes(i) ? C.cinnamon : C.latte} strokeWidth={v === 0 || (rev > 0.5 && nb.includes(i)) ? 2 : 1} strokeDasharray={v === 0 ? '4 3' : undefined} />
+            <T x={60 + (i % 4) * 44} y={66 + Math.floor(i / 4) * 44} s={13} a="middle" f={C.crema}>{v ? `${v}` : ''}</T>
+          </g>
+        ))}
+        <T x={240} y={60} s={12} f={C.latte}>each arrangement: a state</T>
+        <T x={240} y={84} s={12} f={C.latte}>each slide: a move</T>
       </g>
-      <T x={300} y={220} s={12} a="middle" f={C.caramel}>can the graph be stored? can a full search ever finish?</T>
+      <g opacity={cnt}>
+        <T x={240} y={130} s={12} f={C.latte}>states: 16! ÷ 2 =</T>
+        <T x={240} y={154} s={14} f={C.caramel}>10,461,394,944,000</T>
+      </g>
+      <T x={240} y={200} s={12} f={C.caramel} o={rev > 0 ? 0 : ask}>store them all? search them all?</T>
+      <g opacity={rev}>
+        <T x={240} y={200} s={12} f={C.cherryText}>neither</T>
+        <T x={240} y={224} s={12} f={C.cinnamon}>{`make the ${nb.length} neighbours on demand`}</T>
+      </g>
     </Svg>
   );
 }
 
-// 3 · The implicit graph: never stored, generated on demand
+/** States at each depth of examples.py's breadth-first search from the eight puzzle's goal. */
+const DEPTHS = [1, 2, 4, 8, 16, 20, 39, 62, 116, 152, 286, 396, 748, 1024, 1893, 2512, 4485, 5638, 9529, 10878, 16993, 17110, 23952, 20224, 24047, 15578, 14560, 6274, 3910, 760, 221, 2];
+
+// 3 · The eight puzzle searched for real; the fifteen by arithmetic
 export function ImplicitGraphRevealed({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
+  const a = easeOut(seg(t, 0.1, 0.5));
+  const d = stepIdx(t, 0.5, 3.2, 32);
+  const tot = easeOut(seg(t, 3.3, 3.8));
+  const fif = easeOut(seg(t, 4.1, 4.6));
+  const max = Math.max(...DEPTHS);
   return (
-    <Svg label="The eight-puzzle's state count and search depth counted exactly, against the fifteen-puzzle's count, far too large to store" h={260}>
-      <g opacity={a}>
-        <T x={300} y={90} s={12} a="middle" f={C.crema}>eight-puzzle: states counted</T>
-        <T x={300} y={118} s={11} a="middle" f={C.latte}>deepest: thirty-one moves</T>
-      </g>
-      <g opacity={b}>
-        <T x={300} y={165} s={11} a="middle" f={C.cherryText}>fifteen-puzzle: too many to store</T>
-      </g>
+    <Svg label="A breadth-first search of the eight puzzle from its goal: the count of states at each distance grows, peaks in the twenties and falls off, ending at 31 moves; 181,440 states in all. The fifteen puzzle's 10,461,394,944,000 comes from arithmetic alone" h={290}>
+      <T x={30} y={26} s={12} f={C.latte} o={a}>eight puzzle: a real breadth-first search</T>
+      <line x1={60} y1={190} x2={560} y2={190} stroke={C.mocha} strokeWidth={1} opacity={a} />
+      {DEPTHS.map((c, i) => (
+        <rect key={i} x={64 + i * 15.4} y={190 - (c / max) * 140} width={11} height={(c / max) * 140} fill={i === 31 && d >= 31 ? C.caramel : C.crema} opacity={i <= d ? 0.6 : 0} />
+      ))}
+      <T x={64} y={208} s={11} f={C.latte} o={a}>0</T>
+      <T x={560} y={208} s={11} a="end" f={C.latte} o={d >= 31 ? 1 : 0}>31 moves deep</T>
+      <T x={300} y={208} s={11} a="middle" f={C.latte} o={a}>moves from the goal</T>
+      <T x={30} y={240} s={13} f={C.caramel} o={tot}>181,440 reachable states</T>
+      <T x={30} y={274} s={12} f={C.latte} o={fif}>fifteen puzzle: 16! ÷ 2, never listed</T>
     </Svg>
   );
 }
 
-// 4 · The wildcard-bucket trick
+const BUCKETS: [string, string[]][] = [
+  ['hea_', ['head', 'heal', 'hear', 'heat']],
+  ['_eal', ['heal', 'teal']],
+  ['te_l', ['teal', 'tell']],
+  ['t_ll', ['tall', 'tell']],
+  ['ta_l', ['tail', 'tall']],
+];
+
+// 4 · Wildcard buckets: edges without comparing words
 export function WildcardBuckets({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
+  const a = easeOut(seg(t, 0.1, 0.5));
+  const b = stepIdx(t, 0.5, 2.8, 5);
+  const edges = easeOut(seg(t, 3.0, 3.5));
+  const end = easeOut(seg(t, 3.8, 4.3));
   return (
-    <Svg label="A wildcard slot collecting every word that shares it, finding edges without ever comparing one word to another" h={250}>
-      <g opacity={a}>
-        <rect x={200} y={80} width={200} height={40} fill="none" stroke={C.crema} strokeWidth={1.6} />
-        <T x={300} y={105} s={13} a="middle" f={C.crema}>h _ l l o</T>
-      </g>
-      <T x={300} y={200} s={12} a="middle" f={C.caramel} o={b}>edges found without ever being compared</T>
+    <Svg label="Words dropped into buckets keyed by a blanked letter: hea_ holds head, heal, hear, heat; _eal holds heal and teal; te_l teal and tell; t_ll tall and tell; ta_l tail and tall. Words sharing a bucket are joined: those are the ladder's edges. 200 neighbour links either way" h={290}>
+      <T x={30} y={26} s={12} f={C.latte} o={a}>blank one letter; bucket by the pattern</T>
+      {BUCKETS.map(([key, ws], i) => {
+        const y = 62 + i * 40;
+        return (
+          <g key={key} opacity={i <= b ? 1 : 0}>
+            <T x={30} y={y} s={13} f={C.caramel}>{key}</T>
+            {ws.map((w, j) => (
+              <T key={w} x={130 + j * 68} y={y} s={12} f={C.crema}>{w}</T>
+            ))}
+            <path d={`M${150} ${y + 8} L${130 + (ws.length - 1) * 68 + 20} ${y + 8}`} stroke={C.caramel} strokeWidth={1.4} opacity={edges} />
+          </g>
+        );
+      })}
+      <T x={30} y={262} s={12} f={C.caramel} o={edges}>same bucket: one letter apart, an edge</T>
+      <T x={30} y={284} s={11} f={C.latte} o={end}>200 neighbour links, identical to comparing every pair</T>
     </Svg>
   );
 }
 
-// 5 · State too small or too large: the lock example
+function Chip({ x, y, code, col = C.crema, strike = false, o = 1 }: { x: number; y: number; code: string; col?: string; strike?: boolean; o?: number }) {
+  return (
+    <g opacity={o}>
+      <rect x={x - 30} y={y - 14} width={60} height={26} fill="none" stroke={col} strokeWidth={1.4} />
+      <T x={x} y={y + 4} s={13} a="middle" f={col === C.cherry ? C.cherryText : col}>{code}</T>
+      {strike && <line x1={x - 32} y1={y - 1} x2={x + 32} y2={y - 1} stroke={C.cherry} strokeWidth={1.6} />}
+    </g>
+  );
+}
+
+// 5 · A state that only remembers the combination forgets the path
 export function StateSizeLock({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
+  const a = easeOut(seg(t, 0.1, 0.5));
+  const pa = stepIdx(t, 0.6, 1.6, 2);
+  const pb = stepIdx(t, 1.7, 3.0, 4);
+  const end = easeOut(seg(t, 3.3, 3.9));
+  const A: [number, number, string, boolean][] = [
+    [250, 60, '0001', true],
+    [470, 130, '0002', false],
+  ];
+  const B: [number, number, string][] = [
+    [140, 200, '0010'],
+    [250, 200, '0011'],
+    [360, 200, '0012'],
+    [470, 130, '0002'],
+  ];
   return (
-    <Svg label="Four wheels of a lock, with a forbidden code crossed out, raising the question of what the state must remember" h={250}>
-      <g opacity={a}>
-        {[0, 1, 2, 3].map((i) => (
-          <rect key={i} x={170 + i * 70} y={80} width={50} height={50} fill="none" stroke={C.crema} strokeWidth={1.6} />
-        ))}
+    <Svg label="Two paths from 0000 to 0002. One turns straight through the forbidden 0001; the other goes 0010, 0011, 0012 and back down. Both arrive at the same combination, and a state holding only 0002 cannot tell them apart" h={280}>
+      <Chip x={50} y={130} code="0000" o={a} />
+      <path d="M80 122 L220 66" stroke={pa >= 0 ? C.cherry : C.mocha} strokeWidth={1.4} opacity={a} />
+      <path d="M280 66 L440 122" stroke={pa >= 1 ? C.cherry : C.mocha} strokeWidth={1.4} opacity={a} />
+      {A.map(([x, y, c, bad], i) => (
+        <Chip key={c} x={x} y={y} code={c} col={bad ? C.cherry : C.caramel} o={i <= pa ? 1 : 0} />
+      ))}
+      <path d="M80 138 L110 194 M170 200 L220 200 M280 200 L330 200 M390 194 L440 140" stroke={pb >= 0 ? C.crema : C.mocha} strokeWidth={1.4} fill="none" opacity={a} />
+      {B.slice(0, 3).map(([x, y, c], i) => (
+        <Chip key={c} x={x} y={y} code={c} o={i <= pb ? 1 : 0} />
+      ))}
+      <T x={250} y={36} s={11} a="middle" f={C.cherryText} o={pa >= 0 ? 1 : 0}>forbidden</T>
+      <g opacity={end}>
+        <T x={470} y={170} s={12} a="middle" f={C.caramel}>same state</T>
+        <T x={300} y={262} s={12} a="middle" f={C.cherryText}>remembering only 0002 forgets the forbidden pass</T>
       </g>
-      <T x={300} y={200} s={12} a="middle" f={C.cherryText} o={b}>too small a state, and the answer merges two different situations</T>
     </Svg>
   );
 }
 
-// 6 · The lock's size, and a shortest path avoiding forbidden codes
+const LOCK_PATH = ['0000', '1000', '1100', '1200', '1300', '1310', '1320', '1330', '1339', '1338'];
+
+// 6 · Every combination a vertex; forbidden codes removed; breadth-first search
 export function LockShortestPath({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
+  const a = easeOut(seg(t, 0.1, 0.6));
+  const rm = easeOut(seg(t, 0.8, 1.4));
+  const p = stepIdx(t, 1.6, 4.0, 10);
+  const end = easeOut(seg(t, 4.2, 4.7));
   return (
-    <Svg label="Ten thousand states and eighty thousand edges, with a shortest path found that avoids every forbidden code" h={250}>
+    <Svg label="10,000 combinations as vertices, 80,000 one-notch turns as edges. Forbidden 1337, 6666 and 0001 are removed. Breadth-first search from 0000 to 1338 turns the wheels one notch at a time, wrapping the last wheel from 0 to 9 to 8 to step around 1337: 9 turns" h={280}>
       <g opacity={a}>
-        <T x={300} y={100} s={12} a="middle" f={C.crema}>ten thousand states, eighty thousand edges</T>
-        <T x={300} y={135} s={11} a="middle" f={C.latte}>a shortest path, forbidden codes removed as vertices</T>
+        <T x={30} y={30} s={12} f={C.latte}>10,000 combinations, 80,000 one-notch turns</T>
       </g>
-      <T x={300} y={210} s={12} a="middle" f={C.caramel}>the question is a graph question, whatever the story</T>
+      <g opacity={rm}>
+        <T x={30} y={66} s={12} f={C.cherryText}>removed first:</T>
+        {['1337', '6666', '0001'].map((c, i) => (
+          <Chip key={c} x={200 + i * 80} y={62} code={c} col={C.cherry} strike />
+        ))}
+      </g>
+      {LOCK_PATH.map((c, i) => {
+        const row = i < 5 ? 0 : 1;
+        const x = 60 + (i % 5) * 116;
+        const y = 130 + row * 60;
+        const last = i >= 8;
+        return (
+          <g key={c} opacity={i <= p ? 1 : 0}>
+            {i % 5 !== 0 && <line x1={x - 86} y1={y - 1} x2={x - 30} y2={y - 1} stroke={C.latte} strokeWidth={1.2} />}
+            <Chip x={x} y={y} code={c} col={last ? C.caramel : C.crema} />
+          </g>
+        );
+      })}
+      <path d="M524 144 Q560 160 524 176" fill="none" stroke={C.latte} strokeWidth={1.2} opacity={p >= 5 ? 1 : 0} />
+      <T x={30} y={248} s={13} f={C.caramel} o={end}>shortest: 9 turns</T>
+      <T x={30} y={272} s={12} f={C.latte} o={end}>the last wheel goes 0, 9, 8: around 1337</T>
     </Svg>
   );
 }
 
-// 7 · The layered graph: a constraint becomes part of the state
+/** The discount graph: direct 0-1-2-3, detour 0-4-5-6-3 with discountable edges. */
+const NODES: Record<number, [number, number]> = { 0: [0, 1], 1: [1, 0], 2: [2, 0], 3: [3, 1], 4: [0.75, 2], 5: [1.5, 2], 6: [2.25, 2] };
+const EDGES: [number, number, boolean][] = [
+  [0, 1, false], [1, 2, false], [2, 3, false],
+  [0, 4, true], [4, 5, true], [5, 6, true], [6, 3, true],
+];
+
+function Road({ x0, y0, sx, sy, r, o = 1, label = true }: { x0: number; y0: number; sx: number; sy: number; r: number; o?: number; label?: boolean }) {
+  const P = (n: number): [number, number] => [x0 + NODES[n][0] * sx, y0 + NODES[n][1] * sy];
+  return (
+    <g opacity={o}>
+      {EDGES.map(([u, v, d], i) => (
+        <line key={i} x1={P(u)[0]} y1={P(u)[1]} x2={P(v)[0]} y2={P(v)[1]} stroke={d ? C.caramel : C.latte} strokeWidth={1.4} strokeDasharray={d ? '5 3' : undefined} />
+      ))}
+      {Object.keys(NODES).map((k) => {
+        const [x, y] = P(Number(k));
+        return (
+          <g key={k}>
+            <circle cx={x} cy={y} r={r} fill={C.band} stroke={C.crema} strokeWidth={1.2} />
+            {label && <T x={x} y={y + 4} s={12} a="middle" f={C.crema}>{k}</T>}
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+// 7 · A count limit goes into the state: the map stacked into layers
 export function LayeredGraphIntroduced({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
+  const a = easeOut(seg(t, 0.1, 0.6));
+  const leg = easeOut(seg(t, 0.8, 1.3));
+  const lay = easeInOut(seg(t, 1.8, 2.6));
+  const up = easeOut(seg(t, 2.8, 3.5));
+  const end = easeOut(seg(t, 3.8, 4.4));
+  const layerY = [36, 116, 196];
+  const P = (n: number, l: number): [number, number] => [80 + NODES[n][0] * 100, layerY[l] + NODES[n][1] * 20];
   return (
-    <Svg label="Four stacked copies of one road graph, a discounted edge crossing from one layer up into the next" h={260}>
-      <g opacity={a}>
-        {[0, 1, 2, 3].map((i) => (
-          <rect key={i} x={160} y={60 + i * 35} width={280} height={24} fill="none" stroke={C.taupe} strokeWidth={1.2} />
-        ))}
+    <Svg label="A road map: a direct route 0, 1, 2, 3 and a detour 0, 4, 5, 6, 3 whose roads can be discounted. The map is copied into layers, one per count of discounts spent; a discounted road climbs from one layer to the next" h={290}>
+      <g opacity={a * (1 - lay)}>
+        <Road x0={80} y0={60} sx={130} sy={60} r={13} />
+        <g opacity={leg}>
+          <line x1={80} y1={250} x2={110} y2={250} stroke={C.caramel} strokeWidth={1.4} strokeDasharray="5 3" />
+          <T x={120} y={254} s={11} f={C.latte}>discount allowed</T>
+          <line x1={300} y1={250} x2={330} y2={250} stroke={C.latte} strokeWidth={1.4} />
+          <T x={340} y={254} s={11} f={C.latte}>full price only</T>
+        </g>
       </g>
-      <T x={300} y={225} s={12} a="middle" f={C.caramel} o={b}>the count of discounts used becomes part of the state</T>
+      <g opacity={lay}>
+        {layerY.map((y, l) => (
+          <g key={l}>
+            <Road x0={80} y0={y} sx={100} sy={20} r={6} label={false} />
+            <T x={430} y={y + 26} s={11} f={C.latte}>{`${l} spent`}</T>
+          </g>
+        ))}
+        {[0, 1].map((l) =>
+          EDGES.filter(([, , d]) => d).map(([u, v], i) => {
+            const [x1, y1] = P(u, l);
+            const [x2, y2] = P(v, l + 1);
+            return <line key={`${l}${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={C.cinnamon} strokeWidth={1.2} opacity={up} />;
+          }),
+        )}
+      </g>
+      <T x={300} y={282} s={12} a="middle" f={C.caramel} o={end}>state: (vertex, discounts spent)</T>
     </Svg>
   );
 }
 
-// 8 · The layered graph, sized and measured
+// 8 · The layered graph measured: the detour pays only with enough discounts
 export function LayeredGraphMeasured({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
-  const c = easeOut(seg(t, 2.3, 3.0));
+  const a = easeOut(seg(t, 0.1, 0.5));
+  const k = stepIdx(t, 0.5, 2.8, 5);
+  const size = easeOut(seg(t, 3.2, 3.8));
+  const size2 = easeOut(seg(t, 4.0, 4.6));
+  const costs = [30, 30, 30, 25, 20];
   return (
-    <Svg label="A direct route and a discounted detour, the detour only winning once enough discounts are allowed" h={260}>
-      <g opacity={a}>
-        <T x={300} y={80} s={12} a="middle" f={C.crema}>direct route: cost thirty</T>
+    <Svg label="Cheapest cost from 0 to 3 for k = 0 to 4 discounts: 30, 30, 30, 25, 20. The direct route holds until three discounts make the detour pay. At V = 100,000, E = 300,000 and k = 3, the layered graph has 400,000 vertices and 2,100,000 edges" h={290}>
+      <T x={30} y={26} s={12} f={C.latte} o={a}>cheapest cost, 0 to 3</T>
+      {costs.map((c, i) => {
+        const y = 44 + i * 30;
+        const detour = c < 30;
+        return (
+          <g key={i} opacity={i <= k ? 1 : 0}>
+            <T x={30} y={y + 13} s={12} f={C.latte}>{`k = ${i}`}</T>
+            <rect x={100} y={y} width={c * 10} height={16} fill={detour ? C.caramel : C.latte} opacity={0.6} />
+            <T x={110 + c * 10} y={y + 13} s={12} f={detour ? C.caramel : C.crema}>{`${c} ${detour ? 'detour' : 'direct'}`}</T>
+          </g>
+        );
+      })}
+      <g opacity={size}>
+        <T x={30} y={224} s={12} f={C.latte}>V = 100,000, E = 300,000, k = 3</T>
       </g>
-      <g opacity={b}>
-        <T x={300} y={115} s={12} a="middle" f={C.cinnamon}>detour: wins past three discounts</T>
-      </g>
-      <g opacity={c}>
-        <T x={300} y={165} s={11} a="middle" f={C.latte}>four hundred thousand vertices</T>
-        <T x={300} y={190} s={11} a="middle" f={C.latte}>two million one hundred thousand edges</T>
+      <g opacity={size2}>
+        <T x={30} y={250} s={12} f={C.crema}>(k + 1) × V = 400,000 vertices</T>
+        <T x={30} y={274} s={12} f={C.crema}>(2k + 1) × E = 2,100,000 edges</T>
       </g>
     </Svg>
   );
 }
 
-// 9 · Predict: does "visit every vertex once" stay easy?
-export function PredictHamiltonian({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.3));
+/** A bowtie: two triangles meeting at c. Every degree is even, and c is the only way between the halves. */
+const BT: Record<string, [number, number]> = { a: [150, 60], b: [150, 200], c: [300, 130], d: [450, 60], e: [450, 200] };
+const BT_EDGES: [string, string][] = [['c', 'a'], ['a', 'b'], ['b', 'c'], ['c', 'd'], ['d', 'e'], ['e', 'c']];
+
+// 9 · Predict: swap edge for vertex
+export function PredictHamiltonian({ t, answer }: StepCtx) {
+  const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const a = easeOut(seg(t, 0.1, 0.5));
+  const tr = stepIdx(t, 0.5, 2.4, 6);
+  const ask = easeOut(seg(t, 2.7, 3.2));
+  const rev = answered ? stepIdx(s, 0.2, 1.6, 5) : -1;
+  const ham = ['a', 'b', 'c', 'd', 'e'];
   return (
-    <Svg label="A graph with every vertex lit, and a question mark over whether visiting each one exactly once is still an easy question" h={250}>
-      <g opacity={a}>
-        {[0, 1, 2, 3, 4].map((i) => (
-          <circle key={i} cx={200 + i * 50} cy={100} r={14} fill="none" stroke={C.crema} strokeWidth={1.6} />
-        ))}
-      </g>
-      <T x={300} y={200} s={13} a="middle" f={C.caramel}>visit every vertex exactly once: still an easy question?</T>
+    <Svg label="A bowtie graph, two triangles meeting at c. A circuit c, a, b, c, d, e, c uses every edge once. After answering: a cycle through every vertex once runs a, b, c, d, e and cannot get back to a without passing c a second time" h={270}>
+      {BT_EDGES.map(([u, v], i) => (
+        <line key={i} x1={BT[u][0]} y1={BT[u][1]} x2={BT[v][0]} y2={BT[v][1]} stroke={rev >= 0 ? C.mocha : i <= tr ? C.caramel : C.mocha} strokeWidth={rev < 0 && i <= tr ? 2.2 : 1.2} opacity={a} />
+      ))}
+      {ham.slice(0, Math.max(0, rev)).map((u, i) => {
+        const v = ham[i + 1];
+        return <line key={u} x1={BT[u][0]} y1={BT[u][1]} x2={BT[v][0]} y2={BT[v][1]} stroke={C.cinnamon} strokeWidth={2.2} />;
+      })}
+      {rev >= 4 && <path d="M464 206 C 540 280, 40 280, 138 72" fill="none" stroke={C.cherry} strokeWidth={1.6} strokeDasharray="5 4" />}
+      {Object.entries(BT).map(([k, [x, y]]) => (
+        <g key={k} opacity={a}>
+          <circle cx={x} cy={y} r={14} fill={C.band} stroke={C.crema} strokeWidth={1.4} />
+          <T x={x} y={y + 5} s={13} a="middle" f={C.crema}>{k}</T>
+        </g>
+      ))}
+      <T x={300} y={30} s={12} a="middle" f={C.caramel} o={tr >= 5 && rev < 0 ? 1 : 0}>every edge once: done</T>
+      <T x={300} y={252} s={12} a="middle" f={C.caramel} o={rev >= 0 ? 0 : ask}>every vertex once instead?</T>
+      <T x={300} y={30} s={12} a="middle" f={C.cherryText} o={rev >= 4 ? 1 : 0}>no road from e back to a: c twice</T>
     </Svg>
   );
 }
 
-// 10 · The near-miss: Hamiltonian is NP-hard, Euler circuits are easy
+// 10 · One word apart, opposite sides of easy and hard
 export function HamiltonianNearMiss({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
+  const a = easeOut(seg(t, 0.1, 0.6));
+  const b = easeOut(seg(t, 1.2, 1.8));
+  const sw = easeInOut(seg(t, 2.3, 3.0));
+  const end = easeOut(seg(t, 3.4, 4.0));
   return (
-    <Svg label="A circuit using every edge once, easy and linear time, beside a cycle visiting every vertex once, NP-hard" h={260}>
+    <Svg label="Two statements one word apart. Every edge exactly once: an Euler circuit, linear time with depth-first search. Every vertex exactly once: a Hamiltonian cycle, no known fast algorithm" h={260}>
       <g opacity={a}>
-        <T x={300} y={85} s={12} a="middle" f={C.crema}>every edge once: easy</T>
+        <T x={30} y={50} s={13} f={C.crema}>every</T>
+        <T x={100} y={50} s={13} f={C.caramel}>edge</T>
+        <T x={160} y={50} s={13} f={C.crema}>exactly once</T>
+        <T x={30} y={80} s={12} f={C.cinnamon}>Euler circuit: linear time, depth-first search</T>
       </g>
       <g opacity={b}>
-        <T x={300} y={120} s={12} a="middle" f={C.cherryText}>every vertex once: NP-hard</T>
+        <T x={30} y={140} s={13} f={C.crema}>every</T>
+        <T x={100} y={140} s={13} f={C.cherryText}>vertex</T>
+        <T x={180} y={140} s={13} f={C.crema}>exactly once</T>
+        <T x={30} y={170} s={12} f={C.cherryText}>Hamiltonian cycle: no known fast algorithm</T>
       </g>
-      <T x={300} y={180} s={11} a="middle" f={C.caramel}>two problems, one word apart</T>
+      <path d={`M120 ${lerp(58, 60, sw)} Q ${lerp(120, 70, sw)} 95 120 124`} fill="none" stroke={C.latte} strokeWidth={1.2} strokeDasharray="3 3" opacity={sw} />
+      <T x={300} y={230} s={12} a="middle" f={C.caramel} o={end}>one word apart: easy and hard</T>
     </Svg>
   );
 }
 
-// 11 · Recap and handoff
+// 11 · Recap: state, move, question
 export function Recap({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.4));
+  const p = stepIdx(t, 0.1, 1.6, 4);
+  const b = easeOut(seg(t, 1.9, 2.5));
+  const g = easeOut(seg(t, 2.8, 3.4));
+  const end = easeOut(seg(t, 3.9, 4.4));
+  const probs = ['word ladder', 'sliding puzzle', 'lock, forbidden codes', 'route, few discounts'];
   return (
-    <Svg label="A picture of states and moves, with the next question of which known graph problem it actually is" h={250}>
-      <g opacity={a}>
-        <T x={300} y={90} s={13} a="middle" f={C.crema}>state, move, question</T>
-        <T x={300} y={125} s={12} a="middle" f={C.caramel}>any situation becomes a graph</T>
+    <Svg label="Four problems, a word ladder, a sliding puzzle, a lock with forbidden codes and a route with limited discounts, each turned into a graph by writing down the state, the move and the question. Next, recognizing reductions to known problems" h={270}>
+      {probs.map((s, i) => (
+        <T key={s} x={30} y={40 + i * 32} s={12} f={C.crema} o={i <= p ? 1 : 0}>{s}</T>
+      ))}
+      <g opacity={b}>
+        <path d="M260 36 L290 90 L260 140" fill="none" stroke={C.latte} strokeWidth={1.2} />
+        <T x={310} y={66} s={12} f={C.caramel}>the state</T>
+        <T x={310} y={94} s={12} f={C.caramel}>the move</T>
+        <T x={310} y={122} s={12} f={C.caramel}>the question</T>
       </g>
-      <T x={300} y={200} s={12} a="middle" f={C.caramel}>next: which graph problem is it?</T>
+      <g opacity={g}>
+        {[[470, 60], [530, 100], [470, 140], [520, 160]].map(([x, y], i, arr) => (
+          <g key={i}>
+            {i > 0 && <line x1={arr[i - 1][0]} y1={arr[i - 1][1]} x2={x} y2={y} stroke={C.latte} strokeWidth={1.2} />}
+            <circle cx={x} cy={y} r={7} fill={C.band} stroke={C.crema} strokeWidth={1.4} />
+          </g>
+        ))}
+        <T x={500} y={194} s={11} a="middle" f={C.latte}>a graph</T>
+      </g>
+      <T x={300} y={248} s={12} a="middle" f={C.caramel} o={end}>next: recognizing reductions to known problems</T>
     </Svg>
   );
 }
