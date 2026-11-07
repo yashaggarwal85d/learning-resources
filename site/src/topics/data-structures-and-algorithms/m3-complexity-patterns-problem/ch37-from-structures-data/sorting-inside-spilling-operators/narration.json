@@ -1,0 +1,85 @@
+{
+  "topic": "dsa.sorting-inside-spilling-operators",
+  "steps": [
+    {
+      "lines": [
+        "Hold both numbers before the reveal, because they come from the same budget in two different ways. One counts how many pieces the input breaks into just to fit in memory at all.",
+        "The other counts something completely different: how many times you have to walk over all of those pieces before only one sorted sequence is left."
+      ],
+      "answer": [
+        "A hundred pieces fall straight out of dividing the row count by the budget. A single pass is possible only because every one of those hundred pieces can stay open for reading at the same time.",
+        "Change that second condition and the first number never moves, but the second one gets much worse, which is exactly the next question."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing exotic happens inside one piece. It is sorted the ordinary way, the same sort you would run if the whole dataset fit in memory at once.",
+        "The only thing that makes this an external sort rather than an ordinary one is what happens the moment that piece is full: it leaves memory for good, and a brand new empty one starts."
+      ]
+    },
+    {
+      "lines": [
+        "Four separate decisions, each one a reaction to something that used to be expensive and stopped being expensive. None of them changes what the algorithm is proving; they only change what it is optimizing for.",
+        "The lesson worth keeping is not any one of the four. It is that an algorithm written against yesterday's hardware constraints is a standing invitation to ask which constraint moved."
+      ]
+    },
+    {
+      "lines": [
+        "Before the answer, notice what you are actually trading away by closing most of the tapes: you are trading memory for time, on purpose, because you cannot have both at once.",
+        "That trade is not a defect in the algorithm. It is the entire reason spilling exists in the first place, so expect the number of passes to react to it directly."
+      ],
+      "answer": [
+        "Fewer open tapes means each pass can only fold a limited number of pieces down into one, so what used to finish in a single sweep now needs several.",
+        "Nothing about the data changed, and nothing about the algorithm's correctness changed. Only the amount of memory you were willing to spend on staying open changed."
+      ]
+    },
+    {
+      "lines": [
+        "Watch how the hundred-piece number survives unchanged across both scenarios. It belongs entirely to the budget and the input size, and has nothing to do with how the merge is organized afterward.",
+        "The pass count is the only thing that moves, and it moves because of a decision made after the pieces already exist, not because of anything about how they were created."
+      ]
+    },
+    {
+      "lines": [
+        "This spill has nothing to do with sorting at all. It happens because one single key shows up on both sides of the join so often that holding all of its matches at once outgrows memory.",
+        "A join that looks perfectly healthy on every other key can still blow its budget on exactly one value, which is why the engine tracks this cost separately from the sort itself."
+      ]
+    },
+    {
+      "lines": [
+        "Reading a shuffle is usually thought of as just receiving data. Here it is doing real algorithmic work: merging several already-separate sources back into one ordered sequence as it reads them.",
+        "Nothing about this is a special case bolted onto shuffling. It is the identical external-sort machinery you just watched, pointed at a different kind of input."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what this design refuses to do. It never compares one overflow row against another; it only asks a hash function where each row belongs, which is strictly cheaper than any sort.",
+        "Correctness here comes entirely from the partitioning being consistent, not from any ordering. Two rows with the same key always land on the same tape, and that is the whole guarantee it needs."
+      ]
+    },
+    {
+      "lines": [
+        "This is the opposite philosophy from what you just saw, solving an identical problem. One engine refuses to sort anything, and another one embraces a sort as its fallback.",
+        "Neither choice is a mistake. They are two different bets about what the rest of that engine's execution model already does well and can reuse for free."
+      ]
+    },
+    {
+      "lines": [
+        "The surprising thing isn't the percentage, it's that the two designs agree on it exactly. The decision of which rows overflow is made purely by the shared budget, before either design's own machinery even runs.",
+        "Everything that differs between them happens strictly after that point. That separation, between deciding what spills and deciding how, is worth noticing on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and notice that every path you just walked, the sort's own spill and the aggregation's fallback, lands on the identical last move: find the smallest thing across several already-sorted sources.",
+        "That convergence is not a coincidence of this one chapter. It is the real reason a textbook merge kernel shows up again and again across completely unrelated systems."
+      ]
+    },
+    {
+      "lines": [
+        "You have now seen the second of two answers to the same missing resource. Splitting by hash was the first; splitting into sorted pieces merged back together is the second.",
+        "Both answers end at the same place: picking the smallest available item, over and over. The next structure is the thing that does that picking, wherever it shows up next."
+      ]
+    }
+  ]
+}
