@@ -17,23 +17,32 @@ const threadDot = (cx: number, cy: number, label: string, opacity = 1) => (
   </g>
 );
 
-function timeBar(x: number, y: number, frac: number, display: string, label: string, fill: string) {
+function timeBar(x: number, y: number, frac: number, display: string, label: string, fill: string, t: number, start: number) {
+  // The bar grows from zero to its measured width as time passes, instead of appearing already
+  // full — the growth itself is the measurement being shown, not just a static comparison.
+  const grow = easeOut(seg(t, start, start + 0.6));
   return (
-    <g key={label}>
+    <g key={label} opacity={fa(t, start, 0.2)}>
       <T x={x} y={y - 20} s={13} f={C.latte}>{label}</T>
-      <Bar x={x} y={y} w={380 * frac} h={20} full={380} fill={fill} />
-      <T x={x} y={y + 38} s={13} f={C.crema}>{display}</T>
+      <Bar x={x} y={y} w={380 * frac * grow} h={20} full={380} fill={fill} />
+      <T x={x} y={y + 38} s={13} f={C.crema} o={fa(t, start + 0.5, 0.3)}>{display}</T>
     </g>
   );
 }
 
 // ── 1 · A lock's only job is synchronizing memory (hook) ───────────────────────────────────────
 export function CriticalSectionHook({ t }: StepCtx) {
+  // A read token enters the section and a write token leaves it, tracing the only two memory
+  // operations a critical section's own job actually requires.
+  const read = easeOut(seg(t, 0.1, 0.35));
+  const write = easeOut(seg(t, 0.4, 0.65));
   return (
     <Svg label="a critical section, holding only a memory read and a memory write" h={260}>
       <rect x={200} y={70} width={200} height={70} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
       <T x={300} y={100} s={13} a="middle" f={C.crema}>critical section</T>
       <T x={300} y={122} s={11} a="middle" f={C.taupe}>read memory, write memory</T>
+      <circle cx={150 + read * 60} cy={105} r={6} fill={C.taupe} opacity={read > 0 && read < 1 ? 1 : 0} />
+      <circle cx={400 - write * 60} cy={105} r={6} fill={C.mocha} opacity={write > 0 && write < 1 ? 1 : 0} />
       <T x={60} y={200} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>that's the whole job, nothing more</T>
       <T x={60} y={226} s={13} f={C.mocha} o={fa(t, 1.1, 0.4)}>what if something else goes in there?</T>
     </Svg>
@@ -71,7 +80,7 @@ export function MeasuredReveal({ t }: StepCtx) {
         highlight={[0, 1]}
       />
       <Svg label="measured: four 40ms calls, serialized by the lock" h={90}>
-        {timeBar(30, 50, 1, '160 ms, measured', 'four 40ms calls, one at a time', C.mocha)}
+        {timeBar(30, 50, 1, '160 ms, measured', 'four 40ms calls, one at a time', C.mocha, t, 0.3)}
       </Svg>
     </Stack>
   );
@@ -90,8 +99,8 @@ export function MoveOutsideLock({ t }: StepCtx) {
         highlight={[0, 1]}
       />
       <Svg label="the same four calls, now running concurrently" h={220}>
-        {timeBar(30, 30, 1, '160 ms, inside the lock', 'before: serialized', C.mocha)}
-        {timeBar(30, 150, 40 / 160, '40 ms, measured', 'after: concurrent', C.caramel)}
+        {timeBar(30, 30, 1, '160 ms, inside the lock', 'before: serialized', C.mocha, t, 0.3)}
+        {timeBar(30, 150, 40 / 160, '40 ms, measured', 'after: concurrent', C.caramel, t, 1.1)}
       </Svg>
     </Stack>
   );
