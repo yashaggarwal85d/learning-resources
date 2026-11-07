@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, easeOutBack, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // The topic's own idea: a lifetime as a bracket drawn *over* existing borrow edges, never touching the drop
 // timeline. Variance gets its own small two-box diagram (CHAPTER.md §A.5): an outer box (the longer lifetime)
@@ -154,20 +154,36 @@ export function StaticBound({ t }: StepCtx) {
 
 // ── 9 · The one case the bound really is the fix ────────────────────────────────────────────────────────────────
 export function BoxLeak({ t }: StepCtx) {
+  const travel = easeOut(seg(t, 0.3, 1.5));
+  const boxX = 110 + (380 - 110) * travel;
+  const dropAt = 1.5;
+  const xMark = easeOutBack(seg(t, dropAt, dropAt + 0.35));
   return (
-    <Svg label="Box::leak mints a genuine static reference to data created at run time, by deliberately skipping its destructor" h={300}>
-      <T x={40} y={50} s={15} f={C.crema}>Box::leak(Box::new(n))</T>
-      <g opacity={fa(t, 0.6, 0.4)}>
-        <T x={40} y={90} s={14} f={C.taupe}>the destructor never runs, on purpose</T>
-        <T x={40} y={112} s={14} f={C.taupe}>(Chapter 1's leak-safety)</T>
+    <Svg label="Box::leak mints a genuine static reference to data created at run time, by deliberately skipping its destructor" h={320}>
+      <T x={40} y={34} s={14} f={C.crema}>Box::leak(Box::new(n))</T>
+      <rect x={60} y={60} width={420} height={110} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+      <T x={76} y={84} s={13} f={C.taupe}>owner's scope</T>
+      <rect x={boxX} y={100} width={90} height={48} rx={8} fill={C.cocoa} stroke={C.caramel} strokeWidth={2} />
+      <T x={boxX + 45} y={128} s={14} a="middle" f={C.crema}>n</T>
+      <g opacity={fa(t, dropAt - 0.2, 0.3)}>
+        <circle cx={160} cy={204} r={13} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+        <T x={160} y={208} s={11} a="middle" f={C.taupe}>drop</T>
+        {xMark > 0.01 && (
+          <g opacity={xMark}>
+            <Draw pts={[[148, 192], [172, 216]]} t={t} from={dropAt} to={dropAt + 0.2} stroke={C.cherryText} w={2.5} pen={false} />
+            <Draw pts={[[172, 192], [148, 216]]} t={t} from={dropAt + 0.05} to={dropAt + 0.25} stroke={C.cherryText} w={2.5} pen={false} />
+          </g>
+        )}
       </g>
-      <g opacity={fa(t, 1.4, 0.4)}>
-        <T x={40} y={150} s={14} f={C.caramel}>really &'static, no coercion needed</T>
+      <g opacity={fa(t, dropAt + 0.1, 0.3)}>
+        <T x={60} y={234} s={13} f={C.taupe}>the destructor never runs, on purpose</T>
+        <T x={60} y={256} s={13} f={C.taupe}>(Chapter 1's leak-safety)</T>
       </g>
-      <g opacity={fa(t, 2.2, 0.4)}>
-        <T x={40} y={190} s={14} f={C.taupe}>rare, explicit, and deliberate</T>
-        <T x={40} y={212} s={14} f={C.taupe}>almost never the fix for a 'static hint</T>
+      <g opacity={travel >= 0.98 ? fa(t, dropAt + 0.5, 0.4) : 0}>
+        <Reticle x={425} y={124} w={110} h={64} t={t} at={dropAt + 0.5} color={C.caramel} />
+        <T x={425} y={200} s={13} a="middle" f={C.caramel}>really &'static, no coercion needed</T>
       </g>
+      <T x={40} y={290} s={13} f={C.taupe} o={fa(t, 2.6, 0.4)}>rare and explicit — almost never the fix for a 'static hint</T>
     </Svg>
   );
 }

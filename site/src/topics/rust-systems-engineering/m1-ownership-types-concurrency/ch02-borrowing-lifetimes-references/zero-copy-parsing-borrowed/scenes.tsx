@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, easeOutBack, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -65,14 +65,27 @@ export function NoCopy({ t }: StepCtx) {
 
 // ── 2 · Does Header outlive the buffer it was parsed from? (predict) ───────────────────────────
 export function OutlivesQuestion({ t }: StepCtx) {
+  const bufIn = fa(t, 0.2, 0.3);
+  const headerIn = fa(t, 0.6, 0.3);
+  const shrink = easeOut(seg(t, 1.3, 1.7));
+  const bufW = 180 * (1 - shrink);
   return (
     <Svg label="a function that owns its buffer as a local Vec, parses it, and tries to return the Header" h={340}>
-      <T x={40} y={50} s={14} f={C.crema}>fn make_header() -&gt; Header&lt;'?&gt; {'{'}</T>
-      <T x={56} y={90} s={14} f={C.taupe} o={fa(t, 0.3, 0.4)}>let buf: Vec&lt;u8&gt; = vec![..];</T>
-      <T x={56} y={122} s={14} f={C.taupe} o={fa(t, 0.7, 0.4)}>let header = parse(&amp;buf);</T>
-      <T x={56} y={154} s={14} f={C.caramel} o={fa(t, 1.1, 0.4)}>header  // buf is about to be dropped</T>
-      <T x={40} y={186} s={14} f={C.crema}>{'}'}</T>
-      <T x={40} y={240} s={14} f={C.taupe} o={fa(t, 1.6, 0.4)}>does this compile?</T>
+      <T x={40} y={40} s={14} f={C.crema}>fn make_header() -&gt; Header&lt;'?&gt;</T>
+      <rect x={60} y={64} width={200} height={110} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+      <T x={76} y={88} s={13} f={C.taupe}>function scope</T>
+      <g opacity={bufIn}>
+        <rect x={80} y={100} width={bufW} height={44} rx={8} fill={C.cocoa} stroke={C.caramel} strokeWidth={2} />
+        {bufW > 50 && <T x={80 + bufW / 2} y={126} s={13} a="middle" f={C.crema}>buf: Vec&lt;u8&gt;</T>}
+      </g>
+      <g opacity={headerIn}>
+        <T x={340} y={126} s={14} a="middle" f={C.caramel}>header</T>
+        <Draw pts={[[300, 126], [170, 122]]} t={t} from={0.9} to={1.3} stroke={shrink > 0.3 ? C.cherryText : C.caramel} w={2} dash="5 4" pen={false} />
+      </g>
+      <g opacity={fa(t, 1.7, 0.4)}>
+        <T x={300} y={160} s={13} a="middle" f={C.cherryText}>buf just dropped — header still points there</T>
+      </g>
+      <T x={40} y={260} s={15} f={C.crema} o={fa(t, 2.2, 0.4)}>does this compile?</T>
     </Svg>
   );
 }
@@ -190,18 +203,29 @@ export function OuroborosWorks({ t }: StepCtx) {
 
 // ── 9 · Why yoke and ouroboros exist at all ─────────────────────────────────────────────────────
 export function WhyYoke({ t }: StepCtx) {
+  const yoked = easeOutBack(seg(t, 0.6, 1.0));
+  const travel = easeOut(seg(t, 1.6, 2.4));
+  const dx = 220 * travel;
   return (
-    <Svg label="Yoke attaches a zero-copy value to the cart it was built from, erasing a static lifetime into a dynamic one" h={340}>
-      <T x={40} y={50} s={15} f={C.crema}>Yoke&lt;Cow&lt;'static, str&gt;, Rc&lt;[u8]&gt;&gt;</T>
-      <g opacity={fa(t, 0.5, 0.4)}>
-        <T x={40} y={100} s={14} f={C.taupe}>the Cow is "yoked" to the Rc it was deserialized from</T>
+    <Svg label="Yoke attaches a zero-copy value to the cart it was built from, erasing a static lifetime into a dynamic one" h={320}>
+      <T x={40} y={24} s={14} f={C.crema}>Yoke&lt;Cow&lt;'static, str&gt;, Rc&lt;[u8]&gt;&gt;</T>
+      <g transform={`translate(${dx},0)`}>
+        <rect x={60} y={120} width={150} height={56} rx={9} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
+        <T x={135} y={152} s={13} a="middle" f={C.taupe}>cart: Rc&lt;[u8]&gt;</T>
+        {yoked > 0.01 && (
+          <g opacity={yoked}>
+            <Draw pts={[[135, 120], [135, 96]]} t={t} from={0.6} to={0.9} stroke={C.caramel} w={2.5} pen={false} />
+            <rect x={60} y={66} width={150} height={32} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
+            <T x={135} y={87} s={13} a="middle" f={C.caramel}>Cow view</T>
+          </g>
+        )}
       </g>
-      <g opacity={fa(t, 1.2, 0.4)}>
-        <T x={40} y={150} s={14} f={C.caramel}>the pair moves around as one value, freely</T>
+      <g opacity={fa(t, 1.3, 0.3)}>
+        <T x={40} y={200} s={13} f={C.taupe}>the pair moves as one value, freely</T>
       </g>
-      <g opacity={fa(t, 1.9, 0.4)}>
-        <T x={40} y={210} s={14} f={C.taupe}>erasing a static lifetime into a dynamic one,</T>
-        <T x={40} y={234} s={14} f={C.taupe}>the way dyn erases a static type into a dynamic one</T>
+      <g opacity={fa(t, 2.6, 0.4)}>
+        <T x={40} y={250} s={14} f={C.taupe}>erasing a static lifetime into a dynamic one,</T>
+        <T x={40} y={274} s={14} f={C.taupe}>the way dyn erases a static type into a dynamic one</T>
       </g>
     </Svg>
   );
