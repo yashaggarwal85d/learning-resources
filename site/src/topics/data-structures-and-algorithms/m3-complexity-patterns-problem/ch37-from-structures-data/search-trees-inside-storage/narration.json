@@ -1,0 +1,101 @@
+{
+    "topic": "dsa.search-trees-inside-storage",
+    "steps": [
+        {
+            "lines": [
+                "Think about what a filter is for. It exists so the engine never has to open a data block it does not need. Now imagine the filter itself is a thousand times bigger than that data block.",
+                "Hold that tension before the reveal: something built to save you a read might itself become the expensive thing to read."
+            ],
+            "answer": [
+                "The engine does to the filter exactly what it already does to data: it indexes it. A tiny top level index points at small pieces of the filter, loaded only when needed.",
+                "That is the same move you have seen before, just one layer removed from the data itself."
+            ]
+        },
+        {
+            "lines": [
+                "Start from the picture you already know. A leaf entry here is nothing but a key, sitting in its sorted place.",
+                "Everything that follows is what gets bolted onto that same picture once the tree has to answer to a real table underneath it."
+            ]
+        },
+        {
+            "lines": [
+                "A tree like this promises every key is unique. But real data repeats a key constantly, so something else has to make each entry different without changing what the key means.",
+                "The engine reaches for an address it already has lying around: the exact spot in the table where that row lives. That address breaks every tie for free."
+            ]
+        },
+        {
+            "lines": [
+                "Watch five rows carry the exact same key. On a textbook tree that would be a contradiction. Here it is not, because a second, hidden field rides along with every one of them.",
+                "Nothing about the key itself changed. What changed is that uniqueness was never really about the key alone."
+            ]
+        },
+        {
+            "lines": [
+                "A page like this eventually runs out of room and has to be cut into two. Before you see the answer, think about what a fair cut would look like if every entry carried the same key.",
+                "A split tuned for ordinary, distinct keys does not automatically know what to do with a page where every entry is a tie."
+            ],
+            "answer": [
+                "No clean even split. The engine assumes new copies of the same key keep arriving in roughly the order they were written, so it leaves one side almost completely full and the other nearly bare.",
+                "That is a bet on how duplicates actually arrive in practice, not a geometric rule about halves."
+            ]
+        },
+        {
+            "lines": [
+                "Look at the two halves side by side. One of them barely changed at all. The other took almost the entire burden of making room.",
+                "That asymmetry is not a bug to fix. It is exactly what the engine's own assumption about insertion order predicts."
+            ]
+        },
+        {
+            "lines": [
+                "Same move, different structure. Start from the plain picture: one key, one value, nothing else attached.",
+                "An engine that has to remember more than one version of a key at a time cannot stop there."
+            ]
+        },
+        {
+            "lines": [
+                "Order three writes of the same key by when they happened, then flip that order upside down. The newest one now comes first, not last.",
+                "That single flip is the whole trick. Everything downstream gets simpler because the thing you almost always want, the latest value, is always the first one found."
+            ]
+        },
+        {
+            "lines": [
+                "A reader that commits to a moment in time should never see anything written after that moment, no matter how it finds the key.",
+                "Ask yourself what a reader frozen right after the second write should see. Not the third write, and not the delete that comes later. Exactly the value as it stood at that instant."
+            ]
+        },
+        {
+            "lines": [
+                "Because the newest version is always first, finding the right one for any given moment is not a search through history. It is a single landing, right where that moment's answer already sits.",
+                "A structure built to merge many such orderings later reuses this exact same rule, which is why naming it here matters beyond this one topic."
+            ]
+        },
+        {
+            "lines": [
+                "Picture a cache with limited room, deciding what deserves to stay. A filter many times larger than a single data block does not share that room gently.",
+                "Every time that oversized filter gets pulled in, it can shove out far more useful data than it saves you from reading."
+            ]
+        },
+        {
+            "lines": [
+                "The fix mirrors something you already trust: do not load the whole thing, load a small map of the thing, and let that map tell you exactly which piece to fetch.",
+                "The map itself stays tiny on purpose. Its entire job is to point, not to hold the answer."
+            ]
+        },
+        {
+            "lines": [
+                "Before the count, reason through each case yourself. A hit always needs the real data, filter or not. A miss with no filter at all wastes exactly one read finding that out.",
+                "Now the harder case: a filter that exists, but whose one relevant slice is not sitting in memory yet. Does having a filter at all still help you there?"
+            ],
+            "answer": [
+                "It does not. Fetching that one missing slice costs exactly one more read, the same total as never having built a filter at all.",
+                "A partitioned filter only pays for itself when the piece a lookup actually needs happens to already be resident. Otherwise it is no better than nothing."
+            ]
+        },
+        {
+            "lines": [
+                "Three different patches, one underlying move. Something that used to be assumed unique, current, or small enough to hold whole, got an extra piece bolted on once a real machine had to keep that promise.",
+                "Every one of those patches still assumes a single machine holds the whole structure. The next question breaks that assumption entirely."
+            ]
+        }
+    ]
+}

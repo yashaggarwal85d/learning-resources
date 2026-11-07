@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, easeOutBack, fmt, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, fmt, seg } from '../../../../../reels/anim';
 import { C, SERIF, Svg, T } from '../../../../../reels/kit';
 
 // Every number shown here is computed or asserted by examples.py. Trees are drawn top-down, one row per level; the per-level
@@ -246,6 +246,14 @@ export function ThreeShapes({ t }: StepCtx) {
 }
 
 // 5 · The statement: f against the watershed, five recurrences and their cases.
+// Each row's [watershed exponent, f's exponent]: log₂8 = 3 against 2, log₂3 ≈ 1.585 against 1, 1 against 1, 0 against 0, 1 against 2.
+const EXP: [number, number][] = [
+  [3, 2],
+  [Math.log2(3), 1],
+  [1, 1],
+  [0, 0],
+  [1, 2],
+];
 export function Watershed({ t, portrait }: StepCtx) {
   const rows: [string, string, string, string, string][] = [
     ['8T(n/2) + n²', 'n³', 'n²', '1: ', '(n³)'],
@@ -275,6 +283,23 @@ export function Watershed({ t, portrait }: StepCtx) {
               <T x={X[0]} y={y} s={13} f={C.crema}>{rec}</T>
               <T x={X[1]} y={y} s={13} f={C.crema}>{ws}</T>
               <T x={X[2]} y={y} s={13} f={C.latte}>{f}</T>
+            </g>
+            {/* f against the watershed on an exponent ruler (n⁰ … n³): the hollow ring is the watershed, the dot is f,
+                sliding out to its power; the gap between them is the case. */}
+            <g opacity={a}>
+              <line x1={30} y1={y + 14} x2={300} y2={y + 14} stroke={C.mocha} />
+              {[0, 1, 2, 3].map((e) => <line key={e} x1={30 + e * 90} y1={y + 11} x2={30 + e * 90} y2={y + 17} stroke={C.mocha} />)}
+              {(() => {
+                const k = easeInOut(seg(t, 0.3 + i * 0.6, 0.75 + i * 0.6));
+                const xw = 30 + EXP[i][0] * 90 * k, xf = 30 + EXP[i][1] * 90 * k;
+                return (
+                  <>
+                    <line x1={Math.min(xw, xf)} y1={y + 14} x2={Math.max(xw, xf)} y2={y + 14} stroke={C.caramel} strokeWidth={3} opacity={b} />
+                    <circle cx={xw} cy={y + 14} r={5} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
+                    <circle cx={xf} cy={y + 14} r={3.5} fill={C.caramel} />
+                  </>
+                );
+              })()}
             </g>
             <T x={X[3]} y={y} s={15} f={C.caramel} w={700} o={b}>
               {cs}
@@ -562,35 +587,55 @@ export function FalseProof({ t, answer, portrait }: StepCtx) {
 
 // 11 and 15 · Two induction attempts: the naive guess fails by a lower-order term, the strengthened guess closes.
 // The failed attempt's title is crema and plain; only the successful one's title is caramel and serif (one serif word per step).
-function Attempt({ y, label, lines, bad, o }: { y: number; label: string; lines: string[]; bad: boolean; o: number }) {
+/** One induction attempt, worked line by line from `at`: each line lands on its beat, then the step's result is drawn
+ * as a bar against the target c·n (a dashed line). The bad guess overshoots it by the + 1 (red tip, then a cross);
+ * the good one stops d short of it (a tick). */
+function Attempt({ y, label, lines, bad, t, at, gauge = true }: { y: number; label: string; lines: string[]; bad: boolean; t: number; at: number; gauge?: boolean }) {
+  const o = easeOut(seg(t, at, at + 0.3));
+  const bar = easeInOut(seg(t, at + 1.0, at + 1.5));
+  const mark = easeOut(seg(t, at + 1.4, at + 1.7));
+  const X0 = 330, TGT = 470, END = bad ? 492 : 444;
+  const x = X0 + (END - X0) * bar;
   return (
     <g opacity={o}>
-      <rect x={30} y={y} width={515} height={112} rx={14} fill={C.roast} stroke={bad ? C.cherry : C.mocha} />
+      <rect x={30} y={y} width={515} height={112} rx={14} fill={C.roast} stroke={bad && mark > 0.5 ? C.cherry : C.mocha} />
       <T x={46} y={y + 28} s={20} f={bad ? C.crema : C.caramel} w={700} serif={!bad}>{label}</T>
       {lines.map((l, i) => (
-        <T key={i} x={46} y={y + 54 + i * 24} s={15} f={bad && i === 2 ? C.cherryText : C.crema}>{l}</T>
+        <T key={i} x={46} y={y + 54 + i * 24} s={15} f={bad && i === 2 ? C.cherryText : C.crema} o={easeOut(seg(t, at + 0.25 + i * 0.3, at + 0.5 + i * 0.3))}>{l}</T>
       ))}
+      {gauge && (
+        <g>
+          <line x1={TGT} y1={y + 60} x2={TGT} y2={y + 100} stroke={C.latte} strokeWidth={1.5} strokeDasharray="3 3" />
+          <T x={TGT} y={y + 54} s={13} f={C.latte} a="middle">c·n</T>
+          <rect x={X0} y={y + 74} width={Math.max(0, Math.min(x, TGT) - X0)} height={12} rx={2} fill={bad ? C.crema : C.caramel} />
+          {bad && x > TGT && <rect x={TGT} y={y + 74} width={x - TGT} height={12} rx={2} fill={C.cherryText} />}
+        </g>
+      )}
       {bad ? (
-        <g stroke={C.cherryText} strokeWidth={3} strokeLinecap="round">
-          <line x1={500} y1={y + 24} x2={522} y2={y + 46} />
-          <line x1={522} y1={y + 24} x2={500} y2={y + 46} />
+        <g stroke={C.cherryText} strokeWidth={3} strokeLinecap="round" opacity={mark}>
+          <line x1={500} y1={y + 24} x2={500 + 22 * mark} y2={y + 24 + 22 * mark} />
+          <line x1={522} y1={y + 24} x2={522 - 22 * mark} y2={y + 24 + 22 * mark} />
         </g>
       ) : (
-        <path d={`M500 ${y + 36} L508 ${y + 46} L524 ${y + 24}`} stroke={C.caramel} strokeWidth={3.5} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={`M500 ${y + 36} L508 ${y + 46} L524 ${y + 24}`} stroke={C.caramel} strokeWidth={3.5} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="40" strokeDashoffset={40 * (1 - mark)} />
       )}
     </g>
   );
 }
 
 export function StrengthenGuess({ t }: StepCtx) {
+  const counts = [3, 7, 15, 127, 2047];
   return (
     <Svg label="Merge sort's call count C(n) = 2C(n/2) + 1: the guess c·n fails by the plus 1, the guess c·n − d closes the induction; the exact counts are 3, 7, 15, 127, 2,047, which is 2n − 1" h={360}>
       <T x={30} y={28} s={15} f={C.crema} w={600} o={easeOut(seg(t, 0, 0.3))}>C(n) = 2C(n/2) + 1: calls of merge sort</T>
-      <Attempt y={44} label="guess c·n" lines={['≤ 2·c·(n/2) + 1', '= c·n + 1', '> c·n: not closed']} bad o={easeOut(seg(t, 0.4, 0.8))} />
-      <Attempt y={166} label="guess c·n − d" lines={['≤ 2·(c·n/2 − d) + 1', '= c·n − 2d + 1', '≤ c·n − d if d ≥ 1']} bad={false} o={easeOut(seg(t, 2.0, 2.4))} />
-      <g opacity={easeOut(seg(t, 3.9, 4.3))}>
+      <Attempt y={44} label="guess c·n" lines={['≤ 2·c·(n/2) + 1', '= c·n + 1', '> c·n: not closed']} bad t={t} at={0.3} />
+      <Attempt y={166} label="guess c·n − d" lines={['≤ 2·(c·n/2 − d) + 1', '= c·n − 2d + 1', '≤ c·n − d if d ≥ 1']} bad={false} t={t} at={2.0} />
+      <g opacity={easeOut(seg(t, 3.7, 4.0))}>
         <T x={30} y={314} s={13} f={C.latte}>n = 2, 4, 8, 64, 1,024</T>
-        <T x={30} y={336} s={15} f={C.crema} w={600}>C(n) = 3, 7, 15, 127, 2,047 = 2n − 1</T>
+        <T x={30} y={336} s={15} f={C.crema} w={600}>
+          C(n) = {counts.filter((_, i) => t >= 3.75 + i * 0.1).map((c) => fmt(c)).join(', ')}
+          {t >= 4.25 ? ' = 2n − 1' : ''}
+        </T>
       </g>
     </Svg>
   );
@@ -724,9 +769,9 @@ export function Q3({ t, answer, portrait }: StepCtx) {
   const s = useSinceAnswer(shown);
   return (
     <Svg label="Substitution on 4T(n/2) + n: the guess c·n² ends at c·n² + n and fails; the guess c₁·n² − c₂·n closes; the exact counts are 6, 28, 120, 8,128, 2,096,128, which is 2n² − n" h={340}>
-      <Attempt y={14} label="guess c·n²" lines={['≤ 4·c·(n/2)² + n', '= c·n² + n', shown ? '> c·n²: a larger c never helps' : '> c·n²: the step does not close']} bad o={easeOut(seg(t, 0, 0.5))} />
+      <Attempt y={14} label="guess c·n²" lines={['≤ 4·c·(n/2)² + n', '= c·n² + n', shown ? '> c·n²: a larger c never helps' : '> c·n²: the step does not close']} bad t={t + 0.3} at={0} gauge={false} />
       {shown ? (
-        <Attempt y={138} label="guess c₁·n² − c₂·n" lines={['≤ 4·(c₁·n²/4 − c₂·n/2) + n', '= c₁·n² − 2c₂·n + n', '≤ c₁·n² − c₂·n if c₂ ≥ 1']} bad={false} o={easeOut(seg(s, 0, 0.2))} />
+        <Attempt y={138} label="guess c₁·n² − c₂·n" lines={['≤ 4·(c₁·n²/4 − c₂·n/2) + n', '= c₁·n² − 2c₂·n + n', '≤ c₁·n² − c₂·n if c₂ ≥ 1']} bad={false} t={s} at={0} gauge={false} />
       ) : (
         <g>
           <rect x={30} y={138} width={515} height={112} rx={14} fill="none" stroke={C.mocha} strokeDasharray="6 6" />

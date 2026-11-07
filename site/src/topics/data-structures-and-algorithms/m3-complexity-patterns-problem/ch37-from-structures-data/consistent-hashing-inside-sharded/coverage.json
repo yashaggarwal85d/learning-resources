@@ -1,0 +1,83 @@
+{
+  "topic": "dsa.consistent-hashing-inside-sharded",
+  "syllabus": [
+    {
+      "clause": "partition assignment",
+      "at": [
+        { "step": "A cluster of ten nodes becomes eleven. Plain modulo hashing moves almost every key; a ring moves about one key in eleven; a fixed-slot table moves exactly the slots an operator chooses to move. But one key is hot, and none of those three placement schemes notices by itself. Predict: when one key carries a quarter of all traffic, does giving every node a thousand points on the ring instead of one actually help that key?" },
+        { "step": "Three real answers to the same question: which machine owns this key? Cassandra's token ring, Redis Cluster's fixed slot table, Kafka's plain modulo hashing." },
+        { "step": "Cassandra names its own mechanism directly: consistent hashing using a token ring. Virtual nodes, several tokens per physical node, fix the imbalance a single token per node has on a small cluster." },
+        { "step": "Redis Cluster is not a ring at all. The key space is a fixed table of slots; a key's slot is a hash of the key, taken modulo the slot count; each master node owns a subset of the slots directly, not a subset of a numeric range." },
+        { "step": "Kafka's keyed partitioner computes a hash of the key, taken modulo the current partition count. Plain modulo hashing, with no stability property at all: change the partition count, and the mapping changes almost everywhere." }
+      ]
+    },
+    {
+      "clause": "rebalancing",
+      "at": [
+        { "step": "Predict, then measured: growing ten nodes to eleven. How much of the key space does each of the three schemes actually move?" },
+        { "step": "Measured: the ring moves about one key in nine; the fixed-slot table moves a comparably small, operator-controlled share; modulo hashing moves almost every key." },
+        { "step": "Two different mechanics for a similar-sized move. A ring's new node claims a token range from its neighbors automatically. A slot table's operator moves whole slots one at a time, each going through an explicit migrating and importing handshake: data is never moved between nodes except when resharding." }
+      ]
+    },
+    {
+      "clause": "and hot-key handling",
+      "at": [
+        { "step": "The shared blind spot: every one of these three schemes balances keys, never load. One hot key still lands on exactly one node, whichever scheme placed it there." },
+        { "step": "Measured: the same hot key, now under a ring with a thousand points per node instead of one. Which node ends up owning it can change, but how overloaded that node becomes does not systematically improve: the key still hashes to exactly one point, however many points exist." },
+        { "step": "HAProxy's real knob for this: hash-balance-factor. A server already carrying more than its share of the average load is skipped, and the next candidate the same hash would choose is tried instead, until one with room is found. The feature is off by default." },
+        { "step": "Measured: the same hot key, now under bounded-load placement at HAProxy's own example factor. The busiest node's share drops from several times the average down to close to the factor itself." }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering §5.3.",
+      "at": [
+        { "deep": "Where this goes next" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Cassandra architecture docs (Dynamo)",
+      "items": [
+        { "item": "The section is titled \"Dataset Partitioning: Consistent Hashing\" / \"Consistent Hashing using a Token Ring\"", "at": [{ "step": "Cassandra names its own mechanism directly: consistent hashing using a token ring. Virtual nodes, several tokens per physical node, fix the imbalance a single token per node has on a small cluster." }] },
+        { "item": "Multiple tokens per physical node (vnodes) fixes small-cluster imbalance", "at": [{ "step": "Cassandra names its own mechanism directly: consistent hashing using a token ring. Virtual nodes, several tokens per physical node, fix the imbalance a single token per node has on a small cluster." }] }
+      ]
+    },
+    {
+      "source": "Redis Cluster specification",
+      "items": [
+        { "item": "The key space is 16,384 fixed slots; HASH_SLOT = CRC16(key) mod 16384", "at": [{ "step": "Redis Cluster is not a ring at all. The key space is a fixed table of slots; a key's slot is a hash of the key, taken modulo the slot count; each master node owns a subset of the slots directly, not a subset of a numeric range." }] },
+        { "item": "Data is never moved between nodes except when resharding, via CLUSTER SETSLOT MIGRATING/IMPORTING", "at": [{ "step": "Two different mechanics for a similar-sized move. A ring's new node claims a token range from its neighbors automatically. A slot table's operator moves whole slots one at a time, each going through an explicit migrating and importing handshake: data is never moved between nodes except when resharding." }] }
+      ]
+    },
+    {
+      "source": "Kafka BuiltInPartitioner.java",
+      "items": [
+        { "item": "partitionForKey returns murmur2(key) mod numPartitions", "at": [{ "step": "Kafka's keyed partitioner computes a hash of the key, taken modulo the current partition count. Plain modulo hashing, with no stability property at all: change the partition count, and the mapping changes almost everywhere." }] }
+      ]
+    },
+    {
+      "source": "HAProxy configuration manual, hash-balance-factor",
+      "items": [
+        { "item": "hash-balance-factor caps a server's load as a percentage of the average; disqualified servers are skipped for the next hash-chosen candidate; off (0) by default", "at": [{ "step": "HAProxy's real knob for this: hash-balance-factor. A server already carrying more than its share of the average load is skipped, and the next candidate the same hash would choose is tried instead, until one with room is found. The feature is off by default." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-07",
+    "items": [
+      { "item": "The fixed-slot table's rebalance-on-join is this topic's own synthesis from the spec's stated mechanics (whole slots move, operator-chosen), not a simulation of the real redis-cli --cluster reshard tool, which this topic's sandbox cannot run; flagged explicitly in OUTLINE.md and FACT-CHECK.md rather than presented as Redis's own exact rebalancing output.", "at": [{ "step": "Two different mechanics for a similar-sized move. A ring's new node claims a token range from its neighbors automatically. A slot table's operator moves whole slots one at a time, each going through an explicit migrating and importing handshake: data is never moved between nodes except when resharding." }] },
+      { "item": "The virtual-nodes-don't-help claim was re-checked with a second, unrelated hot key string after the first run's tolerance proved too strict (the second key showed the ratio moving in the opposite direction by a larger margin); the assertion in examples.py was loosened to the honest, narrower claim (no systematic improvement) rather than kept at a false precision.", "at": [{ "step": "Measured: the same hot key, now under a ring with a thousand points per node instead of one. Which node ends up owning it can change, but how overloaded that node becomes does not systematically improve: the key still hashes to exactly one point, however many points exist." }] },
+      { "item": "Python's built-in hash() was caught and replaced with a fixed MD5-based digest before any number was written into OUTLINE.md or the reel, after an early run of examples.py produced a different result on a second invocation in the same session (CPython randomizes str hashing per process unless PYTHONHASHSEED is set).", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Cassandra's current default num_tokens for new clusters was left explicitly unresolved rather than guessed, after reading the production configuration guide and finding only example values and guidance, not a stated current shipped default.", "at": [{ "deep": "At the frontier" }] },
+      { "item": "The claim that Redis Cluster and Kafka 'are not consistent-hashing rings' is checked directly against what each source's own mechanism actually is (a flat slot table; a one-line modulo), not merely asserted by contrast with Cassandra.", "at": [{ "step": "Redis Cluster is not a ring at all. The key space is a fixed table of slots; a key's slot is a hash of the key, taken modulo the slot count; each master node owns a subset of the slots directly, not a subset of a numeric range." }] },
+      { "item": "HAProxy's bounded-load algorithm is presented as the same underlying idea as Chapter 3's textbook bounded-load hashing (skip an overloaded first choice for the next ring candidate), not claimed to be byte-for-byte identical code, since only the documented behavior, not HAProxy's source, was read.", "at": [{ "step": "HAProxy's real knob for this: hash-balance-factor. A server already carrying more than its share of the average load is skipped, and the next candidate the same hash would choose is tried instead, until one with room is found. The feature is off by default." }] },
+      { "item": "The ten-to-eleven-node growth comparison's exact sizing (twenty thousand keys, ten nodes) is the builder's own chosen value for this chapter's shared running example, not read from any source, matching CHAPTER.md's instruction that each topic computes and asserts its own planning values.", "at": [{ "step": "Predict, then measured: growing ten nodes to eleven. How much of the key space does each of the three schemes actually move?" }] },
+      { "item": "The bounded-load balance factor used (one and a half) is taken directly from HAProxy's own documented example ('if <factor> is 150... 1.5 times the average'), not invented by the builder, so the measured cap is checked against a real, cited number.", "at": [{ "step": "Measured: the same hot key, now under bounded-load placement at HAProxy's own example factor. The busiest node's share drops from several times the average down to close to the factor itself." }] },
+      { "item": "The claim that modulo hashing has 'no stability property at all' is scoped to Kafka's own keyed BuiltInPartitioner path specifically, not extended to Kafka's separate sticky partitioner for unkeyed records, which this topic names once in post-notes.md as explicitly out of scope rather than silently conflated.", "at": [{ "step": "Kafka's keyed partitioner computes a hash of the key, taken modulo the current partition count. Plain modulo hashing, with no stability property at all: change the partition count, and the mapping changes almost everywhere." }] },
+      { "item": "Topic 122's handoff (this topic's own bridge) was confirmed live in the registry at build time by grepping registry.ts directly, unlike the sibling gap this topic itself later leaves for topic 124 to resolve the same way.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-07", "by": "self-review", "open": [] }
+}

@@ -1,0 +1,69 @@
+{
+  "topic": "dsa.search-trees-inside-storage",
+  "syllabus": [
+    {
+      "clause": "B+-trees, LSM-trees and their filters as the index layer",
+      "at": [
+        { "step": "A lookup for a key that is not there should touch no data block at all. Yet one filter block alone can be over a thousand times the size of the data block it protects. Predict: what does the engine do with a filter bigger than the thing it is supposed to protect, and what does that remind you of?" },
+        { "step": "The textbook contract, and the system's addition, side by side: the Chapter 5 B+-tree exactly as drawn there, key only, on the left; a storage engine's leaf entry on the right, a second value riding beside the key." },
+        { "step": "PostgreSQL's requirement that every btree key be unique is met by treating the heap tuple identifier as a tiebreaker attribute: logical duplicates of the same key are sorted in heap TID order, so no two entries are ever truly identical." },
+        { "step": "Measured: five order rows for the same customer become five leaf entries. The key repeats five times, but each entry's tuple identifier is different, so every entry is unique and the tree's ordering still holds." },
+        { "step": "Predict: a leaf page fills up with entries that all share one key and must split. Does the split put half the duplicates on each side of the new boundary, the way a split of ordinary, distinct keys would?" },
+        { "step": "Measured on the shop's five duplicate rows at a small leaf capacity: the left page keeps every slot it had, full; the right page holds only the one row the split pushed out, almost empty." },
+        { "step": "The second structure, the same way: the Chapter 5 LSM tree exactly as drawn there on the left; RocksDB's stored key on the right, a sequence number now riding beside the user key." },
+        { "step": "RocksDB's comparator orders by user key ascending, then by sequence number descending: among entries for the same key, the newest write sorts first, drawn as a stack with the newest version on top." },
+        { "step": "Measured: one key is written three times and then deleted. A snapshot taken right after the second write still reads the second write's value, untouched by everything that came later; a reader with no snapshot constraint sees the delete, ahead of every earlier version." },
+        { "step": "Because the newest version already sorts first, a snapshot read is one seek to the first version at or before the snapshot, never a scan of every version a key ever had. The same ordering is what a later topic's merging iterator reads when it walks several files at once." },
+        { "step": "The filter problem, stated in full: one index or filter block is commonly far larger than a single data block, so when it is not cached it competes with the very data blocks it exists to protect, and kicks them out of the cache." },
+        { "step": "The fix: the filter is split into small partitions, with a tiny top-level index over them, itself only a sliver of the filter's own size, loaded once; a lookup loads only the one partition it actually needs, on demand." },
+        { "step": "Predict, then measured: four point lookups, counted in block reads. A hit costs the same whether or not a filter exists, since the data still has to be fetched. A miss with no filter wastes exactly one data read. A miss against a whole filter already in the cache costs nothing extra. A miss whose one needed filter partition is not cached costs one more read: exactly as much as having no filter at all." }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering §5.1, Rust Systems Engineering Ch.21–22.",
+      "at": [
+        { "deep": "Where this goes next" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL nbtree/README",
+      "items": [
+        { "item": "Heap TID is a tiebreaker attribute; logical duplicates sort in heap TID order", "at": [{ "step": "PostgreSQL's requirement that every btree key be unique is met by treating the heap tuple identifier as a tiebreaker attribute: logical duplicates of the same key are sorted in heap TID order, so no two entries are ever truly identical." }] },
+        { "item": "A leaf full of duplicates splits assuming ascending-TID inserts, left page mostly full, right mostly empty", "at": [{ "step": "Predict: a leaf page fills up with entries that all share one key and must split. Does the split put half the duplicates on each side of the new boundary, the way a split of ordinary, distinct keys would?" }, { "step": "Measured on the shop's five duplicate rows at a small leaf capacity: the left page keeps every slot it had, full; the right page holds only the one row the split pushed out, almost empty." }] }
+      ]
+    },
+    {
+      "source": "RocksDB db/dbformat.h",
+      "items": [
+        { "item": "The internal key comparator orders by user key, then breaks ties by decreasing sequence number", "at": [{ "step": "RocksDB's comparator orders by user key ascending, then by sequence number descending: among entries for the same key, the newest write sorts first, drawn as a stack with the newest version on top." }] }
+      ]
+    },
+    {
+      "source": "RocksDB wiki, Partitioned Index/Filters",
+      "items": [
+        { "item": "An SST's index/filter block is typically 0.5-5 MB against a 4-32 KB data block", "at": [{ "step": "A lookup for a key that is not there should touch no data block at all. Yet one filter block alone can be over a thousand times the size of the data block it protects. Predict: what does the engine do with a filter bigger than the thing it is supposed to protect, and what does that remind you of?" }, { "step": "The filter problem, stated in full: one index or filter block is commonly far larger than a single data block, so when it is not cached it competes with the very data blocks it exists to protect, and kicks them out of the cache." }] },
+        { "item": "A 5 MB filter occupies the space that could cache thousands of data blocks", "at": [{ "step": "The filter problem, stated in full: one index or filter block is commonly far larger than a single data block, so when it is not cached it competes with the very data blocks it exists to protect, and kicks them out of the cache." }] },
+        { "item": "Partitioning adds a top-level index, 0.1-1% of the filter's own size, loaded on demand", "at": [{ "step": "The fix: the filter is split into small partitions, with a tiny top-level index over them, itself only a sliver of the filter's own size, loaded once; a lookup loads only the one partition it actually needs, on demand." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-07",
+    "items": [
+      { "item": "The block-read model for the four lookup cases (hit, miss without a filter, miss with a cached whole filter, miss with an uncached filter partition) is this topic's own synthesis from the wiki page's stated mechanics, not a number any source states outright, and is flagged as such explicitly in both OUTLINE.md and FACT-CHECK.md rather than silently attributed to RocksDB's documentation.", "at": [{ "step": "Predict, then measured: four point lookups, counted in block reads. A hit costs the same whether or not a filter exists, since the data still has to be fetched. A miss with no filter wastes exactly one data read. A miss against a whole filter already in the cache costs nothing extra. A miss whose one needed filter partition is not cached costs one more read: exactly as much as having no filter at all." }] },
+      { "item": "The snapshot-read example separates the comparator's ordering (claim: user key ascending, sequence descending) from the snapshot semantics (claim: a snapshot returns the first version at or below its sequence) as two independently asserted functions in examples.py, so neither claim stands in for the other.", "at": [{ "step": "Measured: one key is written three times and then deleted. A snapshot taken right after the second write still reads the second write's value, untouched by everything that came later; a reader with no snapshot constraint sees the delete, ahead of every earlier version." }] },
+      { "item": "RocksDB's current default filter construction (Bloom vs. ribbon, by format_version) was left explicitly unresolved rather than guessed, after reading the Bloom Filter wiki page in full and finding no single current default stated clearly enough to quote without risking a stale claim.", "at": [{ "deep": "At the frontier" }] },
+      { "item": "Topics 119 and 121, whose ids this topic would otherwise move from declared to uses (merging-iterator, compaction-input-iterator), were confirmed absent from the registry at build time by grepping registry.ts directly, not assumed live from the chapter plan's intent; the connection is named in prose only (step 10), never claimed via a registry id that does not yet exist.", "at": [{ "step": "Because the newest version already sorts first, a snapshot read is one seek to the first version at or before the snapshot, never a scan of every version a key ever had. The same ordering is what a later topic's merging iterator reads when it walks several files at once." }] },
+      { "item": "The B+-tree height-3 and LSM four-level sizing are the builder's own chosen values, not read from any source, matching CHAPTER.md's instruction that each topic computes and asserts its own planning values for the chapter's shared running example.", "at": [{ "step": "The textbook contract, and the system's addition, side by side: the Chapter 5 B+-tree exactly as drawn there, key only, on the left; a storage engine's leaf entry on the right, a second value riding beside the key." }] },
+      { "item": "The filter-to-data-block ratio (over a thousand times) is computed directly from the wiki page's own stated typical sizes (0.5-5 MB filter against a 4-32 KB data block) in examples.py, not asserted as a round number from memory, and the computed ratio is checked to exceed one thousand before any on-screen text claims 'over a thousand times'.", "at": [{ "step": "A lookup for a key that is not there should touch no data block at all. Yet one filter block alone can be over a thousand times the size of the data block it protects. Predict: what does the engine do with a filter bigger than the thing it is supposed to protect, and what does that remind you of?" }] },
+      { "item": "The top-level index's own size (a sliver of the filter's size) is computed at the wiki page's stated upper bound (one percent) rather than its lower bound (one tenth of a percent), chosen and stated explicitly in OUTLINE.md so the reel's claim is reproducible from a specific, named assumption rather than an unstated average.", "at": [{ "step": "The fix: the filter is split into small partitions, with a tiny top-level index over them, itself only a sliver of the filter's own size, loaded once; a lookup loads only the one partition it actually needs, on demand." }] },
+      { "item": "The duplicate-key leaf-split example uses a small, explicit leaf capacity (four) chosen so the lopsided-split behaviour is visible at a size a learner can count by eye on screen, not a real engine's actual page capacity (which is far larger and governed by byte size, not entry count), a simplification stated once in post-notes.md rather than implied to be realistic.", "at": [{ "step": "Measured on the shop's five duplicate rows at a small leaf capacity: the left page keeps every slot it had, full; the right page holds only the one row the split pushed out, almost empty." }] },
+      { "item": "The claim that a storage engine's index-only scan 'cannot skip' the heap tuple identifier (named in the topic's outcomes) is scoped in post-notes.md to what the README's own passages support, not extended to claim anything about PostgreSQL's separate index-only-scan visibility-map optimization, which this topic does not open a source for and therefore does not describe.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The RocksDB internal-key ordering example is built from the comparator's own documented rule (user key ascending, sequence descending) rather than from reading an actual on-disk SST file, a deliberate scope choice stated in OUTLINE.md: the topic verifies the stated rule by simulation, not by inspecting real bytes, which the builder's environment has no running RocksDB instance to produce.", "at": [{ "step": "RocksDB's comparator orders by user key ascending, then by sequence number descending: among entries for the same key, the newest write sorts first, drawn as a stack with the newest version on top." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-07", "by": "self-review", "open": [] }
+}

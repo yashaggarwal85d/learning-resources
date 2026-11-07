@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Heaps inside compaction, shuffle and top-N">Before this: the same ready-priority-queue shape, there over sorted streams instead of ready tasks.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Depth-first search and edge classification">Before this: the three-colour cycle detection this topic's scheduler reuses to name the faulty task.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Topological sort">Before this: Kahn's algorithm itself, the textbook this topic runs as a live scheduler.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="DAG shortest and longest paths">Before this: the critical path, the longest-chain makespan this topic measures against both weighting rules.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">Before this: the heap behind the ready priority queue itself.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Priority Weights" href="https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/priority-weight.html" by="Apache Airflow">priority_weight's default, and the downstream rule's own description.</Resource>
+  <Resource kind="reading" title="priority_strategy.py" href="https://raw.githubusercontent.com/apache/airflow/main/airflow-core/src/airflow/task/priority_strategy.py" by="Apache Airflow">The exact downstream-rule formula: own weight plus every descendant's weight.</Resource>
+  <Resource kind="reading" title="node.py" href="https://raw.githubusercontent.com/apache/airflow/main/shared/dagnode/src/airflow_shared/dagnode/node.py" by="Apache Airflow">get_flat_relative_ids: a set, so a descendant on two paths counts once.</Resource>
+  <Resource kind="reading" title="scheduler_job_runner.py" href="https://raw.githubusercontent.com/apache/airflow/main/airflow-core/src/airflow/jobs/scheduler_job_runner.py" by="Apache Airflow">The scheduler's own candidate-task query, ordered by priority weight first.</Resource>
+  <Resource kind="reading" title="cycle.py" href="https://raw.githubusercontent.com/apache/airflow/main/shared/dagnode/src/airflow_shared/dagnode/cycle.py" by="Apache Airflow">detect_cycle: the iterative three-colour DFS that names the one faulty task.</Resource>
+  <Resource kind="reading" title="task-sdk dag.py" href="https://raw.githubusercontent.com/apache/airflow/main/task-sdk/src/airflow/sdk/definitions/dag.py" by="Apache Airflow">check_cycle, called before any task runs, and the exception it raises.</Resource>
+  <Resource kind="reading" title="Multiprocessor scheduling" href="https://en.wikipedia.org/wiki/Multiprocessor_scheduling" by="Wikipedia">Graham's list-scheduling bound, (2 − 1/m) times the optimum.</Resource>
+</ul>
+
+</section>

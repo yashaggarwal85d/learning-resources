@@ -1,0 +1,35 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Sorting inside spilling operators">Before this: the sort's own spill path and merge, whose final merge is this topic's heap.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">Before this: the heap this topic finds reused everywhere, sift-up and sift-down.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Tournament and loser trees">Before this: the loser tree and the k-way merge comparison counts this topic reuses directly.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM-tree write and read paths">Before this: memtables, sstables, fence pointers and the tombstone a compaction drops here.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM compaction and amplification">Before this: the compaction policy whose merge step this topic reads inside RocksDB.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Quickselect and median-of-medians">Before this: the other tool for a top-k problem, selection without a heap at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="merging_iter.go" href="https://raw.githubusercontent.com/cockroachdb/pebble/master/merging_iter.go" by="Pebble">The heap of child iterators, switched between min-heap and max-heap by direction.</Resource>
+  <Resource kind="reading" title="merging_iterator.cc" href="https://raw.githubusercontent.com/facebook/rocksdb/main/table/merging_iterator.cc" by="RocksDB">The independently built, same-design merging iterator.</Resource>
+  <Resource kind="reading" title="dbformat.h" href="https://raw.githubusercontent.com/facebook/rocksdb/main/db/dbformat.h" by="RocksDB">The internal-key comparator: user key, then decreasing sequence number.</Resource>
+  <Resource kind="reading" title="version_set.cc" href="https://raw.githubusercontent.com/facebook/rocksdb/main/db/version_set.cc" by="RocksDB">MakeInputIterator: a compaction's own merge over every input file.</Resource>
+  <Resource kind="reading" title="compaction_iterator.h" href="https://raw.githubusercontent.com/facebook/rocksdb/main/db/compaction/compaction_iterator.h" by="RocksDB">Where a compaction drops the versions a newer one has shadowed.</Resource>
+  <Resource kind="reading" title="TreeOfLosers.h" href="https://raw.githubusercontent.com/facebookincubator/velox/main/velox/common/base/TreeOfLosers.h" by="Velox">The tree of losers and its own worked example for an uneven stream count.</Resource>
+  <Resource kind="reading" title="UnsafeSorterSpillMerger.java" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/java/org/apache/spark/util/collection/unsafe/sort/UnsafeSorterSpillMerger.java" by="Apache Spark">The heap that never enqueues an empty spill reader.</Resource>
+  <Resource kind="reading" title="ExternalSorter.scala" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/scala/org/apache/spark/util/collection/ExternalSorter.scala" by="Apache Spark">The reversed-comparator max-heap merge for shuffle reads.</Resource>
+  <Resource kind="reading" title="BoundedPriorityQueue.scala" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/scala/org/apache/spark/util/BoundedPriorityQueue.scala" by="Apache Spark">The bounded top-K heap behind takeOrdered and top.</Resource>
+  <Resource kind="reading" title="tuplesort.c" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/utils/sort/tuplesort.c" by="PostgreSQL">make_bounded_heap and the switch rule for top-N heapsort.</Resource>
+</ul>
+
+</section>
