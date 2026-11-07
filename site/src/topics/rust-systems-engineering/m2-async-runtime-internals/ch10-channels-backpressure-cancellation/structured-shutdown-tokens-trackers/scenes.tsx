@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A CancellationToken genuinely rejecting new work outright; a TaskTracker's wait()
 // genuinely waiting for real completion; a real deadline genuinely abandoning a straggler.
@@ -25,13 +25,14 @@ export function TokenPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: rejected outright (this is the swipe test's "from" step — NO takeaway) ────────
 export function TokenReveal({ t }: StepCtx) {
+  const bounce = easeOut(seg(t, 0.5, 0.75));
+  const dx = (1 - Math.abs(bounce - 0.5) * 2) * 25;
   return (
     <Svg label="shutdown_rejects_new_after_signal.rs: a hard stop" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>before the signal: accepted</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>after the signal: rejected</T>
-      </g>
+      <circle cx={255 + dx} cy={82} r={4} fill={C.cherry} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>after the signal: rejected</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a hard stop, not a queue</T>
     </Svg>
   );
@@ -55,13 +56,17 @@ export function TrackerPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: waits for real completion (takeaway) ─────────────────────────────────────────
 export function TrackerReveal({ t }: StepCtx) {
+  const jobs = [0, 1, 2, 3, 4, 5, 6, 7];
+  const allDone = jobs.every((i) => easeOut(seg(t, 0.4 + i * 0.07, 0.65 + i * 0.07)) > 0.95);
   return (
     <Svg label="tracker_waits_for_every_accepted_job.rs: a real wait" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>8 jobs, one tracker</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>wait() returns: all finished</T>
-      </g>
+      {jobs.map((i) => {
+        const done = easeOut(seg(t, 0.4 + i * 0.07, 0.65 + i * 0.07));
+        return <circle key={i} cx={66 + i * 26} cy={80} r={5} fill={done > 0.5 ? C.taupe : C.caramel} opacity={0.5 + done * 0.5} />;
+      })}
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {allDone && <T x={170} y={112} s={13} a="middle" f={C.mocha}>wait() returns: all finished</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>completion, not just a signal</T>
     </Svg>
   );
@@ -85,13 +90,13 @@ export function DeadlinePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: stops right on time (takeaway) ────────────────────────────────────────────────
 export function DeadlineReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.4, 0.9));
+  const w = grow * 220;
   return (
     <Svg label="shutdown_meets_its_deadline.rs: a real limit" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a straggler, still running</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>wait: stopped at the deadline</T>
-      </g>
+      <rect x={60} y={85} width={w} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.9 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>wait: stopped at 301ms, the deadline</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>not a moment longer</T>
     </Svg>
   );
