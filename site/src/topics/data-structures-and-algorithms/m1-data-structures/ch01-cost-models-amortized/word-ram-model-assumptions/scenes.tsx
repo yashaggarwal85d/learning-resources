@@ -1,7 +1,32 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { clamp, easeOut, lerp, rng, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, rng, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Svg, T } from '../../../../../reels/kit';
+
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
 
 // Every number shown here is computed or asserted by examples.py. Colour grammar (CHAPTER.md): caramel = what is counted and the
 // answer, cinnamon = the comparison model, cherry = the cache miss and the flush, crema = data, latte/taupe = labels.
@@ -128,23 +153,34 @@ export function WordRam({ t }: StepCtx) {
   );
 }
 
-// 3 · Predict: can anything beat twenty?
+// 3 · Predict: can anything beat twenty? After the answer the 64-bit key is halved on screen, six times: the live
+// bits shrink 64 → 32 → … → 1 while the halving count ticks up to 6, against the comparison model's 20.
 export function BeatTwenty({ t, answer }: StepCtx) {
   const shown = answer !== null;
+  const s = useSinceAnswer(shown);
   const chain = [64, 32, 16, 8, 4, 2, 1];
-  const u = stretch(t, 1.5, 2.0); // the chain's 7 links finish at 1.8 s of answer time
+  const halveAt = (k: number) => 0.35 + k * 0.4; // halving k+1 starts here (answer time)
+  let k = 0;
+  while (shown && k < 6 && s >= halveAt(k) + 0.3) k++;
+  const live = 64 / 2 ** k;
+  // The live bits shrink smoothly during each halving.
+  const shrink = shown && k < 6 ? easeInOut(seg(s, halveAt(k), halveAt(k) + 0.3)) : 0;
+  const w = live * (1 - shrink / 2);
+  const cw = 7.5, x0 = 60;
   return (
-    <Svg label="Comparison model: 20. Word-RAM: a question mark that becomes 6 after the answer" h={300}>
+    <Svg label="Comparison model: 20. Word-RAM: a question mark that becomes 6 halvings of the 64-bit key after the answer" h={300}>
       <T x={150} y={60} s={15} f={C.cinnamon} a="middle">comparison model</T>
       <T x={150} y={124} s={34} f={C.cinnamon} a="middle" w={700}>20</T>
       <T x={450} y={60} s={15} f={C.caramel} a="middle">word-RAM</T>
-      <T x={450} y={124} s={34} f={C.caramel} a="middle" w={700} o={shown ? 1 : 0.7 + 0.3 * Math.sin(t * 4)}>{shown ? '6' : '?'}</T>
+      <T x={450} y={124} s={34} f={C.caramel} a="middle" w={700} o={shown ? 1 : 0.7 + 0.3 * Math.sin(t * 4)}>{shown ? String(k) : '?'}</T>
       {shown && (
         <>
-          <T x={450} y={150} s={13} f={C.taupe} a="middle" o={fadeIn(u, 0.1)}>halvings, each a few</T>
-          <T x={450} y={174} s={13} f={C.taupe} a="middle" o={fadeIn(u, 0.1)}>word operations</T>
-          <T x={300} y={236} s={17} f={C.caramel} a="middle" w={600}>
-            {chain.slice(0, Math.min(7, Math.floor(u / 0.3) + 1)).join(' → ')}
+          <T x={450} y={150} s={13} f={C.taupe} a="middle" o={fadeIn(s, 0.1)}>halvings, each a few</T>
+          <T x={450} y={174} s={13} f={C.taupe} a="middle" o={fadeIn(s, 0.1)}>word operations</T>
+          <Bits x={x0} y={200} value={KEY} tint={(i) => (i < w ? null : C.cocoa)} />
+          <rect x={x0 + (64 - w) * cw} y={196} width={w * cw} height={24} rx={3} fill="none" stroke={C.caramel} strokeWidth={2} />
+          <T x={300} y={262} s={17} f={C.caramel} a="middle" w={600}>
+            {chain.slice(0, k + 1).join(' → ')}
           </T>
         </>
       )}
@@ -320,7 +356,13 @@ export function OneBit({ t }: StepCtx) {
   );
 }
 
-// 9 · On the word-RAM, a key is a number: three cuts.
+// 9 · On the word-RAM, a key is a number: three cuts. Each row's key is cut on screen: used whole (its bracket draws
+// end to end), pulled apart into two halves, then into four digits; last, four keys' small sketches slide into one word.
+/** Bits p of a key cut into `parts` equal fields, most significant first, as its own value. */
+const field = (v: number, parts: number, p: number) => {
+  const w = 64 / parts;
+  return Math.floor(v / 2 ** (64 - (p + 1) * w)) % 2 ** w;
+};
 export function KeyIsNumber({ t }: StepCtx) {
   const cw = 7.5, x0 = 60;
   const cuts = [
@@ -328,22 +370,34 @@ export function KeyIsNumber({ t }: StepCtx) {
     { y: 126, parts: 2, label: 'two halves of 32 → van Emde Boas' },
     { y: 216, parts: 4, label: 'four digits of 16 → radix sort' },
   ];
+  const pack = easeInOut(seg(t, 3.4, 4.2));
   return (
-    <Svg label="One 64-bit key cut three ways: used whole as an address, in two halves, and in four digits" h={350}>
+    <Svg label="One 64-bit key cut three ways: used whole as an address, in two halves, and in four digits; then four small sketches packed into one word" h={380}>
       {cuts.map((c, i) => {
-        const a = fadeIn(t, 0.2 + i * 0.9);
+        const at = 0.2 + i * 1.0;
+        const a = fadeIn(t, at, 0.4);
+        const gap = c.parts > 1 ? 10 * easeOutBack(seg(t, at + 0.4, at + 0.8)) : 0;
         const w = 64 / c.parts;
+        const off = (p: number) => (p - (c.parts - 1) / 2) * gap;
         return (
           <g key={i} opacity={a}>
-            <Bits x={x0} y={c.y} />
             {Array.from({ length: c.parts }, (_, p) => (
-              <Bracket key={p} x1={x0 + p * w * cw + 2} x2={x0 + (p + 1) * w * cw - 2} y={c.y + 40} />
+              <g key={p} transform={`translate(${off(p).toFixed(2)} 0)`}>
+                <Bits x={x0 + p * w * cw} y={c.y} n={w} value={field(KEY, c.parts, p)} />
+                <Bracket x1={x0 + p * w * cw + 2} x2={x0 + p * w * cw + 2 + (w * cw - 4) * easeOut(seg(t, at + 0.5, at + 0.9))} y={c.y + 40} />
+              </g>
             ))}
             <T x={x0} y={c.y + 66} s={15} f={C.crema}>{c.label}</T>
           </g>
         );
       })}
-      <T x={x0} y={330} s={13} f={C.latte} o={fadeIn(t, 3.4)}>many keys’ sketches in one word → fusion trees</T>
+      <g opacity={fadeIn(t, 3.2, 0.3)}>
+        <rect x={x0} y={300} width={64 * cw} height={22} rx={4} fill="none" stroke={C.mocha} />
+        {[0, 1, 2, 3].map((j) => (
+          <rect key={j} x={lerp(x0 + 20 + j * 120, x0 + 4 + j * 30, pack)} y={304} width={26} height={14} rx={2} fill={C.caramel} opacity={0.9} />
+        ))}
+      </g>
+      <T x={x0} y={356} s={13} f={C.latte} o={fadeIn(t, 3.6, 0.5)}>many keys’ sketches in one word → fusion trees</T>
     </Svg>
   );
 }
@@ -484,29 +538,42 @@ export function Sketch({ t }: StepCtx) {
   );
 }
 
-// 14 · Back to the problem.
+// 14 · Back to the problem. Each column runs its own count again: twenty comparison ticks, six halving bars
+// shrinking 64 → 1, and log n / log w decoding; then the line about what every unit step hides.
 export function BackToProblem({ t }: StepCtx) {
   const cols = [
-    { x: 110, head: 'comparisons', big: '20', color: C.cinnamon, size: 34, unit: '', note1: 'a floor,', note2: 'proved in topic 4' },
-    { x: 300, head: 'van Emde Boas', big: '6', color: C.caramel, size: 34, unit: 'halvings', note1: 'Θ(U) space,', note2: 'or hash' },
-    { x: 490, head: 'fusion tree', big: 'log n / log w', color: C.caramel, size: 17, unit: '', note1: 'theory only', note2: '' },
+    { x: 110, head: 'comparisons', color: C.cinnamon, unit: '', note1: 'a floor,', note2: 'proved in topic 4' },
+    { x: 300, head: 'van Emde Boas', color: C.caramel, unit: 'halvings', note1: 'Θ(U) space,', note2: 'or hash' },
+    { x: 490, head: 'fusion tree', color: C.caramel, unit: '', note1: 'theory only', note2: '' },
   ];
+  const at = (i: number) => 0.2 + i * 0.8;
+  const probes = Math.floor(20 * easeOut(seg(t, at(0) + 0.2, at(0) + 0.8)));
+  const halvings = Math.floor(6 * seg(t, at(1) + 0.2, at(1) + 0.75) + 1e-9);
   return (
     <Svg label="Three counts for the opening problem: 20 comparisons, 6 halvings, and log n over log w, each with its model and its price" h={380}>
       {cols.map((c, i) => {
-        const a = fadeIn(t, 0.2 + i * 0.8);
+        const a = fadeIn(t, at(i));
         return (
           <g key={c.head} opacity={a} transform={`translate(0 ${(1 - a) * 14})`}>
             <T x={c.x} y={50} s={15} f={C.latte} a="middle">{c.head}</T>
-            <T x={c.x} y={120} s={c.size} f={c.color} a="middle" w={700}>{c.big}</T>
+            {i === 0 && <T x={c.x} y={120} s={34} f={c.color} a="middle" w={700}>{String(probes)}</T>}
+            {i === 1 && <T x={c.x} y={120} s={34} f={c.color} a="middle" w={700}>{String(halvings)}</T>}
+            {i === 2 && <Decode x={c.x} y={120} s={17} f={c.color} a="middle" w={700} text="log n / log w" t={t} at={at(2) + 0.2} dur={0.5} />}
             <T x={c.x} y={150} s={13} f={C.latte} a="middle">{c.unit}</T>
             <T x={c.x} y={196} s={13} f={C.taupe} a="middle">{c.note1}</T>
             <T x={c.x} y={216} s={13} f={C.taupe} a="middle">{c.note2}</T>
           </g>
         );
       })}
+      {/* Twenty probe ticks under the comparisons; six bars of shrinking width under the halvings. */}
+      {Array.from({ length: 20 }, (_, j) => (
+        <rect key={j} x={62 + (j % 10) * 9.8} y={230 + Math.floor(j / 10) * 9} width={6} height={6} rx={1} fill={C.cinnamon} opacity={j < probes ? 1 : 0} />
+      ))}
+      {[32, 16, 8, 4, 2, 1].map((b, j) => (
+        <rect key={b} x={300 - (b * 1.6) / 2} y={228 + j * 4} width={b * 1.6} height={3} rx={1} fill={C.caramel} opacity={j < halvings ? 1 : 0} />
+      ))}
       <g opacity={fadeIn(t, 2.8)}>
-        <line x1={40} y1={262} x2={560} y2={262} stroke={C.mocha} />
+        <Draw pts={[[40, 262], [560, 262]]} t={t} from={2.8} to={3.4} stroke={C.mocha} w={1} pen={false} />
         <T x={300} y={296} s={15} f={C.latte} a="middle">every unit step: a load, hit or miss;</T>
         <T x={300} y={320} s={15} f={C.latte} a="middle">a compare, predicted or flushed</T>
       </g>
