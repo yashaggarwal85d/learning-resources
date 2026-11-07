@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Not reading a real connection genuinely closes its own receive window and blocks
 // the remote sender; a real bounded output buffer enforces its cap by genuinely
@@ -27,13 +27,14 @@ export function WindowPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: a real write genuinely blocks (swipe test's "from" step — NO takeaway) ────────
 export function WindowReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.4, 0.8));
+  const w = grow * 260;
   return (
     <Svg label="not_reading_closes_the_window.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>several megabytes written successfully</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>then a real write() call blocked</T>
-      </g>
+      <rect x={60} y={70} width={w} height={10} rx={3} fill={C.caramel} opacity={0.6} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.9 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>then a real write() call blocked</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the kernel's own window, closed</T>
     </Svg>
   );
@@ -57,14 +58,20 @@ export function BufferPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: rejected, length never grows past the cap (takeaway) ──────────────────────────
 export function BufferReveal({ t }: StepCtx) {
+  const slots = Array.from({ length: 16 }, (_, i) => i);
+  const bounce = easeOut(seg(t, 1.0, 1.25));
+  const dx = (1 - Math.abs(bounce - 0.5) * 2) * 15;
   return (
     <Svg label="bounded_output_buffer_enforces_its_cap.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>filled to exactly 16, the cap</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the next push: genuinely rejected</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>length never grows past the cap</T>
+      {slots.map((i) => {
+        const land = easeOut(seg(t, 0.4 + i * 0.03, 0.6 + i * 0.03));
+        return <rect key={i} x={66 + i * 15} y={70} width={12} height={10} rx={2} fill={C.caramel} opacity={land} />;
+      })}
+      <circle cx={300 + dx} cy={75} r={4} fill={C.cherry} opacity={fa(t, 1.0, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>the next push: genuinely rejected</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.7, 0.4)}>length never grows past the cap</T>
     </Svg>
   );
 }
@@ -87,13 +94,13 @@ export function TimeoutPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the timeout fires right on schedule (takeaway) ────────────────────────────────
 export function TimeoutReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.5, 1.0));
+  const w = grow * 260;
   return (
     <Svg label="a_stalled_peer_hits_its_real_timeout.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a peer that sent nothing at all</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>a real timeout, fired on schedule</T>
-      </g>
+      <rect x={60} y={85} width={w} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.9 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>a real timeout, fired on schedule</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>good faith was never the real policy</T>
     </Svg>
   );
@@ -117,10 +124,16 @@ export function RfcPredict({ t }: StepCtx) {
 
 // ── 8 · The standard's own words, quoted (no takeaway, connecting step) ─────────────────────────
 export function RfcReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="RFC 9293, quoted directly" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>a closed window may stay closed indefinitely</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>not reading is a sanctioned way to say not yet</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>a closed window may stay closed indefinitely</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>not reading is a sanctioned way to say not yet</T>
+      </g>
     </Svg>
   );
 }

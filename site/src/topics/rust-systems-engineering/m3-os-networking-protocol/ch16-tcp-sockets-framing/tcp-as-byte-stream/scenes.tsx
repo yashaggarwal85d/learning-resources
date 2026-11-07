@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // TCP genuinely delivers an undifferentiated byte stream, not discrete messages;
 // a real half-close leaves one direction open while closing the other; Nagle's own
@@ -27,14 +27,17 @@ export function PartialReadsPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: dozens of real reads (swipe test's "from" step — NO takeaway) ─────────────────
 export function PartialReadsReveal({ t }: StepCtx) {
+  const chunks = [0, 1, 2, 3, 4, 5, 6, 7];
   return (
     <Svg label="partial_reads_on_a_real_tcp_stream.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one real write_all() call, 4 MiB</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>dozens of real read() calls to receive it</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a byte stream, not a queue of messages</T>
+      {chunks.map((i) => {
+        const land = easeOut(seg(t, 0.5 + i * 0.05, 0.7 + i * 0.05));
+        return <rect key={i} x={66 + i * 26} y={70} width={20} height={10} rx={2} fill={C.caramel} opacity={land} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>dozens of real read() calls to receive it</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a byte stream, not a queue of messages</T>
     </Svg>
   );
 }
@@ -57,14 +60,18 @@ export function HalfClosePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: EOF, but still writable the other way (takeaway) ──────────────────────────────
 export function HalfCloseReveal({ t }: StepCtx) {
+  const close = easeOut(seg(t, 0.5, 0.75));
+  const dx = (1 - Math.abs(close - 0.5) * 2) * 20;
+  const reply = easeOut(seg(t, 0.9, 1.2));
+  const dx2 = reply * -120;
   return (
     <Svg label="half_close_lets_the_peer_still_reply.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the server's own read() saw a real EOF</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>and still sent a real reply back</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one direction closed, the other still open</T>
+      <circle cx={260 + dx} cy={57} r={4} fill={C.cherry} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>and still sent a real reply back</T>}
+      <circle cx={300 + dx2} cy={93} r={4} fill={C.taupe} opacity={fa(t, 0.9, 0.3)} />
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>one direction closed, the other still open</T>
     </Svg>
   );
 }
@@ -87,10 +94,16 @@ export function NaglePredict({ t }: StepCtx) {
 
 // ── 6 · The documentation's own words, quoted (no takeaway, connecting step) ────────────────────
 export function NagleReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="tcp(7), quoted directly" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>Nagle on: small writes wait for a fuller packet</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>TCP_NODELAY is what turns that batching off</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>Nagle on: small writes wait for a fuller packet</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>TCP_NODELAY is what turns that batching off</T>
+      </g>
     </Svg>
   );
 }
