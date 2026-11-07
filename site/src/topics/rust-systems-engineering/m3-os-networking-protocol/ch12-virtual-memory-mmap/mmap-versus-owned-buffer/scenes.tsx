@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Mapping a file genuinely holds the same bytes twice once an application keeps its own
 // cache; direct I/O removes that only by making alignment the caller's own responsibility;
@@ -26,11 +26,13 @@ export function DoubleCachePredict({ t }: StepCtx) {
 
 // ── 2 · Measured: both resident at once (this is the swipe test's "from" step — NO takeaway) ────
 export function DoubleCacheReveal({ t }: StepCtx) {
+  const copy = easeOut(seg(t, 0.5, 0.85));
+  const dy = (1 - copy) * -24;
   return (
     <Svg label="mmap_holds_the_same_bytes_twice.rs: a real measurement" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the mapping's own pages: fully resident</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <g transform={`translate(0,${dy})`} opacity={copy}>
         <T x={190} y={112} s={13} a="middle" f={C.mocha}>the app's own cache: a full copy again</T>
       </g>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the same bytes, held twice at once</T>
@@ -56,13 +58,14 @@ export function AlignPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: EINVAL misaligned, success aligned (takeaway) ─────────────────────────────────
 export function AlignReveal({ t }: StepCtx) {
+  const bounce = easeOut(seg(t, 0.5, 0.75));
+  const dx = (1 - Math.abs(bounce - 0.5) * 2) * 20;
   return (
     <Svg label="direct_io_rejects_misaligned_buffers.rs: a real check" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>misaligned buffer: fails outright, EINVAL</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>aligned buffer: succeeds cleanly</T>
-      </g>
+      <circle cx={280 + dx} cy={57} r={4} fill={C.cherry} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>aligned buffer: succeeds cleanly</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>no cache, but alignment is strict now</T>
     </Svg>
   );
@@ -122,10 +125,16 @@ export function ExceptionPredict({ t }: StepCtx) {
 
 // ── 8 · The paper's own exception, quoted (no takeaway, connecting step) ────────────────────────
 export function ExceptionReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="the paper's own closing recommendation" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>working set fits in memory, workload read-only</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>exactly the case LMDB's own design is built around</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>working set fits in memory, workload read-only</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>exactly the case LMDB's own design is built around</T>
+      </g>
     </Svg>
   );
 }
