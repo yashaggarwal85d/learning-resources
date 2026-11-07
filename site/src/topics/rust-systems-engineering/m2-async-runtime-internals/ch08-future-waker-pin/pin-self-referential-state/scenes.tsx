@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Pin exists because the compiler's generated async state machines can hold a reference into
 // their own fields; moving such a value after that reference forms leaves it stale. Every claim
@@ -42,18 +42,19 @@ export function NamedByStdlibReveal({ t }: StepCtx) {
 
 // ── 3 · Breaks on move (takeaway) ────────────────────────────────────────────────────────────────
 export function BreaksOnMoveReveal({ t }: StepCtx) {
+  // The struct, with its own pointer arrow curling back into itself, slides to a new spot — but
+  // the pointer's target (fixed in place) does not move with it, so the arrow visibly misses.
+  const moveX = easeOut(seg(t, 1.1, 1.5)) * 260;
   return (
-    <Svg label="self_ref_breaks_on_move.rs: measured, not assumed" h={220}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>right after construction, still lines up</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={70} width={160} height={44} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={140} y={97} s={13} a="middle" f={C.mocha}>valid: true</T>
+    <Svg label="self_ref_breaks_on_move.rs: measured, not assumed" h={240}>
+      <circle cx={140} cy={60} r={4} fill={C.taupe} opacity={fa(t, 0.3, 0.3)} />
+      <g transform={`translate(${moveX},0)`}>
+        <rect x={60} y={70} width={160} height={44} rx={6} fill="none" stroke={moveX > 10 ? C.cherryText : C.taupe} strokeWidth={1.5} opacity={fa(t, 0.3, 0.3)} />
+        <path d={`M ${140} 70 A 30 30 0 0 1 ${160} 55`} fill="none" stroke={moveX > 10 ? C.cherryText : C.mocha} strokeWidth={1.5} opacity={fa(t, 0.6, 0.3)} />
+        <T x={140} y={97} s={13} a="middle" f={moveX > 10 ? C.cherryText : C.mocha}>{moveX > 10 ? 'valid: false' : 'valid: true'}</T>
       </g>
-      <T x={60} y={150} s={14} f={C.crema} o={fa(t, 1.4, 0.4)}>after the move, it no longer does</T>
-      <g opacity={fa(t, 2.0, 0.4)}>
-        <rect x={60} y={170} width={160} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={140} y={197} s={13} a="middle" f={C.crema}>valid: false</T>
-      </g>
+      <T x={60} y={150} s={14} f={C.crema} o={fa(t, 1.1, 0.3)}>after the move, it no longer does</T>
+      <T x={60} y={190} s={13} f={C.taupe} o={fa(t, 1.7, 0.4)}>the pointer still aims at the old address</T>
     </Svg>
   );
 }
@@ -76,28 +77,36 @@ export function BoxFixPredict({ t }: StepCtx) {
 
 // ── 5 · Pin<Ptr> is a promise about the pointee (takeaway) ─────────────────────────────────────
 export function PinPromiseReveal({ t }: StepCtx) {
+  // Pin wraps around the pointer (drawn growing to enclose it), then an anchor line drops from
+  // the wrapped pointer to the pointee, pinning it in place rather than just naming the promise.
+  const wrap = easeOut(seg(t, 0.3, 0.6));
   return (
-    <Svg label="std::pin's own definition" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>Pin wraps a pointer, not the value itself</T>
-      <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>a promise the pointee will not move</T>
-      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>almost every ordinary type never needed it: Unpin</T>
+    <Svg label="std::pin's own definition" h={220}>
+      <rect x={60} y={30} width={60 + wrap * 60} height={44} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <T x={70} y={56} s={12} f={C.crema}>Pin&lt;</T>
+      <rect x={100} y={38} width={60} height={28} rx={4} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.1, 0.3)} />
+      <T x={130} y={56} s={11} a="middle" f={C.crema}>ptr</T>
+      <Draw pts={[[130, 74], [130, 130]]} t={t} from={0.7} to={0.95} stroke={C.caramel} w={2} pen />
+      <rect x={90} y={130} width={80} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.9, 0.3)} />
+      <T x={130} y={152} s={11} a="middle" f={C.crema}>pinned</T>
+      <T x={60} y={190} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>almost every ordinary type never needed it: Unpin</T>
     </Svg>
   );
 }
 
 // ── 6 · Pinned both ways, still valid (takeaway) ────────────────────────────────────────────────
 export function PinnedBothWaysReveal({ t }: StepCtx) {
+  // Each box's own self-pointer arrow tries the same move the earlier topic broke, and this time
+  // stays anchored instead of slipping, drawn in rather than only labelled "valid".
   return (
-    <Svg label="pin_prevents_the_break.rs and pin_macro_stack_pin.rs" h={220}>
-      <g opacity={fa(t, 0.3, 0.4)}>
-        <rect x={60} y={50} width={220} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={170} y={80} s={13} a="middle" f={C.crema}>Box::pin, heap: valid</T>
-      </g>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={320} y={50} width={220} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={430} y={80} s={13} a="middle" f={C.crema}>pin!, stack: valid</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the identical promise, two different places</T>
+    <Svg label="pin_prevents_the_break.rs and pin_macro_stack_pin.rs" h={240}>
+      <rect x={60} y={50} width={220} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 0.3, 0.3)} />
+      <T x={170} y={80} s={13} a="middle" f={C.crema}>Box::pin, heap: valid</T>
+      <Draw pts={[[170, 100], [170, 140]]} t={t} from={0.6} to={0.85} stroke={C.taupe} w={1.5} pen />
+      <rect x={320} y={50} width={220} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.9, 0.3)} />
+      <T x={430} y={80} s={13} a="middle" f={C.crema}>pin!, stack: valid</T>
+      <Draw pts={[[430, 100], [430, 140]]} t={t} from={1.2} to={1.45} stroke={C.caramel} w={1.5} pen />
+      <T x={60} y={190} s={13} f={C.latte} o={fa(t, 1.7, 0.4)}>the identical promise, two different places</T>
     </Svg>
   );
 }

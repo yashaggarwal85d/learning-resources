@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A trait's async fn is neither dyn compatible nor Send-constrainable by callers — two separate
 // gaps in the stable 2026 language, each proven by a real compiler error. trait-variant and
@@ -88,13 +88,14 @@ export function TraitVariantReveal({ t }: StepCtx) {
 
 // ── 6 · Proven: spawned on a real thread (takeaway) ──────────────────────────────────────────────
 export function TraitVariantProvenReveal({ t }: StepCtx) {
+  // A task token travels from the generated trait straight to a real thread, crossing a drawn
+  // line rather than only being named as spawned.
   return (
     <Svg label="trait-variant-fix: a real cross-thread spawn" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>through the generated Greeter trait</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>spawned, joined, correct</T>
-      </g>
+      <Draw pts={[[90, 72], [170, 83]]} t={t} from={0.9} to={1.1} stroke={C.mocha} w={2} pen />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 0.6, 0.3)} />
+      <T x={170} y={112} s={13} a="middle" f={C.mocha}>spawned, joined, correct</T>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real thread, not merely described</T>
     </Svg>
   );
@@ -132,13 +133,15 @@ export function AsyncTraitReveal({ t }: StepCtx) {
 
 // ── 9 · Measured: one real allocation (takeaway) ────────────────────────────────────────────────
 export function AllocationCountReveal({ t }: StepCtx) {
+  // A single allocation token drops into the counter box, landing exactly once.
+  const drop = easeOut(seg(t, 0.7, 1.0));
+  const dy = (1 - drop) * -30;
   return (
     <Svg label="async-trait-fix: a real counting allocator" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one dyn-dispatched call, through the macro</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>allocations: exactly one</T>
-      </g>
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.6, 0.3)} />
+      <circle cx={100} cy={85 + dy} r={5} fill={C.caramel} opacity={drop > 0 && drop < 1 ? 1 : 0} />
+      <T x={170} y={112} s={13} a="middle" f={C.mocha}>allocations: exactly one</T>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>counted directly, not cited</T>
     </Svg>
   );
