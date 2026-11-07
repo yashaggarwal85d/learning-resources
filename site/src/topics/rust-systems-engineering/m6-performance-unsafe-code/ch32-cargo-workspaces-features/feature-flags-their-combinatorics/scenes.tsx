@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A feature a sibling crate requests is unified into a shared
 // dependency's own single build, for better or worse; staying
@@ -62,11 +62,13 @@ export function AdditiveReveal({ t }: StepCtx) {
   return (
     <Svg label="feature_demo/target/debug" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>consumer_b, checked both ways again</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>"plain" alone, "plain" together</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>additive means nothing already there moves</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>consumer_b alone: "plain"</T>
+      <circle cx={280} cy={76} r={5} fill={C.caramel} opacity={fa(t, 0.45, 0.2)} />
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.6, 0.3)}>consumer_b with fancy: "plain"</T>
+      <circle cx={280} cy={111} r={5} fill={C.caramel} opacity={fa(t, 0.65, 0.2)} />
+      <Draw pts={[[280, 86], [280, 101]]} t={t} from={0.8} to={1.0} stroke={C.taupe} w={2} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={140} s={13} a="middle" f={C.mocha}>"plain" alone, "plain" together</T>}
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>additive means nothing already there moves</T>
     </Svg>
   );
 }
@@ -89,14 +91,16 @@ export function DevDepPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: leaks under the old resolver, not the new (takeaway) ──
 export function DevDepReveal({ t }: StepCtx) {
+  const leak = easeOut(seg(t, 0.5, 0.8));
   return (
     <Svg label="feature_demo vs feature_demo_legacy" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical declaration, two resolvers</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>legacy: "fast" · resolver 3: "plain"</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the resolver decides what can leak through</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>legacy resolver</T>
+      <circle cx={190 + leak * 90} cy={76} r={5} fill={C.cherry} opacity={fa(t, 0.45, 0.2)} />
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.85, 0.3)}>resolver 3</T>
+      <circle cx={280} cy={111} r={5} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.9, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>legacy: "fast" · resolver 3: "plain"</T>}
+      <T x={60} y={178} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>the resolver decides what can leak through</T>
     </Svg>
   );
 }

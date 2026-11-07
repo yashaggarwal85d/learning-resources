@@ -58,14 +58,17 @@ export function HeldGilPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: very little progress (takeaway) ────────────────────────
 export function HeldGilReveal({ t }: StepCtx) {
+  const rust = easeOut(seg(t, 0.4, 0.75));
+  const counter = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="pyo3_exchanges_data_without_copying_it" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the other thread's own real counter</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>genuinely very little progress made</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>holding it leaves almost no room to run</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>Rust work (GIL held)</T>
+      <rect x={60} y={82} width={rust * 260} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>other thread's counter</T>
+      <rect x={60} y={119} width={counter * 15} height={16} rx={3} fill={C.taupe} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>genuinely very little progress made</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>holding it leaves almost no room to run</T>
     </Svg>
   );
 }
@@ -88,14 +91,17 @@ export function ReleasedGilPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: dramatically more progress (takeaway) ──────────────────
 export function ReleasedGilReveal({ t }: StepCtx) {
+  const rust = easeOut(seg(t, 0.4, 0.75));
+  const counter = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="pyo3_exchanges_data_without_copying_it" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical counter, the GIL released now</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>many times more real progress made</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>detach is the act that lets this happen</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>Rust work (GIL released)</T>
+      <rect x={60} y={82} width={rust * 260} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>other thread's counter</T>
+      <rect x={60} y={119} width={counter * 230} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>many times more real progress made</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>detach is the act that lets this happen</T>
     </Svg>
   );
 }

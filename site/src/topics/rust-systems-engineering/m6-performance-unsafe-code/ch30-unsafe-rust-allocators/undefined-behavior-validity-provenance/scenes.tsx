@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A validity rule and a provenance rule are both checked directly and
 // safely, never by constructing the invalid case they describe.
@@ -25,13 +25,14 @@ export function BoolValidityPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: exactly 2 of 256 (takeaway) ────────────────────────────
 export function BoolValidityReveal({ t }: StepCtx) {
+  const sweep = easeOut(seg(t, 0.4, 1.0));
   return (
     <Svg label="validity_and_provenance_are_rules_not_bit_patterns.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>every one of 256 real byte values, checked</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>exactly 2 pass: byte 0, byte 1</T>
-      </g>
+      <Draw pts={[[60, 80], [320, 80]]} t={t} from={0.4} to={1.0} stroke={C.taupe} w={6} />
+      <circle cx={61} cy={80} r={5} fill={C.caramel} opacity={fa(t, 1.1, 0.2)} />
+      <circle cx={62} cy={80} r={5} fill={C.caramel} opacity={fa(t, 1.1, 0.2)} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={130} s={13} a="middle" f={C.mocha}>exactly 2 pass: byte 0, byte 1</T>}
     </Svg>
   );
 }
@@ -86,14 +87,23 @@ export function NullAlignPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: exactly 3 of 6 pass (takeaway) ─────────────────────────
 export function NullAlignReveal({ t }: StepCtx) {
+  const addrs = [0, 4, 6, 8, 11, 16];
+  const pass = new Set([4, 8, 16]);
   return (
     <Svg label="validity_and_provenance_are_rules_not_bit_patterns.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical check, on six real addresses</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>exactly 3 pass: 4, 8, 16</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>checked on the address; nothing invalid built</T>
+      {addrs.map((a, i) => {
+        const land = easeOut(seg(t, 0.4 + i * 0.1, 0.6 + i * 0.1));
+        const dy = (1 - land) * -16;
+        return (
+          <g key={a} opacity={fa(t, 0.4 + i * 0.1, 0.2)}>
+            <circle cx={75 + i * 42} cy={78 + dy} r={5} fill={pass.has(a) ? C.caramel : C.taupe} />
+            <T x={65 + i * 42} y={100} s={11} f={C.latte}>{a}</T>
+          </g>
+        );
+      })}
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={130} s={13} a="middle" f={C.mocha}>exactly 3 pass: 4, 8, 16</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>checked on the address; nothing invalid built</T>
     </Svg>
   );
 }

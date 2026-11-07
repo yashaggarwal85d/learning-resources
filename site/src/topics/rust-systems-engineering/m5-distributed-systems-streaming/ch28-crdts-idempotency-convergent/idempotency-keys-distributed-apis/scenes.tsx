@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // An idempotency key's own scope, TTL, stored response, and conflict check
 // are four genuinely separate real rules, and together they are what lets
@@ -57,14 +57,17 @@ export function ReplayPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely replays (takeaway) ──────────────────────────────
 export function ReplayReveal({ t }: StepCtx) {
+  const travel = easeOut(seg(t, 0.5, 0.85));
   return (
     <Svg label="idempotency_key_scope_ttl_and_replay.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a duplicate, well within the real TTL</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the stored response, replayed exactly</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the side effect never ran a second time</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>stored response</T>
+      <Draw pts={[[90, 95], [90, 75]]} t={t} from={0.4} to={0.5} stroke={C.caramel} w={2} pen />
+      <circle cx={90 + travel * 180} cy={75} r={5} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />
+      <circle cx={270} cy={110} r={5} fill="none" stroke={C.cherry} strokeWidth={1.5} opacity={fa(t, 0.85, 0.2)} />
+      <T x={70} y={125} s={11} f={C.latte} o={fa(t, 0.85, 0.3)}>side effect: skipped</T>
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>the stored response, replayed exactly</T>}
+      <T x={60} y={178} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>the side effect never ran a second time</T>
     </Svg>
   );
 }
@@ -87,14 +90,17 @@ export function RacePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: genuinely caught (takeaway) ───────────────────────────────
 export function RaceReveal({ t }: StepCtx) {
+  const bounce = easeOut(seg(t, 0.7, 1.0));
+  const dy = (1 - Math.abs(bounce - 0.5) * 2) * 12;
   return (
     <Svg label="idempotency_key_scope_ttl_and_replay.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the first still running, a second arrives</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the second request: a real conflict, caught</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the side effect ran exactly once, not twice</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>first request: running</T>
+      <circle cx={260} cy={76} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.5, 0.3)}>second request: same key</T>
+      <circle cx={260} cy={111 - dy} r={5} fill={C.cherry} opacity={fa(t, 0.6, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={145} s={13} a="middle" f={C.mocha}>the second request: a real conflict, caught</T>}
+      <T x={60} y={175} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>the side effect ran exactly once, not twice</T>
     </Svg>
   );
 }
@@ -117,14 +123,17 @@ export function TtlPredict({ t }: StepCtx) {
 
 // ── 8 · Measured: genuinely runs fresh again (takeaway) ─────────────────────
 export function TtlReveal({ t }: StepCtx) {
+  const vanish = easeOut(seg(t, 0.4, 0.65));
+  const fresh = easeOut(seg(t, 0.8, 1.1));
   return (
     <Svg label="idempotency_key_scope_ttl_and_replay.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical key, past its own real TTL</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the expired key treated as brand new</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the side effect genuinely ran again</T>
+      <circle cx={100} cy={78} r={5} fill={C.taupe} opacity={fa(t, 0.35, 0.2) * (1 - vanish)} />
+      <T x={115} y={82} s={11} f={C.latte} o={fa(t, 0.35, 0.3)}>expired entry: gone</T>
+      <circle cx={100} cy={115} r={5} fill={C.caramel} opacity={fa(t, 0.8, 0.2) * fresh} />
+      <T x={115} y={119} s={11} f={C.latte} o={fa(t, 0.8, 0.3)}>treated as brand new</T>
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>the expired key treated as brand new</T>}
+      <T x={60} y={178} s={13} f={C.latte} o={fa(t, 1.6, 0.2)}>the side effect genuinely ran again</T>
     </Svg>
   );
 }

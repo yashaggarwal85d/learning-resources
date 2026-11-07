@@ -59,14 +59,17 @@ export function StripPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the stripped binary is genuinely smaller (takeaway) ────
 export function StripReveal({ t }: StepCtx) {
+  const normal = easeOut(seg(t, 0.4, 0.75));
+  const stripped = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="profile_demo, measured both ways" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the real binary, on disk, both ways</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>genuinely smaller, stripped</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>no behavior changed, only what ships</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>normal binary</T>
+      <rect x={60} y={82} width={normal * 260} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>stripped binary</T>
+      <rect x={60} y={119} width={stripped * 150} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>genuinely smaller, stripped</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>no behavior changed, only what ships</T>
     </Svg>
   );
 }
@@ -89,14 +92,17 @@ export function AbortPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the abort binary is genuinely smaller too (takeaway) ───
 export function AbortReveal({ t }: StepCtx) {
+  const unwind = easeOut(seg(t, 0.4, 0.75));
+  const abort = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="profile_demo, measured both ways" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the real binary, unwind versus abort</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>genuinely smaller, without unwinding</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real capability traded for real space</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>panic = "unwind"</T>
+      <rect x={60} y={82} width={unwind * 260} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>panic = "abort"</T>
+      <rect x={60} y={119} width={abort * 190} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>genuinely smaller, without unwinding</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a real capability traded for real space</T>
     </Svg>
   );
 }

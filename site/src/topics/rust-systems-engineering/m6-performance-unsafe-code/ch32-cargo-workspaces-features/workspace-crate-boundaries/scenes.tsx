@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A crate, not a module, is the real unit cargo rebuilds; a
 // dependency's own real boundary decides what a change forces to
@@ -58,14 +58,17 @@ export function CoreChangePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: both rebuild (takeaway) ────────────────────────────────
 export function CoreChangeReveal({ t }: StepCtx) {
+  const ripple = easeOut(seg(t, 0.5, 0.85));
   return (
     <Svg label="workspace_demo/target/debug" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>both real artifacts, checked again</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>both genuinely newer than before</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the dependency edge is the real boundary</T>
+      <circle cx={100} cy={80} r={6} fill={C.cherry} opacity={fa(t, 0.4, 0.2)} />
+      <T x={115} y={84} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>core_crate: edited</T>
+      <Draw pts={[[100, 95], [100, 125]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
+      <circle cx={100} cy={125} r={6} fill={C.caramel} opacity={fa(t, 0.5, 0.2) * ripple} />
+      <T x={115} y={129} s={12} f={C.latte} o={fa(t, 0.5, 0.3)}>consumer_crate: rebuilds too</T>
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={160} s={13} a="middle" f={C.mocha}>both genuinely newer than before</T>}
+      <T x={60} y={185} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>the dependency edge is the real boundary</T>
     </Svg>
   );
 }
@@ -88,14 +91,17 @@ export function LintEnforcedPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the build genuinely fails, then passes (takeaway) ─────
 export function LintEnforcedReveal({ t }: StepCtx) {
+  const bounce = easeOut(seg(t, 0.5, 0.8));
+  const dy = (1 - Math.abs(bounce - 0.5) * 2) * 12;
   return (
     <Svg label="workspace_demo/target/debug" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the real build, checked both ways</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>fails with it, builds clean without it</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>declared once, enforced every time</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>with unsafe block</T>
+      <circle cx={260} cy={76 - dy} r={5} fill={C.cherry} opacity={fa(t, 0.45, 0.2)} />
+      <T x={70} y={120} s={12} f={C.latte} o={fa(t, 0.85, 0.3)}>without it</T>
+      <circle cx={260} cy={116} r={5} fill={C.caramel} opacity={fa(t, 0.9, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>fails with it, builds clean without it</T>}
+      <T x={60} y={178} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>declared once, enforced every time</T>
     </Svg>
   );
 }

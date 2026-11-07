@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A bounded pipeline that moves each batch forward keeps its own
 // memory capped under a slow sink; an unbounded, cloning pipeline
@@ -26,14 +26,18 @@ export function BoundedPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: bounded memory stays capped ───────────────────────────
 export function BoundedReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.2, 0.6));
   return (
-    <Svg label="pipeline_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>fifty batches, a slow sink underneath</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>peak held: 6,000 bytes</T>
+    <Svg label="pipeline_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>fifty batches, a slow sink underneath</T>
+      <Draw pts={[[60, 50], [60, 115]]} t={t} from={0.1} to={0.2} stroke={C.latte} w={1.5} />
+      <rect x={60} y={115 - grow * 14} width={40} height={grow * 14} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
+      <T x={110} y={112} s={10} f={C.latte}>capped, a few batches' worth</T>
+      <g opacity={fa(t, 0.9, 0.3)}>
+        <rect x={60} y={135} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={157} s={12} a="middle" f={C.mocha}>peak held: 6,000 bytes</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a few batches' worth, the whole run</T>
+      <T x={60} y={190} s={12} f={C.latte} o={fa(t, 1.3, 0.3)}>a few batches' worth, the whole run</T>
     </Svg>
   );
 }
@@ -56,14 +60,17 @@ export function UnboundedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: unbounded memory grows toward the full run ───────────
 export function UnboundedReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.2, 0.65));
   return (
-    <Svg label="pipeline_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical producer, the identical sink</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>peak held: 51,000 bytes</T>
+    <Svg label="pipeline_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>the identical producer, the identical sink</T>
+      <rect x={60} y={115 - grow * 14} width={14} height={grow * 14} fill="none" stroke={C.latte} strokeWidth={1.5} opacity={fa(t, 0.1, 0.15)} />
+      <rect x={85} y={115 - grow * 95} width={40} height={grow * 95} fill={C.cherry} opacity={fa(t, 0.2, 0.2)} />
+      <T x={140} y={55} s={10} f={C.latte} o={fa(t, 0.55, 0.2)}>almost the entire run's own bytes</T>
+      <g opacity={fa(t, 0.9, 0.3)}>
+        <rect x={60} y={135} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={157} s={12} a="middle" f={C.mocha}>peak held: 51,000 bytes</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>almost the entire run's own bytes</T>
     </Svg>
   );
 }

@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A real, typed error, matched on its own variant, correctly drives
 // two different real retry decisions for a real timeout and a real
@@ -58,12 +58,19 @@ export function UntypedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the text check retries both, wrongly (takeaway) ──────
 export function UntypedReveal({ t }: StepCtx) {
+  const travelA = easeOut(seg(t, 0.35, 0.65));
+  const travelB = easeOut(seg(t, 0.55, 0.85));
   return (
     <Svg label="failure_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same two messages, checked as plain text</T>
+      <T x={60} y={40} s={12} f={C.latte} o={fa(t, 0.2, 0.3)}>timeout</T>
+      <T x={60} y={78} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>remote error</T>
+      <Draw pts={[[110, 36], [230, 100]]} t={t} from={0.3} to={0.65} stroke={C.caramel} w={2} pen />
+      <Draw pts={[[110, 74], [230, 100]]} t={t} from={0.5} to={0.85} stroke={C.caramel} w={2} pen />
+      <circle cx={110 + travelA * 120} cy={36 + travelA * 64} r={5} fill={C.caramel} opacity={fa(t, 0.3, 0.2)} />
+      <circle cx={110 + travelB * 120} cy={74 + travelB * 26} r={5} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />
       <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>both say retry; genuinely indistinguishable</T>
+        <rect x={160} y={78} width={140} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={230} y={105} s={13} a="middle" f={C.mocha}>retry</T>
       </g>
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the same words, two different real failures</T>
     </Svg>
@@ -88,14 +95,22 @@ export function DisagreePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: typed skips it, untyped wrongly retries it (takeaway) ─
 export function DisagreeReveal({ t }: StepCtx) {
+  const toSkip = easeOut(seg(t, 0.35, 0.7));
+  const toRetry = easeOut(seg(t, 0.55, 0.9));
   return (
     <Svg label="failure_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the real remote error, decided two ways</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>typed: skip; untyped: retry, wrongly</T>
+      <T x={30} y={40} s={12} f={C.latte} o={fa(t, 0.2, 0.3)}>remote error</T>
+      <Draw pts={[[90, 50], [90, 100]]} t={t} from={0.25} to={0.7} stroke={C.caramel} w={2} pen />
+      <Draw pts={[[90, 50], [280, 100]]} t={t} from={0.45} to={0.9} stroke={C.caramel} w={2} pen />
+      <circle cx={90} cy={50 + toSkip * 50} r={5} fill={C.caramel} opacity={fa(t, 0.25, 0.2)} />
+      <circle cx={90 + toRetry * 190} cy={50 + toRetry * 50} r={5} fill={C.cherry} opacity={fa(t, 0.45, 0.2)} />
+      <g opacity={fa(t, 0.9, 0.3)}>
+        <rect x={40} y={100} width={100} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={90} y={125} s={12} a="middle" f={C.mocha}>typed: skip</T>
+        <rect x={230} y={100} width={100} height={40} rx={6} fill="none" stroke={C.cherry} strokeWidth={2} />
+        <T x={280} y={125} s={12} a="middle" f={C.cherry}>untyped: retry</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real, measured disagreement</T>
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>a real, measured disagreement</T>
     </Svg>
   );
 }

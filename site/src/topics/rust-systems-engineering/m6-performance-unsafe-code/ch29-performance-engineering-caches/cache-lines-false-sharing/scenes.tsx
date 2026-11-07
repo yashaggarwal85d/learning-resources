@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Two unrelated counters sharing one real cache line genuinely pay a
 // real, growing invalidation cost; padding each counter onto its own
@@ -26,14 +26,27 @@ export function SharedPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: pays a real cost on every write (takeaway) ────────────
 export function SharedReveal({ t }: StepCtx) {
+  const writes = [0, 1, 2, 3];
   return (
     <Svg label="false_sharing_costs_a_shared_cache_line.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>two unrelated counters, one shared line</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>an invalidation on every alternating write</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>unrelated data still pays a real, shared cost</T>
+      <rect x={100} y={70} width={160} height={20} rx={4} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.35, 0.3)} />
+      {writes.map((i) => {
+        const land = easeOut(seg(t, 0.5 + i * 0.12, 0.65 + i * 0.12));
+        const fromA = i % 2 === 0;
+        return (
+          <circle
+            key={i}
+            cx={fromA ? 115 + land * 5 : 245 - land * 5}
+            cy={80}
+            r={4}
+            fill={C.cherry}
+            opacity={fa(t, 0.5 + i * 0.12, 0.2)}
+          />
+        );
+      })}
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={120} s={13} a="middle" f={C.mocha}>an invalidation on every alternating write</T>}
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>unrelated data still pays a real, shared cost</T>
     </Svg>
   );
 }
@@ -56,14 +69,20 @@ export function PaddedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely removes it entirely (takeaway) ───────────────
 export function PaddedReveal({ t }: StepCtx) {
+  const writes = [0, 1, 2, 3];
   return (
     <Svg label="false_sharing_costs_a_shared_cache_line.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical writes, now two real lines</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>zero cross-core invalidations, genuinely</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>padding removes the whole cost, not a share</T>
+      <rect x={100} y={70} width={70} height={20} rx={4} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.35, 0.3)} />
+      <rect x={190} y={70} width={70} height={20} rx={4} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.4, 0.3)} />
+      {writes.map((i) => {
+        const fromA = i % 2 === 0;
+        return (
+          <circle key={i} cx={fromA ? 135 : 225} cy={80} r={4} fill={C.caramel} opacity={fa(t, 0.5 + i * 0.12, 0.2)} />
+        );
+      })}
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={120} s={13} a="middle" f={C.mocha}>zero cross-core invalidations, genuinely</T>}
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>padding removes the whole cost, not a share</T>
     </Svg>
   );
 }

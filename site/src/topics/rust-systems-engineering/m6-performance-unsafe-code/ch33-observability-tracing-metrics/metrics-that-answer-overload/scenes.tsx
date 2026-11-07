@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Five real calls, a deliberately uneven real delay pattern, one real
 // checkpoint while two are still running: a counter only ever counts
@@ -59,14 +59,29 @@ export function HistogramPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the histogram shares the counter's blind spot (takeaway)
 export function HistogramReveal({ t }: StepCtx) {
+  const calls = [0, 1, 2, 3, 4];
   return (
-    <Svg label="metric_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the checkpoint, read from the histogram</T>
+    <Svg label="metric_demo, captured" h={210}>
+      {calls.map((i) => {
+        const finished = i < 3;
+        const start = 0.15 + i * 0.08;
+        const travel = easeOut(seg(t, start, start + 0.3));
+        const x0 = 50 + i * 55;
+        const y0 = 40;
+        return finished ? (
+          <g key={i}>
+            <Draw pts={[[x0, y0], [x0, 95]]} t={t} from={start} to={start + 0.3} stroke={C.caramel} w={2} pen />
+            <circle cx={x0} cy={y0 + travel * 55} r={5} fill={C.caramel} opacity={fa(t, start, 0.2)} />
+          </g>
+        ) : (
+          <circle key={i} cx={x0} cy={y0} r={5} fill="none" stroke={C.latte} strokeWidth={1.5} opacity={fa(t, start, 0.2)} />
+        );
+      })}
       <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>histogram length: 3, identically blind</T>
+        <rect x={30} y={95} width={160} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={110} y={120} s={12} a="middle" f={C.mocha}>histogram length: 3</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>built from finished work, blind to the rest</T>
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>built from finished work, blind to the rest</T>
     </Svg>
   );
 }
@@ -89,14 +104,20 @@ export function GaugePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the gauge correctly reads 2 in flight (takeaway) ──────
 export function GaugeReveal({ t }: StepCtx) {
+  const rise = easeOut(seg(t, 0.15, 0.45));
+  const fall = easeOut(seg(t, 0.6, 0.9));
+  const netUnits = 5 * rise - 3 * fall;
+  const barH = Math.max(netUnits, 0) * 16;
   return (
-    <Svg label="metric_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the checkpoint, read from the gauge instead</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>gauge reads: 2, correctly, right now</T>
+    <Svg label="metric_demo, captured" h={210}>
+      <T x={60} y={35} s={12} f={C.latte} o={fa(t, 0.1, 0.3)}>5 starts, then 3 finishes</T>
+      <rect x={60} y={120 - barH} width={40} height={barH} fill={C.caramel} opacity={fa(t, 0.15, 0.2)} />
+      <T x={115} y={105} s={13} f={C.crema} o={fa(t, 0.9, 0.3)}>gauge now: 2</T>
+      <g opacity={fa(t, 1.1, 0.4)}>
+        <rect x={30} y={135} width={160} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={110} y={160} s={12} a="middle" f={C.mocha}>gauge reads: 2, right now</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a current value, not a running total</T>
+      <T x={60} y={190} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a current value, not a running total</T>
     </Svg>
   );
 }

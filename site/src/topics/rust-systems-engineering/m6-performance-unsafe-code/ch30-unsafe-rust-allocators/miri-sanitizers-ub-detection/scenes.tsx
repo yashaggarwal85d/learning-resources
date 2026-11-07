@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A run-based checker only ever asks about the path it actually takes;
 // the identical violation on an unexercised branch sits there, real,
@@ -57,14 +57,15 @@ export function OtherBranchPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely caught, once this run takes it (takeaway) ───
 export function OtherBranchReveal({ t }: StepCtx) {
+  const travel = easeOut(seg(t, 0.4, 0.7));
   return (
     <Svg label="a_checker_only_catches_paths_it_actually_runs.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>two real operations, checked on this run</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the second one: genuinely out of bounds</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>real and checkable, the moment it is run</T>
+      <Draw pts={[[70, 78], [280, 78]]} t={t} from={0.4} to={0.7} stroke={C.caramel} w={2} pen />
+      <circle cx={70 + travel * 210} cy={78} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <circle cx={280} cy={78} r={6} fill={C.cherry} opacity={fa(t, 0.8, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={120} s={13} a="middle" f={C.mocha}>the second one: genuinely out of bounds</T>}
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>real and checkable, the moment it is run</T>
     </Svg>
   );
 }
@@ -87,14 +88,16 @@ export function UncheckedOpsPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: genuinely none (takeaway) ──────────────────────────────
 export function UncheckedOpsReveal({ t }: StepCtx) {
+  const examined = easeOut(seg(t, 0.4, 0.75));
   return (
     <Svg label="a_checker_only_catches_paths_it_actually_runs.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the safe run's own real examined count</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the other branch's ops: genuinely zero</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a branch never taken is never even asked</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>safe branch: examined</T>
+      <rect x={60} y={82} width={examined * 180} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.8, 0.3)}>other branch: examined</T>
+      <circle cx={70} cy={122} r={4} fill="none" stroke={C.cherry} strokeWidth={1.5} opacity={fa(t, 0.8, 0.2)} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>the other branch's ops: genuinely zero</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>a branch never taken is never even asked</T>
     </Svg>
   );
 }

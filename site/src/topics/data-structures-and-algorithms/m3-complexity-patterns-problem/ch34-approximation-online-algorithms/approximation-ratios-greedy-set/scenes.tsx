@@ -1,257 +1,375 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
 import { C, Svg, T } from '../../../../../reels/kit';
 
-// Colour grammar (CHAPTER.md): crema = the algorithm's own solution (sets picked, cover
-// vertices); latte = secondary labels; taupe = the part not yet decided; caramel = the
-// thing to look at (the bounding quantity: the matching, the optimum, the ratio);
-// cinnamon (rare) = the benchmark being compared against (the optimum / OPT, always the
-// same side of each pair); cherry/cherryText = the bad outcome (greedy's worst case,
-// a ratio that keeps growing).
+// Colour grammar (CHAPTER.md): crema = something that exists; latte = secondary labels; taupe = not yet reached or
+// discarded; caramel (focus) = the thing to look at right now; cinnamon = the alternative being compared;
+// cherry/cherryText = the bad outcome.
+//
+// Every printed number is examples.py's: the growing family at k = 3 (28 elements: two rows of 14, blocks of 4, 8 and
+// 16, greedy 3 against 2), and at k = 3, 5, 8, 12: n = 28, 124, 1,020, 16,380, greedy 3, 5, 8, 12, ratios 1.5, 2.5,
+// 4.0, 6.0 against ln n = 3.33, 4.82, 6.93, 9.70; K6,6's matching of 6, cover of 12, optimum 6; sixty random graphs,
+// worst ratio 2.0 (each graph's own ratio, seeded, drawn as shape only). Feige's 1998 bound is the title's. The small
+// graphs and instances shown moving elsewhere are illustrations and print nothing.
 
-const FAMILY = [
-  { k: 3, n: 28, picks: 3, ratio: 1.5, lnN: 3.33 },
-  { k: 5, n: 124, picks: 5, ratio: 2.5, lnN: 4.82 },
-  { k: 8, n: 1020, picks: 8, ratio: 4.0, lnN: 6.93 },
-  { k: 12, n: 16380, picks: 12, ratio: 6.0, lnN: 9.7 },
-];
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
 
-// 1 · Opening
+/** Which of n beats spread over [a, b] has started: -1 before a, then 0 to n - 1. */
+const stepIdx = (x: number, a: number, b: number, n: number) => (x < a ? -1 : Math.min(n - 1, Math.floor(((x - a) / (b - a)) * n)));
+
+// The k = 3 family: two rows of 14 cells; block 1 = columns 0–1, block 2 = 2–5, block 3 = 6–13 (both rows each).
+const COLS = 14;
+const BLOCK_OF = (c: number) => (c < 2 ? 0 : c < 6 ? 1 : 2);
+const GREEDY_ORDER = [2, 1, 0]; // block 3 (16 new), then block 2 (8), then block 1 (4)
+const GAIN = [4, 8, 16];
+
+function FamilyGrid({ x0, y0, cw, ch, cellCol }: { x0: number; y0: number; cw: number; ch: number; cellCol: (r: number, c: number) => string }) {
+  return (
+    <g>
+      {[0, 1].map((r) => Array.from({ length: COLS }, (_, c) => (
+        <rect key={`${r}-${c}`} x={x0 + c * cw} y={y0 + r * (ch + 6)} width={cw - 3} height={ch} rx={2} fill={cellCol(r, c)} stroke={C.mocha} strokeWidth={0.6} />
+      )))}
+    </g>
+  );
+}
+
+// 1 · Opening. The k = 3 family: 28 elements in two rows of 14. Greedy takes the biggest uncovered bite three times
+// (block 3, block 2, block 1); then the two row sets alone cover it all: 3 picks against 2.
 export function Opening({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
+  const g = stepIdx(t, 0.3, 2.1, 3);
+  const rows = easeOut(seg(t, 2.6, 3.2));
+  const cap = easeOut(seg(t, 3.4, 3.9));
+  const picked = (c: number) => g >= 0 && GREEDY_ORDER.slice(0, g + 1).includes(BLOCK_OF(c));
   return (
-    <Svg label="A locked door marked NP-hard, with a cheap rule offering a proof of how close it can get instead" h={280}>
-      <g opacity={a}>
-        <rect x={230} y={50} width={140} height={100} fill="none" stroke={C.cherry} strokeWidth={1.6} />
-        <T x={300} y={105} s={13} a="middle" f={C.cherryText}>NP-hard</T>
-        <T x={300} y={168} s={12} a="middle" f={C.latte}>no exact answer in polynomial time</T>
+    <Svg label="The family at k three: twenty-eight elements in two rows of fourteen. Greedy takes the biggest uncovered bite three times, block three, block two, block one. Then the two row sets alone cover everything: three picks against two" h={280}>
+      <T x={40} y={34} s={12} f={C.caramel}>greedy: biggest bite first</T>
+      <FamilyGrid x0={40} y0={50} cw={36} ch={26} cellCol={(_, c) => (picked(c) ? C.caramel : C.band)} />
+      {GREEDY_ORDER.map((b, i) => {
+        const c0 = b === 0 ? 0 : b === 1 ? 2 : 6, c1 = b === 0 ? 2 : b === 1 ? 6 : 14;
+        return <T key={b} x={40 + ((c0 + c1) / 2) * 36} y={130} s={12} f={C.caramel} a="middle" o={g >= i ? 1 : 0}>pick {i + 1}</T>;
+      })}
+      <g opacity={rows}>
+        <T x={40} y={164} s={12} f={C.cinnamon}>best: the two rows</T>
+        <FamilyGrid x0={40} y0={176} cw={36} ch={14} cellCol={() => C.cinnamon} />
       </g>
-      <g opacity={b}>
-        <T x={300} y={222} s={13} a="middle" f={C.caramel}>a cheap rule, with a proof of its own distance</T>
-        <T x={300} y={244} s={12} a="middle" f={C.latte}>an approximation ratio, next</T>
-      </g>
+      <T x={40} y={250} s={13} f={C.crema} o={cap}>greedy 3, best 2, and a proof of how far</T>
     </Svg>
   );
 }
 
-// 2 · What an approximation ratio promises
+// 2 · RatioPromise. An optimum line and a proved ceiling at ρ times it. Instances arrive as dots: the approximation
+// algorithm's all land under the ceiling; a heuristic's land mostly low, then one far above with no warning.
 export function RatioPromise({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.2));
+  const Y0 = 220, opt = 170, ceil = 90;
+  const a = easeOut(seg(t, 0.2, 0.8));
+  const n = stepIdx(t, 0.9, 2.6, 10);
+  const h = stepIdx(t, 2.6, 3.6, 5);
+  const algY = [150, 120, 160, 100, 140, 130, 110, 155, 125, 96];
+  const heurY = [160, 150, 165, 40, 155];
   return (
-    <Svg label="A theorem icon on one side, a heuristic's shrug on the other" h={270}>
-      <g opacity={a}>
-        <rect x={90} y={70} width={180} height={110} fill="none" stroke={C.caramel} strokeWidth={1.6} />
-        <T x={180} y={110} s={12} a="middle" f={C.crema}>proved,</T>
-        <T x={180} y={128} s={12} a="middle" f={C.crema}>every instance</T>
-        <T x={180} y={198} s={12} a="middle" f={C.caramel}>approximation algorithm</T>
-      </g>
-      <g opacity={b}>
-        <rect x={330} y={70} width={180} height={110} fill="none" stroke={C.taupe} strokeWidth={1.6} strokeDasharray="4 4" />
-        <T x={420} y={110} s={12} a="middle" f={C.latte}>works well,</T>
-        <T x={420} y={128} s={12} a="middle" f={C.latte}>no guarantee when</T>
-        <T x={420} y={198} s={12} a="middle" f={C.latte}>a heuristic</T>
-      </g>
+    <Svg label="An optimum line and a proved ceiling at a fixed multiple of it. Instances arrive as dots: the approximation algorithm's all land under the ceiling, on every one. A heuristic's land mostly low, then one far above, with no warning in advance" h={280}>
+      <line x1={40} y1={opt} x2={560} y2={opt} stroke={C.crema} strokeWidth={1.4} opacity={a} />
+      <T x={560} y={opt + 18} s={12} f={C.crema} a="end" o={a}>optimum</T>
+      <line x1={40} y1={ceil} x2={360} y2={ceil} stroke={C.caramel} strokeDasharray="5 4" strokeWidth={1.6} opacity={a} />
+      <T x={40} y={ceil - 10} s={12} f={C.caramel} o={a}>proved ceiling: ρ × optimum</T>
+      {algY.map((y, i) => <circle key={i} cx={60 + i * 30} cy={y} r={5} fill={C.caramel} opacity={i <= n ? 1 : 0} />)}
+      {heurY.map((y, i) => <circle key={i} cx={400 + i * 30} cy={y} r={5} fill={y < ceil ? C.cherryText : C.latte} opacity={i <= h ? 1 : 0} />)}
+      <T x={60} y={Y0 + 30} s={12} f={C.caramel} o={n >= 9 ? 1 : 0}>proved, every instance</T>
+      <T x={400} y={Y0 + 30} s={12} f={C.cherryText} o={h >= 4 ? 1 : 0}>heuristic: no promise</T>
     </Svg>
   );
 }
 
-// 3 · Greedy set cover's rule
+// 3 · GreedyRule. The k = 3 grid again, one pick at a time. Each pick charges its newly covered elements 1 over how
+// many it covered: 16 elements at 1/16, then 8 at 1/8, then 4 at 1/4.
 export function GreedyRule({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.3));
-  const sets = [
-    { label: 'set A', covers: 3 },
-    { label: 'set B', covers: 7 },
-    { label: 'set C', covers: 4 },
-  ];
+  const g = stepIdx(t, 0.4, 3.4, 3);
+  const sum = easeOut(seg(t, 3.6, 4.2));
+  const cellCol = (_: number, c: number) => {
+    const at = GREEDY_ORDER.indexOf(BLOCK_OF(c));
+    return g >= at ? [C.caramel, C.crema, C.latte][at] : C.band;
+  };
   return (
-    <Svg label="Three candidate sets with different counts of still-uncovered elements, the largest one highlighted" h={260}>
-      <g opacity={a}>
-        {sets.map((s, i) => (
-          <g key={s.label}>
-            <rect x={140 + i * 120} y={190 - s.covers * 14} width={50} height={s.covers * 14} fill="none" stroke={s.covers === 7 ? C.caramel : C.taupe} strokeWidth={1.6} />
-            <T x={165 + i * 120} y={206} s={11} a="middle" f={C.latte}>{s.label}</T>
-          </g>
-        ))}
-      </g>
-      <g opacity={b}>
-        <T x={300} y={235} s={12} a="middle" f={C.caramel}>pick the largest gain, every step</T>
-      </g>
+    <Svg label="The same grid, one greedy pick at a time. Each pick charges its newly covered elements one over how many it covered: sixteen elements at a sixteenth each, then eight at an eighth, then four at a quarter" h={280}>
+      <FamilyGrid x0={40} y0={40} cw={36} ch={26} cellCol={cellCol} />
+      {GREEDY_ORDER.map((b, i) => (
+        <T key={b} x={40} y={130 + i * 26} s={13} f={[C.caramel, C.crema, C.latte][i]} o={g >= i ? 1 : 0}>
+          {`pick ${i + 1}: ${GAIN[b]} new, each charged 1/${GAIN[b]}`}
+        </T>
+      ))}
+      <T x={40} y={236} s={12} f={C.caramel} o={sum}>charges add up to a harmonic sum</T>
+      <T x={40} y={258} s={12} f={C.latte} o={sum}>H(largest set) × optimum, at most</T>
     </Svg>
   );
 }
 
-// 4 · Predict: does the ratio stay flat as k grows?
-export function PredictFamily({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.3));
+// 4 · PredictFamily. The family grows: each new block doubles. After answering, greedy's pick count climbs with k
+// (3, 5, 8, 12) while the optimum stays at 2.
+const FAM = [
+  { k: 3, n: '28', g: 3, r: '1.5', ln: '3.33', lnv: 3.33 },
+  { k: 5, n: '124', g: 5, r: '2.5', ln: '4.82', lnv: 4.82 },
+  { k: 8, n: '1,020', g: 8, r: '4.0', ln: '6.93', lnv: 6.93 },
+  { k: 12, n: '16,380', g: 12, r: '6.0', ln: '9.70', lnv: 9.7 },
+];
+export function PredictFamily({ t, answer }: StepCtx) {
+  const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const k = answered ? stepIdx(s, 0.2, 2.2, 4) : -1;
+  const blocks = stepIdx(t, 0.2, 1.8, 4);
   return (
-    <Svg label="Two rows and k growing blocks, with a question mark over whether greedy's picks stay close to the optimum of two" h={260}>
-      <g opacity={a}>
-        <rect x={60} y={150} width={200} height={20} fill="none" stroke={C.cinnamon} strokeWidth={1.6} />
-        <T x={160} y={186} s={11} a="middle" f={C.latte}>2 row sets = OPT</T>
-        {[0, 1, 2, 3].map((i) => (
-          <rect key={i} x={320 + i * 36} y={150 - i * 22} width={30} height={20 + i * 22} fill="none" stroke={C.taupe} strokeWidth={1.4} />
-        ))}
-        <T x={400} y={76} s={11} a="middle" f={C.latte}>k growing blocks</T>
-      </g>
-      <T x={300} y={230} s={13} a="middle" f={C.caramel}>flat ratio, or does it grow with k?</T>
+    <Svg label="The family grows: each new block doubles the last, and two row sets still cover everything. After answering, greedy's pick count climbs with k, three, five, eight, twelve, while the optimum stays at two" h={280}>
+      {Array.from({ length: 4 }, (_, j) => {
+        const w = 8 * 2 ** j;
+        const x = 40 + (2 ** j - 1) * 8 + j * 4;
+        return <rect key={j} x={x} y={40} width={w} height={34} fill={C.latte} opacity={j <= blocks ? 0.7 : 0} stroke={C.band} />;
+      })}
+      <T x={40} y={94} s={12} f={C.latte} o={blocks >= 0 ? 1 : 0}>each block doubles</T>
+      <line x1={60} y1={240} x2={560} y2={240} stroke={C.line} opacity={answered ? 1 : 0} />
+      {FAM.map((f, i) => (
+        <g key={f.k} opacity={i <= k ? 1 : 0}>
+          <rect x={90 + i * 120} y={240 - f.g * 10} width={36} height={f.g * 10} fill={C.caramel} />
+          <rect x={130 + i * 120} y={220} width={36} height={20} fill={C.cinnamon} />
+          <T x={108 + i * 120} y={232 - f.g * 10} s={12} f={C.caramel} a="middle">{f.g}</T>
+          <T x={128 + i * 120} y={262} s={12} f={C.latte} a="middle">k = {f.k}</T>
+        </g>
+      ))}
+      <T x={560} y={40} s={12} f={C.caramel} a="end" o={k >= 3 ? 1 : 0}>greedy keeps climbing</T>
+      <T x={560} y={62} s={12} f={C.cinnamon} a="end" o={k >= 3 ? 1 : 0}>optimum: 2</T>
     </Svg>
   );
 }
 
-// 5 · The family measured: ratio tracking ln(n)
+// 5 · FamilyMeasured. Ratio against n on a log axis: greedy's 1.5, 2.5, 4.0, 6.0 at n = 28, 124, 1,020, 16,380,
+// climbing alongside ln n = 3.33, 4.82, 6.93, 9.70.
 export function FamilyMeasured({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.5));
+  const X0 = 80, X1 = 520, Y0 = 230, Y1 = 40;
+  const px = (lnv: number) => X0 + ((lnv - 3) / 7) * (X1 - X0);
+  const py = (v: number) => Y0 - (v / 10) * (Y0 - Y1);
+  const k = stepIdx(t, 0.4, 2.8, 4);
+  const ln = easeInOut(seg(t, 3.0, 4.0));
+  const ratios = [1.5, 2.5, 4.0, 6.0];
   return (
-    <Svg label="Four pairs of bars, greedy's ratio and ln(n), both climbing together as the family scales" h={280}>
-      <g opacity={a}>
-        {FAMILY.map((f, i) => (
-          <g key={f.k}>
-            <rect x={90 + i * 120} y={210 - f.ratio * 16} width={30} height={f.ratio * 16} fill="none" stroke={C.cherry} strokeWidth={1.6} />
-            <rect x={125 + i * 120} y={210 - f.lnN * 16} width={30} height={f.lnN * 16} fill="none" stroke={C.cinnamon} strokeWidth={1.6} />
-            <T x={120 + i * 120} y={226} s={11} a="middle" f={C.latte}>k={f.k}</T>
-          </g>
-        ))}
-      </g>
-      <T x={150} y={56} s={12} a="middle" f={C.cherryText}>ratio</T>
-      <T x={210} y={56} s={12} a="middle" f={C.cinnamon}>ln(n)</T>
-      <T x={300} y={258} s={12} a="middle" f={C.latte}>1.5 → 2.5 → 4.0 → 6.0, climbing with ln(n)</T>
+    <Svg label="Ratio against the number of elements, on a log axis: greedy's 1.5, 2.5, 4.0 and 6.0 at 28, 124, 1,020 and 16,380 elements, climbing alongside the natural log of n, 3.33, 4.82, 6.93 and 9.70" h={290}>
+      <line x1={X0} y1={Y0} x2={X1} y2={Y0} stroke={C.line} />
+      <line x1={X0} y1={Y0} x2={X0} y2={Y1} stroke={C.line} />
+      {FAM.map((f) => <T key={f.k} x={px(f.lnv)} y={Y0 + 18} s={12} f={C.latte} a="middle">{f.n}</T>)}
+      <T x={X1} y={Y0 + 40} s={12} f={C.latte} a="end">elements n, log scale</T>
+      <polyline points={FAM.filter((_, i) => i <= k).map((f, i) => `${px(f.lnv)},${py(ratios[i])}`).join(' ')} fill="none" stroke={C.caramel} strokeWidth={2.2} />
+      {FAM.map((f, i) => (
+        <g key={f.k} opacity={i <= k ? 1 : 0}>
+          <circle cx={px(f.lnv)} cy={py(ratios[i])} r={5} fill={C.caramel} />
+          <T x={px(f.lnv)} y={py(ratios[i]) + 20} s={12} f={C.caramel} a="middle">{f.r}</T>
+        </g>
+      ))}
+      <polyline points={FAM.filter((_, i) => i <= ln * 3 + 1e-9).map((f) => `${px(f.lnv)},${py(f.lnv)}`).join(' ')} fill="none" stroke={C.cinnamon} strokeWidth={1.6} strokeDasharray="5 4" />
+      {FAM.map((f, i) => <T key={f.k} x={px(f.lnv)} y={py(f.lnv) - 10} s={12} f={C.cinnamon} a="middle" o={ln * 3 >= i ? 1 : 0}>{f.ln}</T>)}
+      <T x={X0 + 10} y={Y1} s={12} f={C.cinnamon} o={ln}>dashed: ln n</T>
+      <T x={X0 + 10} y={Y1 + 22} s={12} f={C.caramel} o={k >= 0 ? 1 : 0}>solid: greedy / optimum</T>
     </Svg>
   );
 }
 
-// 6 · Feige's bound: essentially tight
+// 6 · FeigeBound. Ratio against n: everything under (1 − ε) ln n is shaded, out of reach in polynomial time unless
+// P = NP (Feige, 1998); greedy's harmonic bound runs just above that shading.
 export function FeigeBound({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.3));
-  const b = easeOut(seg(t, 1.4, 2.2));
+  const X0 = 80, X1 = 540, Y0 = 220, Y1 = 50;
+  const shade = easeOut(seg(t, 0.3, 1.3));
+  const g = easeInOut(seg(t, 1.6, 2.8));
+  const cap = easeOut(seg(t, 3.0, 3.6));
+  const pts = (off: number, d = 1) => Array.from({ length: 31 }, (_, i) => i / 30).filter((u) => u <= d + 1e-9).map((u) => `${lerp(X0, X1, u)},${Y0 - (Math.log(2 + u * 60) + off) * 30}`);
   return (
-    <Svg label="A ceiling line labelled ln n, with greedy's own bound sitting directly beneath it" h={250}>
-      <g opacity={a}>
-        <path d="M100 80 L500 80" stroke={C.cherry} strokeWidth={1.6} fill="none" />
-        <T x={300} y={66} s={12} a="middle" f={C.cherryText}>(1 − ε) ln n — no polynomial algorithm beats this</T>
-      </g>
-      <g opacity={b}>
-        <path d="M100 110 L500 110" stroke={C.caramel} strokeWidth={1.6} fill="none" strokeDasharray="4 4" />
-        <T x={300} y={140} s={12} a="middle" f={C.caramel}>greedy's own H(n) sits right at the ceiling</T>
-      </g>
+    <Svg h={290} label="Approximation ratio against n. Everything under one minus epsilon times the natural log of n is shaded: out of reach for any polynomial algorithm unless P equals NP, Feige 1998. Greedy's harmonic bound runs just above the shading">
+      <line x1={X0} y1={Y0} x2={X1} y2={Y0} stroke={C.line} />
+      <line x1={X0} y1={Y0} x2={X0} y2={Y1 - 20} stroke={C.line} />
+      <polygon points={[...pts(-0.4), `${X1},${Y0}`, `${X0},${Y0}`].join(' ')} fill={C.cherry} opacity={0.35 * shade} />
+      <polyline points={pts(-0.4).join(' ')} fill="none" stroke={C.cherryText} strokeWidth={1.4} opacity={shade} />
+      <polyline points={pts(0.2, g).join(' ')} fill="none" stroke={C.caramel} strokeWidth={2.4} />
+      <T x={X0} y={258} s={12} f={C.cherryText} o={shade}>shaded: below (1 − ε) ln n</T>
+      <T x={X0 + 10} y={40} s={12} f={C.caramel} o={g >= 1 ? 1 : 0}>greedy's H(n), right at the ceiling</T>
+      <T x={X1} y={Y0 + 20} s={12} f={C.latte} a="end">n</T>
+      <T x={X0} y={280} s={12} f={C.latte} o={cap}>out of reach, Feige 1998, unless P = NP</T>
     </Svg>
   );
 }
 
-// 7 · Switch problems: vertex cover
+// A small graph for the vertex-cover scenes (illustration).
+const VC_P = [
+  { x: 120, y: 60 }, { x: 240, y: 50 }, { x: 360, y: 70 }, { x: 470, y: 60 },
+  { x: 100, y: 170 }, { x: 220, y: 160 }, { x: 340, y: 180 }, { x: 460, y: 170 },
+];
+const VC_E: [number, number][] = [[0, 1], [1, 2], [2, 3], [0, 4], [1, 5], [2, 6], [3, 7], [4, 5], [5, 6], [6, 7], [1, 6]];
+const MATCH = [0, 2, 7, 9]; // edge indices taken by the scan: (0,1), (2,3), (4,5), (6,7)
+const VC_MIN = [1, 2, 4, 7, 5]; // a cover drawn in the intro (illustration)
+
+function VCGraph({ edgeCol, nodeCol, ring }: { edgeCol: (i: number) => string; nodeCol: (v: number) => string; ring?: (v: number) => boolean }) {
+  return (
+    <g>
+      {VC_E.map(([a, b], i) => <line key={i} x1={VC_P[a].x} y1={VC_P[a].y} x2={VC_P[b].x} y2={VC_P[b].y} stroke={edgeCol(i)} strokeWidth={edgeCol(i) === C.mocha ? 1.2 : 2.6} />)}
+      {VC_P.map((p, v) => (
+        <g key={v}>
+          <circle cx={p.x} cy={p.y} r={11} fill={C.band} stroke={nodeCol(v)} strokeWidth={1.8} />
+          {ring?.(v) && <circle cx={p.x} cy={p.y} r={17} fill="none" stroke={C.caramel} strokeWidth={1.6} />}
+        </g>
+      ))}
+    </g>
+  );
+}
+
+// 7 · VertexCoverIntro. A small network; chosen vertices light one at a time, and each lights the edges it touches,
+// until every edge is touched.
 export function VertexCoverIntro({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.3));
-  const pts: Array<[number, number]> = [[200, 80], [400, 80], [200, 180], [400, 180]];
-  const edges: Array<[number, number]> = [[0, 1], [0, 2], [1, 3], [2, 3]];
+  const k = stepIdx(t, 0.4, 2.6, VC_MIN.length);
+  const chosen = VC_MIN.slice(0, k + 1);
+  const cap = easeOut(seg(t, 2.8, 3.3));
   return (
-    <Svg label="A small graph with every edge needing at least one endpoint chosen" h={260}>
-      <g opacity={a}>
-        {edges.map(([p, q], i) => (
-          <path key={i} d={`M${pts[p][0]} ${pts[p][1]} L${pts[q][0]} ${pts[q][1]}`} stroke={C.taupe} strokeWidth={1.4} fill="none" />
-        ))}
-        {pts.map((p, i) => (
-          <circle key={i} cx={p[0]} cy={p[1]} r={14} fill="none" stroke={C.crema} strokeWidth={1.6} />
-        ))}
-      </g>
-      <T x={300} y={230} s={13} a="middle" f={C.caramel}>fewest vertices touching every edge — also NP-hard</T>
+    <Svg label="A small network. Chosen vertices light one at a time, and each lights every edge it touches, until every edge in the network is touched" h={260}>
+      <VCGraph edgeCol={(i) => (chosen.includes(VC_E[i][0]) || chosen.includes(VC_E[i][1]) ? C.cinnamon : C.mocha)} nodeCol={(v) => (chosen.includes(v) ? C.caramel : C.latte)} />
+      <T x={40} y={232} s={12} f={C.crema} o={cap}>every edge touched: a vertex cover</T>
+      <T x={40} y={254} s={12} f={C.latte} o={cap}>fewest possible: NP-hard</T>
     </Svg>
   );
 }
 
-// 8 · The maximal-matching construction
+// 8 · MatchingConstruction. The scan takes an edge (caramel), and every other edge at its endpoints goes dim; it repeats
+// until no edge is free: a maximal matching of 4. Both endpoints of every matched edge are ringed: a cover of 8. The
+// optimum needs one endpoint per matched edge, at least 4, so the cover is at most twice it.
 export function MatchingConstruction({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.2));
-  const b = easeOut(seg(t, 1.3, 2.3));
-  const pts: Array<[number, number]> = [[160, 80], [280, 80], [160, 180], [280, 180], [420, 130]];
-  const matchEdges: Array<[number, number]> = [[0, 1], [2, 3]];
-  const otherEdges: Array<[number, number]> = [[1, 4], [3, 4]];
+  const m = stepIdx(t, 0.3, 2.3, MATCH.length);
+  const ring = easeOut(seg(t, 2.6, 3.2));
+  const lb = easeOut(seg(t, 3.6, 4.3));
+  const fin = easeOut(seg(t, 4.6, 5.2));
+  const taken = MATCH.slice(0, m + 1);
+  const usedV = new Set(taken.flatMap((i) => VC_E[i]));
   return (
-    <Svg label="Two matched edges in bold, their four endpoints becoming the cover, two more edges still waiting" h={270}>
-      <g opacity={a}>
-        {otherEdges.map(([p, q], i) => (
-          <path key={`o${i}`} d={`M${pts[p][0]} ${pts[p][1]} L${pts[q][0]} ${pts[q][1]}`} stroke={C.taupe} strokeWidth={1.3} fill="none" />
-        ))}
-        {matchEdges.map(([p, q], i) => (
-          <path key={`m${i}`} d={`M${pts[p][0]} ${pts[p][1]} L${pts[q][0]} ${pts[q][1]}`} stroke={C.caramel} strokeWidth={2.4} fill="none" />
-        ))}
-        {pts.map((p, i) => (
-          <circle key={i} cx={p[0]} cy={p[1]} r={14} fill="none" stroke={i < 4 ? C.caramel : C.taupe} strokeWidth={1.8} />
-        ))}
-      </g>
-      <g opacity={b}>
-        <T x={300} y={230} s={12} a="middle" f={C.crema}>M's edges share no endpoints: OPT needs one per edge of M</T>
-      </g>
+    <Svg label="The scan takes an edge, and every other edge at its two endpoints goes dim; it repeats until no free edge is left, a maximal matching of four edges. Both endpoints of every matched edge are ringed: a cover of eight. The optimum must take one endpoint of each matched edge, at least four, so the cover is at most twice the optimum" h={290}>
+      <VCGraph
+        edgeCol={(i) => (taken.includes(i) ? C.caramel : VC_E[i].some((v) => usedV.has(v)) ? C.mocha : C.latte)}
+        nodeCol={(v) => (usedV.has(v) ? C.caramel : C.latte)}
+        ring={(v) => ring > 0 && usedV.has(v)}
+      />
+      <T x={40} y={226} s={12} f={C.caramel} o={m >= 3 ? 1 : 0}>maximal matching: 4 edges</T>
+      <T x={330} y={226} s={12} f={C.caramel} o={ring}>cover: their 8 endpoints</T>
+      <T x={40} y={254} s={12} f={C.cinnamon} o={lb}>optimum ≥ 4: one end of each</T>
+      <T x={40} y={278} s={13} f={C.crema} o={fin}>8 = 2 × 4 ≤ 2 × optimum</T>
     </Svg>
   );
 }
 
-// 9 · Predict: is the factor-2 bound actually attained?
-export function PredictTight({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.3));
+// 9 · PredictTight. K6,6: six vertices on each side, every pair joined. After answering, a matching of 6 lights, its
+// cover takes all 12 vertices, while one side alone (6, cinnamon) already covers every edge: exactly 2.
+export function PredictTight({ t, answer }: StepCtx) {
+  const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const mt = answered ? easeOut(seg(s, 0.2, 0.9)) : 0;
+  const cov = answered ? easeOut(seg(s, 1.1, 1.7)) : 0;
+  const opt = answered ? easeOut(seg(s, 1.9, 2.5)) : 0;
+  const a = easeOut(seg(t, 0.2, 0.9));
+  const ax = 180, bx = 420, y = (i: number) => 40 + i * 32;
   return (
-    <Svg label="K sub 6,6, every vertex connected across, with a question mark over whether the ratio of 2 is ever really hit" h={260}>
+    <Svg label="K six six: six vertices on each side, every pair joined. After answering, a matching of six edges lights, its cover takes all twelve vertices, while one side alone, six vertices, already covers every edge: exactly two times the optimum" h={290}>
       <g opacity={a}>
-        {[0, 1, 2].map((i) => (
-          <circle key={`a${i}`} cx={180} cy={70 + i * 50} r={10} fill="none" stroke={C.cinnamon} strokeWidth={1.6} />
-        ))}
-        {[0, 1, 2].map((i) => (
-          <circle key={`b${i}`} cx={420} cy={70 + i * 50} r={10} fill="none" stroke={C.cinnamon} strokeWidth={1.6} />
-        ))}
-        <path d="M180 70 L420 170 M180 120 L420 120 M180 170 L420 70" stroke={C.taupe} strokeWidth={1} fill="none" />
-        <T x={300} y={40} s={11} a="middle" f={C.latte}>K(6,6), 6 vertices shown each side</T>
+        {Array.from({ length: 6 }, (_, i) => Array.from({ length: 6 }, (_, j) => <line key={`${i}-${j}`} x1={ax} y1={y(i)} x2={bx} y2={y(j)} stroke={C.mocha} strokeWidth={0.8} />))}
       </g>
-      <T x={300} y={230} s={13} a="middle" f={C.caramel}>attained exactly, or only approached?</T>
+      {Array.from({ length: 6 }, (_, i) => <line key={i} x1={ax} y1={y(i)} x2={bx} y2={y(i)} stroke={C.caramel} strokeWidth={2.4} opacity={mt} />)}
+      {Array.from({ length: 6 }, (_, i) => (
+        <g key={i} opacity={a}>
+          <circle cx={ax} cy={y(i)} r={9} fill={C.band} stroke={opt > 0 ? C.cinnamon : cov > 0 ? C.caramel : C.latte} strokeWidth={2} />
+          <circle cx={bx} cy={y(i)} r={9} fill={C.band} stroke={cov > 0 && opt <= 0 ? C.caramel : C.latte} strokeWidth={2} />
+        </g>
+      ))}
+      <T x={40} y={262} s={12} f={C.caramel} o={cov}>cover from the matching: 12</T>
+      <T x={330} y={262} s={12} f={C.cinnamon} o={opt}>one side: 6</T>
+      <T x={330} y={284} s={13} f={C.crema} o={opt}>12 / 6 = 2, exactly</T>
     </Svg>
   );
 }
 
-// 10 · Checked against a brute-force optimum
+// 10 · RandomGraphCheck. Sixty random graphs drop in one by one as dots at their measured ratio (seeded: shape only),
+// under a ceiling line at 2; the worst seen sits right on it, 2.0.
+const RG = [2.0, 1.667, 1.333, 1.2, 1.143, 2.0, 1.333, 1.333, 2.0, 1.429, 1.6, 2.0, 1.2, 2.0, 2.0, 1.143, 1.6, 1.6, 1.333, 1.333, 1.429, 1.333, 2.0, 1.111, 2.0, 2.0, 1.333, 1.5, 1.667, 2.0, 1.333, 1.6, 1.0, 1.6, 1.429, 1.429, 2.0, 1.0, 2.0, 2.0, 2.0, 1.6, 1.333, 1.6, 1.6, 1.5, 1.429, 1.25, 2.0, 1.5, 2.0, 2.0, 1.429, 1.333, 1.0, 1.5, 1.5, 1.333, 1.333, 2.0];
 export function RandomGraphCheck({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.4));
+  const X0 = 70, X1 = 550, Y0 = 220;
+  const py = (r: number) => Y0 - (r - 0.8) * 130;
+  const n = Math.floor(seg(t, 0.4, 3.2) * 60);
+  const cap = easeOut(seg(t, 3.4, 4.0));
   return (
-    <Svg label="Sixty small bars, each one's cover against twice its brute-force optimum, none ever crossing the line" h={260}>
-      <g opacity={a}>
-        <path d="M60 80 L540 80" stroke={C.cinnamon} strokeWidth={1.4} fill="none" strokeDasharray="4 4" />
-        <T x={300} y={66} s={12} a="middle" f={C.cinnamon}>2 × OPT, the ceiling</T>
-        {Array.from({ length: 24 }).map((_, i) => (
-          <rect key={i} x={60 + i * 20} y={80} width={10} height={40 + ((i * 7) % 60) * 0.6} fill="none" stroke={C.caramel} strokeWidth={1.1} />
-        ))}
-      </g>
-      <T x={300} y={230} s={12} a="middle" f={C.crema}>60 graphs, 4–13 vertices: never crossed, worst ratio 2.0</T>
+    <Svg label="Sixty random graphs drop in one by one as dots at their measured ratio of cover to optimum, under a ceiling line at two. The worst one seen sits right on the line, 2.0" h={290}>
+      <line x1={X0} y1={py(2)} x2={X1} y2={py(2)} stroke={C.cherryText} strokeDasharray="5 4" strokeWidth={1.6} />
+      <T x={X0 - 8} y={py(2) + 4} s={12} f={C.cherryText} a="end">2</T>
+      <line x1={X0} y1={py(1)} x2={X1} y2={py(1)} stroke={C.line} />
+      <T x={X0 - 8} y={py(1) + 4} s={12} f={C.latte} a="end">1</T>
+      {RG.map((r, i) => <circle key={i} cx={X0 + 6 + i * 8} cy={py(r)} r={3.5} fill={r >= 2 ? C.caramel : C.latte} opacity={i < n ? 1 : 0} />)}
+      <T x={X0} y={40} s={12} f={C.latte}>60 random graphs, 4 to 13 vertices</T>
+      <T x={X0} y={262} s={12} f={C.caramel} o={cap}>never above 2; worst seen 2.0</T>
     </Svg>
   );
 }
 
-// 11 · The two guarantees, side by side
+// 11 · SideBySide. Ratio against n: set cover's guarantee climbs with ln n; vertex cover's stays flat at 2.
 export function SideBySide({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.4));
+  const X0 = 80, X1 = 540, Y0 = 230;
+  const a = easeInOut(seg(t, 0.3, 2.0));
+  const b = easeInOut(seg(t, 2.0, 3.2));
+  const lnPts = Array.from({ length: 31 }, (_, i) => i / 30).filter((u) => u <= a + 1e-9).map((u) => `${lerp(X0, X1, u)},${Y0 - Math.log(3 + u * 400) * 28}`);
   return (
-    <Svg label="Set cover's ratio climbing a staircase against vertex cover's flat line" h={270}>
-      <g opacity={a}>
-        {[0, 1, 2, 3].map((i) => (
-          <rect key={i} x={100 + i * 40} y={190 - (i + 1) * 22} width={28} height={(i + 1) * 22} fill="none" stroke={C.cherry} strokeWidth={1.6} />
-        ))}
-        <T x={200} y={210} s={11} a="middle" f={C.cherryText}>set cover: grows with ln n</T>
-        <path d="M340 130 L540 130" stroke={C.caramel} strokeWidth={1.8} fill="none" />
-        <T x={440} y={210} s={11} a="middle" f={C.caramel}>vertex cover: flat at 2</T>
-      </g>
-      <T x={300} y={244} s={12} a="middle" f={C.latte}>same proof style, two different shapes of promise</T>
+    <Svg label="Ratio against n. Set cover's guarantee climbs with the natural log of n, with no ceiling. Vertex cover's stays flat at two, on every graph" h={280}>
+      <line x1={X0} y1={Y0} x2={X1} y2={Y0} stroke={C.line} />
+      <line x1={X0} y1={Y0} x2={X0} y2={30} stroke={C.line} />
+      <T x={X1} y={Y0 + 20} s={12} f={C.latte} a="end">input size n</T>
+      <polyline points={lnPts.join(' ')} fill="none" stroke={C.caramel} strokeWidth={2.4} />
+      <line x1={X0} y1={Y0 - 2 * 28} x2={lerp(X0, X1, b)} y2={Y0 - 2 * 28} stroke={C.cinnamon} strokeWidth={2.4} />
+      <T x={X1} y={Y0 - Math.log(403) * 28 - 10} s={12} f={C.caramel} a="end" o={a >= 1 ? 1 : 0}>set cover: ln n, climbing</T>
+      <T x={X1} y={Y0 - 2 * 28 + 20} s={12} f={C.cinnamon} a="end" o={b >= 1 ? 1 : 0}>vertex cover: 2, flat</T>
     </Svg>
   );
 }
 
-// 12 · Recap
+// 12 · Recap. Three bars: a quantity computable fast, below the unknown optimum (dashed), and the algorithm's answer
+// bounded against the computable one. Then the next two problems: bins and machines.
 export function Recap({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 1.4));
+  const lb = easeOut(seg(t, 0.3, 0.9));
+  const opt = easeOut(seg(t, 1.0, 1.6));
+  const alg = easeOut(seg(t, 1.8, 2.4));
+  const nx = easeOut(seg(t, 3.0, 3.6));
   return (
-    <Svg label="The shared trick named once: a computable lower bound on OPT, compared against your own answer" h={250}>
-      <g opacity={a}>
-        <T x={300} y={110} s={14} a="middle" serif f={C.caramel}>compute a lower bound on OPT</T>
-        <T x={300} y={140} s={14} a="middle" serif f={C.crema}>compare your own answer to it</T>
+    <Svg label="Three bars: a quantity computable fast, sitting below the unknown optimum, drawn dashed, and the algorithm's answer, bounded against the computable quantity, not the optimum. Then the next two problems: packing bins and scheduling machines" h={280}>
+      <T x={30} y={44} s={12} f={C.caramel}>computable lower bound</T>
+      <rect x={250} y={30} width={120 * lb} height={20} fill={C.caramel} />
+      <T x={30} y={84} s={12} f={C.latte}>optimum, unknown</T>
+      <rect x={250} y={70} width={160 * opt} height={20} fill="none" stroke={C.latte} strokeDasharray="4 3" />
+      <T x={30} y={124} s={12} f={C.crema}>our answer ≤ ρ × bound</T>
+      <rect x={250} y={110} width={220 * alg} height={20} fill={C.crema} />
+      <g opacity={nx}>
+        <T x={30} y={190} s={12} f={C.cinnamon}>next, the same trick:</T>
+        {[0, 1, 2].map((k) => <rect key={k} x={30 + k * 40} y={204} width={30} height={46} rx={2} fill="none" stroke={C.cinnamon} />)}
+        <T x={30} y={274} s={12} f={C.cinnamon}>bins</T>
+        {[0, 1, 2].map((k) => <rect key={k} x={250} y={204 + k * 16} width={80 + k * 40} height={12} rx={2} fill={C.cinnamon} opacity={0.6} />)}
+        <T x={250} y={274} s={12} f={C.cinnamon}>machines</T>
       </g>
-      <T x={300} y={210} s={12} a="middle" f={C.latte}>bin packing and makespan scheduling, next</T>
     </Svg>
   );
 }

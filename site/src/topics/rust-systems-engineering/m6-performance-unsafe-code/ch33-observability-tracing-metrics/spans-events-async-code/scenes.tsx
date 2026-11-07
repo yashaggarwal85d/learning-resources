@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Holding a span's own guard across an await lets it leak onto
 // whatever runs next on the same thread; .instrument(span) and
@@ -58,14 +58,20 @@ export function InstrumentPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: instrument(span) genuinely fixes it (takeaway) ────────
 export function InstrumentReveal({ t }: StepCtx) {
+  const exitX = easeOut(seg(t, 0.2, 0.4)) * 90 + 50;
+  const travel = easeOut(seg(t, 0.45, 0.75));
   return (
     <Svg label="span_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>task_b's own event, this time</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>current span: none, genuinely correct</T>
+      <rect x={50} y={30} width={90} height={36} rx={6} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.1, 0.2)} />
+      <T x={95} y={52} s={11} a="middle" f={C.crema} o={fa(t, 0.1, 0.2)}>task_a span</T>
+      <circle cx={exitX} cy={48} r={5} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
+      <Draw pts={[[140, 48], [260, 48]]} t={t} from={0.45} to={0.75} stroke={C.latte} w={2} pen />
+      <circle cx={140 + travel * 120} cy={48} r={5} fill={C.cherry} opacity={fa(t, 0.45, 0.2)} />
+      <g opacity={fa(t, 0.85, 0.3)}>
+        <rect x={160} y={80} width={180} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={250} y={105} s={12} a="middle" f={C.mocha}>current span: none, correct</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>exited and re-entered around the await</T>
+      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.4, 0.4)}>exited and re-entered around the await</T>
     </Svg>
   );
 }
@@ -88,14 +94,21 @@ export function MacroPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the macro matches instrument(span) exactly (takeaway) ─
 export function MacroReveal({ t }: StepCtx) {
+  const travelA = easeOut(seg(t, 0.25, 0.55));
+  const travelB = easeOut(seg(t, 0.4, 0.7));
   return (
     <Svg label="span_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the macro, checked the same way</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>current span: none, the identical fix</T>
+      <T x={50} y={35} s={11} f={C.latte} o={fa(t, 0.1, 0.2)}>.instrument(span)</T>
+      <T x={50} y={70} s={11} f={C.latte} o={fa(t, 0.25, 0.2)}>#[instrument]</T>
+      <Draw pts={[[150, 30], [250, 95]]} t={t} from={0.25} to={0.55} stroke={C.caramel} w={2} pen />
+      <Draw pts={[[150, 65], [250, 95]]} t={t} from={0.4} to={0.7} stroke={C.caramel} w={2} pen />
+      <circle cx={150 + travelA * 100} cy={30 + travelA * 65} r={5} fill={C.caramel} opacity={fa(t, 0.25, 0.2)} />
+      <circle cx={150 + travelB * 100} cy={65 + travelB * 30} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <g opacity={fa(t, 0.85, 0.3)}>
+        <rect x={190} y={95} width={160} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={270} y={120} s={12} a="middle" f={C.mocha}>current span: none, identical</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>generated code, not a different mechanism</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>generated code, not a different mechanism</T>
     </Svg>
   );
 }

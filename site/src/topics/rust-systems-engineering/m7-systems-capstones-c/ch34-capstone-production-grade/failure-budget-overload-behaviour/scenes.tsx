@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A real burst of requests past a real queue's own capacity is shed
 // as a real suffix of arrival order, genuinely and reproducibly; an
@@ -58,14 +58,35 @@ export function SuffixPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: shedding is a real suffix of the order (takeaway) ────
 export function SuffixReveal({ t }: StepCtx) {
+  const ids = [0, 1, 2, 3, 4, 5];
   return (
     <Svg label="overload_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the shed requests, checked against order</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>shed requests come after admitted ones</T>
+      <T x={30} y={30} s={11} f={C.latte} o={fa(t, 0.1, 0.2)}>requests, in arrival order</T>
+      {ids.map((i) => {
+        const admitted = i < 3;
+        const start = 0.2 + i * 0.1;
+        const travel = easeOut(seg(t, start, start + 0.25));
+        const x0 = 40 + i * 50;
+        return (
+          <g key={i}>
+            <Draw pts={[[x0, 50], [x0, admitted ? 90 : 120]]} t={t} from={start} to={start + 0.25} stroke={admitted ? C.caramel : C.latte} w={2} pen />
+            <circle
+              cx={x0}
+              cy={50 + travel * (admitted ? 40 : 70)}
+              r={5}
+              fill={admitted ? C.caramel : 'none'}
+              stroke={admitted ? undefined : C.cherry}
+              strokeWidth={admitted ? 0 : 1.5}
+              opacity={fa(t, start, 0.2)}
+            />
+          </g>
+        );
+      })}
+      <g opacity={fa(t, 1.0, 0.3)}>
+        <rect x={30} y={130} width={320} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={190} y={152} s={12} a="middle" f={C.mocha}>shed requests come after admitted ones</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real suffix, never an arbitrary pick</T>
+      <T x={60} y={185} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>a real suffix, never an arbitrary pick</T>
     </Svg>
   );
 }
@@ -88,14 +109,39 @@ export function ReproduciblePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the identical split reproduces exactly (takeaway) ────
 export function ReproducibleReveal({ t }: StepCtx) {
+  const runs = [0, 1];
   return (
-    <Svg label="overload_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a fresh instance, the identical burst</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>three admitted, three shed, again</T>
+    <Svg label="overload_demo, captured" h={225}>
+      {runs.map((run) => {
+        const y0 = 35 + run * 60;
+        return (
+          <g key={run}>
+            <T x={30} y={y0 - 5} s={11} f={C.latte} o={fa(t, 0.1 + run * 0.3, 0.2)}>{run === 0 ? 'run 1' : 'run 2, fresh instance'}</T>
+            {[0, 1, 2, 3, 4, 5].map((i) => {
+              const admitted = i < 3;
+              const start = 0.25 + run * 0.3 + i * 0.07;
+              const grow = easeOut(seg(t, start, start + 0.2));
+              return (
+                <circle
+                  key={i}
+                  cx={40 + i * 50}
+                  cy={y0 + 15}
+                  r={grow * 5}
+                  fill={admitted ? C.caramel : 'none'}
+                  stroke={admitted ? undefined : C.cherry}
+                  strokeWidth={admitted ? 0 : 1.5}
+                  opacity={fa(t, start, 0.15)}
+                />
+              );
+            })}
+          </g>
+        );
+      })}
+      <g opacity={fa(t, 1.3, 0.3)}>
+        <rect x={30} y={160} width={320} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={190} y={182} s={12} a="middle" f={C.mocha}>three admitted, three shed, again</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>real, deterministic saturation</T>
+      <T x={60} y={205} s={12} f={C.latte} o={fa(t, 1.9, 0.3)}>real, deterministic saturation</T>
     </Svg>
   );
 }

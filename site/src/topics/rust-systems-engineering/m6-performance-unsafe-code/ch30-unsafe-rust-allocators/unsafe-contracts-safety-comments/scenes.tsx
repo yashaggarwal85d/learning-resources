@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A documented safety contract plus a real guard that genuinely
 // enforces it is what makes unsafe code sound: no safe caller can ever
@@ -57,14 +57,18 @@ export function RejectPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: every bad request rejected (takeaway) ─────────────────
 export function RejectReveal({ t }: StepCtx) {
+  const reqs = [0, 1, 2];
   return (
     <Svg label="safety_contracts_bound_what_a_caller_can_trigger.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>three real requests, outside the contract</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the unsafe call counter: unmoved, genuinely</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a sound guard rejects all of it, not most</T>
+      <rect x={230} y={65} width={70} height={30} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.35, 0.3)} />
+      <T x={238} y={84} s={11} f={C.crema} o={fa(t, 0.35, 0.3)}>guard</T>
+      {reqs.map((i) => {
+        const travel = easeOut(seg(t, 0.5 + i * 0.15, 0.75 + i * 0.15));
+        return <circle key={i} cx={90 + travel * 140} cy={80} r={4} fill={C.cherry} opacity={fa(t, 0.5 + i * 0.15, 0.2) * (1 - travel * 0.3)} />;
+      })}
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={120} s={13} a="middle" f={C.mocha}>the unsafe call counter: unmoved, genuinely</T>}
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>a sound guard rejects all of it, not most</T>
     </Svg>
   );
 }
@@ -87,14 +91,27 @@ export function UnguardedPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: genuinely violates it (takeaway) ───────────────────────
 export function UnguardedReveal({ t }: StepCtx) {
+  const reqs = [0, 1, 2];
   return (
     <Svg label="safety_contracts_bound_what_a_caller_can_trigger.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical inputs, checked directly</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>every one: genuinely outside the contract</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>"my callers don't" is weaker than a guard</T>
+      {reqs.map((i) => {
+        const travel = easeOut(seg(t, 0.5 + i * 0.15, 0.85 + i * 0.15));
+        return (
+          <Draw
+            key={i}
+            pts={[[90 + i * 10, 80], [90 + i * 10 + travel * 150, 80]]}
+            t={t}
+            from={0.5 + i * 0.15}
+            to={0.85 + i * 0.15}
+            stroke={C.cherry}
+            w={2}
+            pen
+          />
+        );
+      })}
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={120} s={13} a="middle" f={C.mocha}>every one: genuinely outside the contract</T>}
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>"my callers don't" is weaker than a guard</T>
     </Svg>
   );
 }
