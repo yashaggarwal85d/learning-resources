@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // At-least-once delivery genuinely redelivers a message whose own effect
 // may have already run; a real idempotency key removes that duplicate's
@@ -57,14 +57,16 @@ export function DupPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely applied twice (takeaway) ───────────────────────
 export function DupReveal({ t }: StepCtx) {
+  const land1 = easeOut(seg(t, 0.4, 0.65));
+  const land2 = easeOut(seg(t, 0.8, 1.05));
   return (
     <Svg label="idempotent_consumer_removes_duplicate_effect.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a naive consumer, after the real redelivery</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the side effect ran a second real time</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the real ledger balance is now wrong</T>
+      <circle cx={100} cy={80 - (1 - land1) * 20} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <circle cx={100} cy={80 - (1 - land2) * 20} r={5} fill={C.cherry} opacity={fa(t, 0.8, 0.2)} />
+      <T x={115} y={84} s={12} f={C.latte} o={fa(t, 0.8, 0.3)}>applied twice</T>
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={125} s={13} a="middle" f={C.mocha}>the side effect ran a second real time</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>the real ledger balance is now wrong</T>
     </Svg>
   );
 }
@@ -87,14 +89,16 @@ export function FixPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: genuinely removed (takeaway) ──────────────────────────────
 export function FixReveal({ t }: StepCtx) {
+  const land1 = easeOut(seg(t, 0.4, 0.65));
+  const blocked = easeOut(seg(t, 0.8, 1.0));
   return (
     <Svg label="idempotent_consumer_removes_duplicate_effect.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical crash, the identical redelivery</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the real key: producer id, sequence number</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the real balance landed exactly right</T>
+      <circle cx={100} cy={80 - (1 - land1) * 20} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <circle cx={100} cy={80} r={5} fill="none" stroke={C.cherry} strokeWidth={1.5} opacity={fa(t, 0.8, 0.2) * blocked} />
+      <T x={115} y={84} s={12} f={C.latte} o={fa(t, 0.8, 0.3)}>seen key: skipped</T>
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={125} s={13} a="middle" f={C.mocha}>the real key: producer id, sequence number</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>the real balance landed exactly right</T>
     </Svg>
   );
 }
@@ -117,14 +121,15 @@ export function StillRedeliversPredict({ t }: StepCtx) {
 
 // ── 8 · Measured: redelivery still happens (takeaway) ───────────────────────
 export function StillRedeliversReveal({ t }: StepCtx) {
+  const travel = easeOut(seg(t, 0.4, 0.75));
   return (
     <Svg label="idempotent_consumer_removes_duplicate_effect.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a real, counted redelivery, every time</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the message is still genuinely redelivered</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>only its own effect never runs twice</T>
+      <Draw pts={[[70, 78], [290, 78]]} t={t} from={0.4} to={0.75} stroke={C.caramel} w={2} pen />
+      <circle cx={70 + travel * 220} cy={78} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <circle cx={290} cy={78} r={5} fill="none" stroke={C.cherry} strokeWidth={1.5} opacity={fa(t, 0.8, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={120} s={13} a="middle" f={C.mocha}>the message is still genuinely redelivered</T>}
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>only its own effect never runs twice</T>
     </Svg>
   );
 }
