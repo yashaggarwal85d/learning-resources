@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A recorded history gathered under several real, independent failures can
 // be mechanically checked for linearizability; only the failures an actual
@@ -61,11 +61,13 @@ export function AttributionReveal({ t }: StepCtx) {
   return (
     <Svg label="failure_injection_linearizability_checker.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the checker names the real violation directly</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the delayed-ack read, not the duplicated one</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>idempotent, so the duplicate was harmless</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>delayed-ack read</T>
+      <circle cx={260} cy={76} r={5} fill={C.cherry} opacity={fa(t, 0.55, 0.2)} />
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.65, 0.3)}>duplicated message</T>
+      <circle cx={260} cy={111} r={5} fill={C.taupe} opacity={fa(t, 0.8, 0.2)} />
+      <Draw pts={[[235, 60], [260, 76]]} t={t} from={0.9} to={1.1} stroke={C.cherry} w={2} pen />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={140} s={13} a="middle" f={C.mocha}>the delayed-ack read, not the duplicated one</T>}
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>idempotent, so the duplicate was harmless</T>
     </Svg>
   );
 }
@@ -88,14 +90,16 @@ export function FixedHistoryPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: genuinely linearizable now (takeaway) ────────────────────
 export function FixedHistoryReveal({ t }: StepCtx) {
+  const catchUp = easeOut(seg(t, 0.5, 0.85));
   return (
     <Svg label="failure_injection_linearizability_checker.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the lagging replica caught up before any read</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>linearizable, failure still injected</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>unobserved failures never show up at all</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>replica, catching up</T>
+      <circle cx={190 + catchUp * 90} cy={76} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.9, 0.3)}>duplicated message: still injected</T>
+      <circle cx={260} cy={111} r={5} fill={C.taupe} opacity={fa(t, 0.9, 0.2)} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={140} s={13} a="middle" f={C.mocha}>linearizable, failure still injected</T>}
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>unobserved failures never show up at all</T>
     </Svg>
   );
 }
