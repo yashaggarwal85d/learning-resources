@@ -33,7 +33,7 @@ export function CorrectReveal({ t }: StepCtx) {
       <Draw pts={[[40, 55], [320, 55]]} t={t} from={0.2} to={0.55} stroke={C.caramel} w={2} pen />
       <circle cx={40 + commit * 280} cy={55} r={5} fill={C.caramel} opacity={fa(t, 0.2, 0.15)} />
       <Draw pts={[[320, 40], [320, 70]]} t={t} from={0.6} to={0.8} stroke={C.caramel} w={2} />
-      <T x={300} y={35} s={10} f={C.latte} o={fa(t, 0.65, 0.2)}>checkpoint</T>
+      <T x={320} y={86} s={10} a="middle" f={C.latte} o={fa(t, 0.65, 0.2)}>checkpoint</T>
       <g opacity={fa(t, 0.9, 0.3)}>
         <rect x={60} y={95} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={117} s={12} a="middle" f={C.mocha}>checkpoint matches: batch fourteen</T>

@@ -19,7 +19,7 @@ const site = `${root}/site`;
 const arg = (name) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1].split(',') : null);
 const only = arg('--only');
 const skip = arg('--skip') ?? [];
-let topic = arg('--topic')?.[0];
+let topic = arg('--topic')?.join(','); // a comma list tests every named reel, as --changed does
 let linkFiles = [];
 if (process.argv.includes('--changed')) {
   const { affected } = await import('./affected.mjs');
