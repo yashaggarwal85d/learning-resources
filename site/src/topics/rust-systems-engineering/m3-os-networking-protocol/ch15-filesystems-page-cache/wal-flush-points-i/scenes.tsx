@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A per-update fsync makes one real syscall per write; batching into WAL-style flush
 // points makes a dramatically smaller number for the identical writes, and is also
@@ -27,14 +27,17 @@ export function PerUpdatePredict({ t }: StepCtx) {
 
 // ── 2 · Measured: exactly 1000 (this is the swipe test's "from" step — NO takeaway) ─────────────
 export function PerUpdateReveal({ t }: StepCtx) {
+  const ticks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   return (
     <Svg label="fsync_per_update.rs, traced: one call per write" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a thousand writes, each flushed on its own</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>real fsync syscalls: exactly 1000</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>confirmed by strace, not assumed</T>
+      {ticks.map((i) => {
+        const land = easeOut(seg(t, 0.5 + i * 0.04, 0.7 + i * 0.04));
+        return <rect key={i} x={66 + i * 25} y={70} width={18} height={10} rx={2} fill={C.caramel} opacity={land} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>real fsync syscalls: exactly 1000</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>confirmed by strace, not assumed</T>
     </Svg>
   );
 }
@@ -57,14 +60,17 @@ export function BatchedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: 21 real fsync calls, not 1000 (takeaway) ──────────────────────────────────────
 export function BatchedReveal({ t }: StepCtx) {
+  const ticks = [0, 1, 2, 3];
   return (
     <Svg label="fsync_batched_flush_points.rs: a real trace" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical thousand writes, batched</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>real fsync syscalls: 21, not 1000</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>close to one flush per batch, not a vague cut</T>
+      {ticks.map((i) => {
+        const land = easeOut(seg(t, 0.5 + i * 0.1, 0.7 + i * 0.1));
+        return <rect key={i} x={66 + i * 60} y={70} width={18} height={10} rx={2} fill={C.caramel} opacity={land} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>real fsync syscalls: 21, not 1000</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>close to one flush per batch, not a vague cut</T>
     </Svg>
   );
 }
@@ -87,14 +93,16 @@ export function TimingPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: dramatically faster, for the identical writes (takeaway) ──────────────────────
 export function TimingReveal({ t }: StepCtx) {
+  const bar1 = easeOut(seg(t, 0.4, 0.9));
+  const bar2 = easeOut(seg(t, 0.95, 1.3));
   return (
     <Svg label="both binaries, timed on the same 1000 writes" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>per-update: a thousand real waits</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>batched: far less real wall-clock time</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>same writes, far less waiting</T>
+      <rect x={60} y={70} width={bar1 * 240} height={12} rx={3} fill={C.caramel} opacity={0.7} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <rect x={70} y={98} width={bar2 * 8} height={12} rx={3} fill={C.taupe} opacity={0.9} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={122} s={13} a="middle" f={C.mocha}>batched: far less real wall-clock time</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>same writes, far less waiting</T>
     </Svg>
   );
 }
@@ -117,10 +125,16 @@ export function WalDocPredict({ t }: StepCtx) {
 
 // ── 8 · The documentation's own words, quoted (no takeaway, connecting step) ────────────────────
 export function WalDocReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="PostgreSQL's own WAL documentation, quoted" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>only the WAL file needs flushing, not every file</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>one flush can cover many transactions at once</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>only the WAL file needs flushing, not every file</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>one flush can cover many transactions at once</T>
+      </g>
     </Svg>
   );
 }

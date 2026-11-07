@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // sync_all and sync_data genuinely make different syscalls; a file's fsync and its
 // directory's fsync are genuinely two separate calls; and a failed fsync's own retry
@@ -26,13 +26,14 @@ export function SyncCallPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: fsync vs fdatasync (this is the swipe test's "from" step — NO takeaway) ───────
 export function SyncCallReveal({ t }: StepCtx) {
+  const trace = easeOut(seg(t, 0.5, 0.85));
+  const dx = trace * 110;
   return (
     <Svg label="sync_demo.rs, traced: two real syscalls" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>sync_all() traced as: fsync</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>sync_data() traced as: fdatasync</T>
-      </g>
+      <circle cx={60 + dx} cy={82} r={4} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>sync_data() traced as: fdatasync</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>confirmed by strace, not by the docs alone</T>
     </Svg>
   );
@@ -59,10 +60,10 @@ export function DirSyncReveal({ t }: StepCtx) {
   return (
     <Svg label="directory_fsync_is_a_separate_syscall.rs: a real trace" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the file's own fsync: one real syscall</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the directory's own fsync: a second one</T>
-      </g>
+      <circle cx={260} cy={57} r={4} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <Draw pts={[[260, 61], [260, 85]]} t={t} from={0.6} to={0.9} stroke={C.caramel} w={2} pen />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>the directory's own fsync: a second one</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>two different handles, two different calls</T>
     </Svg>
   );
@@ -86,13 +87,14 @@ export function AtomicReplacePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: no partial reads, ever (takeaway) ─────────────────────────────────────────────
 export function AtomicReplaceReveal({ t }: StepCtx) {
+  const cyclePos = t > 0.4 ? ((t - 0.4) % 0.5) / 0.5 : 0;
+  const swap = cyclePos < 0.5 ? 0 : 1;
   return (
     <Svg label="atomic_replace_never_exposes_a_partial_file.rs: a real race" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>tens of thousands of real concurrent reads</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>a half-written file: never once observed</T>
-      </g>
+      <circle cx={260} cy={57} r={4} fill={swap === 0 ? C.taupe : C.caramel} opacity={fa(t, 0.4, 0.3)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>a half-written file: never once observed</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>old content or new content, never a mix</T>
     </Svg>
   );
@@ -116,10 +118,16 @@ export function RetryPredict({ t }: StepCtx) {
 
 // ── 8 · The paper's own account, quoted (no takeaway, connecting step) ──────────────────────────
 export function RetryReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="the paper's own account of the 2018 incident" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>a failed fsync marks the dirty page clean anyway</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>the retry finds nothing left to write, "succeeds"</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>a failed fsync marks the dirty page clean anyway</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>the retry finds nothing left to write, "succeeds"</T>
+      </g>
     </Svg>
   );
 }
