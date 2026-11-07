@@ -12,22 +12,35 @@ const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
 
 // ── 1 · Chosen once, or chosen many times ───────────────────────────────────────────────────────────
 export function AssocVsGeneric({ t }: StepCtx) {
+  // The associated-type impl drops into place once and locks (position, then stays put). The
+  // generic-parameter impls arrive one at a time, each sliding in from its own side, showing the
+  // same type gaining a second implementation instead of being limited to the first.
+  const drop = easeOut(seg(t, 0.2, 0.5));
+  const boxDy = (1 - drop) * -30;
+  const lockOn = fa(t, 0.5, 0.3);
+  const slide1 = easeOut(seg(t, 0.8, 1.1));
+  const slide2 = easeOut(seg(t, 1.2, 1.5));
+  const dx1 = (1 - slide1) * -180;
+  const dx2 = (1 - slide2) * 180;
   return (
     <Svg label="an associated type is chosen once per impl; a generic parameter on the trait lets the same type implement it many times" h={340}>
       <T x={40} y={30} s={13} f={C.taupe}>Codec::Output, an associated type</T>
-      <g opacity={fa(t, 0.2, 0.4)}>
+      <g transform={`translate(0,${boxDy})`} opacity={fa(t, 0.2, 0.3)}>
         <rect x={60} y={44} width={200} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={160} y={72} s={13} a="middle" f={C.crema}>impl Codec for A</T>
-        <T x={60} y={108} s={12} f={C.caramel}>chosen once, right here</T>
       </g>
+      <rect x={252} y={50} width={14} height={14} fill={C.caramel} opacity={lockOn} />
+      <T x={60} y={108} s={12} f={C.caramel} o={lockOn}>chosen once, right here</T>
       <T x={40} y={160} s={13} f={C.taupe}>Meters: From&lt;T&gt;, a generic parameter</T>
-      <g opacity={fa(t, 0.8, 0.4)}>
+      <g transform={`translate(${dx1},0)`} opacity={fa(t, 0.8, 0.3)}>
         <rect x={60} y={174} width={150} height={44} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
         <T x={135} y={201} s={12} a="middle" f={C.crema}>From&lt;i32&gt;</T>
+      </g>
+      <g transform={`translate(${dx2},0)`} opacity={fa(t, 1.2, 0.3)}>
         <rect x={230} y={174} width={150} height={44} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
         <T x={305} y={201} s={12} a="middle" f={C.crema}>From&lt;f64&gt;</T>
-        <T x={60} y={238} s={12} f={C.taupe}>two impls, one per source type</T>
       </g>
+      <T x={60} y={238} s={12} f={C.taupe} o={fa(t, 1.5, 0.3)}>two impls, one per source type</T>
     </Svg>
   );
 }
