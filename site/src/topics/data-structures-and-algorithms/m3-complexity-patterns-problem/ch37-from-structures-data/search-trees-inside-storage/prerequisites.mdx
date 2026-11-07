@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">Before this: the textbook B+-tree node, split and sibling links this topic adapts.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree node engineering">Before this: slotted-page layout and bulk loading, assumed here, not retaught.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM-tree write and read paths">Before this: the memtable, SSTable and write-ahead log this topic's RocksDB key builds on.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM compaction and amplification">Before this: compaction policy and per-level filter sizing, named not rebuilt.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bloom filters and false-positive math">Before this: the Bloom filter and its false-positive formula, behind this topic's filter sizing.</Resource>
+</ul>
+
+Topic 119 ("Heaps inside compaction, shuffle and top-N") and topic 121 ("Union-find inside
+entity resolution") are confirmed **not yet live** in the registry at build time (2026-11-07);
+topic 119's merging iterator, which shares this topic's RocksDB internal-key comparator, is
+named once in prose (step 10) without a link, since no live topic exists yet to link to.
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="nbtree/README" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/access/nbtree/README" by="PostgreSQL">The heap-TID tiebreaker and the ascending-TID duplicate split.</Resource>
+  <Resource kind="reading" title="db/dbformat.h" href="https://raw.githubusercontent.com/facebook/rocksdb/main/db/dbformat.h" by="RocksDB">The internal-key comparator: user key ascending, sequence number descending.</Resource>
+  <Resource kind="reading" title="Partitioned Index/Filters" href="https://github.com/facebook/rocksdb/wiki/Partitioned-Index-Filters" by="RocksDB wiki">Why a filter block is paged, and what the top-level index costs.</Resource>
+  <Resource kind="reading" title="RocksDB Bloom Filter" href="https://github.com/facebook/rocksdb/wiki/RocksDB-Bloom-Filter" by="RocksDB wiki">Read to check the current default filter family; left as an open question.</Resource>
+</ul>
+
+</section>
