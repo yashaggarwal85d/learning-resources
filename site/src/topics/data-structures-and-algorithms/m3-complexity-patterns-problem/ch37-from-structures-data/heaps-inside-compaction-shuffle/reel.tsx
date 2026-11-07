@@ -1,7 +1,7 @@
 import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
-// Chapter 37's third topic: the one kernel both the hash path (117) and the sort path (118)
+// This chapter's third topic: the one kernel both the hash path and the sort path before it
 // share, the k-way merge, found inside an LSM compaction, two different Spark spill merges,
 // and a sort's final merge — and the same heap turned upside down and capped for ORDER BY ...
 // LIMIT. Every number is computed in examples.py; every system claim is a word-for-word quote
@@ -38,7 +38,7 @@ const reel: Reel = {
       Visual: S.Chapter6Recap,
     },
     {
-      title: "Pebble's mergingIter keeps one heap of child iterators, one per LSM level, table or memtable. The same heap runs forward as a min-heap and backward as a max-heap. Next or Prev pops the current winner, advances its iterator, and \"fixes\" the heap — pop, advance, sift, read word for word from the source.",
+      title: "Pebble's mergingIter keeps one heap of child iterators, one per LSM level, table or memtable. The same heap runs forward as a min-heap and backward as a max-heap. Next or Prev pops the current winner, advances its iterator, and fixes the heap — pop, advance, sift, read word for word from the source.",
       body: <>One heap of iterators, switched between min-heap and max-heap by direction.</>,
       duration: 5.5,
       fig: 'PebbleHeap',
@@ -81,7 +81,7 @@ const reel: Reel = {
       Visual: S.PredictTreeShape,
     },
     {
-      title: "Spark's heap shows up through two different APIs, same kernel. UnsafeSorterSpillMerger's priority queue never enqueues an empty spill reader, so a drained reader can never produce a spurious record. ExternalSorter's mergeSort builds a max-heap-only priority queue with the comparator reversed, because dequeuing the \"maximum\" under a flipped order is dequeuing the minimum key.",
+      title: "Spark's heap shows up through two different APIs, same kernel. UnsafeSorterSpillMerger's priority queue never enqueues an empty spill reader, so a drained reader can never produce a spurious record. ExternalSorter's mergeSort builds a max-heap-only priority queue with the comparator reversed, because dequeuing the maximum under a flipped order is dequeuing the minimum key.",
       body: <>One heap guards against an empty reader; the other inverts a max-heap into a min-heap.</>,
       duration: 6,
       fig: 'SparkTwoHeaps',
@@ -92,7 +92,7 @@ const reel: Reel = {
       body: <>A loser tree compares less per output. Most engines still reach for the heap.</>,
       duration: 6,
       fig: 'HeapVsLoserMeasured',
-      takeaway: 'A tree of losers costs fewer comparisons per output than a binary heap at the same fan-in, and most production merges still choose the heap anyway.',
+      takeaway: 'A tree of losers compares less per output than a heap; most merges still choose the heap anyway.',
       Visual: S.HeapVsLoserMeasured,
     },
     {
@@ -100,7 +100,7 @@ const reel: Reel = {
       body: <>The worst kept row sits at the root, so discarding it costs one comparison.</>,
       duration: 6,
       fig: 'BoundedHeapRoot',
-      takeaway: "A bounded top-N heap keeps its worst kept row at the root on purpose, so a row that can't make the cut is discarded for the price of one comparison.",
+      takeaway: "A bounded top-N heap keeps its worst kept row at the root, so a losing row costs one comparison.",
       Visual: S.BoundedHeapRoot,
     },
     {
@@ -115,7 +115,7 @@ const reel: Reel = {
       body: <>n log N beats n log n; about one hundred seventy-five replacements out of four hundred million rows.</>,
       duration: 6.5,
       fig: 'ReplacementArithmetic',
-      takeaway: 'Almost every row a bounded top-N heap sees is thrown away for one comparison; only a vanishing fraction ever reaches the root.',
+      takeaway: 'Almost every row a bounded top-N heap sees is thrown away for one comparison; only a few reach the root.',
       Visual: S.ReplacementArithmetic,
     },
     {
