@@ -1,0 +1,82 @@
+{
+  "topic": "dsa.topological-sort-inside-schedulers",
+  "steps": [
+    {
+      "lines": [
+        "Thirty-two slots out of two hundred ready tasks sounds like a small decision. It decides the whole pipeline's finish time, because every slot you fill with the wrong task is a slot the right task didn't get.",
+        "Before you answer, separate two different questions: which task the rule runs first, and which task actually finishes the pipeline sooner. They are not always the same question."
+      ],
+      "answer": [
+        "The fan-out runs first, because the default rule counts tasks below, not how long the chain below is.",
+        "But watch the chain's own finish time in the next few steps. With only these two competing, there turns out to be enough slack that the order barely matters."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing on this screen is new to you. What's worth noticing is how little of it survives once a real scheduler gets involved — everything after this step is about what changes when the graph stops sitting still."
+      ]
+    },
+    {
+      "lines": [
+        "Three shapes, three roles: a chain you'll track all topic, a fan-out that competes with it for workers, and a third branch that's longer than either but doesn't show up until later. Hold onto that third one.",
+        "Notice the fan-out's total work is small — five short tasks — while the chain is short but each step is long. Count and duration are already pulling in different directions."
+      ]
+    },
+    {
+      "lines": [
+        "Read the default slowly: a sum over descendants, not a maximum over any chain. That's the whole surprise of this topic, stated in one sentence before any code runs."
+      ]
+    },
+    {
+      "lines": [
+        "A set, not a list, is the detail worth sitting with. If a descendant were counted once per path reaching it, a diamond-shaped DAG would quietly inflate its own priority every time you added a redundant edge.",
+        "The source doesn't call this out as a design choice worth justifying. It's just the obvious way to answer 'how much depends on this,' which is exactly the topic's point."
+      ]
+    },
+    {
+      "lines": [
+        "The rule picked correctly, exactly as predicted. Now look at what that prediction didn't promise: a different finish time for the thing you actually care about.",
+        "Running the fan-out first used up worker time the chain wasn't going to need yet anyway. The ranking changed; the schedule's shape around it absorbed the difference."
+      ]
+    },
+    {
+      "lines": [
+        "This is the fix a user actually has to apply by hand — set every task's own weight to its own duration. Airflow doesn't do this for you; there's no separate critical-path rule.",
+        "And it works, for this one pair: the chain now outranks the fan-out. Don't conclude yet that it always will."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the branch you were told to hold onto. Add it back in, and the clean story from two steps ago breaks.",
+        "The duration-weighted rule isn't wrong here, it's just not aimed at what you assumed it was aimed at: a sum of durations is still a sum, not a longest path, and a sum can lose to a shorter sum that happens to sit on the chain you're watching."
+      ]
+    },
+    {
+      "lines": [
+        "Take the workers away entirely and the scheduling problem disappears — what's left is pure graph structure. The longest chain by duration is the floor nothing can beat, no matter how clever the ready-queue rule is.",
+        "Notice which chain that is. It isn't the one this whole topic has been narrating around."
+      ]
+    },
+    {
+      "lines": [
+        "This bound doesn't care which rule you used, or whether your rule was any good at guessing the critical path. It's a worst case over every possible ready-queue order, including a bad one.",
+        "Both measured runs sit well inside it. That's expected — the bound is loose on purpose, a guarantee, not a prediction."
+      ]
+    },
+    {
+      "lines": [
+        "Both of these detect the exact same cycle. The question is which one was built to remember how it got there.",
+        "One of them is just counting. The other is tracking a path."
+      ],
+      "answer": [
+        "The depth-first search names the one faulty edge; Kahn's algorithm only shows the whole stuck group.",
+        "Kahn's algorithm never asks which edge is the problem; it just reports who's still stuck when it runs out of ready tasks. The depth-first search was watching the exact path it came in on, so it's the only one that can name an edge."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the one habit this topic was really about: ask what a rule is actually optimizing before you trust that it's optimizing the thing you care about."
+      ]
+    }
+  ]
+}
