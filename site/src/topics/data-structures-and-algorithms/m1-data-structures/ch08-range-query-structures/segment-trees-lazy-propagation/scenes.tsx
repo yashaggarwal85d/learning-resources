@@ -1,287 +1,368 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
-// Colour grammar (CHAPTER.md, DESIGN.md): crema = the array's own live state; latte =
-// secondary labels; taupe = a slot/node not yet touched; caramel = the thing to look at
-// (the nodes a query or update actually visits); cinnamon (rare) = the alternative being
-// compared (a segment tree with no lazy tags, set directly against one with them); cherry/
-// cherryText = the full leaf-by-leaf work a segment tree with no lazy tags pays that a
-// lazy one skips.
+// Colour grammar (CHAPTER.md): crema = the tree's own live state; latte = labels; caramel = the thing to look at
+// (nodes a query uses, a lazy tag, the climbing update); cinnamon = the compared alternative (the Fenwick tree,
+// the eager update); cherryText = what can't be done, or the cost paid. The array, the query range [5, 11), the
+// tags and the workload are examples.py's own; each tree node is drawn as a bar over the slots it covers, and its
+// stored value is never printed, only what examples.py prints.
 
-const COUNTS = [3, 5, 2, 8, 1, 4, 6, 2, 9, 3, 5, 7, 1, 2, 4];
-const N = COUNTS.length;
-
-// one row of N slots, 0-indexed; `touched` indices light up in `colour`.
-function row(x: number, y: number, w: number, touched: number[], colour = C.caramel, reveal = 1, labelAll = true) {
-  const slotW = w / N;
-  const items: React.ReactNode[] = [];
-  for (let i = 0; i < N; i++) {
-    const isTouched = touched.includes(i);
-    const sx = x + i * slotW;
-    items.push(
-      <rect
-        key={`r-${x}-${y}-${i}`}
-        x={sx}
-        y={y}
-        width={slotW - 2}
-        height={20}
-        rx={2}
-        fill={isTouched ? colour : 'none'}
-        stroke={isTouched ? colour : C.taupe}
-        strokeWidth={1.2}
-        opacity={isTouched ? reveal : 0.6}
-      />,
-    );
-    if (labelAll || isTouched) {
-      items.push(
-        <T key={`l-${x}-${y}-${i}`} x={sx + slotW / 2 - 1} y={y + 14} s={13} f={isTouched ? C.ink : C.latte} a="middle">
-          {String(COUNTS[i])}
-        </T>,
-      );
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
     }
-  }
-  return items;
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
 }
 
-// a node of the real segment tree, drawn as a labeled box at (x, y): its own [tl, tr) range.
-function node(x: number, y: number, tl: number, tr: number, status: 'idle' | 'recurse' | 'used', reveal = 1) {
-  const colour = status === 'used' ? C.caramel : status === 'recurse' ? C.latte : C.taupe;
+const A = [3, 5, 2, 8, 1, 4, 6, 2, 9, 3, 5, 7, 1, 2, 4];
+const N = 15;
+const X = (i: number) => 36 + i * 35;
+const CW = 31;
+
+// The recursive tree over [0, 15): node v covers [tl, tr), at depth d (examples.py's own split, tm = (tl+tr)//2).
+type Node = { v: number; tl: number; tr: number; d: number };
+const NODES: Node[] = [];
+(function build(v: number, tl: number, tr: number, d: number) {
+  NODES.push({ v, tl, tr, d });
+  if (tr - tl > 1) {
+    const tm = Math.floor((tl + tr) / 2);
+    build(2 * v, tl, tm, d + 1);
+    build(2 * v + 1, tm, tr, d + 1);
+  }
+})(1, 0, N, 0);
+const INTERNAL = NODES.filter((n) => n.tr - n.tl > 1);
+const node = (v: number) => NODES.find((n) => n.v === v)!;
+const VISIT = [1, 2, 5, 11, 3, 6]; // query [5, 11): every node it touches, in order
+const USED = [11, 6]; // the two fully inside, used whole
+
+/** A node as a bar over the slots it covers; leaves sit on the bottom row with their values. */
+function Bar({ n, top = 50, dy = 38, c = C.latte, fill = false, o = 1, k = 1, leafY = 210 }: { n: Node; top?: number; dy?: number; c?: string; fill?: boolean; o?: number; k?: number; leafY?: number }) {
+  const leaf = n.tr - n.tl === 1;
+  const x0 = X(n.tl);
+  const x1 = X(n.tr - 1) + CW;
+  const y = leaf ? leafY : top + n.d * dy;
+  const w = (x1 - x0) * k;
   return (
-    <g opacity={status === 'idle' ? 0.45 : reveal}>
-      <rect x={x - 32} y={y - 14} width={64} height={28} rx={4} fill="none" stroke={colour} strokeWidth={1.4} />
-      <T x={x} y={y + 5} s={13} f={colour} a="middle">
-        [{tl},{tr})
-      </T>
+    <g opacity={o}>
+      <rect x={(x0 + x1) / 2 - w / 2} y={y} width={Math.max(0, w)} height={22} rx={3} fill={fill ? c : C.roast} stroke={c} strokeWidth={fill ? 0 : 1.2} />
+      {leaf && <T x={(x0 + x1) / 2} y={y + 16} s={13} f={fill ? C.espresso : C.crema} a="middle">{A[n.tl]}</T>}
     </g>
   );
 }
 
-function edge(x1: number, y1: number, x2: number, y2: number, lit: boolean, reveal = 1) {
-  return <line x1={x1} y1={y1 + 14} x2={x2} y2={y2 - 14} stroke={lit ? C.caramel : C.mocha} strokeWidth={lit ? 1.6 : 1} opacity={lit ? reveal : 0.5} />;
+/** A small tag badge (e.g. "+3") sitting on a node's right end. */
+function Tag({ x, y, text, o = 1, c = C.caramel }: { x: number; y: number; text: string; o?: number; c?: string }) {
+  return (
+    <g opacity={o}>
+      <rect x={x - 16} y={y - 13} width={32} height={20} rx={10} fill={C.espresso} stroke={c} strokeWidth={1.6} />
+      <T x={x} y={y + 2} s={12} f={c} a="middle">{text}</T>
+    </g>
+  );
+}
+const tagAt = (v: number, top = 50, dy = 38): [number, number] => {
+  const n = node(v);
+  return [(X(n.tl) + X(n.tr - 1) + CW) / 2, top + n.d * dy - 4];
+};
+
+/** The query bracket under slots [l, r). */
+function Bracket({ l, r, y, c = C.caramel, o = 1 }: { l: number; r: number; y: number; c?: string; o?: number }) {
+  return <path d={`M ${X(l)} ${y} L ${X(l)} ${y + 8} L ${X(r - 1) + CW} ${y + 8} L ${X(r - 1) + CW} ${y}`} fill="none" stroke={c} strokeWidth={1.8} opacity={o} />;
 }
 
-// the real tree, three levels deep: root [0,15), its two children, and the four
-// grandchildren — the exact split points _build(1,0,15) computes (tm = (tl+tr)//2 at
-// every level), not a schematic stand-in.
-function treeLevels(highlight: Record<string, 'recurse' | 'used'>, reveal: number) {
-  const L0 = { x: 300, y: 40, tl: 0, tr: 15, key: '1' };
-  const L1 = [
-    { x: 160, y: 95, tl: 0, tr: 7, key: '2' },
-    { x: 440, y: 95, tl: 7, tr: 15, key: '3' },
-  ];
-  const L2 = [
-    { x: 90, y: 150, tl: 0, tr: 3, key: '4' },
-    { x: 230, y: 150, tl: 3, tr: 7, key: '5' },
-    { x: 370, y: 150, tl: 7, tr: 11, key: '6' },
-    { x: 510, y: 150, tl: 11, tr: 15, key: '7' },
-  ];
-  const status = (key: string): 'idle' | 'recurse' | 'used' => highlight[key] ?? 'idle';
-  const items: React.ReactNode[] = [];
-  items.push(edge(L0.x, L0.y, L1[0].x, L1[0].y, status('2') !== 'idle', reveal));
-  items.push(edge(L0.x, L0.y, L1[1].x, L1[1].y, status('3') !== 'idle', reveal));
-  items.push(edge(L1[0].x, L1[0].y, L2[0].x, L2[0].y, status('4') !== 'idle', reveal));
-  items.push(edge(L1[0].x, L1[0].y, L2[1].x, L2[1].y, status('5') !== 'idle', reveal));
-  items.push(edge(L1[1].x, L1[1].y, L2[2].x, L2[2].y, status('6') !== 'idle', reveal));
-  items.push(edge(L1[1].x, L1[1].y, L2[3].x, L2[3].y, status('7') !== 'idle', reveal));
-  items.push(node(L0.x, L0.y, L0.tl, L0.tr, status('1'), reveal));
-  for (const n of L1) items.push(node(n.x, n.y, n.tl, n.tr, status(n.key), reveal));
-  for (const n of L2) items.push(node(n.x, n.y, n.tl, n.tr, status(n.key), reveal));
-  return items;
-}
-
-// 1 · Opening: the gap left by topic 33 — a range needing a minimum, no Fenwick path for it
+// 1 · Opening. The array. A running-sum strip (the Fenwick tree's one question) draws in with a check. Then two
+// asks it can't answer draw in red: the smallest value in a stretch, and +3 across a stretch at once. Then the
+// promise: any combine, any range.
 export function Opening({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.6));
+  const sum = easeInOut(seg(t, 0.3, 1.0));
+  const ask1 = easeOut(seg(t, 1.4, 1.8));
+  const ask2 = easeOut(seg(t, 2.2, 2.6));
+  const promise = easeOut(seg(t, 3.2, 3.6));
   return (
-    <Svg label="Fifteen per-minute event-count slots; a range highlighted needing a minimum, no Fenwick-style path available" h={240}>
-      <T x={30} y={24} s={13} f={C.latte}>
-        the same fifteen per-minute counts
-      </T>
-      {row(30, 40, 540, [5, 6, 7, 8, 9, 10], C.crema, 1)}
-      <T x={30} y={95} s={13} f={C.crema} o={a}>
-        minutes 5 through 10: what's the minimum count?
-      </T>
-      <T x={30} y={125} s={13} f={C.cherryText} o={a}>
-        a Fenwick tree has one operator — sum —
-      </T>
-      <T x={30} y={145} s={13} f={C.cherryText} o={a}>
-        and no index-jump path answers minimum
-      </T>
-      <T x={30} y={175} s={13} f={C.latte} o={a}>
-        this topic builds the structure that can
-      </T>
+    <Svg label="The fifteen counts; a running sum, the Fenwick tree's question, works; the smallest value in a stretch and an update across a stretch do not; this topic handles any combine over any range" h={280}>
+      {A.map((v, i) => (
+        <g key={i}>
+          <rect x={X(i)} y={30} width={CW} height={24} rx={3} fill={C.roast} stroke={C.latte} strokeWidth={1} />
+          <T x={X(i) + CW / 2} y={47} s={13} f={C.crema} a="middle">{v}</T>
+        </g>
+      ))}
+      <rect x={X(0)} y={70} width={(X(N - 1) + CW - X(0)) * sum} height={12} rx={2} fill={C.cinnamon} />
+      <T x={30} y={108} s={13} f={C.cinnamon} o={sum}>running sum</T>
+      <Draw pts={[[170, 102], [176, 108], [188, 94]]} t={t} from={1.0} to={1.25} stroke={C.cinnamon} w={2} pen={false} />
+      <g opacity={ask1}>
+        <rect x={X(5) - 2} y={28} width={X(10) + CW - X(5) + 4} height={28} rx={4} fill="none" stroke={C.cherryText} strokeWidth={1.6} />
+        <T x={30} y={148} s={13} f={C.cherryText}>smallest in a stretch?</T>
+      </g>
+      <Draw pts={[[262, 140], [276, 154]]} t={t} from={1.8} to={1.95} stroke={C.cherryText} w={2} pen={false} />
+      <Draw pts={[[276, 140], [262, 154]]} t={t} from={1.95} to={2.1} stroke={C.cherryText} w={2} pen={false} />
+      <g opacity={ask2}>
+        {[5, 6, 7, 8, 9, 10].map((i) => <T key={i} x={X(i) + CW / 2} y={22} s={12} f={C.cherryText} a="middle">+3</T>)}
+        <T x={30} y={182} s={13} f={C.cherryText}>+3 across a stretch?</T>
+      </g>
+      <Draw pts={[[262, 174], [276, 188]]} t={t} from={2.6} to={2.75} stroke={C.cherryText} w={2} pen={false} />
+      <Draw pts={[[276, 174], [262, 188]]} t={t} from={2.75} to={2.9} stroke={C.cherryText} w={2} pen={false} />
+      <T x={30} y={240} s={14} f={C.caramel} o={promise}>any combine, any range</T>
     </Svg>
   );
 }
 
-// 2 · TreeReveal: the real tree built above the array, three levels, no highlight yet
+// 2 · The tree, built bottom-up. The 15 leaves first, then each level of internal nodes appears as a bar over the
+// slots it covers, flashing as it combines its two children: deepest first, root last.
 export function TreeReveal({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.7));
+  const leaves = easeOut(seg(t, 0.2, 0.6));
+  const lv = (d: number) => easeOut(seg(t, 0.8 + (3 - d) * 0.55, 1.2 + (3 - d) * 0.55));
+  const flash = (d: number) => clamp(1 - Math.abs(t - (1.1 + (3 - d) * 0.55)) / 0.3);
   return (
-    <Svg label="A small binary tree built above the array, each node's own range shown, each internal node holding the combine of its two children" h={260}>
-      {treeLevels({ '1': 'recurse', '2': 'recurse', '3': 'recurse', '4': 'recurse', '5': 'recurse', '6': 'recurse', '7': 'recurse' }, a)}
-      {row(30, 190, 540, [], C.crema, 1)}
+    <Svg label="Fifteen leaves hold the counts; each level of nodes above combines its two children, built from the bottom up to the root" h={270}>
+      {NODES.filter((n) => n.tr - n.tl === 1).map((n) => <Bar key={n.v} n={n} c={C.crema} o={leaves} />)}
+      {INTERNAL.map((n) => <Bar key={n.v} n={n} c={flash(n.d) > 0.2 ? C.caramel : C.latte} k={lv(n.d)} o={lv(n.d)} />)}
+      <T x={30} y={262} s={13} f={C.latte} o={easeOut(seg(t, 3.2, 3.6))}>each bar: its two children, combined</T>
     </Svg>
   );
 }
 
-// 3 · QueryPredict: the range [5,11) highlighted, candidate node-counts as options
-export function QueryPredict({}: StepCtx) {
+// 3 · Predict. The tree, with the query [5, 11) bracketed under its six leaves, pulsing. How many nodes? After
+// answering: the six nodes the query touches are outlined, the two it uses whole are filled.
+export function QueryPredict({ t, answer }: StepCtx) {
+  const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const pulse = 0.6 + 0.4 * Math.sin(t * 4);
   return (
-    <Svg label="Minutes five through ten highlighted; how many tree nodes does the range query actually visit?" h={240}>
-      <T x={30} y={24} s={13} f={C.latte}>
-        range sum, minutes 5 through 10
-      </T>
-      {row(30, 40, 540, [5, 6, 7, 8, 9, 10], C.caramel, 1)}
-      <T x={30} y={100} s={13} f={C.crema}>
-        how many tree nodes does this query touch?
-      </T>
-      <T x={30} y={130} s={13} f={C.latte}>
-        one · a handful · eleven · all of them
-      </T>
-    </Svg>
-  );
-}
-
-// 4 · QueryReveal: the real descent for [5,11), only the visited nodes lit
-export function QueryReveal({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.7));
-  return (
-    <Svg label="The real descent for minutes five through ten: six nodes visited, two of them used directly, the rest skipped" h={260}>
-      {treeLevels({ '1': 'recurse', '2': 'recurse', '5': 'used', '3': 'recurse', '6': 'used' }, a)}
-      {row(30, 190, 540, [5, 6, 7, 8, 9, 10], C.caramel, a)}
-    </Svg>
-  );
-}
-
-// 5 · OperatorReveal: the identical shape, built twice, sum beside minimum
-export function OperatorReveal({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.6));
-  return (
-    <Svg label="The identical tree shape built twice: one combining by sum, one by minimum, both over the same array" h={260}>
-      <T x={30} y={24} s={13} f={C.latte}>
-        sum tree
-      </T>
-      <T x={330} y={24} s={13} f={C.latte}>
-        minimum tree
-      </T>
-      <g transform="translate(-130, 0)">{treeLevels({ '1': 'used', '2': 'used', '3': 'used' }, a).slice(0, 7)}</g>
-      <g transform="translate(130, 0)" opacity={a}>
-        <T x={430} y={40} s={13} f={C.crema} a="middle">
-          min = 1
-        </T>
-      </g>
-      {row(30, 200, 540, [], C.crema, 1)}
-    </Svg>
-  );
-}
-
-// 6 · IterativeReveal: the flat array layout, a leaf climbing to the root
-export function IterativeReveal({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.8));
-  const path = [20, 10, 5, 2, 1];
-  return (
-    <Svg label="One flat array of leaves and internal nodes; minute five's own leaf climbs straight up to the root, combining with its sibling at each level" h={260}>
-      <T x={30} y={24} s={13} f={C.latte}>
-        leaf at position 20 (minute 5), climbing up
-      </T>
-      {path.map((p, i) => {
-        const k = easeOut(seg(t, 0.1 + i * 0.15, 0.1 + i * 0.15 + 0.3));
-        return (
-          <g key={`climb-${i}`} opacity={Math.max(0.3, k)}>
-            <rect x={300 - 30} y={190 - i * 35 - 14} width={60} height={28} rx={4} fill="none" stroke={i === 0 ? C.crema : C.caramel} strokeWidth={1.4} />
-            <T x={300} y={190 - i * 35 + 5} s={13} f={i === 0 ? C.crema : C.caramel} a="middle">
-              array[{p}]
-            </T>
-          </g>
-        );
+    <Svg label="The tree with a query over slots 5 to 10 bracketed; after answering, the six nodes it touches are outlined and the two it uses whole are filled" h={290}>
+      {NODES.map((n) => {
+        const j = VISIT.indexOf(n.v);
+        const k = answered && j >= 0 ? easeOut(seg(s, 0.2 + j * 0.15, 0.4 + j * 0.15)) : 0;
+        return <Bar key={n.v} n={n} c={k > 0 ? C.caramel : C.latte} fill={k > 0 && USED.includes(n.v)} />;
       })}
-      {row(30, 210, 540, [5], C.crema, a)}
+      <Bracket l={5} r={11} y={240} c={answered ? C.caramel : C.cherryText} o={answered ? 1 : pulse} />
+      {!answered && <T x={30} y={282} s={15} f={C.cherryText} o={pulse}>how many nodes?</T>}
+      {answered && <T x={30} y={282} s={13} f={C.caramel} o={easeOut(seg(s, 1.3, 1.7))}>6 touched, 2 used whole</T>}
     </Svg>
   );
 }
 
-// 7 · LazyPredict: a range-wide update, two candidate costs sketched
-export function LazyPredict({}: StepCtx) {
+// 4 · The descent. In order: the root straddles the range (split), its left child straddles (split), [3, 7)
+// straddles (split), [5, 7) is inside (use it), [7, 15) straddles (split), [7, 11) is inside (use it). Every
+// other node dims: never visited. Then the answer: 29.
+export function QueryReveal({ t }: StepCtx) {
+  const at = (j: number) => 0.3 + j * 0.42;
+  const seen = (v: number) => {
+    const j = VISIT.indexOf(v);
+    return j >= 0 && t >= at(j);
+  };
+  const done = t >= at(5) + 0.4;
+  const ans = easeOut(seg(t, 3.0, 3.4));
   return (
-    <Svg label="Minutes five through ten, all updated at once by the same amount; does it cost touching every slot, or one tag?" h={240}>
-      <T x={30} y={24} s={13} f={C.latte}>
-        add the same amount to minutes 5 through 10
-      </T>
-      {row(30, 40, 540, [5, 6, 7, 8, 9, 10], C.cherryText, 1)}
-      <T x={30} y={100} s={13} f={C.crema}>
-        six leaf-touches, one at a time —
-      </T>
-      <T x={30} y={120} s={13} f={C.crema}>
-        or one tag, at one node?
-      </T>
+    <Svg label="The query descends: nodes straddling the range are split, nodes inside it are used whole, and everything else is skipped; the six-slot sum is 29" h={300}>
+      {NODES.map((n) => {
+        const v = seen(n.v);
+        const used = USED.includes(n.v) && v;
+        return <Bar key={n.v} n={n} c={used ? C.caramel : v ? C.crema : C.latte} fill={used} o={v ? 1 : done ? 0.3 : 0.8} />;
+      })}
+      <Bracket l={5} r={11} y={240} />
+      <T x={30} y={274} s={12} f={C.crema}>outlined: split</T>
+      <T x={180} y={274} s={12} f={C.caramel}>filled: used whole</T>
+      <T x={370} y={274} s={12} f={C.latte}>faded: skipped</T>
+      <T x={30} y={296} s={14} f={C.caramel} o={ans}>sum over [5, 11): 29</T>
     </Svg>
   );
 }
 
-// 8 · LazyReveal: a tag sitting on a node, pushed down one level
+// 5 · Swap the operator. The same tree and the same two used nodes; the combine label turns from + to min, and
+// the answer turns from 29 to 2, the smallest leaf in the range (ringed).
+export function OperatorReveal({ t }: StepCtx) {
+  const sw = easeInOut(seg(t, 1.2, 1.8));
+  const ring = easeOutBack(seg(t, 2.2, 2.5));
+  return (
+    <Svg label="The same tree and the same descent; switching the combine from sum to minimum turns the answer from 29 to 2, the smallest leaf in the range" h={300}>
+      {NODES.map((n) => {
+        const used = USED.includes(n.v);
+        const vis = VISIT.includes(n.v);
+        return <Bar key={n.v} n={n} c={used ? C.caramel : vis ? C.crema : C.latte} fill={used} o={vis ? 1 : 0.3} />;
+      })}
+      <Bracket l={5} r={11} y={240} />
+      {ring > 0.001 && <rect x={X(7) - 4} y={206} width={CW + 8} height={30} rx={5} fill="none" stroke={C.caramel} strokeWidth={2.2} opacity={clamp(ring)} />}
+      <T x={30} y={24} s={13} f={C.latte}>combine:</T>
+      <T x={124} y={24} s={14} f={C.crema} o={1 - sw}>+</T>
+      <T x={124} y={24} s={14} f={C.caramel} o={sw}>min</T>
+      <T x={30} y={290} s={14} f={C.crema} o={1 - sw}>[5, 11): 29</T>
+      <T x={30} y={290} s={14} f={C.caramel} o={sw}>[5, 11): 2</T>
+      <T x={250} y={290} s={13} f={C.latte} o={easeOut(seg(t, 2.6, 3.0))}>same tree, same descent</T>
+    </Svg>
+  );
+}
+
+// 6 · One flat array. Slots 1..29 in a row: internal nodes 1..14, leaves 15..29. Slot 5's leaf is position 20.
+// The update climbs i -> i // 2: 20, 10, 5, 2, 1, each landing combining with its sibling (lit briefly).
+export function IterativeReveal({ t }: StepCtx) {
+  const SX = (i: number) => 30 + (i - 1) * 18.6;
+  const path = [20, 10, 5, 2, 1];
+  const at = (j: number) => 0.6 + j * 0.55;
+  let dot = SX(20) + 8;
+  let dy = 0;
+  for (let j = 0; j < 4; j++) {
+    if (t >= at(j)) {
+      const k = easeInOut(seg(t, at(j), at(j) + 0.4));
+      dot = lerp(SX(path[j]) + 8, SX(path[j + 1]) + 8, k);
+      dy = Math.sin(Math.PI * k) * 26;
+    }
+  }
+  const landed = (i: number) => {
+    const j = path.indexOf(i);
+    return j === 0 ? t >= 0.3 : j > 0 && t >= at(j - 1) + 0.4;
+  };
+  const sib = (i: number) => {
+    const j = path.indexOf(i);
+    if (j <= 0) return 0;
+    return clamp(1 - Math.abs(t - (at(j - 1) + 0.5)) / 0.25);
+  };
+  return (
+    <Svg label="One flat array: internal nodes 1 to 14, leaves 15 to 29; updating slot 5 starts at position 20 and climbs to 10, 5, 2 and 1, combining with each sibling" h={260}>
+      <T x={30} y={24} s={13} f={C.latte}>one array, no pointers</T>
+      {Array.from({ length: 29 }, (_, k) => k + 1).map((i) => {
+        const on = path.includes(i) && landed(i);
+        const sb = path.slice(1).some((p) => (p ^ 1) === i) ? Math.max(...path.slice(1).filter((p) => (p ^ 1) === i).map(sib)) : 0;
+        return <rect key={i} x={SX(i)} y={110} width={16} height={26} rx={2} fill={on ? C.caramel : sb > 0 ? C.cinnamon : C.roast} stroke={i >= 15 ? C.crema : C.latte} strokeWidth={1} opacity={on || sb > 0 ? 1 : 0.85} />;
+      })}
+      <path d={`M ${SX(1)} 146 L ${SX(1)} 152 L ${SX(14) + 16} 152 L ${SX(14) + 16} 146`} fill="none" stroke={C.latte} strokeWidth={1.2} />
+      <T x={SX(1)} y={172} s={12} f={C.latte}>internal 1-14</T>
+      <path d={`M ${SX(15)} 146 L ${SX(15)} 152 L ${SX(29) + 16} 152 L ${SX(29) + 16} 146`} fill="none" stroke={C.crema} strokeWidth={1.2} />
+      <T x={SX(15)} y={172} s={12} f={C.crema}>leaves 15-29</T>
+      {path.map((i, j) => <T key={i} x={SX(i) + 8} y={98} s={12} f={C.caramel} a="middle" o={landed(i) ? 1 : 0}>{i}</T>)}
+      <circle cx={dot} cy={74 - dy} r={6} fill={C.caramel} opacity={t >= 0.3 && t < at(3) + 0.5 ? 1 : 0} />
+      <T x={30} y={214} s={13} f={C.crema} o={easeOut(seg(t, 3.0, 3.4))}>climb: i &rarr; i // 2, with its sibling</T>
+      <T x={30} y={242} s={13} f={C.latte} o={easeOut(seg(t, 3.5, 3.9))}>same answers as the recursive tree</T>
+    </Svg>
+  );
+}
+
+// 7 · Predict. The tree with [5, 11) bracketed and "+3" over each of its six leaves, pulsing: touch them all? After
+// answering: two tags, +3, appear on the two nodes that cover the range exactly; the leaves stay untouched.
+export function LazyPredict({ t, answer }: StepCtx) {
+  const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const pulse = 0.6 + 0.4 * Math.sin(t * 4);
+  return (
+    <Svg label="The tree with +3 waiting over each of six leaves; after answering, the update becomes two +3 tags on the two nodes that cover the range, and no leaf is touched" h={290}>
+      {NODES.map((n) => <Bar key={n.v} n={n} c={answered && USED.includes(n.v) ? C.caramel : C.latte} />)}
+      {[5, 6, 7, 8, 9, 10].map((i) => <T key={i} x={X(i) + CW / 2} y={200} s={12} f={C.cherryText} a="middle" o={answered ? 0.2 : pulse}>+3</T>)}
+      <Bracket l={5} r={11} y={240} c={answered ? C.caramel : C.cherryText} o={answered ? 1 : pulse} />
+      {answered && USED.map((v, j) => {
+        const [x, y] = tagAt(v);
+        return <Tag key={v} x={x} y={y} text="+3" o={easeOut(seg(s, 0.3 + j * 0.3, 0.6 + j * 0.3))} />;
+      })}
+      {!answered && <T x={30} y={282} s={15} f={C.cherryText} o={pulse}>touch all six leaves?</T>}
+      {answered && <T x={30} y={282} s={13} f={C.caramel} o={easeOut(seg(s, 1.1, 1.5))}>two tags; no leaf touched</T>}
+    </Svg>
+  );
+}
+
+// 8 · The lazy tag's life. The update descends and drops +3 tags on [5, 7) and [7, 11); the leaves beneath wait
+// (dimmed). Later a query for slot 5 alone arrives; it must see past [5, 7), so that tag moves down one level,
+// split into both children, and only then does the query continue. The other tag never moves.
 export function LazyReveal({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 0.45));
-  const pushed = easeOut(seg(t, 0.55, 1));
+  const tag = (j: number) => easeOutBack(seg(t, 0.4 + j * 0.4, 0.7 + j * 0.4));
+  const wait = easeOut(seg(t, 1.3, 1.7));
+  const q = easeOut(seg(t, 2.1, 2.4));
+  const push = easeInOut(seg(t, 2.8, 3.5));
+  const [px, py] = tagAt(11);
+  const kids = [22, 23].map((v) => {
+    const n = node(v);
+    return [X(n.tl) + CW / 2, 199] as [number, number];
+  });
+  const under = (i: number) => (i >= 5 && i < 7 ? push < 1 : i >= 7 && i < 11);
   return (
-    <Svg label="A lazy add tag sitting on one internal node, marked without visiting its leaves, then pushed down one level as a later query descends past it" h={260}>
-      <g opacity={a}>
-        {node(230, 150, 3, 7, 'used', 1)}
-        <T x={230} y={120} s={13} f={C.caramel} a="middle">
-          +3, tagged here
-        </T>
+    <Svg label="Two +3 tags land on the nodes covering slots 5 to 10 and the leaves beneath wait; a later query for slot 5 forces one tag down into its two children, and the other tag stays put" h={300}>
+      {NODES.map((n) => {
+        const leaf = n.tr - n.tl === 1;
+        const dim = leaf && under(n.tl) && wait > 0;
+        return <Bar key={n.v} n={n} c={USED.includes(n.v) && tag(0) > 0.001 ? C.caramel : C.latte} o={dim ? 1 - 0.6 * wait : 1} />;
+      })}
+      {tag(0) > 0.001 && push < 1 && <Tag x={px} y={py} text="+3" o={clamp(tag(0))} />}
+      {tag(1) > 0.001 && <Tag x={tagAt(6)[0]} y={tagAt(6)[1]} text="+3" o={clamp(tag(1))} />}
+      {push > 0 && kids.map(([x, y], j) => <Tag key={j} x={lerp(px, x, push)} y={lerp(py, y, push)} text="+3" />)}
+      <T x={30} y={24} s={13} f={C.latte} o={wait}>leaves below a tag: not yet touched</T>
+      <g opacity={q}>
+        <Bracket l={5} r={6} y={240} c={C.crema} />
+        <T x={30} y={262} s={13} f={C.crema}>later: a query for slot 5 alone</T>
       </g>
-      <g opacity={pushed}>
-        <T x={90} y={200} s={13} f={C.latte} a="middle">
-          pushed to [0,3)
-        </T>
-        <T x={370} y={200} s={13} f={C.latte} a="middle">
-          pushed to [7,11)
-        </T>
-      </g>
-      {row(30, 220, 540, [3, 4, 5, 6], C.caramel, pushed)}
+      <T x={30} y={290} s={13} f={C.caramel} o={easeOut(seg(t, 3.6, 4.0))}>only then does that tag move down</T>
     </Svg>
   );
 }
 
-// 9 · ComposePredict: an assign tag already on a node, a new add arriving
-export function ComposePredict({}: StepCtx) {
+// 9 · Predict. A node with a pending "= 7" (assign) tag; a new "+3" arrives above it. Combine, or one wins? After
+// answering: the +3 folds into the assign, which now reads "= 10": 15 slots of 10, sum 150. The other order
+// (pending +3, then assign 7) drops the add: sum 105.
+export function ComposePredict({ t, answer }: StepCtx) {
+  const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const pulse = 0.6 + 0.4 * Math.sin(t * 4);
+  const fold = answered ? easeInOut(seg(s, 0.3, 0.9)) : 0;
+  const other = answered ? easeOut(seg(s, 1.6, 2.0)) : 0;
   return (
-    <Svg label="A node already carries a pending assign tag (set to 7); a new add tag (3) arrives at the same node" h={240}>
-      {node(300, 70, 3, 7, 'used', 1)}
-      <T x={300} y={40} s={13} f={C.caramel} a="middle">
-        pending: assign 7
-      </T>
-      <T x={300} y={110} s={13} f={C.crema} a="middle">
-        a new add 3 arrives — which wins?
-      </T>
-      <T x={30} y={160} s={13} f={C.latte}>
-        combine · fold into the assign · get dropped
-      </T>
+    <Svg label="A node with a pending assign-7 tag receives an add of 3; after answering, the add folds into the assign, which becomes assign-10 and sums to 150; in the other order, the assign discards the pending add and sums to 105" h={290}>
+      <rect x={60} y={110} width={(X(N - 1) + CW - X(0)) * 0.55} height={24} rx={3} fill={C.roast} stroke={C.latte} strokeWidth={1.2} />
+      <T x={60} y={100} s={12} f={C.latte}>node, all 15 slots</T>
+      <rect x={200} y={142} width={70} height={26} rx={13} fill={C.espresso} stroke={C.crema} strokeWidth={1.6} />
+      {fold < 0.5 ? <T x={235} y={160} s={14} f={C.crema} a="middle" o={1 - 2 * fold}>= 7</T> : <T x={235} y={160} s={14} f={C.caramel} a="middle" o={2 * fold - 1}>= 10</T>}
+      <T x={290} y={160} s={12} f={C.latte}>pending assign</T>
+      <rect x={200} y={44} width={70} height={26} rx={13} fill={C.espresso} stroke={C.caramel} strokeWidth={1.6} opacity={(answered ? 1 - fold : 1) * (answered ? 1 : pulse)} />
+      <T x={235} y={62} s={14} f={C.caramel} a="middle" o={answered ? 1 - fold : pulse}>+3</T>
+      <T x={290} y={62} s={12} f={C.latte} o={answered ? 1 - fold : 1}>arriving add</T>
+      {answered && <Draw pts={[[235, 74], [235, 138]]} t={s} from={0.1} to={0.4} stroke={C.caramel} w={1.6} pen={false} />}
+      {!answered && <T x={30} y={230} s={15} f={C.cherryText} o={pulse}>combine, or one wins?</T>}
+      {answered && <T x={30} y={222} s={13} f={C.caramel} o={easeOut(seg(s, 0.9, 1.3))}>add folds in: assign 10, sum = 150</T>}
+      {answered && <T x={30} y={250} s={13} f={C.latte} o={other}>other order, add then assign 7: sum = 105</T>}
     </Svg>
   );
 }
 
-// 10 · ProveIt: the real measured workload, eager leaf-touches against lazy node-touches
+// 10 · Prove it. examples.py's ten range-adds. Top row (cinnamon): with no lazy tags, each update touches every slot
+// in its range, drawn as ten segments end to end: 85 in all. Bottom row (caramel): with lazy tags, each update's own
+// touches, drawn the same way: 24.
 export function ProveIt({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.6));
-  const eager = 85;
-  const lazy = 24;
-  const scale = 440 / eager;
+  const eager = [15, 9, 6, 7, 7, 5, 13, 3, 9, 11];
+  const lazy = [1, 3, 2, 3, 3, 2, 3, 2, 2, 3];
+  const S = 4.4;
+  const row = (vals: number[], y: number, c: string, t0: number) => {
+    let x = 140;
+    return vals.map((v, j) => {
+      const k = easeOut(seg(t, t0 + j * 0.12, t0 + 0.12 + j * 0.12));
+      const el = <rect key={j} x={x} y={y} width={Math.max(0, v * S * k - 2)} height={20} rx={2} fill={c} opacity={j % 2 ? 0.7 : 1} />;
+      x += v * S;
+      return el;
+    });
+  };
   return (
-    <Svg label="Ten range-add updates: a segment tree with no lazy tags touched eighty-five leaves in total; the same updates through lazy tags touched twenty-four nodes" h={220}>
-      <T x={30} y={24} s={13} f={C.latte}>
-        ten range-add updates, same array
-      </T>
-      <rect x={30} y={50} width={eager * scale * a} height={20} rx={3} fill={C.cherry} />
-      <T x={30} y={90} s={13} f={C.cherryText}>
-        no lazy tags: {eager} leaf-touches
-      </T>
-      <rect x={30} y={110} width={lazy * scale * a} height={20} rx={3} fill={C.caramel} />
-      <T x={30} y={150} s={13} f={C.crema}>
-        lazy tags: {lazy} node-touches
-      </T>
+    <Svg label="Ten range-adds: with no lazy tags they touch 85 slots in all, every slot of every range; with lazy tags they touch 24 nodes" h={240}>
+      <T x={30} y={24} s={13} f={C.crema}>10 range-adds, 15 slots</T>
+      <T x={30} y={70} s={13} f={C.cinnamon}>no tags</T>
+      {row(eager, 55, C.cinnamon, 0.3)}
+      <T x={140 + 85 * S + 10} y={70} s={13} f={C.cinnamon} o={easeOut(seg(t, 1.5, 1.8))}>85</T>
+      <T x={30} y={120} s={13} f={C.caramel}>lazy tags</T>
+      {row(lazy, 105, C.caramel, 1.9)}
+      <T x={140 + 24 * S + 10} y={120} s={13} f={C.caramel} o={easeOut(seg(t, 3.1, 3.4))}>24</T>
+      <T x={30} y={180} s={13} f={C.latte} o={easeOut(seg(t, 3.4, 3.8))}>one segment per update</T>
     </Svg>
   );
 }
