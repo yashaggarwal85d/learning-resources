@@ -26,9 +26,15 @@ export function CallReturnsValuePredict({ t }: StepCtx) {
 
 // ── 2 · A value, the same laziness (no takeaway, "from" step) ──────────────────────────────────
 export function SameLazinessReveal({ t }: StepCtx) {
+  // The call slides a value out from the function name into view, instead of only naming the idea.
+  const slide = easeOut(seg(t, 0.3, 0.6));
+  const dx = (1 - slide) * -80;
   return (
     <Svg label="the same laziness from last topic, by a different name" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>constructing a future does no work</T>
+      <g transform={`translate(${dx},0)`} opacity={fa(t, 0.3, 0.3)}>
+        <rect x={60} y={40} width={140} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+        <T x={130} y={65} s={12} a="middle" f={C.crema}>a future value</T>
+      </g>
       <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>calling an async fn is exactly that</T>
       <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>a value comes back, nothing has run</T>
     </Svg>
@@ -67,24 +73,31 @@ export function BiggerLocalPredict({ t }: StepCtx) {
 
 // ── 5 · Measured: two bytes versus over four thousand (takeaway) ───────────────────────────────
 export function MeasuredSizesReveal({ t }: StepCtx) {
+  // The large future's box grows from the small future's own width out to its full measured
+  // width, so the size difference is seen widening, not just placed side by side.
+  const grow = easeOut(seg(t, 0.5, 1.0));
+  const w = 100 + grow * 320;
   return (
     <Svg label="future_size.rs: real measured sizes" h={220}>
       <rect x={60} y={50} width={100} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
       <T x={110} y={80} s={13} a="middle" f={C.crema}>small</T>
-      <g opacity={fa(t, 0.5, 0.4)}>
-        <rect x={220} y={50} width={320} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={380} y={80} s={13} a="middle" f={C.crema}>large: holds the buffer</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.1, 0.4)}>the same await point, two very different sizes</T>
+      <rect x={220} y={50} width={w} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={280} y={80} s={13} f={C.crema} o={fa(t, 0.4, 0.3)}>large: holds the buffer</T>
+      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>the same await point, two very different sizes</T>
     </Svg>
   );
 }
 
 // ── 6 · That size difference is a real memcpy (takeaway) ────────────────────────────────────────
 export function RealMemcpyReveal({ t }: StepCtx) {
+  // The whole future box slides from its old spot into the box it gets moved into, carrying its
+  // full width with it — the move itself, not just a claim about one.
+  const move = easeOut(seg(t, 0.3, 0.7));
+  const x = 60 + move * 260;
   return (
-    <Svg label="moving the future copies every byte it holds" h={220}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>Box::pin(large_future()) moves the whole enum</T>
+    <Svg label="moving the future copies every byte it holds" h={240}>
+      <rect x={x} y={30} width={240} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={x + 120} y={60} s={12} a="middle" f={C.crema}>large_future()</T>
       <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>every byte measured gets copied, once</T>
       <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>a real cost, paid on every move</T>
     </Svg>
