@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A capped length-prefixed frame decodes correctly and extracts without copying a
 // single byte; an uncapped claim is rejected before any large buffer is ever
@@ -27,13 +27,14 @@ export function CapPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: rejected before allocation (swipe test's "from" step — NO takeaway) ───────────
 export function CapReveal({ t }: StepCtx) {
+  const bounce = easeOut(seg(t, 0.5, 0.75));
+  const dx = (1 - Math.abs(bounce - 0.5) * 2) * 20;
   return (
     <Svg label="capped_length_prefix_framing.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a frame claims a length of 1 GiB</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>rejected, no such buffer allocated</T>
-      </g>
+      <circle cx={280 + dx} cy={57} r={4} fill={C.cherry} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>rejected, no such buffer allocated</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the cap check runs before allocation</T>
     </Svg>
   );
@@ -57,11 +58,14 @@ export function SplitToPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: zero-copy, confirmed by pointer (takeaway) ────────────────────────────────────
 export function SplitToReveal({ t }: StepCtx) {
+  const land = easeOut(seg(t, 0.5, 0.8));
+  const dy = (1 - land) * -24;
   return (
     <Svg label="the frame's own pointer, checked directly" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the frame's own data pointer, checked</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <Draw pts={[[240, 50], [240, 85]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <g transform={`translate(0,${dy})`} opacity={land}>
         <T x={190} y={112} s={13} a="middle" f={C.mocha}>lands at the payload's own address</T>
       </g>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>split in place, never copied</T>
@@ -87,10 +91,16 @@ export function DecoderPredict({ t }: StepCtx) {
 
 // ── 6 · The documentation's own words, quoted (no takeaway, connecting step) ────────────────────
 export function DecoderReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="the codec documentation, quoted directly" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>turn bytes into frames, find the boundaries</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>exactly the problem a byte stream creates</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>turn bytes into frames, find the boundaries</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>exactly the problem a byte stream creates</T>
+      </g>
     </Svg>
   );
 }
@@ -132,10 +142,16 @@ export function StrategiesReveal({ t }: StepCtx) {
 
 // ── 9 · The chapter's own chosen pattern (takeaway) ─────────────────────────────────────────────
 export function PatternReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="capped, and extracted without copying" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>cap the claim before trusting it</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>then split the buffer in place</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>cap the claim before trusting it</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>then split the buffer in place</T>
+      </g>
     </Svg>
   );
 }
