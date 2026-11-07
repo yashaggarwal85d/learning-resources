@@ -17,12 +17,15 @@ const threadDot = (cx: number, cy: number, label: string, opacity = 1) => (
 
 // ── 1 · Two separate questions about the same shared memory (hook) ─────────────────────────────
 export function TwoQuestionsHook({ t }: StepCtx) {
+  // One line, then one, traces out of the shared location toward each separate question in turn.
   return (
     <Svg label="one shared location, two separate questions about it" h={240}>
       <rect x={220} y={30} width={160} height={50} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
       <T x={300} y={60} s={13} a="middle" f={C.crema}>shared memory</T>
-      <T x={60} y={140} s={14} f={C.latte} o={fa(t, 0.5, 0.4)}>did this update tear?</T>
-      <T x={60} y={190} s={14} f={C.mocha} o={fa(t, 1.0, 0.4)}>what order do others see it in?</T>
+      <Draw pts={[[260, 80], [90, 132]]} t={t} from={0.3} to={0.5} stroke={C.latte} w={1.5} pen={false} />
+      <T x={60} y={140} s={14} f={C.latte} o={fa(t, 0.5, 0.3)}>did this update tear?</T>
+      <Draw pts={[[340, 80], [90, 182]]} t={t} from={0.8} to={1.0} stroke={C.mocha} w={1.5} pen={false} />
+      <T x={60} y={190} s={14} f={C.mocha} o={fa(t, 1.0, 0.3)}>what order do others see it in?</T>
     </Svg>
   );
 }
@@ -61,11 +64,20 @@ export function ExactCountReveal({ t }: StepCtx) {
 
 // ── 4 · Atomicity bought that, but nothing about order (takeaway) ──────────────────────────────
 export function AtomicityOnlyReveal({ t }: StepCtx) {
+  // A check mark lands below the proven claim; a bare question mark lands below the untouched one.
+  const check = easeOut(seg(t, 0.6, 0.8));
+  const mark = easeOut(seg(t, 1.3, 1.5));
   return (
-    <Svg label="every access was atomic — nothing here claimed anything about visibility" h={220}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>no torn value, ever — that's atomicity</T>
-      <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>when another thread sees it — that's ordering</T>
-      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>this step only proved the first one</T>
+    <Svg label="every access was atomic — nothing here claimed anything about visibility" h={240}>
+      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.3)}>no torn value, ever — that's atomicity</T>
+      <g transform={`translate(0,${(1 - check) * -14})`}>
+        <T x={60} y={84} s={15} f={C.caramel} o={check}>✓ proven</T>
+      </g>
+      <T x={60} y={130} s={14} f={C.mocha} o={fa(t, 1.0, 0.3)}>when another thread sees it — that's ordering</T>
+      <g transform={`translate(0,${(1 - mark) * -14})`}>
+        <T x={60} y={154} s={15} f={C.mocha} o={mark}>? open</T>
+      </g>
+      <T x={60} y={200} s={13} f={C.taupe} o={fa(t, 1.8, 0.4)}>this step only proved the first one</T>
     </Svg>
   );
 }
@@ -106,12 +118,17 @@ export function LoomViolationReveal({ t }: StepCtx) {
 
 // ── 7 · The missing piece has a name: happens-before (takeaway) ────────────────────────────────
 export function HappensBeforeReveal({ t }: StepCtx) {
+  // An arrow draws from one event dot to the next, tracing the happens-before relation itself.
   return (
     <Svg label="the C++20 memory model Rust's atomics follow, minus consume" h={220}>
       <rect x={120} y={30} width={360} height={50} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
       <T x={300} y={60} s={12} a="middle" f={C.latte}>"Rust atomics currently follow the same rules as C++20"</T>
-      <T x={60} y={130} s={13} f={C.crema} o={fa(t, 0.6, 0.4)}>happens-before: what's guaranteed seen</T>
-      <T x={60} y={170} s={13} f={C.mocha} o={fa(t, 1.1, 0.4)}>every ordering is built from this one relation</T>
+      <circle cx={120} cy={130} r={5} fill={C.crema} />
+      <T x={135} y={134} s={12} f={C.crema}>event A</T>
+      <Draw pts={[[195, 130], [405, 130]]} t={t} from={0.6} to={0.9} stroke={C.caramel} w={2} pen />
+      <circle cx={480} cy={130} r={5} fill={C.crema} opacity={fa(t, 0.9, 0.2)} />
+      <T x={430} y={110} s={12} f={C.crema} o={fa(t, 0.9, 0.2)}>event B</T>
+      <T x={60} y={170} s={13} f={C.mocha} o={fa(t, 1.2, 0.4)}>every ordering is built from this one relation</T>
     </Svg>
   );
 }
@@ -132,10 +149,15 @@ export function DataRaceUbReveal({ t }: StepCtx) {
 
 // ── 9 · The kernel has its own, stricter model (takeaway) ──────────────────────────────────────
 export function LkmmReveal({ t }: StepCtx) {
+  // A dividing line draws itself between the two models, setting LKMM apart rather than just
+  // naming it in text.
   return (
     <Svg label="LKMM: a distinct, stricter model, named and set aside" h={200}>
-      <T x={60} y={70} s={14} f={C.crema} o={fa(t, 0.4, 0.4)}>the Linux kernel's own memory model is different</T>
-      <T x={60} y={120} s={13} f={C.mocha} o={fa(t, 1.0, 0.4)}>it matters only for kernel Rust</T>
+      <T x={60} y={50} s={13} a="middle" f={C.taupe}>C++20 / Rust</T>
+      <Draw pts={[[180, 30], [180, 160]]} t={t} from={0.2} to={0.5} stroke={C.mocha} w={2} dash="4 4" pen={false} />
+      <T x={300} y={50} s={13} a="middle" f={C.taupe}>LKMM</T>
+      <T x={60} y={100} s={14} f={C.crema} o={fa(t, 0.6, 0.3)}>the Linux kernel's own memory model is different</T>
+      <T x={60} y={150} s={13} f={C.mocha} o={fa(t, 1.2, 0.4)}>it matters only for kernel Rust</T>
     </Svg>
   );
 }

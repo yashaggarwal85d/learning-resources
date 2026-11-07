@@ -18,12 +18,16 @@ const threadDot = (cx: number, cy: number, label: string, opacity = 1) => (
 
 // ── 1 · Last topic's race, fixed with two words (hook) ──────────────────────────────────────────
 export function RaceRecapHook({ t }: StepCtx) {
+  // The crack in the pairing draws itself open, then the fix lands on top of it.
+  const crack = easeOut(seg(t, 1.0, 1.3));
+  const fixLand = easeOut(seg(t, 1.6, 1.9));
   return (
     <Svg label="the relaxed publication race from last topic, and the two words that fix it" h={220}>
       <T x={60} y={60} s={14} f={C.mocha} o={fa(t, 0.3, 0.4)}>data.store(42, Relaxed);</T>
       <T x={60} y={90} s={14} f={C.mocha} o={fa(t, 0.6, 0.4)}>ready.store(true, Relaxed);</T>
+      <line x1={60} y1={115} x2={60 + crack * 460} y2={115} stroke={C.cherryText} strokeWidth={2} strokeDasharray="5 4" />
       <T x={60} y={130} s={13} f={C.taupe} o={fa(t, 1.0, 0.4)}>loom found: the flag seen before the value</T>
-      <T x={60} y={180} s={16} f={C.caramel} o={fa(t, 1.6, 0.4)}>Release. Acquire.</T>
+      <T x={60} y={180} s={16} f={C.caramel} o={fixLand}>Release. Acquire.</T>
     </Svg>
   );
 }
@@ -126,11 +130,16 @@ export function StoreBufferingAcqRelReveal({ t }: StepCtx) {
 
 // ── 8 · SeqCst adds the one missing thing (takeaway) ────────────────────────────────────────────
 export function SeqCstReveal({ t }: StepCtx) {
+  // Two separate pair-lines draw first (Release/Acquire, one pair at a time); then one line
+  // sweeps across both, tying every thread to the same single order.
   return (
     <Svg label="SeqCst: one single order, every thread agrees" h={240}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>Release/Acquire orders one pair at a time</T>
-      <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>SeqCst: every thread agrees on one global order</T>
-      <T x={60} y={170} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>that total order rules out both loads seeing nothing</T>
+      <Draw pts={[[60, 50], [240, 50]]} t={t} from={0.1} to={0.35} stroke={C.taupe} w={2} pen={false} />
+      <Draw pts={[[320, 50], [500, 50]]} t={t} from={0.35} to={0.6} stroke={C.taupe} w={2} pen={false} />
+      <T x={60} y={75} s={14} f={C.crema} o={fa(t, 0.1, 0.3)}>Release/Acquire orders one pair at a time</T>
+      <Draw pts={[[60, 120], [500, 120]]} t={t} from={0.9} to={1.3} stroke={C.caramel} w={2} pen />
+      <T x={60} y={145} s={14} f={C.mocha} o={fa(t, 0.9, 0.3)}>SeqCst: every thread agrees on one global order</T>
+      <T x={60} y={190} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>that total order rules out both loads seeing nothing</T>
     </Svg>
   );
 }
