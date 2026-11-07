@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Hash tables inside hash joins">Before this: the hash-batched spill path this topic's sort-based path is the alternative to.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">Before this: the I/O cost model a spilling sort's pass count is measured against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">Before this: the heap behind the merge kernel this topic ends on.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Tournament and loser trees">Before this: the k-way-merge bound, the structure the next topic zooms into.</Resource>
+</ul>
+
+Chapter 15's "External merge sort" (replacement selection, the formal pass-count bound) is
+assumed informally, as the textbook algorithm this topic's production systems are a version of;
+it was confirmed not live in the registry at build time, so this topic's run generation and
+merge code is written directly rather than linked to a not-yet-published topic.
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="tuplesort.c" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/utils/sort/tuplesort.c" by="PostgreSQL">The balanced merge, quicksort run generation, prereading and the on-the-fly final merge.</Resource>
+  <Resource kind="reading" title="nodeAgg.c" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/executor/nodeAgg.c" by="PostgreSQL">The hash-partitioned aggregation spill and its partition-count bounds.</Resource>
+  <Resource kind="reading" title="SortMergeJoinExec.scala" href="https://raw.githubusercontent.com/apache/spark/master/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/SortMergeJoinExec.scala" by="Apache Spark">The buffered-matches spill and its spill-size metric.</Resource>
+  <Resource kind="reading" title="TungstenAggregationIterator.scala" href="https://raw.githubusercontent.com/apache/spark/master/sql/core/src/main/scala/org/apache/spark/sql/execution/aggregate/TungstenAggregationIterator.scala" by="Apache Spark">The hash-to-sort fallback once the map cannot acquire memory.</Resource>
+  <Resource kind="reading" title="ExternalSorter.scala" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/scala/org/apache/spark/util/collection/ExternalSorter.scala" by="Apache Spark">The external sorter a key-ordered shuffle read builds over fetched blocks.</Resource>
+</ul>
+
+</section>

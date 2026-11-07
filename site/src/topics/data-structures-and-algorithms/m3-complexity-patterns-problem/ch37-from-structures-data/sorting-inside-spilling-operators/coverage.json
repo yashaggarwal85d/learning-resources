@@ -1,0 +1,71 @@
+{
+  "topic": "dsa.sorting-inside-spilling-operators",
+  "syllabus": [
+    {
+      "clause": "external merge sort (Ch.15) as the spill path of sorts",
+      "at": [
+        { "step": "Order twenty million rows by amount, with room for only two hundred thousand at once. The textbook answer: sort runs, merge them. Predict: how many sorted runs does this make, and how many merge passes does it take if the engine can hold every run's read buffer open at once?" },
+        { "step": "Run generation absorbs rows into an array until the budget is hit, sorts the array in place with an ordinary comparison sort, and writes it out as one run. On a small instance this produces exactly as many runs as the row count divided by the budget predicts, each one verified sorted." },
+        { "step": "PostgreSQL's own header comment names four departures from the textbook algorithm, each with its reason: a balanced merge replaced polyphase once tape drives stopped being scarce; quicksort replaced replacement selection for run generation; the merge prereads a fair share of the budget from each tape at once, to stay sequential; and the final merge, when nothing after it needs random access, is done on the fly." },
+        { "topic": "External merge sort and k-way merge", "domain": "data-engineering", "quote": "run generation (including replacement selection)" }
+      ]
+    },
+    {
+      "clause": "sort-merge joins",
+      "at": [
+        { "step": "A sort-merge join buffers every row on one side that shares the current key. Past a row-count threshold or a byte-size threshold that buffer spills to disk, and the operator reports its own spill size: a key repeating heavily on both sides, not the sort itself, is where a sort-merge join's memory actually goes." },
+        { "step": "On the reduce side of a shuffle, when the data must arrive in key order, the reader builds an external sorter over the blocks it fetches from every map task. A shuffle read, seen this way, is itself an external sort: the identical spill-and-merge shape, over blocks instead of rows from one source." }
+      ]
+    },
+    {
+      "clause": "and aggregations → Data Engineering §1.3, Ch.7.",
+      "at": [
+        { "step": "PostgreSQL's hash aggregation spills by partitioning: once the in-memory table is full, a row for a new group is hashed to one of between four and a thousand and twenty-four logical tapes and written as-is, exactly as a hash join batches its own overflow. Nothing is sorted; the partitioning alone is what keeps the spill correct." },
+        { "step": "Spark answers the identical problem a different way. Once its hash map cannot get more memory, it sorts the map's own entries by key, spills them, and from that point on behaves as a sort-based aggregation, merging the sorted spill back in with an external sorter: a hash structure that turns itself into a sort once memory runs out." },
+        { "topic": "Hash vs sort aggregation", "domain": "data-engineering", "quote": "hash aggregation vs streaming aggregation over sorted input" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL tuplesort.c",
+      "items": [
+        { "item": "A balanced k-way merge replaced the polyphase merge once tape drives stopped being a scarce physical resource", "at": [{ "step": "PostgreSQL's own header comment names four departures from the textbook algorithm, each with its reason: a balanced merge replaced polyphase once tape drives stopped being scarce; quicksort replaced replacement selection for run generation; the merge prereads a fair share of the budget from each tape at once, to stay sequential; and the final merge, when nothing after it needs random access, is done on the fly." }] },
+        { "item": "Run generation now always uses quicksort or radix sort, not replacement selection", "at": [{ "step": "PostgreSQL's own header comment names four departures from the textbook algorithm, each with its reason: a balanced merge replaced polyphase once tape drives stopped being scarce; quicksort replaced replacement selection for run generation; the merge prereads a fair share of the budget from each tape at once, to stay sequential; and the final merge, when nothing after it needs random access, is done on the fly." }] },
+        { "item": "The merge prereads about workMem/M bytes per tape to keep the access pattern sequential rather than erratic", "at": [{ "deep": "Why a balanced merge replaced polyphase" }] },
+        { "item": "The final merge, when nothing downstream needs random access, is done on the fly, saving one write-and-reread cycle", "at": [{ "step": "Run generation absorbs rows into an array until the budget is hit, sorts the array in place with an ordinary comparison sort, and writes it out as one run. On a small instance this produces exactly as many runs as the row count divided by the budget predicts, each one verified sorted." }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL nodeAgg.c",
+      "items": [
+        { "item": "A hash aggregation's spill partitions the overflow by hash into between HASHAGG_MIN_PARTITIONS (4) and HASHAGG_MAX_PARTITIONS (1024) logical tapes, sized by HASHAGG_PARTITION_FACTOR (1.50)", "at": [{ "step": "PostgreSQL's hash aggregation spills by partitioning: once the in-memory table is full, a row for a new group is hashed to one of between four and a thousand and twenty-four logical tapes and written as-is, exactly as a hash join batches its own overflow. Nothing is sorted; the partitioning alone is what keeps the spill correct." }] }
+      ]
+    },
+    {
+      "source": "Spark SortMergeJoinExec.scala, TungstenAggregationIterator.scala, ExternalSorter.scala",
+      "items": [
+        { "item": "A sort-merge join's buffered matches for one key spill past a row-count or byte-size threshold and report their own spill-size metric", "at": [{ "step": "A sort-merge join buffers every row on one side that shares the current key. Past a row-count threshold or a byte-size threshold that buffer spills to disk, and the operator reports its own spill size: a key repeating heavily on both sides, not the sort itself, is where a sort-merge join's memory actually goes." }] },
+        { "item": "When the hash-based aggregation's map cannot acquire memory, Spark sorts its entries and switches to sort-based aggregation", "at": [{ "step": "Spark answers the identical problem a different way. Once its hash map cannot get more memory, it sorts the map's own entries by key, spills them, and from that point on behaves as a sort-based aggregation, merging the sorted spill back in with an external sorter: a hash structure that turns itself into a sort once memory runs out." }] },
+        { "item": "A shuffle read whose dependency has a key ordering builds an ExternalSorter to merge the fetched blocks", "at": [{ "step": "On the reduce side of a shuffle, when the data must arrive in key order, the reader builds an external sorter over the blocks it fetches from every map task. A shuffle read, seen this way, is itself an external sort: the identical spill-and-merge shape, over blocks instead of rows from one source." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The small instance's 40 runs and 3 merge passes are both produced by an actual simulation (a real quicksort run generation and a real iterative merge), not computed from the closed-form pass-count formula alone, and the simulation's final output is checked against a full sort of the same input to confirm the merge is actually correct, not just the right length.", "at": [{ "step": "Run generation absorbs rows into an array until the budget is hit, sorts the array in place with an ordinary comparison sort, and writes it out as one run. On a small instance this produces exactly as many runs as the row count divided by the budget predicts, each one verified sorted." }] },
+      { "item": "The hook's large numbers (a hundred runs, one or three passes) reuse the identical formula already validated against the small instance's real simulation, rather than being computed by a separate, unverified code path, documented explicitly in OUTLINE.md.", "at": [{ "step": "Measured: a hundred runs at this budget, confirmed by the same run-count formula already validated on a small, fully simulated instance. One merge pass with every run's buffer open at once; three passes at a realistic, much smaller number of open tapes." }] },
+      { "item": "The two aggregation-spill designs are compared on the identical skewed key stream and the identical group budget, so the measured agreement in overflow row count (both designs see the same 25,667 rows) is not an artifact of different test data, but a real structural fact: the decision of what spills is independent of how it is organized afterward.", "at": [{ "step": "Measured on the same skewed stream: both designs spill the identical rows, about forty-three percent of the stream, once the table's group budget is exceeded. What differs is only what happens to those rows afterward: hashed into unsorted partitions, or sorted once before the final merge." }] },
+      { "item": "PostgreSQL's HASHAGG_MAX_PARTITIONS cap (1024) is hit directly by the aggregation example's own numbers, not asserted as a theoretical edge case, confirmed by printing the computed partition count in examples.py and observing it saturate at the cap.", "at": [{ "deep": "Two spills, one row set, different costs" }] },
+      { "item": "DuckDB's external-sorting and external-aggregation engineering blog posts, named in CHAPTER.md as partially read at planning time, were deliberately not re-fetched or quoted in this build since the PostgreSQL and Spark sources already carry every structural fact this topic needs, documented explicitly in OUTLINE.md rather than silently dropped.", "at": [{ "deep": "At the frontier" }] },
+      { "item": "The quote from tuplesort.c's header comment on the balanced-merge-versus-polyphase rationale was deliberately shortened to end within one physical source-code line, after an initial multi-line version failed the source checker because a line beginning with a C comment marker breaks word-for-word matching across a newline.", "at": [{ "deep": "Why a balanced merge replaced polyphase" }] },
+      { "item": "Chapter 15's own 'External merge sort' topic, which would have introduced replacement selection and the formal pass-count bound, was confirmed not live in the registry at build time by grepping registry.ts directly, so this topic's run generation and merge code is original rather than assumed from an unpublished topic.", "at": [{ "deep": "At the frontier" }] },
+      { "item": "The sort-merge join and shuffle-read steps are kept deliberately brief (one structural fact each) since CHAPTER.md scopes the engine-level story (which join strategy the planner picks, Chapter 7's shuffle mechanics) to Data Engineering, and this topic only names the structure inside, not the surrounding system.", "at": [{ "step": "A sort-merge join buffers every row on one side that shares the current key. Past a row-count threshold or a byte-size threshold that buffer spills to disk, and the operator reports its own spill size: a key repeating heavily on both sides, not the sort itself, is where a sort-merge join's memory actually goes." }] },
+      { "item": "The recap step explicitly ties this topic's two spill paths (hash partitioning and sort-based fallback) to the shared merge kernel the next topic opens with, rather than treating the two topics as unrelated, matching CHAPTER.md's own stated reason for their order (topic 119 zooms into the merge this topic already uses).", "at": [{ "step": "A sort's run generation and a hash aggregation's sort fallback both end in the identical operation: merge several sorted sequences by always taking the smallest available element next. Whichever structure picks that element, a heap or a tree of losers, is the same kernel this chapter meets again inside LSM compaction and a shuffle read's own merge." }] },
+      { "item": "The merge-order value used for the three-pass scenario (7) is explicitly flagged in OUTLINE.md as the builder's own choice, not a value read from any source, since CHAPTER.md leaves each topic's exact planning values to the builder.", "at": [{ "step": "Predict: at this hook's scale, if the engine instead holds open only a small, realistic number of tapes at a time rather than every run at once, does the number of merge passes change, and by how much?" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}
