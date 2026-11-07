@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // spawn_blocking (a dedicated, dynamically-sized blocking pool), block_in_place (hand other
 // tasks to a new worker before blocking this one; panics with no other worker to hand off to),
@@ -26,13 +26,13 @@ export function BaselinePredict({ t }: StepCtx) {
 
 // ── 2 · Measured baseline (no takeaway, re-confirming "from" step) ──────────────────────────────
 export function BaselineReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.9, 1.3));
+  const w = grow * 220;
   return (
     <Svg label="blocking_call_stalls_worker.rs: the same baseline, reconfirmed" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one worker, one blocking call</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>waited: the full 300ms</T>
-      </g>
+      <rect x={60} y={85} width={w} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>waited: the full 300ms</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the exact starting point every fix is measured against</T>
     </Svg>
   );
@@ -66,6 +66,7 @@ export function SpawnBlockingReveal({ t }: StepCtx) {
         <rect x={280} y={40} width={200} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={380} y={70} s={12} a="middle" f={C.mocha}>blocking pool, separate</T>
       </g>
+      <Draw pts={[[220, 65], [280, 65]]} t={t} from={0.6} to={0.85} stroke={C.caramel} w={2} pen />
       <T x={60} y={125} s={13} f={C.crema} o={fa(t, 0.9, 0.4)}>sibling ran after roughly 0ms</T>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.4, 0.4)}>the worker never touched the call at all</T>
     </Svg>
@@ -90,15 +91,17 @@ export function BlockInPlacePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: handed off (takeaway) ──────────────────────────────────────────────────────────
 export function BlockInPlaceReveal({ t }: StepCtx) {
+  const move = easeOut(seg(t, 0.5, 0.9));
+  const dx = move * 220;
   return (
     <Svg label="block_in_place_hands_off.rs: everything else moves instead" h={220}>
       <g opacity={fa(t, 0.1, 0.4)}>
         <rect x={60} y={40} width={160} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={140} y={70} s={12} a="middle" f={C.mocha}>this worker, now blocked</T>
       </g>
-      <g opacity={fa(t, 0.5, 0.4)}>
-        <rect x={280} y={40} width={200} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={380} y={70} s={12} a="middle" f={C.crema}>sibling, handed off here</T>
+      <g transform={`translate(${dx},0)`} opacity={move}>
+        <rect x={60} y={40} width={200} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+        <T x={160} y={70} s={12} a="middle" f={C.crema}>sibling, handed off here</T>
       </g>
       <T x={60} y={125} s={13} f={C.crema} o={fa(t, 1.0, 0.4)}>sibling ran after roughly 0ms</T>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>moved before the blocking call even started</T>
@@ -139,10 +142,16 @@ export function PanicReveal({ t }: StepCtx) {
 
 // ── 9 · Named alternatives for CPU-heavy work (no takeaway, naming step) ────────────────────────
 export function AlternativesReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="for genuinely CPU-heavy work, no blocking at all" h={240}>
-      <T x={60} y={55} s={14} f={C.crema} o={fa(t, 0.2, 0.4)}>rayon, or a dedicated runtime</T>
-      <T x={60} y={100} s={14} f={C.mocha} o={fa(t, 0.7, 0.4)}>glommio, monoio, compio</T>
+      <g transform={`translate(${(1 - slide1) * -80},0)`} opacity={slide1}>
+        <T x={60} y={55} s={14} f={C.crema}>rayon, or a dedicated runtime</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -80},0)`} opacity={slide2}>
+        <T x={60} y={100} s={14} f={C.mocha}>glommio, monoio, compio</T>
+      </g>
       <T x={60} y={135} s={13} f={C.latte} o={fa(t, 1.2, 0.4)}>one worker per core, no borrowing at all</T>
     </Svg>
   );

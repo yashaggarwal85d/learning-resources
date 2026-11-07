@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Semaphore saturation, runtime-metrics backlog, and bounded-channel backpressure, each
 // measured directly; tokio-console named from the crate's own words, closing the chapter.
@@ -25,13 +25,16 @@ export function SemaphorePredict({ t }: StepCtx) {
 
 // ── 2 · Measured: 4 running, 0 available (this is the swipe test's "from" step — NO takeaway) ───
 export function SemaphoreReveal({ t }: StepCtx) {
+  const permits = [0, 1, 2, 3];
   return (
     <Svg label="semaphore_bounds_concurrency.rs: a real, measured cap" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>20 tasks, 4 permits</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>available: 0</T>
-      </g>
+      {permits.map((i) => {
+        const taken = easeOut(seg(t, 0.5 + i * 0.1, 0.8 + i * 0.1));
+        return <circle key={i} cx={70 + i * 20} cy={97} r={5} fill={taken > 0.5 ? C.taupe : C.caramel} opacity={1 - taken * 0.5} />;
+      })}
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={127} s={13} a="middle" f={C.mocha}>available: 0</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>never more than 4 running at once</T>
     </Svg>
   );
@@ -55,13 +58,13 @@ export function MetricsPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: hundreds still queued (takeaway) ──────────────────────────────────────────────
 export function MetricsReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.9, 1.3));
+  const w = grow * 220;
   return (
     <Svg label="global_queue_depth_reveals_backlog.rs: a real backlog" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one worker, 500 tasks</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>queued: hundreds</T>
-      </g>
+      <rect x={60} y={85} width={w} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>queued: 240</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>read straight from the runtime's own metrics</T>
     </Svg>
   );

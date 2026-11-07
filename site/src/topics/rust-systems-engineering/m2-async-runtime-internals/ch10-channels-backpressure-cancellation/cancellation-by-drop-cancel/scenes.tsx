@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // select! dropping its losing branch's future; recv() proven cancel-safe, read_exact proven
 // not; a dropped JoinHandle detaching its task rather than cancelling it.
@@ -25,13 +25,14 @@ export function SelectPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: the loser never ran (this is the swipe test's "from" step — NO takeaway) ──────
 export function SelectReveal({ t }: StepCtx) {
+  const fall = easeOut(seg(t, 0.5, 0.85));
+  const dy = fall * 25;
   return (
     <Svg label="select_drops_losing_branches.rs: a real, measured drop" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>fast branch wins</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>loser's side effect: never ran</T>
-      </g>
+      <circle cx={260} cy={57 + dy} r={4} fill={C.cherry} opacity={1 - fall * 0.6} />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>loser's side effect: never ran</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>dropped, not delayed</T>
     </Svg>
   );
@@ -58,10 +59,9 @@ export function RecvReveal({ t }: StepCtx) {
   return (
     <Svg label="recv_is_cancel_safe.rs: nothing lost" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>cancelled, then sent, then received</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>fresh recv(): the exact value sent</T>
-      </g>
+      <Draw pts={[[300, 50], [300, 85]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>fresh recv(): the exact value sent</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>safe to drop and start over</T>
     </Svg>
   );
@@ -85,13 +85,14 @@ export function ReadExactPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the first half gone for good (takeaway) ──────────────────────────────────────
 export function ReadExactReveal({ t }: StepCtx) {
+  const lost = easeOut(seg(t, 0.5, 0.85));
+  const dy = lost * 25;
   return (
     <Svg label="read_exact_is_not_cancel_safe.rs: a real loss" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>cancelled partway through</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>fresh read: only the second half</T>
-      </g>
+      <circle cx={170} cy={57 + dy} r={4} fill={C.cherry} opacity={1 - lost * 0.6} />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>fresh read: only the second half</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the first half is gone, permanently</T>
     </Svg>
   );
@@ -115,13 +116,17 @@ export function JoinHandlePredict({ t }: StepCtx) {
 
 // ── 8 · Measured: still ticking (no takeaway, naming step) ─────────────────────────────────────
 export function JoinHandleReveal({ t }: StepCtx) {
+  const drop = easeOut(seg(t, 0.4, 0.7));
+  const dy = drop * 20;
+  const cyclePos = t > 0.9 ? ((t - 0.9) % 0.6) / 0.6 : 0;
+  const pulse = cyclePos < 0.5 ? cyclePos * 2 : (1 - cyclePos) * 2;
   return (
     <Svg label="dropped_join_handle_detaches_task.rs: detached, not cancelled" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>handle dropped immediately</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>task: still ticking</T>
-      </g>
+      <rect x={300} y={40 + dy} width={60} height={20} rx={4} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={1 - drop} />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {drop > 0.9 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>task: still ticking</T>}
+      <circle cx={268} cy={107} r={3} fill={C.caramel} opacity={0.5 + pulse * 0.5} />
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>unobserved, not stopped</T>
     </Svg>
   );

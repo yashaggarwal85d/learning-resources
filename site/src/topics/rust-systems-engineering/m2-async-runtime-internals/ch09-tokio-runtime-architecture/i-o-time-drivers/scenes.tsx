@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // mio::Poll's real register -> park -> readiness event -> poll cycle, built directly; the
 // timer driver's own wake cycle, measured; io_uring named as real but unstable and opt-in.
@@ -25,11 +25,13 @@ export function RegisterPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: a real event (takeaway) ────────────────────────────────────────────────────────
 export function RegisterReveal({ t }: StepCtx) {
+  const drop = easeOut(seg(t, 0.9, 1.3));
+  const dy = (1 - drop) * -30;
   return (
     <Svg label="mio_register_then_connect.rs: a real event, named" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>register, then wait</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <g transform={`translate(0,${dy})`} opacity={drop}>
         <T x={170} y={112} s={13} a="middle" f={C.mocha}>writable: Token(0)</T>
       </g>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real event, naming the exact socket</T>
@@ -55,13 +57,13 @@ export function TimeoutPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: parked for the timeout (takeaway) ──────────────────────────────────────────────
 export function TimeoutReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.9, 1.3));
+  const w = grow * 220;
   return (
     <Svg label="mio_poll_times_out_with_nothing_ready.rs: a real, measured wait" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>parked, waiting for nothing</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>waited: the full timeout</T>
-      </g>
+      <rect x={60} y={85} width={w} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>waited: 300ms, the full timeout</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>zero events, measured directly</T>
     </Svg>
   );
@@ -85,9 +87,12 @@ export function SleepPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: wakes on time (takeaway) ───────────────────────────────────────────────────────
 export function SleepReveal({ t }: StepCtx) {
+  const target = easeOut(seg(t, 0.3, 0.9));
+  const dotX = 60 + target * 215;
   return (
     <Svg label="sleep_actually_wakes_at_deadline.rs: close to the real deadline" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>asked for 200ms</T>
+      <circle cx={dotX} cy={82} r={4} fill={C.caramel} opacity={fa(t, 0.3, 0.3)} />
       <g opacity={fa(t, 0.9, 0.4)}>
         <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={170} y={112} s={13} a="middle" f={C.mocha}>woke at: 201ms</T>
@@ -132,6 +137,9 @@ export function CycleReveal({ t }: StepCtx) {
   const steps = ['register', 'park', 'real event', 'wake', 'poll again'];
   return (
     <Svg label="the cycle, each step now measured" h={160}>
+      {steps.slice(0, -1).map((_, i) => (
+        <Draw key={`l${i}`} pts={[[60 + i * 100 + 55, 70], [60 + (i + 1) * 100, 70]]} t={t} from={0.3 + i * 0.3} to={0.5 + i * 0.3} stroke={C.taupe} w={1.5} />
+      ))}
       {steps.map((s, i) => (
         <g key={s} opacity={fa(t, 0.2 + i * 0.3, 0.4)}>
           <T x={60 + i * 100} y={70} s={12} f={C.crema}>{s}</T>

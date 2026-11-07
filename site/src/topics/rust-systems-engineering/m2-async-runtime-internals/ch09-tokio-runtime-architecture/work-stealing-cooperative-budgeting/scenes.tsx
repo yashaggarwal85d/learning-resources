@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Work stealing (local queue, global queue, lifo slot, stealing half a queue) and cooperative
 // budgeting, each measured directly on a real tokio runtime.
@@ -46,13 +46,17 @@ export function StealReveal({ t }: StepCtx) {
 
 // ── 3 · Measured stealing (takeaway) ─────────────────────────────────────────────────────────────
 export function StealMeasuredReveal({ t }: StepCtx) {
+  const spread = easeOut(seg(t, 0.9, 1.3));
+  const threads = [0, 1, 2, 3];
   return (
     <Svg label="tasks_get_stolen.rs: a real, measured spread" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>200 tasks, one spawning worker</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>ran across 3–4 real threads</T>
-      </g>
+      {threads.map((i) => {
+        const land = easeOut(seg(t, 0.9 + i * 0.1, 1.2 + i * 0.1));
+        return <circle key={i} cx={70 + i * 20} cy={97} r={5} fill={C.caramel} opacity={land} />;
+      })}
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {spread > 0.8 && <T x={170} y={127} s={13} a="middle" f={C.mocha}>ran across 3–4 real threads</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>measured directly, not assumed</T>
     </Svg>
   );
@@ -76,6 +80,8 @@ export function LifoPredict({ t }: StepCtx) {
 
 // ── 5 · LIFO slot (no takeaway, docs-naming "from" step) ─────────────────────────────────────────
 export function LifoReveal({ t }: StepCtx) {
+  const drop = easeOut(seg(t, 0.5, 0.8));
+  const dy = (1 - drop) * -150;
   return (
     <Svg label="the lifo slot: a fast lane for a just-woken task" h={220}>
       <g opacity={fa(t, 0.2, 0.4)}>
@@ -86,6 +92,11 @@ export function LifoReveal({ t }: StepCtx) {
         <rect x={60} y={96} width={160} height={70} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
         <T x={140} y={135} s={12} a="middle" f={C.crema}>local queue</T>
       </g>
+      <g transform={`translate(0,${dy})`}>
+        <circle cx={300} cy={62} r={5} fill={C.caramel} />
+        <T x={312} y={67} s={11} f={C.latte}>woken task</T>
+      </g>
+      <Draw pts={[[300, 62], [220, 62]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} />
       <T x={60} y={190} s={13} f={C.crema} o={fa(t, 0.8, 0.4)}>checked first, for message-passing locality</T>
       <T x={60} y={215} s={13} f={C.latte} o={fa(t, 1.4, 0.4)}>disabled after three uses in a row</T>
     </Svg>

@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A forked child genuinely has one thread; a pidfd genuinely refers to one exact
 // process; set_var genuinely races with C's own getenv — three names for one lesson.
@@ -25,13 +25,14 @@ export function CommandPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: own pid, real exit code (this is the swipe test's "from" step — NO takeaway) ──
 export function CommandReveal({ t }: StepCtx) {
+  const spawn = easeOut(seg(t, 0.5, 0.8));
+  const dx = spawn * 100;
   return (
     <Svg label="command_spawns_a_real_child.rs: a real child" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>child's pid: genuinely its own</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>exit code: exactly 7</T>
-      </g>
+      <circle cx={60 + dx} cy={82} r={4} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>exit code: exactly 7</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real, separate process</T>
     </Svg>
   );
@@ -55,13 +56,15 @@ export function ForkPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: child has exactly one thread (takeaway) ───────────────────────────────────────
 export function ForkReveal({ t }: StepCtx) {
+  const gone = [0, 1, 2].map((i) => easeOut(seg(t, 0.5 + i * 0.1, 0.75 + i * 0.1)));
   return (
     <Svg label="fork_child_has_one_thread.rs: a real count" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>parent's own thread count: several</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>forked child's count: exactly one</T>
-      </g>
+      {[0, 1, 2, 3].map((i) => (
+        <circle key={i} cx={200 + i * 20} cy={57} r={4} fill={i === 0 ? C.taupe : C.cherry} opacity={i === 0 ? 1 : 1 - gone[i - 1] * 0.7} />
+      ))}
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>forked child's count: exactly one</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one thread, the rest simply gone</T>
     </Svg>
   );
@@ -85,13 +88,14 @@ export function PidfdPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: succeeds alive, ESRCH once gone (takeaway) ────────────────────────────────────
 export function PidfdReveal({ t }: StepCtx) {
+  const land = easeOut(seg(t, 0.5, 0.8));
+  const dx = land * 120;
   return (
     <Svg label="pidfd_fails_after_the_process_is_gone.rs: a real check" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>while alive: the signal succeeds</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>once gone: fails outright, ESRCH</T>
-      </g>
+      <Draw pts={[[60, 82], [60 + dx, 82]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
+      <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={170} y={112} s={13} a="middle" f={C.mocha}>once gone: fails outright, ESRCH</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>never confused with a new process</T>
     </Svg>
   );
@@ -115,10 +119,16 @@ export function SetVarPredict({ t }: StepCtx) {
 
 // ── 8 · The documented safety contract, quoted (no takeaway, connecting step) ───────────────────
 export function SetVarReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="std::env::set_var's own safety section" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>sound alone on one thread, or on Windows</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>elsewhere, multithreaded: never call it at all</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>sound alone on one thread, or on Windows</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>elsewhere, multithreaded: never call it at all</T>
+      </g>
     </Svg>
   );
 }
