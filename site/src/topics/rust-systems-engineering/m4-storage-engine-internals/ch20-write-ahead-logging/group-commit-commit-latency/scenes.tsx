@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Without grouping, every transaction pays for its own flush; group
 // commit trades a short wait for one flush instead of many. Inside one
@@ -63,13 +63,18 @@ export function GroupedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: exactly one flush (takeaway) ────────────────────────────
 export function GroupedReveal({ t }: StepCtx) {
+  const txns = [0, 1, 2, 3, 4];
   return (
     <Svg label="leader_follower_group_commit_latency.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same five transactions, grouped</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>flushes: exactly one, for all five</T>
-      </g>
+      {txns.map((i) => {
+        const converge = easeOut(seg(t, 0.4 + i * 0.05, 0.6 + i * 0.05));
+        const x0 = 70 + i * 50;
+        const x = x0 + (190 - x0) * converge;
+        return <circle key={i} cx={x} cy={76} r={4} fill={C.caramel} opacity={fa(t, 0.4 + i * 0.05, 0.2)} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>flushes: exactly one, for all five</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one wait, shared, instead of five flushes</T>
     </Svg>
   );
@@ -93,14 +98,28 @@ export function LatencyPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: it genuinely differs (takeaway) ─────────────────────────
 export function LatencyReveal({ t }: StepCtx) {
+  const waits = [120, 95, 70, 45, 20];
   return (
     <Svg label="leader_follower_group_commit_latency.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>same execution time, five latencies</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>earliest-ready: longest wait</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>latest-ready: shortest wait, same batch</T>
+      {waits.map((w, i) => {
+        const grow = easeOut(seg(t, 0.4 + i * 0.1, 0.7 + i * 0.1));
+        const h = w * 0.25 * grow;
+        return (
+          <rect
+            key={i}
+            x={60 + i * 50}
+            y={95 - h}
+            width={28}
+            height={h}
+            fill={C.caramel}
+            opacity={fa(t, 0.4 + i * 0.1, 0.2)}
+          />
+        );
+      })}
+      <rect x={60} y={95} width={260} height={1} fill={C.taupe} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={118} s={13} a="middle" f={C.mocha}>earliest-ready: longest wait</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>latest-ready: shortest wait, same batch</T>
     </Svg>
   );
 }
@@ -123,14 +142,18 @@ export function AsyncPredict({ t }: StepCtx) {
 
 // ── 8 · Measured: a false promise, only for async (takeaway) ─────────────
 export function AsyncReveal({ t }: StepCtx) {
+  const ack = easeOut(seg(t, 0.4, 0.6));
+  const flush = easeOut(seg(t, 0.9, 1.15));
   return (
     <Svg label="leader_follower_group_commit_latency.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same crash tick, two commit modes</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>async: a false promise. sync: none</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>sync never tells you before it's true</T>
+      <T x={70} y={88} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>async</T>
+      <circle cx={130 + ack * 130} cy={84} r={4} fill={C.cherry} opacity={fa(t, 0.4, 0.2)} />
+      <T x={70} y={118} s={12} f={C.latte} o={fa(t, 0.85, 0.3)}>sync</T>
+      <Draw pts={[[130, 114], [260, 114]]} t={t} from={0.9} to={1.15} stroke={C.caramel} w={2} />
+      <circle cx={130 + flush * 130} cy={114} r={4} fill={C.caramel} opacity={fa(t, 0.9, 0.2)} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={143} s={13} a="middle" f={C.mocha}>async: a false promise. sync: none</T>}
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.7, 0.4)}>sync never tells you before it's true</T>
     </Svg>
   );
 }

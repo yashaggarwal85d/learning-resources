@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Log first, data later: the same crash survives when the log comes
 // first and silently loses the update when it's reversed. Comparing a
@@ -62,13 +62,17 @@ export function IdempotentPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: a genuine no-op, twice over (takeaway) ─────────────────
 export function IdempotentReveal({ t }: StepCtx) {
+  const attempts = [0, 1];
   return (
     <Svg label="log_first_redo_idempotent_torn_page.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one old record, one full recovery pass</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>both: a genuine no-op</T>
-      </g>
+      {attempts.map((i) => {
+        const bounce = easeOut(seg(t, 0.5 + i * 0.25, 0.7 + i * 0.25));
+        const dy = (1 - Math.abs(bounce - 0.5) * 2) * 14;
+        return <circle key={i} cx={220 + i * 30} cy={76 - dy} r={4} fill={C.taupe} opacity={fa(t, 0.5 + i * 0.25, 0.2)} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>both: a genuine no-op</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>page.lsn already covers both of them</T>
     </Svg>
   );
@@ -92,13 +96,14 @@ export function TornPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: caught and fixed (takeaway) ─────────────────────────────
 export function TornReveal({ t }: StepCtx) {
+  const restore = easeOut(seg(t, 0.6, 0.95));
   return (
     <Svg label="log_first_redo_idempotent_torn_page.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a page torn by a partial write</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>checksum mismatch: caught, then fixed</T>
-      </g>
+      <circle cx={260} cy={76} r={4} fill={C.cherry} opacity={fa(t, 0.4, 0.2) * (1 - restore)} />
+      <Draw pts={[[280, 50], [280, 85]]} t={t} from={0.6} to={0.9} stroke={C.caramel} w={2} pen />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>checksum mismatch: caught, then fixed</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>fixed from the log's own full-page image</T>
     </Svg>
   );
@@ -140,11 +145,14 @@ export function PgWalReveal({ t }: StepCtx) {
 
 // ── 9 · PostgreSQL's own full-page write (surprising fact, takeaway) ─────
 export function FullPageWriteReveal({ t }: StepCtx) {
+  const write = easeOut(seg(t, 0.5, 0.85));
+  const dy = (1 - write) * -24;
   return (
     <Svg label="PostgreSQL docs, quoted" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a full image, written before the page</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <Draw pts={[[240, 50], [240, 85]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <g transform={`translate(0,${dy})`} opacity={write}>
         <T x={190} y={112} s={13} a="middle" f={C.mocha}>PostgreSQL's own name: full-page write</T>
       </g>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the same fix this topic just measured</T>
