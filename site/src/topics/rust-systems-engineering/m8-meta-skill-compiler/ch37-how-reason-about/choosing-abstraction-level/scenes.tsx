@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A recorded hypothesis is what a real result is checked against; the
 // identical real measurement, without it, is just a number with nothing
@@ -57,14 +57,22 @@ export function ChangePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: latency jumps to near the worker's own delay ─────────
 export function ChangeReveal({ t }: StepCtx) {
+  const before = easeOut(seg(t, 0.2, 0.45));
+  const after = easeOut(seg(t, 0.45, 0.8));
   return (
-    <Svg label="evidence_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical workload, the one change made</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>mean latency now near the worker's own delay</T>
+    <Svg label="evidence_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>the identical workload, the one change made</T>
+      <Draw pts={[[90, 120], [250, 120]]} t={t} from={0.1} to={0.2} stroke={C.latte} w={1.5} />
+      <T x={255} y={123} s={10} f={C.latte}>worker's own delay</T>
+      <rect x={60} y={120 - before * 14} width={40} height={before * 14} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
+      <T x={80} y={140} s={10} a="middle" f={C.latte}>reply-on-queue</T>
+      <rect x={160} y={120 - after * 95} width={40} height={after * 95} fill={C.caramel} opacity={fa(t, 0.45, 0.2)} />
+      <T x={180} y={140} s={10} a="middle" f={C.latte}>reply-on-persist</T>
+      <g opacity={fa(t, 0.95, 0.3)}>
+        <rect x={60} y={155} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={177} s={12} a="middle" f={C.mocha}>mean latency now near the worker's own delay</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real number, checked against a real guess</T>
+      <T x={60} y={200} s={12} f={C.latte} o={fa(t, 1.5, 0.3)}>a real number, checked against a real guess</T>
     </Svg>
   );
 }
@@ -87,14 +95,21 @@ export function ComparePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the match holds, confirming the hypothesis ───────────
 export function CompareReveal({ t }: StepCtx) {
+  const predicted = easeOut(seg(t, 0.2, 0.5));
+  const measured = easeOut(seg(t, 0.45, 0.75));
   return (
-    <Svg label="evidence_demo, both runs" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>what was predicted, beside what was measured</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the added wait matches the worker's own delay</T>
+    <Svg label="evidence_demo, both runs" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>what was predicted, beside what was measured</T>
+      <rect x={60} y={120 - predicted * 90} width={40} height={predicted * 90} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.2, 0.2)} />
+      <T x={80} y={140} s={10} a="middle" f={C.latte}>predicted</T>
+      <rect x={160} y={120 - measured * 92} width={40} height={measured * 92} fill={C.caramel} opacity={fa(t, 0.45, 0.2)} />
+      <T x={180} y={140} s={10} a="middle" f={C.latte}>measured</T>
+      <Draw pts={[[100, 32], [160, 32]]} t={t} from={0.75} to={0.9} stroke={C.caramel} w={2} pen />
+      <g opacity={fa(t, 0.95, 0.3)}>
+        <rect x={60} y={155} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={177} s={12} a="middle" f={C.mocha}>the added wait matches the worker's own delay</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real result, checked against a real guess</T>
+      <T x={60} y={200} s={12} f={C.latte} o={fa(t, 1.5, 0.3)}>a real result, checked against a real guess</T>
     </Svg>
   );
 }

@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Leaving a backpressure point implicit does not avoid the decision; it
 // genuinely defaults to an unbounded queue, measurably different from a
@@ -57,14 +57,22 @@ export function UnboundedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: all eight admitted, queue grows to seven ─────────────
 export function UnboundedReveal({ t }: StepCtx) {
+  const ids = [0, 1, 2, 3, 4, 5, 6, 7];
+  const grow = easeOut(seg(t, 0.9, 1.15));
   return (
-    <Svg label="worksheet_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical burst, no stated boundary</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>admitted: all eight. rejected: none</T>
+    <Svg label="worksheet_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>the identical burst, no stated boundary</T>
+      {ids.map((i) => {
+        const start = 0.15 + i * 0.07;
+        const travel = easeOut(seg(t, start, start + 0.25));
+        return <circle key={i} cx={30 + i * 42} cy={40 + travel * 45} r={5} fill={C.caramel} opacity={fa(t, start, 0.15)} />;
+      })}
+      <rect x={30} y={120 - grow * 55} width={310} height={grow * 55} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.9, 0.2)} />
+      <T x={185} y={135} s={11} a="middle" f={C.latte} o={fa(t, 1.0, 0.2)}>queue length at the checkpoint: seven</T>
+      <g opacity={fa(t, 1.3, 0.3)}>
+        <rect x={60} y={155} width={290} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={205} y={177} s={12} a="middle" f={C.mocha}>admitted: all eight. rejected: none</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>queue length at the checkpoint: seven</T>
     </Svg>
   );
 }
@@ -87,14 +95,20 @@ export function ComparePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: capped at two vs. climbing to seven (takeaway) ───────
 export function CompareReveal({ t }: StepCtx) {
+  const bounded = easeOut(seg(t, 0.2, 0.45));
+  const unbounded = easeOut(seg(t, 0.45, 0.8));
   return (
-    <Svg label="worksheet_demo, both instances" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical burst, two real designs</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>bounded: capped at two. unbounded: at seven</T>
+    <Svg label="worksheet_demo, both instances" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>the identical burst, two real designs</T>
+      <rect x={60} y={120 - bounded * 14} width={40} height={bounded * 14} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
+      <T x={80} y={140} s={10} a="middle" f={C.latte}>bounded</T>
+      <rect x={160} y={120 - unbounded * 49} width={40} height={unbounded * 49} fill={C.cherry} opacity={fa(t, 0.45, 0.2)} />
+      <T x={180} y={140} s={10} a="middle" f={C.latte}>unbounded</T>
+      <g opacity={fa(t, 0.95, 0.3)}>
+        <rect x={60} y={155} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={177} s={12} a="middle" f={C.mocha}>bounded: capped at two. unbounded: at seven</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a default is still a real decision</T>
+      <T x={60} y={200} s={12} f={C.latte} o={fa(t, 1.5, 0.3)}>a default is still a real decision</T>
     </Svg>
   );
 }
