@@ -1,220 +1,418 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
-// Colour grammar (CHAPTER.md): crema = the structure's own live state (a memtable, a run's real
-// keys); latte = secondary labels; taupe = an empty/discarded slot; caramel = the thing to look
-// at (a flush, the newest-first read path, a filter/fence check); cinnamon = the alternative
-// being compared (in-place updates, an unfiltered read); cherry = the bad outcome or shadowed
-// value (a stale copy a tombstone hides).
+// Colour grammar (CHAPTER.md): crema = stored entries; latte = labels; taupe = empty; caramel = the thing to
+// look at (the write in flight, the copy a read returns, the run actually opened); cinnamon = the compared
+// alternative (in-place updates, the unfiltered read, memory-side structures); cherryText = the crash, the
+// tombstone, the stale copy. Keys are letters (illustrations, not measurements); every printed number is
+// printed by examples.py.
 
-function edge(x1: number, y1: number, x2: number, y2: number, colour = C.latte, opacity = 0.6, width = 1.4) {
-  return <line key={`${x1}-${y1}-${x2}-${y2}-e`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={colour} strokeWidth={width} opacity={opacity} />;
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
 }
 
-function fill(x: number, y: number, w: number, h: number, colour = C.caramel, opacity = 1) {
-  return <rect key={`${x}-${y}-f`} x={x} y={y} width={w} height={h} rx={3} fill={colour} opacity={opacity} />;
+type Pt = [number, number];
+const CW = 34; // one entry cell's width
+
+/** A row of entry cells: labels[i] is the key letter (or '' for empty). */
+function Cells({ x, y, labels, f = C.crema, hot = -1, hotC = C.caramel, o = 1, w = CW }: { x: number; y: number; labels: string[]; f?: string; hot?: number; hotC?: string; o?: number; w?: number }) {
+  return (
+    <g opacity={o}>
+      {labels.map((l, i) => (
+        <g key={i}>
+          <rect x={x + i * w} y={y} width={w - 4} height={24} rx={3} fill={l ? C.mocha : C.roast} stroke={i === hot ? hotC : l ? f : C.taupe} strokeWidth={i === hot ? 2 : 1.1} />
+          {l && <T x={x + i * w + (w - 4) / 2} y={y + 17} s={13} f={i === hot ? hotC : f === C.taupe ? C.latte : f} a="middle">{l}</T>}
+        </g>
+      ))}
+    </g>
+  );
 }
 
-// A run/page: a wide rounded rectangle of `slots` keys, drawn as small ticks in a row.
-function page(x: number, y: number, w: number, slots: number, colour = C.crema, opacity = 1, filledSlots?: number) {
-  const filled = filledSlots ?? slots;
-  const slotW = w / slots;
-  const items = [] as React.ReactNode[];
-  items.push(<rect key={`${x}-${y}-p`} x={x} y={y} width={w} height={16} rx={2} fill="none" stroke={colour} strokeWidth={1.3} opacity={opacity} />);
-  for (let i = 0; i < slots; i++) {
-    const sx = x + i * slotW + slotW / 2;
-    const isFilled = i < filled;
-    items.push(<circle key={`${x}-${y}-s${i}`} cx={sx} cy={y + 8} r={2.4} fill={isFilled ? colour : 'none'} stroke={isFilled ? 'none' : C.taupe} strokeWidth={1} opacity={opacity} />);
-  }
-  return items;
+function Check({ x, y, t, at, f = C.caramel }: { x: number; y: number; t: number; at: number; f?: string }) {
+  return <Draw pts={[[x - 6, y], [x - 2, y + 5], [x + 7, y - 6]]} t={t} from={at} to={at + 0.25} stroke={f} w={2} pen={false} />;
+}
+function Cross({ x, y, o = 1, f = C.cherryText }: { x: number; y: number; o?: number; f?: string }) {
+  return (
+    <g opacity={o} stroke={f} strokeWidth={2}>
+      <line x1={x - 5} y1={y - 5} x2={x + 5} y2={y + 5} />
+      <line x1={x + 5} y1={y - 5} x2={x - 5} y2={y + 5} />
+    </g>
+  );
+}
+function Lock({ x, y, o = 1 }: { x: number; y: number; o?: number }) {
+  return (
+    <g opacity={o}>
+      <rect x={x - 6} y={y - 1} width={12} height={9} rx={1.5} fill={C.latte} />
+      <path d={`M ${x - 4} ${y - 1} v -3 a 4 4 0 0 1 8 0 v 3`} fill="none" stroke={C.latte} strokeWidth={1.6} />
+    </g>
+  );
 }
 
-// A log: a thin horizontal strip of small marks, growing rightward.
-function logStrip(x: number, y: number, w: number, marks: number, colour = C.crema, opacity = 1, filledMarks?: number) {
-  const filled = filledMarks ?? marks;
-  const markW = w / marks;
-  const items = [] as React.ReactNode[];
-  items.push(<rect key={`${x}-${y}-l`} x={x} y={y} width={w} height={10} rx={2} fill="none" stroke={colour} strokeWidth={1.1} opacity={opacity} />);
-  for (let i = 0; i < filled; i++) {
-    const mx = x + i * markW + markW / 2;
-    items.push(<rect key={`${x}-${y}-m${i}`} x={mx - 1.2} y={y + 2} width={2.4} height={6} fill={colour} opacity={opacity} />);
-  }
-  return items;
-}
-
-// 1 · Opening: an in-place page struck through, replaced by an append-only log
+// 1 · Two ways to pay. Left: every write seeks to its own page somewhere in a grid and overwrites it in place
+// (a red seek arc, a flash). Right: the same writes simply append to the end of one growing strip.
 export function Opening({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.3, 1.3));
+  const N = 6;
+  const pages = [5, 10, 2, 7, 0, 9];
+  const at = (i: number) => 0.4 + i * 0.35;
   return (
-    <Svg label="A page that updates in place, struck through, replaced by a single append-only log line growing rightward" h={280}>
-      <T x={30} y={24} s={13} f={C.cinnamon}>every page so far: update in place, pay the cost now</T>
-      {page(60, 50, 260, 8, C.cinnamon, 0.6, 7)}
-      <line x1={60} y1={44} x2={320} y2={74} stroke={C.cherry} strokeWidth={1.8} opacity={0.7} />
-      <T x={30} y={140} s={13} f={C.crema} o={a}>this structure: never update in place, write sequentially instead</T>
-      {logStrip(60, 166, 320 * a, 12, C.crema, a, Math.round(9 * a))}
-      <T x={30} y={220} s={13} f={C.latte} o={a}>the cost doesn't disappear — it's paid back later, on its own schedule</T>
+    <Svg label="Updating pages in place sends every write to its own spot, paid immediately; this structure appends every write sequentially and pays later" h={300}>
+      <T x={30} y={24} s={13} f={C.cinnamon}>so far: in place, pay now</T>
+      {Array.from({ length: 12 }, (_, p) => {
+        const i = pages.indexOf(p);
+        const hit = i >= 0 && t >= at(i) + 0.25;
+        const flash = i >= 0 ? clamp(1 - (t - at(i) - 0.25) / 0.5) : 0;
+        return <rect key={p} x={30 + (p % 4) * 64} y={44 + Math.floor(p / 4) * 40} width={56} height={30} rx={3} fill={hit && flash > 0 ? C.cherry : C.roast} stroke={hit ? C.cinnamon : C.mocha} strokeWidth={1.4} />;
+      })}
+      {pages.map((p, i) => {
+        const k = easeInOut(seg(t, at(i), at(i) + 0.25));
+        if (k <= 0 || t > at(i) + 0.8) return null;
+        const to: Pt = [58 + (p % 4) * 64, 59 + Math.floor(p / 4) * 40];
+        return <path key={i} d={`M 150 180 Q ${(150 + to[0]) / 2} 200 ${lerp(150, to[0], k)} ${lerp(180, to[1], k)}`} fill="none" stroke={C.cherryText} strokeWidth={1.3} strokeDasharray="3 3" />;
+      })}
+      <T x={320} y={24} s={13} f={C.caramel}>here: append, pay later</T>
+      <rect x={320} y={44} width={250} height={30} rx={3} fill={C.roast} stroke={C.mocha} strokeWidth={1.2} />
+      {Array.from({ length: N }, (_, i) => {
+        const k = easeOutBack(seg(t, at(i), at(i) + 0.3));
+        return k > 0 ? <rect key={i} x={326 + i * 40} y={50} width={34 * clamp(k)} height={18} rx={2} fill={C.caramel} /> : null;
+      })}
+      <path d={`M 326 90 H ${326 + Math.min(N, Math.floor(clamp(seg(t, 0.4, 2.5)) * N + 1e-9)) * 40}`} stroke={C.caramel} strokeWidth={1.6} />
+      <T x={320} y={112} s={13} f={C.latte} o={easeOut(seg(t, 0.6, 1.0))}>one direction, never back</T>
+      <T x={30} y={250} s={13} f={C.crema} o={easeOut(seg(t, 2.7, 3.1))}>the cost doesn&apos;t vanish: it&apos;s paid back later,</T>
+      <T x={30} y={272} s={13} f={C.crema} o={easeOut(seg(t, 2.9, 3.3))}>on the structure&apos;s own schedule</T>
     </Svg>
   );
 }
 
-// 2 · WAL: writes appended to a growing log, for crash recovery
+// 2 · The write-ahead log. Five writes each append to the log on disk first, then land in the memtable in
+// memory. A crash wipes memory (red flash); then the log replays, in order, rebuilding the memtable exactly.
 export function WAL({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.2, 1));
-  const pulse = 0.6 + 0.4 * Math.sin(t * 2.5);
+  const W = ['d', 'b', 'f', 'a', 'e'];
+  const at = (i: number) => 0.3 + i * 0.32;
+  const crash = easeOut(seg(t, 2.0, 2.2));
+  const wiped = t >= 2.2;
+  const replay = clamp(seg(t, 2.5, 3.5)) * W.length;
+  const memSorted = (n: number) => [...W.slice(0, n)].sort();
+  const memN = wiped ? Math.floor(replay + 1e-9) : W.filter((_, i) => t >= at(i) + 0.3).length;
+  const mem = memSorted(memN);
   return (
-    <Svg label="A write-ahead log, writes landing at its growing end" h={260}>
-      <T x={30} y={30} s={13} f={C.crema}>every write lands here first, in order</T>
-      {logStrip(60, 56, 340, 14, C.crema, 1, Math.round(10 * a))}
-      <circle cx={60 + (340 / 14) * (10 * a - 0.5)} cy={61} r={5} fill={C.caramel} opacity={Math.max(0.4, pulse)} />
-      <T x={30} y={140} s={13} f={C.latte} o={a}>a crash here is survived by replaying the log, in order, from the start</T>
-      <T x={30} y={200} s={13} f={C.cinnamon} o={a}>nothing else this topic builds works without this log existing first</T>
+    <Svg label="Each write is appended to the log on disk before it lands in the in-memory table; after a crash wipes memory, replaying the log in order rebuilds the table" h={320}>
+      <T x={30} y={30} s={13} f={C.cinnamon}>memtable (memory)</T>
+      <rect x={30} y={40} width={230} height={40} rx={5} fill="none" stroke={C.cinnamon} strokeWidth={1.4} strokeDasharray="4 3" />
+      <Cells x={38} y={48} labels={[...mem, ...Array(5 - mem.length).fill('')]} />
+      {crash > 0 && !(replay >= W.length) && <rect x={26} y={36} width={238} height={48} rx={6} fill={C.cherry} opacity={0.35 * crash * (wiped ? clamp(1 - (t - 2.2) / 0.4) : 1)} />}
+      <T x={300} y={68} s={14} f={C.cherryText} o={crash * (1 - easeOut(seg(t, 2.6, 2.9)))}>crash: memory gone</T>
+      <T x={30} y={200} s={13} f={C.crema}>log (disk), in arrival order</T>
+      <rect x={30} y={210} width={540} height={36} rx={4} fill={C.roast} stroke={C.mocha} strokeWidth={1.2} />
+      {W.map((k, i) => {
+        const a = easeOut(seg(t, at(i), at(i) + 0.15));
+        const up = easeInOut(seg(t, at(i) + 0.15, at(i) + 0.3));
+        const r = wiped ? clamp(replay - i) : 0;
+        return (
+          <g key={i}>
+            <g opacity={a}>
+              <rect x={38 + i * 40} y={216} width={34} height={24} rx={3} fill={C.mocha} stroke={r > 0 ? C.caramel : C.crema} strokeWidth={r > 0 ? 2 : 1.1} />
+              <T x={55 + i * 40} y={233} s={13} f={r > 0 ? C.caramel : C.crema} a="middle">{k}</T>
+            </g>
+            {up > 0 && up < 1 && <rect x={lerp(38 + i * 40, 38 + i * 34, up)} y={lerp(216, 48, up)} width={30} height={24} rx={3} fill="none" stroke={C.crema} strokeWidth={1.2} />}
+            {r > 0 && r < 1 && <rect x={lerp(38 + i * 40, 160, r)} y={lerp(216, 90, r)} width={30} height={24} rx={3} fill="none" stroke={C.caramel} strokeWidth={1.6} />}
+          </g>
+        );
+      })}
+      <T x={30} y={290} s={13} f={C.caramel} o={easeOut(seg(t, 3.4, 3.8))}>replay the log in order: nothing lost</T>
     </Svg>
   );
 }
 
-// 3 · Memtable: in-memory sorted structure, consulted on every read
+// 3 · The memtable. Writes arrive out of order (d, b, f, a, e) and each slides into its sorted place in memory.
+// Then a read for e arrives: it checks the memtable first and finds the newest copy there; the runs on disk
+// below are never asked.
 export function Memtable({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.2, 1));
+  const W = ['d', 'b', 'f', 'a', 'e'];
+  const at = (i: number) => 0.3 + i * 0.36;
+  const n = W.filter((_, i) => t >= at(i)).length;
+  const sorted = [...W.slice(0, n)].sort();
+  const posOf = (k: string, upto: number) => [...W.slice(0, upto)].sort().indexOf(k);
+  const read = easeInOut(seg(t, 2.3, 2.9));
+  const found = t >= 2.9;
   return (
-    <Svg label="A write-ahead log beside a small in-memory sorted structure, the memtable" h={280}>
-      {logStrip(60, 30, 200, 10, C.latte, 0.6, 7)}
-      <T x={280} y={38} s={12} f={C.latte} o={0.6}>the log</T>
-      <path d="M 160 46 L 160 100" stroke={C.caramel} strokeWidth={1.6} opacity={a} markerEnd="url(#arrow)" />
-      {page(60, 120, 200, 6, C.crema, a, 5)}
-      <T x={280} y={128} s={12} f={C.crema} o={a}>the memtable — sorted, in memory</T>
-      <T x={30} y={190} s={13} f={C.crema} o={a}>every read checks here first, or stale data would come back silently</T>
+    <Svg label="Writes arriving in any order slide into sorted position in the in-memory memtable; a read checks the memtable first and finds the newest value there" h={320}>
+      <T x={30} y={30} s={13} f={C.cinnamon}>memtable: sorted, in memory</T>
+      <rect x={30} y={40} width={250} height={40} rx={5} fill="none" stroke={C.cinnamon} strokeWidth={1.4} strokeDasharray="4 3" />
+      {sorted.map((k) => {
+        const i = W.indexOf(k);
+        const prev = posOf(k, Math.max(i + 1, n - 1));
+        const now = sorted.indexOf(k);
+        const slide = easeInOut(seg(t, at(n - 1), at(n - 1) + 0.25));
+        const p = n - 1 > i ? lerp(prev, now, slide) : now;
+        const drop = i === n - 1 ? easeOutBack(seg(t, at(i), at(i) + 0.3)) : 1;
+        const hot = found && k === 'e';
+        return (
+          <g key={k} transform={`translate(0 ${(1 - clamp(drop)) * -30})`} opacity={clamp(drop)}>
+            <rect x={38 + p * 46} y={48} width={40} height={24} rx={3} fill={C.mocha} stroke={hot ? C.caramel : C.crema} strokeWidth={hot ? 2 : 1.1} />
+            <T x={58 + p * 46} y={65} s={13} f={hot ? C.caramel : C.crema} a="middle">{k}</T>
+          </g>
+        );
+      })}
+      <T x={30} y={150} s={13} f={C.latte}>older runs (disk)</T>
+      {[0, 1].map((r) => <Cells key={r} x={30} y={162 + r * 34} labels={['a', 'c', 'e', 'g']} f={C.taupe} o={found ? 0.35 : 0.8} />)}
+      <g opacity={read > 0 ? 1 : 0}>
+        <rect x={lerp(470, 300, read)} y={50} width={60} height={22} rx={11} fill="none" stroke={C.caramel} strokeWidth={1.8} />
+        <T x={lerp(500, 330, read)} y={66} s={13} f={C.caramel} a="middle">read e</T>
+      </g>
+      <Check x={400} y={60} t={t} at={2.9} />
+      <T x={30} y={270} s={13} f={C.caramel} o={easeOut(seg(t, 3.0, 3.4))}>every read checks here first</T>
+      <T x={30} y={294} s={13} f={C.latte} o={easeOut(seg(t, 3.3, 3.7))}>or it would miss the newest write</T>
     </Svg>
   );
 }
 
-// 4 · Predict: the memtable just filled up
+// 4 · Predict: the memtable is full. Every slot is taken and the outline turns red. After the answer the whole
+// table drops to disk as one locked run and a fresh empty memtable appears in its place.
 export function FlushPredict({ t, answer }: StepCtx) {
   const answered = answer !== null;
-  const pulse = 0.7 + 0.3 * Math.sin(t * 3);
+  const s = useSinceAnswer(answered);
+  const drop = answered ? easeInOut(seg(s, 0.2, 1.0)) : 0;
+  const fresh = answered ? easeOut(seg(s, 1.0, 1.3)) : 0;
+  const keys = ['a', 'b', 'd', 'e', 'f', 'h'];
   return (
-    <Svg label="A memtable drawn completely full, pulsing" h={260}>
-      <T x={30} y={24} s={13} f={C.latte}>the memtable just reached its size limit</T>
-      {page(100, 90, 300, 8, C.cherry, Math.max(0.5, pulse), 8)}
-      <T x={100} y={130} s={13} f={answered ? C.crema : C.cherryText} o={1}>
-        {answered ? 'flushed out whole, as one new, unchanging run' : 'full — what happens to it?'}
-      </T>
+    <Svg label="The memtable has reached its size limit; after answering, it is written to disk whole as a new immutable run and an empty memtable takes over" h={300}>
+      <T x={30} y={24} s={13} f={C.latte}>the memtable hit its size limit</T>
+      <rect x={30} y={40} width={220} height={40} rx={5} fill="none" stroke={answered ? C.cinnamon : C.cherryText} strokeWidth={1.6} strokeDasharray="4 3" opacity={answered ? fresh : 0.6 + 0.4 * Math.sin(t * 4)} />
+      <g transform={`translate(0 ${drop * 130})`}>
+        <Cells x={38} y={48} labels={keys} f={drop > 0 ? C.caramel : C.crema} />
+        <Lock x={262} y={58} o={drop >= 1 ? 1 : 0} />
+      </g>
+      <T x={570} y={156} s={13} f={C.latte} a="end" o={easeOut(seg(t, 0.2, 0.5))}>disk</T>
+      <line x1={30} y1={164} x2={570} y2={164} stroke={C.mocha} strokeWidth={1.2} />
+      {!answered && <T x={30} y={270} s={15} f={C.cherryText} o={0.7 + 0.3 * Math.sin(t * 3)}>full: what happens to it?</T>}
+      {answered && <T x={30} y={246} s={13} f={C.caramel} o={easeOut(seg(s, 1.1, 1.5))}>written out whole, as one new run</T>}
+      {answered && <T x={30} y={270} s={13} f={C.latte} o={easeOut(seg(s, 1.4, 1.8))}>never modified again</T>}
     </Svg>
   );
 }
 
-// 5 · Flush reveal: memtable → immutable SSTable, fresh memtable takes over, old WAL discarded
+// 5 · The flush. The full memtable drops to the top of the stack of runs (newest on top) and locks; a fresh
+// memtable takes over; the log segment behind the flushed table is struck out and removed; new writes land in
+// the new memtable straight away.
 export function FlushReveal({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.7));
-  const b = easeOut(seg(t, 0.6, 1.4));
+  const drop = easeInOut(seg(t, 0.3, 1.3));
+  const fresh = easeOut(seg(t, 1.4, 1.8));
+  const strike = easeOut(seg(t, 2.0, 2.4));
+  const gone = easeOut(seg(t, 2.5, 2.9));
+  const nw = clamp(seg(t, 3.0, 3.6)) * 2;
+  const keys = ['a', 'b', 'd', 'e', 'f', 'h'];
   return (
-    <Svg label="A full memtable flushed into a new immutable run; a fresh memtable and a fresh log take its place" h={320}>
-      <T x={30} y={24} s={13} f={C.latte}>before: one full memtable</T>
-      {page(100, 40, 300, 8, C.cherry, Math.max(0.3, 1 - a), 8)}
-      <path d="M 150 56 L 150 150" stroke={C.caramel} strokeWidth={1.6} opacity={a} markerEnd="url(#arrow)" />
-      <T x={30} y={190} s={13} f={C.crema} o={a}>after: an immutable run on disk, never touched again</T>
-      {page(100, 160, 300, 8, C.crema, a, 8)}
-      <T x={30} y={240} s={13} f={C.crema} o={b}>a brand-new memtable and log take over immediately</T>
-      {logStrip(100, 266, 160, 10, C.crema, b, Math.round(2 * b))}
-      <T x={300} y={260} s={12} f={C.taupe} o={b}>the old log is discarded — its data already lives on disk</T>
+    <Svg label="The full memtable becomes a new immutable run on disk, an empty memtable takes over, and the log behind the flushed table is discarded" h={320}>
+      <T x={30} y={24} s={13} f={C.cinnamon}>memtable</T>
+      <rect x={30} y={34} width={220} height={40} rx={5} fill="none" stroke={C.cinnamon} strokeWidth={1.4} strokeDasharray="4 3" />
+      {fresh > 0 && <Cells x={38} y={42} labels={['c', 'g'].slice(0, Math.floor(nw + 1e-9)).concat(Array(6 - Math.floor(nw + 1e-9)).fill(''))} o={fresh} />}
+      <g transform={`translate(0 ${drop * 120})`} opacity={1}>
+        <Cells x={38} y={42} labels={keys} f={drop > 0 ? C.caramel : C.crema} />
+        <Lock x={262} y={52} o={drop >= 1 ? 1 : 0} />
+      </g>
+      <T x={300} y={24} s={13} f={C.latte}>log</T>
+      <rect x={300} y={34} width={270} height={40} rx={4} fill={C.roast} stroke={C.mocha} strokeWidth={1.2} />
+      <g opacity={1 - gone}>
+        {keys.map((_, i) => <rect key={i} x={306 + i * 26} y={44} width={20} height={20} rx={2} fill={C.latte} />)}
+        <line x1={302} y1={54} x2={lerp(302, 462, strike)} y2={54} stroke={C.cherryText} strokeWidth={2.2} />
+      </g>
+      {Array.from({ length: Math.floor(nw + 1e-9) }, (_, i) => <rect key={i} x={306 + i * 26} y={44} width={20} height={20} rx={2} fill={C.caramel} />)}
+      <T x={30} y={140} s={13} f={C.latte}>runs on disk, newest on top</T>
+      {[0, 1].map((r) => <Cells key={r} x={38} y={196 + r * 32} labels={r ? ['b', 'c', 'g', 'h', 'k', ''] : ['a', 'd', 'j', 'm', '', '']} f={C.taupe} />)}
+      <T x={300} y={174} s={13} f={C.caramel} o={easeOut(seg(t, 1.2, 1.5))}>the new run, sealed</T>
+      <T x={300} y={110} s={13} f={C.latte} o={strike}>its log, no longer needed</T>
+      <T x={30} y={300} s={13} f={C.crema} o={easeOut(seg(t, 3.5, 3.9))}>from now on: read it, or compact it</T>
     </Svg>
   );
 }
 
-// 6 · Predict: the same key in three places
+const RUNS: { name: string; v: string }[] = [
+  { name: 'memtable', v: 'v3' },
+  { name: 'newer run', v: 'v2' },
+  { name: 'oldest run', v: 'v1' },
+];
+
+// 6 · Predict: three copies. Key k has a value in the memtable and in two older runs, each labelled by when it
+// was written. After the answer the memtable's copy lights and the other two dim, marked as shadowed.
 export function ReadPredict({ t, answer }: StepCtx) {
   const answered = answer !== null;
+  const s = useSinceAnswer(answered);
+  const lit = answered ? easeOut(seg(s, 0.2, 0.6)) : 0;
   return (
-    <Svg label="The same key with three different values, in a memtable and two on-disk runs" h={280}>
+    <Svg label="The same key has a value in the memtable and in two older runs; after answering, the newest copy, in the memtable, is the one a read returns" h={300}>
       <T x={30} y={24} s={13} f={C.latte}>the same key, three copies</T>
-      {page(80, 60, 120, 1, C.crema, 1, 1)}
-      <T x={80} y={100} s={11} f={C.latte}>memtable — newest write</T>
-      {page(240, 60, 120, 1, C.crema, 0.75, 1)}
-      <T x={240} y={100} s={11} f={C.latte}>older run</T>
-      {page(400, 60, 120, 1, C.crema, 0.55, 1)}
-      <T x={400} y={100} s={11} f={C.latte}>oldest run</T>
-      <T x={30} y={160} s={13} f={answered ? C.crema : C.latte} o={1}>
-        {answered ? 'the newest copy wins, always' : 'which one does a read actually return?'}
-      </T>
+      {RUNS.map((r, i) => {
+        const hot = answered && i === 0;
+        return (
+          <g key={r.name} opacity={answered && i > 0 ? lerp(1, 0.4, lit) : 1}>
+            <T x={30} y={66 + i * 56} s={13} f={i === 0 ? C.cinnamon : C.latte}>{r.name}</T>
+            <rect x={200} y={48 + i * 56} width={110} height={28} rx={4} fill={C.mocha} stroke={hot ? C.caramel : C.crema} strokeWidth={hot ? 2.2 : 1.2} />
+            <T x={255} y={67 + i * 56} s={13} f={hot ? C.caramel : C.crema} a="middle">k = {r.v}</T>
+            {answered && i > 0 && <T x={330} y={67 + i * 56} s={13} f={C.cherryText} o={lit}>shadowed</T>}
+          </g>
+        );
+      })}
+      {!answered && <T x={30} y={262} s={15} f={C.caramel} o={0.7 + 0.3 * Math.sin(t * 3)}>which one does a read return?</T>}
+      {answered && <T x={30} y={262} s={13} f={C.caramel} o={easeOut(seg(s, 0.8, 1.2))}>the newest copy wins, always</T>}
     </Svg>
   );
 }
 
-// 7 · Read reveal: memtable, then newest-to-oldest runs, stop at first match
+// 7 · The read path. A lookup for key j checks the memtable (miss), the newest run (miss), the next run (hit:
+// stop). The oldest run, which also holds a copy of j, is never opened.
 export function ReadReveal({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.1, 0.5));
-  const b = easeOut(seg(t, 0.5, 1));
-  const c = easeOut(seg(t, 1, 1.5));
-  const runs = [
-    { x: 240, label: 'newer run', hit: false },
-    { x: 400, label: 'older run', hit: true },
+  const rows = [
+    { name: 'memtable', keys: ['c', 'g', 'm'], hit: false },
+    { name: 'run 3 (newest)', keys: ['a', 'e', 'k'], hit: false },
+    { name: 'run 2', keys: ['b', 'j', 'p'], hit: true },
+    { name: 'run 1 (oldest)', keys: ['d', 'j', 'q'], hit: false },
   ];
+  const at = (i: number) => 0.4 + i * 0.6;
+  const stopped = t >= at(2) + 0.4;
+  const cur = Math.min(2, Math.floor(clamp(seg(t, 0.4, 2.2)) * 3 + 1e-9));
   return (
-    <Svg label="A read checking the memtable, then each on-disk run from newest to oldest, stopping at the first match" h={300}>
-      {page(80, 60, 120, 1, C.crema, Math.max(0.4, 1 - a), 0)}
-      <T x={80} y={100} s={11} f={C.cinnamon} o={a}>memtable — not found here</T>
-      <path d="M 200 68 L 240 68" stroke={C.caramel} strokeWidth={1.6} opacity={a} markerEnd="url(#arrow)" />
-      {page(240, 60, 120, 1, C.crema, Math.max(0.4, 1 - b), 0)}
-      <T x={240} y={100} s={11} f={C.cinnamon} o={b}>newer run — not found here</T>
-      <path d="M 360 68 L 400 68" stroke={C.caramel} strokeWidth={1.6} opacity={b} markerEnd="url(#arrow)" />
-      {page(400, 60, 120, 1, C.caramel, c, 1)}
-      <T x={400} y={100} s={11} f={C.crema} o={c}>oldest run — found, stop here</T>
-      <T x={30} y={180} s={13} f={C.crema} o={c}>newest-first isn't an optimization — it's the only way to know which copy is current</T>
+    <Svg label="A read checks the memtable, then each run from newest to oldest, and stops at the first one holding the key; older copies are never reached" h={320}>
+      <T x={30} y={24} s={13} f={C.caramel}>read j: newest first</T>
+      {rows.map((r, i) => {
+        const y = 50 + i * 54;
+        const checked = t >= at(i) + 0.3 && i <= 2;
+        const skipped = i === 3 && stopped;
+        const hotIdx = r.hit && checked ? 1 : -1;
+        return (
+          <g key={r.name} opacity={skipped ? 0.35 : 1}>
+            <T x={30} y={y + 17} s={13} f={i === 0 ? C.cinnamon : C.latte}>{r.name}</T>
+            <Cells x={200} y={y} labels={r.keys} f={C.crema} hot={hotIdx} />
+            {checked && !r.hit && <Cross x={330} y={y + 12} />}
+            {r.hit && <Check x={330} y={y + 10} t={t} at={at(2) + 0.3} />}
+          </g>
+        );
+      })}
+      {t > 0.4 && !stopped && <rect x={192} y={42 + cur * 54} width={118} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />}
+      <T x={360} y={272} s={13} f={C.latte} o={easeOut(seg(t, 1.9, 2.2))}>never opened</T>
+      <T x={30} y={300} s={13} f={C.crema} o={easeOut(seg(t, 2.9, 3.3))}>order is how it knows which copy is current</T>
     </Svg>
   );
 }
 
-// 8 · Skip work: Bloom filter (membership) + fence pointer (range), compounding
+// 8 · Skipping work. Five runs, each with a small Bloom filter held in memory. A lookup asks every filter:
+// four answer "definitely not" and their runs are never read; one answers "maybe". That run's fence pointers
+// (one first-key per block) narrow the read to a single block, which alone is read from disk.
 export function SkipWork({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.15, 0.7));
-  const b = easeOut(seg(t, 0.5, 1.2));
-  const c = easeOut(seg(t, 1, 1.6));
+  const ask = (i: number) => 0.3 + i * 0.25;
+  const maybe = 2;
+  const fence = easeInOut(seg(t, 2.0, 2.8));
+  const read = easeOut(seg(t, 3.0, 3.5));
   return (
-    <Svg label="A Bloom filter ruling a run out from memory, and a fence pointer narrowing where inside a run to look" h={320}>
-      <T x={30} y={24} s={13} f={C.crema}>a Bloom filter: definitely-not-here, or maybe-here — checked in memory</T>
-      {fill(60, 40, 40 * a, 20, C.cinnamon, 0.5)}
-      <T x={110} y={55} s={11} f={C.cinnamon} o={a}>definitely not — run skipped, no disk read at all</T>
-      <T x={30} y={120} s={13} f={C.crema} o={b}>a fence pointer: a stored key range, narrowing a maybe to one block</T>
-      {page(60, 140, 300, 6, C.latte, b, 6)}
-      {fill(60 + (300 / 6) * 2, 140, 300 / 6, 16, C.caramel, c)}
-      <T x={60} y={190} s={12} f={C.crema} o={c}>only this one block is ever actually opened</T>
-      <T x={30} y={250} s={13} f={C.latte} o={c}>neither one answers the question — they only decide what's worth checking</T>
+    <Svg label="A Bloom filter per run, kept in memory, rules out four of five runs without a disk read; fence pointers narrow the remaining run to one block" h={320}>
+      <T x={30} y={24} s={13} f={C.cinnamon}>filters, in memory</T>
+      <T x={300} y={24} s={13} f={C.latte}>runs, on disk</T>
+      {[0, 1, 2, 3, 4].map((i) => {
+        const y = 40 + i * 40;
+        const asked = t >= ask(i) + 0.15;
+        const no = i !== maybe;
+        return (
+          <g key={i}>
+            {Array.from({ length: 8 }, (_, b) => <rect key={b} x={30 + b * 16} y={y + 4} width={12} height={16} rx={1} fill={(b * 7 + i * 3) % 5 < 2 ? C.cinnamon : C.cocoa} stroke={C.cinnamon} strokeWidth={0.8} />)}
+            {asked && <T x={170} y={y + 17} s={13} f={no ? C.latte : C.caramel}>{no ? 'no' : 'maybe'}</T>}
+            <g opacity={asked && no ? 0.25 : 1}>
+              <rect x={300} y={y} width={270} height={24} rx={3} fill={C.roast} stroke={!no && asked ? C.caramel : C.mocha} strokeWidth={!no && asked ? 1.8 : 1.1} />
+              {[0, 1, 2, 3, 4].map((b) => <line key={b} x1={300 + b * 54} y1={y} x2={300 + b * 54} y2={y + 24} stroke={C.mocha} strokeWidth={1} />)}
+            </g>
+          </g>
+        );
+      })}
+      <g opacity={fence > 0 ? 1 : 0}>
+        {[0, 1, 2, 3, 4].map((b) => <path key={b} d={`M ${300 + b * 54 + 4} ${120 + 30} v -6`} stroke={C.crema} strokeWidth={1.4} />)}
+        <rect x={lerp(300, 354, fence)} y={118} width={lerp(270, 54, fence)} height={28} rx={3} fill="none" stroke={C.caramel} strokeWidth={2.2} />
+      </g>
+      <rect x={356} y={122} width={50} height={20} rx={2} fill={C.caramel} opacity={read} />
+      <T x={30} y={262} s={13} f={C.cinnamon} o={easeOut(seg(t, 1.6, 1.9))}>filter: definitely not, or maybe</T>
+      <T x={30} y={286} s={13} f={C.caramel} o={easeOut(seg(t, 2.6, 2.9))}>fence pointers: one block worth reading</T>
+      <T x={30} y={310} s={13} f={C.crema} o={easeOut(seg(t, 3.4, 3.8))}>one block read, out of five runs</T>
     </Svg>
   );
 }
 
-// 9 · Tombstone: a delete marker shadows an older, unmodified run
+// 9 · The tombstone. An older, locked run holds k = v1. A delete writes a red tombstone for k into the
+// memtable; a read for k meets the tombstone first and answers "not found", while v1 still sits on disk.
+// Later a compaction sweeps both away together.
 export function Tombstone({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.2, 0.8));
-  const b = easeOut(seg(t, 0.7, 1.4));
+  const del = easeOutBack(seg(t, 0.5, 0.9));
+  const read = easeInOut(seg(t, 1.3, 2.0));
+  const nf = easeOut(seg(t, 2.0, 2.3));
+  const sweep = easeInOut(seg(t, 3.0, 3.7));
   return (
-    <Svg label="A tombstone marker in the memtable shadowing an older run's unmodified value" h={300}>
-      <T x={30} y={24} s={13} f={C.latte}>an older run still holds this key's value, byte for byte, unchanged</T>
-      {page(80, 50, 120, 1, C.cherry, 0.7, 1)}
-      <T x={80} y={90} s={11} f={C.cherryText}>shadowed — still physically there</T>
-      <T x={30} y={150} s={13} f={C.crema} o={a}>a delete lands in the memtable as its own entry, not an edit to that run</T>
-      {page(80, 176, 120, 1, C.caramel, a, 1)}
-      <T x={80} y={216} s={11} f={C.crema} o={a}>tombstone — found first, every time</T>
-      <T x={30} y={260} s={13} f={C.latte} o={b}>no compaction has run. the read already returns not-found</T>
+    <Svg label="A delete writes a tombstone into the memtable; reads hit it first and report not found while the old value still sits in an immutable run, until a compaction removes both" h={320}>
+      <T x={30} y={24} s={13} f={C.cinnamon}>memtable</T>
+      <rect x={30} y={34} width={220} height={40} rx={5} fill="none" stroke={C.cinnamon} strokeWidth={1.4} strokeDasharray="4 3" />
+      <g opacity={(1 - sweep) * clamp(del)} transform={`translate(${38 + 15} ${42 + 12}) scale(${clamp(del)}) translate(${-(38 + 15)} ${-(42 + 12)})`}>
+        <rect x={38} y={42} width={60} height={24} rx={3} fill={C.cherry} stroke={C.cherryText} strokeWidth={1.8} />
+        <T x={68} y={59} s={13} f={C.crema} a="middle">k &dagger;</T>
+      </g>
+      <T x={110} y={59} s={13} f={C.cherryText} o={easeOut(seg(t, 0.8, 1.1)) * (1 - sweep)}>tombstone</T>
+      <T x={30} y={140} s={13} f={C.latte}>older run, sealed</T>
+      <Lock x={214} y={132} />
+      <g opacity={lerp(1, 0, sweep)}>
+        <rect x={38} y={150} width={60} height={24} rx={3} fill={C.mocha} stroke={read > 0 ? C.taupe : C.crema} strokeWidth={1.2} />
+        <T x={68} y={167} s={13} f={read > 0 ? C.taupe : C.crema} a="middle">k = v1</T>
+      </g>
+      <Cells x={104} y={150} labels={['m', 'p']} f={C.taupe} />
+      <T x={110} y={200} s={13} f={C.latte} o={nf * (1 - sweep)}>still physically there</T>
+      <g opacity={read > 0 ? 1 - easeOut(seg(t, 2.6, 2.9)) : 0}>
+        <rect x={lerp(470, 280, read)} y={44} width={70} height={22} rx={11} fill="none" stroke={C.caramel} strokeWidth={1.8} />
+        <T x={lerp(505, 315, read)} y={60} s={13} f={C.caramel} a="middle">read k</T>
+      </g>
+      <T x={300} y={110} s={14} f={C.caramel} o={nf}>not found</T>
+      <rect x={20} y={lerp(30, 190, sweep)} width={260} height={4} fill={C.caramel} opacity={sweep > 0 && sweep < 1 ? 1 : 0} />
+      <T x={30} y={262} s={13} f={C.caramel} o={easeOut(seg(t, 3.0, 3.3))}>a later compaction drops both together</T>
+      <T x={30} y={290} s={13} f={C.latte} o={easeOut(seg(t, 3.5, 3.9))}>until then, the tombstone must outrank v1</T>
     </Svg>
   );
 }
 
-// 10 · Prove it
+// 10 · Prove it, from examples.py: 50 log records replayed to an exact match; a 9.9-bit-per-key filter's
+// observed false positives (0.900%) against RocksDB's ~1%; 500 run reads unfiltered against 55 with filters and
+// fence pointers (89% fewer); a tombstone hiding an older value with zero compactions.
 export function ProveIt({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.2, 1));
-  const b = easeOut(seg(t, 0.4, 1.2));
-  const c = easeOut(seg(t, 0.6, 1.4));
+  const o = (a: number) => easeOut(seg(t, a, a + 0.3));
+  const g = easeInOut(seg(t, 1.6, 2.6));
   return (
-    <Svg label="Three measured bars: a Bloom filter's observed false-positive rate, runs touched with and without filters and fence pointers, and a tombstone shadowing a value with zero compactions" h={340}>
-      <T x={30} y={24} s={13} f={C.crema}>Bloom filter: observed false-positive rate against its bits-per-key setting</T>
-      {fill(30, 36, 20 * a, 16, C.caramel, Math.max(0.3, a))}
-      <T x={30} y={100} s={13} f={C.crema} o={b}>runs actually opened: unfiltered vs. with filters and fence pointers</T>
-      {fill(30, 112, 220 * b, 16, C.cinnamon, Math.max(0.3, b) * 0.7)}
-      {fill(30, 134, 40 * b, 16, C.caramel, Math.max(0.3, b))}
-      <T x={30} y={200} s={13} f={C.crema} o={c}>a tombstone shadowing an older value, with zero compactions run</T>
-      {fill(30, 212, 60 * c, 16, C.caramel, Math.max(0.3, c))}
-      <T x={30} y={270} s={13} f={C.latte} o={c}>every bar here is a measurement from examples.py, not an assumption</T>
+    <Svg label="Measured: 50 log records replayed exactly; a 9.9 bits-per-key Bloom filter gave 0.900 per cent false positives against a predicted 1 per cent; 500 run reads fell to 55; a tombstone hid a value with zero compactions" h={320}>
+      <T x={30} y={26} s={13} f={C.crema} o={o(0.2)}>log replay: 50 records, exact match</T>
+      <Check x={414} y={21} t={t} at={0.5} />
+      <T x={30} y={60} s={13} f={C.crema} o={o(0.7)}>filter, 9.9 bits/key: 0.900% false positives</T>
+      <T x={30} y={82} s={13} f={C.latte} o={o(0.9)}>RocksDB&apos;s own table predicts ~1%</T>
+      <T x={30} y={126} s={13} f={C.crema} o={o(1.3)}>100 lookups over 5 runs: runs opened</T>
+      <rect x={30} y={138} width={520 * g} height={18} rx={2} fill={C.cinnamon} />
+      <T x={30} y={176} s={13} f={C.cinnamon} o={o(2.4)}>500 blind</T>
+      <rect x={30} y={186} width={(55 / 500) * 520 * g} height={18} rx={2} fill={C.caramel} />
+      <T x={30 + (55 / 500) * 520 + 8} y={200} s={13} f={C.caramel} o={o(2.5)}>55 with filter and fences: 89% fewer</T>
+      <T x={30} y={248} s={13} f={C.crema} o={o(2.9)}>tombstone: value hidden, zero compactions</T>
+      <Check x={444} y={243} t={t} at={3.2} />
+      <T x={30} y={300} s={13} f={C.latte} o={o(3.5)}>every number from one run of examples.py</T>
     </Svg>
   );
 }
