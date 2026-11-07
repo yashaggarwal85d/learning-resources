@@ -13,22 +13,35 @@ const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
 
 // ── 1 · One owner, many owners, many owners safely ──────────────────────────────────────────────────
 export function OwnershipShapes({ t }: StepCtx) {
+  // One owner dot drops onto Box; Rc's owner dots arrive one after another from the same side (one
+  // thread, in sequence); Arc's owner dots arrive at the same time from spread-out starting points
+  // (many threads, at once) — the arrival pattern itself is the safety difference, not just a label.
+  const boxDrop = easeOut(seg(t, 0.1, 0.4));
+  const ownerY = (row: number) => 20 + row * 70 + 25;
+  const rc2 = easeOut(seg(t, 0.7, 0.95));
+  const rc3 = easeOut(seg(t, 0.95, 1.2));
+  const arc1 = easeOut(seg(t, 1.3, 1.55));
+  const arc2 = easeOut(seg(t, 1.3, 1.55));
+  const arc3 = easeOut(seg(t, 1.3, 1.55));
   return (
     <Svg label="Box is one owner on the heap; Rc shares that owner on one thread; Arc shares it safely across threads" h={360}>
-      <g opacity={fa(t, 0.1, 0.4)}>
-        <rect x={60} y={20} width={260} height={50} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={51} s={13} a="middle" f={C.crema}>Box, one owner</T>
-      </g>
-      <g opacity={fa(t, 0.6, 0.4)}>
-        <rect x={60} y={90} width={260} height={50} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={190} y={121} s={13} a="middle" f={C.crema}>Rc, shared on one thread</T>
-      </g>
-      <g opacity={fa(t, 1.1, 0.4)}>
-        <rect x={60} y={160} width={260} height={50} rx={8} fill="none" stroke={C.mocha} strokeWidth={1.5} />
-        <T x={190} y={191} s={13} a="middle" f={C.crema}>Arc, shared safely</T>
-      </g>
-      <T x={40} y={250} s={13} f={C.taupe} o={fa(t, 1.6, 0.4)}>all three point at the same heap value</T>
-      <T x={40} y={278} s={13} f={C.taupe} o={fa(t, 1.9, 0.4)}>what changes is owners, and safety</T>
+      <rect x={60} y={20} width={260} height={50} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.1, 0.3)} />
+      <T x={110} y={51} s={13} a="middle" f={C.crema} o={fa(t, 0.1, 0.3)}>Box, one owner</T>
+      <circle cx={280} cy={20 + (1 - boxDrop) * -40 + 25} r={6} fill={C.caramel} opacity={fa(t, 0.1, 0.3)} />
+
+      <rect x={60} y={90} width={260} height={50} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 0.6, 0.3)} />
+      <T x={105} y={121} s={13} a="middle" f={C.crema} o={fa(t, 0.6, 0.3)}>Rc, shared on one thread</T>
+      <circle cx={70 + (1 - rc2) * -40} cy={ownerY(1)} r={6} fill={C.taupe} opacity={rc2 > 0 ? 1 : 0} />
+      <circle cx={88 + (1 - rc3) * -40} cy={ownerY(1)} r={6} fill={C.taupe} opacity={rc3 > 0 ? 1 : 0} />
+
+      <rect x={60} y={160} width={260} height={50} rx={8} fill="none" stroke={C.mocha} strokeWidth={1.5} opacity={fa(t, 1.1, 0.3)} />
+      <T x={95} y={191} s={13} a="middle" f={C.crema} o={fa(t, 1.1, 0.3)}>Arc, shared safely</T>
+      <circle cx={70} cy={160 + (1 - arc1) * 50 + 25} r={6} fill={C.mocha} opacity={arc1 > 0 ? 1 : 0} />
+      <circle cx={88} cy={160 + (1 - arc2) * -50 + 25} r={6} fill={C.mocha} opacity={arc2 > 0 ? 1 : 0} />
+      <circle cx={106} cy={160 + (1 - arc3) * 50 + 25} r={6} fill={C.mocha} opacity={arc3 > 0 ? 1 : 0} />
+
+      <T x={40} y={250} s={13} f={C.taupe} o={fa(t, 1.9, 0.4)}>all three point at the same heap value</T>
+      <T x={40} y={278} s={13} f={C.taupe} o={fa(t, 2.2, 0.4)}>what changes is owners, and safety</T>
     </Svg>
   );
 }
@@ -47,6 +60,12 @@ export function RcNotSend({ t }: StepCtx) {
 
 // ── 3 · A shared count, cheap to touch (no takeaway: the reel's "from" step) ────────────────────────
 export function RcShared({ t }: StepCtx) {
+  // A clone token travels up into the count circle (bumping it), then a drop token travels back
+  // down out of it (bringing it back down) — the count's own motion carries the idea, not a label.
+  const up = easeOut(seg(t, 0.9, 1.2));
+  const upY = 220 - up * 80;
+  const down = easeOut(seg(t, 1.4, 1.7));
+  const downY = 140 + down * 80;
   return (
     <Svg label="cloning an Rc bumps a plain count and shares the same allocation; dropping a clone brings the count back down" h={300}>
       <rect x={220} y={30} width={160} height={56} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
@@ -55,8 +74,10 @@ export function RcShared({ t }: StepCtx) {
         <circle cx={300} cy={140} r={28} fill="none" stroke={C.taupe} strokeWidth={2} />
         <T x={300} y={145} s={14} a="middle" f={C.crema}>count</T>
       </g>
-      <T x={120} y={220} s={13} f={C.taupe} o={fa(t, 0.9, 0.4)}>clone bumps it up</T>
-      <T x={360} y={220} s={13} f={C.taupe} o={fa(t, 1.4, 0.4)}>drop brings it down</T>
+      <circle cx={180} cy={upY} r={6} fill={C.taupe} opacity={up > 0 && up < 1 ? 1 : 0} />
+      <circle cx={420} cy={downY} r={6} fill={C.mocha} opacity={down > 0 && down < 1 ? 1 : 0} />
+      <T x={120} y={220} s={13} f={C.taupe} o={fa(t, 0.9, 0.3)}>clone bumps it up</T>
+      <T x={360} y={220} s={13} f={C.taupe} o={fa(t, 1.4, 0.3)}>drop brings it down</T>
       <T x={120} y={260} s={12} f={C.mocha} o={fa(t, 1.9, 0.4)}>a plain count, one thread only</T>
     </Svg>
   );
@@ -107,18 +128,19 @@ export function ContentionPredict({ t }: StepCtx) {
 
 // ── 6 · Measuring what contention really costs ──────────────────────────────────────────────────────
 export function ContentionBar({ t }: StepCtx) {
+  // Both bars grow upward from the baseline (scale), the contended bar visibly taller — the real
+  // measured shape of the result, not a label fading onto two static boxes.
+  const base = 260;
+  const h1 = easeOut(seg(t, 0.2, 0.6)) * 50;
+  const h2 = easeOut(seg(t, 0.6, 1.1)) * 140;
   return (
     <Svg label="measured: the contended run took longer than the single uncontended thread doing all of it alone" h={380}>
-      <g opacity={fa(t, 0.2, 0.4)}>
-        <rect x={100} y={260} width={120} height={60} fill="none" stroke={C.taupe} strokeWidth={2} />
-        <T x={160} y={300} s={13} a="middle" f={C.crema}>one thread</T>
-      </g>
-      <g opacity={fa(t, 0.8, 0.4)}>
-        <rect x={340} y={140} width={120} height={180} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={400} y={180} s={13} a="middle" f={C.crema}>four threads</T>
-      </g>
-      <T x={60} y={340} s={13} f={C.mocha} o={fa(t, 1.4, 0.4)}>contention cost more than</T>
-      <T x={60} y={362} s={13} f={C.mocha} o={fa(t, 1.6, 0.4)}>the parallelism gave back</T>
+      <rect x={100} y={base - h1} width={120} height={h1} fill="none" stroke={C.taupe} strokeWidth={2} />
+      <T x={160} y={base + 24} s={13} a="middle" f={C.crema} o={fa(t, 0.3, 0.3)}>one thread</T>
+      <rect x={340} y={base - h2} width={120} height={h2} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={400} y={base + 24} s={13} a="middle" f={C.crema} o={fa(t, 0.7, 0.3)}>four threads</T>
+      <T x={60} y={base + 60} s={13} f={C.mocha} o={fa(t, 1.5, 0.4)}>contention cost more than</T>
+      <T x={60} y={base + 82} s={13} f={C.mocha} o={fa(t, 1.7, 0.4)}>the parallelism gave back</T>
     </Svg>
   );
 }
