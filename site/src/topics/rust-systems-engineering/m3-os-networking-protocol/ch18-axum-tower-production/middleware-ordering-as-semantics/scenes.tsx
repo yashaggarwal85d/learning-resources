@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Order changes meaning: a real buffer-then-concurrency-limit stack admits far
 // more concurrent callers than the reverse order, matching ServiceBuilder's own
@@ -62,13 +62,14 @@ export function TimeoutOutsidePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the deadline fired early, auth included (takeaway) ────────────────────────────
 export function TimeoutOutsideReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.4, 0.9));
+  const w = grow * 180;
   return (
     <Svg label="timeout_placement_bounds_different_things.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a slow auth step, wrapped by the deadline</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>fired, well before auth would finish</T>
-      </g>
+      <rect x={60} y={70} width={w} height={10} rx={3} fill={C.cherry} opacity={0.7} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.9 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>fired, well before auth would finish</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the deadline bounded everything inside it</T>
     </Svg>
   );
@@ -92,13 +93,14 @@ export function TimeoutInsidePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: auth ran unbounded, outside the deadline (takeaway) ───────────────────────────
 export function TimeoutInsideReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.4, 1.0));
+  const w = grow * 260;
   return (
     <Svg label="timeout_placement_bounds_different_things.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same slow auth step, moved outside</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>ran to completion, entirely unbounded</T>
-      </g>
+      <rect x={60} y={70} width={w} height={10} rx={3} fill={C.taupe} opacity={0.7} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {grow > 0.9 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>ran to completion, entirely unbounded</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the deadline never even saw it</T>
     </Svg>
   );
@@ -122,28 +124,34 @@ export function RetryPredict({ t }: StepCtx) {
 
 // ── 8 · Measured: the side effect ran once per attempt (takeaway) ───────────────────────────────
 export function RetryReveal({ t }: StepCtx) {
+  const attempts = [0, 1, 2];
   return (
     <Svg label="retry_without_idempotency_reruns_the_effect.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>three attempts, two failed, one succeeded</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the side effect: ran all three times</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>nothing was guarding it from running again</T>
+      {attempts.map((i) => {
+        const fire = easeOut(seg(t, 0.5 + i * 0.2, 0.7 + i * 0.2));
+        return <circle key={i} cx={200 + i * 30} cy={57} r={4} fill={C.cherry} opacity={fire} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>the side effect: ran all three times</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>nothing was guarding it from running again</T>
     </Svg>
   );
 }
 
 // ── 9 · Add an idempotency key: runs once (no takeaway, surprising fact) ────────────────────────
 export function IdempotentReveal({ t }: StepCtx) {
+  const attempts = [0, 1, 2];
   return (
     <Svg label="retry_without_idempotency_reruns_the_effect.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same handler, same failures, same retries</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the side effect: ran exactly once</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one check, and the repeats stopped mattering</T>
+      {attempts.map((i) => {
+        const fire = easeOut(seg(t, 0.5 + i * 0.2, 0.7 + i * 0.2));
+        return <circle key={i} cx={200 + i * 30} cy={57} r={4} fill={i === 0 ? C.cherry : C.taupe} opacity={i === 0 ? fire : fire * 0.4} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>the side effect: ran exactly once</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>one check, and the repeats stopped mattering</T>
     </Svg>
   );
 }

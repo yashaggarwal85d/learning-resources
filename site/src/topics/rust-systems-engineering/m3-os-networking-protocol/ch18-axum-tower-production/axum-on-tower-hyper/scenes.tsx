@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Axum has no middleware system of its own; it is tower::Service and Layer all
 // the way down. A real extractor, real shared state, a real middleware::from_fn
@@ -27,10 +27,16 @@ export function FrameworkPredict({ t }: StepCtx) {
 
 // ── 2 · The framework's own words, quoted (no takeaway, swipe-test "from" step) ──────────────────
 export function FrameworkReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="axum's own documentation, quoted directly" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>no middleware system of its own</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>it's Service, all the way down</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={70} s={13} f={C.crema}>no middleware system of its own</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={13} f={C.latte}>it's Service, all the way down</T>
+      </g>
     </Svg>
   );
 }
@@ -53,11 +59,14 @@ export function ExtractPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the real extractor pulled out the name (takeaway) ─────────────────────────────
 export function ExtractReveal({ t }: StepCtx) {
+  const pull = easeOut(seg(t, 0.5, 0.85));
+  const dy = (1 - pull) * -24;
   return (
     <Svg label="axum_is_tower_underneath.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a real request, a name in its own path</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <Draw pts={[[240, 50], [240, 85]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <g transform={`translate(0,${dy})`} opacity={pull}>
         <T x={190} y={112} s={13} a="middle" f={C.mocha}>the exact name, already extracted</T>
       </g>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the handler never touched the raw path</T>
@@ -83,14 +92,22 @@ export function StatePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: three requests, a genuinely accumulating value (takeaway) ─────────────────────
 export function StateReveal({ t }: StepCtx) {
+  const reqs = [0, 1, 2];
   return (
     <Svg label="axum_is_tower_underneath.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>three separate, real requests, in a row</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the shared value: genuinely increasing</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>shared state, not three fresh copies</T>
+      {reqs.map((i) => {
+        const land = easeOut(seg(t, 0.5 + i * 0.2, 0.75 + i * 0.2));
+        const dy = (1 - land) * -16;
+        return (
+          <g key={i} transform={`translate(0,${dy})`} opacity={land}>
+            <circle cx={200 + i * 30} cy={76} r={4} fill={C.caramel} />
+          </g>
+        );
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>the shared value: genuinely increasing</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>shared state, not three fresh copies</T>
     </Svg>
   );
 }
