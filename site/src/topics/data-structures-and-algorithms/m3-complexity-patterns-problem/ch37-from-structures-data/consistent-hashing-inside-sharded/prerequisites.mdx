@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Consistent hashing rings">Before this: the textbook ring, virtual nodes, minimal remapping and bounded-load hashing this topic reuses throughout.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Merkle trees">Before this: anti-entropy repair, the ring's own mechanism for keeping replicas in sync, named once for contrast with explicit slot migration.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Dynamo" href="https://cassandra.apache.org/doc/stable/cassandra/architecture/dynamo.html" by="Apache Cassandra">The token-ring name, and virtual nodes as the fix for small-cluster imbalance.</Resource>
+  <Resource kind="reading" title="Redis Cluster Specification" href="https://raw.githubusercontent.com/redis/redis-doc/master/docs/reference/cluster-spec.md" by="Redis">The fixed 16,384-slot table and the migrating/importing resharding handshake.</Resource>
+  <Resource kind="reading" title="BuiltInPartitioner.java" href="https://raw.githubusercontent.com/apache/kafka/trunk/clients/src/main/java/org/apache/kafka/clients/producer/internals/BuiltInPartitioner.java" by="Apache Kafka">The keyed partitioner's plain modulo formula.</Resource>
+  <Resource kind="reading" title="Configuration Manual: hash-balance-factor" href="https://docs.haproxy.org/2.9/configuration.html" by="HAProxy">The bounded-load rule that actually answers the hot-key problem.</Resource>
+</ul>
+
+</section>

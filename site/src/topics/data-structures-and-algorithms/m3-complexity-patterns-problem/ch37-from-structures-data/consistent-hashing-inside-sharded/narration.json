@@ -1,0 +1,94 @@
+{
+    "topic": "dsa.consistent-hashing-inside-sharded",
+    "steps": [
+        {
+            "lines": [
+                "Three systems all answer the same question, which machine should hold this key, and they land on three different rules. Before anything else, notice that none of those rules mention how busy any machine already is.",
+                "Hold that thought, because the predict question is really asking whether spreading one machine's presence across many points on a ring changes anything about a single, specific key."
+            ],
+            "answer": [
+                "No. However many points a machine owns, one particular key still lands on exactly one of them. Giving every machine far more points moves where the boundaries sit between machines, not where that one key's own point sits.",
+                "Balance across many ordinary keys and protection for one hot key turn out to be two completely different problems, solved by two completely different mechanisms."
+            ]
+        },
+        {
+            "lines": [
+                "Before comparing anything, name what is actually being compared. Three real systems, three real engineering choices, for one single question: who owns this piece of data right now."
+            ]
+        },
+        {
+            "lines": [
+                "This system tells you its own name for what it is doing, right in its own documentation. When a source hands you the name directly, use it.",
+                "A single token per machine works until the cluster is small, at which point one unlucky placement can leave one machine doing far more than its share. Multiple tokens per machine is the fix, not a different mechanism."
+            ]
+        },
+        {
+            "lines": [
+                "Resist the pull to assume every sharded system is secretly a ring. This one explicitly is not. It is a fixed, finite set of labeled boxes, and ownership of whole boxes is what gets handed around.",
+                "Notice what a hash does here. It never searches for a neighbor on some imaginary circle. It just picks a box number directly, every time, the same way."
+            ]
+        },
+        {
+            "lines": [
+                "This one has no stability story at all, and that is worth sitting with before moving on. Nothing here was built to survive the partition count changing.",
+                "A remainder operation is simple, cheap, and completely indifferent to whether the number it depends on ever changes underneath it."
+            ]
+        },
+        {
+            "lines": [
+                "Before the numbers, reason about what each scheme was actually designed to tolerate. Two of these three were built with growth in mind from day one. One was not built with that in mind at all."
+            ],
+            "answer": [
+                "Modulo hashing, by a wide margin. The ring and the slot table both land in the same small neighborhood, far below it, because both were designed for exactly this moment.",
+                "Being simple to compute and being stable under change turn out to be two separate virtues, and only two of these three schemes were ever asked to have both."
+            ]
+        },
+        {
+            "lines": [
+                "Look at how close these two numbers are to each other, and how far both sit from the third. That gap is not a coincidence. It is the entire difference between a scheme designed for change and one that was not."
+            ]
+        },
+        {
+            "lines": [
+                "Both of these schemes end up moving a similarly small amount of data, but notice who decides what moves. One of them decides for itself, automatically, the moment a new machine shows up.",
+                "The other waits for a human or a tool to say which specific pieces move, and even then walks through two separate states before a piece is considered fully relocated."
+            ]
+        },
+        {
+            "lines": [
+                "Every clever placement rule you have just seen solves the same narrow problem: spreading keys out evenly. None of them were ever asked to solve a different problem, which is what happens when traffic itself is uneven.",
+                "One key can still be unlucky enough to be popular, and popularity has nothing to do with where a hash function happens to put it."
+            ]
+        },
+        {
+            "lines": [
+                "Test your own prediction honestly here. Giving every machine far more presence on the ring changes a great deal about ordinary, everyday keys.",
+                "But this one key never asked to be treated specially by the hash function, and it still is not. It hashes to one spot, today, and it will hash to that same spot no matter how many other spots exist."
+            ]
+        },
+        {
+            "lines": [
+                "Here is the actual fix, and it is not a smarter hash at all. It is a rule that watches how much load a machine is already carrying before sending it anything more.",
+                "When a machine is already over its share, the system does not give up. It simply asks who would have been the next choice anyway, and tries that one instead."
+            ]
+        },
+        {
+            "lines": [
+                "Compare these two bars directly. One of them is the same overloaded picture from before. The other is deliberately held down near a number someone chose on purpose.",
+                "That number is not found by the hash function. It is a limit a human set, precisely because the hash function alone was never going to notice."
+            ]
+        },
+        {
+            "lines": [
+                "Three different engineering teams solved placement three different ways, and all three quietly inherited the exact same weakness. That is worth remembering longer than any one of the three mechanisms.",
+                "The fix that actually worked was never about where keys go. It was about refusing to let any one destination take more than its fair share, no matter how it got chosen."
+            ]
+        },
+        {
+            "lines": [
+                "Knowing exactly which machine holds something is only half of a much larger problem. The other half starts the moment you need an answer that depends on every machine at once.",
+                "That only works if whatever each machine computed on its own can be combined afterward, which is nowhere near guaranteed for every kind of structure."
+            ]
+        }
+    ]
+}
