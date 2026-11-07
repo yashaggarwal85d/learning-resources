@@ -120,10 +120,11 @@ export function SignalWords({ t }: StepCtx) {
     <Svg label="Four signal words, each lighting up and resolving to the technique it points at" h={280}>
       {words.map((w, i) => {
         const a = easeOut(seg(t, 0.1 + i * 0.6, 0.6 + i * 0.6));
+        const long = i === 3;
         return (
           <g key={w} opacity={a}>
-            <T x={150} y={70 + i * 50} s={13} a="start" f={C.caramel}>{w}</T>
-            <T x={450} y={70 + i * 50} s={11} a="end" f={C.latte}>{techniques[i]}</T>
+            <T x={120} y={70 + i * 50} s={long ? 12 : 13} a="start" f={C.caramel}>{w}</T>
+            <T x={480} y={70 + i * 50} s={long ? 10 : 11} a="end" f={C.latte}>{techniques[i]}</T>
           </g>
         );
       })}
@@ -140,7 +141,8 @@ export function PredictBudgetExit({ t }: StepCtx) {
         <rect x={180} y={85} width={240} height={55} fill="none" stroke={C.cherry} strokeWidth={1.6} />
         <T x={300} y={118} s={11} a="middle" f={C.cherryText}>two to the n, and n is kept deliberately small</T>
       </g>
-      <T x={300} y={220} s={13} a="middle" f={C.caramel}>is a smaller limit ever a sign about the problem, not just its speed?</T>
+      <T x={300} y={212} s={13} a="middle" f={C.caramel}>is a smaller limit ever a sign about the problem,</T>
+      <T x={300} y={232} s={13} a="middle" f={C.caramel}>not just its speed?</T>
     </Svg>
   );
 }
@@ -151,8 +153,8 @@ export function NecessaryNotSufficient({ t }: StepCtx) {
   return (
     <Svg label="A budget ruling a growth rate out on one side, and staying silent about correctness on the other" h={250}>
       <g opacity={a}>
-        <T x={180} y={110} s={12} a="middle" f={C.crema}>rules a growth rate out</T>
-        <T x={420} y={110} s={12} a="middle" f={C.taupe}>says nothing about being right</T>
+        <T x={300} y={100} s={12} a="middle" f={C.crema}>rules a growth rate out</T>
+        <T x={300} y={125} s={12} a="middle" f={C.taupe}>says nothing about being right</T>
       </g>
     </Svg>
   );

@@ -161,8 +161,8 @@ export function Recap({ t }: StepCtx) {
   return (
     <Svg label="Three searches named beside the one thing none of them promises, with the next topic's cache waiting" h={240}>
       <g opacity={a}>
-        <T x={160} y={90} s={13} a="start" f={C.crema}>local search, annealing, genetic</T>
-        <T x={440} y={90} s={12} a="end" f={C.cherryText}>none says where it stops</T>
+        <T x={300} y={80} s={13} a="middle" f={C.crema}>local search, annealing, genetic</T>
+        <T x={300} y={105} s={12} a="middle" f={C.cherryText}>none says where it stops</T>
       </g>
       <T x={300} y={200} s={12} a="middle" f={C.caramel}>next: a decision made before the future is known</T>
     </Svg>

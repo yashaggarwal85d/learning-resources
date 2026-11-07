@@ -67,7 +67,8 @@ export function PredictEscape({ t }: StepCtx) {
         <rect x={180} y={80} width={240} height={60} fill="none" stroke={C.cherry} strokeWidth={1.6} />
         <T x={300} y={115} s={11} a="middle" f={C.cherryText}>stuck faulting every time</T>
       </g>
-      <T x={300} y={220} s={13} a="middle" f={C.caramel}>can a cleverer deterministic rule escape, or does it take something else?</T>
+      <T x={300} y={212} s={13} a="middle" f={C.caramel}>can a cleverer deterministic rule escape,</T>
+      <T x={300} y={232} s={13} a="middle" f={C.caramel}>or does it take something else?</T>
     </Svg>
   );
 }
@@ -160,8 +161,8 @@ export function Recap({ t }: StepCtx) {
   return (
     <Svg label="A ceiling no deterministic policy can beat, with the next topic's reading of a problem's own shape waiting" h={240}>
       <g opacity={a}>
-        <T x={160} y={90} s={13} a="start" f={C.crema}>a competitive ratio of k</T>
-        <T x={440} y={90} s={12} a="end" f={C.caramel}>what can't be fixed by a cleverer policy</T>
+        <T x={300} y={80} s={13} a="middle" f={C.crema}>a competitive ratio of k</T>
+        <T x={300} y={105} s={12} a="middle" f={C.caramel}>what can't be fixed by a cleverer policy</T>
       </g>
       <T x={300} y={200} s={12} a="middle" f={C.caramel}>next: reading a problem's shape before any algorithm</T>
     </Svg>

@@ -83,10 +83,10 @@ export function TopKCrossover({ t }: StepCtx) {
   return (
     <Svg label="A heap winning top-k at a small k, then sorting the whole array winning past a larger k" h={250}>
       <g opacity={a}>
-        <T x={180} y={110} s={12} a="middle" f={C.crema}>ten percent of n: the heap wins</T>
+        <T x={300} y={95} s={12} a="middle" f={C.crema}>ten percent of n: the heap wins</T>
       </g>
       <g opacity={b}>
-        <T x={420} y={110} s={12} a="middle" f={C.cinnamon}>twenty percent of n: sorting wins</T>
+        <T x={300} y={120} s={12} a="middle" f={C.cinnamon}>twenty percent of n: sorting wins</T>
       </g>
       <T x={300} y={200} s={11} a="middle" f={C.caramel}>the heap's own bookkeeping grows with k</T>
     </Svg>
@@ -136,10 +136,10 @@ export function TrieBreakingCondition({ t }: StepCtx) {
   return (
     <Svg label="A trie answering a prefix query at once, then failing to find a substring buried in the middle of a word" h={250}>
       <g opacity={a}>
-        <T x={180} y={100} s={13} a="middle" f={C.crema}>prefix "ca": found at once</T>
+        <T x={300} y={85} s={13} a="middle" f={C.crema}>prefix "ca": found at once</T>
       </g>
       <g opacity={b}>
-        <T x={420} y={100} s={13} a="middle" f={C.cherryText}>substring "art": not a prefix, not found</T>
+        <T x={300} y={110} s={12} a="middle" f={C.cherryText}>substring "art": not a prefix, not found</T>
       </g>
       <T x={300} y={200} s={11} a="middle" f={C.caramel}>bounded by key length, not by the number of keys</T>
     </Svg>
@@ -204,8 +204,8 @@ export function Recap({ t }: StepCtx) {
   return (
     <Svg label="A structure chosen by the mix, not the biggest single operation, with a situation rather than data waiting next" h={250}>
       <g opacity={a}>
-        <T x={160} y={90} s={13} a="start" f={C.crema}>chosen by the mix</T>
-        <T x={440} y={90} s={12} a="end" f={C.caramel}>not the biggest single operation</T>
+        <T x={300} y={80} s={13} a="middle" f={C.crema}>chosen by the mix</T>
+        <T x={300} y={105} s={12} a="middle" f={C.caramel}>not the biggest single operation</T>
       </g>
       <T x={300} y={200} s={12} a="middle" f={C.caramel}>next: when the input isn't data, but a situation</T>
     </Svg>
