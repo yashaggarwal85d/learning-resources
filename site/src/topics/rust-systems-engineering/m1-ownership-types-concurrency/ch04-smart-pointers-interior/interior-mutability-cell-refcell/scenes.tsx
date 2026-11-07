@@ -44,12 +44,20 @@ export function NoCellFail({ t }: StepCtx) {
 
 // ── 3 · Cell copies the whole value, in and out ─────────────────────────────────────────────────────
 export function CellCopy({ t }: StepCtx) {
+  // A value token slides into the Cell (set), then a second, separate token slides back out of it
+  // (get) — two different tokens, because what moves each time is a copy, never a shared pointer.
+  const inT = easeOut(seg(t, 0.4, 0.75));
+  const inX = 150 + inT * 90;
+  const outT = easeOut(seg(t, 1.0, 1.35));
+  const outX = 380 + outT * 90;
   return (
     <Svg label="Cell copies a whole value in and out; a reference to the inside is never handed out" h={280}>
       <rect x={220} y={30} width={160} height={54} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
       <T x={300} y={62} s={13} a="middle" f={C.crema}>Cell&lt;u32&gt;</T>
-      <T x={90} y={150} s={13} f={C.taupe} o={fa(t, 0.5, 0.4)}>set copies a value in</T>
-      <T x={340} y={150} s={13} f={C.taupe} o={fa(t, 1.0, 0.4)}>get copies a value out</T>
+      <circle cx={inX} cy={57} r={7} fill={C.taupe} opacity={inT > 0 && inT < 1 ? 1 : 0} />
+      <circle cx={outX} cy={57} r={7} fill={C.mocha} opacity={outT > 0 && outT < 1 ? 1 : 0} />
+      <T x={90} y={150} s={13} f={C.taupe} o={fa(t, 0.4, 0.3)}>set copies a value in</T>
+      <T x={340} y={150} s={13} f={C.taupe} o={fa(t, 1.0, 0.3)}>get copies a value out</T>
       <T x={90} y={210} s={12} f={C.mocha} o={fa(t, 1.6, 0.4)}>no reference handed out, nothing to track</T>
     </Svg>
   );
@@ -85,19 +93,31 @@ export function DoubleBorrowFail({ t }: StepCtx) {
 
 // ── 6 · Written once, computed once ─────────────────────────────────────────────────────────────────
 export function OnceLazy({ t }: StepCtx) {
+  // The first touch of each cell carries a filled "write/compute" token that lands and stays
+  // (position, then it settles); every touch after that is a hollow "read" token that arrives and
+  // leaves again without changing the cell, showing why only the first touch does real work.
+  const write = easeOut(seg(t, 0.2, 0.5));
+  const writeX = 150 + write * 200;
+  const read1 = easeOut(seg(t, 0.6, 0.85));
+  const read1X = 400 + read1 * 60;
+  const compute = easeOut(seg(t, 0.9, 1.2));
+  const computeX = 150 + compute * 200;
+  const read2 = easeOut(seg(t, 1.3, 1.55));
+  const read2X = 400 + read2 * 60;
   return (
     <Svg label="OnceLock writes once then reads freely; LazyLock computes once, the first time it is touched" h={320}>
-      <g opacity={fa(t, 0.2, 0.4)}>
-        <rect x={60} y={30} width={260} height={54} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={62} s={13} a="middle" f={C.crema}>OnceLock::get_or_init</T>
-        <T x={60} y={108} s={12} f={C.taupe}>written once, read freely after</T>
-      </g>
-      <g opacity={fa(t, 0.8, 0.4)}>
-        <rect x={60} y={150} width={260} height={54} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={190} y={182} s={13} a="middle" f={C.crema}>LazyLock::new</T>
-        <T x={60} y={228} s={12} f={C.taupe}>computed once, on first touch</T>
-      </g>
-      <T x={60} y={280} s={13} f={C.mocha} o={fa(t, 1.5, 0.4)}>both reads see the same value back</T>
+      <rect x={60} y={30} width={260} height={54} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.1, 0.3)} />
+      <T x={190} y={62} s={13} a="middle" f={C.crema} o={fa(t, 0.1, 0.3)}>OnceLock::get_or_init</T>
+      <circle cx={writeX} cy={57} r={7} fill={C.caramel} opacity={write > 0 ? 1 : 0} />
+      <circle cx={read1X} cy={57} r={6} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={read1 > 0 && read1 < 1 ? 1 : 0} />
+      <T x={60} y={108} s={12} f={C.taupe} o={fa(t, 0.6, 0.3)}>written once, read freely after</T>
+
+      <rect x={60} y={150} width={260} height={54} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 0.8, 0.3)} />
+      <T x={190} y={182} s={13} a="middle" f={C.crema} o={fa(t, 0.8, 0.3)}>LazyLock::new</T>
+      <circle cx={computeX} cy={177} r={7} fill={C.caramel} opacity={compute > 0 ? 1 : 0} />
+      <circle cx={read2X} cy={177} r={6} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={read2 > 0 && read2 < 1 ? 1 : 0} />
+      <T x={60} y={228} s={12} f={C.taupe} o={fa(t, 1.3, 0.3)}>computed once, on first touch</T>
+      <T x={60} y={280} s={13} f={C.mocha} o={fa(t, 1.9, 0.4)}>both reads see the same value back</T>
     </Svg>
   );
 }
