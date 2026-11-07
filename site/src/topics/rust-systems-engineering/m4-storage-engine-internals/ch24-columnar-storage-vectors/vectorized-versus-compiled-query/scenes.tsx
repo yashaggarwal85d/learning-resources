@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Processing a batch at a time instead of one row at a time cuts the
 // real per-row dispatch overhead by exactly the batch size chosen,
@@ -59,14 +59,17 @@ export function CorrectnessPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the identical result (takeaway) ─────────────────────────
 export function CorrectnessReveal({ t }: StepCtx) {
+  const meet = easeOut(seg(t, 0.5, 0.85));
   return (
     <Svg label="vectorized_vs_compiled_execution_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>row-at-a-time sum vs batch-at-a-time sum</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>exact identical result, both paths</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>batching changes cost, not correctness</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>row-at-a-time</T>
+      <circle cx={130 + meet * 60} cy={76} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.45, 0.3)}>batch-at-a-time</T>
+      <circle cx={250 - meet * 60} cy={111} r={5} fill={C.taupe} opacity={fa(t, 0.5, 0.2)} />
+      <Draw pts={[[190, 85], [190, 95]]} t={t} from={0.7} to={0.9} stroke={C.cherry} w={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>exact identical result, both paths</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>batching changes cost, not correctness</T>
     </Svg>
   );
 }
@@ -89,14 +92,18 @@ export function ArithmeticPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: an exact match (takeaway) ───────────────────────────────
 export function ArithmeticReveal({ t }: StepCtx) {
+  const predicted = easeOut(seg(t, 0.4, 0.7));
+  const measured = easeOut(seg(t, 0.75, 1.05));
   return (
     <Svg label="vectorized_vs_compiled_execution_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>predicted dispatch count vs measured count</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>an exact match, not an estimate</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the cut follows exactly from the batch size</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>predicted</T>
+      <rect x={60} y={82} width={predicted * 95} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.7, 0.3)}>measured</T>
+      <rect x={60} y={119} width={measured * 95} height={16} rx={3} fill={C.taupe} />
+      <Draw pts={[[155, 90], [155, 127]]} t={t} from={1.1} to={1.3} stroke={C.cherry} w={2} />
+      {fa(t, 1.4, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>an exact match, not an estimate</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.7, 0.3)}>the cut follows exactly from the batch size</T>
     </Svg>
   );
 }

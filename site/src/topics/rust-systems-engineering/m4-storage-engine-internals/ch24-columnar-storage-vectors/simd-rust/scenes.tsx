@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // An explicit SIMD kernel, called only once the real CPU's own support
 // is checked at runtime, computes the exact identical answer as its
@@ -59,14 +59,17 @@ export function CorrectnessPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the identical sum (takeaway) ────────────────────────────
 export function CorrectnessReveal({ t }: StepCtx) {
+  const meet = easeOut(seg(t, 0.5, 0.85));
   return (
     <Svg label="simd_autovectorization_verification.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>scalar sum vs explicit SIMD sum</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>exact identical result, both paths</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>SIMD changes cost, not correctness</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>scalar</T>
+      <circle cx={100 + meet * 90} cy={76} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.45, 0.3)}>SIMD</T>
+      <circle cx={280 - meet * 90} cy={111} r={5} fill={C.taupe} opacity={fa(t, 0.5, 0.2)} />
+      <Draw pts={[[190, 85], [190, 95]]} t={t} from={0.7} to={0.9} stroke={C.cherry} w={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>exact identical result, both paths</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>SIMD changes cost, not correctness</T>
     </Svg>
   );
 }
@@ -89,14 +92,17 @@ export function OpCountPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: far fewer, exact match (takeaway) ───────────────────────
 export function OpCountReveal({ t }: StepCtx) {
+  const scalar = easeOut(seg(t, 0.4, 0.75));
+  const simd = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="simd_autovectorization_verification.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>scalar ops vs vector ops, same column</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>far fewer, exact lane-width match</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the cut follows exactly from the lane width</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>scalar ops</T>
+      <rect x={60} y={82} width={scalar * 260} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>vector ops</T>
+      <rect x={60} y={119} width={simd * 35} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>far fewer, exact lane-width match</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>the cut follows exactly from the lane width</T>
     </Svg>
   );
 }

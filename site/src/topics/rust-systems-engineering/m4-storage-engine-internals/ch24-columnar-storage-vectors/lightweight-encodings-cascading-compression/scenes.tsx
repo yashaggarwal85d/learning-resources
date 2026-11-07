@@ -58,14 +58,17 @@ export function RandomPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely loses (takeaway) ──────────────────────────────
 export function RandomReveal({ t }: StepCtx) {
+  const raw = easeOut(seg(t, 0.4, 0.75));
+  const encoded = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="lightweight_encoding_decode_cost_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>raw column vs run-length encoded</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>genuinely larger, not smaller</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>no real runs, no real win</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>raw</T>
+      <rect x={60} y={82} width={raw * 180} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>run-length encoded</T>
+      <rect x={60} y={119} width={encoded * 260} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>genuinely larger, not smaller</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>no real runs, no real win</T>
     </Svg>
   );
 }
@@ -88,14 +91,17 @@ export function DecodeWorkPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: far fewer headers, correct round trip (takeaway) ───────
 export function DecodeWorkReveal({ t }: StepCtx) {
+  const skewed = easeOut(seg(t, 0.4, 0.75));
+  const random = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="lightweight_encoding_decode_cost_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>headers processed per value, both columns</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>skewed: far fewer; both decode exactly</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>decode cost rides on the real shape too</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>skewed column</T>
+      <rect x={60} y={82} width={skewed * 35} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>random column</T>
+      <rect x={60} y={119} width={random * 260} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>skewed: far fewer; both decode exactly</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>decode cost rides on the real shape too</T>
     </Svg>
   );
 }
