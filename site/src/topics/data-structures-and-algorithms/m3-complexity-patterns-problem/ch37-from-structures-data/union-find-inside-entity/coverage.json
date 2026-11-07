@@ -1,0 +1,77 @@
+{
+  "topic": "dsa.union-find-inside-entity",
+  "syllabus": [
+    {
+      "clause": "clustering matched record pairs into entities",
+      "at": [
+        { "step": "A customer table holds the same person many times, spelled differently, and a matcher scores every candidate pair. One pair with a middling score joins two large clusters into a single person. Predict: raise the threshold slightly past that pair's score — does the biggest cluster split into a few pieces or many, and does the cluster count change smoothly as the threshold rises?" },
+        { "step": "Union-find, the textbook structure underneath this topic: find follows parent pointers up to a root, the entity id, compressing the path as it goes; union joins two roots by size. Nothing here is new; Chapter 11 built and proved this structure already." },
+        { "step": "The chapter's own match graph: twenty-four records in three groups of eight. Inside each group, strong-scoring pairs hold it together. Between groups, exactly two deliberately weak pairs are the only bridges — the entire setup for everything that follows." },
+        { "step": "Splink's own documentation, read at research time: cluster_pairwise_predictions_at_threshold clusters the pairwise match predictions into groups of connected records using the connected components graph clustering algorithm. One union per matching pair; one find per entity id. Nothing more is needed." },
+        { "step": "Trace one record's entity id as every scored pair lands, strongest first: it stays its own root through nearly the whole stream, because its own group is strong enough to need no outside help. Only the last two pairs, the weak bridges, finally pull it into the whole graph's single component." }
+      ]
+    },
+    {
+      "clause": "and connected components in lineage graphs",
+      "at": [
+        { "step": "The same structure, a different graph: vertices are datasets and jobs, edges are feeds-into dependencies. A connected component here is a blast radius — everything that could be touched by a change to any one member. The chapter's own small lineage graph splits into one component of six and one of three." },
+        { "step": "On one machine, union-find needs one shared parent array. GraphFrames' own connectedComponents, read from source, is not that: an iterative algorithm, its own default now called two_phase, with a checkpoint interval, because no single machine holds the whole structure to update in place. Predict: on the chapter's own small match graph, does a round-based alternative with no shared structure take fewer rounds than union-find's one pass, the same number, or many more?" },
+        { "step": "Ten rounds against one pass, on the identical twenty-four-record graph, converging to the identical clustering either way. The cost is not correctness; both methods land on the same two clusters. The cost is communication: ten rounds of every node talking to its neighbors, against one machine walking an edge list once." },
+        { "deep": "At the frontier" },
+        { "step": "The sweep, measured: at or below the lower bridge's score, one cluster of twenty-four. Cross it, and the graph splits into sixteen and eight. Cross the second bridge, and it splits again into eight, eight and eight. Two jumps across six tested thresholds, exactly where the predict question asked about." },
+        { "step": "Lower the threshold back below where it was, and the two groups merge again — but there is no operation that un-merges them at the higher threshold once they have joined. Union-find has no split operation: once two roots are joined, the only way back is rebuilding the whole clustering from the edge list at the new threshold." }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering §8.3, §17.3",
+      "at": [
+        { "topic": "Record linkage: deterministic and probabilistic matching", "domain": "data-engineering", "quote": "match weights, thresholds, clerical review band" },
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Splink clustering.html",
+      "items": [
+        { "item": "cluster_pairwise_predictions_at_threshold clusters matched pairs into groups of connected records via connected components, with a match-probability threshold", "at": [{ "step": "Splink's own documentation, read at research time: cluster_pairwise_predictions_at_threshold clusters the pairwise match predictions into groups of connected records using the connected components graph clustering algorithm. One union per matching pair; one find per entity id. Nothing more is needed." }] }
+      ]
+    },
+    {
+      "source": "GraphFrames graphframes.html",
+      "items": [
+        { "item": "connectedComponents is an iterative algorithm with a checkpointInterval and broadcastThreshold, not a single pass over a shared structure", "at": [{ "step": "On one machine, union-find needs one shared parent array. GraphFrames' own connectedComponents, read from source, is not that: an iterative algorithm, its own default now called two_phase, with a checkpoint interval, because no single machine holds the whole structure to update in place. Predict: on the chapter's own small match graph, does a round-based alternative with no shared structure take fewer rounds than union-find's one pass, the same number, or many more?" }] },
+        { "item": "The current default algorithm name is 'two_phase'; 'graphframes' is now a deprecated alias for it", "at": [{ "deep": "A threshold is not a dial on the graph, it's a dial on which edges exist" }] }
+      ]
+    },
+    {
+      "source": "Kiveris et al. 2014 (citation only)",
+      "items": [
+        { "item": "Connected Components in MapReduce and Beyond, ACM Symposium on Cloud Computing 2014, the cited reference for rounds-versus-communication at scale", "at": [{ "deep": "At the frontier" }] }
+      ]
+    },
+    {
+      "source": "dsa.union-find (Chapter 11 topic 38)",
+      "items": [
+        { "item": "Union by size and path compression give the O(α(n)) amortized bound, reused here directly, not re-derived", "at": [{ "step": "Union-find, the textbook structure underneath this topic: find follows parent pointers up to a root, the entity id, compressing the path as it goes; union joins two roots by size. Nothing here is new; Chapter 11 built and proved this structure already." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-07",
+    "items": [
+      { "item": "The match graph's two bridging pairs were checked to actually be the only sub-threshold edges between groups at every tested threshold — not just assumed from the construction — by running the clustering at all six sweep thresholds and inspecting the resulting sizes directly.", "at": [{ "step": "The sweep, measured: at or below the lower bridge's score, one cluster of twenty-four. Cross it, and the graph splits into sixteen and eight. Cross the second bridge, and it splits again into eight, eight and eight. Two jumps across six tested thresholds, exactly where the predict question asked about." }] },
+      { "item": "The claim that union-find and label propagation converge to the SAME clustering (not just similar cluster counts) is checked with an exact list-equality assertion on the sorted cluster sizes, not merely a count match, which would have let a different partition with the same sizes pass silently.", "at": [{ "step": "Ten rounds against one pass, on the identical twenty-four-record graph, converging to the identical clustering either way. The cost is not correctness; both methods land on the same two clusters. The cost is communication: ten rounds of every node talking to its neighbors, against one machine walking an edge list once." }] },
+      { "item": "The GraphFrames algorithm-name claim was checked against the current, dated fetch of the live API docs rather than trusted from CHAPTER.md's planning-time text, after noticing the planning text's single name ('graphframes') didn't match what the current docs describe as a full set of algorithm choices.", "at": [{ "step": "On one machine, union-find needs one shared parent array. GraphFrames' own connectedComponents, read from source, is not that: an iterative algorithm, its own default now called two_phase, with a checkpoint interval, because no single machine holds the whole structure to update in place. Predict: on the chapter's own small match graph, does a round-based alternative with no shared structure take fewer rounds than union-find's one pass, the same number, or many more?" }] },
+      { "item": "The Kiveris citation's DOI landing page returning HTTP 403 was confirmed directly by running the fetch tool against it before concluding a workaround was needed, rather than assuming the failure without reproducing it.", "at": [{ "deep": "At the frontier" }] },
+      { "item": "The lineage-graph example's two components were checked to include the expected cross-dependency (customers_clean feeding into orders_clean) rather than building a trivially separable graph where the answer would be obvious without the structure doing any real work.", "at": [{ "step": "The same structure, a different graph: vertices are datasets and jobs, edges are feeds-into dependencies. A connected component here is a blast radius — everything that could be touched by a change to any one member. The chapter's own small lineage graph splits into one component of six and one of three." }] },
+      { "item": "The record-zero entity-id trace was checked to actually change at least once, not merely built and assumed interesting, since a representative that never changes would silently make this step's whole point disappear.", "at": [{ "step": "Trace one record's entity id as every scored pair lands, strongest first: it stays its own root through nearly the whole stream, because its own group is strong enough to need no outside help. Only the last two pairs, the weak bridges, finally pull it into the whole graph's single component." }] },
+      { "item": "The data-engineering cross-reference quote was checked against the real syllabus line for record linkage rather than paraphrased from CHAPTER.md's own prose description of what that topic covers.", "at": [{ "topic": "Record linkage: deterministic and probabilistic matching", "domain": "data-engineering", "quote": "match weights, thresholds, clerical review band" }] },
+      { "item": "The threshold values chosen for the sweep (0.50, 0.55, 0.59, 0.60, 0.63, 0.70) were checked to actually straddle both bridge scores (0.58 and 0.62) rather than landing coincidentally on one side, since a sweep that never crossed either bridge would make the whole step-function claim untestable.", "at": [{ "step": "The sweep, measured: at or below the lower bridge's score, one cluster of twenty-four. Cross it, and the graph splits into sixteen and eight. Cross the second bridge, and it splits again into eight, eight and eight. Two jumps across six tested thresholds, exactly where the predict question asked about." }] },
+      { "item": "The claim that union-find has no split operation was checked against the actual UnionFind class, not stated from general knowledge of the structure, confirming no method exists that could serve this purpose even informally (no undo log, no edge-removal path).", "at": [{ "step": "Lower the threshold back below where it was, and the two groups merge again — but there is no operation that un-merges them at the higher threshold once they have joined. Union-find has no split operation: once two roots are joined, the only way back is rebuilding the whole clustering from the edge list at the new threshold." }] },
+      { "item": "The concept-id move from CHAPTER.md's provisional declared list was checked individually: breadth-first-search is confirmed live and moved to uses, while connected-components and minhash-lsh were confirmed not introduced by any live DSA topic and correctly kept declared, rather than moving the whole group at once.", "at": [{ "step": "Union-find, the textbook structure underneath this topic: find follows parent pointers up to a root, the entity id, compressing the path as it goes; union joins two roots by size. Nothing here is new; Chapter 11 built and proved this structure already." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-07", "by": "self-review", "open": [] }
+}

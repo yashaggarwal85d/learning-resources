@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Topological sort inside schedulers">Before this: a scheduler's graph that is acyclic by construction, built the other way round from this one.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Union–find">Before this: find and union themselves, path compression, union by size, and the O(α(n)) bound.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Adjacency lists, matrices and edge lists">Before this: the edge list, the exact shape the stream of scored pairs arrives in.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Breadth-first search">Before this: the graph-search alternative for finding connected components, when the pairs are not arriving one at a time.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Clustering (Splink)" href="https://moj-analytical-services.github.io/splink/api_docs/clustering.html" by="Splink">cluster_pairwise_predictions_at_threshold: clustering matched pairs is connected components.</Resource>
+  <Resource kind="reading" title="graphframes package" href="https://graphframes.io/api/python/graphframes.html" by="GraphFrames">connectedComponents: an iterative algorithm, checkpointed, not a single shared parent array.</Resource>
+  <Resource kind="reading" title="Connected Components in MapReduce and Beyond" href="https://doi.org/10.1145/2670979.2670997" by="Kiveris, Lattanzi, Mirrokni, Rastogi, Vassilvitskii (2014)">The cited reference for rounds-versus-communication at scale, named, not read.</Resource>
+</ul>
+
+</section>

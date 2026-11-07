@@ -1,0 +1,76 @@
+{
+  "topic": "dsa.union-find-inside-entity",
+  "steps": [
+    {
+      "lines": [
+        "A matcher doesn't output clusters. It outputs scored pairs, one at a time, with no sense of the groups they're about to form. Everything in this topic is about what happens once you start joining them.",
+        "Before you answer, notice the question isn't really about clustering. It's about what a threshold actually does to a graph that's already built out of pairwise decisions."
+      ],
+      "answer": [
+        "Nothing changes until the threshold crosses that one bridging pair's exact score. Then it jumps.",
+        "A pair is either a match or it isn't — there's no partial union. So the cluster count can't move smoothly; it has to be a step function, with one step per bridging edge you cross."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing on this screen is new. The entire point of putting it here is that this chapter already proved it correct once, and you get to spend zero effort re-earning that trust."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what's deliberate about this graph: the within-group pairs are almost all scored high enough that no reasonable threshold would ever drop them. Only the two bridges are built to be fragile.",
+        "That's not how a real matcher's scores would look by accident. It's built this way on purpose, so the one effect this topic is about isn't buried in noise."
+      ]
+    },
+    {
+      "lines": [
+        "Read this sentence slowly: it says connected components, not clustering, not grouping, not anything softer. The people who built this tool reached for the exact graph-theory term, because that's exactly what it is."
+      ]
+    },
+    {
+      "lines": [
+        "Watch how long record zero's entity id does nothing at all. That's not a bug in the visualization — it's the actual behavior of a record sitting in a well-connected group, waiting for the rest of the graph to catch up to it.",
+        "The two moments it does change are the only two pairs in the whole stream that matter to this specific record. Everything else was already decided."
+      ]
+    },
+    {
+      "lines": [
+        "This is the predict's answer, laid out as it actually happened: two flat stretches, two drops, nothing in between. If you expected a smooth curve, notice exactly where that expectation breaks.",
+        "Each drop lines up with crossing one bridge's score, not with any particular number of threshold steps. The x-axis you'd want to draw this against is score, not 'how many thresholds have I tried.'"
+      ]
+    },
+    {
+      "lines": [
+        "Ask yourself what would even need to happen for union to have a splitting counterpart. It would need to remember, for every merge, exactly which edge caused it — and union-find was built specifically to not carry that weight.",
+        "That's not a missing feature. It's the trade that makes the structure fast in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Same algorithm, same two lines of code, a completely different question. Nothing about union-find cares whether the vertices are customer records or dataset names.",
+        "What changes is what a 'component' means to the person reading the output. Here, it means a blast radius, not an identity."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what a single shared parent array actually requires: every machine needs to be able to see and update the same memory. That assumption is the whole topic in one sentence, and it's the assumption a cluster doesn't get to make.",
+        "Before the answer lands, notice this is a real trade, not a hypothetical one — the source names an actual checkpoint interval, which only exists because rounds cost something real."
+      ],
+      "answer": [
+        "Many more rounds than union-find's one pass.",
+        "Ten rounds of every node talking to its neighbors, to converge on the same answer union-find found by walking the edge list exactly once. The cost isn't correctness — it's communication."
+      ]
+    },
+    {
+      "lines": [
+        "Say the number out loud: ten. Not two, not three. That's the real cost of giving up a shared parent array, measured on a graph with only twenty-four records.",
+        "Scale this graph up and the gap doesn't close — it's the structural reason distributed connected-components implementations exist as their own research area at all."
+      ]
+    },
+    {
+      "lines": [
+        "Carry forward the shape of the lesson, not just the algorithm: a structure's guarantees come from what it refuses to support. Union-find is fast because it never promised to split."
+      ]
+    }
+  ]
+}
