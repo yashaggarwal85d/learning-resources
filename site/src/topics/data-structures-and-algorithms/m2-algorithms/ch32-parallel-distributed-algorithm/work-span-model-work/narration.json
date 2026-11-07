@@ -1,0 +1,107 @@
+{
+  "topic": "dsa.work-span-model-work",
+  "steps": [
+    {
+      "lines": [
+        "Watch the same program run twice: once on a single core, once spread across sixteen, and the second run finishes in a fraction of the time.",
+        "Now run a different program of exactly the same size, written as one long dependent chain, and adding cores buys it nothing at all."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about what a tree of additions actually forces: how deep is its longest unavoidable chain, and does that depth change if you hand it more workers?"
+      ],
+      "answer": [
+        "The longest chain here is only four additions deep, so unlimited workers finish in four steps — but that same four-deep chain is also the hard ceiling on how much speed-up any worker count can ever buy."
+      ]
+    },
+    {
+      "lines": [
+        "Give a name to what just happened: the total number of additions is the work, the longest unavoidable chain is the span, and dividing one by the other tells you the most speed-up physically available.",
+        "Neither number depends on how many workers you actually have — they are properties of the dependency structure itself, fixed before a single worker is assigned."
+      ]
+    },
+    {
+      "lines": [
+        "Take the identical set of additions and force them into one strict order instead of a tree, and the span stops being four and becomes the entire count of additions.",
+        "Not one operation changed — only the order they are permitted to run in — and that alone erased every bit of available parallelism."
+      ]
+    },
+    {
+      "lines": [
+        "A divide-and-conquer algorithm whose two halves run side by side only pays for the slower of those halves, plus whatever work has to happen afterward to combine them.",
+        "A merge sort built this way inherits its span almost entirely from that final combining step, because the two halves it waits on finish together, not one after another."
+      ]
+    },
+    {
+      "lines": [
+        "Double the size of the input and watch what each of the two numbers does: one grows in a straight line, the other grows faster than that.",
+        "Because one outpaces the other, the ratio between them — the available parallelism — keeps climbing as the problem gets bigger, which is exactly backward from what a fixed ceiling would predict."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate limits apply here, and neither one is a guess: workers can never finish faster than the work divided evenly among them, and no worker count, however large, can ever beat the span by itself.",
+        "Those two floors hold independently of any scheduling decision — they are consequences of the dependency structure, not of how well a scheduler happens to be built."
+      ]
+    },
+    {
+      "lines": [
+        "A schedule that refuses to ever leave a worker idle while some ready task is waiting turns out to have a provable ceiling of its own: work divided by workers, plus the span.",
+        "That guarantee is not close to optimal by luck — it can be shown to land within a factor of two of whatever the best possible schedule could achieve, for any number of workers at all."
+      ]
+    },
+    {
+      "lines": [
+        "Running that exact never-idle rule on the same tree of additions, across one worker, a handful, and many, produces step counts that sit right where the two floors and this new ceiling predict they should.",
+        "Past a certain worker count the measured steps simply stop falling, because the span itself has already become the only thing left to wait on."
+      ]
+    },
+    {
+      "lines": [
+        "Now take away the one assumption that made the previous scheduler simple: a single list that every worker checks before deciding what to run next.",
+        "Ask what an individual worker, holding only its own private list, should actually do the moment that list runs dry."
+      ],
+      "answer": [
+        "Reach out to some other worker, chosen with no favoritism at all, and take a piece of its remaining work — a coordinator was never required in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Each worker treats its own list the way a single-threaded program treats its own call stack, taking from one particular end while it has anything left to do.",
+        "An idle worker becomes a thief instead, reaching into some other worker's list from the opposite end — deliberately the oldest entry there, the one statistically most likely to still be carrying real work underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "This protocol only carries a guarantee for a particular shape of computation — one where every dependency returns straight back to whichever task created it, the shape an ordinary recursive split-and-combine program already has.",
+        "For exactly that shape, the expected running time comes out to work divided by workers, plus a constant times the span — the identical guarantee as before, now achieved with nobody coordinating anything centrally."
+      ]
+    },
+    {
+      "lines": [
+        "Running this stealing protocol through a step-by-step simulation on a much larger version of the same tree shows a single worker completing everything alone, since there is nobody around to steal from.",
+        "Add more workers and the share of the work that changes hands through a steal does rise, but even with a great many workers involved, that stolen share stays a comfortably small slice of the total."
+      ]
+    },
+    {
+      "lines": [
+        "This is not a hypothetical scheduler: it is the one a specific research language was built around from the start, and its own modern successor still advertises tuning its scheduling to whatever machine it happens to run on.",
+        "A popular Rust library runs this identical protocol under a familiar-sounding call, right down to warning that letting one half wait on the other inside it can cause an outright deadlock.",
+        "A different, widely used asynchronous runtime steals from private queues too, but for tasks that spend their time waiting on networks and disks rather than pure dependent computation — a related idea, applied somewhere this topic's guarantee does not reach."
+      ]
+    },
+    {
+      "lines": [
+        "One detail was deliberately set aside: the moment a worker and a thief both reach for the very last entry in a list at the same instant.",
+        "That particular race has a well-known, carefully engineered fix elsewhere in this course — naming the problem honestly here does not require building its solution before this topic's own guarantee can stand."
+      ]
+    },
+    {
+      "lines": [
+        "Work, span and their ratio set a hard ceiling on one machine's many cores, and this stealing protocol reaches that ceiling without any central coordination at all.",
+        "The next question drops the assumption this whole topic quietly made: that every core can still read the same memory for free, no matter how many machines are actually involved."
+      ]
+    }
+  ]
+}

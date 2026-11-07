@@ -1,0 +1,4 @@
+- **In-degree (recap)**: the number of edges pointing into a vertex. *Where you meet it:* Kahn's algorithm removes a vertex the moment this hits zero.
+- **DAG (recap from Chapter 10)**: a directed graph with no cycle. *Where you meet it:* a topological order exists if and only if the graph is a DAG.
+- **Dependency order**: an ordering of tasks where every task comes after everything it needs. *Where you meet it:* this is exactly what a topological order is, stated in non-graph language.
+- **Queue (recap)**: a FIFO (first-in, first-out) container — the earliest thing added is the first thing removed. *Where you meet it:* Kahn's algorithm's own in-degree queue.

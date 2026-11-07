@@ -1,0 +1,63 @@
+{
+  "topic": "dsa.dijkstra-s-algorithm",
+  "syllabus": [
+    {
+      "clause": "label-setting with a priority queue",
+      "at": [
+        { "step": "The algorithm pops the closest unsettled vertex from a priority queue, settles it, and relaxes every one of its outgoing edges — repeating until the queue is empty." }
+      ]
+    },
+    {
+      "clause": "why non-negative weights are required",
+      "at": [
+        { "step": "If a graph has a single negative-weight edge somewhere in it, does the algorithm still find the correct shortest distances?" },
+        { "step": "On the exact graph where a greedy choice goes wrong, the algorithm settles a vertex at a distance that a negative edge, reached only later, could have beaten. The settled vertex is never revisited, so the wrong distance stands." }
+      ]
+    },
+    {
+      "clause": "lazy deletion vs decrease-key",
+      "at": [
+        { "step": "Lazy deletion and a true decrease-key operation produce the identical final distances on any graph — do they also do the identical amount of work in the priority queue, or does one of them do strictly more?" }
+      ]
+    },
+    {
+      "clause": "O((m + n) log n) with a binary heap",
+      "at": [
+        { "step": "The algorithm pops the closest unsettled vertex from a priority queue, settles it, and relaxes every one of its outgoing edges — repeating until the queue is empty." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Dijkstra's algorithm\"",
+      "items": [
+        { "item": "The exact counterexample graph (3 nodes, s→a weight 2, s→b weight 5, b→a weight −10) and the greedy-selection failure mechanism itself", "at": [{ "step": "On the exact graph where a greedy choice goes wrong, the algorithm settles a vertex at a distance that a negative edge, reached only later, could have beaten. The settled vertex is never revisited, so the wrong distance stands." }] },
+        { "item": "The O((|E|+|V|)log|V|) worst-case bound for a binary-heap-backed priority queue, simplified to O(|E|log|V|) for connected graphs", "at": [{ "step": "The algorithm pops the closest unsettled vertex from a priority queue, settles it, and relaxes every one of its outgoing edges — repeating until the queue is empty." }] },
+        { "item": "The lazy-insertion variant (start with one queue item, insert new entries as discovered rather than decrease-key) and its own worst-case-bound-preserving, practically-smaller-queue trade-off", "at": [{ "step": "Lazy deletion and a true decrease-key operation produce the identical final distances on any graph — do they also do the identical amount of work in the priority queue, or does one of them do strictly more?" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Shortest path problem\"",
+      "items": [
+        { "item": "Dijkstra's own restriction to non-negative edge weights, stated generally and independently of any particular counterexample", "at": [{ "step": "If a graph has a single negative-weight edge somewhere in it, does the algorithm still find the correct shortest distances?" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "Dijkstra's own correctness proof is exactly the claim that a vertex, once popped at its current-smallest distance, can never later be beaten — true only because every undiscovered extension of a path can only add a non-negative amount", "at": [{ "step": "The algorithm pops the closest unsettled vertex from a priority queue, settles it, and relaxes every one of its outgoing edges — repeating until the queue is empty." }] },
+      { "item": "The failure in the counterexample is not about the negative edge being on the shortest path to the wrongly-settled vertex — it is about the negative edge being reachable only through a vertex the algorithm has not yet settled when it settles the wrong one first", "at": [{ "step": "If a graph has a single negative-weight edge somewhere in it, does the algorithm still find the correct shortest distances?" }] },
+      { "item": "A single negative edge breaks the guarantee even when every other edge in the graph is non-negative — the restriction is on the graph as a whole, not on how many negative edges it contains", "at": [{ "step": "On the exact graph where a greedy choice goes wrong, the algorithm settles a vertex at a distance that a negative edge, reached only later, could have beaten. The settled vertex is never revisited, so the wrong distance stands." }] },
+      { "item": "Lazy deletion's extra cost is specifically the stale pops it must later discard — each one was a legitimate, correctly-computed distance at the time it was pushed, just superseded before it was popped, not a bug or a wasted computation", "at": [{ "step": "Lazy deletion and a true decrease-key operation produce the identical final distances on any graph — do they also do the identical amount of work in the priority queue, or does one of them do strictly more?" }] },
+      { "item": "Decrease-key needs a priority queue that supports updating an existing entry's key in place (e.g. a Fibonacci heap or an indexed binary heap) — a plain binary heap, as used by Python's heapq, cannot do this directly, which is exactly why lazy deletion is the common practical choice", "at": [{ "step": "Lazy deletion and a true decrease-key operation produce the identical final distances on any graph — do they also do the identical amount of work in the priority queue, or does one of them do strictly more?" }] },
+      { "item": "Both variants still settle every vertex in the same order and compute the same final distances — the difference is purely in the bookkeeping cost inside the priority queue, never in correctness", "at": [{ "step": "Lazy deletion and a true decrease-key operation produce the identical final distances on any graph — do they also do the identical amount of work in the priority queue, or does one of them do strictly more?" }] },
+      { "item": "Dijkstra's algorithm generalises breadth-first search exactly when every edge weight is one — the priority queue degenerates to a plain FIFO queue and settling order becomes arrival order", "at": [{ "step": "A road network where every edge has a drive time, and the question is the fastest way from one city to every other — answered without ever reconsidering a city once its fastest time is known, as long as no road can ever make a trip shorter by being driven." }] },
+      { "item": "The O((|E|+|V|)log|V|) bound comes from each of the |E| edges causing at most one push and each of the |V| vertices being popped exactly once, with every heap operation costing O(log|V|) — not from any property specific to this particular graph", "at": [{ "step": "The algorithm pops the closest unsettled vertex from a priority queue, settles it, and relaxes every one of its outgoing edges — repeating until the queue is empty." }] },
+      { "item": "A* search, named once in this topic's frontier, is a direct generalisation of Dijkstra's algorithm that adds a heuristic estimate of remaining distance — not a separate algorithm family", "at": [{ "deep": "The frontier" }] },
+      { "item": "This topic's non-negative-weight restriction is the exact question the rest of the chapter answers by relaxing it: Bellman-Ford drops the restriction entirely by relaxing every edge repeatedly instead of settling vertices greedily", "at": [{ "step": "Dijkstra's algorithm settles the closest vertex first, and that greedy choice is only safe because no edge can ever make a path shorter by being added to it. The moment even one edge weight can be negative, that safety breaks, and the closest-first order stops being trustworthy." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

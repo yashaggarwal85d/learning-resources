@@ -1,0 +1,63 @@
+{
+  "topic": "dsa.dag-shortest-longest-paths",
+  "steps": [
+    {
+      "lines": [
+        "Somewhere in every big project, there's a handful of tasks that can happen whenever, and a handful of others that are stuck waiting on several things to finish first.",
+        "And buried in that mess is a single number: the fastest the whole project could possibly be done.",
+        "That number turns out to be nothing more than the longest path through a graph this chapter already knows how to build."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trick this topic runs: visit every vertex once, in the order a topological sort already hands you, and relax its edges on the way past. No queue, no repeats.",
+        { "beat": 0.3 },
+        "Now, what happens to that trick the moment the graph has even one cycle hiding in it somewhere?"
+      ],
+      "answer": [
+        "It breaks, and it breaks silently.",
+        "A topological order only exists because nothing points backward. Take that away, and a vertex can get locked into a final answer before one of its own predecessors has even been visited — and this algorithm never goes back to check."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the mechanism, one vertex at a time, strictly in that order.",
+        "By the time you reach any given vertex, every edge coming into it has already been relaxed by everyone upstream who could possibly make it better.",
+        "That's the whole proof, really — not a clever trick, just the order itself doing all the work."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what happens if you relax those same edges, on that same graph, in some other order instead.",
+        "One vertex gets its distance locked in early — too early — and ends up stuck on a number that's simply wrong.",
+        "No crash, no warning. The algorithm finishes and hands you an answer that looks exactly as confident as the right one would have."
+      ]
+    },
+    {
+      "lines": [
+        "Flip the sign on every single edge weight, run the identical pass, and shortest paths become longest paths.",
+        { "beat": 0.3 },
+        "Does that same move work on any graph at all, or only on this particular shape of one?"
+      ],
+      "answer": [
+        "Only here — only where there's no cycle to begin with.",
+        "Flip the sign on a cycle of positive weight and you get a cycle of negative weight. A negative cycle means there's no bottom to find — loop it forever and you keep improving.",
+        "A graph with no cycle at all never has that problem, which is exactly why this one substitution is safe here and nowhere else."
+      ]
+    },
+    {
+      "lines": [
+        "A project's own task graph can never have a cycle — a task can't wait on itself finishing first, directly or by some roundabout chain.",
+        "So its critical path, the one everybody in project management talks about, is nothing more exotic than the longest path through that graph.",
+        "Same algorithm, same single pass, just read off as the answer to a different question."
+      ]
+    },
+    {
+      "lines": [
+        "Every other algorithm in this chapter had to earn its answer the hard way — a priority queue, round after round of relaxing, an entire reweighting step just to get rid of negative edges.",
+        "This one needed none of that, because the one thing it demanded up front — no cycles, anywhere — ruled out every problem the others were built to survive.",
+        "The cheapest algorithm in the whole chapter, and it's the one that asked for the most to begin with."
+      ]
+    }
+  ]
+}

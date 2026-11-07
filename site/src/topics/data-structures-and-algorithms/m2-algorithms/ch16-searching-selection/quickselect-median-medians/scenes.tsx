@@ -59,11 +59,12 @@ export function WorstCase({ t }: StepCtx) {
   const n = 14;
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="A row of ascending bars with the first element always chosen as pivot, shrinking the range by only one each round" h={240}>
+    <Svg label="A row of ascending bars with the first element always chosen as pivot, shrinking the range by only one each round" h={260}>
       {Array.from({ length: n }, (_, i) => (
         <Bar key={i} x={30 + i * 36} y={160} h={20 + i * 8} fill={i === 0 ? C.cherry : C.quiet} />
       ))}
-      <T x={300} y={200} s={13} f={C.cherryText} a="middle" o={a}>first-element pivot on sorted input — one element discarded per round</T>
+      <T x={300} y={200} s={13} f={C.cherryText} a="middle" o={a}>first-element pivot on sorted input —</T>
+      <T x={300} y={218} s={13} f={C.cherryText} a="middle" o={a}>one element discarded per round</T>
     </Svg>
   );
 }
@@ -73,7 +74,7 @@ export function MedianOfMedians({ t }: StepCtx) {
   const groups = [[3, 1, 4, 1, 5], [9, 2, 6, 5, 3], [5, 8, 9, 7, 9]];
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="Three groups of five bars each collapsing to their own median, those medians collapsing again to the pivot" h={260}>
+    <Svg label="Three groups of five bars each collapsing to their own median, those medians collapsing again to the pivot" h={280}>
       {groups.map((g, gi) => (
         <g key={gi}>
           {g.map((v, i) => (
@@ -82,7 +83,8 @@ export function MedianOfMedians({ t }: StepCtx) {
           <T x={40 + gi * 170 + 2 * 28 + 8} y={130} s={10} f={C.caramel} a="middle">median</T>
         </g>
       ))}
-      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>median of the group-medians — at least three in ten below it, three in ten above</T>
+      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>median of the group-medians — at least</T>
+      <T x={300} y={218} s={13} f={C.latte} a="middle" o={a}>three in ten below it, three in ten above</T>
     </Svg>
   );
 }
@@ -91,11 +93,12 @@ export function MedianOfMedians({ t }: StepCtx) {
 export function WhyNobodyUsesIt({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="Two bars comparing measured comparison counts, quickselect lower, median of medians higher, on the same input" h={240}>
-      <Bar x={200} y={180} h={70} fill={C.caramel} />
-      <Bar x={280} y={180} h={150} fill={C.quiet} />
-      <T x={208} y={200} s={11} f={C.caramel} a="middle">quickselect</T>
-      <T x={288} y={200} s={11} f={C.latte} a="middle">median of medians</T>
+    <Svg label="Two bars comparing measured comparison counts, quickselect lower, median of medians higher, on the same input" h={260}>
+      <Bar x={190} y={180} h={70} fill={C.caramel} />
+      <Bar x={300} y={180} h={150} fill={C.quiet} />
+      <T x={198} y={210} s={11} f={C.caramel} a="middle">quickselect</T>
+      <T x={308} y={210} s={11} f={C.latte} a="middle">median of</T>
+      <T x={308} y={228} s={11} f={C.latte} a="middle">medians</T>
       <T x={300} y={30} s={13} f={C.latte} a="middle" o={a}>same input, same target rank</T>
     </Svg>
   );
@@ -107,11 +110,12 @@ export function FloydRivest({ t }: StepCtx) {
   const sampleIdx = new Set([1, 4, 7, 10]);
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="A full row of bars with a small random sample picked out, used to narrow the band the target rank must fall in" h={240}>
+    <Svg label="A full row of bars with a small random sample picked out, used to narrow the band the target rank must fall in" h={260}>
       {heights.map((h, i) => (
         <Bar key={i} x={30 + i * 40} y={160} h={h} fill={sampleIdx.has(i) ? C.caramel : C.quiet} />
       ))}
-      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>the sample estimates two bounds; only the band between them needs a full partition</T>
+      <T x={300} y={200} s={13} f={C.latte} a="middle" o={a}>the sample estimates two bounds; only the</T>
+      <T x={300} y={218} s={13} f={C.latte} a="middle" o={a}>band between them needs a full partition</T>
     </Svg>
   );
 }
@@ -134,13 +138,14 @@ export function PredictLibrary({ t, answer }: StepCtx) {
 export function Introselect({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.3));
   return (
-    <Svg label="Two paths from quickselect once recursion runs too deep: the textbook's median of medians, and this machine's own heap-based fallback" h={260}>
-      <T x={30} y={40} s={13} f={C.latte}>quickselect, recursing too deep</T>
-      <T x={120} y={100} s={13} f={C.crema}>textbook (Musser, 1997):</T>
-      <T x={330} y={100} s={13} f={C.caramel}>median of medians</T>
-      <T x={120} y={140} s={13} f={C.crema}>this machine's libstdc++:</T>
-      <T x={330} y={140} s={13} f={C.cherryText}>heap-based select</T>
-      <T x={300} y={200} s={12} f={C.quiet} a="middle" o={a}>read directly from /usr/include/c++/13/bits/stl_algo.h</T>
+    <Svg label="Two paths from quickselect once recursion runs too deep: the textbook's median of medians, and this machine's own heap-based fallback" h={300}>
+      <T x={300} y={40} s={13} f={C.latte} a="middle">quickselect, recursing too deep</T>
+      <T x={30} y={100} s={13} f={C.crema}>textbook (Musser, 1997):</T>
+      <T x={30} y={120} s={13} f={C.caramel}>median of medians</T>
+      <T x={30} y={160} s={13} f={C.crema}>this machine's libstdc++:</T>
+      <T x={30} y={180} s={13} f={C.cherryText}>heap-based select</T>
+      <T x={300} y={230} s={12} f={C.quiet} a="middle" o={a}>read directly from</T>
+      <T x={300} y={246} s={12} f={C.quiet} a="middle" o={a}>/usr/include/c++/13/bits/stl_algo.h</T>
     </Svg>
   );
 }

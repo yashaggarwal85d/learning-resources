@@ -1,0 +1,187 @@
+{
+  "topic": "dsa.p-np-polynomial-reductions",
+  "syllabus": [
+    {
+      "clause": "decision vs search vs optimization",
+      "at": [
+        { "step": "The same bin-packing question comes in three shapes: decision asks only yes or no, search asks for an actual packing, and optimization asks for the fewest bins possible. The theory is built on the decision form, because yes or no is the simplest answer to compare and to build reductions out of." },
+        { "step": "Walking that self-reduction on a real graph: one call confirms a witness of the target size exists, then each vertex is tried for removal in turn. A vertex whose removal keeps the answer yes gets dropped for good; a vertex whose removal flips the answer to no stays, and belongs in the final set." }
+      ]
+    },
+    {
+      "clause": "certificates and verifiers",
+      "at": [
+        { "step": "A decision problem answers only yes or no. P is every decision problem some procedure solves in time bounded by a fixed power of the input's length. NP is every decision problem where a yes answer comes with a proof — a certificate — that a separate procedure can check in that same bounded time: a verifier." },
+        { "step": "Every problem in P is already in NP, because solving it from scratch is itself a valid proof. Whether that containment runs the other way is the open question behind the field's most famous unanswered prize. The letters themselves name a kind of machine, not the word 'not': nondeterministic polynomial time." }
+      ]
+    },
+    {
+      "clause": "Karp reductions and their direction (reduce from the known-hard problem)",
+      "at": [
+        { "step": "A Karp reduction from problem A to problem B is a function, computable quickly, that maps every yes-instance of A to a yes-instance of B and every no-instance to a no-instance. To show B is at least as hard as A, the function has to run from the already-known-hard problem toward the new one, never the other way." },
+        { "step": "One reduction, checked completely rather than merely argued: map a graph and a target size to the same graph and the vertex count minus that size. A set is independent exactly when its complement covers every edge, so the map sends every yes-instance to a yes-instance and every no-instance to a no-instance, confirmed on every small graph there is." },
+        { "step": "That mistaken direction is not just unhelpful, it is vacuous: every problem solvable quickly reduces to almost any other problem at all, by solving the easy one first and then outputting one of two fixed, already-decided instances of the target. A reduction built this way carries no information about the target whatsoever." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Erickson, *Algorithms* (2019), Chapter \"NP-Hardness\"",
+      "items": [
+        {
+          "item": "the P and NP definitions, and P's containment in NP",
+          "at": [
+            { "step": "A decision problem answers only yes or no. P is every decision problem some procedure solves in time bounded by a fixed power of the input's length. NP is every decision problem where a yes answer comes with a proof — a certificate — that a separate procedure can check in that same bounded time: a verifier." }
+          ]
+        },
+        {
+          "item": "the Karp (many-one) reduction definition and why complexity theorists prefer it",
+          "at": [
+            { "step": "A Karp reduction from problem A to problem B is a function, computable quickly, that maps every yes-instance of A to a yes-instance of B and every no-instance to a no-instance. To show B is at least as hard as A, the function has to run from the already-known-hard problem toward the new one, never the other way." }
+          ]
+        },
+        {
+          "item": "formally, no optimization or construction problem is Karp-NP-hard",
+          "at": [
+            { "out": "informs the topic's one-sentence caveat about calling optimization problems \"NP-hard\" informally; not stated verbatim on screen" }
+          ]
+        },
+        {
+          "item": "the Cook-Levin theorem statement",
+          "at": [
+            { "step": "One fact in this whole chain has no reduction behind it: circuit satisfiability is NP-hard, a result with no known-hard problem standing behind it to reduce from. Every other NP-complete problem inherits its hardness from a chain of reductions built on that one fact, first assembled into a list of twenty-one such problems the following year." }
+          ]
+        },
+        {
+          "item": "the independent set / vertex cover complement fact",
+          "at": [
+            { "step": "One reduction, checked completely rather than merely argued: map a graph and a target size to the same graph and the vertex count minus that size. A set is independent exactly when its complement covers every edge, so the map sends every yes-instance to a yes-instance and every no-instance to a no-instance, confirmed on every small graph there is." }
+          ]
+        },
+        {
+          "item": "the 3-SAT to independent set construction (one vertex per literal, a triangle per clause, an edge between a variable and its negation)",
+          "at": [
+            { "out": "built in examples.py and named in post-notes as the syllabus's own lab bullet's first half" }
+          ]
+        },
+        {
+          "item": "the Clay Mathematics Institute's Millennium Prize listing for P versus NP",
+          "at": [
+            { "step": "Every problem in P is already in NP, because solving it from scratch is itself a valid proof. Whether that containment runs the other way is the open question behind the field's most famous unanswered prize. The letters themselves name a kind of machine, not the word 'not': nondeterministic polynomial time." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, \"Controlling the Planner with Explicit JOIN Clauses\"",
+      "items": [
+        {
+          "item": "the number of possible join orders grows exponentially as the number of tables expands",
+          "at": [
+            { "step": "Bin packing is one problem a reduction has actually shown hard. A query planner choosing the order to join many tables faces a search space that grows exponentially as the table count rises, which is exactly the kind of blow-up a planner has to work around rather than search exhaustively." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Bin packing problem\"",
+      "items": [
+        {
+          "item": "bin packing's decision form is NP-complete, and the problem itself is strongly NP-complete",
+          "at": [
+            { "step": "Bin packing is one problem a reduction has actually shown hard. A query planner choosing the order to join many tables faces a search space that grows exponentially as the table count rises, which is exactly the kind of blow-up a planner has to work around rather than search exhaustively." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Cook–Levin theorem\" and \"Karp's 21 NP-complete problems\"",
+      "items": [
+        {
+          "item": "Cook's 1971 paper, Karp's 1972 paper and the list of twenty-one NP-complete problems it supplied",
+          "at": [
+            { "step": "One fact in this whole chain has no reduction behind it: circuit satisfiability is NP-hard, a result with no known-hard problem standing behind it to reduce from. Every other NP-complete problem inherits its hardness from a chain of reductions built on that one fact, first assembled into a list of twenty-one such problems the following year." }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "the independent-set candidate count and verify cost (sixty vertices, target thirty) computed directly via math.comb, not asserted from the chapter plan's own stated values alone",
+        "at": [
+          { "step": "A graph has sixty vertices, and the question is whether any thirty of them can be chosen with no two connected. Hand someone a candidate set of thirty and they confirm or refuse it in a few hundred quick checks. Finding one means searching among more candidate sets than anyone could ever check one at a time." }
+        ]
+      },
+      {
+        "item": "the self-reduction's call count (one plus the vertex count) checked by direct counting on ten random twelve-vertex graphs, with the returned witness independently verified to be both the right size and genuinely independent",
+        "at": [
+          { "step": "Walking that self-reduction on a real graph: one call confirms a witness of the target size exists, then each vertex is tried for removal in turn. A vertex whose removal keeps the answer yes gets dropped for good; a vertex whose removal flips the answer to no stays, and belongs in the final set." }
+        ]
+      },
+      {
+        "item": "the independent-set-to-vertex-cover reduction checked by exhaustion on every graph of six vertices or fewer and every target size, not sampled",
+        "at": [
+          { "step": "One reduction, checked completely rather than merely argued: map a graph and a target size to the same graph and the vertex count minus that size. A set is independent exactly when its complement covers every edge, so the map sends every yes-instance to a yes-instance and every no-instance to a no-instance, confirmed on every small graph there is." }
+        ]
+      },
+      {
+        "item": "the vacuous wrong-direction reduction from two-colourability implemented and checked against twenty random graphs, to demonstrate rather than merely assert that a reduction can be valid by the letter of the definition and still prove nothing",
+        "at": [
+          { "step": "That mistaken direction is not just unhelpful, it is vacuous: every problem solvable quickly reduces to almost any other problem at all, by solving the easy one first and then outputting one of two fixed, already-decided instances of the target. A reduction built this way carries no information about the target whatsoever." }
+        ]
+      },
+      {
+        "item": "the 3-SAT to independent set lab reduction checked against brute-force satisfiability on thirty random three-CNF formulas, not merely described",
+        "at": [
+          { "out": "checked in examples.py and documented in FACT-CHECK.md's red team" }
+        ]
+      },
+      {
+        "item": "Cook's and Karp's original papers not claimed as read; every attribution sourced to two Wikipedia pages that themselves cite and summarize the originals, documented honestly rather than presented as primary-source verification",
+        "at": [
+          { "out": "documented in SOURCES.md's attribution notes and FACT-CHECK.md's red team" }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for both predict steps",
+        "at": [
+          { "step": "Suppose you are handed a procedure that only answers yes or no to 'does an independent set of size thirty exist here?', nothing else. How many times must you call it to actually produce thirty vertices that form one?" },
+          { "step": "A new problem is reduced the wrong way: instead of reducing a known-hard problem to it, someone reduces the new problem to a known-hard one. What does a reduction built in that direction actually establish about how hard the new problem is?" }
+        ]
+      },
+      {
+        "item": "the chapter plan's named PostgreSQL GEQO page substituted for the explicit-joins page, since the former's body text did not render through the fetcher, recorded honestly rather than silently",
+        "at": [
+          { "out": "documented in OUTLINE.md's Changes from the chapter plan" }
+        ]
+      },
+      {
+        "item": "the bridge quoted word for word from topic 106's own handoff, and the handoff to topic 108 quoted word for word from CHAPTER.md",
+        "at": [
+          { "out": "recorded in OUTLINE.md" }
+        ]
+      },
+      {
+        "item": "every number on screen (the candidate count and verify cost, the self-reduction's call count, the exhaustive reduction check's pair count, the vacuous-reduction check, the lab reduction's check) computed fresh in examples.py, not copied from the chapter plan's own planning-time values",
+        "at": [
+          { "out": "checked via python3 examples.py, not restated on screen" }
+        ]
+      },
+      {
+        "item": "the chain of gadgets (Cook–Levin's proof, SAT → 3-SAT → independent set, clique, Hamiltonian cycle, subset sum) named once in post-notes as the *(skipped)* topic's own content, not re-taught on screen",
+        "at": [
+          { "out": "checked against CHAPTER.md's \"does not do\" scope and post-notes.md" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -15,8 +15,10 @@ const root = process.argv[2] ?? 'http://localhost:4321/learning-resources/';
 // Each reel to test, with its title: the feed holds several reels at once, so every check is scoped to this reel's
 // section (labelled with the title), never to the whole page.
 const parts = process.argv[3] ? process.argv[3].split(',').filter(Boolean) : null;
-const slugs = [...readFileSync(new URL('../src/topics/registry.ts', import.meta.url), 'utf8').matchAll(/slug: '([^']+)',\s*title: '((?:[^'\\]|\\.)*)',[\s\S]*?status: '(live|held)'/g)]
-  .map((m) => [m[0], m[1], m[3], m[2].replace(/\\'/g, "'")])
+// title: is single-quoted for a plain title, double-quoted when the title itself contains an apostrophe
+// (e.g. "Dijkstra's algorithm") — the quote-char backreference below matches either.
+const slugs = [...readFileSync(new URL('../src/topics/registry.ts', import.meta.url), 'utf8').matchAll(/slug: '([^']+)',\s*title: (['"])((?:\\.|(?!\2)[^\\])*)\2,[\s\S]*?status: '(live|held)'/g)]
+  .map((m) => [m[0], m[1], m[4], m[3].replace(/\\(['"])/g, '$1')])
   // Held topics (PREVIEW_HELD=1 builds give them pages) are tested when named: on their own branch and in CI for a push
   // that changes them. A full sweep tests live reels; a held topic gets the full test again when it is released.
   .filter((m) => (m[2] === 'live' ? !parts || parts.some((p) => m[1].includes(p)) : m[2] === 'held' && process.env.PREVIEW_HELD === '1' && !!parts && parts.some((p) => m[1].includes(p))))

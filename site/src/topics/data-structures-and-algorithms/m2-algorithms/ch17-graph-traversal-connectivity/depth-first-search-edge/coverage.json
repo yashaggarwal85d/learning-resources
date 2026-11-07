@@ -1,0 +1,64 @@
+{
+  "topic": "dsa.depth-first-search-edge",
+  "syllabus": [
+    {
+      "clause": "discovery/finish times",
+      "at": [
+        { "step": "Every vertex gets a discovery time when first visited and a finish time when its subtree is fully explored. For any two vertices, their discovery/finish intervals are either entirely disjoint or one nests completely inside the other — never partially overlapping. A vertex is a proper descendant of another exactly when its interval nests inside it." }
+      ]
+    },
+    {
+      "clause": "tree/back/forward/cross edges",
+      "at": [
+        { "step": "An edge from a vertex to one of its own ancestors in the DFS tree — is that a tree edge, a back edge, a forward edge, or a cross edge?" },
+        { "step": "Tree edges are part of the DFS tree itself. Back edges point to an ancestor, closing a cycle. Forward edges point to an already-finished descendant. Cross edges point to neither — a different subtree, or a different DFS tree entirely. All four are defined purely from discovery and finish times and tree membership, nothing else." }
+      ]
+    },
+    {
+      "clause": "three-colour cycle detection in directed graphs and parent-check in undirected graphs",
+      "at": [
+        { "step": "A directed graph has a cycle exactly when its DFS finds a back edge — an edge to a vertex still grey, still on the current path. An undirected graph needs no colouring at all: a visited neighbour that is not the immediate parent is already a cycle, because an undirected DFS never has the cross edges that could confuse the test." }
+      ]
+    },
+    {
+      "clause": "iterative DFS with an explicit stack to avoid recursion-depth limits",
+      "at": [
+        { "step": "A recursive DFS on a long dependency chain — a few hundred thousand vertices deep — overflows the call stack before the algorithm's own logic is ever wrong. Converting to an explicit stack of (vertex, iterator) pairs, instead of the language's own call stack, gives the identical traversal order and finishes without crashing." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Depth-first search\"",
+      "items": [
+        { "item": "The four-way edge classification (tree, forward, back, cross) and the fact that an undirected graph's DFS has only tree and back edges", "at": [{ "step": "Tree edges are part of the DFS tree itself. Back edges point to an ancestor, closing a cycle. Forward edges point to an already-finished descendant. Cross edges point to neither — a different subtree, or a different DFS tree entirely. All four are defined purely from discovery and finish times and tree membership, nothing else." }] },
+        { "item": "The stack-of-iterators iterative DFS construction, which yields the identical traversal order to recursive DFS", "at": [{ "step": "A recursive DFS on a long dependency chain — a few hundred thousand vertices deep — overflows the call stack before the algorithm's own logic is ever wrong. Converting to an explicit stack of (vertex, iterator) pairs, instead of the language's own call stack, gives the identical traversal order and finishes without crashing." }] }
+      ]
+    },
+    {
+      "source": "University of Crete CS-583 course notes — \"Graph Algorithms\" (DFS, presenting the CLRS treatment)",
+      "items": [
+        { "item": "Discovery/finish timestamps and white/grey/black vertex colouring", "at": [{ "step": "Every vertex gets a discovery time when first visited and a finish time when its subtree is fully explored. For any two vertices, their discovery/finish intervals are either entirely disjoint or one nests completely inside the other — never partially overlapping. A vertex is a proper descendant of another exactly when its interval nests inside it." }] },
+        { "item": "The Parenthesis Theorem and its descendant-interval corollary (d[u] < d[v] < f[v] < f[u] iff v is a proper descendant of u)", "at": [{ "step": "Every vertex gets a discovery time when first visited and a finish time when its subtree is fully explored. For any two vertices, their discovery/finish intervals are either entirely disjoint or one nests completely inside the other — never partially overlapping. A vertex is a proper descendant of another exactly when its interval nests inside it." }] },
+        { "item": "Lemma 3.4: a directed graph is acyclic iff its DFS yields no back edges, with both directions of the proof", "at": [{ "step": "A directed graph has a cycle exactly when its DFS finds a back edge — an edge to a vertex still grey, still on the current path. An undirected graph needs no colouring at all: a visited neighbour that is not the immediate parent is already a cycle, because an undirected DFS never has the cross edges that could confuse the test." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "The parenthesis property is the structural root of everything else in the topic: edge classification, the descendant test, and the cycle-detection proof all follow from intervals nesting or sitting apart, never partly overlapping", "at": [{ "step": "Every vertex gets a discovery time when first visited and a finish time when its subtree is fully explored. For any two vertices, their discovery/finish intervals are either entirely disjoint or one nests completely inside the other — never partially overlapping. A vertex is a proper descendant of another exactly when its interval nests inside it." }] },
+      { "item": "An edge to an ancestor (a back edge) is not merely associated with a cycle — it is logically equivalent to one: the ancestor already reaches the descendant via the tree path, and the back edge closes the loop", "at": [{ "step": "An edge from a vertex to one of its own ancestors in the DFS tree — is that a tree edge, a back edge, a forward edge, or a cross edge?" }] },
+      { "item": "Forward and cross edges are impossible in an undirected graph's DFS, not merely rare, because every non-tree edge in an undirected DFS connects a vertex still on the stack to one of its own ancestors — there is no way to reach an already-finished subtree without using the same edge from the other direction first", "at": [{ "step": "Tree edges are part of the DFS tree itself. Back edges point to an ancestor, closing a cycle. Forward edges point to an already-finished descendant. Cross edges point to neither — a different subtree, or a different DFS tree entirely. All four are defined purely from discovery and finish times and tree membership, nothing else." }] },
+      { "item": "The undirected cycle test's parent exclusion is load-bearing: without excluding the parent, every tree edge would look like a 'visited neighbour' and every undirected graph with at least one edge would wrongly report a cycle", "at": [{ "step": "A directed graph has a cycle exactly when its DFS finds a back edge — an edge to a vertex still grey, still on the current path. An undirected graph needs no colouring at all: a visited neighbour that is not the immediate parent is already a cycle, because an undirected DFS never has the cross edges that could confuse the test." }] },
+      { "item": "The iterative DFS conversion changes only where the call frame lives (an explicit stack vs. the language's own), not the traversal order or the algorithm's correctness — the fix is purely about memory, not logic", "at": [{ "step": "A recursive DFS on a long dependency chain — a few hundred thousand vertices deep — overflows the call stack before the algorithm's own logic is ever wrong. Converting to an explicit stack of (vertex, iterator) pairs, instead of the language's own call stack, gives the identical traversal order and finishes without crashing." }] },
+      { "item": "A grey vertex (three-colour scheme) is exactly 'on the current recursion stack' — the colour is a direct restatement of the explicit-stack topic's own state, not a separate idea introduced only for cycle detection", "at": [{ "step": "A directed graph has a cycle exactly when its DFS finds a back edge — an edge to a vertex still grey, still on the current path. An undirected graph needs no colouring at all: a visited neighbour that is not the immediate parent is already a cycle, because an undirected DFS never has the cross edges that could confuse the test." }] },
+      { "item": "DFS and BFS both run in O(n+m) and visit every vertex exactly once; the topic's own contrast with Chapter 17's first topic is purely about order (deep-first vs. level-by-level), never about asymptotic cost", "at": [{ "step": "A breadth-first frontier answers one question well: the fewest edges to reach a vertex. It says nothing about which vertex to visit next when the graph has structure a single widening ring can't see. Depth-first search goes the other way entirely: as deep as possible before ever backing up." }] },
+      { "item": "A DFS finish order, reversed, gives a valid topological order on a DAG for free — no back edges means no cycle, and the reversal is the only extra step needed, which is exactly topic 61's own reverse-DFS-finish-order algorithm", "at": [{ "step": "A directed graph with no back edges — no cycle anywhere — has a DFS finish order that is itself a valid answer to a question BFS was never asked: in what order can every vertex be processed so that nothing is processed before the things it depends on. That order falls out of the traversal just built, almost for free." }] },
+      { "item": "The explicit-stack conversion generalises beyond DFS to any recursive tree or graph algorithm whose call depth can exceed a language's recursion limit, making it a reusable technique, not a one-off DFS trick", "at": [{ "deep": "In production" }] },
+      { "item": "Classifying a non-tree edge as forward vs. cross from discovery/finish times alone (disc[u] < disc[v] means forward, disc[u] > disc[v] means cross, for an edge from an already-black u) is a direct consequence of the parenthesis property, not a separate rule to memorise", "at": [{ "step": "Tree edges are part of the DFS tree itself. Back edges point to an ancestor, closing a cycle. Forward edges point to an already-finished descendant. Cross edges point to neither — a different subtree, or a different DFS tree entirely. All four are defined purely from discovery and finish times and tree membership, nothing else." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

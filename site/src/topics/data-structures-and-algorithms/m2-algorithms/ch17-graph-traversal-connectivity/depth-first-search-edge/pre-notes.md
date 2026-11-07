@@ -1,0 +1,4 @@
+- **Recursion and the call stack**: a function calling itself, with each call's local state held on a stack that unwinds when the call returns. *Where you meet it:* why a deep recursive traversal can run out of stack space.
+- **Cycle**: a path that starts and ends at the same vertex, visiting no vertex twice in between. *Where you meet it:* the thing both cycle tests this topic builds are looking for.
+- **Ancestor and descendant (in a rooted tree)**: a vertex's ancestors are the vertices on the path back to the root; its descendants are everything reachable by going the other way. *Where you meet it:* every edge-type definition in this topic is stated in terms of ancestors and descendants in the DFS tree.
+- **Stack (recap)**: a LIFO (last-in, first-out) container — the most recently added thing is the first thing removed. *Where you meet it:* both the implicit call stack and the explicit stack this topic builds by hand.

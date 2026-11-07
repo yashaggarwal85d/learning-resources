@@ -1,0 +1,100 @@
+{
+  "topic": "dsa.p-np-polynomial-reductions",
+  "steps": [
+    {
+      "lines": [
+        "Here is a graph, and a question about it: does it hold a set of vertices, no two of them connected, of some target size.",
+        "Hand someone a candidate set and they check it in a flash. Searching for one from nothing has no known shortcut at all."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about this: all you are handed is a yes or no answer to whether a set of that size exists."
+      ],
+      "answer": [
+        "One call tells you a set exists at all. Then, one vertex at a time, you delete it and ask again.",
+        "If the answer still holds, that vertex was never needed, so you drop it for good. If the answer breaks, that vertex belongs in your witness, so you keep it and move on."
+      ]
+    },
+    {
+      "lines": [
+        "A decision problem only ever answers yes or no. The class called P is every such problem some procedure actually solves quickly.",
+        "The class called NP is different: a yes answer there only has to come with a proof, a certificate, that some other procedure can check quickly."
+      ]
+    },
+    {
+      "lines": [
+        "Solving a problem is itself a valid certificate, so everything solvable quickly already sits inside the class that merely checks quickly.",
+        "Whether that containment runs backward too is the open question behind the field's single most famous unanswered prize."
+      ]
+    },
+    {
+      "lines": [
+        "Take one packing question and ask it three ways: does it fit, give me a packing that fits, or find the fewest bins that will ever fit it.",
+        "The theory is built entirely on the first of those, because a yes or no answer is the simplest thing to compare across problems."
+      ]
+    },
+    {
+      "lines": [
+        "Watch that oracle trick run on an actual graph now: one call up front, then one more for every single vertex in turn.",
+        "Delete a vertex, ask again. Still yes? That vertex was never load-bearing. Flips to no? Keep it, it belongs in the witness."
+      ]
+    },
+    {
+      "lines": [
+        "A reduction from one problem to another is a quick function mapping every yes-instance to a yes-instance, every no-instance to a no-instance.",
+        "To show the new problem is hard, that function has to start at a problem already known to be hard, and map toward the new one, never backward."
+      ]
+    },
+    {
+      "lines": [
+        "One reduction, checked completely: take the same graph, subtract the target size from the vertex count, and that is the new instance.",
+        "A set is independent exactly when what's left over covers every edge, and this was confirmed on every small graph there is, not merely argued once."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal: someone builds a reduction the other way around, from a brand new problem toward an already-known-hard one."
+      ],
+      "answer": [
+        "That direction only shows the new problem is no harder than the known one. It says nothing about whether the new problem is itself hard, which is the opposite of what a hardness proof actually needs."
+      ]
+    },
+    {
+      "lines": [
+        "That backward reduction is worse than merely useless, it is empty: any quickly solvable problem reduces this way to almost any target at all.",
+        "Solve the easy question first, then output one of two already-decided instances of the target. The reduction exists, and it proves nothing whatsoever."
+      ]
+    },
+    {
+      "lines": [
+        "A problem earns the label NP-hard when every problem in that whole class reduces to it, running in the correct direction.",
+        "Add that the problem is itself checkable quickly, and it earns the stronger label NP-complete. Neither label says one word about any particular easy instance."
+      ]
+    },
+    {
+      "lines": [
+        "Deep in this whole chain sits one proof with nothing standing behind it: circuit satisfiability is hard, shown directly, from first principles.",
+        "Every other classically hard problem borrows its hardness secondhand, through a chain of reductions that eventually traces back to that one proof."
+      ]
+    },
+    {
+      "lines": [
+        "Bin packing is one problem a real reduction has shown hard this way. A database choosing a join order faces a search space with the same shape.",
+        "As more tables join the query, the space of orderings to search explodes, and a planner has to work around that rather than search all of it."
+      ]
+    },
+    {
+      "lines": [
+        "This reel built and checked exactly one reduction by brute force, not the whole chain that makes every classically hard problem hard.",
+        "What to actually do once a problem carries that label — approximate it, lean on its structure, search it with pruning — is a separate skill, still ahead."
+      ]
+    },
+    {
+      "lines": [
+        "A reduction moves hardness in one direction, and knowing which direction is the entire subject. But every number so far was harmless, just a count.",
+        "Hand a problem real numbers instead, and a new question appears: does fast mean fast in the number's value, or only in how many digits write it down."
+      ]
+    }
+  ]
+}

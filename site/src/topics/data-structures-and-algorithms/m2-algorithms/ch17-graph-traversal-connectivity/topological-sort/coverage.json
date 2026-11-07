@@ -1,0 +1,64 @@
+{
+  "topic": "dsa.topological-sort",
+  "syllabus": [
+    {
+      "clause": "Kahn's in-degree queue vs reverse DFS finish order",
+      "at": [
+        { "step": "Kahn's algorithm repeatedly removes a vertex with in-degree zero and decrements its neighbours' in-degrees, using a plain queue — the same queue mechanics already built for breadth-first search, pointed at in-degrees instead of distances." },
+        { "step": "Reverse DFS finish order runs the same depth-first search already built, then reads off vertices in decreasing finish time. It gives a second, independently valid topological order — not required to match Kahn's vertex-for-vertex, only to respect every edge." }
+      ]
+    },
+    {
+      "clause": "cycle detection as a by-product",
+      "at": [
+        { "step": "Kahn's algorithm cannot be run to completion — vertices remain stuck with positive in-degree, none ever reaching zero — exactly when the graph has a cycle. Reverse DFS already has its own back-edge test built in. Neither algorithm needs a separate cycle check bolted on." }
+      ]
+    },
+    {
+      "clause": "lexicographically smallest order with a heap",
+      "at": [
+        { "step": "Among all valid topological orders, which one does a min-heap keyed on vertex label produce, compared to a plain FIFO queue on the same graph: always the identical order, always a different order, or could either happen depending on the graph?" }
+      ]
+    },
+    {
+      "clause": "critical-path scheduling on DAGs → Data Engineering Ch.11",
+      "at": [
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Topological sorting\"",
+      "items": [
+        { "item": "Topological sort's own definition and the DAG-iff-topological-order-exists equivalence", "at": [{ "step": "A build system with ten thousand targets, each depending on a handful of others, has to run every target after everything it needs. That order is not found by trial and error — it falls out of the same two traversals already built this chapter, pointed at in-degrees instead of distances." }] },
+        { "item": "Kahn's algorithm, attributed by name, with its in-degree-queue mechanics", "at": [{ "step": "Kahn's algorithm repeatedly removes a vertex with in-degree zero and decrements its neighbours' in-degrees, using a plain queue — the same queue mechanics already built for breadth-first search, pointed at in-degrees instead of distances." }] },
+        { "item": "The cycle-as-failure-mode fact: Kahn's algorithm fails to drain its queue exactly when the graph has a cycle", "at": [{ "step": "Kahn's algorithm cannot be run to completion — vertices remain stuck with positive in-degree, none ever reaching zero — exactly when the graph has a cycle. Reverse DFS already has its own back-edge test built in. Neither algorithm needs a separate cycle check bolted on." }] },
+        { "item": "The lexicographically-smallest-order variant, named as a building block of the Coffman–Graham scheduling algorithm", "at": [{ "step": "Among all valid topological orders, which one does a min-heap keyed on vertex label produce, compared to a plain FIFO queue on the same graph: always the identical order, always a different order, or could either happen depending on the graph?" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Depth-first search\" (reused from topic 60's own SOURCES.md)",
+      "items": [
+        { "item": "Reverse postordering (reverse DFS finish order) produces a valid topological sort of any DAG", "at": [{ "step": "Reverse DFS finish order runs the same depth-first search already built, then reads off vertices in decreasing finish time. It gives a second, independently valid topological order — not required to match Kahn's vertex-for-vertex, only to respect every edge." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "Kahn's algorithm and reverse-DFS-finish-order need not produce the identical order — only each its own valid one — because a DAG can have many valid topological orders and neither algorithm is defined to prefer one over another", "at": [{ "step": "Reverse DFS finish order runs the same depth-first search already built, then reads off vertices in decreasing finish time. It gives a second, independently valid topological order — not required to match Kahn's vertex-for-vertex, only to respect every edge." }] },
+      { "item": "A cycle is not merely associated with Kahn's queue running dry — it is the exact condition for it: every vertex in a cycle depends, directly or transitively, on every other vertex in that cycle, so none can ever reach in-degree zero", "at": [{ "step": "Kahn's algorithm cannot be run to completion — vertices remain stuck with positive in-degree, none ever reaching zero — exactly when the graph has a cycle. Reverse DFS already has its own back-edge test built in. Neither algorithm needs a separate cycle check bolted on." }] },
+      { "item": "The heap-based variant costs O(log n) per removal instead of Kahn's plain queue's O(1), for the benefit of a canonical, reproducible order rather than an arbitrary one", "at": [{ "step": "Among all valid topological orders, which one does a min-heap keyed on vertex label produce, compared to a plain FIFO queue on the same graph: always the identical order, always a different order, or could either happen depending on the graph?" }] },
+      { "item": "A plain FIFO queue and a lexicographic heap can only diverge when more than one vertex is available at some step and they are not already in label order at that step — a graph where every round has at most one available vertex can never show the divergence, however it is built", "at": [{ "step": "Among all valid topological orders, which one does a min-heap keyed on vertex label produce, compared to a plain FIFO queue on the same graph: always the identical order, always a different order, or could either happen depending on the graph?" }] },
+      { "item": "Topic 60's edge-classification work is what makes reverse-DFS-finish-order correct here: a DAG has no back edges by definition, which is exactly the condition under which DFS finish order, reversed, respects every edge", "at": [{ "step": "A build system with ten thousand targets, each depending on a handful of others, has to run every target after everything it needs. That order is not found by trial and error — it falls out of the same two traversals already built this chapter, pointed at in-degrees instead of distances." }] },
+      { "item": "Kahn's algorithm is BFS's own queue mechanics applied to a different quantity (in-degree instead of distance from a source), not a new traversal — the chapter's running claim that later structural facts reuse topic 59's and 60's primitives rather than introducing new ones", "at": [{ "step": "Kahn's algorithm repeatedly removes a vertex with in-degree zero and decrements its neighbours' in-degrees, using a plain queue — the same queue mechanics already built for breadth-first search, pointed at in-degrees instead of distances." }] },
+      { "item": "Both algorithms run in O(n + m): Kahn's visits every vertex once and every edge once (to decrement in-degrees); reverse-DFS-finish-order is exactly one DFS pass plus a linear-time reversal", "at": [{ "step": "A build system with ten thousand targets, each depending on a handful of others, has to run every target after everything it needs. That order is not found by trial and error — it falls out of the same two traversals already built this chapter, pointed at in-degrees instead of distances." }] },
+      { "item": "Critical-path scheduling needs a topological order as a precondition, not as the whole algorithm: once ordered, the longest weighted path to each vertex is computed by a single linear sweep over that order, which is exactly what Data Engineering's own DAG-scheduling topic builds on top of this one", "at": [{ "deep": "In production" }] },
+      { "item": "A topological order existing at all is strictly a DAG property; the moment a graph has even one cycle, no permutation of its vertices can satisfy every edge, which is this topic's own opening predict question", "at": [{ "step": "Can a directed graph with a cycle have any valid topological order at all?" }] },
+      { "item": "The lexicographically smallest order is a single canonical choice among potentially many valid orders, not a claim that one order is more 'correct' than another — every valid order satisfies the same dependency constraints equally well", "at": [{ "step": "Among all valid topological orders, which one does a min-heap keyed on vertex label produce, compared to a plain FIFO queue on the same graph: always the identical order, always a different order, or could either happen depending on the graph?" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

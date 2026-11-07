@@ -1,0 +1,221 @@
+{
+  "topic": "dsa.mapreduce-as-algorithmic-pattern",
+  "syllabus": [
+    {
+      "clause": "map, shuffle and reduce",
+      "at": [
+        { "step": "Map applies a function to each input record independently, emitting key-value pairs. The shuffle moves every pair to the reduce task that owns its key, by a partition function — the key’s hash, taken modulo the reduce-task count, by default. Reduce is called once per key with every value that landed there." },
+        { "step": "The map function emits each word plus a count of one; the reduce function sums every count that arrives for the same word. Map and reduce are each embarrassingly parallel — the exchange in between is the one step where every map task talks to every reduce task." },
+        { "step": "Each phase, alone, has a span of one task — the work-span lesson already given. The shuffle is different: it is the step that forces every map task’s output toward every reduce task that might own a piece of it, and that all-to-all exchange is what a MapReduce job actually pays for." }
+      ]
+    },
+    {
+      "clause": "combiners and the associativity/commutativity they require",
+      "at": [
+        { "step": "When a reduce function is commutative and associative, it may run early — on one map task’s own output, before the exchange — merging duplicate keys into one record per map task instead of one record per occurrence. A common word, following a Zipf distribution, makes this collapse dramatic." },
+        { "step": "The same word count, shuffled with and without a combiner: far fewer records cross the network with one, and both runs land on the identical final answer — a combiner changes how much moves, never what the answer is, when the algebra actually holds." },
+        { "step": "A combiner’s output must combine further, in any grouping and in any order, because the framework decides neither how work splits among map tasks nor what order partial results arrive in. That is exactly associativity and commutativity — not a convenience, a requirement." },
+        { "step": "A concrete example settles it: three groups’ own means, averaged, land far from the true pooled mean. The fix combines sum-and-count pairs instead of means, and divides only once, in the final reduce — a combinable representation exists even when the obvious one does not." }
+      ]
+    },
+    {
+      "clause": "round complexity in the MPC model",
+      "at": [
+        { "step": "A round is one local computation phase followed by one all-to-all exchange. The Massively Parallel Communication model counts exactly two things: how many rounds a computation takes, and the most data any one server receives in any round — nothing about an actual framework’s engineering enters the cost at all." },
+        { "step": "A two-relation join finishes in one round with no replication, by partitioning on the shared join column. A three-relation join among the same kind of relations needs real replication to finish in that same one round — the query’s own shape, not its size, decides the replication needed." },
+        { "step": "A chain of dependent steps needs a number of rounds that grows with the chain’s own length, under any scheme that only doubles its reach each round — no fixed round count, however many servers help, changes that." }
+      ]
+    },
+    {
+      "clause": "mapping back to joins and aggregations",
+      "at": [
+        { "step": "A reduce-side equi-join is map-with-a-tag, shuffle on the join key, reduce emitting the matching pairs for each key — the same partitioning idea a hash join used on one machine’s memory, now applied across a network. A skewed key sending most of its records to one reducer is the same hot-partition problem, paid for in network time instead of disk time." }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering Ch.7",
+      "at": [
+        {
+          "topic": "Sort-based shuffle mechanics",
+          "domain": "data-engineering",
+          "quote": "map side partitions, sorts and spills records into one data file plus an index file per map task"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Dean and Ghemawat, \"MapReduce: Simplified Data Processing on Large Clusters\" (OSDI 2004)",
+      "items": [
+        {
+          "item": "the map/reduce function signatures and the word-count example",
+          "at": [
+            { "step": "The map function emits each word plus a count of one; the reduce function sums every count that arrives for the same word. Map and reduce are each embarrassingly parallel — the exchange in between is the one step where every map task talks to every reduce task." }
+          ]
+        },
+        {
+          "item": "the default partitioning function, hash(key) mod R",
+          "at": [
+            { "step": "Map applies a function to each input record independently, emitting key-value pairs. The shuffle moves every pair to the reduce task that owns its key, by a partition function — the key’s hash, taken modulo the reduce-task count, by default. Reduce is called once per key with every value that landed there." }
+          ]
+        },
+        {
+          "item": "the combiner's justification: significant repetition in intermediate keys, a commutative and associative reduce function, and the Zipf-skewed word-count example",
+          "at": [
+            { "step": "When a reduce function is commutative and associative, it may run early — on one map task’s own output, before the exchange — merging duplicate keys into one record per map task instead of one record per occurrence. A common word, following a Zipf distribution, makes this collapse dramatic." }
+          ]
+        },
+        {
+          "item": "backup tasks for stragglers, and the small resource-cost overhead",
+          "at": [
+            { "out": "named in post-notes as fault-tolerance engineering, not taught on screen, per CHAPTER.md's instruction" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Beame, Koutris and Suciu, \"Communication Steps for Parallel Query Processing\" (arXiv:1306.5972)",
+      "items": [
+        {
+          "item": "the MPC model definition: p servers, O(N/p^(1−ε)) bits per server per round, ε controlling replication",
+          "at": [
+            { "step": "A round is one local computation phase followed by one all-to-all exchange. The Massively Parallel Communication model counts exactly two things: how many rounds a computation takes, and the most data any one server receives in any round — nothing about an actual framework’s engineering enters the cost at all." }
+          ]
+        },
+        {
+          "item": "the one-round lower bound in terms of the fractional vertex cover of the query's hypergraph",
+          "at": [
+            { "step": "A two-relation join finishes in one round with no replication, by partitioning on the shared join column. A three-relation join among the same kind of relations needs real replication to finish in that same one round — the query’s own shape, not its size, decides the replication needed." }
+          ]
+        },
+        {
+          "item": "the transitive-closure consequence: not computable in O(1) rounds",
+          "at": [
+            { "step": "A chain of dependent steps needs a number of rounds that grows with the chain’s own length, under any scheme that only doubles its reach each round — no fixed round count, however many servers help, changes that." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Goodrich, Sitchinava and Zhang, \"Sorting, searching, and simulation in the MapReduce framework\" (arXiv:1101.1902)",
+      "items": [
+        {
+          "item": "constant-round sorting, multi-searching and BSP/CRCW-PRAM simulation when each machine has memory N^ε",
+          "at": [
+            { "out": "named once, per CHAPTER.md, not re-derived on screen" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Spark PairRDDFunctions.scala",
+      "items": [
+        {
+          "item": "reduceByKey's documented contract (associative and commutative, local merge first) and groupByKey's deliberate lack of map-side combine",
+          "at": [
+            { "step": "A combiner’s output must combine further, in any grouping and in any order, because the framework decides neither how work splits among map tasks nor what order partial results arrive in. That is exactly associativity and commutativity — not a convenience, a requirement." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Apache Hadoop MapReduce Tutorial",
+      "items": [
+        {
+          "item": "the Partitioner's role and HashPartitioner as the default",
+          "at": [
+            { "step": "Map applies a function to each input record independently, emitting key-value pairs. The shuffle moves every pair to the reduce task that owns its key, by a partition function — the key’s hash, taken modulo the reduce-task count, by default. Reduce is called once per key with every value that landed there." }
+          ]
+        },
+        {
+          "item": "the combiner's role: local aggregation cutting down Mapper-to-Reducer transfer",
+          "at": [
+            { "step": "The same word count, shuffled with and without a combiner: far fewer records cross the network with one, and both runs land on the identical final answer — a combiner changes how much moves, never what the answer is, when the algebra actually holds." }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "the combiner's answer-preservation checked by direct dict equality between a no-combiner and a with-combiner shuffle, not merely asserted in prose",
+        "at": [
+          { "step": "The same word count, shuffled with and without a combiner: far fewer records cross the network with one, and both runs land on the identical final answer — a combiner changes how much moves, never what the answer is, when the algebra actually holds." }
+        ]
+      },
+      {
+        "item": "the record-count collapse (ninety records without a combiner, twenty-two with one) measured directly from the simulation, not asserted from the chapter plan's own description",
+        "at": [
+          { "step": "When a reduce function is commutative and associative, it may run early — on one map task’s own output, before the exchange — merging duplicate keys into one record per map task instead of one record per occurrence. A common word, following a Zipf distribution, makes this collapse dramatic." }
+        ]
+      },
+      {
+        "item": "the broken-mean counter-example deliberately built with unequal group sizes (two, one and four), since equal-sized groups would make mean-of-means correct and hide the general failure",
+        "at": [
+          { "step": "A concrete example settles it: three groups’ own means, averaged, land far from the true pooled mean. The fix combines sum-and-count pairs instead of means, and divides only once, in the final reduce — a combinable representation exists even when the obvious one does not." }
+        ]
+      },
+      {
+        "item": "the MPC-model round/replication simulation explicitly documented as a simplification illustrating BKS's own space-exponent claim (0 for a chain, 1/3 for a triangle), not a reproduction of their one-round algorithm",
+        "at": [
+          { "out": "documented in examples.py's own comments and FACT-CHECK.md's red team" }
+        ]
+      },
+      {
+        "item": "the doubling-rounds table for transitive closure labeled as an illustration of why a chain resists a constant round count under one natural scheme, not a reproduction of BKS's own proof",
+        "at": [
+          { "step": "A chain of dependent steps needs a number of rounds that grows with the chain’s own length, under any scheme that only doubles its reach each round — no fixed round count, however many servers help, changes that." }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for both predict steps",
+        "at": [
+          { "step": "Apply that same early-combining trick to a sum rewritten as an average. Does the answer come out too high, too low, or still exactly right?" },
+          { "step": "A reduce function that computes the mean of its values is asked to double as a combiner. Combine three groups’ own means, then average those three numbers — is that the same as the mean of every value pooled together?" }
+        ]
+      },
+      {
+        "item": "the Karloff/Suri/Vassilvitskii MRC model's unreachability documented honestly (its own homepage unreachable at research time), named only via BKS's own summary of it, not stated as independently verified",
+        "at": [
+          { "out": "documented in SOURCES.md's \"Named, not read\" section and OUTLINE.md" }
+        ]
+      },
+      {
+        "item": "the bridge quoted word for word from topic 105's own handoff, and the handoff to topic 107 quoted word for word from CHAPTER.md",
+        "at": [
+          { "out": "recorded in OUTLINE.md" }
+        ]
+      },
+      {
+        "item": "the Data Engineering Ch.7 scope boundary respected: this topic states the combiner's algebra and the round-complexity view; Spark's own shuffle mechanics (sort-based writer, spill, fetch failure) are named once and owned there",
+        "at": [
+          {
+            "topic": "Sort-based shuffle mechanics",
+            "domain": "data-engineering",
+            "quote": "map side partitions, sorts and spills records into one data file plus an index file per map task"
+          }
+        ]
+      },
+      {
+        "item": "every number on screen (the shuffle's record counts with/without a combiner, the broken-mean counter-example's gap, the chain-join and triangle-query round/replication figures, the doubling-rounds table) computed fresh in examples.py, not copied from the chapter plan's own planning-time description",
+        "at": [
+          { "out": "checked via python3 examples.py, not restated on screen" }
+        ]
+      },
+      {
+        "item": "the vertex-centric graph processing skip (Pregel, the COST argument) named once in post-notes with only primary-source-read facts, per CHAPTER.md's instruction not to teach it here",
+        "at": [
+          { "out": "checked against CHAPTER.md's \"does not do\" scope and post-notes.md" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

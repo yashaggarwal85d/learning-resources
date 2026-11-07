@@ -1,0 +1,29 @@
+# Fact-check — DAG shortest and longest paths
+
+## Claims table
+
+| # | Claim | Status | Evidence |
+|---|---|---|---|
+| 1 | An algorithm using topological sorting solves the single-source shortest path problem in linear time on a directed acyclic graph with arbitrary weights. | Confirmed | Wikipedia "Shortest path problem", quoted; `examples.py` (`dag_shortest_paths`), matching `brute_force_all_paths_shortest` exactly. |
+| 2 | The topological ordering can be used to quickly compute shortest paths through a weighted DAG, in Θ(n + m) time. | Confirmed | Wikipedia "Topological sorting", quoted (two sentences); independently restates claim 1. |
+| 3 | The longest path problem is NP-hard on general graphs, but has a linear-time solution on directed acyclic graphs. | Confirmed, stated not proven | Wikipedia "Longest path problem", quoted (two sentences); per this topic's own scope (CHAPTER.md: "a fact stated but not proven here"), no NP-hardness reduction is built. |
+| 4 | A longest path in a weighted graph is the same thing as a shortest path in the graph with every weight negated, and this substitution is only safe on an acyclic graph because negating weights elsewhere creates a negative cycle. | Confirmed, directly reproduced | Wikipedia "Longest path problem", quoted (two sentences); `examples.py` (`dag_longest_paths`, via `negate`), confirmed against a hand-traceable predecessor chain. |
+| 5 | The longest path ending at each DAG vertex can be computed directly, without negation, by processing vertices in topological order and maximising over incoming neighbours. | Confirmed, directly reproduced | Wikipedia "Longest path problem", quoted (the two-step procedure); `examples.py`'s `dag_longest_paths` (built via negation plus the identical relaxation pass, an equivalent and simpler implementation of the same procedure). |
+| 6 | In a project's milestone-and-activity graph, the longest path from the first milestone to the last is the critical path, describing the total time to complete the project. | Confirmed, directly reproduced | Wikipedia "Longest path problem" and "Critical path method", both quoted; `examples.py`'s 7-task worked example, critical path confirmed by hand-summing each candidate path's own duration. |
+| 7 | The critical path method was developed in the late 1950s by Morgan R. Walker of DuPont and James E. Kelley Jr. of Remington Rand. | Confirmed | Wikipedia "Critical path method", quoted. The specific year 1959 is not asserted, since it appears only in the page's own citation to Kelley & Walker's paper, not in the attribution sentence itself. |
+
+## Currency check
+
+Topological sort (Kahn 1962, Tarjan 1976), the longest-path-via-negation argument, and the critical path method (late 1950s) are long-settled, textbook-standard results. No recent revision is expected for any claim here.
+
+## Red team
+
+1. **Does `dag_shortest_paths` actually need the topological-order precondition, or does this particular graph's shape make any order work by luck?** The `dag_shortest_paths_wrong_order` counterexample, run on the identical graph with the non-topological order `[0, 1, 3, 5, 2, 4]`, produces a strictly larger (wrong) distance at vertex five (nine, versus the correct five) — confirming the ordering requirement is load-bearing on this graph, not merely asserted from the algorithm's general theory.
+2. **Is the DAG algorithm's result genuinely correct, or does it merely agree with itself under a self-consistency check?** `dag_dist` is checked against `brute_force_all_paths_shortest`, an independently-coded full Bellman-Ford-style relaxation sweep (not a topological-order pass at all), and the two match exactly — a cross-check between two differently-structured algorithms, not a comparison against a second copy of the same one.
+3. **Is the reconstructed shortest path in `examples.py` genuinely the shortest one, or merely a valid path that happens to exist?** `shortest_path_to_5` (`[0, 2, 3, 5]`, weight five) is checked by direct arithmetic trace through `ADJ`'s own edge weights (two plus one plus two equals five), matching `dag_dist[5]` exactly, not merely assumed from the predecessor chain's own construction.
+4. **Does `dag_longest_paths` actually compute a longest path, or does negation-then-shortest-path silently return the same answer as the shortest-path pass on this particular small graph?** `long_dist[5]` (thirteen) is asserted strictly greater than `dag_dist[5]` (five), and the two reconstructed paths differ (`[0, 2, 4, 5]` versus `[0, 2, 3, 5]`) — confirming the longest-path computation genuinely diverges from the shortest-path one, not coincidentally matching it.
+5. **Is the critical-path worked example's result genuinely the longest chain, or an artifact of how `TASK_ADJ` happens to be laid out?** `critical_path` (`start, design, build-frame, paint, ship`, total eleven) is checked against every other start-to-finish chain's own hand-summed duration in the same seven-task graph (for example `start, design, wiring, paint, ship` totals zero plus four plus five plus three plus one, nine, strictly less than eleven), confirming no other path in this graph is actually longer.
+
+## Corrections applied
+
+None. No claim in the chapter plan's own scope was found incorrect against the fetched sources, and the DAG algorithm's implementation matched both an independent brute-force check and its own cross-check against the negation-based longest-path computation on first run; one initial drafting error in `examples.py` (a hand-computed expected shortest distance of eight for vertex five, miscounted before actually tracing the graph) was caught and corrected to the correct value of five before any build attempt — recorded here, not as a correction to a sourced claim, but as a note that every numeric assertion in this topic was independently re-traced by hand against the graph's own edge weights, not only checked by running the code once.

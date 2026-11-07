@@ -1,0 +1,179 @@
+{
+  "topic": "dsa.pseudo-polynomial-time-strong",
+  "syllabus": [
+    {
+      "clause": "why knapsack has an O(nW) DP while bin packing has no pseudo-polynomial algorithm unless P = NP",
+      "at": [
+        { "step": "That table's size is the item count times the capacity itself, not times the length of the capacity written down. Ten bits of capacity gives about a hundred thousand cells; twenty bits gives about a hundred million; forty bits gives over a hundred trillion, for the same hundred items." },
+        { "step": "Bin packing's own hardness depends on the interaction of many bins with many different sizes. Fix the number of bins and it becomes pseudo-polynomial in the capacity; fix the bin capacity instead and it becomes polynomial outright. Neither fix is available when both are free to vary." }
+      ]
+    },
+    {
+      "clause": "reading input encodings carefully",
+      "at": [
+        { "step": "Write that same capacity as a short string of bits, or as one tally mark for every unit of value. The table's size tracks the tally strip's length, not the bit string's. That table is pseudo-polynomial: polynomial in the number itself, exponential in how compactly it is written." },
+        { "step": "A problem is strongly NP-hard when it remains NP-hard even with every numerical parameter bounded by a polynomial in the input's length — the same thing as staying hard when every number is written in unary. Three-partition is the standard example of exactly this." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Strong NP-completeness\"",
+      "items": [
+        {
+          "item": "the strong NP-completeness definition: NP-complete even when every numerical parameter is bounded by a polynomial in the input's length",
+          "at": [
+            { "step": "A problem is strongly NP-hard when it remains NP-hard even with every numerical parameter bounded by a polynomial in the input's length — the same thing as staying hard when every number is written in unary. Three-partition is the standard example of exactly this." }
+          ]
+        },
+        {
+          "item": "bin packing is strongly NP-complete while 0-1 knapsack is only weakly NP-complete",
+          "at": [
+            { "step": "Suppose a strongly NP-hard problem did have a pseudo-polynomial algorithm. Bounding its numbers by a polynomial would then make that algorithm run in ordinary polynomial time — but the problem is, by definition, still NP-hard on exactly those bounded instances. That is the contradiction." }
+          ]
+        },
+        {
+          "item": "a weakly NP-hard problem may have a pseudo-polynomial algorithm; partition is an example",
+          "at": [
+            { "step": "A problem is weakly NP-hard when it is hard only in the usual, compact binary encoding, and a pseudo-polynomial algorithm may still exist for it, the way it does for knapsack. The partition problem is the standard example: shrink its numbers and the hard instances disappear." }
+          ]
+        },
+        {
+          "item": "a strongly NP-hard problem has no pseudo-polynomial algorithm and no fully polynomial-time approximation scheme",
+          "at": [
+            { "step": "Strong NP-hardness rules out more than an exact algorithm: a strongly NP-hard problem with a polynomially bounded objective also has no fully polynomial-time approximation scheme, unless P equals NP. Knapsack's own such scheme, built on its weak hardness, belongs to a later topic on approximation." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Knapsack problem\"",
+      "items": [
+        {
+          "item": "the decision form of knapsack is NP-complete",
+          "at": [
+            { "step": "The decision form of knapsack — can a value of at least some target be reached without exceeding the weight limit — is NP-complete. And yet a dynamic program with one row per item and one column per unit of capacity fills in and answers it in a single pass." }
+          ]
+        },
+        {
+          "item": "knapsack has a pseudo-polynomial time algorithm using dynamic programming, and that runtime is not polynomial in the input's length, which is why it does not contradict NP-completeness",
+          "at": [
+            { "step": "A knapsack with a hundred items and a capacity measured in bits fills a table in a blink: about a hundred thousand cells. Append ten more bits to that capacity and the table has about a hundred million. Append thirty more and it is over a hundred trillion, though the input itself grew by only thirty bits." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Bin packing problem\"",
+      "items": [
+        {
+          "item": "bin packing is strongly NP-complete, proven by reducing the strongly NP-complete 3-partition problem to it",
+          "at": [
+            { "step": "Bin packing is also NP-complete, and it also has numbers in it. Does shrinking those numbers give it the same kind of escape that knapsack's table gives knapsack?" }
+          ]
+        },
+        {
+          "item": "bin packing is solvable in pseudo-polynomial time for any fixed number of bins K, and in polynomial time for any fixed bin capacity B",
+          "at": [
+            { "step": "Bin packing's own hardness depends on the interaction of many bins with many different sizes. Fix the number of bins and it becomes pseudo-polynomial in the capacity; fix the bin capacity instead and it becomes polynomial outright. Neither fix is available when both are free to vary." }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"3-partition problem\"",
+      "items": [
+        {
+          "item": "3-partition is strongly NP-complete: deciding whether a multiset of integers can be partitioned into equal-sum triplets",
+          "at": [
+            { "step": "A backtracking solver on three-partition instances with every number kept small still fans out sharply as more triples are added: the search tree's size climbs fast even though no single number in the instance ever grows." }
+          ]
+        },
+        {
+          "item": "3-partition remains NP-complete even when its integers are bounded by a polynomial in n, the same as being hard in unary",
+          "at": [
+            { "step": "Three-partition's hard instances keep every number small by design: the numbers are bounded by a polynomial in how many of them there are. Does that smallness buy the same escape it bought partition, or is something different going on here?" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "item": "the knapsack dynamic program checked against brute force on twenty random small instances before trusting any cell-count or timing claim built on it",
+        "at": [
+          { "step": "The decision form of knapsack — can a value of at least some target be reached without exceeding the weight limit — is NP-complete. And yet a dynamic program with one row per item and one column per unit of capacity fills in and answers it in a single pass." }
+        ]
+      },
+      {
+        "item": "the hook's cell counts (about a hundred thousand, a hundred million, over a hundred trillion) computed fresh as n times two to the bit length, not copied from the chapter plan's own planning-time arithmetic",
+        "at": [
+          { "step": "A knapsack with a hundred items and a capacity measured in bits fills a table in a blink: about a hundred thousand cells. Append ten more bits to that capacity and the table has about a hundred million. Append thirty more and it is over a hundred trillion, though the input itself grew by only thirty bits." }
+        ]
+      },
+      {
+        "item": "the doubling-per-bit timing claim measured directly across six increasing bit lengths in one run, not asserted from the formula alone",
+        "at": [
+          { "step": "Running the knapsack dynamic program for real as the capacity's bit length climbs, one bit at a time, its measured time roughly doubles with each bit appended — exactly what a table with that many more cells should cost." }
+        ]
+      },
+      {
+        "item": "the three-partition instances checked to keep every individual number small by construction, with the backtracking call count counted by direct instrumentation rather than estimated",
+        "at": [
+          { "step": "A backtracking solver on three-partition instances with every number kept small still fans out sharply as more triples are added: the search tree's size climbs fast even though no single number in the instance ever grows." }
+        ]
+      },
+      {
+        "item": "the bin-packing K-fixed table size checked both as a formula and against an actual feasibility search that finds a packing with three bins and reports infeasibility with one",
+        "at": [
+          { "step": "Bin packing's own hardness depends on the interaction of many bins with many different sizes. Fix the number of bins and it becomes pseudo-polynomial in the capacity; fix the bin capacity instead and it becomes polynomial outright. Neither fix is available when both are free to vary." }
+        ]
+      },
+      {
+        "item": "the unary-against-binary length gap demonstrated with a concrete capacity, not only stated abstractly",
+        "at": [
+          { "step": "Write that same capacity as a short string of bits, or as one tally mark for every unit of value. The table's size tracks the tally strip's length, not the bit string's. That table is pseudo-polynomial: polynomial in the number itself, exponential in how compactly it is written." }
+        ]
+      },
+      {
+        "item": "predict distractor plausibility checked for both predict steps",
+        "at": [
+          { "step": "Bin packing is also NP-complete, and it also has numbers in it. Does shrinking those numbers give it the same kind of escape that knapsack's table gives knapsack?" },
+          { "step": "Three-partition's hard instances keep every number small by design: the numbers are bounded by a polynomial in how many of them there are. Does that smallness buy the same escape it bought partition, or is something different going on here?" }
+        ]
+      },
+      {
+        "item": "the no-escape argument (strongly NP-hard implies no pseudo-polynomial algorithm unless P equals NP) checked against the source's own statement of the consequence, not only against a derived restatement",
+        "at": [
+          { "step": "Suppose a strongly NP-hard problem did have a pseudo-polynomial algorithm. Bounding its numbers by a polynomial would then make that algorithm run in ordinary polynomial time — but the problem is, by definition, still NP-hard on exactly those bounded instances. That is the contradiction." }
+        ]
+      },
+      {
+        "item": "Chapter 22 topic 75 confirmed not live in the registry before declaring knapsack-dynamic-program as its own concept id, rather than assuming either way",
+        "at": [
+          { "out": "checked directly against registry.ts before writing coverage.json; recorded in OUTLINE.md's Changes from the chapter plan" }
+        ]
+      },
+      {
+        "item": "Garey and Johnson's original papers not claimed as read; attributed only through the Wikipedia pages that themselves cite them, documented honestly",
+        "at": [
+          { "out": "documented in SOURCES.md's attribution notes and FACT-CHECK.md's red team" }
+        ]
+      },
+      {
+        "item": "the bridge quoted word for word from topic 107's own handoff, and the handoff to topic 109 quoted word for word from CHAPTER.md",
+        "at": [
+          { "out": "recorded in OUTLINE.md" }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-11-05",
+    "by": "self-review",
+    "open": []
+  }
+}

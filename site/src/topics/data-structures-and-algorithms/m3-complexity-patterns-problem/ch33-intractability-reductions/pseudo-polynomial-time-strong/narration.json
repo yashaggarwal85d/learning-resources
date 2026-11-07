@@ -1,0 +1,94 @@
+{
+  "topic": "dsa.pseudo-polynomial-time-strong",
+  "steps": [
+    {
+      "lines": [
+        "A hundred items, a capacity written in bits: this table fills in a blink, about a hundred thousand cells.",
+        "Append ten more bits to that same capacity and it is a hundred million. Thirty more, and it passes a hundred trillion."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about this: bin packing is NP-complete too, and it has numbers in it just like knapsack does."
+      ],
+      "answer": [
+        "A table big enough to track every bin's load has one dimension per bin, so it grows exponentially with the bin count.",
+        "That has nothing to do with how the item sizes themselves are written down, so shrinking them buys nothing here."
+      ]
+    },
+    {
+      "lines": [
+        "Asking whether some value can fit under a weight limit is NP-complete on paper. A table with one row per item answers it anyway, in one pass."
+      ]
+    },
+    {
+      "lines": [
+        "That table's size tracks the capacity's actual value, not the length of the number written down for it.",
+        "Ten bits gives about a hundred thousand cells, twenty gives about a hundred million, forty gives over a hundred trillion."
+      ]
+    },
+    {
+      "lines": [
+        "Write that capacity as a short string of bits, or as one tally mark for every single unit of value.",
+        "The table tracks the tally strip's length, not the bit string's. That is what pseudo-polynomial actually means."
+      ]
+    },
+    {
+      "lines": [
+        "A problem is weakly NP-hard when only its compact, binary encoding makes it hard, and some pseudo-polynomial algorithm may still exist.",
+        "Partition is the standard example: shrink its numbers and every hard instance simply disappears."
+      ]
+    },
+    {
+      "lines": [
+        "Running that dynamic program for real, one more bit at a time, its measured time roughly doubles with every bit appended.",
+        "That is exactly what a table with twice as many cells should cost, nothing more mysterious than that."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about this: three-partition is built so its hardest instances already have small numbers."
+      ],
+      "answer": [
+        "There is no compact encoding to blame here, since the numbers were already small to begin with.",
+        "So shrinking them further removes nothing, and the problem stays exactly as hard as it was."
+      ]
+    },
+    {
+      "lines": [
+        "A problem is strongly NP-hard when it stays NP-hard even with every number bounded by a polynomial in the input's length.",
+        "That is the same thing as staying hard when every number is written out in unary. Three-partition is the standard example."
+      ]
+    },
+    {
+      "lines": [
+        "A solver on three-partition instances with every number kept small still fans out sharply as more triples are added.",
+        "No single number in the instance ever grows, yet the search tree's size climbs fast anyway."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose a strongly NP-hard problem had a pseudo-polynomial algorithm after all. Bounding its numbers would make that algorithm run in ordinary polynomial time.",
+        "But the problem is, by definition, still NP-hard on exactly those bounded instances. That is the whole contradiction."
+      ]
+    },
+    {
+      "lines": [
+        "Bin packing's hardness lives in the interaction of many bins with many different sizes, together.",
+        "Fix the number of bins and it becomes pseudo-polynomial. Fix the bin capacity instead and it becomes polynomial outright."
+      ]
+    },
+    {
+      "lines": [
+        "Strong NP-hardness rules out more than an exact algorithm: it also rules out a fully polynomial-time approximation scheme, unless P equals NP.",
+        "Knapsack's own such scheme, built on its weak hardness instead, belongs to a later topic on approximation."
+      ]
+    },
+    {
+      "lines": [
+        "Knapsack's table is polynomial in the value of its numbers, so shrinking those numbers shrinks the table away entirely.",
+        "Bin packing's hardness lives in how its bins interact, so no amount of shrinking the sizes ever shrinks that away."
+      ]
+    }
+  ]
+}

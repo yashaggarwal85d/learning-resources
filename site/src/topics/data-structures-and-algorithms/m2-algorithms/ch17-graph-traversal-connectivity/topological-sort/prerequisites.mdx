@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Breadth-first search">Kahn's algorithm reuses this topic's own queue mechanics, pointed at in-degrees instead of distances.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Depth-first search and edge classification">Reverse-DFS-finish-order reuses this topic's traversal directly, and its back-edge test is the DFS-side cycle check.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The min-heap that replaces Kahn's plain queue to produce the lexicographically smallest order.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="Topological sorting" href="https://en.wikipedia.org/wiki/Topological_sorting" by="Wikipedia">Kahn's algorithm, the DAG-iff-order-exists equivalence, and the lexicographic heap variant.</Resource>
+  <Resource kind="reading" title="Depth-first search" href="https://en.wikipedia.org/wiki/Depth-first_search" by="Wikipedia">The exact claim reverse-DFS-finish-order relies on: reversed postordering is a valid topological sort of any DAG.</Resource>
+</ul>
+
+</section>

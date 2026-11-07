@@ -1,0 +1,65 @@
+{
+  "topic": "dsa.strongly-connected-components",
+  "syllabus": [
+    {
+      "clause": "Tarjan's low-link single pass vs Kosaraju's two passes",
+      "at": [
+        { "step": "Tarjan's algorithm runs a single depth-first search, maintaining a low-link value per vertex — the smallest discovery index reachable from it through tree and back edges — and pops a complete component the instant a vertex's low-link equals its own discovery index." },
+        { "step": "Kosaraju's algorithm runs DFS once to get a finish order, reverses every edge, and runs DFS again in decreasing finish order. Each new DFS tree in the second pass is exactly one strongly connected component — simpler to state, at the cost of a second full pass and an explicit transpose." }
+      ]
+    },
+    {
+      "clause": "the condensation DAG",
+      "at": [
+        { "step": "Contracting every strongly connected component of any directed graph down to a single vertex — is the result always a DAG, sometimes a DAG, or never a DAG?" },
+        { "step": "Contracting every strongly connected component to a single vertex turns any directed graph into a DAG. A cycle among the condensed vertices would mean their original components were mutually reachable — contradicting that each was already a maximal such group." }
+      ]
+    },
+    {
+      "clause": "2-SAT solved via SCCs",
+      "at": [
+        { "step": "In a two-SAT instance's implication graph, if a variable's two literals (itself and its negation) land in the same strongly connected component, is the formula satisfiable, unsatisfiable, or does it depend on the rest of the formula?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia — \"Tarjan's strongly connected components algorithm\"",
+      "items": [
+        { "item": "The low-link value's own definition (smallest discovery index reachable through tree and back edges) and the pop-on-low-link-equals-index rule", "at": [{ "step": "Tarjan's algorithm runs a single depth-first search, maintaining a low-link value per vertex — the smallest discovery index reachable from it through tree and back edges — and pops a complete component the instant a vertex's low-link equals its own discovery index." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"Kosaraju's algorithm\"",
+      "items": [
+        { "item": "The transpose-graph fact (reversing every edge preserves the same SCCs) that Kosaraju's second pass relies on, and its attribution (Kosaraju 1978, unpublished; Sharir 1981, independent publication)", "at": [{ "step": "Kosaraju's algorithm runs DFS once to get a finish order, reverses every edge, and runs DFS again in decreasing finish order. Each new DFS tree in the second pass is exactly one strongly connected component — simpler to state, at the cost of a second full pass and an explicit transpose." }] },
+        { "item": "The one practical cost difference: Kosaraju's two full traversals against Tarjan's and the path-based algorithm's single traversal", "at": [{ "step": "Kosaraju's algorithm runs DFS once to get a finish order, reverses every edge, and runs DFS again in decreasing finish order. Each new DFS tree in the second pass is exactly one strongly connected component — simpler to state, at the cost of a second full pass and an explicit transpose." }] }
+      ]
+    },
+    {
+      "source": "Wikipedia — \"2-satisfiability\"",
+      "items": [
+        { "item": "The implication-graph construction: each 2-CNF clause becomes a pair of implication edges", "at": [{ "step": "In a two-SAT instance's implication graph, if a variable's two literals (itself and its negation) land in the same strongly connected component, is the formula satisfiable, unsatisfiable, or does it depend on the rest of the formula?" }] },
+        { "item": "The satisfiability-iff-no-shared-SCC theorem (Aspvall, Plass and Tarjan, 1979)", "at": [{ "step": "In a two-SAT instance's implication graph, if a variable's two literals (itself and its negation) land in the same strongly connected component, is the formula satisfiable, unsatisfiable, or does it depend on the rest of the formula?" }] },
+        { "item": "The condensation-is-always-a-DAG fact, stated generally for any skew-symmetric implication graph and reused here for directed graphs generally", "at": [{ "step": "Contracting every strongly connected component to a single vertex turns any directed graph into a DAG. A cycle among the condensed vertices would mean their original components were mutually reachable — contradicting that each was already a maximal such group." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review, from the syllabus line and the fetched sources only",
+    "date": "2026-11-05",
+    "items": [
+      { "item": "Tarjan's and Kosaraju's algorithms must agree on the exact partition into SCCs, not merely on the count of components, since the SCC partition of a graph is unique regardless of which algorithm finds it", "at": [{ "step": "Tarjan's algorithm runs a single depth-first search, maintaining a low-link value per vertex — the smallest discovery index reachable from it through tree and back edges — and pops a complete component the instant a vertex's low-link equals its own discovery index." }] },
+      { "item": "A low-link value strictly less than a vertex's own discovery index means that vertex still belongs to an SCC being built by an ancestor further up the stack, which is exactly why it is not popped yet", "at": [{ "step": "Tarjan's algorithm runs a single depth-first search, maintaining a low-link value per vertex — the smallest discovery index reachable from it through tree and back edges — and pops a complete component the instant a vertex's low-link equals its own discovery index." }] },
+      { "item": "Kosaraju's second-pass DFS must run on the transpose graph, not the original — running it on the original graph in reverse finish order does not in general recover the SCCs", "at": [{ "step": "Kosaraju's algorithm runs DFS once to get a finish order, reverses every edge, and runs DFS again in decreasing finish order. Each new DFS tree in the second pass is exactly one strongly connected component — simpler to state, at the cost of a second full pass and an explicit transpose." }] },
+      { "item": "The condensation-is-a-DAG proof is a maximality argument, not a graph-search argument: it holds because SCCs are defined as maximal mutually-reachable sets, so two components reaching each other both ways would contradict their own definition", "at": [{ "step": "Contracting every strongly connected component to a single vertex turns any directed graph into a DAG. A cycle among the condensed vertices would mean their original components were mutually reachable — contradicting that each was already a maximal such group." }] },
+      { "item": "The condensation graph's acyclicity can be verified by the identical directed-cycle test built in topic 60, since the condensation is itself an ordinary directed graph — no new cycle-detection mechanism is needed for this proof", "at": [{ "step": "Contracting every strongly connected component to a single vertex turns any directed graph into a DAG. A cycle among the condensed vertices would mean their original components were mutually reachable — contradicting that each was already a maximal such group." }] },
+      { "item": "The implication graph for a 2-CNF formula is always skew-symmetric (each edge's reverse-negation edge is also present), which is what makes a reverse-topological assignment pass over its condensation produce a consistent satisfying assignment when one exists", "at": [{ "step": "In a two-SAT instance's implication graph, if a variable's two literals (itself and its negation) land in the same strongly connected component, is the formula satisfiable, unsatisfiable, or does it depend on the rest of the formula?" }] },
+      { "item": "Checking 2-SAT satisfiability needs only the SCC partition itself, not the full satisfying assignment — finding an actual assignment is a separate, slightly more involved step built on top of the same SCCs", "at": [{ "step": "In a two-SAT instance's implication graph, if a variable's two literals (itself and its negation) land in the same strongly connected component, is the formula satisfiable, unsatisfiable, or does it depend on the rest of the formula?" }] },
+      { "item": "Both SCC algorithms run in O(n + m): Tarjan's is one DFS pass with constant extra work per vertex and edge; Kosaraju's is exactly two such passes plus a linear-time transpose construction", "at": [{ "step": "A graph where every vertex can reach every other looks, from a distance, indistinguishable from one where only small pockets can reach each other. Telling the two apart, for a graph with a billion edges, takes exactly one more depth-first search, carrying one extra number per vertex." }] },
+      { "item": "This topic closes the chapter's own arc: BFS and DFS as the two traversal orders, and every later structural fact (shortest paths, topological order, SCCs) as a side effect of one of those two traversals rather than a new kind of search", "at": [{ "step": "Finding one key, one boundary, one order statistic was the previous chapter's business. This chapter answered a different kind of question about a graph with no weights at all: which vertices are reachable, in what order, and which groups of vertices can all reach each other. Every answer cost exactly one traversal." }] },
+      { "item": "Articulation points, bridges and lowest common ancestor (both skipped syllabus topics) are not prerequisites for anything in this topic, despite sharing DFS and low-link-style machinery with Tarjan's algorithm", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-05", "by": "self-review", "open": [] }
+}

@@ -1,0 +1,64 @@
+{
+  "topic": "dsa.floyd-warshall-johnson-s",
+  "steps": [
+    {
+      "lines": [
+        "Picture a few hundred cities, and every single pair of them wants its fastest route, all at once.",
+        "One way: a single dynamic program that checks every possible waypoint, for every pair, together.",
+        "Another way: the single-source algorithm, already built, run once from every city in turn."
+      ]
+    },
+    {
+      "lines": [
+        "One of these approaches has a fixed cost — it never cares how many roads actually exist, only how many cities.",
+        "The other's cost grows with the number of roads.",
+        { "beat": 0.3 },
+        "On a huge map with comparatively few roads between cities, which one does less total work?"
+      ],
+      "answer": [
+        "The one whose cost is tied to the roads, not the cities.",
+        "The fixed-cost approach does the identical amount of work no matter how sparse the map is. The other one's cost shrinks right along with the road count — so on a sparse map, it comes out ahead."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the dynamic program's own mechanism. It fills a whole table of distances, one allowed waypoint at a time.",
+        "For every single pair of cities, it asks one question: does routing through this new waypoint beat the best route found so far?",
+        "Repeat that question for every waypoint, and the whole table ends up correct."
+      ]
+    },
+    {
+      "lines": [
+        "A distance alone can't tell you which road actually got taken — two completely different routes can add up to the exact same number.",
+        "So keep a second table alongside the first. Each cell remembers one thing: the city visited right before the destination.",
+        "Follow that, one step backward at a time, and the actual route falls right out."
+      ]
+    },
+    {
+      "lines": [
+        "Take that identical table-filling idea, and strip out the numbers entirely.",
+        "Instead of adding distances, just ask whether both halves of a route are already reachable.",
+        "Same waypoints, same order, same rule for updating a cell — now it answers which city can reach which."
+      ]
+    },
+    {
+      "lines": [
+        "Add one new city to the map, connected to every other city by a free road.",
+        "Run the slower, more general algorithm once from that new city, and use what it finds to adjust every single road's own length.",
+        { "beat": 0.3 },
+        "Could that adjustment ever flip which route between two cities is the cheapest one?"
+      ],
+      "answer": [
+        "No. Every route between the same two cities shifts by the identical amount.",
+        "Whichever route you take between two fixed cities, the adjustment adds up to the exact same total. Shifting every option in a comparison by the same amount can never change which one was smallest to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Every algorithm in this chapter, so far, has answered a question about two cities, or one city against all the rest.",
+        "Neither of today's two answers needed a new trick underneath — just a new way of putting the old ones together.",
+        "The next kind of map has no loops in it at all, and that changes everything about how cheap the answer gets."
+      ]
+    }
+  ]
+}

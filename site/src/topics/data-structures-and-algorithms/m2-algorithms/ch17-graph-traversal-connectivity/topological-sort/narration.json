@@ -1,0 +1,63 @@
+{
+  "topic": "dsa.topological-sort",
+  "steps": [
+    {
+      "lines": [
+        "Picture a build system with ten thousand targets, each one depending on a handful of others.",
+        "Every target has to run after everything it needs — and that order isn't found by trial and error.",
+        "It falls straight out of the same two traversals already built this chapter, just pointed at how many things still have to finish first, instead of how far away something is."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a graph with a cycle in it.",
+        { "beat": 0.3 },
+        "Can a graph like that have any valid order at all — one where everything comes after everything it depends on?"
+      ],
+      "answer": [
+        "No. A cycle rules it out completely.",
+        "Any order you tried would have to put some vertex in that cycle both before and after another vertex in the same cycle, since every vertex in a cycle can reach every other one in it. Nothing satisfies that — not a short cycle, not a long one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first way to find that order: keep a queue of every vertex that currently has nothing left pointing into it.",
+        "Pull one out, and for everything it points to, take away one incoming edge.",
+        "The moment one of those drops to zero, it joins the queue too. That's the exact same queue mechanics already built for the widening frontier — just counting down incoming edges instead of counting up distance."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the second way: run the same depth-first search already built, and just write down the order things finished in.",
+        "Reverse that list, and you already have a valid order.",
+        { "beat": 0.3 },
+        "It doesn't have to match the queue's order vertex for vertex. It only has to respect every single edge — and it does."
+      ]
+    },
+    {
+      "lines": [
+        "Now run the queue version on a graph that actually has a cycle in it.",
+        "It drains itself dry. Some vertices never once hit zero, because they're all still waiting on each other.",
+        "The depth-first version doesn't need a separate check either — its own back-edge test already caught this the first time it ran."
+      ]
+    },
+    {
+      "lines": [
+        "Swap that plain queue for a heap that always pops the smallest label currently available.",
+        { "beat": 0.3 },
+        "Compared to the plain queue, on the same graph: always the identical order, always different, or could either happen?"
+      ],
+      "answer": [
+        "Either — and whenever they differ, the heap gives the smaller one.",
+        "A queue only remembers who arrived first. If a smaller-labelled vertex becomes available one round later, it still has to wait behind whoever got there before it. A heap breaks that tie by label, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "An order like this only says which things can come before which.",
+        "It says nothing about which vertices can reach each other at all, once cycles are allowed back in — whole groups that can each reach every other member of the group, and nothing outside it.",
+        "Finding those groups is next."
+      ]
+    }
+  ]
+}
