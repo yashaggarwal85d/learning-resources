@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Overwriting in place is the cheapest in space, but destroys the old
 // version outright. Appending keeps every version until a real compaction
@@ -62,14 +62,16 @@ export function AppendPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: footprint grows, compaction reclaims it (takeaway) ─────────────────────────────
 export function AppendReveal({ t }: StepCtx) {
+  const grow = easeOut(seg(t, 0.4, 0.8));
+  const shrink = easeOut(seg(t, 0.9, 1.2));
+  const w = grow * 200 * (1 - shrink * 0.7);
   return (
     <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the log, after five appended updates</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>footprint grew; compaction shrank it back</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>every old version stayed until compaction ran</T>
+      <rect x={70} y={70} width={w} height={10} rx={3} fill={C.caramel} opacity={0.7} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>footprint grew; compaction shrank it back</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.7, 0.4)}>every old version stayed until compaction ran</T>
     </Svg>
   );
 }
@@ -92,13 +94,14 @@ export function CowPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: a whole page copied every time (takeaway) ──────────────────────────────────────
 export function CowReveal({ t }: StepCtx) {
+  const copy = easeOut(seg(t, 0.4, 0.8));
+  const w = copy * 180;
   return (
     <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one small update, copy-on-write</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>footprint grew by a whole page each time</T>
-      </g>
+      <rect x={70} y={70} width={w} height={10} rx={3} fill={C.cherry} opacity={0.7} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>footprint grew by a whole page each time</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>never just the record's own few bytes</T>
     </Svg>
   );
@@ -140,13 +143,15 @@ export function CompareReveal({ t }: StepCtx) {
 
 // ── 9 · LMDB's own crash-safety claim (surprising fact, takeaway) ────────────────────────────────
 export function CrashSafetyReveal({ t }: StepCtx) {
+  const copy = easeOut(seg(t, 0.5, 0.85));
+  const dx = copy * 50;
   return (
     <Svg label="LMDB docs, quoted" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a data page is copied, never overwritten</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>no page can ever be left half-written</T>
-      </g>
+      <circle cx={200} cy={76} r={4} fill={C.taupe} />
+      <circle cx={200 + dx} cy={76} r={4} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>no page can ever be left half-written</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>no special recovery procedure needed at all</T>
     </Svg>
   );

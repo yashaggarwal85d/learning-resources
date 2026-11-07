@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A real page's checksum genuinely catches a corrupted byte anywhere in its
 // body, but a checksum alone can't catch a deliberate, consistent format
@@ -62,13 +62,15 @@ export function MagicPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: checksum valid, format invalid (takeaway) ──────────────────────────────────────
 export function MagicReveal({ t }: StepCtx) {
+  const check1 = easeOut(seg(t, 0.5, 0.75));
+  const check2 = easeOut(seg(t, 0.85, 1.1));
   return (
     <Svg label="self_describing_page_catches_corruption.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>magic number changed, checksum recomputed</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>checksum: valid. format check: invalid</T>
-      </g>
+      <circle cx={250} cy={76} r={4} fill={C.taupe} opacity={check1} />
+      <circle cx={280} cy={76} r={4} fill={C.cherry} opacity={check2} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>checksum: valid. format check: invalid</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>only the magic number check caught it</T>
     </Svg>
   );
@@ -92,13 +94,19 @@ export function EndiannessPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: wrong byte order, wrong value (takeaway) ───────────────────────────────────────
 export function EndiannessReveal({ t }: StepCtx) {
+  const bytes = [0, 1, 2, 3];
+  const flip = easeOut(seg(t, 0.5, 0.85));
   return (
     <Svg label="self_describing_page_catches_corruption.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>same raw bytes, read in two different orders</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>chosen order: correct. reversed: wrong</T>
-      </g>
+      {bytes.map((i) => {
+        const x1 = 220 + i * 20;
+        const x2 = 220 + (3 - i) * 20;
+        const x = x1 + (x2 - x1) * flip;
+        return <rect key={i} x={x} y={70} width={16} height={10} rx={2} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />;
+      })}
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>chosen order: correct. reversed: wrong</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the order itself had to be picked and kept</T>
     </Svg>
   );
@@ -122,23 +130,31 @@ export function FieldPredict({ t }: StepCtx) {
 
 // ── 8 · The documentation quoted directly (connecting step — NO takeaway) ────────────────────────
 export function FieldReveal({ t }: StepCtx) {
+  const slide1 = easeOut(seg(t, 0.2, 0.55));
+  const slide2 = easeOut(seg(t, 0.7, 1.05));
   return (
     <Svg label="PostgreSQL docs, quoted" h={180}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>first field: the most recent log entry</T>
-      <T x={60} y={100} s={14} f={C.crema} o={fa(t, 0.9, 0.4)}>second field: the page checksum, when enabled</T>
+      <g transform={`translate(${(1 - slide1) * -70},0)`} opacity={slide1}>
+        <T x={60} y={60} s={14} f={C.crema}>first field: the most recent log entry</T>
+      </g>
+      <g transform={`translate(${(1 - slide2) * -70},0)`} opacity={slide2}>
+        <T x={60} y={100} s={14} f={C.crema}>second field: the page checksum, when enabled</T>
+      </g>
     </Svg>
   );
 }
 
 // ── 9 · Item identifiers outlive being moved (surprising fact, takeaway) ─────────────────────────
 export function PermanenceReveal({ t }: StepCtx) {
+  const move = easeOut(seg(t, 0.5, 0.85));
+  const dx = move * 60;
   return (
     <Svg label="PostgreSQL docs, quoted" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>an item identifier is never moved until freed</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>its index references an item long term</T>
-      </g>
+      <circle cx={200} cy={76} r={4} fill={C.taupe} />
+      <circle cx={200 + dx} cy={76} r={4} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>its index references an item long term</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>even while the item moves to compact space</T>
     </Svg>
   );
