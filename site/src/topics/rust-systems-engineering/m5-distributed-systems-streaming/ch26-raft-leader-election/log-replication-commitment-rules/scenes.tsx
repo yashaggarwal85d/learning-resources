@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // An entry is only genuinely committed once it is replicated to a real
 // majority under the leader's own current term; conflict repair genuinely
@@ -58,14 +58,17 @@ export function PreviousTermPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely not committed (takeaway) ───────────────────────
 export function PreviousTermReveal({ t }: StepCtx) {
+  const nodes = [0, 1, 2];
+  const bounce = easeOut(seg(t, 0.8, 1.1));
   return (
     <Svg label="log_replication_commitment_rules.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a real majority, but from a previous term</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>genuinely not committed, by that alone</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the real hazard this rule exists to prevent</T>
+      {nodes.map((i) => (
+        <circle key={i} cx={100 + i * 60} cy={78} r={6} fill={C.caramel} opacity={fa(t, 0.4 + i * 0.1, 0.2)} />
+      ))}
+      <circle cx={190} cy={78 - (1 - Math.abs(bounce - 0.5) * 2) * 12} r={5} fill={C.cherry} opacity={fa(t, 0.8, 0.2)} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={125} s={13} a="middle" f={C.mocha}>genuinely not committed, by that alone</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>the real hazard this rule exists to prevent</T>
     </Svg>
   );
 }
@@ -88,14 +91,16 @@ export function CurrentTermPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: both commit, genuinely (takeaway) ────────────────────────
 export function CurrentTermReveal({ t }: StepCtx) {
+  const nodes = [0, 1, 2];
   return (
     <Svg label="log_replication_commitment_rules.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the current-term entry, on the same majority</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>both genuinely commit, together</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one real commitment reaches backward too</T>
+      {nodes.map((i) => (
+        <circle key={i} cx={100 + i * 60} cy={78} r={6} fill={C.caramel} opacity={fa(t, 0.4 + i * 0.1, 0.2)} />
+      ))}
+      <Draw pts={[[190, 70], [190, 86]]} t={t} from={0.8} to={1.05} stroke={C.caramel} w={3} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={125} s={13} a="middle" f={C.mocha}>both genuinely commit, together</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>one real commitment reaches backward too</T>
     </Svg>
   );
 }
