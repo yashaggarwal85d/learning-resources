@@ -1,0 +1,85 @@
+{
+  "topic": "dsa.heaps-inside-compaction-shuffle",
+  "steps": [
+    {
+      "lines": [
+        "Twenty files merging into one, and ten rows surviving out of four hundred million, look like two different problems. Notice they are not.",
+        "Both are asking the same question over and over: of everything still in play, what is the smallest, or the best, right now? Hold onto that question before the numbers land."
+      ],
+      "answer": [
+        "About one hundred seventy five rows out of four hundred million actually change anything in the heap.",
+        "Once ten good rows are already sitting in it, almost everything that arrives afterward loses to the worst of those ten on the very first comparison, and is thrown away for that one comparison's cost."
+      ]
+    },
+    {
+      "lines": [
+        "You built this exact picture already, so look for what has not changed rather than what has: one heap, one pop per output, one sift back into shape.",
+        "Everything from here is about where this picture turns up, not about teaching it again."
+      ]
+    },
+    {
+      "lines": [
+        "A heap that only ever moves forward is half an idea. Read what this one does when asked to walk backward instead.",
+        "It does not become a different structure. The same comparisons, judged the opposite way, make the identical heap into its own mirror image."
+      ]
+    },
+    {
+      "lines": [
+        "Two engines arrived at the same heap independently, which is itself worth noticing, but look at the one rule that makes it a database's heap and not a textbook one.",
+        "A tie on the key is not an edge case here, it is the entire reason multiple versions of one row can coexist at all, and the ordering rule resolves it before anyone has to ask which version is newest."
+      ]
+    },
+    {
+      "lines": [
+        "The compaction you opened with is built from exactly the heap you just read about, just over every file instead of a handful.",
+        "Watch what happens after the merge produces its order: older copies of a key do not get to linger because they lost the comparison once already. They are removed, not just ignored."
+      ]
+    },
+    {
+      "lines": [
+        "Before the source answers this, think about what a complete binary tree actually requires: every level full except possibly the last, and the last filled from the left.",
+        "Twelve does not divide evenly into a power of two, so something has to give, and it is not the shape of the tree. It is which streams get to sit on the bottom level at all."
+      ],
+      "answer": [
+        "No. Four of the twelve streams end up as inner nodes instead of leaves, because the last level only has room for eight.",
+        "The tree stays complete and balanced in the technical sense; it is just that \"stream\" and \"leaf\" stop meaning the same thing once the count is not a power of two."
+      ]
+    },
+    {
+      "lines": [
+        "Two files, two different heap APIs, one identical worry underneath both: what happens to a source that has already run dry.",
+        "One guards against it by never letting an empty source anywhere near the heap. The other gets a min-heap out of an API that only offers a max-heap, by lying to it about which direction is up."
+      ]
+    },
+    {
+      "lines": [
+        "Somebody already measured this for you, in the chapter right before this one, so read the number rather than deriving it again.",
+        "A heap does strictly more comparisons per output than a loser tree at the same fan-in, and production code keeps reaching for the heap anyway. That is not a contradiction. It is a trade for something the comparison count does not capture."
+      ]
+    },
+    {
+      "lines": [
+        "Flip everything you know about a heap's root. Here the root is not the best thing kept, it is the worst, and that is deliberate.",
+        "A structure built to answer \"give me the smallest\" is being asked a completely different question here: \"is this new thing good enough to bump out my current worst?\" The root is where that question gets answered in one comparison."
+      ]
+    },
+    {
+      "lines": [
+        "The same upside-down heap, now spread across partitions before it is asked for a final answer.",
+        "Notice that the second pass is not a different algorithm cleaning up after the first. It is the identical bounded heap, run again, because the input it receives the second time is already small."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the part nobody states from memory: work out why so few rows ever reach the root, instead of asserting that they do not.",
+        "A row arriving later in a long stream is being compared against ten rows that have already won a lot of comparisons. The odds of beating all ten keep shrinking the longer the stream runs, and that shrinking is exactly what the number on screen is counting."
+      ]
+    },
+    {
+      "lines": [
+        "Everything this reel showed you answers one question: given several things waiting, which one goes next? That question does not belong only to sorted data.",
+        "Replace \"sorted order\" with \"nothing left undone that this depends on,\" and the identical machinery starts scheduling work instead of merging rows."
+      ]
+    }
+  ]
+}

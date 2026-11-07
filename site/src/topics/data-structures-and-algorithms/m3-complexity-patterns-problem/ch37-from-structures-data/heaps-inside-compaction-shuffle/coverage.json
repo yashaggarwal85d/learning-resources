@@ -1,0 +1,90 @@
+{
+  "topic": "dsa.heaps-inside-compaction-shuffle",
+  "syllabus": [
+    {
+      "clause": "k-way merges with heaps or loser trees in LSM compaction and shuffle reads",
+      "at": [
+        { "step": "A RocksDB compaction opens twenty sorted files holding four billion keys and writes one sorted, deduplicated output, never holding more than one key per file in memory. A dashboard asks for the ten most expensive orders of four hundred million. Both are a heap. Predict: for the top ten of four hundred million rows, about how many rows actually replace something in the heap, if the rows arrive in random order?" },
+        { "step": "Pebble's mergingIter keeps one heap of child iterators, one per LSM level, table or memtable. The same heap runs forward as a min-heap and backward as a max-heap. Next or Prev pops the current winner, advances its iterator, and \"fixes\" the heap — pop, advance, sift, read word for word from the source." },
+        { "step": "RocksDB built the identical design independently: a min/max heap combining data from point iterators. What makes it a database merge and not a generic one is the comparator: ties on the user key are broken by decreasing sequence number, so the newest version of a key surfaces first out of the heap with no special case at all." },
+        { "step": "A compaction's own input iterator is built the same way: VersionSet::MakeInputIterator opens one iterator per input file across every input level and merges them into a single merging iterator. CompactionIterator then walks that merge and drops every version a newer one has already shadowed, tombstones included." },
+        { "step": "Predict: twelve streams need to merge, and a tree of losers is a complete binary tree in spirit. Does Velox's TreeOfLosers lay out twelve streams as a tree where every level but the last is completely full, the textbook picture exactly?" },
+        { "step": "Spark's heap shows up through two different APIs, same kernel. UnsafeSorterSpillMerger's priority queue never enqueues an empty spill reader, so a drained reader can never produce a spurious record. ExternalSorter's mergeSort builds a max-heap-only priority queue with the comparator reversed, because dequeuing the \"maximum\" under a flipped order is dequeuing the minimum key." },
+        { "step": "Chapter six already measured the cost: at a fan-in of eight, a binary heap spends about 4.35 comparisons per output row; a tree of losers spends exactly log base two of eight, three, every time, a 1.45 times difference. And still, three of the four engines read here reach for the heap, not the loser tree, because it adapts to an uneven fan-in with no separate rebuild step." }
+      ]
+    },
+    {
+      "clause": "bounded heaps for ORDER BY … LIMIT",
+      "at": [
+        { "step": "The same heap, turned upside down. PostgreSQL's make_bounded_heap keeps the largest entry at the root instead of the smallest, temporarily reversing the sort direction, because the root is what a bounded heap needs to discard cheaply. The switch itself fires once the input passes twice the bound, or once work memory fills with enough rows to meet it." },
+        { "step": "Spark's BoundedPriorityQueue is the same structure for ORDER BY ... LIMIT: capped at the limit, a new row only replaces the current worst kept row when it ranks higher. Utils.takeOrdered runs this per partition, shuffles only those small local winners to one partition, then runs the identical bounded heap once more over the merged result — RDD's own doc comment calls it the opposite of top." },
+        { "step": "The arithmetic: a full sort costs on the order of n log n comparisons; a bounded heap of size N costs at most n log N, cheaper whenever N is far smaller than n, exactly the ORDER BY ... LIMIT case. And the number of rows that actually replace something in the heap, derived from how a random arrival order ranks each row and checked by simulation before trusting it at scale, is about k times the gap between two harmonic numbers — for ten of four hundred million, about one hundred seventy-five." }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering §5.1, Ch.7",
+      "at": [
+        { "topic": "LSM compaction and the RUM trade-off", "domain": "data-engineering", "quote": "compaction policy and amplification own the system view" },
+        { "topic": "Spill and shuffle memory pressure", "domain": "data-engineering", "quote": "Spark's shuffle and spill metrics own the cost accounting" },
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Pebble merging_iter.go",
+      "items": [
+        { "item": "One heap of child iterators serves both forward (min-heap) and reverse (max-heap) iteration", "at": [{ "step": "Pebble's mergingIter keeps one heap of child iterators, one per LSM level, table or memtable. The same heap runs forward as a min-heap and backward as a max-heap. Next or Prev pops the current winner, advances its iterator, and \"fixes\" the heap — pop, advance, sift, read word for word from the source." }] },
+        { "item": "Next/Prev pops the current winner, advances its iterator, and fixes the heap property; an exhausted iterator is removed from the heap", "at": [{ "step": "Pebble's mergingIter keeps one heap of child iterators, one per LSM level, table or memtable. The same heap runs forward as a min-heap and backward as a max-heap. Next or Prev pops the current winner, advances its iterator, and \"fixes\" the heap — pop, advance, sift, read word for word from the source." }] }
+      ]
+    },
+    {
+      "source": "RocksDB merging_iterator.cc, dbformat.h, version_set.cc, compaction_iterator.h",
+      "items": [
+        { "item": "MergingIterator uses a min/max heap to combine data from point iterators, built independently of Pebble's design", "at": [{ "step": "RocksDB built the identical design independently: a min/max heap combining data from point iterators. What makes it a database merge and not a generic one is the comparator: ties on the user key are broken by decreasing sequence number, so the newest version of a key surfaces first out of the heap with no special case at all." }] },
+        { "item": "The internal-key comparator breaks ties on the user key by decreasing sequence number", "at": [{ "step": "RocksDB built the identical design independently: a min/max heap combining data from point iterators. What makes it a database merge and not a generic one is the comparator: ties on the user key are broken by decreasing sequence number, so the newest version of a key surfaces first out of the heap with no special case at all." }] },
+        { "item": "VersionSet::MakeInputIterator builds one merging iterator over every input file of every input level of a compaction", "at": [{ "step": "A compaction's own input iterator is built the same way: VersionSet::MakeInputIterator opens one iterator per input file across every input level and merges them into a single merging iterator. CompactionIterator then walks that merge and drops every version a newer one has already shadowed, tombstones included." }] },
+        { "item": "CompactionIterator's NextFromInput drops versions a newer one has shadowed and expired tombstones as it advances", "at": [{ "step": "A compaction's own input iterator is built the same way: VersionSet::MakeInputIterator opens one iterator per input file across every input level and merges them into a single merging iterator. CompactionIterator then walks that merge and drops every version a newer one has already shadowed, tombstones included." }] }
+      ]
+    },
+    {
+      "source": "Velox common/base/TreeOfLosers.h, exec/Merge.cpp",
+      "items": [
+        { "item": "next() returns the stream with the lowest first value among all streams, nullptr when all are at end", "at": [{ "step": "Predict: twelve streams need to merge, and a tree of losers is a complete binary tree in spirit. Does Velox's TreeOfLosers lay out twelve streams as a tree where every level but the last is completely full, the textbook picture exactly?" }] },
+        { "item": "The constructor's own worked example: 12 streams lay out as 8 leaves on the last level and 4 inner nodes on the level above", "at": [{ "step": "Predict: twelve streams need to merge, and a tree of losers is a complete binary tree in spirit. Does Velox's TreeOfLosers lay out twelve streams as a tree where every level but the last is completely full, the textbook picture exactly?" }] },
+        { "item": "Merge.cpp drives a TreeOfLosers over one MergeStream per source, calling next() in a loop", "at": [{ "deep": "At the frontier" }] }
+      ]
+    },
+    {
+      "source": "Spark UnsafeSorterSpillMerger.java, ExternalSorter.scala, BoundedPriorityQueue.scala, RDD.scala, limit.scala",
+      "items": [
+        { "item": "UnsafeSorterSpillMerger never enqueues an empty spill reader, to avoid an extra empty output record", "at": [{ "step": "Spark's heap shows up through two different APIs, same kernel. UnsafeSorterSpillMerger's priority queue never enqueues an empty spill reader, so a drained reader can never produce a spurious record. ExternalSorter's mergeSort builds a max-heap-only priority queue with the comparator reversed, because dequeuing the \"maximum\" under a flipped order is dequeuing the minimum key." }] },
+        { "item": "ExternalSorter.mergeSort reverses the comparator because Scala's PriorityQueue always dequeues the maximum", "at": [{ "step": "Spark's heap shows up through two different APIs, same kernel. UnsafeSorterSpillMerger's priority queue never enqueues an empty spill reader, so a drained reader can never produce a spurious record. ExternalSorter's mergeSort builds a max-heap-only priority queue with the comparator reversed, because dequeuing the \"maximum\" under a flipped order is dequeuing the minimum key." }] },
+        { "item": "BoundedPriorityQueue retains only the top K elements, replacing the current lowest only when a new element ranks higher", "at": [{ "step": "The same heap, turned upside down. PostgreSQL's make_bounded_heap keeps the largest entry at the root instead of the smallest, temporarily reversing the sort direction, because the root is what a bounded heap needs to discard cheaply. The switch itself fires once the input passes twice the bound, or once work memory fills with enough rows to meet it." }, { "step": "Spark's BoundedPriorityQueue is the same structure for ORDER BY ... LIMIT: capped at the limit, a new row only replaces the current worst kept row when it ranks higher. Utils.takeOrdered runs this per partition, shuffles only those small local winners to one partition, then runs the identical bounded heap once more over the merged result — RDD's own doc comment calls it the opposite of top." }] },
+        { "item": "takeOrdered's own doc comment calls it the opposite of top", "at": [{ "step": "Spark's BoundedPriorityQueue is the same structure for ORDER BY ... LIMIT: capped at the limit, a new row only replaces the current worst kept row when it ranks higher. Utils.takeOrdered runs this per partition, shuffles only those small local winners to one partition, then runs the identical bounded heap once more over the merged result — RDD's own doc comment calls it the opposite of top." }] },
+        { "item": "limit.scala's TakeOrderedAndProjectExec runs a per-partition localTopK via Utils.takeOrdered, then a second Utils.takeOrdered over the shuffled result", "at": [{ "step": "Spark's BoundedPriorityQueue is the same structure for ORDER BY ... LIMIT: capped at the limit, a new row only replaces the current worst kept row when it ranks higher. Utils.takeOrdered runs this per partition, shuffles only those small local winners to one partition, then runs the identical bounded heap once more over the merged result — RDD's own doc comment calls it the opposite of top." }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL utils/sort/tuplesort.c",
+      "items": [
+        { "item": "make_bounded_heap reverses the sort direction so the largest (worst, for an ascending bound) entry sits at the root", "at": [{ "step": "The same heap, turned upside down. PostgreSQL's make_bounded_heap keeps the largest entry at the root instead of the smallest, temporarily reversing the sort direction, because the root is what a bounded heap needs to discard cheaply. The switch itself fires once the input passes twice the bound, or once work memory fills with enough rows to meet it." }] },
+        { "item": "The switch into a bounded heapsort fires once the input exceeds twice the bound, or workMem fills with enough tuples to meet the bound", "at": [{ "step": "The same heap, turned upside down. PostgreSQL's make_bounded_heap keeps the largest entry at the root instead of the smallest, temporarily reversing the sort direction, because the root is what a bounded heap needs to discard cheaply. The switch itself fires once the input passes twice the bound, or once work memory fills with enough rows to meet it." }] },
+        { "item": "EXPLAIN reports the method by name (top-N heapsort, external merge)", "at": [{ "deep": "In production" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-07",
+    "items": [
+      { "item": "The compaction example's tombstone-over-live-version case is built so the tombstone's sequence number is strictly newer than the live version it shadows, and the assertion checks the key disappears entirely, not merely that a value is present — catching the direction-of-shadowing bug that appeared once while this topic was built and was fixed before shipping.", "at": [{ "step": "A compaction's own input iterator is built the same way: VersionSet::MakeInputIterator opens one iterator per input file across every input level and merges them into a single merging iterator. CompactionIterator then walks that merge and drops every version a newer one has already shadowed, tombstones included." }] },
+      { "item": "The replacement-count formula k·(Hₙ − H_k) is derived from the per-row probability argument in this topic's own comments, not copied from a source, and is checked three ways before being trusted at the hook's scale: exact harmonic sums at a size small enough to sum directly, an asymptotic approximation cross-checked against that exact sum, and a four-hundred-trial Monte Carlo average at a size small enough to simulate the actual heap.", "at": [{ "step": "The arithmetic: a full sort costs on the order of n log n comparisons; a bounded heap of size N costs at most n log N, cheaper whenever N is far smaller than n, exactly the ORDER BY ... LIMIT case. And the number of rows that actually replace something in the heap, derived from how a random arrival order ranks each row and checked by simulation before trusting it at scale, is about k times the gap between two harmonic numbers — for ten of four hundred million, about one hundred seventy-five." }] },
+      { "item": "Chapter 6's 'k=256' figure from CHAPTER.md's planning-time assumption was checked directly against that topic's own shipped examples.py (grepped for '256', not found) before this topic reused any number from it, rather than trusting the chapter plan's provisional figure.", "at": [{ "step": "Chapter six already measured the cost: at a fan-in of eight, a binary heap spends about 4.35 comparisons per output row; a tree of losers spends exactly log base two of eight, three, every time, a 1.45 times difference. And still, three of the four engines read here reach for the heap, not the loser tree, because it adapts to an uneven fan-in with no separate rebuild step." }] },
+      { "item": "The Spark 'TopK' comment CHAPTER.md attributed provisionally to limit.scala was searched for directly in the fetched current-master source text (grep for 'TopK' and 'opposite') before being dropped, rather than silently omitted or kept on the strength of the chapter plan alone.", "at": [{ "step": "Spark's BoundedPriorityQueue is the same structure for ORDER BY ... LIMIT: capped at the limit, a new row only replaces the current worst kept row when it ranks higher. Utils.takeOrdered runs this per partition, shuffles only those small local winners to one partition, then runs the identical bounded heap once more over the merged result — RDD's own doc comment calls it the opposite of top." }] },
+      { "item": "Topic 118's exact registry introduces/handoff were confirmed directly with the thread that built it and cross-checked against registry.ts after merging origin/main, rather than trusting the chapter plan's provisional text for a sibling topic that could have shipped differently.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The twelve-stream tree-of-losers claim is checked against the source's own worked example in its constructor comment, not against a general complete-binary-tree formula applied from memory, since the source's actual node-numbering scheme (streams becoming inner nodes) is what the predict question and its answer describe.", "at": [{ "step": "Predict: twelve streams need to merge, and a tree of losers is a complete binary tree in spirit. Does Velox's TreeOfLosers lay out twelve streams as a tree where every level but the last is completely full, the textbook picture exactly?" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-07", "by": "self-review", "open": [] }
+}
