@@ -1,7 +1,7 @@
 import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
-// This chapter's second topic: the other path out of memory from topic 117's hash batching.
+// This chapter's second topic: the other path out of memory from the prior topic's hash batching.
 // This one spills sorted runs to disk and merges them back, inside sorts, sort-merge joins and
 // aggregations. Every number is computed in examples.py; every system claim is a word-for-word
 // quote in SOURCES.md.
@@ -68,7 +68,7 @@ const reel: Reel = {
       body: <>A hundred runs; one pass wide open, three passes at a realistic width.</>,
       duration: 5.5,
       fig: 'PassesMeasured',
-      takeaway: "The same run-count and merge-pass formula, validated on a small instance, gives a hundred runs and either one or three passes depending only on how many tapes stay open.",
+      takeaway: "The same formula gives a hundred runs, and one or three merge passes depending on how many tapes stay open.",
       Visual: S.PassesMeasured,
     },
     {
@@ -97,7 +97,7 @@ const reel: Reel = {
       body: <>Spark's hash table turns itself into a sort once memory runs out.</>,
       duration: 6,
       fig: 'SortBasedFallback',
-      takeaway: "A hash aggregation can spill by hash-partitioning the overflow or by turning into a sort; both see the identical overflow rows.",
+      takeaway: "A hash aggregation can spill by hash-partitioning the overflow or by turning into a sort; both see identical overflow rows.",
       Visual: S.SortBasedFallback,
     },
     {
