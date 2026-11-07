@@ -57,14 +57,21 @@ export function MedianPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: median improved, p99 regressed (takeaway) ───────────────
 export function MedianReveal({ t }: StepCtx) {
+  const before50 = easeOut(seg(t, 0.4, 0.65));
+  const after50 = easeOut(seg(t, 0.4, 0.65));
+  const before99 = easeOut(seg(t, 0.85, 1.1));
+  const after99 = easeOut(seg(t, 0.85, 1.1));
   return (
     <Svg label="tail_latency_diverges_from_the_average.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>p50: 10ms down to 8ms, genuinely faster</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>p99: 45ms up to 55ms, genuinely slower</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a median alone cannot show the real tail</T>
+      <T x={60} y={70} s={11} f={C.latte} o={fa(t, 0.35, 0.3)}>p50 before/after</T>
+      <rect x={150} y={64} width={before50 * 100} height={10} rx={2} fill={C.taupe} />
+      <rect x={150} y={76} width={after50 * 80} height={10} rx={2} fill={C.caramel} />
+      <T x={60} y={105} s={11} f={C.latte} o={fa(t, 0.85, 0.3)}>p99 before/after</T>
+      <rect x={150} y={99} width={before99 * 180} height={10} rx={2} fill={C.caramel} />
+      <rect x={150} y={111} width={after99 * 220} height={10} rx={2} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={140} s={13} a="middle" f={C.mocha}>p99: 45ms up to 55ms, genuinely slower</T>}
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>a median alone cannot show the real tail</T>
     </Svg>
   );
 }
@@ -87,14 +94,19 @@ export function AverageDoesItPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: average also improved, hiding the regression (takeaway) ─
 export function AverageHidesReveal({ t }: StepCtx) {
+  const before = easeOut(seg(t, 0.4, 0.65));
+  const after = easeOut(seg(t, 0.4, 0.65));
+  const p99 = easeOut(seg(t, 0.85, 1.1));
   return (
     <Svg label="tail_latency_diverges_from_the_average.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>avg: 11.75ms down to 10.35ms, improved too</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>yet the real p99 still regressed, 45 to 55</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a single average can hide a real tail cost</T>
+      <T x={60} y={70} s={11} f={C.latte} o={fa(t, 0.35, 0.3)}>average before/after</T>
+      <rect x={150} y={64} width={before * 117} height={10} rx={2} fill={C.taupe} />
+      <rect x={150} y={76} width={after * 104} height={10} rx={2} fill={C.caramel} />
+      <T x={60} y={105} s={11} f={C.latte} o={fa(t, 0.85, 0.3)}>p99: still regressed</T>
+      <rect x={150} y={99} width={p99 * 220} height={10} rx={2} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={130} s={13} a="middle" f={C.mocha}>yet the real p99 still regressed, 45 to 55</T>}
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>a single average can hide a real tail cost</T>
     </Svg>
   );
 }

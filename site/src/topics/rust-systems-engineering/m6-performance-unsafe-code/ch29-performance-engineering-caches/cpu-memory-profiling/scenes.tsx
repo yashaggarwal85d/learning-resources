@@ -26,14 +26,28 @@ export function SpreadPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: one function holds the real majority (takeaway) ───────
 export function HotFunctionReveal({ t }: StepCtx) {
+  const fns = [0, 1, 2, 3, 4, 5];
+  const widths = [40, 32, 28, 150, 22, 18];
   return (
     <Svg label="profiling_attributes_cost_to_the_real_hot_path.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>an even split: one sixth, per function</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>run_model alone: most of the real cost</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>cost piles up; it never spreads evenly</T>
+      {fns.map((i) => {
+        const grow = easeOut(seg(t, 0.4 + i * 0.1, 0.65 + i * 0.1));
+        return (
+          <rect
+            key={i}
+            x={60}
+            y={70 + i * 14}
+            width={widths[i] * grow}
+            height={10}
+            rx={2}
+            fill={i === 3 ? C.cherry : C.caramel}
+            opacity={i === 3 ? 0.9 : fa(t, 0.4 + i * 0.1, 0.2)}
+          />
+        );
+      })}
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={168} s={13} a="middle" f={C.mocha}>run_model alone: most of the real cost</T>}
+      <T x={60} y={190} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>cost piles up; it never spreads evenly</T>
     </Svg>
   );
 }
@@ -87,14 +101,17 @@ export function AllocatorPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: cuts cost by over half (takeaway) ───────────────────────
 export function AllocatorReveal({ t }: StepCtx) {
+  const def = easeOut(seg(t, 0.4, 0.75));
+  const spec = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="profiling_attributes_cost_to_the_real_hot_path.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the default allocator, the identical count</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the specialized one: cost cut by over half</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>allocator choice is a real, measured decision</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>default allocator</T>
+      <rect x={60} y={82} width={def * 260} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>specialized allocator</T>
+      <rect x={60} y={119} width={spec * 115} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>the specialized one: cost cut by over half</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>allocator choice is a real, measured decision</T>
     </Svg>
   );
 }
