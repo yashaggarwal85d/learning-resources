@@ -193,3 +193,8 @@ miss_partitioned_filter_not_cached=2). Every number on screen is asserted here. 
    number read from any source; FACT-CHECK.md records this explicitly and the red-team pass
    checked it against the wiki page's own stated costs ("one extra I/O when the top-level
    index is not cached") before accepting it.
+5. **`npm run test:editor` fails in this cloud sandbox on this topic's build, as it does on a
+   clean, unmodified `main`** (a pre-existing environment issue, confirmed by other threads'
+   independent runs, not a regression this topic introduced): "a save did not open a new
+   GitHub issue." `node tests/reels.mjs` itself (the actual phone/desktop smoke test) passed:
+   "Reel smoke test passed: 1 live reel(s) at desktop and phone sizes."

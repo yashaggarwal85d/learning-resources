@@ -202,15 +202,15 @@ export function BlockReadCounts({ t }: StepCtx) {
   const cases = [
     { label: 'hit', n: 2, c: C.crema },
     { label: 'miss, no filter', n: 2, c: C.taupe },
-    { label: 'miss, whole filter cached', n: 1, c: C.crema },
-    { label: 'miss, partition uncached', n: 2, c: C.cherry },
+    { label: 'filter cached', n: 1, c: C.crema },
+    { label: 'partition uncached', n: 2, c: C.cherry },
   ];
   const shown = Math.min(cases.length, Math.floor(seg(t, 0.3, 2.8) * cases.length) + 1);
   return (
     <Svg label="Four lookups, counted in block reads: the uncached partition costs as much as no filter" h={280}>
       {cases.slice(0, shown).map((c, i) => (
         <g key={c.label}>
-          <T x={60} y={70 + i * 42} s={11} a="start" f={C.latte}>{c.label}</T>
+          <T x={225} y={70 + i * 42} s={11} a="end" f={C.latte}>{c.label}</T>
           <Bar x={260} y={58 + i * 42} w={c.n * 60} h={18} full={1} fill={c.c} />
         </g>
       ))}
