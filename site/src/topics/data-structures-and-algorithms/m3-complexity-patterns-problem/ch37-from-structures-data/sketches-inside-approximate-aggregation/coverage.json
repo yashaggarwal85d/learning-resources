@@ -1,0 +1,89 @@
+{
+  "topic": "dsa.sketches-inside-approximate-aggregation",
+  "syllabus": [
+    {
+      "clause": "HLL, KLL/t-digest and reservoir samples",
+      "at": [
+        { "step": "A register that only ever grows" },
+        { "step": "A summary that is only approximately mergeable" },
+        { "step": "Where the weighting comes from" }
+      ]
+    },
+    {
+      "clause": "as mergeable partial aggregates in warehouses and stream processors",
+      "at": [
+        { "step": "What a mergeable aggregate already is" },
+        { "step": "A register that only ever grows" },
+        { "step": "Measured: averaging medians is wrong" }
+      ]
+    },
+    {
+      "clause": "→ Data Engineering §5.6.",
+      "at": [
+        { "deep": "Where this goes next" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL manual (Partial Aggregation)",
+      "items": [
+        { "item": "The combine function must produce the same state a single pass over the combined rows would have produced", "at": [{ "step": "What a mergeable aggregate already is" }] },
+        { "item": "MAX/MIN combine by the same comparison, SUM by addition; row-order-sensitive aggregates have no useful combine function", "at": [{ "step": "What a mergeable aggregate already is" }] }
+      ]
+    },
+    {
+      "source": "Spark HyperLogLogPlusPlus.scala",
+      "items": [
+        { "item": "approx_count_distinct returns the estimated cardinality by HyperLogLog++, relativeSD defaults to 0.05", "at": [{ "step": "A register that only ever grows" }] }
+      ]
+    },
+    {
+      "source": "BigQuery HyperLogLog++ functions",
+      "items": [
+        { "item": "HLL++ functions are approximate aggregate functions trading resources for statistical error; MERGE and MERGE_PARTIAL combine sketches by union", "at": [{ "step": "A register that only ever grows" }] }
+      ]
+    },
+    {
+      "source": "Spark QuantileSummaries.scala",
+      "items": [
+        { "item": "Cites Greenwald and Khanna's paper and provides a merge method", "at": [{ "step": "A summary that is only approximately mergeable" }] }
+      ]
+    },
+    {
+      "source": "Spark SQL built-in aggregate functions reference",
+      "items": [
+        { "item": "percentile_approx's accuracy defaults to ten thousand; kll_sketch_agg_bigint's k defaults to two hundred", "at": [{ "step": "A summary that is only approximately mergeable" }] }
+      ]
+    },
+    {
+      "source": "Spark Partitioner.scala (RangePartitioner.sketch)",
+      "items": [
+        { "item": "Sketches the input RDD via reservoir sampling on each partition; sample size capped at one million, over-sampled by a factor of three", "at": [{ "step": "Where the weighting comes from" }] }
+      ]
+    },
+    {
+      "source": "Druid DataSketches extension",
+      "items": [
+        { "item": "Sketches are data structures implementing approximate streaming mergeable algorithms, stored in Druid segments as additive metrics", "at": [{ "step": "A summary that is only approximately mergeable" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-11-07",
+    "items": [
+      { "item": "HyperLogLog's exact register-level merge law is verified directly in examples.py (merged registers equal single-pass registers, asserted bit for bit), not merely claimed from a citation, since no source read states this as a one-sentence fact safe to quote.", "at": [{ "step": "A register that only ever grows" }] },
+      { "item": "The naive-sum-over-counts claim is scoped to this topic's own synthetic stream, where customers are drawn from a shared pool across partitions rather than partitioned by customer id, so the over-count is a measured, designed property of this topic's own data, not a general theorem.", "at": [{ "step": "Summed, or merged?" }] },
+      { "item": "The averaging-medians failure needed a genuinely skewed partition split (one partition a hundredth the size of the rest, holding only outlier values) to show a large gap; re-running the same seeded script reproduced an identical gap both times, confirmed not to be a one-off artifact of a particular random draw.", "at": [{ "step": "Measured: averaging medians is wrong" }] },
+      { "item": "No source read at planning or research time describes t-digest or DDSketch usage inside any named product; this topic makes no such claim, matching CHAPTER.md's own explicit restriction.", "at": [{ "deep": "At the frontier" }] },
+      { "item": "The chapter plan's provisional declared ids (hyperloglog, quantile-sketch) do not match the live registry's actual ids (hyperloglog-distinct-counting, quantile-sketches); this topic's uses list cites the registry's own ids instead, confirmed by grepping registry.ts directly at build time.", "at": [{ "step": "A summary that is only approximately mergeable" }] },
+      { "item": "The Partitioner.scala source required a manual clean re-fetch (via curl, bypassing the fetch tool's own HTML-stripping step) because Scala's generic-type syntax is indistinguishable from an HTML tag to that step, which silently deleted several lines of the constructor signature; the quoted text and the examples.py constants were both taken from the clean fetch, not the mangled one.", "at": [{ "step": "Where the weighting comes from" }] },
+      { "item": "The Bloom-filter OR-merge is named once, briefly, as CHAPTER.md instructs, and demonstrated with a small toy filter rather than attributed to any named product's documentation, since no source opened for this topic describes a product merging Bloom filters by OR.", "at": [{ "step": "Named once: a filter that merges too" }] },
+      { "item": "The eight-partition stream's exact sizes (six thousand rows in seven ordinary partitions, sixty in one small, skewed partition) are this topic's own chosen values for the chapter's shared running example, not read from any source, matching CHAPTER.md's instruction that each topic computes and asserts its own planning values.", "at": [{ "step": "Eight partitions, one wrong average" }] },
+      { "item": "Python's built-in hash() was never used in this topic's examples.py; a fixed MD5-based digest was used from the start, having already been caught as a reproducibility problem while building the sibling topic on consistent hashing.", "at": [{ "step": "A register that only ever grows" }] },
+      { "item": "This topic's handoff was checked by grepping registry.ts for Chapter 38's opening topic at build time; it is not yet live, so the handoff's own wording (quoted from CHAPTER.md) is used as written rather than adjusted against a topic that does not exist yet.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-11-07", "by": "self-review", "open": [] }
+}

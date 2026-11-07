@@ -1,0 +1,126 @@
+{
+  "topic": "dsa.sketches-inside-approximate-aggregation",
+  "note": "An MIT-professor pass: every line teaches the mechanism, never reads the on-screen caption. No digits, symbols or code names; every number is spoken in words.",
+  "steps": [
+    {
+      "lines": [
+        "Split a stream of orders into several pieces, ask each piece for its own typical value, and average those answers together. That average is not, in general, the typical value of the whole stream.",
+        { "beat": 0.4 },
+        "One of those pieces is far smaller than the rest, and happens to hold only unusually large orders. Averaging treats every piece as equally important, no matter how many rows stand behind it."
+      ],
+      "answer": [
+        "The true typical value barely moves, because the odd, small piece carries so little weight in the real data. It is the plain average across pieces that gets pulled off course."
+      ]
+    },
+    {
+      "lines": [
+        "Start with what an ordinary exact total or an ordinary running maximum already does across separate pieces of data: scan each piece on its own, keep a small running state, and then combine those states into the one answer a single uninterrupted scan would have given.",
+        { "beat": 0.4 },
+        "For a running maximum, combining is just comparing the two candidates and keeping the larger. For a running total, combining is addition. Neither one needs to remember the rows themselves, only the one number each scan produced.",
+        { "beat": 0.4 },
+        "An aggregate that cares about the order its rows arrived in has no such combining step at all, because two separately scanned pieces carry no memory of how their rows would have interleaved."
+      ]
+    },
+    {
+      "lines": [
+        "A compact summary is held to the same standard, for a harder question: how many distinct things were seen, or what value sits in the middle of the distribution.",
+        { "beat": 0.4 },
+        "Two separately built summaries must combine into the summary a single pass over both pieces together would have produced, either exactly, or within a stated and known margin.",
+        { "beat": 0.4 },
+        "That one property, whether two partial summaries combine correctly, decides whether a compact summary is worth anything once the data lives on more than one machine."
+      ]
+    },
+    {
+      "lines": [
+        "One well known way to estimate how many distinct things were seen keeps a small array of counters, and feeds every item through a scrambling function first.",
+        { "beat": 0.4 },
+        "Each counter remembers only the longest run of a particular pattern that any item landing on it has ever produced, never the items themselves.",
+        { "beat": 0.4 },
+        "Because that array is so small, it can be written out, stored, carried across a network and combined later, with the actual estimate computed only once, at the very end."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate pieces of the stream each produce their own estimate of how many distinct customers they saw, and the very same customer happens to appear in both pieces.",
+        { "beat": 0.4 },
+        "Does the right combined estimate come from adding those two numbers together, or from combining the counter arrays themselves first, and estimating only once?"
+      ],
+      "answer": [
+        "Adding the two estimates counts that shared customer twice. Combining the counter arrays by keeping, at every position, whichever array's longest run was greater, asks the one question that actually matters across both pieces at once."
+      ]
+    },
+    {
+      "lines": [
+        "Combine every piece's own counter array this way, position by position, and the result is exactly the array a single, uninterrupted pass over the whole stream would have built. Not close. Identical.",
+        { "beat": 0.4 },
+        "Add together each piece's own separate estimate instead, and the total overshoots the real number of distinct customers by a wide margin, because every customer who ordered in more than one piece gets counted again for each piece they touched."
+      ]
+    },
+    {
+      "lines": [
+        "A summary built for the middle of a distribution cannot afford to remember every value, so it keeps a small, carefully chosen sample or compressed summary instead, and its combined answer is only ever an approximation, bounded by a margin the summary itself can state.",
+        { "beat": 0.4 },
+        "Different systems spend that budget differently: one trades more memory for a tighter guaranteed margin, another keeps the summary smaller and accepts a looser one. The underlying promise, that two partial summaries combine into something close to the truth, stays the same across all of them."
+      ]
+    },
+    {
+      "lines": [
+        "Set the naive average of each piece's own typical value against the real typical value of the whole stream, and the gap is large, pulled off course by the one odd, small piece, exactly as predicted earlier.",
+        { "beat": 0.4 },
+        "Now set a properly combined, weighted summary, built from each piece's own small sample, against that same real value, and the gap nearly disappears."
+      ]
+    },
+    {
+      "lines": [
+        "That weighting has to come from somewhere, and one well known partitioning step already does exactly this work before it ever sorts a single row.",
+        { "beat": 0.3 },
+        "Take a small random sample from each piece, and attach to every sampled value a weight equal to how many rows its own piece actually held.",
+        { "beat": 0.4 },
+        "A sample without that weight is worthless once pieces differ in size; the weight is what lets samples from pieces of very different sizes be combined honestly."
+      ]
+    },
+    {
+      "lines": [
+        "Feed those same weighted, combined samples into the job of choosing where a later step should cut the stream into roughly equal shares, and the chosen cut points land close to the cut points a full sort of every single row would have produced.",
+        { "beat": 0.4 },
+        "No row ever had to be fully sorted to find them."
+      ]
+    },
+    {
+      "lines": [
+        "A membership filter, the kind that answers a plain yes or no about whether something might be present, turns out to belong to this same family, as long as two copies are built with the same size and the same number of scrambling functions.",
+        { "beat": 0.4 },
+        "Combining them is nothing more than a bitwise union: flip on every position either copy had already flipped on. Anything either original filter would have called present still tests present afterward."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the whole journey a summary like this takes inside a distributed job: built once on each machine as its own share of the data streams past.",
+        { "beat": 0.3 },
+        "Carried across the network as a compact block of bytes during a shuffle, and only combined once, at the very end, into the final answer.",
+        { "beat": 0.4 },
+        "That is the same shape an earlier topic already measured for keeping only the very largest values across many streams: build small pieces locally, merge once."
+      ]
+    },
+    {
+      "lines": [
+        "Across this chapter, one textbook structure after another picked up exactly one production constraint.",
+        { "beat": 0.3 },
+        "A table that had to spill, a sort that had to spill, a heap that had to merge streams, a queue that had to schedule real work.",
+        { "beat": 0.3 },
+        "A clustering structure that had to track groups as they formed, a tree that had to serve as a real index, a ring that had to place real machines, and now a summary that had to combine correctly across pieces.",
+        { "beat": 0.4 },
+        "A summary earns its place in a distributed answer the moment its combining rule is actually checked, never merely assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Recognizing a familiar structure inside a real system, and naming exactly what constraint reshaped it, is only half of the skill this milestone built.",
+        { "beat": 0.4 },
+        "The other half is building one of these structures from nothing, arguing that it behaves correctly, testing it under real conditions.",
+        { "beat": 0.3 },
+        "And explaining the reasoning behind it under real pressure. That practice starts next."
+      ]
+    }
+  ]
+}

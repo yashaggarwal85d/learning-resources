@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Bloom filters and false-positive math">Before this: the filter this topic names once as also mergeable, by OR, when built with equal parameters.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Heaps inside compaction, shuffle and top-N">Before this: the distributed top-N merge shape this topic's own map-combine-shuffle-merge pipeline reuses.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Consistent hashing inside sharded stores">Before this: the partitioned placement scheme behind the stream this topic's sketches are built over.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The sources
+
+<ul class="resources">
+  <Resource kind="reading" title="User-Defined Aggregates: Partial Aggregation" href="https://www.postgresql.org/docs/current/xaggr.html" by="PostgreSQL">The combine-function contract every mergeable aggregate, sketches included, must satisfy.</Resource>
+  <Resource kind="reading" title="HyperLogLogPlusPlus.scala" href="https://raw.githubusercontent.com/apache/spark/master/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/expressions/aggregate/HyperLogLogPlusPlus.scala" by="Apache Spark">The estimator's own description and its default relative standard deviation.</Resource>
+  <Resource kind="reading" title="HyperLogLog++ functions" href="https://cloud.google.com/bigquery/docs/reference/standard-sql/hll_functions" by="Google BigQuery">The sketch exposed as a storable, mergeable value.</Resource>
+  <Resource kind="reading" title="Partitioner.scala" href="https://raw.githubusercontent.com/apache/spark/master/core/src/main/scala/org/apache/spark/Partitioner.scala" by="Apache Spark">RangePartitioner's own reservoir-sampling sketch and its weighting.</Resource>
+</ul>
+
+</section>
