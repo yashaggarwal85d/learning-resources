@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A structured field sums exactly, every time, no matter how its own
 // event is worded; a formatted sentence can silently lose the
@@ -59,14 +59,23 @@ export function FormattedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the formatted total is genuinely wrong (takeaway) ─────
 export function FormattedReveal({ t }: StepCtx) {
+  const bars = [0, 1, 2];
   return (
-    <Svg label="field_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same three events, re-parsed from text</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>total: 3, genuinely wrong (should be 6)</T>
+    <Svg label="field_demo, captured" h={210}>
+      <T x={30} y={30} s={11} f={C.latte} o={fa(t, 0.1, 0.2)}>recovered from text: 1, 1, 1</T>
+      {bars.map((i) => {
+        const start = 0.2 + i * 0.15;
+        const grow = easeOut(seg(t, start, start + 0.25));
+        return (
+          <rect key={i} x={30 + i * 50} y={95 - grow * 14} width={30} height={grow * 14} fill={C.cherry} opacity={fa(t, start, 0.2)} />
+        );
+      })}
+      <Draw pts={[[200, 60], [200, 85]]} t={t} from={0.6} to={0.75} stroke={C.caramel} w={2} pen />
+      <g opacity={fa(t, 0.85, 0.3)}>
+        <rect x={150} y={95} width={210} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={255} y={122} s={13} a="middle" f={C.mocha}>total: 3, wrong (should be 6)</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a sentence's own words are not a value</T>
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>a sentence's own words are not a value</T>
     </Svg>
   );
 }
@@ -89,14 +98,23 @@ export function TraceContextPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: it round-trips, the bad header is rejected (takeaway) ─
 export function TraceContextReveal({ t }: StepCtx) {
+  const good = easeOut(seg(t, 0.2, 0.5));
+  const bad = easeOut(seg(t, 0.35, 0.6));
   return (
-    <Svg label="field_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the real header, parsed both ways</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>exact round-trip; malformed: rejected</T>
+    <Svg label="field_demo, captured" h={210}>
+      <T x={30} y={30} s={11} f={C.latte} o={fa(t, 0.1, 0.2)}>built header</T>
+      <Draw pts={[[90, 35], [260, 65]]} t={t} from={0.2} to={0.5} stroke={C.caramel} w={2} pen />
+      <circle cx={90 + good * 170} cy={35 + good * 30} r={5} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
+      <T x={30} y={85} s={11} f={C.latte} o={fa(t, 0.3, 0.2)}>malformed header</T>
+      <Draw pts={[[110, 90], [230, 90]]} t={t} from={0.35} to={0.6} stroke={C.latte} w={2} pen />
+      <circle cx={110 + bad * 60} cy={90} r={5} fill={C.cherry} opacity={fa(t, 0.35, 0.2)} />
+      <circle cx={230} cy={90} r={7} fill="none" stroke={C.cherry} strokeWidth={1.5} opacity={fa(t, 0.6, 0.2)} />
+      <g opacity={fa(t, 0.75, 0.3)}>
+        <rect x={190} y={45} width={160} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={270} y={70} s={12} a="middle" f={C.mocha}>exact round-trip</T>
+        <T x={240} y={112} s={11} f={C.latte}>rejected, not guessed at</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a specified format survives a new parser</T>
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>a specified format survives a new parser</T>
     </Svg>
   );
 }
