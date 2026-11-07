@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Snapshot isolation's own commit rule only checks for same-key writes,
 // so it genuinely lets write skew through even while two transactions
@@ -62,11 +62,11 @@ export function NoConflictReveal({ t }: StepCtx) {
   return (
     <Svg label="isolation_level_permitted_anomaly.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>same-key write check, run for real</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>no conflict found, genuinely</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>never designed to catch this</T>
+      <T x={70} y={85} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>txn_a writes: doctor_0</T>
+      <T x={70} y={115} s={12} f={C.latte} o={fa(t, 0.5, 0.3)}>txn_b writes: doctor_1</T>
+      <Draw pts={[[280, 81], [280, 111]]} t={t} from={0.7} to={1.0} stroke={C.caramel} w={2} pen />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>no conflict found, genuinely</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>never designed to catch this</T>
     </Svg>
   );
 }
@@ -120,14 +120,17 @@ export function NoCyclePredict({ t }: StepCtx) {
 
 // ── 8 · Measured: no cycle for unrelated transactions (takeaway) ─────────
 export function NoCycleReveal({ t }: StepCtx) {
+  const probe = easeOut(seg(t, 0.6, 0.95));
   return (
     <Svg label="isolation_level_permitted_anomaly.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>two transactions, no shared keys at all</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>no cycle found, genuinely</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>not stricter about everything</T>
+      <circle cx={100} cy={85} r={6} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.4, 0.3)} />
+      <T x={92} y={89} s={10} f={C.crema} o={fa(t, 0.4, 0.3)}>C</T>
+      <circle cx={280} cy={85} r={6} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.5, 0.3)} />
+      <T x={272} y={89} s={10} f={C.crema} o={fa(t, 0.5, 0.3)}>D</T>
+      <circle cx={106 + probe * 168} cy={85} r={3} fill={C.taupe} opacity={fa(t, 0.6, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={130} s={13} a="middle" f={C.mocha}>no cycle found, genuinely</T>}
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>not stricter about everything</T>
     </Svg>
   );
 }
