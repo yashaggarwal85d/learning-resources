@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, seg } from '../../../../../reels/anim';
-import { Bar, C, SERIF, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, fmt, seg } from '../../../../../reels/anim';
+import { Bar, C, Decode, Draw, Plot, Reticle, SERIF, Svg, T } from '../../../../../reels/kit';
 
 // Every number shown here is computed or asserted by examples.py.
 
@@ -39,28 +39,82 @@ const sci = (v: number) => {
   return `${m.replace(/\.0$/, '')}×10${[...e].map((c) => SUP[c]).join('')}`;
 };
 
-// 1 · The three questions every cost claim answers, drawn from the claim itself.
+// 1 · The three questions every cost claim answers, pulled out of the claim itself: each word of the claim is
+// underlined in turn and a lead line drops from it to the question it hides.
+const CLAIM = '“quicksort is O(n log n)”';
+// For each question, the characters of the claim it is about: O (the bound), quicksort (which inputs: the case),
+// n log n (a count of what: the resource).
+const SPANS: [number, number][] = [
+  [CLAIM.indexOf('O'), 1],
+  [CLAIM.indexOf('quicksort'), 9],
+  [CLAIM.indexOf('n log n'), 7],
+];
+/** Where each span of the claim sits on screen, measured from the rendered text (it scales up on phones). */
+function useSpans(ref: { current: SVGTextElement | null }) {
+  const [pos, setPos] = useState<[number, number][]>([
+    [228, 16],
+    [44, 126],
+    [252, 98],
+  ]);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !el.getNumberOfChars?.()) return;
+    try {
+      const next = SPANS.map(([i, n]): [number, number] => {
+        const x0 = el.getStartPositionOfChar(i).x;
+        const x1 = el.getEndPositionOfChar(i + n - 1).x;
+        return [Math.round(x0), Math.round(x1 - x0)];
+      });
+      if (next.some((p, k) => p[0] !== pos[k][0] || p[1] !== pos[k][1])) setPos(next);
+    } catch {
+      /* not laid out yet */
+    }
+  });
+  return pos;
+}
 export function Opening({ t }: StepCtx) {
   const rows = [
     ['Which bound?', 'O, Ω, Θ, o, ω', 'how the function relates'],
     ['Which case?', 'best, worst, average, expected', 'which function we bound'],
     ['Which resource?', 'time, space', 'what is being counted'],
   ];
+  const ref = useRef<SVGTextElement>(null);
+  const pos = useSpans(ref);
   const claim = easeOut(seg(t, 0, 0.4));
   return (
     <Svg label="The claim quicksort is O of n log n hides three questions: which bound, which case, which resource" h={400}>
-      <T x={30} y={36} s={22} f={C.caramel} serif w={700} o={claim}>“quicksort is O(n log n)”</T>
+      <text
+        ref={ref}
+        x={30}
+        y={36}
+        fontSize={22}
+        style={{ fontSize: 'calc(22px * var(--svg-text-scale, 1))' }}
+        fill={C.caramel}
+        fontWeight={700}
+        fontFamily={SERIF}
+        opacity={claim}
+        transform={`translate(0 ${((1 - claim) * 8).toFixed(2)})`}
+      >
+        {CLAIM}
+      </text>
       {rows.map(([q, v, d], i) => {
-        const a = easeOut(seg(t, 0.4 + i * 0.4, 1.0 + i * 0.4));
+        const at = 0.45 + i * 0.75;
+        const u = easeOut(seg(t, at, at + 0.3));
+        const a = easeOut(seg(t, at + 0.3, at + 0.8));
         const y = 64 + i * 110;
+        const [wx, ww] = pos[i];
+        const x0 = Math.round(wx + ww / 2);
+        const lit = t >= at && (i === 2 || t < at + 0.75);
         return (
-          <g key={q} opacity={a} transform={`translate(${(1 - a) * 30} 0)`}>
-            <line x1={14} y1={46} x2={14} y2={y + 49} stroke={C.mocha} strokeWidth={2} />
-            <line x1={14} y1={y + 49} x2={30} y2={y + 49} stroke={C.mocha} strokeWidth={2} />
-            <rect x={30} y={y} width={540} height={98} rx={16} fill={C.roast} stroke={C.mocha} />
-            <T x={52} y={y + 30} s={17} f={C.caramel} w={700}>{q}</T>
-            <T x={52} y={y + 56} s={14} f={C.crema} w={600}>{v}</T>
-            <T x={52} y={y + 80} s={13} f={C.latte}>{d}</T>
+          <g key={q}>
+            <rect x={wx} y={45} width={ww * u} height={3} fill={lit ? C.caramel : C.latte} />
+            <Draw pts={[[x0, 50], [x0, 53 + i * 3], [9 + i * 6, 53 + i * 3], [9 + i * 6, y + 49], [30, y + 49]]} t={t} from={at + 0.1} to={at + 0.45} stroke={lit ? C.latte : C.mocha} w={1.6} />
+            <g opacity={a} transform={`translate(0 ${((1 - a) * 14).toFixed(2)})`}>
+              <rect x={30} y={y} width={540} height={98} rx={16} fill={C.roast} stroke={lit ? C.latte : C.mocha} strokeWidth={lit ? 1.8 : 1} />
+              <Decode x={52} y={y + 30} s={17} f={C.caramel} w={700} text={q} t={t} at={at + 0.3} dur={0.4} />
+              <T x={52} y={y + 56} s={14} f={C.crema} w={600}>{v}</T>
+              <T x={52} y={y + 80} s={13} f={C.latte}>{d}</T>
+            </g>
           </g>
         );
       })}
@@ -135,7 +189,8 @@ export function PowerRatios({ t, answer }: StepCtx) {
   );
 }
 
-// 4 · o and ω: read the ratio.
+// 4 · o and ω: read the ratio. n steps through 10, 10³, 10⁶ (the column lights), each row's ratio lands and its
+// trend line draws: down to 0, flat at 3, up and away; then the verdict symbol drops in.
 export function Ratios({ t }: StepCtx) {
   const rows: [string, string, (n: number) => number, string][] = [
     ['n log n  vs  n²', 'o', (n) => (n * Math.log2(n)) / (n * n), 'ratio → 0: little-o'],
@@ -144,23 +199,36 @@ export function Ratios({ t }: StepCtx) {
   ];
   const ns = [10, 1000, 1000000];
   const heads = ['n = 10', 'n = 10³', 'n = 10⁶'];
+  const colAt = (j: number) => 0.6 + j * 0.8;
+  const col = ns.reduce((c, _, j) => (t >= colAt(j) ? j : c), -1);
   return (
     <Svg label="The ratio of f to g as n grows: toward zero is little-o, toward a constant is theta, toward infinity is little-omega" h={400}>
       <T x={30} y={30} s={13} f={C.taupe}>f(n) / g(n)</T>
-      {heads.map((h, j) => <T key={h} x={50 + j * 112} y={54} s={13} f={C.taupe}>{h}</T>)}
+      {heads.map((h, j) => (
+        <T key={h} x={50 + j * 112} y={54} s={13} f={j === col ? C.caramel : C.taupe} w={j === col ? 700 : 500}>{h}</T>
+      ))}
+      {col >= 0 && <rect x={46 + col * 112} y={58} width={(heads[col].length + 1) * 8} height={2} fill={C.caramel} opacity={col === 2 && t > 3 ? 0.4 : 1} />}
       {rows.map(([lab, sym, g, verdict], i) => {
-        const a = easeOut(seg(t, 0.2 + i * 0.6, 0.8 + i * 0.6));
+        const a = easeOut(seg(t, 0.1 + i * 0.15, 0.5 + i * 0.15));
         const y = 68 + i * 108;
+        // Trend: one point per n, at log10 of the ratio, 5 units a decade around the card's middle.
+        const pts: [number, number][] = ns.map((n, j) => [410 + j * 45, Math.round(y + 50 - 5.5 * Math.log10(g(n)) + (i === 1 ? 8 : 0))]);
+        const land = easeOutBack(seg(t, 3.0, 3.45));
         return (
           <g key={lab} opacity={a} transform={`translate(${(1 - a) * 24} 0)`}>
             <rect x={30} y={y} width={540} height={92} rx={16} fill={C.roast} stroke={C.mocha} />
             <T x={50} y={y + 30} s={16} f={C.crema} w={600}>{lab}</T>
-            <T x={550} y={y + 34} s={30} f={C.caramel} a="end" serif w={800}>{sym}</T>
             {ns.map((n, j) => {
               const v = g(n);
-              return <T key={n} x={50 + j * 112} y={y + 60} s={14} f={C.latte}>{v < 0.001 || v >= 1000 ? sci(v) : v.toFixed(v < 1 ? 4 : 2)}</T>;
+              const text = v < 0.001 || v >= 1000 ? sci(v) : v.toFixed(v < 1 ? 4 : 2);
+              return <Decode key={n} x={50 + j * 112} y={y + 60} s={14} f={j === col ? C.crema : C.latte} text={text} t={t} at={colAt(j)} dur={0.4} />;
             })}
-            <T x={50} y={y + 82} s={13} f={C.caramel}>{verdict}</T>
+            <Draw pts={pts} t={t} from={colAt(0) + 0.3} to={colAt(2) + 0.3} stroke={C.latte} w={1.8} pen={false} />
+            <Plot pts={pts} t={t} start={colAt(0) + 0.2} beat={0.8} r={3.5} fill={C.caramel} />
+            <g opacity={clamp(land * 1.2)} transform={`translate(0 ${((1 - land) * -18).toFixed(2)})`}>
+              <T x={550} y={y + 34} s={30} f={C.caramel} a="end" serif w={800}>{sym}</T>
+            </g>
+            <Decode x={50} y={y + 82} s={13} f={C.caramel} text={verdict} t={t} at={3.2 + i * 0.12} dur={0.6} />
           </g>
         );
       })}
@@ -250,12 +318,13 @@ export function Spread({ t }: StepCtx) {
   );
 }
 
-// 8 · Time versus space: duplicate detection among 1,000 distinct numbers.
+// 8 · Time versus space: duplicate detection among 1,000 distinct numbers. Each method runs: its step count races
+// up with a bar to scale (the pairs bar is the full width), and the hash set's 1,000 stored values count up in red.
 export function TimeSpace({ t }: StepCtx) {
-  const rows: [string, string, string, string][] = [
-    ['compare every pair', '499,500', '0', 'time n²'],
-    ['heapsort in place, scan', '17,830', '0', 'time n log n'],
-    ['hash set', '1,000', '1,000', 'expected time n'],
+  const rows: [string, number, number, string][] = [
+    ['compare every pair', 499500, 0, 'time n²'],
+    ['heapsort in place, scan', 17830, 0, 'time n log n'],
+    ['hash set', 1000, 1000, 'expected time n'],
   ];
   return (
     <Svg label="Finding a duplicate among 1000 distinct numbers: pairs 499,500 comparisons and no extra storage; heapsort 17,830 and none; hash set 1,000 lookups and 1,000 stored values" h={380}>
@@ -263,19 +332,24 @@ export function TimeSpace({ t }: StepCtx) {
       <T x={420} y={64} s={13} f={C.taupe} a="end">STEPS</T>
       <T x={550} y={64} s={13} f={C.taupe} a="end">EXTRA VALUES</T>
       {rows.map(([lab, steps, extra, th], i) => {
-        const a = easeOut(seg(t, 0.2 + i * 0.7, 0.9 + i * 0.7));
+        const at = 0.2 + i * 0.9;
+        const a = easeOut(seg(t, at, at + 0.5));
+        const run = easeInOut(seg(t, at + 0.3, at + 1.1));
         const y = 74 + i * 92;
+        const bw = Math.max(2, (370 * steps) / 499500) * run;
         return (
           <g key={lab} opacity={a} transform={`translate(${(1 - a) * 24} 0)`}>
             <rect x={30} y={y} width={540} height={82} rx={16} fill={C.roast} stroke={C.mocha} />
             <T x={50} y={y + 30} s={15} f={C.crema} w={600}>{lab}</T>
-            <T x={50} y={y + 62} s={13} f={C.caramel}>{th}</T>
-            <T x={420} y={y + 60} s={20} f={C.crema} a="end" w={700}>{steps}</T>
-            <T x={550} y={y + 60} s={20} f={extra === '0' ? C.caramel : C.cherryText} a="end" w={700}>{extra}</T>
+            <T x={50} y={y + 56} s={13} f={C.caramel}>{th}</T>
+            <rect x={50} y={y + 66} width={370} height={4} rx={2} fill={C.cocoa} />
+            <rect x={50} y={y + 66} width={bw} height={4} rx={2} fill={i === 0 ? C.cherryText : C.caramel} />
+            <T x={420} y={y + 52} s={20} f={C.crema} a="end" w={700}>{fmt(steps * run)}</T>
+            <T x={550} y={y + 52} s={20} f={extra === 0 ? C.caramel : C.cherryText} a="end" w={700}>{fmt(extra * run)}</T>
           </g>
         );
       })}
-      <T x={30} y={368} s={13} f={C.latte} o={easeOut(seg(t, 3, 3.6))}>time bought with space: name both resources</T>
+      <T x={30} y={368} s={13} f={C.latte} o={easeOut(seg(t, 3.6, 4.2))}>time bought with space: name both resources</T>
     </Svg>
   );
 }
@@ -310,31 +384,43 @@ export function Crossover({ t }: StepCtx) {
   );
 }
 
-// 10 · Size is bits, not value.
+// 10 · Size is bits, not value. The 32-bit prime's bits light up and its trial divisions count to 65,534; then the
+// strip doubles to 64 bits, and the count runs on and on, past four billion.
 export function BitsNotValue({ t }: StepCtx) {
-  const rows: [string, string, string, number][] = [
-    ['a 32-bit prime', '65,534', 'trial divisions to prove it prime', 32],
-    ['a 64-bit prime', '4 billion+', 'the input only doubled in size', 64],
+  const rows: [string, number, string, number][] = [
+    ['a 32-bit prime', 65534, 'trial divisions to prove it prime', 32],
+    ['a 64-bit prime', 4294967296, 'the input only doubled in size', 64],
   ];
   return (
     <Svg label="Trial division on a 32-bit prime takes 65,534 steps; on a 64-bit prime over four billion: polynomial in the value, exponential in the bits" h={340}>
       <T x={30} y={34} s={13} f={C.taupe}>PRIMALITY BY TRIAL DIVISION · O(√v) IN THE VALUE v</T>
       {rows.map(([lab, v, d, bits], i) => {
-        const a = easeOut(seg(t, 0.3 + i * 0.9, 1.1 + i * 0.9));
+        const at = 0.2 + i * 1.1;
+        const a = easeOut(seg(t, at, at + 0.5));
+        const lit = seg(t, at + 0.2, at + 0.7);
+        // Count up: the first quickly; the second keeps running (exponential ease) and only then lands on its label.
+        const run = i ? easeInOut(seg(t, at + 0.6, at + 2.0)) : easeOut(seg(t, at + 0.4, at + 1.0));
+        const done = run >= 1;
         const y = 50 + i * 120;
         return (
           <g key={lab} opacity={a} transform={`translate(${(1 - a) * 24} 0)`}>
             <rect x={30} y={y} width={540} height={108} rx={16} fill={C.roast} stroke={C.mocha} />
             <T x={50} y={y + 28} s={16} f={C.crema} w={600}>{lab}</T>
-            {Array.from({ length: bits }, (_, k) => (
-              <rect key={k} x={50 + k * 4.6} y={y + 40} width={3.6} height={12} rx={1} fill={(k * 5 + 3) % 7 < 3 ? C.latte : C.mocha} />
-            ))}
+            {Array.from({ length: bits }, (_, k) => {
+              const on = k < bits * lit;
+              const extra = i === 1 && k >= 32;
+              return <rect key={k} x={50 + k * 4.6} y={y + 40} width={3.6} height={12} rx={1} fill={on ? ((k * 5 + 3) % 7 < 3 ? (extra ? C.caramel : C.latte) : C.mocha) : C.cocoa} />;
+            })}
             <T x={50} y={y + 82} s={13} f={C.latte}>{d}</T>
-            {i ? <T x={550} y={y + 66} s={26} f={C.cherryText} a="end" serif w={800}>{v}</T> : <T x={550} y={y + 66} s={20} f={C.caramel} a="end" w={700}>{v}</T>}
+            {i ? (
+              <T x={550} y={y + 66} s={done ? 26 : 16} f={C.cherryText} a="end" serif={done} w={800}>{done ? '4 billion+' : fmt(Math.pow(v, run))}</T>
+            ) : (
+              <T x={550} y={y + 66} s={20} f={C.caramel} a="end" w={700}>{fmt(v * run)}</T>
+            )}
           </g>
         );
       })}
-      <T x={30} y={322} s={13} f={C.latte} o={easeOut(seg(t, 2.4, 3))}>32 more bits of input: about 65,536 times the steps</T>
+      <T x={30} y={322} s={13} f={C.latte} o={easeOut(seg(t, 3.2, 3.7))}>32 more bits of input: about 65,536 times the steps</T>
     </Svg>
   );
 }
@@ -386,7 +472,7 @@ const DECODED = [
   ['resource', 'time (comparisons)'],
 ];
 export function Recap({ t }: StepCtx) {
-  const d = easeOut(seg(t, 1.8, 2.5));
+  const d = easeOut(seg(t, 1.4, 1.9));
   return (
     <Svg label="Recap of the seven points, and the opening claim decoded: an upper bound on expected time, counting comparisons, with random pivots" h={412}>
       {RECAP.map(([k, v], i) => {
@@ -406,10 +492,11 @@ export function Recap({ t }: StepCtx) {
         {DECODED.map(([k, v], i) => (
           <g key={k}>
             <T x={46} y={348 + i * 26} s={14} f={C.latte}>{k}</T>
-            <T x={170} y={348 + i * 26} s={14} f={C.crema} w={600}>{v}</T>
+            <Decode x={170} y={348 + i * 26} s={14} f={C.crema} w={600} text={v} t={t} at={1.7 + i * 0.15} dur={0.4} />
           </g>
         ))}
       </g>
+      <Reticle x={300} y={362} w={572} h={96} t={t} at={2.0} color={C.latte} />
     </Svg>
   );
 }
