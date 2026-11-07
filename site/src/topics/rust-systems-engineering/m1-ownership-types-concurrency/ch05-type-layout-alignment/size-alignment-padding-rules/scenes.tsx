@@ -12,15 +12,21 @@ const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
 type Field = { name: string; bytes: number; padding?: boolean };
 
 function byteRuler(x0: number, y: number, cellW: number, fields: Field[], t: number, start: number, cellH = 28) {
+  // Each cell drops into its slot from above, one after another in declaration order, so the
+  // struct visibly gets laid out byte by byte instead of popping in all at once.
   let x = x0;
   const nodes: ReactNode[] = [];
   fields.forEach((f, i) => {
     const w = f.bytes * cellW;
-    const op = fa(t, start + i * 0.15);
+    const cellT = start + i * 0.15;
+    const op = fa(t, cellT);
+    const drop = easeOut(seg(t, cellT, cellT + 0.3));
+    const dy = (1 - drop) * -26;
+    const cx = x;
     nodes.push(
-      <g key={i} opacity={op}>
-        <rect x={x} y={y} width={w} height={cellH} fill={f.padding ? C.cocoa : 'none'} stroke={f.padding ? C.mocha : C.caramel} strokeWidth={1.3} strokeDasharray={f.padding ? '3 3' : undefined} />
-        <T x={x + w / 2} y={y + cellH / 2 + 4} s={11} a="middle" f={f.padding ? C.taupe : C.crema}>
+      <g key={i} opacity={op} transform={`translate(0,${dy})`}>
+        <rect x={cx} y={y} width={w} height={cellH} fill={f.padding ? C.cocoa : 'none'} stroke={f.padding ? C.mocha : C.caramel} strokeWidth={1.3} strokeDasharray={f.padding ? '3 3' : undefined} />
+        <T x={cx + w / 2} y={y + cellH / 2 + 4} s={11} a="middle" f={f.padding ? C.taupe : C.crema}>
           {f.padding ? '···' : f.name}
         </T>
       </g>,
