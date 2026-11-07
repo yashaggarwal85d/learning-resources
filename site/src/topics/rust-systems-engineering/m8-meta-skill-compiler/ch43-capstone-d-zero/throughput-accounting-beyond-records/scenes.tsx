@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Two implementations can run at the identical real speed while one
 // allocates a dramatically larger real cost underneath it, a gap
@@ -26,14 +26,20 @@ export function ThroughputPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: throughput lands close either way ─────────────────────
 export function ThroughputReveal({ t }: StepCtx) {
+  const borrow = easeOut(seg(t, 0.2, 0.5));
+  const clone = easeOut(seg(t, 0.35, 0.65));
   return (
-    <Svg label="alloc_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical twenty thousand records</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>millions of records per second, either way</T>
+    <Svg label="alloc_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>the identical twenty thousand records</T>
+      <rect x={60} y={120 - borrow * 70} width={40} height={borrow * 70} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
+      <T x={80} y={140} s={10} a="middle" f={C.latte}>borrowing</T>
+      <rect x={160} y={120 - clone * 64} width={40} height={clone * 64} fill={C.caramel} opacity={fa(t, 0.35, 0.2)} />
+      <T x={180} y={140} s={10} a="middle" f={C.latte}>cloning</T>
+      <g opacity={fa(t, 0.9, 0.3)}>
+        <rect x={60} y={155} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={177} s={12} a="middle" f={C.mocha}>millions of records per second, either way</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a modest band, not a structural gap</T>
+      <T x={60} y={200} s={11} f={C.latte} o={fa(t, 1.3, 0.3)}>a modest band, not a structural gap</T>
     </Svg>
   );
 }
@@ -87,14 +93,20 @@ export function GapPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: over twenty times larger ──────────────────────────────
 export function GapReveal({ t }: StepCtx) {
+  const borrow = easeOut(seg(t, 0.2, 0.45));
+  const clone = easeOut(seg(t, 0.4, 0.75));
   return (
-    <Svg label="alloc_demo, captured" h={200}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical speed, a hidden cost</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>over twenty times the bytes, per record</T>
+    <Svg label="alloc_demo, captured" h={210}>
+      <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>the identical speed, a hidden cost</T>
+      <rect x={60} y={120 - borrow * 4} width={40} height={borrow * 4} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
+      <T x={80} y={140} s={10} a="middle" f={C.latte}>8 bytes/record</T>
+      <rect x={160} y={120 - clone * 90} width={40} height={clone * 90} fill={C.cherry} opacity={fa(t, 0.4, 0.2)} />
+      <T x={180} y={140} s={10} a="middle" f={C.latte}>208 bytes/record</T>
+      <g opacity={fa(t, 0.9, 0.3)}>
+        <rect x={60} y={155} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={210} y={177} s={12} a="middle" f={C.mocha}>over twenty times the bytes, per record</T>
       </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a gap speed alone never showed</T>
+      <T x={60} y={200} s={11} f={C.latte} o={fa(t, 1.3, 0.3)}>a gap speed alone never showed</T>
     </Svg>
   );
 }
