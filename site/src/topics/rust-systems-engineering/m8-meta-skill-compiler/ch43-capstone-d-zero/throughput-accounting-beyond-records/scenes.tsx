@@ -99,9 +99,9 @@ export function GapReveal({ t }: StepCtx) {
     <Svg label="alloc_demo, captured" h={210}>
       <T x={30} y={25} s={11} f={C.latte} o={fa(t, 0.05, 0.2)}>the identical speed, a hidden cost</T>
       <rect x={60} y={120 - borrow * 4} width={40} height={borrow * 4} fill={C.caramel} opacity={fa(t, 0.2, 0.2)} />
-      <T x={80} y={140} s={10} a="middle" f={C.latte}>8 bytes/record</T>
-      <rect x={160} y={120 - clone * 90} width={40} height={clone * 90} fill={C.cherry} opacity={fa(t, 0.4, 0.2)} />
-      <T x={180} y={140} s={10} a="middle" f={C.latte}>208 bytes/record</T>
+      <T x={80} y={140} s={10} a="middle" f={C.latte}>8 bytes</T>
+      <rect x={220} y={120 - clone * 90} width={40} height={clone * 90} fill={C.cherry} opacity={fa(t, 0.4, 0.2)} />
+      <T x={240} y={140} s={10} a="middle" f={C.latte}>208 bytes</T>
       <g opacity={fa(t, 0.9, 0.3)}>
         <rect x={60} y={155} width={300} height={34} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={177} s={12} a="middle" f={C.mocha}>over twenty times the bytes, per record</T>
