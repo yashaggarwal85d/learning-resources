@@ -13,15 +13,21 @@ const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
 type Field = { name: string; bytes: number; padding?: boolean; value?: string };
 
 function byteRuler(x0: number, y: number, cellW: number, fields: Field[], t: number, start: number, cellH = 28) {
+  // Each cell drops into its slot from above, one after another, so the buffer or struct visibly
+  // gets laid out byte by byte instead of popping in all at once.
   let x = x0;
   const nodes: ReactNode[] = [];
   fields.forEach((f, i) => {
     const w = f.bytes * cellW;
-    const op = fa(t, start + i * 0.15);
+    const cellT = start + i * 0.15;
+    const op = fa(t, cellT);
+    const drop = easeOut(seg(t, cellT, cellT + 0.3));
+    const dy = (1 - drop) * -26;
+    const cx = x;
     nodes.push(
-      <g key={i} opacity={op}>
-        <rect x={x} y={y} width={w} height={cellH} fill={f.padding ? C.cocoa : 'none'} stroke={f.padding ? C.mocha : C.caramel} strokeWidth={1.3} strokeDasharray={f.padding ? '3 3' : undefined} />
-        <T x={x + w / 2} y={y + cellH / 2 + 4} s={11} a="middle" f={f.padding ? C.taupe : C.crema}>
+      <g key={i} opacity={op} transform={`translate(0,${dy})`}>
+        <rect x={cx} y={y} width={w} height={cellH} fill={f.padding ? C.cocoa : 'none'} stroke={f.padding ? C.mocha : C.caramel} strokeWidth={1.3} strokeDasharray={f.padding ? '3 3' : undefined} />
+        <T x={cx + w / 2} y={y + cellH / 2 + 4} s={11} a="middle" f={f.padding ? C.taupe : C.crema}>
           {f.padding ? '?' : f.value ?? f.name}
         </T>
       </g>,
@@ -124,13 +130,19 @@ export function EndiannessPredict({ t }: StepCtx) {
 
 // ── 6 · Big-endian, little-endian, and the one wrong default ────────────────────────
 export function EndiannessFig({ t }: StepCtx) {
-  const panel = (label: string, value: string, y: number, start: number, good: boolean) => (
-    <g opacity={fa(t, start)}>
-      <rect x={90} y={y} width={420} height={70} rx={8} fill="none" stroke={good ? C.caramel : C.cherryText} strokeWidth={1.5} />
-      <T x={110} y={y + 26} s={12} f={C.taupe}>{label}</T>
-      <T x={110} y={y + 52} s={15} f={good ? C.crema : C.cherryText}>{value}</T>
-    </g>
-  );
+  // Both panels slide in from the same two wire-byte source instead of just fading into place,
+  // so it reads as one pair of bytes taking two different paths rather than two static facts.
+  const panel = (label: string, value: string, y: number, start: number, good: boolean) => {
+    const slide = easeOut(seg(t, start, start + 0.35));
+    const dx = (1 - slide) * -60;
+    return (
+      <g opacity={fa(t, start)} transform={`translate(${dx},0)`}>
+        <rect x={90} y={y} width={420} height={70} rx={8} fill="none" stroke={good ? C.caramel : C.cherryText} strokeWidth={1.5} />
+        <T x={110} y={y + 26} s={12} f={C.taupe}>{label}</T>
+        <T x={110} y={y + 52} s={15} f={good ? C.crema : C.cherryText}>{value}</T>
+      </g>
+    );
+  };
   return (
     <Svg label="the same two wire bytes decode to a correct number read as big-endian, and a wrong one read in this platform's native order" h={280}>
       {panel('read as big-endian — the wire’s own choice', 'correct', 40, 0.2, true)}
