@@ -24,22 +24,29 @@ function ThinPointer({ x, y, label }: { x: number; y: number; label: string }) {
  * rows for each method's function pointer. */
 function FatPointerDiagram({ t, from = 0.3, showRows = false }: { t: number; from?: number; showRows?: boolean }) {
   const k = fa(t, from, 0.4);
+  // The vtable pointer box docks onto the data pointer box by sliding in from the right (position);
+  // its method table then unfolds downward from the vtable box's own bottom edge (grow), one row
+  // fading in just after the box has grown enough to hold it (staggered reveal, not all at once).
+  const dock = easeOut(seg(t, from, from + 0.4));
+  const vtx = 260 + (1 - dock) * 160;
+  const unfold = showRows ? easeOut(seg(t, from + 0.5, from + 0.8)) : 0;
+  const rowsH = unfold * 120;
   return (
     <Svg label="a dyn Trait reference is a fat pointer: a data pointer and a vtable pointer drawn as one unit" h={300}>
-      <g opacity={k}>
-        <rect x={120} y={30} width={130} height={56} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={185} y={62} s={13} a="middle" f={C.crema}>data pointer</T>
-        <rect x={260} y={30} width={130} height={56} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={325} y={62} s={13} a="middle" f={C.crema}>vtable pointer</T>
-        <T x={252} y={25} s={12} a="middle" f={C.taupe}>one fat pointer</T>
+      <g opacity={k > 0 ? 1 : 0}>
+        <rect x={120} y={30} width={130} height={56} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} opacity={k} />
+        <T x={185} y={62} s={13} a="middle" f={C.crema} o={k}>data pointer</T>
+        <rect x={vtx} y={30} width={130} height={56} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} opacity={k} />
+        <T x={vtx + 65} y={62} s={13} a="middle" f={C.crema} o={k}>vtable pointer</T>
+        <T x={252} y={25} s={12} a="middle" f={C.taupe} o={k}>one fat pointer</T>
       </g>
       {showRows && (
-        <g opacity={fa(t, from + 0.5, 0.4)}>
-          <rect x={260} y={100} width={220} height={120} rx={8} fill="none" stroke={C.mocha} strokeWidth={1.5} />
-          <T x={280} y={124} s={12} f={C.taupe}>encode fn pointer</T>
-          <T x={280} y={150} s={12} f={C.taupe}>drop fn pointer</T>
-          <T x={280} y={176} s={12} f={C.taupe}>size, align</T>
-          <T x={325} y={238} s={13} a="middle" f={C.caramel}>one slot per method</T>
+        <g>
+          <rect x={260} y={100} width={220} height={rowsH} rx={8} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+          <T x={280} y={124} s={12} f={C.taupe} o={fa(t, from + 0.55, 0.25)}>encode fn pointer</T>
+          <T x={280} y={150} s={12} f={C.taupe} o={fa(t, from + 0.65, 0.25)}>drop fn pointer</T>
+          <T x={280} y={176} s={12} f={C.taupe} o={fa(t, from + 0.75, 0.25)}>size, align</T>
+          <T x={325} y={238} s={13} a="middle" f={C.caramel} o={fa(t, from + 0.9, 0.3)}>one slot per method</T>
         </g>
       )}
     </Svg>
@@ -48,22 +55,28 @@ function FatPointerDiagram({ t, from = 0.3, showRows = false }: { t: number; fro
 
 // ── 1 · Two words, not one ──────────────────────────────────────────────────────────────────────────
 export function FatPointer({ t }: StepCtx) {
+  // The vtable half of each dyn pointer slides in and docks next to its data-pointer half (position),
+  // arriving right as the caption that names it appears.
+  const dock = easeOut(seg(t, 0.7, 1.1));
+  const vdx = (1 - dock) * 140;
   return (
     <Svg label="a reference or Box to a concrete type is one word; to a dyn Trait it is two words, a data pointer plus a vtable pointer" h={300}>
       <ThinPointer x={60} y={40} label="&A" />
       <ThinPointer x={60} y={110} label="Box<A>" />
       <T x={40} y={190} s={13} f={C.taupe} o={fa(t, 0.2, 0.4)}>one word: just the data</T>
-      <g opacity={fa(t, 0.7, 0.4)}>
+      <g opacity={fa(t, 0.7, 0.3)}>
         <rect x={320} y={40} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={365} y={69} s={12} a="middle" f={C.crema}>&dyn Codec</T>
-        <rect x={420} y={40} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={465} y={69} s={12} a="middle" f={C.crema}>vtable</T>
         <rect x={320} y={110} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={365} y={139} s={12} a="middle" f={C.crema}>Box dyn</T>
+      </g>
+      <g transform={`translate(${vdx},0)`} opacity={fa(t, 0.7, 0.3)}>
+        <rect x={420} y={40} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={465} y={69} s={12} a="middle" f={C.crema}>vtable</T>
         <rect x={420} y={110} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={465} y={139} s={12} a="middle" f={C.crema}>vtable</T>
-        <T x={320} y={190} s={13} f={C.caramel}>two words: data plus vtable</T>
       </g>
+      <T x={320} y={190} s={13} f={C.caramel} o={fa(t, 1.1, 0.3)}>two words: data plus vtable</T>
     </Svg>
   );
 }

@@ -54,18 +54,28 @@ export function MonomorphizationCode({ t }: StepCtx) {
 
 // ── 3 · Zero run-time overhead is not zero cost (no predict, no takeaway: this is the reel's "from" step) ──────
 export function MonoProof({ t }: StepCtx) {
+  // The two bodies slide into place (position), a speed line draws itself across both at equal height
+  // (draw, equal — same speed), then a cost bar grows wider under them (scale — the cost that keeps growing).
+  const slideIn = easeOut(seg(t, 0, 0.5));
+  const dxA = (1 - slideIn) * -260;
+  const dxB = (1 - slideIn) * 260;
+  const costGrow = easeOut(seg(t, 1.0, 1.5));
   return (
     <Svg label="the two compiled bodies run exactly as fast as hand-written code, but compiling and storing both of them costs compile time and binary size" h={320}>
       <T x={40} y={46} s={15} f={C.crema}>rustc --emit=llvm-ir (no optimizer)</T>
-      <g opacity={fa(t, 0.4, 0.4)}>
+      <g transform={`translate(${dxA},0)`}>
         <rect x={40} y={70} width={240} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={1.5} />
         <T x={60} y={98} s={13} f={C.taupe}>define encode_generic ... A</T>
+      </g>
+      <g transform={`translate(${dxB},0)`}>
         <rect x={320} y={70} width={240} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={1.5} />
         <T x={340} y={98} s={13} f={C.taupe}>define encode_generic ... B</T>
       </g>
-      <T x={40} y={160} s={15} f={C.caramel} o={fa(t, 1.0, 0.4)}>each call runs as fast as hand-written</T>
-      <T x={40} y={200} s={15} f={C.latte} o={fa(t, 1.6, 0.4)}>but two bodies cost more than one</T>
-      <T x={40} y={224} s={15} f={C.latte} o={fa(t, 1.6, 0.4)}>and that cost grows with new types</T>
+      <Draw pts={[[40, 140], [560, 140]]} t={t} from={0.5} to={0.9} stroke={C.caramel} w={2} dash="4 4" pen={false} />
+      <T x={40} y={160} s={15} f={C.caramel} o={fa(t, 0.9, 0.3)}>each call runs as fast as hand-written</T>
+      <T x={40} y={200} s={15} f={C.latte} o={fa(t, 1.2, 0.3)}>but two bodies cost more than one</T>
+      <rect x={40} y={216} width={20 + costGrow * 520} height={16} rx={4} fill={C.latte} opacity={0.85} />
+      <T x={40} y={260} s={15} f={C.latte} o={fa(t, 1.5, 0.4)}>and that cost grows with new types</T>
     </Svg>
   );
 }
@@ -167,20 +177,29 @@ export function ImplTraitReturn({ t }: StepCtx) {
 
 // ── 9 · Returning it unboxed costs nothing extra; boxing it allocates ──────────────────────────────────────────
 export function AllocCount({ t }: StepCtx) {
+  // A call token travels from each function box toward the heap below. The impl Trait call stops short
+  // of the heap (never touches it); the boxed call reaches it and a real allocation block grows there.
+  const heapY = 230;
+  const allocGrow = easeOut(seg(t, 1.5, 1.8));
   return (
-    <Svg label="a counting global allocator shows the impl Trait return making no new allocation, and the boxed trait object making exactly one, every call" h={300}>
+    <Svg label="a counting global allocator shows the impl Trait return making no new allocation, and the boxed trait object making exactly one, every call" h={320}>
       <T x={40} y={44} s={15} f={C.crema}>a counting allocator, before and after each call</T>
-      <g opacity={fa(t, 0.4, 0.4)}>
+      <g opacity={fa(t, 0.2, 0.4)}>
         <rect x={40} y={70} width={240} height={60} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={160} y={96} s={13} a="middle" f={C.crema}>make_adder_impl_trait</T>
         <T x={160} y={118} s={13} a="middle" f={C.caramel}>no new allocation</T>
       </g>
-      <g opacity={fa(t, 1.0, 0.4)}>
+      <g opacity={fa(t, 0.6, 0.4)}>
         <rect x={320} y={70} width={240} height={60} rx={8} fill="none" stroke={C.cherryText} strokeWidth={2} />
         <T x={440} y={96} s={13} a="middle" f={C.crema}>make_adder_boxed</T>
         <T x={440} y={118} s={13} a="middle" f={C.cherryText}>one new allocation</T>
       </g>
-      <T x={300} y={200} s={14} a="middle" f={C.latte} o={fa(t, 1.6, 0.4)}>same closure, same result, different cost every call</T>
+      <rect x={40} y={heapY} width={520} height={30} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <T x={48} y={heapY + 20} s={12} f={C.taupe}>heap</T>
+      <Draw pts={[[160, 132], [160, 210]]} t={t} from={0.9} to={1.2} stroke={C.caramel} w={2} pen />
+      <Draw pts={[[440, 132], [440, heapY]]} t={t} from={0.9} to={1.2} stroke={C.cherryText} w={2} pen />
+      <rect x={410} y={heapY + 4} width={allocGrow * 60} height={22} rx={4} fill={C.cherryText} opacity={0.75} />
+      <T x={300} y={290} s={14} a="middle" f={C.latte} o={fa(t, 2.0, 0.4)}>same closure, same result, different cost every call</T>
     </Svg>
   );
 }
