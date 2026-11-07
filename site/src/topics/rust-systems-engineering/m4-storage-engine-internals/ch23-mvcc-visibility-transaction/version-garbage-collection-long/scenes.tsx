@@ -59,14 +59,25 @@ export function FreedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: all four freed (takeaway) ───────────────────────────────
 export function FreedReveal({ t }: StepCtx) {
+  const versions = [0, 1, 2, 3];
   return (
     <Svg label="version_gc_coupled_to_snapshot_lifetime.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical four dead versions</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>genuinely all reclaimed</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>closing the reader removed the need</T>
+      {versions.map((i) => {
+        const vanish = easeOut(seg(t, 0.5 + i * 0.15, 0.8 + i * 0.15));
+        return (
+          <circle
+            key={i}
+            cx={80 + i * 60}
+            cy={85}
+            r={6}
+            fill={C.taupe}
+            opacity={fa(t, 0.4 + i * 0.1, 0.2) * (1 - vanish)}
+          />
+        );
+      })}
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={130} s={13} a="middle" f={C.mocha}>genuinely all reclaimed</T>}
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>closing the reader removed the need</T>
     </Svg>
   );
 }
@@ -89,14 +100,17 @@ export function ComparePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the long-lived run retains far more (takeaway) ─────────
 export function CompareReveal({ t }: StepCtx) {
+  const short = easeOut(seg(t, 0.4, 0.75));
+  const long = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="version_gc_coupled_to_snapshot_lifetime.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>short-lived run vs long-lived run</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>long-lived: far more retained</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real storage-growth problem</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>short-lived reader</T>
+      <rect x={60} y={82} width={short * 60} height={16} rx={3} fill={C.caramel} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>long-lived reader</T>
+      <rect x={60} y={119} width={long * 260} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>long-lived: far more retained</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a real storage-growth problem</T>
     </Svg>
   );
 }

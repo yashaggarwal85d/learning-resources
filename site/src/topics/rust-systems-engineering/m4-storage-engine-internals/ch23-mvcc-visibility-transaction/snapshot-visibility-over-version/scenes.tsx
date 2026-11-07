@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Visibility is a function of a version's own metadata and a reader's
 // fixed snapshot, never the newest row written; a writer appends a
@@ -59,14 +59,18 @@ export function AfterCommitPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: unchanged, even after the commit (takeaway) ───────────
 export function AfterCommitReveal({ t }: StepCtx) {
+  const commitX = 70 + easeOut(seg(t, 0.4, 0.7)) * 150;
   return (
     <Svg label="snapshot_visibility_version_chain.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>same reader, before and after the commit</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>genuinely identical, both times</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a snapshot taken once stays fixed</T>
+      <circle cx={commitX} cy={78} r={4} fill={C.taupe} opacity={fa(t, 0.4, 0.2)} />
+      <T x={70 + 150} y={82} s={11} f={C.latte} o={fa(t, 0.7, 0.2)}>writer commits</T>
+      <Draw pts={[[90, 100], [90, 130]]} t={t} from={0.3} to={0.5} stroke={C.caramel} w={2} pen />
+      <Draw pts={[[90, 100], [250, 100], [250, 130]]} t={t} from={0.9} to={1.2} stroke={C.caramel} w={2} pen />
+      <T x={70} y={145} s={11} f={C.crema} o={fa(t, 0.5, 0.2)}>reader: old version</T>
+      <T x={230} y={145} s={11} f={C.crema} o={fa(t, 1.2, 0.2)}>reader: still the old version</T>
+      {fa(t, 1.4, 0.4) > 0.85 && <T x={190} y={165} s={13} a="middle" f={C.mocha}>genuinely identical, both times</T>}
+      <T x={60} y={185} s={13} f={C.latte} o={fa(t, 1.75, 0.3)}>a snapshot taken once stays fixed</T>
     </Svg>
   );
 }

@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A real election under terms and randomized timeouts elects a correct
 // leader only when the up-to-date-log voting rule is enforced; a real
@@ -58,14 +58,15 @@ export function StaleCandidatePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely rejected (takeaway) ─────────────────────────────
 export function StaleCandidateReveal({ t }: StepCtx) {
+  const bounce = easeOut(seg(t, 0.6, 0.95));
+  const dy = (1 - Math.abs(bounce - 0.5) * 2) * 12;
   return (
     <Svg label="leader_election_log_up_to_date_voting.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a fresh term alone, and a behind log</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>genuinely rejected, genuinely loses</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a fresh term is never enough on its own</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>candidate: fresh term, short log</T>
+      <circle cx={280} cy={76 - dy} r={5} fill={C.cherry} opacity={fa(t, 0.5, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={130} s={13} a="middle" f={C.mocha}>genuinely rejected, genuinely loses</T>}
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a fresh term is never enough on its own</T>
     </Svg>
   );
 }
@@ -91,11 +92,12 @@ export function DisruptionReveal({ t }: StepCtx) {
   return (
     <Svg label="leader_election_log_up_to_date_voting.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>every node updates to the higher term it sees</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the healthy leader genuinely steps down</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a bare term rise alone can depose a leader</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>rejoining node: inflated term</T>
+      <circle cx={280} cy={76} r={5} fill={C.caramel} opacity={fa(t, 0.45, 0.2)} />
+      <Draw pts={[[200, 76], [160, 110]]} t={t} from={0.7} to={0.95} stroke={C.cherry} w={2} pen />
+      <T x={70} y={122} s={12} f={C.latte} o={fa(t, 0.95, 0.3)}>leader: steps down</T>
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>the healthy leader genuinely steps down</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>a bare term rise alone can depose a leader</T>
     </Svg>
   );
 }

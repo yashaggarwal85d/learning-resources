@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Redo repeats history for everyone first, winners and losers alike. A
 // fuzzy checkpoint's own dirty-page bound lets it skip what's already
@@ -63,14 +63,16 @@ export function CheckpointPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: fewer records, identical state (takeaway) ───────────────
 export function CheckpointReveal({ t }: StepCtx) {
+  const full = easeOut(seg(t, 0.4, 0.7));
+  const bounded = easeOut(seg(t, 0.8, 1.1));
   return (
     <Svg label="aries_analysis_redo_undo.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a full scan, and a bounded one</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>fewer records, same final state</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>skips only what's already durable</T>
+      <rect x={60} y={68} width={full * 260} height={8} rx={2} fill={C.taupe} opacity={0.7} />
+      <rect x={60} y={79} width={bounded * 90} height={8} rx={2} fill={C.caramel} opacity={0.8} />
+      <rect x={60} y={90} width={260} height={39} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={114} s={13} a="middle" f={C.mocha}>fewer records, same final state</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>skips only what's already durable</T>
     </Svg>
   );
 }
@@ -93,13 +95,15 @@ export function ClrPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: resumes exactly, one CLR per update (takeaway) ──────────
 export function ClrReveal({ t }: StepCtx) {
+  const resume = easeOut(seg(t, 0.5, 0.85));
+  const dx = resume * 60;
   return (
     <Svg label="aries_analysis_redo_undo.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>two recovery attempts, one loser txn</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>exactly one CLR per update, total</T>
-      </g>
+      <circle cx={200} cy={76} r={4} fill={C.taupe} />
+      <circle cx={200 + dx} cy={76} r={4} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>exactly one CLR per update, total</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>resumed right where the first one stopped</T>
     </Svg>
   );
@@ -144,10 +148,10 @@ export function StealNoForceReveal({ t }: StepCtx) {
   return (
     <Svg label="ARIES paper, quoted" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>steal: early write-back. no-force: late</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>redo and undo fix up either case</T>
-      </g>
+      <Draw pts={[[200, 76], [240, 76]]} t={t} from={0.5} to={0.75} stroke={C.caramel} w={2} />
+      <Draw pts={[[240, 76], [280, 76]]} t={t} from={0.75} to={1.0} stroke={C.taupe} w={2} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>redo and undo fix up either case</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>that freedom is why it's the fast policy</T>
     </Svg>
   );

@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A Bloom filter never forgets a key it was actually given, so a
 // negative result is always proof of absence; a positive result only
@@ -59,14 +59,27 @@ export function FalsePositivesPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: real false positives exist (takeaway) ───────────────────
 export function FalsePositivesReveal({ t }: StepCtx) {
+  const probes = [0, 1, 2, 3, 4, 5, 6, 7];
+  const hit = new Set([2, 6]);
   return (
     <Svg label="bloom_filter_false_positive_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>never-inserted keys, probed for real</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>some genuinely came back maybe-present</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a positive is permission, not proof</T>
+      {probes.map((i) => {
+        const land = easeOut(seg(t, 0.5 + i * 0.08, 0.7 + i * 0.08));
+        const dy = (1 - land) * -16;
+        return (
+          <circle
+            key={i}
+            cx={70 + i * 32}
+            cy={82 + dy}
+            r={5}
+            fill={hit.has(i) ? C.cherry : C.taupe}
+            opacity={fa(t, 0.5 + i * 0.08, 0.2)}
+          />
+        );
+      })}
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={120} s={13} a="middle" f={C.mocha}>some genuinely came back maybe-present</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a positive is permission, not proof</T>
     </Svg>
   );
 }
@@ -89,14 +102,17 @@ export function MoreBitsPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the rate genuinely drops (takeaway) ─────────────────────
 export function MoreBitsReveal({ t }: StepCtx) {
+  const low = easeOut(seg(t, 0.4, 0.75));
+  const high = easeOut(seg(t, 0.8, 1.15));
   return (
     <Svg label="bloom_filter_false_positive_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>same filter, two real bits-per-key budgets</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>more bits: a genuinely lower rate</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real cost, not a free setting</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>4 bits/key</T>
+      <rect x={60} y={82} width={low * 260} height={16} rx={3} fill={C.cherry} opacity={0.85} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>12 bits/key</T>
+      <rect x={60} y={119} width={high * 30} height={16} rx={3} fill={C.caramel} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>more bits: a genuinely lower rate</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a real cost, not a free setting</T>
     </Svg>
   );
 }

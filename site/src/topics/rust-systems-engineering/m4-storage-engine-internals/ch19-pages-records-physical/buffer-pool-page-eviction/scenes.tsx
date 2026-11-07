@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A pinned frame is never evicted, a dirty frame is always written back
 // before its frame is reused, and a real CLOCK sweep genuinely favors the
@@ -62,13 +62,14 @@ export function DirtyPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: written back before reuse (takeaway) ───────────────────────────────────────────
 export function DirtyReveal({ t }: StepCtx) {
+  const write = easeOut(seg(t, 0.5, 0.85));
+  const dx = write * 110;
   return (
     <Svg label="pin_dirty_and_clock_decide_eviction.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a dirty frame, evicted and reused</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>written back first, then the frame reused</T>
-      </g>
+      <circle cx={60 + dx} cy={76} r={4} fill={C.cherry} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>written back first, then the frame reused</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>nothing dirty was ever simply discarded</T>
     </Svg>
   );
@@ -92,13 +93,15 @@ export function ClockPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the untouched frame is evicted (takeaway) ──────────────────────────────────────
 export function ClockReveal({ t }: StepCtx) {
+  const sweep = easeOut(seg(t, 0.5, 0.9));
+  const dx = sweep * 220;
   return (
     <Svg label="pin_dirty_and_clock_decide_eviction.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one frame touched again, one left alone</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>evicted: the untouched, not the touched</T>
-      </g>
+      <Draw pts={[[60, 76], [280, 76]]} t={t} from={0.5} to={0.9} stroke={C.taupe} w={1.5} />
+      <circle cx={60 + dx} cy={76} r={4} fill={C.cherry} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>evicted: the untouched, not the touched</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>being touched again bought a second chance</T>
     </Svg>
   );
@@ -140,13 +143,14 @@ export function PgBufferReveal({ t }: StepCtx) {
 
 // ── 9 · mmap hands this decision to the OS instead (surprising fact, takeaway) ───────────────────
 export function MmapContrastReveal({ t }: StepCtx) {
+  const cyclePos = t > 0.9 ? ((t - 0.9) % 0.8) / 0.8 : 0;
+  const drift = cyclePos < 0.5 ? cyclePos * 2 : (1 - cyclePos) * 2;
   return (
     <Svg label="CIDR 2022 paper, quoted" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a buffer pool's own dirty bit, explicit</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>mmap: the OS flushes dirty pages anytime</T>
-      </g>
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>mmap: the OS flushes dirty pages anytime</T>}
+      <circle cx={70 + drift * 240} cy={76} r={3} fill={C.taupe} opacity={fa(t, 0.9, 0.3)} />
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>with mmap, the DBMS gets no say in when</T>
     </Svg>
   );

@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A key's own write order is only genuinely guaranteed within one partition;
 // key-based routing holds that order only as long as the partition count
@@ -57,14 +57,17 @@ export function ResizePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: at least one key reroutes (takeaway) ─────────────────────
 export function ResizeReveal({ t }: StepCtx) {
+  const move = easeOut(seg(t, 0.6, 0.95));
   return (
     <Svg label="key_partitioning_order_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>four partitions became six, a real resize</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>at least one key's own route changed</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>growing a topic is never free for a key</T>
+      <T x={70} y={78} s={11} f={C.latte} o={fa(t, 0.35, 0.3)}>4 partitions</T>
+      <T x={70} y={120} s={11} f={C.latte} o={fa(t, 0.95, 0.3)}>6 partitions</T>
+      <Draw pts={[[140, 73], [140 + move * 80, 113]]} t={t} from={0.6} to={0.95} stroke={C.cherry} w={2} pen />
+      <circle cx={140} cy={73} r={4} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <circle cx={140 + move * 80} cy={113} r={4} fill={C.cherry} opacity={fa(t, 0.6, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={140} s={13} a="middle" f={C.mocha}>at least one key's own route changed</T>}
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>growing a topic is never free for a key</T>
     </Svg>
   );
 }
@@ -87,14 +90,23 @@ export function SplitPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the history genuinely splits (takeaway) ──────────────────
 export function SplitReveal({ t }: StepCtx) {
+  const oldEntries = [0, 1, 2];
+  const newEntries = [0, 1];
   return (
     <Svg label="key_partitioning_order_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same key, written before and after resize</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>old entries stayed in the old partition</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>new writes landed in a different one</T>
+      <T x={60} y={75} s={11} f={C.latte} o={fa(t, 0.35, 0.3)}>old partition</T>
+      {oldEntries.map((i) => {
+        const land = easeOut(seg(t, 0.4 + i * 0.1, 0.6 + i * 0.1));
+        return <circle key={i} cx={70 + i * 25} cy={88 - (1 - land) * 14} r={4} fill={C.caramel} opacity={fa(t, 0.4 + i * 0.1, 0.2)} />;
+      })}
+      <T x={60} y={115} s={11} f={C.latte} o={fa(t, 0.75, 0.3)}>new partition</T>
+      {newEntries.map((i) => {
+        const land = easeOut(seg(t, 0.8 + i * 0.1, 1.0 + i * 0.1));
+        return <circle key={i} cx={70 + i * 25} cy={128 - (1 - land) * 14} r={4} fill={C.cherry} opacity={fa(t, 0.8 + i * 0.1, 0.2)} />;
+      })}
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={155} s={13} a="middle" f={C.mocha}>old entries stayed in the old partition</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.3)}>new writes landed in a different one</T>
     </Svg>
   );
 }

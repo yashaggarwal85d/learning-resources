@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A slotted page's whole point is that a record's own identity (its slot
 // index) and its physical offset are two different things, deliberately:
@@ -63,13 +63,14 @@ export function IdentityPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: slot index unchanged, offset changed (takeaway) ────────────────────────────────
 export function IdentityReveal({ t }: StepCtx) {
+  const shift = easeOut(seg(t, 0.5, 0.85));
+  const dx = shift * 60;
   return (
     <Svg label="slot_index_outlives_physical_compaction.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>two surviving records, after compaction</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>offset: changed. slot index: unchanged</T>
-      </g>
+      <rect x={200 + dx} y={70} width={30} height={10} rx={2} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>offset: changed. slot index: unchanged</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>neither record was ever renumbered</T>
     </Svg>
   );
@@ -93,11 +94,14 @@ export function ReadbackPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: content exactly matches after the move (takeaway) ──────────────────────────────
 export function ReadbackReveal({ t }: StepCtx) {
+  const read = easeOut(seg(t, 0.5, 0.85));
+  const dy = (1 - read) * -24;
   return (
     <Svg label="slot_index_outlives_physical_compaction.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>same slot index, read after compaction</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <Draw pts={[[240, 50], [240, 85]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <g transform={`translate(0,${dy})`} opacity={read}>
         <T x={190} y={112} s={13} a="middle" f={C.mocha}>content: exactly the same for both</T>
       </g>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the caller never had to notice the move</T>
@@ -141,13 +145,14 @@ export function OverflowReveal({ t }: StepCtx) {
 
 // ── 9 · A fixed page size is why TOAST exists (surprising fact, takeaway) ────────────────────────
 export function FixedSizeReveal({ t }: StepCtx) {
+  const exit = easeOut(seg(t, 0.5, 0.85));
+  const dx = exit * 60;
   return (
     <Svg label="PostgreSQL docs, quoted" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a page's own size is fixed, on purpose</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>too large: compressed, or moved elsewhere</T>
-      </g>
+      <circle cx={200 + dx} cy={76} r={4} fill={C.taupe} opacity={fa(t, 0.5, 0.2)} />
+      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>too large: compressed, or moved elsewhere</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>it never spans onto another page</T>
     </Svg>
   );

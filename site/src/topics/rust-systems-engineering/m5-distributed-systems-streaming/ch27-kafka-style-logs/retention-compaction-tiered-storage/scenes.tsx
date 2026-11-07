@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Time/size retention deletes by age alone; compaction keeps the latest
 // value per key forever instead, until a real tombstone genuinely removes
@@ -57,14 +57,15 @@ export function CompactionPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: genuinely survives (takeaway) ─────────────────────────────
 export function CompactionReveal({ t }: StepCtx) {
+  const bounce = easeOut(seg(t, 0.6, 0.95));
+  const dy = (1 - Math.abs(bounce - 0.5) * 2) * 12;
   return (
     <Svg label="compaction_keeps_latest_value_per_key.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same old entry, the same key, compaction</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the identical old entry, kept by compaction</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>it is still that key's own latest value</T>
+      <T x={70} y={80} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>old entry, same key</T>
+      <circle cx={270} cy={76 - dy} r={5} fill={C.caramel} opacity={fa(t, 0.5, 0.2)} />
+      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={130} s={13} a="middle" f={C.mocha}>the identical old entry, kept by compaction</T>}
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.5, 0.3)}>it is still that key's own latest value</T>
     </Svg>
   );
 }
@@ -87,14 +88,16 @@ export function TombstonePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: genuinely removed (takeaway) ──────────────────────────────
 export function TombstoneReveal({ t }: StepCtx) {
+  const vanish = easeOut(seg(t, 0.8, 1.1));
   return (
     <Svg label="compaction_keeps_latest_value_per_key.rs" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a tombstone, appended after every real entry</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={210} y={102} s={13} a="middle" f={C.mocha}>the key disappears; every other key stays</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a tombstone deletes the key, not just a value</T>
+      <circle cx={100} cy={78} r={5} fill={C.cherry} opacity={fa(t, 0.4, 0.2) * (1 - vanish)} />
+      <T x={115} y={82} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>tombstoned key</T>
+      <circle cx={100} cy={115} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <T x={115} y={119} s={12} f={C.latte} o={fa(t, 0.4, 0.3)}>other key</T>
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>the key disappears; every other key stays</T>}
+      <T x={60} y={178} s={13} f={C.latte} o={fa(t, 1.6, 0.2)}>a tombstone deletes the key, not just a value</T>
     </Svg>
   );
 }

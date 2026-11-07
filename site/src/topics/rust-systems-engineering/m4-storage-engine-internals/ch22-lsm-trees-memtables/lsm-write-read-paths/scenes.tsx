@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A read checks the newest structure first, so a fresh, unflushed write
 // always beats a stale, flushed one. The older a key is, the more
@@ -31,11 +31,13 @@ export function OverwriteReveal({ t }: StepCtx) {
   return (
     <Svg label="lsm_write_read_paths_newest_first.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one key, old value flushed, new value not</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>read returns: the fresh value</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the stale, flushed value never wins</T>
+      <T x={70} y={85} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>memtable: fresh value</T>
+      <circle cx={230} cy={81} r={5} fill={C.caramel} opacity={fa(t, 0.4, 0.2)} />
+      <T x={70} y={120} s={12} f={C.latte} o={fa(t, 0.6, 0.3)}>SSTable: stale value</T>
+      <circle cx={230} cy={116} r={5} fill={C.taupe} opacity={fa(t, 0.65, 0.2)} />
+      <Draw pts={[[300, 60], [230, 81]]} t={t} from={0.9} to={1.1} stroke={C.caramel} w={2} pen />
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={150} s={13} a="middle" f={C.mocha}>read returns: the fresh value</T>}
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>the stale, flushed value never wins</T>
     </Svg>
   );
 }
@@ -67,6 +69,7 @@ export function FallThroughReveal({ t }: StepCtx) {
           <T x={75} y={52 + i * 48} s={12} f={C.crema}>{r}</T>
         </g>
       ))}
+      <Draw pts={[[340, 47], [340, 95], [340, 143]]} t={t} from={1.0} to={1.5} stroke={C.cherry} w={2} pen />
       <T x={60} y={200} s={13} f={C.latte} o={fa(t, 1.7, 0.4)}>a miss checks every one of these</T>
     </Svg>
   );
@@ -90,14 +93,18 @@ export function ImmutablePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the bytes never change (takeaway) ───────────────────────
 export function ImmutableReveal({ t }: StepCtx) {
+  const probes = [0, 1, 2, 3, 4];
   return (
     <Svg label="lsm_write_read_paths_newest_first.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>same content fold, before and after</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>identical, across every read</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a flushed table is read-only, genuinely</T>
+      <rect x={60} y={70} width={260} height={30} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.4, 0.3)} />
+      {probes.map((i) => {
+        const bounce = easeOut(seg(t, 0.55 + i * 0.1, 0.75 + i * 0.1));
+        const dy = (1 - Math.abs(bounce - 0.5) * 2) * -10;
+        return <circle key={i} cx={90 + i * 45} cy={110 + dy} r={4} fill={C.taupe} opacity={fa(t, 0.55 + i * 0.1, 0.2)} />;
+      })}
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={140} s={13} a="middle" f={C.mocha}>identical, across every read</T>}
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a flushed table is read-only, genuinely</T>
     </Svg>
   );
 }

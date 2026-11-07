@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A column-major layout touches far fewer bytes scanning one column and
 // skips exactly the rows its packed validity bitmap marks absent, but it
@@ -59,14 +59,21 @@ export function UpdatePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: four regions vs one (takeaway) ──────────────────────────
 export function UpdateReveal({ t }: StepCtx) {
+  const cols = [0, 1, 2, 3];
   return (
     <Svg label="columnar_layout_locality_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the identical logical row, updated in full</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>row-major: one region; column-major: four</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>scattered across every column's own buffer</T>
+      <T x={60} y={75} s={12} f={C.latte} o={fa(t, 0.35, 0.3)}>row-major: one region</T>
+      <Draw pts={[[60, 90], [320, 90]]} t={t} from={0.4} to={0.65} stroke={C.caramel} w={6} />
+      <T x={60} y={112} s={12} f={C.latte} o={fa(t, 0.75, 0.3)}>column-major: four regions</T>
+      {cols.map((i) => {
+        const draw = easeOut(seg(t, 0.85 + i * 0.12, 1.0 + i * 0.12));
+        return (
+          <rect key={i} x={60 + i * 68} y={122} width={draw * 58} height={14} rx={3} fill={C.cherry} opacity={0.85} />
+        );
+      })}
+      {fa(t, 1.6, 0.4) > 0.85 && <T x={190} y={160} s={13} a="middle" f={C.mocha}>row-major: one region; column-major: four</T>}
+      <T x={60} y={185} s={13} f={C.latte} o={fa(t, 1.9, 0.3)}>scattered across every column's own buffer</T>
     </Svg>
   );
 }
@@ -89,14 +96,26 @@ export function BitmapPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: exactly those rows skipped (takeaway) ───────────────────
 export function BitmapReveal({ t }: StepCtx) {
+  const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   return (
     <Svg label="columnar_layout_locality_tradeoff.rs, measured" h={200}>
       <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>every marked row skipped, none missed</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={75} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={102} s={13} a="middle" f={C.mocha}>one bit per row, not one byte</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a fraction of a byte-per-row bitmap's size</T>
+      {rows.map((i) => {
+        const land = easeOut(seg(t, 0.4 + i * 0.05, 0.6 + i * 0.05));
+        const skip = i % 7 === 0;
+        return (
+          <circle
+            key={i}
+            cx={70 + i * 20}
+            cy={85 - (1 - land) * 14}
+            r={4}
+            fill={skip ? C.cherry : C.caramel}
+            opacity={fa(t, 0.4 + i * 0.05, 0.2)}
+          />
+        );
+      })}
+      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={125} s={13} a="middle" f={C.mocha}>one bit per row, not one byte</T>}
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>a fraction of a byte-per-row bitmap's size</T>
     </Svg>
   );
 }
