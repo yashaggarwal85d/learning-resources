@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // OPC UA's information model, drawn from examples.py: the MachineTool/Monitoring/Spindle/Speed browse with its typed
@@ -158,7 +158,8 @@ export function Hook({ t }: StepCtx) {
 }
 
 // 1 · Four fields down the side — name, unit, type, parent. The raw address column answers each with a grey dash. The
-// typed node column shows "?" before the answer; after it, the four cells fill in turn: Speed, rpm, Double, Spindle.
+// typed node column shows "?" before the answer; after it, the four values are carried in from the right in turn:
+// Speed, rpm, Double, Spindle, and brackets lock onto the typed column.
 export function PredictModel({ t, answer }: StepCtx) {
   const s = useSinceAnswer(answer !== null);
   const on = answer !== null;
@@ -176,31 +177,39 @@ export function PredictModel({ t, answer }: StepCtx) {
       <T x={430} y={30} s={13} f={C.focus} w={600} o={easeOut(seg(t, 0.2, 0.5))}>
         typed node
       </T>
-      <line x1={25} y1={42} x2={575} y2={42} stroke={C.line} strokeWidth={1} opacity={easeOut(seg(t, 0.2, 0.5))} />
+      <Draw pts={[[25, 42], [575, 42]]} t={t} from={0.2} to={0.7} stroke={C.line} w={1} pen={false} />
       {fields.map((r, i) => {
         const y = 72 + i * 32;
         const a = 0.6 + i * 0.35;
-        const k = on ? easeOut(seg(s, 0.2 + i * 0.25, 0.5 + i * 0.25)) : 0;
+        const row = easeOut(seg(t, a, a + 0.3));
+        // after the answer each value is carried in from the right, one field at a time
+        const k = on ? easeOutBack(seg(s, 0.2 + i * 0.25, 0.55 + i * 0.25)) : 0;
         return (
-          <g key={r.f} opacity={easeOut(seg(t, a, a + 0.3))}>
-            <T x={25} y={y} s={13} f={C.quiet}>
-              {r.f}
-            </T>
-            <T x={150} y={y} s={14} f={C.quiet}>
-              —
-            </T>
-            {!on ? (
-              <T x={430} y={y} s={14} f={C.focus}>
-                ?
+          <g key={r.f}>
+            <g opacity={row} transform={`translate(${((1 - row) * -20).toFixed(1)} 0)`}>
+              <T x={25} y={y} s={13} f={C.quiet}>
+                {r.f}
               </T>
-            ) : (
-              <T x={430} y={y} s={14} f={C.focus} w={600} o={k}>
-                {r.v}
+              <T x={150} y={y} s={14} f={C.quiet}>
+                —
               </T>
+              {!on && (
+                <T x={430} y={y} s={14} f={C.focus} o={0.75 + 0.25 * Math.sin(t * 3 + i)}>
+                  ?
+                </T>
+              )}
+            </g>
+            {on && k > 0 && (
+              <g opacity={clamp(k)} transform={`translate(${((1 - clamp(k, 0, 1.1)) * 80).toFixed(1)} 0)`}>
+                <T x={430} y={y} s={14} f={C.focus} w={600}>
+                  {r.v}
+                </T>
+              </g>
             )}
           </g>
         );
       })}
+      {on && <Reticle x={470} y={108} w={130} h={128} t={s} at={1.3} />}
     </Svg>
   );
 }
@@ -476,7 +485,7 @@ export function RevealSecurity({ t }: StepCtx) {
 }
 
 // 7 · Five lanes with tiny pictures: a node tree, three rows collapsing to one path, sparse deadband ticks against dense
-// polling, one publisher line, and a pointer resting on Invalid.
+// polling, one publisher line, and a pointer resting on Invalid — each picture builds as its lane lands.
 export function Recap({ t }: StepCtx) {
   const lane = (i: number) => 32 + i * 50;
   const k = (i: number) => easeOut(seg(t, i * 1.0, i * 1.0 + 0.5));
@@ -487,44 +496,45 @@ export function Recap({ t }: StepCtx) {
     { l: 'PubSub', r: 'flat in subscribers', c: C.second },
     { l: 'security', r: 'None is a finding', c: C.badText },
   ];
+  const poll = seg(t, 2.1, 2.7);
+  const rest = easeOutBack(seg(t, 4.2, 4.8));
   return (
     <Svg
       label="typed nodes and references, a companion specification that standardizes a path across vendors, a deadband that cuts notification volume, PubSub that decouples cost from subscriber count, and a security default built to never be an accident"
       h={260}
     >
-      <g opacity={k(0)}>
-        {[0, 1, 2].map((j) => (
-          <rect key={j} x={25 + j * 22} y={lane(0) - 12 + j * 8} width={14} height={8} fill={j === 2 ? C.focus : C.secondary} />
-        ))}
-      </g>
-      <g opacity={k(1)}>
-        {[0, 1, 2].map((j) => (
-          <line key={j} x1={25} y1={lane(1) - 10 + j * 8} x2={80} y2={lane(1) - 2} stroke={C.line} strokeWidth={1.2} />
-        ))}
-        <line x1={80} y1={lane(1) - 2} x2={135} y2={lane(1) - 2} stroke={C.second} strokeWidth={2} />
-      </g>
-      <g opacity={k(2)}>
-        {Array.from({ length: 22 }, (_, j) => (
-          <line key={j} x1={25 + j * 5} y1={lane(2) - 12} x2={25 + j * 5} y2={lane(2) - 6} stroke={C.quiet} strokeWidth={0.8} />
-        ))}
-        {[2, 9, 17].map((j) => (
-          <line key={j} x1={25 + j * 5} y1={lane(2) - 2} x2={25 + j * 5} y2={lane(2) + 8} stroke={C.focus} strokeWidth={1.6} />
-        ))}
-      </g>
-      <g opacity={k(3)}>
-        <line x1={25} y1={lane(3) - 2} x2={135} y2={lane(3) - 2} stroke={C.second} strokeWidth={2} />
-        {[0, 1, 2, 3].map((j) => (
-          <line key={j} x1={55 + j * 22} y1={lane(3) - 2} x2={55 + j * 22} y2={lane(3) + 10} stroke={C.line} strokeWidth={1} />
-        ))}
-      </g>
+      {/* typed nodes: each node steps down into its place under its parent */}
+      {[0, 1, 2].map((j) => {
+        const d = easeOutBack(seg(t, 0.1 + j * 0.15, 0.4 + j * 0.15));
+        return <rect key={j} x={25 + j * 22} y={lane(0) - 12 + j * 8 * clamp(d, 0, 1.2)} width={14} height={8} fill={j === 2 ? C.focus : C.secondary} opacity={clamp(d)} />;
+      })}
+      {/* companion spec: three vendors' paths converge on one */}
+      {[0, 1, 2].map((j) => (
+        <Draw key={j} pts={[[25, lane(1) - 10 + j * 8], [80, lane(1) - 2]]} t={t} from={1.1} to={1.4} stroke={C.line} w={1.2} pen={false} />
+      ))}
+      <Draw pts={[[80, lane(1) - 2], [135, lane(1) - 2]]} t={t} from={1.4} to={1.7} stroke={C.second} w={2} />
+      {/* deadband: the polling ticks sweep in densely, then only three notifications rise */}
+      {Array.from({ length: 22 }, (_, j) =>
+        j / 22 < poll ? <line key={j} x1={25 + j * 5} y1={lane(2) - 12} x2={25 + j * 5} y2={lane(2) - 6} stroke={C.quiet} strokeWidth={0.8} /> : null,
+      )}
+      {[2, 9, 17].map((j, n) => {
+        const r = easeOutBack(seg(t, 2.6 + n * 0.12, 2.9 + n * 0.12));
+        return <line key={j} x1={25 + j * 5} y1={lane(2) + 8 - 10 * clamp(r, 0, 1.2)} x2={25 + j * 5} y2={lane(2) + 8} stroke={C.focus} strokeWidth={1.6} opacity={clamp(r)} />;
+      })}
+      {/* PubSub: one publisher line, subscribers hanging off it cost the publisher nothing more */}
+      <Draw pts={[[25, lane(3) - 2], [135, lane(3) - 2]]} t={t} from={3.0} to={3.35} stroke={C.second} w={2} pen={false} />
+      {[0, 1, 2, 3].map((j) => (
+        <Draw key={j} pts={[[55 + j * 22, lane(3) - 2], [55 + j * 22, lane(3) + 10]]} t={t} from={3.3 + j * 0.08} to={3.45 + j * 0.08} stroke={C.line} w={1} pen={false} />
+      ))}
+      {/* security: the pointer swings in and rests on Invalid */}
       <g opacity={k(4)}>
-        <path d={`M25 ${lane(4) - 11} l12 5 l-12 5 z`} fill={C.second} />
-        <T x={45} y={lane(4) + 2} s={12} f={C.primary}>
+        <path d={`M25 ${lane(4) - 11} l12 5 l-12 5 z`} fill={C.second} transform={`translate(${((1 - clamp(rest, 0, 1.2)) * 90).toFixed(1)} 0)`} />
+        <T x={45} y={lane(4) + 2} s={13} f={C.primary}>
           Invalid
         </T>
       </g>
       {texts.map((x, i) => (
-        <g key={i} opacity={k(i)}>
+        <g key={i} opacity={k(i)} transform={`translate(${((1 - k(i)) * -20).toFixed(1)} 0)`}>
           <T x={160} y={lane(i) + 5} s={14} f={C.primary}>
             {x.l}
           </T>
@@ -533,6 +543,7 @@ export function Recap({ t }: StepCtx) {
           </T>
         </g>
       ))}
+      <Reticle x={300} y={lane(4)} w={566} h={34} t={t} at={5.0} color={C.badText} />
     </Svg>
   );
 }

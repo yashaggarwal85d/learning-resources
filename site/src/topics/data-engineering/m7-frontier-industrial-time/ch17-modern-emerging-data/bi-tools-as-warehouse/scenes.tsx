@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // BI tools as the warehouse's consumer. The topic has no examples.py; nothing here is a measured number. The hook's
@@ -423,7 +423,7 @@ export function RevealHeadlessBI({ t }: StepCtx) {
 }
 
 // 7 · Three modes, each with its own small rhythm: extract's copies on a schedule, live's query on every click, the
-// per-column load filling slots once. Under them, one metric line feeding all three.
+// per-column load filling slots once. Under them, one metric whose lines draw up to all three; brackets lock onto it.
 export function Recap({ t }: StepCtx) {
   const L: [string, string][] = [
     ['extract', 'cost on a schedule'],
@@ -432,11 +432,14 @@ export function Recap({ t }: StepCtx) {
     ['one metric', 'what every tool reads'],
   ];
   const k = (i: number) => easeOut(seg(t, 0.3 + i * 0.9, 0.7 + i * 0.9));
-  const loop = (t * 1.2) % 1;
+  // extract: a copy rides across on each scheduled run
+  const run = ((t - 0.5) / 1.2) % 1;
+  // live: every click fires its own query
+  const click = ((t - 1.2) / 0.45) % 1;
   return (
     <Svg label="three query modes, one load-vs-freshness trade-off each. One compiled metric, many tools." h={260}>
       {L.map(([a, b], i) => (
-        <g key={a} opacity={k(i)}>
+        <g key={a} opacity={k(i)} transform={`translate(${((1 - k(i)) * -24).toFixed(1)} 0)`}>
           <T x={25} y={34 + i * 60} s={13} f={i === 3 ? C.focus : C.secondary}>
             {a}
           </T>
@@ -447,25 +450,29 @@ export function Recap({ t }: StepCtx) {
       ))}
       <g opacity={k(0)}>
         {[0, 1, 2].map((j) => (
-          <line key={j} x1={460 + j * 40} y1={28} x2={460 + j * 40} y2={52} stroke={C.second} strokeWidth={j === Math.floor(loop * 3) ? 2.4 : 1.2} />
+          <line key={j} x1={460 + j * 40} y1={28} x2={460 + j * 40} y2={52} stroke={C.second} strokeWidth={1.2} />
         ))}
+        {t > 0.5 && <rect x={lerp(450, 538, easeInOut(clamp(run * 1.6)))} y={34} width={14} height={12} rx={2} fill={C.second} />}
       </g>
       <g opacity={k(1)}>
-        {[0, 1, 2, 3, 4, 5].map((j) => (
-          <line key={j} x1={450 + j * 20} y1={88} x2={450 + j * 20} y2={112} stroke={C.badText} strokeWidth={1.4} opacity={j / 6 <= loop ? 1 : 0.25} />
-        ))}
+        <line x1={445} y1={100} x2={575} y2={100} stroke={C.line} />
+        {t > 1.2 && [0, 1].map((j) => <circle key={j} cx={lerp(450, 570, (click + j * 0.5) % 1)} cy={100} r={4} fill={C.badText} />)}
       </g>
       <g opacity={k(2)}>
-        {[0, 1, 2, 3].map((j) => (
-          <rect key={j} x={460 + j * 26} y={146} width={20} height={28} rx={2} fill={j === 1 || j === 3 ? C.second : 'none'} stroke={C.line} strokeDasharray={j === 1 || j === 3 ? undefined : '3 3'} />
-        ))}
+        {[0, 1, 2, 3].map((j) => {
+          const on = j === 1 || j === 3;
+          const h = on ? 28 * easeOutBack(seg(t, 2.2 + j * 0.15, 2.5 + j * 0.15)) : 28;
+          return <rect key={j} x={460 + j * 26} y={on ? 174 - h : 146} width={20} height={on ? Math.max(0, h) : 28} rx={2} fill={on ? C.second : 'none'} stroke={C.line} strokeDasharray={on ? undefined : '3 3'} />;
+        })}
       </g>
       <g opacity={k(3)}>
         <rect x={470} y={210} width={80} height={24} rx={4} fill={C.panel} stroke={C.focus} strokeWidth={1.4} />
-        {[0, 1, 2].map((j) => (
-          <line key={j} x1={510} y1={210} x2={470 + j * 40} y2={196} stroke={C.second} strokeWidth={1.1} />
-        ))}
       </g>
+      {/* one compiled metric, read by every tool: a line draws up from it to each mode */}
+      {[0, 1, 2].map((j) => (
+        <Draw key={j} pts={[[510, 210], [470 + j * 40, 192]]} t={t} from={3.2 + j * 0.15} to={3.5 + j * 0.15} stroke={C.second} w={1.3} />
+      ))}
+      <Reticle x={510} y={222} w={96} h={36} t={t} at={3.85} />
     </Svg>
   );
 }

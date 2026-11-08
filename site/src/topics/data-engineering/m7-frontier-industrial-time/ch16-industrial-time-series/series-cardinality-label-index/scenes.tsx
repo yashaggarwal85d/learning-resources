@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Series cardinality, drawn from examples.py's own plant: 3 sites, 8 lines, 12 machines, 5 sensor kinds, 3 statuses;
@@ -144,9 +144,11 @@ export function Hook({ t }: StepCtx) {
 
 // 1 · Series identity, slot by slot. A reading's labels plantA line1 eq1 temperature are series 3. A second reading with
 // the same four values joins series 3. One with line2 instead — the changed slot turns red — is a new series. One with
-// an extra batch label is a new series too.
+// an extra batch label is a new series too. Each new reading drops in and a cursor compares it slot by slot with the
+// first, stopping red at the first slot that differs; the verdict decodes; brackets lock onto the last "new".
 export function RevealSeriesIdentity({ t }: StepCtx) {
-  const sx = [25, 130, 225, 290];
+  const sx = [25, 130, 225, 290, 455];
+  const sw = [40, 40, 40, 90, 40];
   const rows: { v: string[]; bad: number; r: string; at: number }[] = [
     { v: ['plantA', 'line1', 'eq1', 'temperature'], bad: -1, r: 'series 3', at: 0 },
     { v: ['plantA', 'line1', 'eq1', 'temperature'], bad: -1, r: 'same: 3', at: 1.0 },
@@ -158,27 +160,34 @@ export function RevealSeriesIdentity({ t }: StepCtx) {
       {rows.map((r, i) => {
         const y = 36 + i * 44;
         const k = easeOut(seg(t, r.at, r.at + 0.4));
-        const mark = easeOut(seg(t, r.at + 0.5, r.at + 0.9));
+        // the comparison: a cursor runs slot by slot against the first reading and stops at the first slot that differs
+        const last = r.bad >= 0 ? r.bad : 3;
+        const scan = i === 0 ? 0 : clamp((t - r.at - 0.3) / 0.15, 0, last);
+        const j0 = Math.floor(scan);
+        const cx = lerp(sx[j0], sx[Math.min(last, j0 + 1)], easeInOut(scan - j0));
+        const cw = lerp(sw[j0], sw[Math.min(last, j0 + 1)], easeInOut(scan - j0));
+        const scanning = i > 0 && t > r.at + 0.3;
+        const mark = easeOut(seg(t, r.at + 0.3 + last * 0.15 + 0.1, r.at + 0.3 + last * 0.15 + 0.4));
         return (
-          <g key={i} opacity={k}>
+          <g key={i} opacity={k} transform={`translate(0 ${((1 - k) * -16).toFixed(1)})`}>
             {r.v.map((v, j) => {
               const bad = j === r.bad;
-              const x = j < 4 ? sx[j] : 455;
+              const extra = j === 4 ? easeOutBack(seg(t, r.at + 0.2, r.at + 0.6)) : 1;
               return (
-                <g key={j}>
-                  <T x={x} y={y} s={13} f={bad && mark > 0.5 ? C.badText : C.primary}>
+                <g key={j} transform={j === 4 ? `translate(${((1 - clamp(extra, 0, 1.1)) * 60).toFixed(1)} 0)` : undefined}>
+                  <T x={sx[j]} y={y} s={13} f={bad && mark > 0.5 ? C.badText : C.primary}>
                     {v}
                   </T>
-                  <line x1={x} y1={y + 7} x2={x + (j === 3 ? 90 : 40)} y2={y + 7} stroke={bad && mark > 0.5 ? C.badText : C.line} strokeWidth={1.4} />
+                  <line x1={sx[j]} y1={y + 7} x2={sx[j] + sw[j]} y2={y + 7} stroke={bad && mark > 0.5 ? C.badText : C.line} strokeWidth={1.4} />
                 </g>
               );
             })}
-            <T x={575} y={y} s={14} f={r.r === 'new' ? C.badText : C.focus} a="end" w={600} o={mark}>
-              {r.r}
-            </T>
+            {scanning && <rect x={cx} y={y + 5} width={cw} height={4} rx={2} fill={r.bad >= 0 && mark > 0.5 ? C.badText : C.focus} />}
+            <Decode text={r.r} t={t} at={i === 0 ? 0.3 : r.at + 0.3 + last * 0.15 + 0.1} x={575} y={y} s={14} f={r.r === 'new' ? C.badText : C.focus} a="end" w={600} />
           </g>
         );
       })}
+      <Reticle x={548} y={163} w={64} h={30} t={t} at={4.6} color={C.badText} />
     </Svg>
   );
 }

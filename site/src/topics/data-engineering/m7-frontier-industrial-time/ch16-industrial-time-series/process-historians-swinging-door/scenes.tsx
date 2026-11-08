@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Process historians, drawn from examples.py: the kettle hour's 3,600 readings → 50 points through the exception
@@ -455,7 +455,8 @@ export function RevealStep({ t }: StepCtx) {
 }
 
 // 8 · Five lanes with tiny pictures: a deadband band, two doors from an anchor, a dense wall of knees, a filled area,
-// and a step.
+// and a step — each one moving as its lane lands: the signal draws across the band, the doors swing shut, the wall
+// rises, the area sweeps in, the step draws; brackets lock onto the time-weighted fix.
 export function Recap({ t }: StepCtx) {
   const lane = (i: number) => 32 + i * 50;
   const k = (i: number) => easeOut(seg(t, i * 1.05, i * 1.05 + 0.5));
@@ -466,6 +467,16 @@ export function Recap({ t }: StepCtx) {
     { l: 'time-weighted', r: 'the fix', c: C.focus },
     { l: 'step series', r: 'hold the value', c: C.focus },
   ];
+  // exception filter: a noisy signal draws across the deadband; only what leaves the band is passed on
+  const noise: [number, number][] = Array.from({ length: 23 }, (_, i) => [25 + i * 5, lane(0) - 1 + Math.sin(i * 1.7) * (i % 7 === 3 ? 11 : 3)]);
+  // swinging door: the two doors swing toward each other from the anchor until they meet
+  const sw = easeInOut(seg(t, 1.3, 2.1));
+  const up = lerp(-26, -4, sw);
+  const dn = lerp(22, -2, sw);
+  // knee average: the knees land, then the misleading wall rises
+  const wall = easeOutBack(seg(t, 2.6, 3.0));
+  // time-weighted: the area sweeps in under the curve
+  const area = easeInOut(seg(t, 3.3, 3.9));
   return (
     <Svg
       label="exception filtering before compression, swinging-door knees within a stated error band, a plain knee average that misleads, a time-weighted fix, and step series that need step interpolation"
@@ -473,27 +484,24 @@ export function Recap({ t }: StepCtx) {
     >
       <g opacity={k(0)}>
         <rect x={25} y={lane(0) - 6} width={110} height={10} fill={C.second} opacity={0.4} />
-        <line x1={25} y1={lane(0) - 1} x2={135} y2={lane(0) - 1} stroke={C.quiet} strokeWidth={1} />
       </g>
+      <Draw pts={noise} t={t} from={0.2} to={0.8} stroke={C.quiet} w={1} />
       <g opacity={k(1)}>
         <circle cx={30} cy={lane(1)} r={3.5} fill={C.focus} />
-        <line x1={30} y1={lane(1) - 6} x2={135} y2={lane(1) - 14} stroke={C.second} strokeWidth={1.4} />
-        <line x1={30} y1={lane(1) + 6} x2={135} y2={lane(1) + 2} stroke={C.second} strokeWidth={1.4} />
+        <line x1={30} y1={lane(1) - 6} x2={135} y2={lane(1) + up * 0.6 - 6} stroke={C.second} strokeWidth={1.4} />
+        <line x1={30} y1={lane(1) + 6} x2={135} y2={lane(1) + dn * 0.6 + 6} stroke={C.second} strokeWidth={1.4} />
       </g>
-      <g opacity={k(2)}>
-        {[25, 55, 85].map((x) => (
-          <circle key={x} cx={x} cy={lane(2)} r={2.5} fill={C.secondary} />
-        ))}
-        <rect x={110} y={lane(2) - 10} width={25} height={20} fill={C.bad} />
-      </g>
+      <Plot pts={[[25, lane(2)], [55, lane(2)], [85, lane(2)]]} t={t} start={2.2} beat={0.12} r={2.5} fill={C.secondary} />
+      {wall > 0 && <rect x={110} y={lane(2) + 10 - 20 * clamp(wall, 0, 1.1)} width={25} height={20 * clamp(wall, 0, 1.1)} fill={C.bad} />}
       <g opacity={k(3)}>
-        <path d={`M25 ${lane(3) + 10} L25 ${lane(3)} L105 ${lane(3)} L112 ${lane(3) - 10} L135 ${lane(3) - 8} L135 ${lane(3) + 10} Z`} fill={C.second} opacity={0.45} />
+        <clipPath id="hist-recap-area">
+          <rect x={25} y={lane(3) - 14} width={110 * area} height={28} />
+        </clipPath>
+        <path clipPath="url(#hist-recap-area)" d={`M25 ${lane(3) + 10} L25 ${lane(3)} L105 ${lane(3)} L112 ${lane(3) - 10} L135 ${lane(3) - 8} L135 ${lane(3) + 10} Z`} fill={C.second} opacity={0.45} />
       </g>
-      <g opacity={k(4)}>
-        <path d={`M25 ${lane(4) + 8} H80 V${lane(4) - 8} H135`} fill="none" stroke={C.focus} strokeWidth={1.8} />
-      </g>
+      <Draw pts={[[25, lane(4) + 8], [80, lane(4) + 8], [80, lane(4) - 8], [135, lane(4) - 8]]} t={t} from={4.3} to={4.9} stroke={C.focus} w={1.8} />
       {texts.map((x, i) => (
-        <g key={i} opacity={k(i)}>
+        <g key={i} opacity={k(i)} transform={`translate(${((1 - k(i)) * -20).toFixed(1)} 0)`}>
           <T x={160} y={lane(i) + 5} s={14} f={C.primary}>
             {x.l}
           </T>
@@ -502,13 +510,14 @@ export function Recap({ t }: StepCtx) {
           </T>
         </g>
       ))}
+      <Reticle x={300} y={lane(3)} w={566} h={34} t={t} at={5.3} />
     </Svg>
   );
 }
 
 // 9 · A bare extraction: three values in a column — 161.88, 161.95, 162.03 — with nothing beside them. Before the answer:
 // "recorded or interpolated?". After it, a "?" lands by each and the verdict reads indistinguishable; then the flag
-// column the extraction should have carried fades in: recorded, interpolated, recorded.
+// column the extraction should have carried slides in: recorded, interpolated, recorded, locked onto the interpolated one.
 export function ProveIt({ t, answer }: StepCtx) {
   const s = useSinceAnswer(answer !== null);
   const on = answer !== null;
@@ -519,43 +528,58 @@ export function ProveIt({ t, answer }: StepCtx) {
   ];
   return (
     <Svg label="an extraction carries only values, no flag and no compression deviation — can a later analyst tell a recorded point from an interpolated one?" h={200}>
-      <T x={40} y={28} s={12} f={C.quiet} o={easeOut(seg(t, 0, 0.3))}>
+      <T x={40} y={28} s={13} f={C.quiet} o={easeOut(seg(t, 0, 0.3))}>
         value
       </T>
       {rows.map((r, i) => {
         const y = 62 + i * 34;
+        const k = easeOut(seg(t, 0.2 + i * 0.25, 0.5 + i * 0.25));
+        const q = on ? easeOutBack(seg(s, 0.2 + i * 0.15, 0.5 + i * 0.15)) : 0;
+        // the flag the extraction should have carried slides in from the right, after the verdict
+        const fl = on ? easeOut(seg(s, 1.6 + i * 0.15, 1.95 + i * 0.15)) : 0;
         return (
-          <g key={i} opacity={easeOut(seg(t, 0.2 + i * 0.25, 0.5 + i * 0.25))}>
-            <T x={40} y={y} s={15} f={C.primary} w={600}>
-              {r.v}
-            </T>
-            {on && (
-              <T x={170} y={y} s={15} f={C.badText} w={600} o={easeOut(seg(s, 0.2 + i * 0.15, 0.5 + i * 0.15))}>
-                ?
+          <g key={i}>
+            <g opacity={k} transform={`translate(${((1 - k) * -24).toFixed(1)} 0)`}>
+              <T x={40} y={y} s={15} f={C.primary} w={600}>
+                {r.v}
               </T>
+            </g>
+            {q > 0 && (
+              <g transform={`translate(175 ${y - 5}) scale(${clamp(q, 0, 1.3).toFixed(3)}) translate(-175 ${-(y - 5)})`}>
+                <T x={170} y={y} s={15} f={C.badText} w={600}>
+                  ?
+                </T>
+              </g>
             )}
-            {on && (
-              <T x={575} y={y} s={13} f={r.f === 'recorded' ? C.focus : C.second} a="end" o={easeOut(seg(s, 1.6 + i * 0.15, 1.9 + i * 0.15))}>
-                {r.f}
-              </T>
+            {fl > 0 && (
+              <g opacity={fl} transform={`translate(${((1 - fl) * 40).toFixed(1)} 0)`}>
+                <T x={575} y={y} s={13} f={r.f === 'recorded' ? C.focus : C.second} a="end">
+                  {r.f}
+                </T>
+              </g>
             )}
           </g>
         );
       })}
       {on && (
-        <T x={575} y={28} s={12} f={C.quiet} a="end" o={easeOut(seg(s, 1.4, 1.8))}>
+        <T x={575} y={28} s={13} f={C.quiet} a="end" o={easeOut(seg(s, 1.4, 1.8))}>
           the missing flag
         </T>
       )}
+      {/* the column that was dropped: drawn as an empty, dashed lane between the values and the flags */}
+      {on && <Draw pts={[[220, 44], [220, 140]]} t={s} from={1.2} to={1.6} stroke={C.line} w={1.2} dash="4 4" pen={false} />}
       {!on ? (
         <T x={300} y={184} s={14} f={C.focus} a="middle" o={easeOut(seg(t, 1.4, 1.8))}>
           recorded or interpolated?
         </T>
       ) : (
-        <T x={40} y={184} s={14} f={C.badText} w={600} o={easeOut(seg(s, 0.8, 1.2))}>
-          without a flag: indistinguishable
-        </T>
+        <g opacity={easeOut(seg(s, 0.8, 1.2))} transform={`translate(${((1 - easeOut(seg(s, 0.8, 1.2))) * -24).toFixed(1)} 0)`}>
+          <T x={40} y={184} s={14} f={C.badText} w={600}>
+            without a flag: indistinguishable
+          </T>
+        </g>
       )}
+      {on && <Reticle x={515} y={92} w={136} h={30} t={s} at={2.4} color={C.second} />}
     </Svg>
   );
 }
