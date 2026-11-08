@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, Decode, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // This chapter's own two shapes (CHAPTER.md §A.5): a monomorphization fan-out (one generic box, an arrow to each
 // concrete-type box it was compiled for) and an outlining split (a thin generic shim box feeding one wider shared
@@ -31,23 +32,104 @@ function MonoFanOut({ t, labelA = 'A', labelB = 'B' }: { t: number; labelA?: str
   );
 }
 
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so a reveal can still move. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4.5) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
+
 // ── 1 · One generic function, compiled once per concrete type ──────────────────────────────────────────────────
 export function MonoFanOutStep({ t }: StepCtx) {
   return <MonoFanOut t={t} />;
 }
 
 // ── 2 · How many compiled bodies does rustc actually emit? (predict) ───────────────────────────────────────────
-export function MonomorphizationCode({ t }: StepCtx) {
+export function MonomorphizationCode({ t, answer, portrait }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
+  const box = easeOut(seg(t, 0.5, 0.9));
+  const ca = easeInOut(seg(t, 0.9, 1.4));
+  const cb = easeInOut(seg(t, 1.2, 1.7));
+  const split = ans ? easeInOut(seg(s, 0.15, 0.9)) : 0;
   return (
     <Stack>
-      <Code
+      {!portrait && <Code
         title="examples/monomorphization.rs"
         lines={['pub fn encode_generic<C: Codec>(c: &C) -> u8 {', '    c.encode()', '}', 'call_a(&A)   // compiled for A', 'call_b(&B)   // compiled for B']}
         t={t}
         start={0.1}
-        end={2.0}
+        end={0.9}
         highlight={[0]}
-      />
+      />}
+      <Svg label="two call sites, one with A and one with B, reach the one generic function; the compiler emits a separate full body for each" h={190} fill>
+        <T x={30} y={44} s={13} f={C.latte} o={easeOut(seg(t, 0.8, 1.0))}>call_a(&A)</T>
+        <T x={30} y={154} s={13} f={C.latte} o={easeOut(seg(t, 1.1, 1.3))}>call_b(&B)</T>
+        {ca > 0 && split < 1 && <circle cx={lerp(140, 230, ca)} cy={lerp(40, 95, ca)} r={6} fill={C.crema} />}
+        {cb > 0 && split < 1 && <circle cx={lerp(140, 230, cb)} cy={lerp(150, 95, cb)} r={6} fill={C.cinnamon} />}
+        {[0, 1].map((i) => {
+          const dy = (i ? 1 : -1) * 52 * split;
+          const label = !ans || split < 0.5 ? 'encode_generic<C>' : i ? 'encode_generic::<B>' : 'encode_generic::<A>';
+          if (i === 1 && split <= 0) return null;
+          return (
+            <g key={i} transform={`translate(${(split * 40).toFixed(1)} ${dy.toFixed(1)})`} opacity={box}>
+              <rect x={230} y={74} width={250} height={42} rx={8} fill={C.cocoa} stroke={split > 0.9 ? (i ? C.cinnamon : C.caramel) : C.mocha} strokeWidth={1.5} />
+              <T x={355} y={100} s={14} a="middle" f={C.crema}>{label}</T>
+            </g>
+          );
+        })}
+        {ans && split > 0.95 && <Reticle x={395} y={95} w={280} h={150} t={s} at={1.0} />}
+      </Svg>
     </Stack>
   );
 }
@@ -65,11 +147,11 @@ export function MonoProof({ t }: StepCtx) {
       <T x={40} y={46} s={15} f={C.crema}>rustc --emit=llvm-ir (no optimizer)</T>
       <g transform={`translate(${dxA},0)`}>
         <rect x={40} y={70} width={240} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={1.5} />
-        <T x={60} y={98} s={13} f={C.taupe}>define encode_generic ... A</T>
+        <T x={60} y={98} s={13} f={C.taupe}>{'define encode_generic<A>'}</T>
       </g>
       <g transform={`translate(${dxB},0)`}>
         <rect x={320} y={70} width={240} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={1.5} />
-        <T x={340} y={98} s={13} f={C.taupe}>define encode_generic ... B</T>
+        <T x={340} y={98} s={13} f={C.taupe}>{'define encode_generic<B>'}</T>
       </g>
       <Draw pts={[[40, 140], [560, 140]]} t={t} from={0.5} to={0.9} stroke={C.caramel} w={2} dash="4 4" pen={false} />
       <T x={40} y={160} s={15} f={C.caramel} o={fa(t, 0.9, 0.3)}>each call runs as fast as hand-written</T>
@@ -123,6 +205,10 @@ export function NaiveVsOutlining({ t }: StepCtx) {
 
 // ── 6 · impl Trait in argument position: sugar for a hidden generic ────────────────────────────────────────────
 export function ImplTraitArg({ t }: StepCtx) {
+  const slots = easeOut(seg(t, 0.5, 0.9));
+  const hid = (a: number) => (t >= a ? 1 : 0);
+  const dog = easeInOut(seg(t, 1.9, 2.5));
+  const cat = easeInOut(seg(t, 2.1, 2.7));
   return (
     <Stack>
       <Code
@@ -130,9 +216,38 @@ export function ImplTraitArg({ t }: StepCtx) {
         lines={['fn two_impl_trait(a: impl Greet, b: impl Greet)', '    -> (&\'static str, &\'static str) {', '    (a.hi(), b.hi())', '}', 'two_impl_trait(Dog, Cat)   // woof meow']}
         t={t}
         start={0.1}
-        end={2.0}
-        highlight={[0, 4]}
+        end={0.8}
+        highlight={t > 1.9 ? [4] : [0]}
       />
+      <Svg label="each impl Greet parameter is its own hidden type parameter, so a Dog and a Cat land in the two slots and both are accepted" h={190} fill>
+        {[0, 1].map((i) => {
+          const x = 100 + i * 230;
+          return (
+            <g key={i} opacity={slots}>
+              <rect x={x} y={90} width={170} height={44} rx={8} fill={C.cocoa} stroke={(i ? cat : dog) > 0.95 ? C.caramel : C.mocha} strokeWidth={1.5} />
+              <T x={x + 12} y={82} s={13} f={C.taupe}>{i ? 'b' : 'a'}</T>
+              {hid(1.0 + i * 0.3) ? (
+                <Decode text={i ? 'hidden type U' : 'hidden type T'} x={x + 85} y={117} s={13} a="middle" f={C.cinnamon} t={t} at={1.0 + i * 0.3} dur={0.5} />
+              ) : (
+                <T x={x + 85} y={117} s={13} a="middle" f={C.crema}>impl Greet</T>
+              )}
+              {(i ? cat : dog) > 0.98 && <T x={x + 85} y={168} s={14} a="middle" f={C.caramel}>{i ? 'meow' : 'woof'}</T>}
+            </g>
+          );
+        })}
+        {dog > 0 && dog < 1 && (
+          <g transform={`translate(${lerp(30, 185, dog).toFixed(1)} ${lerp(30, 112, dog).toFixed(1)})`}>
+            <rect x={-30} y={-14} width={60} height={28} rx={6} fill={C.crema} />
+            <T x={0} y={5} s={13} a="middle" f={C.espresso} w={700}>Dog</T>
+          </g>
+        )}
+        {cat > 0 && cat < 1 && (
+          <g transform={`translate(${lerp(570, 415, cat).toFixed(1)} ${lerp(30, 112, cat).toFixed(1)})`}>
+            <rect x={-30} y={-14} width={60} height={28} rx={6} fill={C.cinnamon} />
+            <T x={0} y={5} s={13} a="middle" f={C.espresso} w={700}>Cat</T>
+          </g>
+        )}
+      </Svg>
     </Stack>
   );
 }
@@ -158,18 +273,40 @@ export function SharedBoundFail({ t }: StepCtx) {
 
 // ── 8 · impl Trait in return position: one hidden, committed type ──────────────────────────────────────────────
 export function ImplTraitReturn({ t }: StepCtx) {
+  const box = easeOut(seg(t, 0.5, 0.9));
+  const pick = easeOutBack(seg(t, 0.9, 1.3));
+  const cover = easeInOut(seg(t, 2.0, 2.7)); // the opaque type slides over the real one
+  const caller = easeOut(seg(t, 2.6, 3.0));
   return (
     <Stack>
-      <Code
-        title="examples/impl_trait_return.rs"
-        lines={['fn make_adder_impl_trait(n: i32) -> impl Fn(i32) -> i32 {', '    move |x| x + n', '}']}
-        t={t}
-        start={0.1}
-        end={1.4}
-        highlight={[0]}
-      />
-      <Svg label="the caller only ever sees Fn's interface, never the real closure type the function picked" h={56}>
-        <T x={40} y={32} s={13} f={C.taupe} o={fa(t, 1.6, 0.4)}>the function picks the real type; the caller only sees Fn</T>
+      <Code title="examples/impl_trait_return.rs" lines={['fn make_adder_impl_trait(n: i32) -> impl Fn(i32) -> i32 {', '    move |x| x + n', '}']} t={t} start={0.1} end={0.6} highlight={[0]} />
+      <Svg label="the function picks one real closure type; every return path hands back that one type; the caller only ever sees impl Fn" h={200} fill>
+        <g opacity={box}>
+          <rect x={20} y={30} width={330} height={140} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+          <T x={34} y={52} s={13} f={C.taupe}>make_adder_impl_trait</T>
+        </g>
+        {pick > 0 && (
+          <g transform={`translate(270 110) scale(${pick.toFixed(3)}) translate(-270 -110)`}>
+            <rect x={200} y={88} width={140} height={44} rx={8} fill={C.cocoa} stroke={C.caramel} strokeWidth={2} />
+            {cover < 0.95 && <T x={270} y={115} s={13} a="middle" f={C.caramel}>its closure</T>}
+          </g>
+        )}
+        <Draw pts={[[40, 80], [140, 80], [198, 104]]} t={t} from={1.3} to={1.7} stroke={C.latte} w={2} />
+        <Draw pts={[[40, 145], [140, 145], [198, 118]]} t={t} from={1.5} to={1.9} stroke={C.latte} w={2} />
+        <T x={44} y={72} s={13} f={C.taupe} o={easeOut(seg(t, 1.3, 1.5))}>path</T>
+        <T x={44} y={137} s={13} f={C.taupe} o={easeOut(seg(t, 1.5, 1.7))}>path</T>
+        {cover > 0 && (
+          <g>
+            <rect x={196} y={84} width={150 * cover} height={52} rx={8} fill={C.roast} stroke={C.crema} strokeWidth={1.5} />
+            {cover > 0.95 && <T x={271} y={115} s={13} a="middle" f={C.crema}>impl Fn</T>}
+          </g>
+        )}
+        <g transform={`translate(${((1 - caller) * 30).toFixed(1)} 0)`} opacity={caller}>
+          <line x1={346} y1={110} x2={440} y2={110} stroke={C.crema} strokeWidth={2} />
+          <rect x={440} y={88} width={130} height={44} rx={8} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
+          <T x={505} y={115} s={13} a="middle" f={C.crema}>caller</T>
+          <T x={505} y={156} s={13} a="middle" f={C.latte}>sees Fn only</T>
+        </g>
       </Svg>
     </Stack>
   );
@@ -206,21 +343,12 @@ export function AllocCount({ t }: StepCtx) {
 
 // ── 10 · Recap ────────────────────────────────────────────────────────────────────────────────────────────────────
 export function Recap({ t }: StepCtx) {
-  const rows = [
-    'one body compiled per concrete type',
-    'free at run time, costly at compile time',
-    'outlining keeps the duplicated shim thin',
-    'impl Trait args may differ in type',
-    'unboxed return allocates nothing extra',
-  ];
   return (
-    <Svg label="recap: monomorphization, its cost, outlining, and the two impl Trait positions" h={320}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 50} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 50} s={15} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
+    <RecapList
+      t={t}
+      end={2.8}
+      label="recap: monomorphization, its cost, outlining, and the two impl Trait positions"
+      rows={['one body compiled per concrete type', 'free at run time, costly at compile time', 'outlining keeps the duplicated shim thin', 'impl Trait args may differ in type', 'unboxed return allocates nothing extra']}
+    />
   );
 }
