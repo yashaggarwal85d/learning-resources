@@ -43,7 +43,7 @@ URL: https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-evict
 > all the containers and they are equal. These pods will never be evicted because
 > of another pod's resource consumption. If a system daemon (such as kubelet
 > and journald) is consuming more resources than were reserved via
-> system-reserved or kube-reserved allocations, and the node only has
+> systemReserved or kubeReserved allocations, and the node only has
 > Guaranteed or Burstable pods using less resources than requests left on it,
 > then the kubelet must choose to evict one of these pods to preserve node stability
 > and to limit the impact of resource starvation on other pods. In this case, it
@@ -52,7 +52,7 @@ URL: https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-evict
 > The kubelet does not respect your configured PodDisruptionBudget
 > or the pod's
 > terminationGracePeriodSeconds. If you use soft eviction thresholds,
-> the kubelet respects your configured eviction-max-pod-grace-period. If you use
+> the kubelet respects your configured evictionMaxPodGracePeriod. If you use
 > hard eviction thresholds, the kubelet uses a 0s grace period (immediate shutdown) for termination.
 
 > The kubelet has the following default hard eviction thresholds:
@@ -87,7 +87,7 @@ URL: https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-evict
 > regular interval. If memory usage increases within that window rapidly, the
 > kubelet may not observe MemoryPressure fast enough, and the OOM killer
 > will still be invoked.
-> You can use the --kernel-memcg-notification flag to enable the memcg
+> You can use the kernelMemcgNotification configuration field to enable the memcg
 > notification API on the kubelet to get notified immediately when a threshold
 > is crossed.
 
