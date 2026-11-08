@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar: plan trees root at the top; caramel = the rewritten (cheaper) form, cherryText = the operator being removed
 // or the costly dependent form, crema = data, latte = labels, taupe = structure.
@@ -454,20 +454,52 @@ export function Verdict({ t }: StepCtx) {
   );
 }
 
+// 12 · Predict: when can a LEFT JOIN go. An outer and an inner table sit joined. After the answer each outer row's one
+// match line draws (it cannot multiply rows) and its check draws; then, nothing above reading the inner side, the inner
+// table slides away, its lines retract, and the second check draws.
 export function ProveRemove({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
+  const tables = easeOut(seg(t, 0.1, 0.6));
+  const gone = answered ? easeInOut(seg(s, 1.3, 2.0)) : 0;
   return (
     <Svg label="A LEFT JOIN can be deleted when it has at most one inner match and no inner column is used" h={240}>
       <T x={40} y={90} s={16} f={C.latte}>
         LEFT JOIN deletable if…
       </T>
+      <g opacity={tables}>
+        <T x={400} y={40} s={13} a="middle" f={C.secondary}>
+          outer
+        </T>
+        {[0, 1, 2].map((i) => (
+          <rect key={i} x={370} y={56 + i * 40} width={60} height={26} rx={4} fill={C.cocoa} stroke={C.mocha} />
+        ))}
+      </g>
+      <g opacity={tables * (1 - gone)} transform={`translate(${(gone * 70).toFixed(1)} 0)`}>
+        <T x={530} y={40} s={13} a="middle" f={C.secondary}>
+          inner
+        </T>
+        {[0, 1, 2].map((i) => (
+          <rect key={i} x={500} y={56 + i * 40} width={60} height={26} rx={4} fill={C.cocoa} stroke={C.mocha} />
+        ))}
+      </g>
+      {answered &&
+        [0, 1, 2].map((i) => {
+          const back = 1 - gone;
+          if (back <= 0) return null;
+          return (
+            <g key={i} opacity={back}>
+              <Draw pts={[[430, 69 + i * 40], [430 + 70 * back, 69 + i * 40]]} t={s} from={0.1 + i * 0.12} to={0.45 + i * 0.12} stroke={C.caramel} w={2} pen={gone === 0} />
+            </g>
+          );
+        })}
       {answered ? (
         ['≤ 1 inner match', 'no inner column used'].map((l, i) => {
-          const k = easeOut(seg(s, 0.1 + i * 0.35, 0.4 + i * 0.35));
+          const from = i === 0 ? 0.3 : 1.7;
+          const k = easeOut(seg(s, from, from + 0.35));
           return (
-            <g key={l} opacity={k}>
-              <path d={`M40 ${122 + i * 30} l5 5 l10 -12`} fill="none" stroke={C.caramel} strokeWidth={2.5} />
+            <g key={l} opacity={k} transform={`translate(${((1 - k) * -16).toFixed(1)} 0)`}>
+              <Draw pts={[[40, 124 + i * 30], [45, 129 + i * 30], [55, 117 + i * 30]]} t={s} from={from + 0.15} to={from + 0.45} stroke={C.caramel} w={2.5} />
               <T x={62} y={130 + i * 30} s={15} f={C.caramel}>
                 {l}
               </T>
@@ -475,7 +507,7 @@ export function ProveRemove({ t, answer }: StepCtx) {
           );
         })
       ) : (
-        <T x={400} y={120} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>
+        <T x={40} y={160} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>
           ?
         </T>
       )}

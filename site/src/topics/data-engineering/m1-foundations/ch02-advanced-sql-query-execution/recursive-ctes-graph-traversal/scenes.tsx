@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar: caramel = the node or batch under discussion, cherryText = a cycle or runaway, crema = data,
 // latte = labels, taupe = structure. Products: bundle 1 -> kits 2, 3 -> parts 4 (shared mic), 5, 6.
@@ -296,7 +296,7 @@ export function CycleLoop({ t }: StepCtx) {
 }
 
 // 6 · Predict: UNION. The four rows arrive with their depth. Before the answer UNION's dedup bracket compares the
-// two bundle rows. After it the depths flash as different, the ≠ lands, and the next row of the loop keeps coming.
+// two bundle rows (it draws). After it the ≠ pops in and locks on, the loop arrow draws, and the next row drops in.
 export function UnionPredict({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
@@ -306,32 +306,49 @@ export function UnionPredict({ t, answer }: StepCtx) {
     ['kit B', 'depth 3'],
     ['bundle', 'depth 4'],
   ];
-  const br = easeOut(seg(t, 1.4, 1.8));
   const neq = answered ? easeOutBack(seg(s, 0.2, 0.6)) : 0;
-  const more = answered ? easeOut(seg(s, 1.0, 1.5)) : 0;
+  const more = answered ? easeOut(seg(s, 1.4, 1.9)) : 0;
   return (
     <Svg label="Going round the cycle gives a row with a larger depth, so UNION does not see a duplicate and the loop keeps going" h={300}>
-      {rows.map((r, i) => (
-        <g key={i} opacity={easeOut(seg(t, 0.2 + i * 0.3, 0.6 + i * 0.3))}>
-          <rect x={25} y={30 + i * 50} width={150} height={36} rx={8} fill={C.cocoa} stroke={(i === 3 || i === 0) && answered ? C.cherryText : C.mocha} />
-          <T x={100} y={54 + i * 50} s={13} f={C.crema} a="middle">
-            {r[0]}
-          </T>
-          <T x={200} y={54 + i * 50} s={13} f={(i === 0 || i === 3) && neq > 0.5 ? C.cherryText : C.caramel}>
-            {r[1]}
-          </T>
-        </g>
-      ))}
-      <path d="M 305 48 L 325 48 L 325 198 L 305 198" fill="none" stroke={C.latte} strokeWidth={1.5} opacity={br} />
-      <T x={335} y={128} s={13} f={C.latte} o={br * (1 - neq)}>
+      {/* each pass of the recursion drops one more row onto the result */}
+      {rows.map((r, i) => {
+        const k = easeOut(seg(t, 0.15 + i * 0.28, 0.5 + i * 0.28));
+        return (
+          <g key={i} opacity={k} transform={`translate(0 ${((1 - k) * -24).toFixed(1)})`}>
+            <rect x={25} y={30 + i * 50} width={150} height={36} rx={8} fill={C.cocoa} stroke={(i === 3 || i === 0) && answered ? C.cherryText : C.mocha} />
+            <T x={100} y={54 + i * 50} s={13} f={C.crema} a="middle">
+              {r[0]}
+            </T>
+            <T x={200} y={54 + i * 50} s={13} f={(i === 0 || i === 3) && neq > 0.5 ? C.cherryText : C.caramel}>
+              {r[1]}
+            </T>
+          </g>
+        );
+      })}
+      {/* UNION's dedup check reaches from the first bundle row to the repeated one */}
+      <Draw pts={[[305, 48], [325, 48], [325, 198], [305, 198]]} t={t} from={1.25} to={1.75} stroke={C.latte} w={1.5} />
+      <T x={335} y={128} s={13} f={C.latte} o={easeOut(seg(t, 1.5, 1.8)) * (1 - clamp(neq))}>
         UNION: same row?
       </T>
       {neq > 0 && (
-        <T x={335} y={128} s={16} f={C.cherryText} w={700} o={clamp(neq)}>
-          ≠ new depth
-        </T>
+        <g transform={`translate(335 128) scale(${clamp(neq, 0, 1.2).toFixed(3)})`}>
+          <T x={0} y={0} s={16} f={C.cherryText} w={700}>
+            ≠ new depth
+          </T>
+        </g>
       )}
-      <g opacity={more}>
+      {/* not a duplicate, so the walk goes round the ring again: the loop arrow, then the next row */}
+      {answered && (
+        <Draw
+          pts={[[25, 204], [11, 210], [11, 242], [25, 248]]}
+          t={s}
+          from={0.8}
+          to={1.4}
+          stroke={C.cherryText}
+          w={2}
+        />
+      )}
+      <g opacity={more} transform={`translate(0 ${((1 - more) * -24).toFixed(1)})`}>
         <rect x={25} y={230} width={150} height={36} rx={8} fill={C.cocoa} stroke={C.mocha} />
         <T x={100} y={254} s={13} f={C.crema} a="middle">
           kit A
@@ -348,6 +365,7 @@ export function UnionPredict({ t, answer }: StepCtx) {
       <T x={575} y={254} s={14} f={C.cherryText} a="end" o={more}>
         still looping
       </T>
+      {answered && <Reticle x={400} y={123} w={150} h={34} t={s} at={0.6} color={C.cherryText} />}
     </Svg>
   );
 }

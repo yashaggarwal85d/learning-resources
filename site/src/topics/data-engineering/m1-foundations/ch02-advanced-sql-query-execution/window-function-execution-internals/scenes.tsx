@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar: caramel = the work the good algorithm does, cherryText = redundant work, crema = data, latte = labels.
 
@@ -299,30 +299,46 @@ export function TreePredict({ t, answer }: StepCtx) {
   );
 }
 
-// 9 · Segment tree: built leaves-up, a frame bracket under the leaves, then the four covering nodes light one by one.
+// 9 · Segment tree: built leaves-up, the frame draws under the leaves, then a probe hops from the root to each covering node.
 export function SegmentTree({ t }: StepCtx) {
   const levels = [1, 2, 4, 8];
   const used: Record<string, number> = { '3-1': 0, '2-1': 1, '2-2': 2, '3-6': 3 };
-  const br = easeOut(seg(t, 1.6, 2.0));
   const lw = 540 / 8;
+  const centre = (l: number, i: number): [number, number] => {
+    const w = 540 / levels[l];
+    return [30 + i * w + (w - 6) / 2, 44 + l * 50];
+  };
+  // The probe starts at the root and hops to each covering node in turn; each one lights as it lands.
+  const stops: [number, number][] = [centre(0, 0), centre(3, 1), centre(2, 1), centre(2, 2), centre(3, 6)];
+  const hop = clamp((t - 2.0) / 0.3, 0, 4);
+  const h = Math.min(3, Math.floor(hop));
+  const k = easeInOut(hop - h);
+  const probe: [number, number] = [lerp(stops[h][0], stops[h + 1][0], k), lerp(stops[h][1], stops[h + 1][1], k)];
+  const note = easeOut(seg(t, 3.3, 3.7));
   return (
     <Svg label="A segment tree stores the totals of blocks; a frame is covered by a few nodes, about 10 visits for 1,000 rows" h={300}>
+      {/* built leaves-up: each level rises into place, the leaves first */}
       {levels.map((n, l) =>
         Array.from({ length: n }, (_, i) => {
           const w = 540 / n;
-          const k = easeOut(seg(t, 0.2 + (3 - l) * 0.3, 0.6 + (3 - l) * 0.3));
+          const r = easeOut(seg(t, 0.2 + (3 - l) * 0.3, 0.6 + (3 - l) * 0.3));
           const u = used[`${l}-${i}`];
-          const lit = u !== undefined && t >= 2.2 + u * 0.3;
-          return <rect key={`${l}-${i}`} x={30 + i * w} y={24 + l * 50} width={w - 6} height={40} rx={6} fill={lit ? C.caramel : C.cocoa} stroke={C.mocha} opacity={k} />;
+          const lit = u !== undefined && t >= 2.0 + (u + 1) * 0.3;
+          return <rect key={`${l}-${i}`} x={30 + i * w} y={24 + l * 50 + (1 - r) * 22} width={w - 6} height={40} rx={6} fill={lit ? C.caramel : C.cocoa} stroke={C.mocha} opacity={r} />;
         }),
       )}
-      <rect x={30 + lw - 3} y={222} width={6 * lw} height={6} rx={3} fill={C.caramel} opacity={br} />
-      <T x={30 + lw} y={246} s={13} f={C.caramel} o={br}>
+      {/* the frame, drawn under the leaves it spans */}
+      <Draw pts={[[30 + lw, 225], [30 + 7 * lw - 6, 225]]} t={t} from={1.5} to={1.95} w={6} />
+      <T x={30 + lw} y={248} s={13} f={C.caramel} o={easeOut(seg(t, 1.7, 2.0))}>
         one frame
       </T>
-      <T x={25} y={282} s={14} f={C.crema} o={easeOut(seg(t, 3.5, 3.9))}>
-        about 10 node visits for 1,000 rows
-      </T>
+      {t >= 2.0 && t < 3.3 && <circle cx={probe[0]} cy={probe[1]} r={7} fill={C.focus} stroke={C.ink} strokeWidth={2} />}
+      <g opacity={note} transform={`translate(0 ${((1 - note) * 8).toFixed(1)})`}>
+        <T x={25} y={282} s={14} f={C.crema}>
+          about 10 node visits for 1,000 rows
+        </T>
+      </g>
+      <Reticle x={210} y={277} w={385} h={28} t={t} at={3.6} />
     </Svg>
   );
 }

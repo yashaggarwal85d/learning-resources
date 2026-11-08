@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar: caramel = a session start / the id, cherryText = a gap over the threshold, crema = data, latte = labels.
 // One customer's clicks at minutes 0, 12, 25, 80, 95, 200, 202, 230; threshold 30 minutes.
@@ -249,36 +249,50 @@ export function RunningSum({ t }: StepCtx) {
   );
 }
 
-// 6 · Predict: the flags in boxes. After the answer, the running total writes under the first four and the fourth box lights.
+// 6 · Predict: the flags drop into boxes. After the answer a cursor walks the first four, the running total lands under each, and brackets lock onto the fourth.
 export function FourthPredict({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
   const run = [1, 1, 1, 2];
+  // After the answer a cursor walks the first four flags, adding each one; the total so far lands under it.
+  const walk = answered ? clamp((s - 0.1) / 0.3, 0, 3) : 0;
+  const at = Math.floor(walk + 1e-6);
+  const cx = 57 + lerp(at * 66, Math.min(3, at + 1) * 66, easeInOut(walk - at));
   return (
     <Svg label="Flags 1, 0, 0, 1, 0, 1, 0, 0; the running sum through the fourth row is 2, the second session" h={240}>
-      {FLAG.map((f, i) => (
-        <g key={i} opacity={easeOut(seg(t, i * 0.08, i * 0.08 + 0.3))}>
-          <rect x={30 + i * 66} y={50} width={54} height={44} rx={8} fill={C.cocoa} stroke={i === 3 ? C.caramel : C.mocha} strokeWidth={i === 3 ? 3 : 1} />
-          <T x={57 + i * 66} y={79} s={18} f={C.crema} a="middle">
-            {String(f)}
-          </T>
-        </g>
-      ))}
+      {FLAG.map((f, i) => {
+        const k = easeOut(seg(t, i * 0.08, i * 0.08 + 0.35));
+        return (
+          <g key={i} opacity={k} transform={`translate(0 ${((1 - k) * -18).toFixed(1)})`}>
+            <rect x={30 + i * 66} y={50} width={54} height={44} rx={8} fill={C.cocoa} stroke={i === 3 ? C.caramel : C.mocha} strokeWidth={i === 3 ? 3 : 1} />
+            <T x={57 + i * 66} y={79} s={18} f={C.crema} a="middle">
+              {String(f)}
+            </T>
+          </g>
+        );
+      })}
+      {answered && <polygon points={`${cx - 8},26 ${cx + 8},26 ${cx},38`} fill={C.focus} />}
       {answered &&
-        run.map((r, i) => (
-          <T key={i} x={57 + i * 66} y={128} s={16} f={C.caramel} a="middle" w={700} o={easeOut(seg(s, 0.1 + i * 0.25, 0.3 + i * 0.25))}>
-            {String(r)}
-          </T>
-        ))}
+        run.map((r, i) => {
+          const k = easeOutBack(seg(s, 0.1 + i * 0.3, 0.4 + i * 0.3));
+          return (
+            <g key={i} opacity={clamp(k)} transform={`translate(0 ${((1 - clamp(k)) * -14).toFixed(1)})`}>
+              <T x={57 + i * 66} y={128} s={16} f={C.caramel} a="middle" w={700}>
+                {String(r)}
+              </T>
+            </g>
+          );
+        })}
       {!answered ? (
         <T x={228} y={190} s={44} f={C.caramel} a="middle" o={0.75 + 0.25 * Math.sin(t * 3)}>
           ?
         </T>
       ) : (
-        <T x={228} y={190} s={22} f={C.caramel} a="middle" w={700} o={easeOut(seg(s, 1.1, 1.5))}>
+        <T x={228} y={190} s={22} f={C.caramel} a="middle" w={700} o={easeOut(seg(s, 1.3, 1.7))}>
           1 + 0 + 0 + 1 = 2
         </T>
       )}
+      {answered && <Reticle x={255} y={95} w={70} h={76} t={s} at={1.6} />}
     </Svg>
   );
 }

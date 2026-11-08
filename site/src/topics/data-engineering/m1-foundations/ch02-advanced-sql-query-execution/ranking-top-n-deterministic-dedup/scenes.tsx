@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar: caramel = the chosen / kept row, cherryText = the ambiguous or lost row, crema = data, latte = labels.
 // Scores 90, 80, 80, 70 (the two 80s tie).
@@ -525,34 +525,53 @@ export function ProveStandard({ t, answer }: StepCtx) {
     </Svg>
   );
 }
+// 13 · Predict: dense rank of the 70. The four scores slide in. After the answer the two 80s slide together into one
+// group, the 70 closes up beside them, the groups count 1, 2, 3 left to right, and brackets lock onto the 70's 3.
 export function ProveDense({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
-  const groups = ['90', '80', '70'];
+  const scores = ['90', '80', '80', '70'];
+  const merge = answered ? easeInOut(seg(s, 0.1, 0.6)) : 0;
+  // Where each score sits: in a row of four before, in three groups (the 80s stacked) after.
+  const xs = [40, 130, lerp(220, 136, merge), lerp(310, 220, merge)];
+  const ys = [100, 100, lerp(100, 94, merge), 100];
   return (
     <Svg label="DENSE_RANK of the 70 in 90, 80, 80, 70 is 3: three distinct scores down to it" h={240}>
       <T x={40} y={70} s={18} f={C.latte}>
         90, 80, 80, 70 → the 70 is
       </T>
+      {/* the second 80 is drawn first, so once it slides under the first 80 it peeks out behind it as one group */}
+      {[2, 0, 1, 3].map((i) => {
+        const g = scores[i];
+        const k = easeOut(seg(t, 0.1 + i * 0.15, 0.45 + i * 0.15));
+        const last = i === 3;
+        return (
+          <g key={i} opacity={k} transform={`translate(${((1 - k) * 30).toFixed(1)} 0)`}>
+            <rect x={xs[i]} y={ys[i]} width={70} height={40} rx={8} fill={C.cocoa} stroke={last ? C.caramel : C.mocha} strokeWidth={last ? 2 : 1} />
+            {!(i === 2 && merge >= 0.5) && (
+              <T x={xs[i] + 35} y={ys[i] + 25} s={14} f={C.crema} a="middle">
+                {g}
+              </T>
+            )}
+          </g>
+        );
+      })}
       {answered ? (
         <>
-          {groups.map((g, i) => {
-            const k = easeOutBack(seg(s, 0.1 + i * 0.3, 0.4 + i * 0.3));
+          {[0, 1, 2].map((i) => {
+            const k = easeOutBack(seg(s, 0.7 + i * 0.3, 1.0 + i * 0.3));
             return (
-              <g key={g} opacity={clamp(k)}>
-                <rect x={40 + i * 90} y={100} width={70} height={40} rx={8} fill={C.cocoa} stroke={i === 2 ? C.caramel : C.mocha} strokeWidth={i === 2 ? 2 : 1} />
-                <T x={75 + i * 90} y={125} s={14} f={C.crema} a="middle">
-                  {g}
-                </T>
-                <T x={75 + i * 90} y={168} s={18} f={C.caramel} a="middle" w={700}>
+              <g key={i} opacity={clamp(k)} transform={`translate(0 ${((1 - clamp(k)) * 12).toFixed(1)})`}>
+                <T x={75 + i * 90} y={170} s={18} f={C.caramel} a="middle" w={700}>
                   {String(i + 1)}
                 </T>
               </g>
             );
           })}
+          <Reticle x={255} y={133} w={92} h={86} t={s} at={1.7} />
         </>
       ) : (
-        <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>
+        <T x={430} y={140} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>
           ?
         </T>
       )}
