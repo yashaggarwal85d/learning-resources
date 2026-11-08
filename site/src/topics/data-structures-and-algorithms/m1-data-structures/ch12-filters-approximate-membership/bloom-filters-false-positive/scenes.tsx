@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
+import { C, Decode, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = a bit or stored key; latte = labels; caramel = the thing to look at (the bits a
 // key sets or checks, the optimum); cinnamon = the alternative being compared (measured beside formula, derived beside
@@ -82,8 +82,10 @@ export function Hook({ t }: StepCtx) {
   const RY = (i: number) => 50 + i * 40;
   const open1 = (i: number) => easeOut(seg(t, 0.4 + i * 0.15, 0.6 + i * 0.15));
   const filt = easeOut(seg(t, 1.6, 1.9));
-  const verdict = (i: number) => t >= 2.1 + i * 0.15;
   const MAYBE = 3;
+  // Without a filter the lookup's probes run out to every run (red, the cost). Then a few bits slide in beside each
+  // run: four say no on the spot, one says maybe, the one probe that is sent goes there, and that run is crossed out.
+  const gone = 1 - easeOut(seg(t, 1.5, 1.8));
   return (
     <Svg label="Five sorted runs on disk and a lookup for a missing key: without a filter every run is opened; with a few bits per key beside each, four answer no at once and one says maybe, which is opened and is wrong" h={300}>
       <T x={30} y={24} s={12} f={C.latte}>get(key that isn&apos;t there)</T>
@@ -91,13 +93,19 @@ export function Hook({ t }: StepCtx) {
         <g key={i}>
           <rect x={300} y={RY(i) - 14} width={150} height={28} rx={3} fill={C.roast} stroke={C.mocha} strokeWidth={1.2} />
           <T x={316} y={RY(i) + 5} s={12} f={C.latte}>sorted run {i + 1}</T>
-          {t < 1.6 && <line x1={150} y1={140} x2={298} y2={RY(i)} stroke={C.cherryText} strokeWidth={1.2} opacity={open1(i)} />}
-          <g opacity={filt}>
+          {gone > 0 && <Draw pts={[[150, 140], [298, RY(i)]]} t={t} from={0.4 + i * 0.15} to={0.75 + i * 0.15} stroke={C.cherryText} w={1.2} o={gone} />}
+          <g opacity={filt} transform={`translate(${((1 - filt) * 40).toFixed(2)} 0)`}>
             <rect x={460} y={RY(i) - 8} width={36} height={16} rx={2} fill="none" stroke={C.cinnamon} strokeWidth={1.2} />
             {[0, 1, 2, 3].map((b) => <rect key={b} x={463 + b * 8} y={RY(i) - 5} width={6} height={10} fill={(i * 3 + b) % 3 ? C.cinnamon : C.roast} />)}
-            {verdict(i) && <T x={506} y={RY(i) + 5} s={12} f={i === MAYBE ? C.caramel : C.latte}>{i === MAYBE ? 'maybe' : 'no'}</T>}
+            <Decode text={i === MAYBE ? 'maybe' : 'no'} t={t} at={2.1 + i * 0.15} dur={0.35} x={506} y={RY(i) + 5} s={12} f={i === MAYBE ? C.caramel : C.latte} />
           </g>
-          {t >= 2.9 && i === MAYBE && <line x1={150} y1={140} x2={298} y2={RY(i)} stroke={C.caramel} strokeWidth={1.6} />}
+          {i === MAYBE && <Draw pts={[[150, 140], [298, RY(i)]]} t={t} from={2.9} to={3.3} stroke={C.caramel} w={1.6} />}
+          {i === MAYBE && (
+            <>
+              <Draw pts={[[360, RY(i) - 9], [390, RY(i) + 9]]} t={t} from={3.4} to={3.6} stroke={C.cherryText} w={2} pen={false} />
+              <Draw pts={[[390, RY(i) - 9], [360, RY(i) + 9]]} t={t} from={3.55} to={3.75} stroke={C.cherryText} w={2} pen={false} />
+            </>
+          )}
         </g>
       ))}
       <rect x={30} y={124} width={120} height={32} rx={4} fill={C.roast} stroke={C.crema} strokeWidth={1.3} />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = runs on disk; caramel = the thing to look at (the merge happening, the
 // tracked key, the chosen point); cinnamon = the compared alternative (tiered, the uniform filter split, a
@@ -193,7 +193,10 @@ export function TradeoffPredict({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
   const p = answered ? easeInOut(seg(s, 0.2, 1.2)) : 0;
-  const hs = [lerp(100, 40, p), lerp(100, 40, p), lerp(100, 180, p)];
+  // The three costs rise into place one by one; after the answer, two are pressed down from above and the third
+  // is pushed up out of its slot, and the lock-on lands on the one that had to give.
+  const rise = (i: number) => easeOutBack(seg(t, 0.1 + i * 0.2, 0.6 + i * 0.2));
+  const hs = [lerp(100, 40, p), lerp(100, 40, p), lerp(100, 180, p)].map((h, i) => h * rise(i));
   const names = ['write', 'read', 'space'];
   return (
     <Svg label="Three cost bars for one policy; pushing two of them down forces the third up" h={300}>
@@ -201,10 +204,14 @@ export function TradeoffPredict({ t, answer }: StepCtx) {
       <line x1={30} y1={230} x2={330} y2={230} stroke={C.mocha} strokeWidth={1.2} />
       {hs.map((h, i) => (
         <g key={i}>
-          <rect x={60 + i * 90} y={230 - h} width={50} height={h} rx={2} fill={i === 2 && p > 0 ? C.cherryText : C.crema} />
+          <rect x={60 + i * 90} y={230 - Math.max(2, h)} width={50} height={Math.max(2, h)} rx={2} fill={i === 2 && p > 0 ? C.cherryText : C.crema} />
           <T x={85 + i * 90} y={252} s={13} f={C.latte} a="middle">{names[i]}</T>
+          {answered && i < 2 && p < 1 && (
+            <path d={`M${73 + i * 90} ${220 - h - 14} l12 10 l12 -10`} fill="none" stroke={C.caramel} strokeWidth={2} opacity={clamp(p * 4) * (1 - p)} />
+          )}
         </g>
       ))}
+      {answered && <Reticle x={265} y={140} w={66} h={196} t={s} at={1.2} color={C.cherryText} />}
       {!answered && <T x={350} y={140} s={15} f={C.caramel} o={0.7 + 0.3 * Math.sin(t * 3)}>all three low?</T>}
       {answered && <T x={350} y={120} s={13} f={C.caramel} o={easeOut(seg(s, 1.0, 1.4))}>push two down,</T>}
       {answered && <T x={350} y={142} s={13} f={C.cherryText} o={easeOut(seg(s, 1.2, 1.6))}>the third goes up</T>}

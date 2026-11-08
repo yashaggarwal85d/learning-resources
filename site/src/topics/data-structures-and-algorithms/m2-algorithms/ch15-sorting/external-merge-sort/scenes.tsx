@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = a key or run at rest; latte = secondary labels; taupe = disk not yet touched;
 // caramel = the thing to look at (the run being written, the winner climbing the tree); cinnamon (rare) = the held-back
@@ -409,19 +409,36 @@ export function PredictTable({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
   const pulse = 0.6 + 0.4 * Math.sin(t * 4);
-  const h = Math.min(5, Math.floor(clamp((t - 0.3) / 0.4, 0, 5.99)));
+  // Each halving is shown as the bar above being cut in two: the new bar starts at the old width and shrinks to half.
+  const cut = (i: number) => (i === 0 ? easeOut(seg(t, 0.1, 0.4)) : easeInOut(seg(t, 0.3 + i * 0.4, 0.65 + i * 0.4)));
   const rows = answered ? clamp((s - 0.2) / 1.2, 0, 1) * 6 : 0;
+  // After the answer, the pass count is traced down the rows as a line: straight down while it stays at 1,
+  // and one step out to the right at the last row, where it jumps.
+  const PX = (passes: number) => (passes > 1 ? 560 : 500);
+  const trace: [number, number][] = [];
+  TABLE.forEach((r, i) => {
+    const y = 39 + i * 32;
+    if (i > 0 && r[3] !== TABLE[i - 1][3]) trace.push([PX(TABLE[i - 1][3]), y - 16], [PX(r[3]), y - 16]);
+    trace.push([PX(r[3]), y]);
+  });
   return (
     <Svg label="Memory halves again and again while the file and block size stay fixed; how often does the merge-pass count change? After answering, the pass counts appear: 1, 1, 1, 1, 1, then 2" h={260}>
-      {Array.from({ length: 6 }, (_, i) => (
-        <g key={i}>
-          <rect x={40} y={30 + i * 32} width={320 / 2 ** i} height={18} rx={2} fill={C.crema} opacity={i <= h ? 0.8 : 0} />
-          {!answered && i <= h && <T x={420} y={44 + i * 32} s={14} f={C.caramel} o={pulse}>?</T>}
-          {answered && (
-            <T x={420} y={44 + i * 32} s={13} f={TABLE[i][3] > 1 ? C.cherryText : C.caramel} o={clamp(rows - i, 0, 1)}>{TABLE[i][3]} {TABLE[i][3] > 1 ? 'passes' : 'pass'}</T>
-          )}
-        </g>
-      ))}
+      {Array.from({ length: 6 }, (_, i) => {
+        const k = cut(i);
+        const full = 320 / 2 ** i;
+        const w = i === 0 ? full * k : lerp(full * 2, full, k);
+        return (
+          <g key={i}>
+            {k > 0 && <rect x={40} y={30 + i * 32} width={Math.max(2, w)} height={18} rx={2} fill={C.crema} opacity={0.8} />}
+            {!answered && k > 0 && <T x={420} y={44 + i * 32} s={14} f={C.caramel} o={pulse * clamp(k * 2)}>?</T>}
+            {answered && (
+              <T x={420} y={44 + i * 32} s={13} f={TABLE[i][3] > 1 ? C.cherryText : C.caramel} o={clamp(rows - i, 0, 1)}>{TABLE[i][3]} {TABLE[i][3] > 1 ? 'passes' : 'pass'}</T>
+            )}
+          </g>
+        );
+      })}
+      {answered && <Draw pts={trace} t={s} from={0.2} to={1.5} stroke={C.caramel} w={2} />}
+      {answered && <Reticle x={480} y={39 + 5 * 32} w={150} h={30} t={s} at={1.6} color={C.cherryText} />}
       {!answered && <T x={300} y={248} s={13} a="middle" f={C.caramel} o={pulse}>how often does it change?</T>}
     </Svg>
   );

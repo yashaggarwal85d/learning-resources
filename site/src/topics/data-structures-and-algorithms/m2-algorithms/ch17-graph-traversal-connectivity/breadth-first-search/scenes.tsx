@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md, Chapter 17): crema = a vertex in the queue; latte = secondary labels (a distance);
 // taupe = a vertex already fully processed; caramel = the thing to look at this beat (the vertex just dequeued, the
@@ -364,14 +364,36 @@ export function PredictBipartite({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
   const pulse = Math.sin(t * 5) > 0;
-  const walk = Math.floor(easeInOut(seg(t, 0.3, 1.9)) * 4.01);
+  const prog = easeInOut(seg(t, 0.3, 1.9)) * 4.01;
+  const walk = Math.floor(prog);
   const COL = [C.caramel, C.cinnamon];
   const clash = answered ? easeOut(seg(s, 0.4, 0.9)) : 0;
   const cols = [0, 1, 2, 3, 4].map((i) => (i <= walk && i < 4 ? COL[i % 2] : null));
   if (walk >= 4) cols[4] = answered ? COL[0] : pulse ? COL[0] : COL[1];
+  // A pen walks the cycle, colouring as it goes; after the answer it takes the last edge home to 0, which draws red.
+  const along = (i: number, f: number) => {
+    const [x1, y1] = PENT(i);
+    const [x2, y2] = PENT((i + 1) % 5);
+    return [lerp(x1, x2, f), lerp(y1, y2, f)] as const;
+  };
+  const seg4 = Math.min(3.999, prog);
+  const pen = answered ? along(4, easeInOut(seg(s, 0, 0.45))) : along(Math.floor(seg4), seg4 - Math.floor(seg4));
+  const pop = (i: number) => (i <= walk ? 1 + 0.35 * (1 - easeOut(clamp(prog - i, 0, 0.6) / 0.6)) : 1);
   return (
     <Svg label="A five-cycle coloured by walking around it, alternating white and blue; the last vertex flickers between both. After answering: it must be white, and the edge back to vertex 0 joins two whites" h={270}>
-      <Pent cols={cols} edgeStroke={(i) => (i === 4 && clash > 0 ? C.cherryText : undefined)} />
+      <Pent cols={cols} />
+      {[0, 1, 2, 3].map((i) => (
+        <Draw key={i} pts={[PENT(i), PENT(i + 1)]} t={prog} from={i} to={i + 1} stroke={C.secondary} w={2.5} pen={false} />
+      ))}
+      {answered && <Draw pts={[PENT(4), PENT(0)]} t={s} from={0} to={0.45} stroke={C.cherryText} w={3} pen={false} />}
+      {[0, 1, 2, 3, 4].map((i) => {
+        const [x, y] = PENT(i);
+        const c = cols[i];
+        if (!c || pop(i) <= 1.001) return null;
+        return <circle key={i} cx={x} cy={y} r={15 * pop(i)} fill="none" stroke={c} strokeWidth={2} />;
+      })}
+      {t >= 0.3 && (!answered || s < 0.5) && <circle cx={pen[0]} cy={pen[1]} r={5} fill={C.focus} />}
+      {answered && <Reticle x={(PENT(4)[0] + PENT(0)[0]) / 2} y={(PENT(4)[1] + PENT(0)[1]) / 2} w={96} h={70} t={s} at={0.6} color={C.cherryText} />}
       {!answered && <T x={300} y={236} s={13} f={C.crema} a="middle">two colours, alternating: does the last one fit?</T>}
       {answered && (
         <g opacity={clash}>

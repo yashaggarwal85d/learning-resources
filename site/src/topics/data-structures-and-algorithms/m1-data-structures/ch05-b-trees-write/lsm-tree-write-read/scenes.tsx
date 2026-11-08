@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = stored entries; latte = labels; taupe = empty; caramel = the thing to
 // look at (the write in flight, the copy a read returns, the run actually opened); cinnamon = the compared
@@ -260,23 +260,36 @@ const RUNS: { name: string; v: string }[] = [
 export function ReadPredict({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
-  const lit = answered ? easeOut(seg(s, 0.2, 0.6)) : 0;
+  const lit = answered ? easeOut(seg(s, 0.6, 1.0)) : 0;
+  // The copies land in the order they were written, oldest first, so the one thing that tells them apart is visible
+  // before the reveal. After it, a read walks in at the newest copy, locks on, and the older copies are struck out.
+  const land = (i: number) => easeOutBack(seg(t, 0.15 + (2 - i) * 0.4, 0.55 + (2 - i) * 0.4));
+  const probe = answered ? easeInOut(seg(s, 0.05, 0.5)) : 0;
   return (
     <Svg label="The same key has a value in the memtable and in two older runs; after answering, the newest copy, in the memtable, is the one a read returns" h={300}>
       <T x={30} y={24} s={13} f={C.latte}>the same key, three copies</T>
       {RUNS.map((r, i) => {
         const hot = answered && i === 0;
+        const k = land(i);
+        const y = 48 + i * 56;
         return (
-          <g key={r.name} opacity={answered && i > 0 ? lerp(1, 0.4, lit) : 1}>
+          <g key={r.name} opacity={clamp(k * 2) * (answered && i > 0 ? lerp(1, 0.4, lit) : 1)} transform={`translate(${((1 - k) * 60).toFixed(2)} 0)`}>
             <T x={30} y={66 + i * 56} s={13} f={i === 0 ? C.cinnamon : C.latte}>{r.name}</T>
-            <rect x={200} y={48 + i * 56} width={110} height={28} rx={4} fill={C.mocha} stroke={hot ? C.caramel : C.crema} strokeWidth={hot ? 2.2 : 1.2} />
+            <rect x={200} y={y} width={110} height={28} rx={4} fill={C.mocha} stroke={hot ? C.caramel : C.crema} strokeWidth={hot ? 2.2 : 1.2} />
             <T x={255} y={67 + i * 56} s={13} f={hot ? C.caramel : C.crema} a="middle">k = {r.v}</T>
+            {answered && i > 0 && <Draw pts={[[196, y + 14], [314, y + 14]]} t={s} from={0.6 + i * 0.15} to={0.9 + i * 0.15} stroke={C.cherryText} w={2} />}
             {answered && i > 0 && <T x={330} y={67 + i * 56} s={13} f={C.cherryText} o={lit}>shadowed</T>}
           </g>
         );
       })}
+      <Draw pts={[[470, 172], [470, 52]]} t={t} from={0.2} to={1.4} stroke={C.taupe} w={1.5} />
+      <path d="M464 60 L470 50 L476 60" fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={easeOut(seg(t, 1.3, 1.5))} />
+      <T x={486} y={58} s={13} f={C.taupe} o={easeOut(seg(t, 1.2, 1.6))}>newer</T>
+      <T x={486} y={172} s={13} f={C.taupe} o={easeOut(seg(t, 0.2, 0.6))}>older</T>
+      {answered && probe < 1 && <circle cx={lerp(130, 200, probe)} cy={62} r={5} fill={C.caramel} />}
+      {answered && <Reticle x={255} y={62} w={126} h={42} t={s} at={0.45} />}
       {!answered && <T x={30} y={262} s={15} f={C.caramel} o={0.7 + 0.3 * Math.sin(t * 3)}>which one does a read return?</T>}
-      {answered && <T x={30} y={262} s={13} f={C.caramel} o={easeOut(seg(s, 0.8, 1.2))}>the newest copy wins, always</T>}
+      {answered && <T x={30} y={262} s={13} f={C.caramel} o={easeOut(seg(s, 1.0, 1.4))}>the newest copy wins, always</T>}
     </Svg>
   );
 }
