@@ -369,7 +369,7 @@ export function ProveIt({ t, answer }: StepCtx) {
   const v = answer !== null ? easeOut(seg(s, 0.8, 1.2)) : 0;
   return (
     <Svg label="a tombstone and two stale copies in two files — why doesn't the disk shrink yet?" h={230}>
-      <Row y={40} label="a tombstone, two stale copies" value="why still there?" k={easeOut(seg(t, 0.1, 0.5))} />
+      <Row y={40} label="a tombstone, two stale copies" value="why kept?" k={easeOut(seg(t, 0.1, 0.5))} />
       <AnswerRow y={90} label="the delete removed them" answer={answer} value="no, a later merge" k={easeOut(seg(t, 0.4, 0.9))} />
       {['tombstone', 'stale, file 2', 'stale, file 1'].map((l, i) => (
         <Cell
