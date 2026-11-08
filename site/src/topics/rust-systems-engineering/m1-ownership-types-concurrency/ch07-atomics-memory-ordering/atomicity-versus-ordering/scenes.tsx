@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, decodeText, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // Atomicity (no torn updates) and ordering (visibility between threads) are separate concerns.
 // The exact count and the loom-found ordering violation are both executed for real by
@@ -14,6 +14,38 @@ const threadDot = (cx: number, cy: number, label: string, opacity = 1) => (
     <T x={cx} y={cy + 4} s={10} a="middle" f={C.crema}>{label}</T>
   </g>
 );
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
 
 // ── 1 · Two separate questions about the same shared memory (hook) ─────────────────────────────
 export function TwoQuestionsHook({ t }: StepCtx) {
@@ -50,15 +82,26 @@ export function EightThreadsPredict({ t }: StepCtx) {
 
 // ── 3 · Exact (no takeaway: the reel's "from" step) ─────────────────────────────────────────────
 export function ExactCountReveal({ t }: StepCtx) {
+  const fill = (i: number) => easeInOut(seg(t, 0.5 + i * 0.05, 1.9 + i * 0.05));
+  const total = Array.from({ length: 8 }, (_, i) => fill(i)).reduce((a, b) => a + b, 0) / 8;
+  const n = Math.round(400000 * total);
   return (
-    <Code
-      title="examples/atomic_no_torn_updates.rs"
-      lines={['counter.fetch_add(1, Ordering::Relaxed);', '// eight threads, fifty thousand times each', 'println!("{}", counter.load(Ordering::Relaxed));', '// measured: exact, every run']}
-      t={t}
-      start={0.1}
-      end={2.4}
-      highlight={[0, 3]}
-    />
+    <Stack>
+      <Code title="examples/atomic_no_torn_updates.rs" lines={['counter.fetch_add(1, Ordering::Relaxed);', '// eight threads, fifty thousand times each', 'println!("{}", counter.load(Ordering::Relaxed));', '// measured: exact, every run']} t={t} start={0.1} end={0.5} highlight={t > 2.2 ? [3] : [0]} />
+      <Svg label="eight threads each pour fifty thousand relaxed increments into one atomic counter; it lands on exactly 400,000" h={180} fill>
+        {Array.from({ length: 8 }, (_, i) => (
+          <g key={i}>
+            <rect x={30} y={14 + i * 19} width={260} height={11} rx={3} fill={C.cocoa} />
+            <rect x={30} y={14 + i * 19} width={Math.max(2, 260 * fill(i))} height={11} rx={3} fill={C.crema} />
+            {fill(i) > 0 && fill(i) < 1 && <circle cx={lerp(300, 380, (t * 3 + i * 0.37) % 1)} cy={lerp(20 + i * 19, 86, (t * 3 + i * 0.37) % 1)} r={3} fill={C.caramel} />}
+          </g>
+        ))}
+        <rect x={390} y={56} width={190} height={62} rx={10} fill={C.cocoa} stroke={total >= 1 ? C.caramel : C.mocha} strokeWidth={2} />
+        <T x={485} y={96} s={20} a="middle" f={total >= 1 ? C.caramel : C.crema} w={700}>{n.toLocaleString('en-US')}</T>
+        <T x={485} y={142} s={13} a="middle" f={C.latte} o={easeOut(seg(t, 2.0, 2.3))}>exact, every run</T>
+        <Reticle x={485} y={87} w={206} h={78} t={t} at={2.1} />
+      </Svg>
+    </Stack>
   );
 }
 
@@ -102,17 +145,34 @@ export function PublicationPredict({ t }: StepCtx) {
 }
 
 // ── 6 · loom found it (takeaway) ────────────────────────────────────────────────────────────────
-export function LoomViolationReveal({ t }: StepCtx) {
+export function LoomViolationReveal({ t, portrait }: StepCtx) {
+  const ready = easeInOut(seg(t, 0.6, 1.1)); // the flag's store reaches the reader first
+  const data = easeInOut(seg(t, 0.6, 2.3)); // the value's store arrives late
+  const look = t >= 1.3;
+  const bad = easeOutBack(seg(t, 1.6, 1.9));
   return (
-    <Code
-      title="loom-check: model-checked, not a one-off hardware fluke"
-      dim
-      lines={['assertion `left == right` failed', '  left: 0', ' right: 42', '// the reader saw ready == true,', '// but data had not arrived yet']}
-      t={t}
-      start={0.1}
-      end={2.6}
-      highlight={[0, 1, 2]}
-    />
+    <Stack>
+      {!portrait && <Code title="loom-check: model-checked, not a one-off hardware fluke" dim={t < 0.1} lines={['assertion `left == right` failed', '  left: 0', ' right: 42', '// the reader saw ready == true,', '// but data had not arrived yet']} t={t} start={0.1} end={0.6} highlight={t > 1.6 ? [1, 2] : []} />}
+      <Svg label="the writer stores data = 42 then ready = true; loom finds an ordering where ready reaches the reader first, so the reader reads data as 0, not 42" h={176} fill>
+        <T x={20} y={30} s={13} f={C.latte}>writer</T>
+        <T x={20} y={150} s={13} f={C.latte}>reader sees</T>
+        <rect x={110} y={14} width={140} height={28} rx={6} fill="none" stroke={C.mocha} />
+        <T x={180} y={33} s={13} a="middle" f={C.crema}>data = 42</T>
+        <rect x={280} y={14} width={150} height={28} rx={6} fill="none" stroke={C.mocha} />
+        <T x={355} y={33} s={13} a="middle" f={C.crema}>ready = true</T>
+        <rect x={150} y={128} width={150} height={32} rx={6} fill={C.cocoa} stroke={bad > 0 ? C.cherryText : C.mocha} strokeWidth={1.5} />
+        <T x={225} y={149} s={13} a="middle" f={bad > 0 ? C.cherryText : C.crema}>{data >= 1 ? 'data: 42' : look ? 'data: 0' : 'data: ?'}</T>
+        <rect x={340} y={128} width={150} height={32} rx={6} fill={C.cocoa} stroke={ready >= 1 ? C.caramel : C.mocha} strokeWidth={1.5} />
+        <T x={415} y={149} s={13} a="middle" f={ready >= 1 ? C.caramel : C.crema}>{ready >= 1 ? 'ready: true' : 'ready: false'}</T>
+        {ready > 0 && ready < 1 && <circle cx={355} cy={lerp(42, 128, ready)} r={6} fill={C.caramel} />}
+        {data > 0 && data < 1 && <circle cx={lerp(180, 225, data)} cy={lerp(42, 128, data)} r={6} fill={C.crema} />}
+        {bad > 0 && (
+          <g transform={`translate(520 90) scale(${bad.toFixed(3)}) translate(-520 -90)`}>
+            <T x={520} y={95} s={14} a="middle" f={C.cherryText} w={700}>flag first</T>
+          </g>
+        )}
+      </Svg>
+    </Stack>
   );
 }
 
@@ -134,16 +194,32 @@ export function HappensBeforeReveal({ t }: StepCtx) {
 }
 
 // ── 8 · Unsynchronized conflicting access is UB (takeaway) ─────────────────────────────────────
-export function DataRaceUbReveal({ t }: StepCtx) {
+export function DataRaceUbReveal({ t, portrait }: StepCtx) {
+  const a = easeOut(seg(t, 0.5, 1.1));
+  const b = easeOut(seg(t, 0.6, 1.2));
+  const hit = t >= 1.2;
+  const ub = easeOutBack(seg(t, 1.8, 2.2));
   return (
-    <Code
-      title="the std library's own definition"
-      lines={['// data races are undefined behavior', '// conflicting, non-synchronized accesses', '// where at least one is a write']}
-      t={t}
-      start={0.1}
-      end={2.0}
-      highlight={[0, 1, 2]}
-    />
+    <Stack>
+      {!portrait && <Code title="the std library's own definition" lines={['// data races are undefined behavior', '// conflicting, non-synchronized accesses', '// where at least one is a write']} t={t} start={0.1} end={0.5} highlight={t > 1.8 ? [0] : t > 0.5 ? [1, 2] : []} />}
+      <Svg label="two threads write the same memory with no synchronization between them; the result is not a wrong value but undefined behavior" h={160} fill>
+        {threadDot(60, 40, 'T1')}
+        {threadDot(60, 120, 'T2')}
+        <line x1={76} y1={44} x2={lerp(76, 268, a)} y2={lerp(44, 76, a)} stroke={C.crema} strokeWidth={2} opacity={a > 0 ? 1 : 0} />
+        <line x1={76} y1={116} x2={lerp(76, 268, b)} y2={lerp(116, 84, b)} stroke={C.crema} strokeWidth={2} opacity={b > 0 ? 1 : 0} />
+        <T x={170} y={40} s={13} a="middle" f={C.latte} o={a}>write</T>
+        <T x={170} y={134} s={13} a="middle" f={C.latte} o={b}>write</T>
+        <rect x={270} y={60} width={110} height={40} rx={7} fill={C.cocoa} stroke={hit ? C.cherryText : C.mocha} strokeWidth={2} />
+        <T x={325} y={86} s={14} a="middle" f={hit ? C.cherryText : C.crema}>{hit ? decodeText('#####', 0.5 + ((Math.floor(t * 12) % 7) / 20)) : 'x'}</T>
+        {ub > 0 && (
+          <g transform={`translate(490 80) scale(${ub.toFixed(3)}) translate(-490 -80)`}>
+            <T x={490} y={74} s={14} a="middle" f={C.cherryText} w={700}>undefined</T>
+            <T x={490} y={94} s={14} a="middle" f={C.cherryText} w={700}>behavior</T>
+          </g>
+        )}
+        <Reticle x={325} y={80} w={126} h={56} t={t} at={2.2} color={C.cherryText} />
+      </Svg>
+    </Stack>
   );
 }
 
@@ -170,14 +246,5 @@ export function Recap({ t }: StepCtx) {
     'Rust follows C++20, minus consume',
     'a data race is real undefined behavior',
   ];
-  return (
-    <Svg label="recap: atomicity and ordering, each proven separately" h={300}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: atomicity and ordering, each proven separately" rows={rows} step={55} />;
 }
