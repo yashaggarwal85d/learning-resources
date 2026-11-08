@@ -11,7 +11,7 @@
 5. SAP's own rules also name SLT Replication Server, an ABAP adapter, SAP HANA log-based replication and SAP Database Trigger as technologies that must not be used to move data out of SAP under the same note family — a broader restriction than ODP-RFC alone, disclosed here even though the syllabus's own framing scopes Note 3255746 to ODP specifically (Matillion tech note).
 6. On 13 February 2025, Databricks announced the launch of SAP Databricks, a product natively integrated into the newly launched SAP Business Data Cloud, with bi-directional Delta Sharing between SAP Databricks and a customer's native Databricks environment, governed by Unity Catalog, sold by SAP as part of SAP Business Data Cloud (Databricks press release).
 7. SuccessFactors' Employee Central OData API uses `asOfDate`, `fromDate` and `toDate` query parameters to control which version of an effective-dated record a query returns (SAP KBA 2853045).
-8. If an OData request's effective date falls outside a record's effective start and end date, that record is filtered out by effective dating and not returned at all — a documented, concrete failure mode of querying effective-dated SuccessFactors data without the right `asOfDate` (SAP KBA 3774633).
+8. If an OData request's effective date falls outside a record's effective start and end date, that record is filtered out by effective dating and not returned at all — a documented, concrete failure mode of querying effective-dated SuccessFactors data without the right `asOfDate` (SAP KBAs 2853045 and 2148752).
 
 ## Changes from the chapter plan
 

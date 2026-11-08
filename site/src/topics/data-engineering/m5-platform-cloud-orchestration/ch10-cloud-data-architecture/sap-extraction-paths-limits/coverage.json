@@ -75,7 +75,7 @@
       ]
     },
     {
-      "source": "SAP Knowledge Base Articles 2853045 / 3774633",
+      "source": "SAP Knowledge Base Articles 2853045 / 2148752",
       "items": [
         { "item": "SuccessFactors' OData API uses asOfDate/fromDate/toDate to control which version of an effective-dated record a query returns; a record outside its effective start/end date relative to that date is filtered out entirely, not returned stale", "at": [{ "step": "Effective-dated records: a different cursor problem entirely" }, { "step": "Prove it" }] }
       ]
@@ -91,7 +91,7 @@
       { "item": "The four-mechanism comparison is precise about which specific capability each mechanism lacks (OData's deletes), not a vague ranking of mechanisms as better or worse overall", "at": [{ "step": "Four mechanisms, four different things they can actually see" }] },
       { "item": "The note-history step states three dated stages precisely (2022 unsupported, 2 February 2024 prohibited, 7 July 2024 redirected to Datasphere) sourced from Matillion's own tech note, not an invented timeline", "at": [{ "step": "SAP's own note, stated precisely" }] },
       { "item": "The Datasphere/Databricks step states SAP's own strategic direction as SAP's own stated direction, not as a claim that every customer has already moved or must move", "at": [{ "step": "The vendor-preferred path, and a named outside partner" }] },
-      { "item": "The effective-dated-record step's point is a visibility failure (nothing returned), not a staleness failure (an old value returned); a learner who describes the failure as 'you get outdated data' has missed KBA 3774633's own documented behavior", "at": [{ "step": "Effective-dated records: a different cursor problem entirely" }] },
+      { "item": "The effective-dated-record step's point is a visibility failure (nothing returned), not a staleness failure (an old value returned); a learner who describes the failure as 'you get outdated data' has missed SAP's own documented behavior (KBAs 2853045, 2148752)", "at": [{ "step": "Effective-dated records: a different cursor problem entirely" }] },
       { "item": "The special-category framing names the regulatory stakes of HR data without re-teaching GDPR mechanics already covered in topic 17; this topic only raises the stakes, it does not duplicate that lesson", "at": [{ "deep": "Internals" }] },
       { "item": "The final predict step's correct answer identifies a stale as-of date as the failure, not a delete-visibility gap or a licensing issue; a learner who picks the OData-delete or Note 3255746 options has conflated this topic's two separate failure modes", "at": [{ "step": "Prove it" }] },
       { "item": "This topic cannot connect to a real S/4HANA, ECC or SuccessFactors tenant in this sandbox; examples.py reproduces the mechanism-capability comparison, the licensing check, and the effective-dated query filtering as a disclosed structural simulation against synthetic data, not a live system", "at": [{ "deep": "Internals" }] },

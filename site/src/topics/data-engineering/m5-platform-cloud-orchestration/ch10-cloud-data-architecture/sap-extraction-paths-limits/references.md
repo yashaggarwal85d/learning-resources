@@ -11,4 +11,4 @@ Expert sign-off: pending
 - DEV Community, "Core Data Services (CDS) and Their Integration with SAP Datasphere" — https://dev.to/alopez/core-data-services-cds-and-their-integration-with-sap-datasphere-3lg0
 - Databricks, "Databricks Announces Launch of SAP Databricks" — https://www.databricks.com/company/newsroom/press-releases/databricks-announces-launch-sap-databricks
 - SAP Knowledge Base Article 2853045, "How effective-dating is handled in an OData API query" — https://userapps.support.sap.com/sap/support/knowledge/en/2853045
-- SAP Knowledge Base Article 3774633, "Unable to fetch all pending workflow positions from position entity" — https://userapps.support.sap.com/sap/support/knowledge/en/3774633
+- SAP Knowledge Base Article 2148752, "How to extract Employee Central historical/future dated records using SuccessFactors OData API" — https://userapps.support.sap.com/sap/support/knowledge/en/2148752

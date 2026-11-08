@@ -62,11 +62,11 @@ Version: fetched 2026-10-31
 
 > SAP's rules also state that technologies such as SLT Replication Server, Master Data Integration ABAP Adapter, SAP HANA log-based replication, and SAP Database Trigger must not be used to move data out of SAP.
 
-## SAP Knowledge Base Article 3774633: Unable to fetch all pending workflow positions from position entity
+## SAP Knowledge Base Article 2148752: How to extract Employee Central historical/future dated records using SuccessFactors OData API
 
-URL: https://userapps.support.sap.com/sap/support/knowledge/en/3774633
-Version: fetched 2026-10-31
+URL: https://userapps.support.sap.com/sap/support/knowledge/en/2148752
+Version: fetched 2026-11-08 (public preview)
 
-> If the OData request date is not between a position record's effective start date and effective end date, that position record is filtered out by effective dating and will not be returned.
+> You are trying to get data from SuccessFactors using OData API and it's not returning future or historical records in the output, only the recent time slice is being returned.
 
-> Re-run the Position OData query using the $asOfDate parameter set to a date that falls within the effective range of the records you want returned
+Note: replaces KBA 3774633, whose public page shrank to a preview on 2026-11-08 and no longer shows the quoted resolution text. This article states the same visibility failure: records outside the query's date are left out, not returned stale.

@@ -9,7 +9,7 @@
 | 5 | SAP's broader rules also name SLT Replication Server, an ABAP adapter, HANA log-based replication and SAP Database Trigger as mechanisms that must not move data out of SAP | Matillion tech note | Confirmed, verbatim quote |
 | 6 | On 13 February 2025 Databricks announced SAP Databricks, natively integrated into SAP Business Data Cloud, with bi-directional Delta Sharing and Unity Catalog governance, sold by SAP | Databricks press release | Confirmed, verbatim quotes |
 | 7 | SuccessFactors' Employee Central OData API uses asOfDate/fromDate/toDate to control which version of an effective-dated record a query returns | SAP KBA 2853045 | Confirmed, documented behavior from SAP's own knowledge base |
-| 8 | A record outside its effective start/end date relative to the query's as-of date is filtered out entirely, not merely returned stale | SAP KBA 3774633 | Confirmed, verbatim quote |
+| 8 | A record outside its effective start/end date relative to the query's as-of date is filtered out entirely, not merely returned stale | SAP KBAs 2853045 and 2148752 | Confirmed, verbatim quotes (KBA 3774633 replaced 2026-11-08: its public text shrank to a preview) |
 | 9 | The mechanism delta-capability comparison, the ODP-RFC licensing check, and the effective-dated query logic all behave as documented when reproduced against synthetic data | Derived in `examples.py`, run and verified locally | Confirmed by running the code |
 
 ## Red-team

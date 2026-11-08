@@ -60,7 +60,7 @@ def licensing_worked_examples():
 
 
 def effective_dated_query(records, as_of_date):
-    """SAP KBA 2853045/3774633: a record is returned only if as_of_date falls within its
+    """SAP KBA 2853045/2148752: a record is returned only if as_of_date falls within its
     effective start and end date — otherwise it is filtered out entirely, not merely stale."""
     matches = [r for r in records if r["effective_start"] <= as_of_date <= r["effective_end"]]
     return {"as_of_date": as_of_date, "matched_record_ids": sorted(r["id"] for r in matches)}
