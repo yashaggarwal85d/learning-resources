@@ -100,7 +100,7 @@
     "date": "2026-10-24",
     "items": [
       {
-        "item": "Leveled compaction minimizes space amplification at the cost of read and write amplification — it keeps one sorted run per level, merging aggressively.",
+        "item": "Leveled compaction keeps one sorted run per level, merging aggressively: against tiered it pays more write amplification and keeps read and space amplification lower. (RocksDB's wiki sentence, 'minimizes space amplification at the cost of read and write amplification', lists leveled's costs on their own, not against tiered.)",
         "at": [{ "step": "Reveal: the same writes, two different shapes" }]
       },
       {

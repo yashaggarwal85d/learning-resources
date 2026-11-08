@@ -66,6 +66,14 @@
       "items": [
         { "item": "Paging as the k-server problem's special case, with a known k-competitive algorithm (Sleator and Tarjan 1985)", "at": [{ "deep": "Into the internals" }] }
       ]
+    },
+    {
+      "source": "Fiat, Karp, Luby, McGeoch, Sleator, Young — \"Competitive Paging Algorithms\" (Journal of Algorithms 12(4), 1991; arXiv cs/0205038)",
+      "items": [
+        { "item": "The randomized marking algorithm: on a fault, evict a page chosen uniformly at random among the unmarked pages", "at": [{ "deep": "The frontier" }] },
+        { "item": "Randomized marking is 2H_k-competitive (H_k roughly ln k, so O(log k)), and no randomized paging algorithm is below H_k", "at": [{ "deep": "The frontier" }] },
+        { "item": "The lower bound's adversary does not see the algorithm's random choices (an oblivious adversary)", "at": [{ "deep": "The frontier" }] }
+      ]
     }
   ],
   "expert": {
@@ -73,7 +81,7 @@
     "date": "2026-11-05",
     "items": [
       { "item": "The adversary argument's ratio of k is an upper bound no deterministic algorithm can beat, not a claim that every algorithm actually achieves exactly k on every input — LRU's own measured ratio on the cyclic trace (3.98 at k equals 4, approaching but never reaching 4) illustrates the bound from below rather than contradicting it.", "at": [{ "step": "Every deterministic policy, whatever its rule, faults on every single request of a trace built this way. Before naming what actually changes this picture: could a cleverer deterministic rule dodge this particular trap, or does escaping it take something else entirely?" }] },
-      { "item": "The randomized marking algorithm's O(log k) bound holds specifically against an oblivious adversary (one that fixes its request sequence in advance, without seeing the algorithm's random choices) — against an adaptive adversary that can see the algorithm's coin flips as they happen, no such improvement over the deterministic ratio of k is claimed by this topic.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The randomized marking algorithm's 2H_k (so O(log k)) bound, Fiat et al. 1991, holds specifically against an oblivious adversary (one that fixes its request sequence in advance, without seeing the algorithm's random choices) — against an adaptive adversary that can see the algorithm's coin flips as they happen, no such improvement over the deterministic ratio of k is claimed by this topic.", "at": [{ "deep": "The frontier" }] },
       { "item": "This topic's exact fault counts for the anomaly reference string and the adversary trace are both reproducible deterministically from `examples.py`'s own simulation code, not estimated or approximated — every number shown on screen is the literal output of running the stated policy against the stated sequence, which is why the topic states them as exact counts rather than typical or expected values.", "at": [{ "step": "On the classic reference string, computed directly: FIFO faults nine times with three frames, and ten times with four — more memory, more faults. LRU faults ten times and then eight; the true optimum faults seven times and then six. Both of those are monotone, exactly as claimed." }] },
       { "item": "Bélády's anomaly is specific to algorithms like FIFO that are not stack algorithms (an algorithm whose cache contents at size k are always a subset of its own cache contents at a larger size, on the identical sequence); LRU is a stack algorithm and is therefore immune to this particular anomaly by construction, not by coincidence on this one example.", "at": [{ "step": "On the classic reference string, computed directly: FIFO faults nine times with three frames, and ten times with four — more memory, more faults. LRU faults ten times and then eight; the true optimum faults seven times and then six. Both of those are monotone, exactly as claimed." }] },
       { "item": "The k/(k−h+1)-competitive bound for a marking algorithm against a smaller offline cache (named in post-notes, not in the main storyboard) assumes the offline comparison cache is itself of a fixed, named size h less than or equal to k — it is not a claim about an online algorithm's cache size changing, which is the separate, unrelated phenomenon Bélády's anomaly describes.", "at": [{ "deep": "The frontier" }] },

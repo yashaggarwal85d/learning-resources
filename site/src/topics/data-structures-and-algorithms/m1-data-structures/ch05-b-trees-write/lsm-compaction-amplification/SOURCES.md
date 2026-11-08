@@ -101,6 +101,10 @@ Version: `wiki` branch, fetched 2026-10-23
 
 > Tiered compaction minimizes write amplification at the cost of read and space amplification.
 
+> While write amplification is usually worse with leveled than with tiered, there are a few cases where leveled is competitive.
+
+> Leveled-N compaction is like leveled compaction but with less write and more read amplification.
+
 > Tiered+Leveled has less write amplification than leveled and less space amplification than tiered.
 
 > The tiered+leveled approach is a hybrid that uses tiered for the smaller levels and leveled for the larger levels.
@@ -111,7 +115,7 @@ Version: `wiki` branch, fetched 2026-10-23
 
 ### Contents (item by item, this topic's scope)
 
-- The three-way trade-off, named directly: leveled minimizes space at the cost of read+write; tiered minimizes write at the cost of read+space; a leveled/tiered hybrid lands in between on both axes it mixes.
+- The three-way trade-off, named directly: tiered minimizes write at the cost of read+space; a leveled/tiered hybrid lands in between on both axes it mixes. The leveled sentence ("at the cost of read and write amplification") names leveled's costs on their own, not a comparison with tiered: against tiered, leveled pays more write amplification ("usually worse with leveled than with tiered") and less read amplification (allowing more runs per level, as leveled-N does, gives "more read amplification"). The reel states the comparison, which is also what `examples.py` measures (2 runs against 5).
 - The per-level merge mechanic (`Ln-1` merged into `Ln`) and the size-ratio/fanout definition this topic's own `examples.py` uses to size its levels.
 - Confirmation that RocksDB itself implements exactly these three families (Level Compaction = tiered+leveled, Universal Compaction = tiered), a real, current production engine, not a textbook abstraction.
 

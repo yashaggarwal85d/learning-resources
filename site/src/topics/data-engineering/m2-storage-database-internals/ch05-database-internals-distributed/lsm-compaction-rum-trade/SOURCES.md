@@ -36,7 +36,7 @@ Version: retrieved 2026-10-24 (GitHub wiki, facebook/rocksdb)
 
 > The FIFOStyle Compaction drops oldest file when obsolete and can be used for cache-like data.
 
-Contents: L0 as the newest-data level; leveled compaction's own space-vs-read/write amplification trade (minimizes space, costs read and write); tiered compaction's own trade (named Universal in RocksDB's code); FIFO compaction as the drop-oldest, cache-like-data style.
+Contents: L0 as the newest-data level; leveled compaction's own space-vs-read/write amplification trade (minimizes space; its read and write costs are stated on their own, and against tiered leveled pays more write and less read amplification); tiered compaction's own trade (named Universal in RocksDB's code); FIFO compaction as the drop-oldest, cache-like-data style.
 
 ## RocksDB Write Stalls (RocksDB wiki)
 

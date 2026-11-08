@@ -100,3 +100,26 @@ URL: https://en.wikipedia.org/wiki/K-server_problem
 Version: fetched 2026-11-05
 
 > The special case of metrics in which all distances are equal is called the paging problem because it models the problem of page replacement algorithms in memory caches, and was also already known to have a k-competitive algorithm (Sleator and Tarjan 1985).
+
+## Fiat, Karp, Luby, McGeoch, Sleator, Young — "Competitive Paging Algorithms" (Journal of Algorithms 12(4), 1991; arXiv cs/0205038)
+
+URL: https://arxiv.org/pdf/cs/0205038
+Version: arXiv cs/0205038v1 (posted 18 May 2002 by the authors; the journal version is Journal of Algorithms 12(4):685–699, 1991, DOI 10.1016/0196-6774(91)90041-V), fetched 2026-11-08
+
+The PDF's text flattens the subscript: "2Hk" is 2H_k, "Hk" is H_k, the k-th harmonic number.
+
+> We develop the marking algorithm, a randomized on-line algorithm for the paging problem. We prove that its expected cost on any sequence of requests is within a factor of 2Hk of optimum.
+
+> (Where Hk is the kth harmonic number, which is roughly ln k.) The best such factor that can be achieved is Hk.
+
+> This is in contrast to deterministic algorithms, which cannot be guaranteed to be within a factor smaller than k of optimum.
+
+> If the requested vertex is not covered, then a server is chosen uniformly at random from among the unmarked vertices, and this server is moved to cover the requested vertex.
+
+> We also show that no randomized paging algorithm can have a competitive factor less than Hk.
+
+> Since A is randomized, the adversary constructing the sequence is not allowed to see where the servers are.
+
+> The paging problem is isomorphic to the uniform k-server problem.
+
+Contents: the randomized marking algorithm (on a fault, evict a page chosen uniformly at random among the unmarked ones; the paper states it in k-server terms, where a page in the cache is a vertex covered by a server); its bound, 2H_k-competitive, H_k being roughly ln k, so O(log k); the matching lower bound, no randomized paging algorithm below H_k; the adversary in the lower bound does not see the algorithm's random choices, which is the oblivious adversary the reel's prediction step describes; the contrast with the deterministic bound of k.

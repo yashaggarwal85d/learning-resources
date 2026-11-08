@@ -98,7 +98,7 @@ const reel: Reel = {
       Visual: S.TradeoffPredict,
     },
     {
-      title: 'Leveled minimizes space amplification at the cost of read and write amplification. Tiered minimizes write amplification at the cost of read and space amplification. A hybrid lands between both on the axes it mixes — it relocates the trade, not escapes it.',
+      title: 'Leveled keeps read and space amplification low and pays for it in write amplification. Tiered keeps write amplification low and pays for it in read and space amplification. A hybrid lands between both on the axes it mixes — it relocates the trade, not escapes it.',
       body: (
         <>
           No arrangement of the same mechanism, merge now or merge later, makes all three numbers

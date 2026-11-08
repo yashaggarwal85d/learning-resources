@@ -10,7 +10,7 @@
 - Sleator, D., & Tarjan, R. (1985). "Amortized efficiency of list update and paging rules." *Communications of the ACM*, 28(2), 202–208. Cited from the Competitive analysis and K-server problem Wikipedia pages' own reference lists; not independently fetched.
 - Bélády, L. A., Nelson, R. A., & Shedler, G. S. (1969). "An anomaly in space-time characteristics of certain programs running in a paging machine." *Communications of the ACM*, 12(6), 349–353. Cited from the Bélády's anomaly Wikipedia page's own reference list; not independently fetched.
 - Fornai, P., & Iványi, A. (2010). "FIFO anomaly is unbounded." arXiv:1003.1336. Cited from the same page; not independently fetched.
-- Fiat, A., Karp, R. M., Luby, M., McGeoch, L. A., Sleator, D. D., & Young, N. E. (1991). "Competitive paging algorithms." *Journal of Algorithms*, 12(4), 685–699. Attribution as commonly cited in the online-algorithms literature for the randomized marking algorithm's O(log k) competitive ratio; neither this paper nor a secondary source stating its exact bound was found or independently read for this topic — see `OUTLINE.md` → "Changes from the chapter plan".
+- Fiat, A., Karp, R. M., Luby, M., McGeoch, L. A., Sleator, D. D., & Young, N. E. (1991). "Competitive paging algorithms." *Journal of Algorithms*, 12(4), 685–699. DOI [10.1016/0196-6774(91)90041-V](https://doi.org/10.1016/0196-6774(91)90041-V); the authors' copy, read for this topic: [arXiv cs/0205038](https://arxiv.org/abs/cs/0205038). The randomized marking algorithm, its 2H_k competitive ratio, and the H_k lower bound for any randomized paging algorithm.
 
-Last verified: 2026-11-05.
+Last verified: 2026-11-08.
 Expert sign-off: pending.
