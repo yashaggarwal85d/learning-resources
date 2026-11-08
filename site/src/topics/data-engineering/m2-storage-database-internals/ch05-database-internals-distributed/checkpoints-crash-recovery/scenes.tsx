@@ -246,7 +246,7 @@ export function RevealFrequentMeasurement({ t }: StepCtx) {
   const r = easeOut(seg(t, 2.8, 3.2));
   return (
     <Svg label="checkpointing every round of ten — how many full-page images, and how short a replay?" h={230}>
-      <Row y={40} label="10 rounds, 2,000 rows" value="a checkpoint each round" k={easeOut(seg(t, 0.2, 0.7))} />
+      <Row y={40} label="10 rounds, 2,000 rows" value="checkpoint each round" k={easeOut(seg(t, 0.2, 0.7))} />
       <rect x={25} y={76} width={550} height={14} rx={2} fill="none" stroke={C.mocha} strokeWidth={1} />
       {Array.from({ length: 10 }, (_, i) => (
         <g key={i} opacity={i < n ? 1 : 0}>
