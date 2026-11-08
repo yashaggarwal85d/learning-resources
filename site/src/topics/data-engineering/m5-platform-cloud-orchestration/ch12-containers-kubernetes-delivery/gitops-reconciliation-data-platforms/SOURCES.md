@@ -18,6 +18,8 @@ Version: stable, fetched 2026-10-30
 
 > An automated sync will only be performed if the application is OutOfSync. Applications in a Synced or error state will not attempt automated sync.
 
+> Automated sync will only attempt one synchronization per unique combination of commit SHA1 and application parameters.
+
 ## Argo CD documentation, Sync Options
 
 URL: https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/
@@ -26,6 +28,31 @@ Version: stable, fetched 2026-10-30
 > You may wish to prevent an object from being pruned:
 
 > argocd.argoproj.io/sync-options: Prune=false
+
+Re-read 2026-11-08 for what a sync applies (the hook's answer):
+
+> The default behavior when syncing your application is to apply every object in the application.
+
+> By default, Argo CD executes the kubectl apply operation to apply the configuration stored in Git.
+
+> However during the sync stage, the desired state is applied as-is. The patch is calculated using a 3-way-merge between the live state the desired state and the last-applied-configuration annotation.
+
+> If the ServerSideApply=true sync option is set, Argo CD will use the kubectl apply --server-side --force-conflicts
+
+## Kubernetes documentation, Declarative Management of Kubernetes Objects Using Configuration Files
+
+URL: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/
+Version: fetched 2026-11-08
+
+The three-way merge `kubectl apply` performs, which examples.py's `three_way_apply()` reproduces.
+
+> Calculate the fields to delete. These are the fields present in last-applied-configuration and missing from the configuration file.
+
+> Calculate the fields to add or set. These are the fields present in the configuration file whose values don't match the live configuration.
+
+> The replicas field retains the value of 2 set by kubectl scale.
+
+> This is possible because it is omitted from the configuration file.
 
 ## Argo CD documentation, Diff Customization
 

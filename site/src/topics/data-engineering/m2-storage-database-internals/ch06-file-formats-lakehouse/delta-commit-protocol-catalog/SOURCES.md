@@ -27,9 +27,20 @@ Version: latest (fetched 2026-11-02)
 ## Databricks, Isolation levels (WriteSerializable and Serializable)
 
 URL: https://docs.databricks.com/aws/en/optimizations/isolation/isolation-levels
-Version: latest (fetched 2026-11-02)
+Version: latest (fetched 2026-11-02; re-read 2026-11-08, "Last updated on Oct 12, 2026")
+
+> Delta Lake on Databricks supports two isolation levels
 
 > The strongest isolation level. Ensures that committed write operations and all reads are
+> Serializable.
+
+> WriteSerializable (Default)
+
+> With WriteSerializable, a DELETE , UPDATE , or MERGE that starts before a concurrent insert can
+> still commit after it. The rows from the insert aren't affected, even if they match the
+> operation's condition.
+
+> Appends that don't read the table never conflict under WriteSerializable but can conflict under
 > Serializable.
 
 > A weaker isolation level than Serializable. Ensures that only write operations (not reads) are
@@ -45,6 +56,33 @@ Version: latest (fetched 2026-11-02)
 > Serializable: A reader always sees only tables that conform to the history
 
 > WriteSerializable: A reader can see a table state that does not exist in the Delta log
+
+## Delta Lake (open source), ConflictChecker.scala
+
+URL: https://raw.githubusercontent.com/delta-io/delta/master/spark/src/main/scala/org/apache/spark/sql/delta/ConflictChecker.scala
+Version: master (fetched 2026-11-08)
+
+The rule `delete_can_commit()` in examples.py reproduces: under WriteSerializable a blind append's
+added files are not checked; under Serializable every added file is checked against the current
+transaction's read predicates.
+
+> // Fail if new files have been added that the txn should have read.
+
+> winningCommitSummary.changedDataAddedFiles // don't conflict with blind appends
+
+> winningCommitSummary.changedDataAddedFiles ++ winningCommitSummary.blindAppendAddedFiles
+
+## Delta Lake (open source), DeltaConfig.scala
+
+URL: https://raw.githubusercontent.com/delta-io/delta/master/spark/src/main/scala/org/apache/spark/sql/delta/DeltaConfig.scala
+Version: master (fetched 2026-11-08)
+
+Open-source Delta Lake on Spark accepts only Serializable as a table's `delta.isolationLevel`, and
+defaults to it; WriteSerializable as the default is Databricks' setting.
+
+> Delta currently supports one isolation level:
+
+> "must be Serializable"
 
 ## Delta Lake, Delta Lake 4.0
 
@@ -85,10 +123,18 @@ Version: latest (fetched 2026-11-02)
   own preview feature list named "Coordinated Commits" — an earlier name for the same direction,
   not yet called catalog-managed tables.) This topic's content uses the verified September 2025
   date rather than repeating CHAPTER.md's unverified one.
-- The isolation-level demo (`delete_can_commit`) is a direct reproduction of Databricks' own
-  documented decision rule for WriteSerializable vs. Serializable — it is not Delta Lake's actual
-  Scala conflict-detection implementation, which also reasons about read/write sets of files and
-  partitions, not just a single named target path. Disclosed in FACT-CHECK.md.
+- The isolation-level demo (`delete_can_commit`) reproduces the one check in Delta's
+  `ConflictChecker` that separates the two levels (added files the transaction should have read),
+  with the delete's read predicate reduced to one partition value — it is not the whole Scala
+  conflict checker, which also checks deleted files, metadata and protocol changes, and row-level
+  predicates. Disclosed in FACT-CHECK.md.
+- Corrected 2026-11-08: an earlier version said Serializable refuses the delete "even without an
+  overlap", while examples.py already asserted it commits when the insert's file is outside the
+  delete's condition. The code and both Databricks' docs ("The rows from the insert aren't
+  affected, even if they match the operation's condition") and the open-source checker agree with
+  examples.py: the levels differ only when the insert adds rows the delete should have read. The
+  same version called WriteSerializable "Delta's default" without qualification; it is Databricks'
+  default, and open-source Delta Lake on Spark accepts only Serializable.
 - The put-if-absent commit demo reuses topic 10's exact `IfNoneMatch="*"` primitive against a
   `_delta_log/{v:020d}.json` key, standing in for a real catalog's commit path — there is no real
   Unity Catalog or DynamoDB Commit Coordinator here, matching the local-disk/local-S3 stand-in

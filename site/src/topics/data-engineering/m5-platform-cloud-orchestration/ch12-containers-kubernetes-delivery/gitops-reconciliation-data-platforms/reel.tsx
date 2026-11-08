@@ -25,21 +25,21 @@ const reel: Reel = {
       title: 'Survives, gets corrected, or something else?',
       body: (
         <>
-          Automated sync is on, but the setting that reacts to live drift is off. The deploy's change doesn't touch the field that was hand-edited. What happens to that edit?
+          Automated sync is on, but the setting that reacts to live drift is off. Git declares the hand-edited field, but the deploy's change doesn't touch it. What happens to that edit?
         </>
       ),
       duration: 1.8,
       predict: {
         options: [
           { label: 'it gets corrected back to whatever git says, immediately' },
-          { label: "it survives this particular deploy, but it's still live drift waiting to be overwritten", correct: true },
+          { label: "it survives this deploy, since the deploy's change never touched that field" },
+          { label: 'this deploy reverts it: a sync re-applies every field git declares', correct: true },
           { label: 'the whole deploy is blocked until someone resolves the edit' },
-          { label: 'nothing about this setup can ever detect the edit at all' },
         ],
         explain: (
           <>
-            It survives this one. The setting that pulls live drift back to git is off, so nothing actively corrects the edit — but the deploy still applies the whole desired manifest, and any
-            field the edit touched that happens to get touched by a later change reverts anyway. The edit was never safe; it just hadn't been overwritten yet.
+            This deploy reverts it. With the drift setting off, nothing corrected the edit for three weeks — but a sync applies the whole object, not just the change: any field git declares
+            that differs from the live value is set back to git's. Only a field git never mentions is left alone. The edit was never safe; it just hadn't been overwritten yet.
           </>
         ),
       },

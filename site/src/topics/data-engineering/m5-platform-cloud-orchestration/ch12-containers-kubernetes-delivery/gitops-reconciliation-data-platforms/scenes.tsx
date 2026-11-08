@@ -243,7 +243,8 @@ export function Hook({ t: t0 }: StepCtx) {
 }
 
 // 1 · Predict. Automated sync on, self-heal off. Git's image moves to v2 and the deploy comes down; the red timeout sits
-// untouched beside it. Once answered, the reticle locks on the edit that is still there.
+// beside it. Once answered, the sync applies the whole object: the image goes to v2 and the timeout goes back to git's 10,
+// and the reticle locks on the edit that is gone.
 export function PredictSelfHeal({ t: t0, answer }: StepCtx) {
   const t = t0 * 1.55;
   const s = useSinceAnswer(answer !== null);
@@ -261,7 +262,7 @@ export function PredictSelfHeal({ t: t0, answer }: StepCtx) {
       <Cross x={350} y={24} k={k(0.5)} />
       <Cell x={120} y={60} w={130} label="timeout: 10" o={k(0)} />
       <Cell x={270} y={60} w={110} label={t > 0.9 ? 'image: v2' : 'image: v1'} stroke={t > 0.9 ? C.focus : C.mocha} o={k(0)} />
-      <Cell x={120} y={150} w={130} label="timeout: 30" stroke={C.cherryText} o={k(0.1)} />
+      <Cell x={120} y={150} w={130} label={a > 0.5 ? 'timeout: 10' : 'timeout: 30'} stroke={a > 0.5 ? C.mocha : C.cherryText} o={k(0.1)} />
       <Cell x={270} y={150} w={110} label={a > 0.5 ? 'image: v2' : 'image: v1'} o={k(0.1)} />
       <VArrow x={325} y1={90} y2={146} k={k(1.2)} f={C.focus} />
       {answer === null && t > 1.6 && (
@@ -270,7 +271,7 @@ export function PredictSelfHeal({ t: t0, answer }: StepCtx) {
         </T>
       )}
       {answer !== null && <Reticle x={116} y={146} w={138} h={36} t={s} at={0.3} />}
-      <Verdict answer={answer} text="it survives this deploy: still drift" y={228} />
+      <Verdict answer={answer} text="this deploy reverts it: git declares it" y={228} />
     </Svg>
   );
 }

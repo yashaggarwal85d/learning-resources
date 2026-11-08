@@ -6,8 +6,8 @@
       "at": [
         { "step": "Reveal: a real put-if-absent commit, loser rejected with a real 412" },
         { "step": "Reveal: the loser retries and wins the next version" },
-        { "step": "Reveal: WriteSerializable orders it; Serializable would refuse it" },
-        { "step": "Reveal: the overlapping case splits the two levels further" },
+        { "step": "Reveal: WriteSerializable orders it; Serializable checks it first" },
+        { "step": "Reveal: the overlapping case splits the two levels" },
         { "step": "Reveal: why S3 historically needed an external coordinator" },
         { "step": "Reveal: catalog-managed tables take over the commit, then everything else" }
       ]
@@ -27,10 +27,26 @@
     {
       "source": "Databricks, Isolation levels (WriteSerializable and Serializable)",
       "items": [
-        { "item": "Serializable is the strongest isolation level, ensuring that committed write operations and all reads are Serializable", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable would refuse it" }] },
-        { "item": "WriteSerializable is a weaker isolation level than Serializable, ensuring that only write operations (not reads) are serializable", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable would refuse it" }] },
-        { "item": "Under Serializable, a concurrent delete that did not see an insert is not allowed to commit; under WriteSerializable it is allowed because the transactions can be ordered", "at": [{ "step": "Reveal: the overlapping case splits the two levels further" }] },
-        { "item": "Under WriteSerializable a reader can see a table state that does not exist in the Delta log; under Serializable a reader always sees only tables that conform to the history", "at": [{ "deep": "Production" }] }
+        { "item": "Serializable is the strongest isolation level, ensuring that committed write operations and all reads are Serializable", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable checks it first" }] },
+        { "item": "WriteSerializable is a weaker isolation level than Serializable, ensuring that only write operations (not reads) are serializable", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable checks it first" }] },
+        { "item": "Under Serializable, a concurrent delete that did not see an insert is not allowed to commit; under WriteSerializable it is allowed because the transactions can be ordered", "at": [{ "step": "Reveal: the overlapping case splits the two levels" }] },
+        { "item": "Under WriteSerializable a reader can see a table state that does not exist in the Delta log; under Serializable a reader always sees only tables that conform to the history", "at": [{ "deep": "Production" }] },
+        { "item": "Delta Lake on Databricks supports two isolation levels, with WriteSerializable the default", "at": [{ "step": "Predict: does the delete commit under the default isolation level?" }] },
+        { "item": "With WriteSerializable, a DELETE, UPDATE or MERGE that starts before a concurrent insert can still commit after it; the insert's rows aren't affected, even if they match the operation's condition", "at": [{ "step": "Reveal: the overlapping case splits the two levels" }] },
+        { "item": "Appends that don't read the table never conflict under WriteSerializable but can conflict under Serializable", "at": [{ "deep": "Production" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake (open source), ConflictChecker.scala",
+      "items": [
+        { "item": "Fail if new files have been added that the transaction should have read", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable checks it first" }] },
+        { "item": "Under WriteSerializable only non-blind-append added files are checked (don't conflict with blind appends); under Serializable blind-append added files are checked too", "at": [{ "step": "Reveal: WriteSerializable orders it; Serializable checks it first" }, { "step": "Reveal: the overlapping case splits the two levels" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake (open source), DeltaConfig.scala",
+      "items": [
+        { "item": "Open-source Delta Lake on Spark supports one table isolation level, Serializable, which is also the default (delta.isolationLevel must be Serializable)", "at": [{ "deep": "Production" }] }
       ]
     },
     {
@@ -53,13 +69,13 @@
     "items": [
       { "item": "The put-if-absent commit reuses topic 10's exact conditional-write primitive on a real moto S3 server, not a new simulated mechanism, and the loser's write is a real rejected HTTP request, not an asserted outcome.", "at": [{ "step": "Reveal: a real put-if-absent commit, loser rejected with a real 412" }] },
       { "item": "The append retry correctly applies topic 13's own verified Iceberg retry rule (an append has no requirements) to a Delta commit, rather than inventing a new rule for Delta specifically.", "at": [{ "step": "Reveal: the loser retries and wins the next version" }] },
-      { "item": "The WriteSerializable/Serializable contrast is demonstrated on two distinct cases (non-overlapping and overlapping) against the same real committed log, not asserted from the docs alone.", "at": [{ "step": "Reveal: the overlapping case splits the two levels further" }] },
+      { "item": "The WriteSerializable/Serializable contrast is demonstrated on two distinct cases (the insert's file outside the delete's condition, where both levels commit, and inside it, where only WriteSerializable does) against the insert's real committed log entry, not asserted from the docs alone.", "at": [{ "step": "Reveal: the overlapping case splits the two levels" }] },
       { "item": "The claim that catalog-managed tables moved commits under the catalog in 4.2 and everything else in 4.3 is sourced to the 4.3 release post's own explicit statement of that split, not inferred.", "at": [{ "step": "Reveal: catalog-managed tables take over the commit, then everything else" }] },
       { "item": "CHAPTER.md's own stated date for the catalog-managed-tables preview (June 2025) was checked against the primary source's own dated URL and found to be wrong by about three months; the correct date (September 2025) is used in this topic's content instead of repeating the error, and both are disclosed in SOURCES.md.", "at": [{ "deep": "Frontier" }] },
       { "item": "The isolation-level decision function is explicitly disclosed as a reproduction of the documented decision rule, not Delta's real multi-file conflict detector, avoiding an overclaim about what the code actually models.", "at": [{ "deep": "Production" }] },
       { "item": "No deltalake/delta-rs library is used; the demo is boto3 against a real local moto S3 server, matching the chapter's established from-scratch convention.", "at": [{ "deep": "Frontier" }] },
       { "item": "The bridge/handoff framing correctly answers topic 27's handoff (what makes a log entry atomic) and hands off cleanly to topic 29's Delta DML scope, matching CHAPTER.md's chapter structure.", "at": [{ "step": "Hook" }] },
-      { "item": "The overlapping-vs-non-overlapping isolation cases are tested as two distinct function calls with different committed-path arguments against the real log, not two assertions derived from the same single call.", "at": [{ "step": "Reveal: the overlapping case splits the two levels further" }] },
+      { "item": "The overlapping-vs-non-overlapping isolation cases are tested as two distinct function calls with different committed-path arguments against the real log, not two assertions derived from the same single call.", "at": [{ "step": "Reveal: the overlapping case splits the two levels" }] },
       { "item": "The predict step at step 5 is answered correctly by the reveal that follows it (WriteSerializable allows the commit), and the predict step at step 2 is answered by the reveal that a put-if-absent loser is rejected outright, not merged.", "at": [{ "step": "Predict: does the delete commit under the default isolation level?" }] }
     ]
   },

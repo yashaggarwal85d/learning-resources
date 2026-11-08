@@ -17,7 +17,9 @@
 
 ### Self-heal off doesn't mean the edit is permanent
 
-It's easy to read "self-heal is off" as "my manual edit is safe." It isn't, not really — self-heal is what *specifically targets* live drift and corrects it. But any sync at all, triggered by any unrelated Git change, applies the *whole* desired manifest. If the field you hand-edited happens to also be touched by that unrelated change, it reverts anyway — not because anything noticed your edit, but because the sync never knew it was supposed to preserve it. The honest takeaway for operating a cluster this way: there's no safe manual edit, self-heal setting or not. There's only an edit that hasn't been overwritten yet.
+It's easy to read "self-heal is off" as "my manual edit is safe." It isn't — self-heal is only what *starts* a sync because of live drift. Without it, automated sync runs once per new commit, and a sync, triggered by any unrelated Git change, applies the *whole* object with `kubectl apply` (by default on every object in the application). Its three-way merge sets every field the manifest declares whose live value differs, so a hand-edited field that Git declares reverts at the very next deploy, even when that deploy's change was elsewhere — not because anything noticed your edit, but because the sync never knew it was supposed to preserve it. Only a field the manifest never mentions is left alone (Kubernetes' own example: replicas set by `kubectl scale` and omitted from the file survive the next apply). Server-side apply doesn't save it either: Argo CD runs it with `--force-conflicts`. The honest takeaway for operating a cluster this way: there's no safe manual edit, self-heal setting or not. There's only an edit that hasn't been overwritten yet.
+
+The same mechanics apply to `ignoreDifferences`: it only changes the diff, so the application reads as Synced and self-heal stops fighting the autoscaler. But a sync for any other reason still applies the manifest's `spec.replicas` as-is, unless the manifest omits the field or the `RespectIgnoreDifferences=true` sync option is set.
 
 ### Two guards solving two different mistakes
 
@@ -41,8 +43,11 @@ This topic hosts the chapter's §12.3 lab: promote a Flink job from staging to p
 $ python3 examples.py
 ok  test_a_differing_field_is_outofsync
 ok  test_a_resource_level_prune_false_overrides_the_app_level_policy
-ok  test_hook_an_unrelated_git_change_does_not_touch_the_manually_edited_field
+ok  test_apply_leaves_a_field_git_never_declares
+ok  test_apply_resets_a_field_git_declares_even_if_this_change_never_touched_it
+ok  test_hook_an_unrelated_git_change_still_reverts_the_hand_edited_field
 ok  test_identical_desired_and_live_is_synced
+ok  test_ignoredifferences_alone_still_lets_a_sync_reset_the_field
 ok  test_ignoredifferences_does_not_mask_other_fields
 ok  test_ignoredifferences_masks_a_field_an_autoscaler_owns
 ok  test_outofsync_with_automated_sync_disabled_does_not_sync
@@ -55,7 +60,7 @@ ok  test_self_heal_off_never_corrects_a_manual_edit
 ok  test_self_heal_on_corrects_a_manual_edit
 ok  test_synced_never_triggers_a_sync_even_if_automated
 
-15 checks passed.
+18 checks passed.
 ```
 
 The Flink half of the lab (the savepoint-preserving upgrade itself) is disclosed as sourced-only, reusing the previous topic's already-verified upgrade-mode facts rather than re-deriving them here.

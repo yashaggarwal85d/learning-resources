@@ -273,11 +273,12 @@ export function PredictIsolationLevel({ t, answer }: StepCtx) {
 }
 
 // 6 · WriteSerializable. Insert and delete cards in log order; the delete card rises and the insert card sinks as they
-// trade places into a valid logical order; WriteSerializable commits; Serializable's stricter rule is stated beneath.
+// trade places into a valid logical order; WriteSerializable commits; beneath, Serializable checks the insert's file and,
+// finding it outside the delete's condition, commits too.
 export function RevealWriteSerializableAllows({ t }: StepCtx) {
   const sw = easeInOut(seg(t, 0.9, 1.8));
   return (
-    <Svg label="writeserializable (the default) lets it commit: the two can still be ordered." h={230}>
+    <Svg label="writeserializable (databricks' default) lets it commit: the two can still be ordered." h={230}>
       <T x={25} y={25} s={11} f={C.latte} o={easeOut(seg(t, 0.1, 0.4))}>
         log order, then a valid logical order
       </T>
@@ -288,25 +289,25 @@ export function RevealWriteSerializableAllows({ t }: StepCtx) {
         commits
       </T>
       <T x={25} y={160} s={12} f={C.focus} o={easeOut(seg(t, 2.0, 2.3))}>
-        WriteSerializable, the default: commits
+        WriteSerializable, Databricks' default: commits
       </T>
       <T x={25} y={195} s={12} f={C.second} o={easeOut(seg(t, 3.0, 3.4))}>
-        Serializable: log order must equal logical order
+        Serializable: outside the delete's condition, commits too
       </T>
     </Svg>
   );
 }
 
-// 7 · The overlapping case. The insert's new row is the delete's one target, joined by a line; WriteSerializable ticks;
-// Serializable is crossed.
+// 7 · The overlapping case. The insert's new row matches the delete's condition, joined by a line; WriteSerializable
+// ticks; Serializable is crossed.
 export function RevealOverlappingCase({ t }: StepCtx) {
   return (
-    <Svg label="now the delete targets the exact row the insert just added. writeserializable still allows it." h={230}>
+    <Svg label="now the insert's new row matches the delete's condition. writeserializable still allows it." h={230}>
       <Cell x={25} y={30} w={230} h={30} label="insert adds part-00003" o={easeOut(seg(t, 0.2, 0.5))} />
-      <Cell x={330} y={30} w={245} h={30} label="delete targets part-00003" stroke={C.second} o={easeOut(seg(t, 0.6, 0.9))} />
+      <Cell x={330} y={30} w={245} h={30} label="delete's condition matches" stroke={C.second} o={easeOut(seg(t, 0.6, 0.9))} />
       <line x1={257} y1={45} x2={lerp(257, 328, easeOut(seg(t, 1.1, 1.5)))} y2={45} stroke={C.cherryText} strokeWidth={2.2} />
       <T x={292} y={85} s={11} f={C.cherryText} a="middle" o={easeOut(seg(t, 1.4, 1.7))}>
-        the same row
+        a row it would delete
       </T>
       <Cell x={25} y={110} w={260} h={30} label="WriteSerializable" stroke={C.focus} o={easeOut(seg(t, 1.9, 2.2))} />
       <MiniTick x={300} y={120} k={easeOut(seg(t, 2.3, 2.6))} />

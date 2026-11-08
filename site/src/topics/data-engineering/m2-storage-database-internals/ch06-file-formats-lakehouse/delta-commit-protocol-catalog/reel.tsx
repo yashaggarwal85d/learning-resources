@@ -79,8 +79,8 @@ const reel: Reel = {
       body: (
         <>
           A concurrent insert lands at version 3. A delete that read the table before that insert
-          then tries to commit at version 4. Under Delta's default isolation level, does that
-          delete commit or get rejected as a conflict?
+          then tries to commit at version 4. Under the default isolation level on Databricks, does
+          that delete commit or get rejected as a conflict?
         </>
       ),
       duration: 4.8,
@@ -92,38 +92,39 @@ const reel: Reel = {
         ],
         explain: (
           <>
-            WriteSerializable, the default, only requires writes to be serializable — it can order
-            the insert "after" the delete, so the delete is allowed to commit.
+            WriteSerializable, Databricks' default, only requires writes to be serializable — it can
+            order the blind insert "after" the delete, so the delete is allowed to commit.
           </>
         ),
       },
       Visual: S.PredictIsolationLevel,
     },
     {
-      title: 'Reveal: WriteSerializable orders it; Serializable would refuse it',
+      title: 'Reveal: WriteSerializable orders it; Serializable checks it first',
       body: (
         <>
-          WriteSerializable (the default) lets the delete commit, because the two operations can
-          still be ordered as if the insert happened after the delete. Serializable would refuse
-          the same commit as a conflict.
+          WriteSerializable never checks a blind insert's files: the two operations can be
+          ordered as if the insert happened after the delete. Serializable checks part-00003
+          against what the delete read; it lies outside the delete's condition, so the delete
+          commits there too.
         </>
       ),
       duration: 4.8,
-      fig: 'writeserializable (the default) lets it commit: the two can still be ordered.',
-      takeaway: 'WriteSerializable orders transactions after the fact; Serializable refuses to, even without an overlap.',
+      fig: "writeserializable (databricks' default) lets it commit: the two can still be ordered.",
+      takeaway: "WriteSerializable orders a blind insert after the fact; Serializable refuses only an insert inside the delete's condition.",
       Visual: S.RevealWriteSerializableAllows,
     },
     {
-      title: 'Reveal: the overlapping case splits the two levels further',
+      title: 'Reveal: the overlapping case splits the two levels',
       body: (
         <>
-          Now the delete's target row is exactly the insert's new row. WriteSerializable still
-          allows the commit by the same ordering logic; Serializable now refuses it, because a
-          reader must never see a snapshot that disagrees with that ordering.
+          Now the insert's new row matches the delete's condition. WriteSerializable still allows
+          the commit by the same ordering logic, and the row survives; Serializable refuses it,
+          because replaying the log in order would have deleted that row.
         </>
       ),
       duration: 4.8,
-      fig: 'now the delete targets the exact row the insert just added. writeserializable still allows it.',
+      fig: "now the insert's new row matches the delete's condition. writeserializable still allows it.",
       Visual: S.RevealOverlappingCase,
     },
     {
@@ -157,9 +158,9 @@ const reel: Reel = {
       title: 'Recap',
       body: (
         <>
-          A commit is a put-if-absent write of the next version. An isolation level decides which
-          non-overlapping races are even allowed to commit. Catalog-managed tables move that
-          decision from the filesystem into the catalog, one operation type at a time.
+          A commit is a put-if-absent write of the next version. An isolation level decides
+          whether a delete may still commit past an insert it never saw. Catalog-managed tables
+          move that decision from the filesystem into the catalog, one operation type at a time.
         </>
       ),
       duration: 4.8,

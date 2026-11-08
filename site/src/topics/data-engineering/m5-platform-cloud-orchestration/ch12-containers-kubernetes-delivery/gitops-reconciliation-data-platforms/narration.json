@@ -9,14 +9,14 @@
     },
     {
       "lines": [
-        "Reacting automatically to a hand-made change like that is a setting of its own, and here it's switched off. The thing being deployed doesn't even touch whatever was changed by hand.",
+        "Reacting automatically to a hand-made change like that is a setting of its own, and here it's switched off. The written description does spell out the value that was changed by hand, but the thing being deployed doesn't change it.",
         { "beat": 0.4 },
         "So does that hand-made change get undone right away, does it quietly survive, or does something else happen entirely?"
       ],
       "answer": [
-        "It survives, for now. Nothing is actively watching for it and correcting it, since that reactive setting is off.",
-        "But every deployment still pushes out the entire intended description, not just whatever changed.",
-        "The moment some later, unrelated deployment happens to touch the exact same part of the description, the hand-made change disappears anyway — not because anyone caught it, but because nothing was protecting it in the first place."
+        "It gets undone, by this very deployment. For three weeks nothing touched it, because that reactive setting is off and nothing else started a sync.",
+        "But a deployment doesn't push out only what changed. It applies the whole intended description, and every value that description spells out, if it differs from what's running, is set back.",
+        "Only something the description never mentions at all is left alone. So the hand-made change disappears — not because anyone caught it, but because nothing was protecting it in the first place."
       ]
     },
     {

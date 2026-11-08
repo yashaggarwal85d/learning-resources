@@ -7,6 +7,7 @@ case where the two levels actually disagree — not a simulation of any of it.
 
 - Delta Lake, "Transaction Log Protocol": [raw.githubusercontent.com/delta-io/delta](https://raw.githubusercontent.com/delta-io/delta/master/PROTOCOL.md). Fetched 2026-11-02. Catalog-managed tables and the put-if-absent commit protocol.
 - Databricks, "Isolation levels (WriteSerializable and Serializable)": [docs.databricks.com](https://docs.databricks.com/aws/en/optimizations/isolation/isolation-levels). Fetched 2026-11-02. The default isolation level and its worked concurrent delete-and-insert example.
+- Delta Lake (open source), `ConflictChecker.scala` and `DeltaConfig.scala`: [github.com/delta-io/delta](https://github.com/delta-io/delta/blob/master/spark/src/main/scala/org/apache/spark/sql/delta/ConflictChecker.scala). Fetched 2026-11-08. The check that separates the two levels, and the open-source table setting that accepts only Serializable.
 - Delta Lake, "Delta Lake 4.0": [delta.io/blog](https://delta.io/blog/2025-09-25-delta-lake-40/). Fetched 2026-11-02. The catalog-managed-tables preview announcement.
 - Delta Lake, "Strengthening Catalog-Managed Delta Tables with the Unity Catalog Delta APIs": [delta.io/blog](https://delta.io/blog/2026-06-22-delta-4-3-release). Fetched 2026-11-02. The 4.2-to-4.3 rollout of catalog-routed table operations.
 

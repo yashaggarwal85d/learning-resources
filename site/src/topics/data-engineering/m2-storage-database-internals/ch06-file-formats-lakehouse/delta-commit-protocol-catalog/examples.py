@@ -13,12 +13,14 @@ real `IfNoneMatch="*"` PUT of `_delta_log/{v:020d}.json`; the loser's PUT is rej
 HTTP 412 PreconditionFailed, exactly like topic 10's `commit-001` race -- the same primitive, now
 named as Delta's put-if-absent commit.
 
-A second demo reproduces the two isolation levels Delta documents for commits that DO need to read
-the table first (a delete, not a blind append): WriteSerializable (the default) lets a delete
-commit even though it didn't see a concurrent insert, because the two operations can still be
-ordered; Serializable refuses the same delete as a conflict, because a reader must never see a
-table state time-travel would disagree with. Both are reproduced as real conflict checks against
-the real commits written above, not simulated with a flag.
+A second demo reproduces the two isolation levels Delta has for commits that DO need to read the
+table first (a delete, not a blind append), by the rule Delta's own ConflictChecker applies:
+WriteSerializable (Databricks' default) never checks a blind insert's new files, so a delete
+commits even though it didn't see a concurrent insert, as if the insert came after it;
+Serializable checks the insert's new files against what the delete read, and refuses the delete
+only when one of them falls inside it (replaying the log in order would have deleted that row).
+Open-source Delta Lake on Spark accepts only Serializable as a table's isolation level. Both
+levels are checked against the insert's real committed log entry, not simulated with a flag.
 
 moto's own consistency and latency characteristics are a local in-memory simulation, not AWS's
 real network behavior -- disclosed in FACT-CHECK.md, same disclosure as topic 10. What this script
@@ -71,15 +73,15 @@ def commit_body(actions):
 v0_actions = [
     {"metaData": {"id": "tbl-1", "format": {"provider": "parquet"}, "schemaString": "{}"}},
     {"protocol": {"minReaderVersion": 1, "minWriterVersion": 2}},
-    {"add": {"path": "part-00000.parquet", "size": 100, "dataChange": True}},
+    {"add": {"path": "part-00000.parquet", "partitionValues": {"day": "mon"}, "size": 100, "dataChange": True}},
 ]
 s3.put_object(Bucket=BUCKET, Key=log_key(0), Body=commit_body(v0_actions), IfNoneMatch="*")
 v0_committed = True
 
 # Writer A proposes an append; writer B proposes a different append. Each stages its own body
 # first (never shared) -- only the put-if-absent below decides which one becomes version 1.
-writer_a_v1 = [{"add": {"path": "part-a-00001.parquet", "size": 50, "dataChange": True}}]
-writer_b_v1 = [{"add": {"path": "part-b-00001.parquet", "size": 60, "dataChange": True}}]
+writer_a_v1 = [{"add": {"path": "part-a-00001.parquet", "partitionValues": {"day": "tue"}, "size": 50, "dataChange": True}}]
+writer_b_v1 = [{"add": {"path": "part-b-00001.parquet", "partitionValues": {"day": "tue"}, "size": 60, "dataChange": True}}]
 
 s3.put_object(Bucket=BUCKET, Key=log_key(1), Body=commit_body(writer_a_v1), IfNoneMatch="*")
 writer_a_won_v1 = True
@@ -111,12 +113,22 @@ assert writer_b_retry_won_v2 is True
 
 # ---------------------------------------------------------------------------
 # Demo 2: WriteSerializable vs. Serializable, on a delete that DOES need to read the table (unlike
-# the blind appends above). A concurrent insert lands at v3; a delete that read the table at v2
-# (before the insert) then tries to commit at v4. WriteSerializable allows it because the two
-# operations can still be ordered; Serializable refuses it as a conflict.
+# the blind appends above). A concurrent blind insert lands at v3; a delete that read the table at
+# v2 (before the insert) then tries to commit at v4. The rule reproduced is the one Delta's own
+# ConflictChecker applies ("Fail if new files have been added that the txn should have read"):
+# under Serializable, every file the winning commit added is checked against the delete's read
+# predicate; under WriteSerializable, a blind append's files are not checked at all ("don't
+# conflict with blind appends"), so the insert is treated as if it happened after the delete.
+# The two levels therefore agree when the insert's file is outside what the delete read, and
+# split only when it is inside.
+#
+# Where each level is available: Databricks documents both, with WriteSerializable as the
+# default. Open-source Delta Lake on Spark accepts only Serializable for delta.isolationLevel
+# ("must be Serializable"), and that is also its default.
 # ---------------------------------------------------------------------------
 
-insert_v3 = [{"add": {"path": "part-00003.parquet", "size": 40, "dataChange": True}}]
+# The insert is a blind append (it never read the table) of one file in partition day=wed.
+insert_v3 = [{"add": {"path": "part-00003.parquet", "partitionValues": {"day": "wed"}, "size": 40, "dataChange": True}}]
 s3.put_object(Bucket=BUCKET, Key=log_key(3), Body=commit_body(insert_v3), IfNoneMatch="*")
 
 FILES_AT_READ_TIME_V2 = {"part-00000.parquet", "part-a-00001.parquet", "part-b-00001.parquet"}
@@ -132,43 +144,49 @@ def files_from_log(up_to_version):
     return files
 
 
-def delete_can_commit(isolation_level, read_version, delete_target, committed_insert_paths):
-    """Reproduces Delta's own documented rule (concurrency-control docs, "Example: Concurrent
-    delete and insert"): a delete that read `read_version` and did not see a later insert's rows
-    can still commit under WriteSerializable (the operations can be ordered as if the insert
-    happened after the delete), but conflicts under Serializable (a reader must never see a
-    snapshot that disagrees with commit history)."""
-    insert_rows_touch_delete_target = delete_target in committed_insert_paths
-    if isolation_level == "WriteSerializable":
-        return True
-    assert isolation_level == "Serializable"
-    return not insert_rows_touch_delete_target
+def added_files_in(version):
+    actions = [json.loads(line) for line in s3.get_object(Bucket=BUCKET, Key=log_key(version))["Body"].read().decode().splitlines()]
+    return [a["add"] for a in actions if "add" in a]
+
+
+def delete_can_commit(isolation_level, delete_day, winning_added_files, winning_is_blind_append):
+    """The delete's read predicate is `day = delete_day`. Under Serializable, any file the winning
+    commit added that matches that predicate is a file the delete should have read, so the delete
+    conflicts. Under WriteSerializable, a blind append's added files are skipped, so the delete
+    commits and the insert counts as if it came after it."""
+    assert isolation_level in ("Serializable", "WriteSerializable")
+    if isolation_level == "WriteSerializable" and winning_is_blind_append:
+        files_to_check = []
+    else:
+        files_to_check = winning_added_files
+    return not any(f["partitionValues"].get("day") == delete_day for f in files_to_check)
 
 
 files_read_at_v2 = files_from_log(2)
 assert files_read_at_v2 == FILES_AT_READ_TIME_V2
 
+# The delete is `DELETE WHERE day = 'mon'`; at v2 that matches exactly one file, part-00000.
+delete_day = "mon"
 delete_target = "part-00000.parquet"
-write_serializable_allows_commit = delete_can_commit(
-    "WriteSerializable", read_version=2, delete_target=delete_target, committed_insert_paths={"part-00003.parquet"}
-)
-serializable_allows_commit = delete_can_commit(
-    "Serializable", read_version=2, delete_target=delete_target, committed_insert_paths={"part-00003.parquet"}
-)
+insert_files_v3 = added_files_in(3)
+assert [f["path"] for f in insert_files_v3] == ["part-00003.parquet"]
+
+write_serializable_allows_commit = delete_can_commit("WriteSerializable", delete_day, insert_files_v3, True)
+serializable_allows_commit = delete_can_commit("Serializable", delete_day, insert_files_v3, True)
 
 assert write_serializable_allows_commit is True
-assert serializable_allows_commit is True  # the insert's rows don't overlap the delete's target
+assert serializable_allows_commit is True  # part-00003 (day=wed) is outside what the delete read
 
-# Now the overlapping case: the concurrent insert's one row IS the row the delete targets.
-overlapping_serializable_allows_commit = delete_can_commit(
-    "Serializable", read_version=2, delete_target="part-00003.parquet", committed_insert_paths={"part-00003.parquet"}
-)
+# Now the overlapping case: the same insert, but its one file lands in day=mon, so its row is one
+# the delete's condition would have matched had the delete seen it.
+overlapping_insert_files = [dict(insert_files_v3[0], partitionValues={"day": "mon"})]
 overlapping_write_serializable_allows_commit = delete_can_commit(
-    "WriteSerializable", read_version=2, delete_target="part-00003.parquet", committed_insert_paths={"part-00003.parquet"}
+    "WriteSerializable", delete_day, overlapping_insert_files, True
 )
+overlapping_serializable_allows_commit = delete_can_commit("Serializable", delete_day, overlapping_insert_files, True)
 
 assert overlapping_write_serializable_allows_commit is True  # still orderable: insert "after" delete
-assert overlapping_serializable_allows_commit is False  # a reader must never see that disagreement
+assert overlapping_serializable_allows_commit is False  # replaying the log in order would delete that row
 
 if write_serializable_allows_commit:
     s3.put_object(
@@ -199,8 +217,10 @@ if __name__ == "__main__":
     print(f"put-if-absent commit: v0 written, writer A won v1, writer B's conflicting v1 write "
           f"rejected with {writer_b_status} {writer_b_code}, writer B retried successfully as v2")
     print(f"WriteSerializable allows the delete to commit: {write_serializable_allows_commit}")
-    print(f"Serializable, non-overlapping insert, still allows commit: {serializable_allows_commit}")
-    print(f"Serializable, overlapping insert, refuses the commit: {overlapping_serializable_allows_commit}")
+    print(f"Serializable, insert outside the delete's condition, allows commit: {serializable_allows_commit}")
+    print(f"Serializable, insert inside the delete's condition, allows commit: {overlapping_serializable_allows_commit}")
+    print(f"WriteSerializable, insert inside the delete's condition, allows commit: "
+          f"{overlapping_write_serializable_allows_commit}")
     print(f"delete committed at v4, target file gone from final state: "
           f"{delete_target not in final_files}")
     print("All assertions passed.")

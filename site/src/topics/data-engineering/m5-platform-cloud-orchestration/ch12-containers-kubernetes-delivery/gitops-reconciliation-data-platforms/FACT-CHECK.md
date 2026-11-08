@@ -15,6 +15,7 @@
 | 11 | SOPS encrypts files with AWS KMS, GCP KMS, Azure Key Vault, HuaweiCloud KMS, age, and PGP | SOPS README | ✅ quoted |
 | 12 | Argo Rollouts is a controller and CRD set providing blue-green, canary, canary analysis, experimentation, and progressive delivery | Argo Rollouts Overview | ✅ quoted |
 | 13 | Chapter 10 §10.4 (IaC/FinOps) and Chapter 11 §11.4 (CI/CD, write-audit-publish) don't exist yet in `registry.ts` | direct `registry.ts` inspection | ✅ confirmed by grep, see OUTLINE.md |
+| 14 | With self-heal off, the hand-edited field (one Git declares) is reverted by the next sync, even one triggered by an unrelated Git change: automated sync runs once per new commit, a sync applies every object with `kubectl apply`, and its three-way merge sets every field the file declares that differs from live; only a field the file omits survives. Server-side apply (`--force-conflicts`) reverts it too. | Argo CD Automated Sync Policy and Sync Options docs; Kubernetes declarative-config docs | ✅ quoted; `three_way_apply()` and the hook test in examples.py. Corrected 2026-11-08: the predict answer and narration first said the edit survives the unrelated deploy, which contradicted examples.py and these docs. |
 
 ## Red-team notes
 

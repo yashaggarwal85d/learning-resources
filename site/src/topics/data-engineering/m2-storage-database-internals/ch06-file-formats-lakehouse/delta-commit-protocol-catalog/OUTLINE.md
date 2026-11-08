@@ -18,13 +18,15 @@
 5. **Predict.** A concurrent insert lands at version 3. A delete that read the table before that
    insert then tries to commit at version 4. Under Delta's default isolation level, does that
    delete commit or get rejected as a conflict?
-6. **Reveal + takeaway.** WriteSerializable (the default) lets it commit, because the two
-   operations can still be ordered as if the insert happened after the delete. Serializable would
-   refuse it. Takeaway: WriteSerializable orders transactions after the fact; Serializable refuses
-   to, even when no row actually overlaps.
-7. **Reveal.** The overlapping case: the delete's one target row is exactly the insert's one new
-   row. WriteSerializable still allows the commit (same ordering logic); Serializable now refuses
-   it, because a reader must never see a snapshot that disagrees with that ordering.
+6. **Reveal + takeaway.** WriteSerializable (Databricks' default) lets it commit without checking
+   the blind insert, because the two operations can still be ordered as if the insert happened
+   after the delete. Serializable checks the insert's file against what the delete read; it is
+   outside the delete's condition, so it commits too. Takeaway: WriteSerializable orders a blind
+   insert after the fact; Serializable refuses only an insert inside the delete's condition.
+   (Open-source Delta Lake on Spark only offers Serializable.)
+7. **Reveal.** The overlapping case: the insert's new row matches the delete's condition.
+   WriteSerializable still allows the commit (same ordering logic, the row survives); Serializable
+   now refuses it, because replaying the log in order would have deleted that row.
 8. **Reveal.** Why any of this needed a lock service before conditional writes existed on S3:
    before S3 supported `If-None-Match`, two writers racing to publish the same next version could
    both succeed, silently overwriting one another — so Delta's DynamoDB Commit Coordinator
@@ -35,5 +37,5 @@
    bigger lock — it is the catalog becoming the only place "did this commit happen" can be
    answered, which is what makes a multi-table transaction possible at all.
 10. **Recap.** A commit is a put-if-absent write of the next version; an isolation level decides
-    which non-overlapping race outcomes are even allowed to commit; catalog-managed tables move
+    whether a delete may still commit past an insert it never saw; catalog-managed tables move
     that decision from the filesystem into the catalog, one operation type at a time.

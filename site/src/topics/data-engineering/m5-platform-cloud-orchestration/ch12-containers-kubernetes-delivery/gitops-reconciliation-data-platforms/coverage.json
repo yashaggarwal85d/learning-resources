@@ -77,8 +77,16 @@
       ]
     },
     {
+      "source": "Kubernetes documentation, Declarative Management of Kubernetes Objects Using Configuration Files",
+      "items": [
+        { "item": "kubectl apply sets the fields present in the configuration file whose values don't match the live configuration, and deletes fields present in last-applied-configuration but missing from the file", "at": [{ "step": "Survives, gets corrected, or something else?" }] },
+        { "item": "a field omitted from the configuration file, such as replicas set by kubectl scale, retains its live value across apply", "at": [{ "deep": "A little deeper" }] }
+      ]
+    },
+    {
       "source": "Argo CD documentation, Sync Options",
       "items": [
+        { "item": "the default sync applies every object in the application, with kubectl apply, as-is, through a three-way merge of live, desired and last-applied-configuration; ignoreDifferences only affects the diff unless RespectIgnoreDifferences=true", "at": [{ "step": "Survives, gets corrected, or something else?" }, { "deep": "A little deeper" }] },
         { "item": "a Prune=false annotation on a resource overrides the application's own prune policy for that one resource", "at": [{ "deep": "A little deeper" }] }
       ]
     },
@@ -111,7 +119,7 @@
     "by": "self-review",
     "date": "2026-10-30",
     "items": [
-      { "item": "self-heal and a sync triggered by an unrelated git change are two different mechanisms with overlapping effects: self-heal off does not mean an edit is permanent, because any sync at all applies the whole desired manifest, not just the changed fields — the edit can still be overwritten incidentally, just not by a mechanism that specifically detected and targeted it", "at": [{ "step": "Survives, gets corrected, or something else?" }] },
+      { "item": "self-heal and a sync triggered by an unrelated git change are two different mechanisms with overlapping effects: self-heal off does not mean an edit is permanent, because any sync at all applies the whole desired manifest, not just the changed fields — a hand-edited field git declares is overwritten by the next sync, even one triggered by an unrelated change, just not by a mechanism that specifically detected and targeted it; only a field git never declares survives the three-way merge", "at": [{ "step": "Survives, gets corrected, or something else?" }] },
       { "item": "Flux's gitless direction does not mean Git has become irrelevant to GitOps generally; it is one project's newer option, and Argo CD's own architecture in this topic's main source is still Git-based — the two are shown as separate, real, differently-evolving tools, not as Git being obsolete", "at": [{ "step": "Two real projects, and Git isn't even required" }] },
       { "item": "a resource-level Prune=false annotation and an application-level allow-empty setting solve two different failure modes: the first stops one specific resource from ever being deleted by this mechanism at all, the second stops an accidental total deletion when git momentarily looks empty — a team that only sets one of the two is still exposed to the other", "at": [{ "deep": "A little deeper" }] },
       { "item": "ignoreDifferences only affects what Argo CD treats as in-sync; it does not stop the autoscaler from changing the field, and does not mean Argo CD will apply a different replica count than what's in git on an actual sync — it specifically means Argo CD will sync, not flag this field, as the sync's own documentation about RespectIgnoreDifferences clarifies the subtlety of", "at": [{ "deep": "A little deeper" }] },

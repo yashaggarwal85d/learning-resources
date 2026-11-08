@@ -32,23 +32,23 @@
     {
       "lines": [
         "Now change the operation. A concurrent insert lands first, at version three. A delete that started before that insert, and never saw it, tries to commit right after.",
-        "Under Delta's default isolation level, does that delete get to commit, or does it get turned back as a conflict?"
+        "Under the default isolation level on Databricks, does that delete get to commit, or does it get turned back as a conflict?"
       ],
       "answer": [
-        "It commits. Delta's default level only requires that writes line up in some valid order — it doesn't require the delete to have seen everything that happened before it.",
+        "It commits. That default level only requires that writes line up in some valid order — it doesn't require the delete to have seen everything that happened before it.",
         "So the system is free to treat the insert as if it logically happened after the delete, even though the log says otherwise."
       ]
     },
     {
       "lines": [
-        "That default is called WriteSerializable, and this is exactly its behavior: the delete commits, because the two operations can still be arranged into some valid order.",
-        "The stronger level, Serializable, would not allow this — it insists the physical order and the logical order always agree."
+        "That default is called WriteSerializable, and it never even looks at a blind insert's new files: the delete commits, because the two operations can still be arranged into some valid order.",
+        "The stronger level, Serializable, does look. It asks whether the insert added anything the delete should have read — and here the new file sits outside the delete's condition, so the delete commits under Serializable too. Open-source Delta on Spark, by the way, only offers this stronger level."
       ]
     },
     {
       "lines": [
-        "Push it further: make the delete's one target row the exact same row the insert just added.",
-        "WriteSerializable still lets the delete through, by that same ordering trick — but Serializable now refuses it, because letting it through would mean a reader could see a table state the log itself never actually produced."
+        "Push it further: make the insert's new row one that the delete's condition would have matched.",
+        "WriteSerializable still lets the delete through, by that same ordering trick, and the new row survives. Serializable refuses, because replaying the log in order would have deleted that row — a reader would see a table state the log itself never actually produced."
       ]
     },
     {
@@ -65,7 +65,7 @@
     },
     {
       "lines": [
-        "So: a commit is one atomic, winner-take-all write of the next version. An isolation level decides which non-overlapping stories about that write are even allowed to stand.",
+        "So: a commit is one atomic, winner-take-all write of the next version. An isolation level decides whether a write that never saw another one is still allowed to stand.",
         "And a catalog-managed table is what happens when a storage system stops trusting any single file to settle that question by itself."
       ]
     }

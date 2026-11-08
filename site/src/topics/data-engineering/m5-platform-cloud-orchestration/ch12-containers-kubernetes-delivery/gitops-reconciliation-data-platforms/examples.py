@@ -4,9 +4,10 @@ No local Kubernetes cluster is reachable on this build machine (confirmed across
 this chapter: no Docker daemon socket, no kubectl/kind/k3s), and no Argo CD or Flink Kubernetes
 Operator instance is reachable either, so this chapter's lab (promoting a Flink job through Argo CD
 with a savepoint-preserving upgrade, injecting drift, rolling back) cannot be run live. What IS run
-for real: Argo CD's documented sync, self-heal, prune, and ignoreDifferences decision logic
-(SOURCES.md), modeled directly from its own docs rather than a plain-Deployment stand-in, since no
-live cluster of any kind exists here to run even that against.
+for real: Argo CD's documented sync, self-heal, prune, and ignoreDifferences decision logic, and
+the three-way merge `kubectl apply` performs when Argo CD syncs (SOURCES.md), modeled directly from
+the Argo CD and Kubernetes docs rather than a plain-Deployment stand-in, since no live cluster of
+any kind exists here to run even that against.
 """
 
 from dataclasses import dataclass, field
@@ -58,42 +59,83 @@ def test_outofsync_with_automated_sync_disabled_does_not_sync():
     assert should_auto_sync("OutOfSync", automated_enabled=False) is False
 
 
-# --- Self-heal: whether a manual live edit gets corrected ---
-def self_heal_corrects_manual_edit(self_heal_enabled: bool, edited_field_in_git: bool) -> bool:
-    """SOURCES.md: by default, changes made to the live cluster do not trigger automated sync.
-    Self-heal must be explicitly enabled for Argo CD to react to live drift at all. Even with it
-    off, a later sync triggered by an unrelated Git change does not touch a field Git doesn't
-    mention, so the manual edit survives that sync regardless -- self-heal is what's needed to
-    *correct* it, not any sync at all."""
-    if not self_heal_enabled:
-        return False
-    return True
+# --- Self-heal: whether a manual live edit, on its own, triggers a sync ---
+def live_edit_triggers_sync(self_heal_enabled: bool, already_synced_this_commit: bool) -> bool:
+    """SOURCES.md: by default, changes made to the live cluster do not trigger automated sync, and
+    automated sync attempts one sync per unique commit SHA and parameters unless selfHeal is set.
+    So without self-heal, a live edit alone never starts a sync; with it, Argo CD syncs again."""
+    if self_heal_enabled:
+        return True
+    return not already_synced_this_commit
 
 
 def test_self_heal_off_never_corrects_a_manual_edit():
-    assert self_heal_corrects_manual_edit(self_heal_enabled=False, edited_field_in_git=False) is False
+    assert live_edit_triggers_sync(self_heal_enabled=False, already_synced_this_commit=True) is False
 
 
 def test_self_heal_on_corrects_a_manual_edit():
-    assert self_heal_corrects_manual_edit(self_heal_enabled=True, edited_field_in_git=False) is True
+    assert live_edit_triggers_sync(self_heal_enabled=True, already_synced_this_commit=True) is True
+
+
+# --- What a sync does: kubectl apply's three-way merge, run on every object in the application ---
+def three_way_apply(last_applied: dict, desired: dict, live: dict) -> tuple[dict, dict]:
+    """SOURCES.md (Kubernetes, declarative config; Argo CD sync options): Argo CD syncs with
+    `kubectl apply`, by default on every object in the application, and applies the desired state
+    as-is through a three-way merge of live, desired and last-applied-configuration. Fields to
+    delete: in last-applied, missing from the file. Fields to set: in the file, with a value that
+    doesn't match live. Any other live field is left alone. Returns (new live, new last-applied)."""
+    new_live = {k: v for k, v in live.items() if not (k in last_applied and k not in desired)}
+    for k, v in desired.items():
+        if new_live.get(k) != v:
+            new_live[k] = v
+    return new_live, dict(desired)
+
+
+def test_apply_resets_a_field_git_declares_even_if_this_change_never_touched_it():
+    last_applied = {"timeout": 10, "image": "v1"}
+    live = {"timeout": 30, "image": "v1"}  # timeout hand-edited
+    new_live, _ = three_way_apply(last_applied, {"timeout": 10, "image": "v2"}, live)
+    assert new_live == {"timeout": 10, "image": "v2"}
+
+
+def test_apply_leaves_a_field_git_never_declares():
+    # Kubernetes' own example: replicas set live by `kubectl scale`, omitted from the file, is
+    # retained by the next apply; only fields the file declares are set.
+    last_applied = {"image": "v1"}
+    live = {"image": "v1", "replicas": 7}
+    new_live, _ = three_way_apply(last_applied, {"image": "v2"}, live)
+    assert new_live == {"image": "v2", "replicas": 7}
+
+
+def test_ignoredifferences_alone_still_lets_a_sync_reset_the_field():
+    # SOURCES.md: ignoreDifferences only feeds the diff; during sync the desired state is applied
+    # as-is (unless RespectIgnoreDifferences=true). Synced while ignored, yet a sync resets it.
+    desired, live = {"replicas": 3, "image": "v2"}, {"replicas": 7, "image": "v1"}
+    assert sync_status({"replicas": 3, "image": "v1"}, {"replicas": 7, "image": "v1"}, ignored={"replicas"}) == "Synced"
+    new_live, _ = three_way_apply({"replicas": 3, "image": "v1"}, desired, live)
+    assert new_live["replicas"] == 3
 
 
 # --- The hook, resolved: the 3 a.m. kubectl edit, after an unrelated Git change, self-heal off ---
-def test_hook_an_unrelated_git_change_does_not_touch_the_manually_edited_field():
-    # The manual edit changed field "timeout"; the later Git change only touches field "image".
+def test_hook_an_unrelated_git_change_still_reverts_the_hand_edited_field():
+    # The manual edit changed "timeout", a field Git declares; the later Git change only touches
+    # "image".
+    last_applied = {"timeout": 10, "image": "v1"}
     live_after_edit = {"timeout": 30, "image": "v1"}
     desired_before_git_change = {"timeout": 10, "image": "v1"}
     desired_after_git_change = {"timeout": 10, "image": "v2"}
-    # Before the Git change: already OutOfSync on "timeout" (the manual edit), but self-heal is off.
+    # Before the Git change: OutOfSync on "timeout" (the manual edit, visible as drift), but with
+    # self-heal off and this commit already synced, nothing starts a sync: the edit stays for now.
     assert sync_status(desired_before_git_change, live_after_edit) == "OutOfSync"
-    assert self_heal_corrects_manual_edit(self_heal_enabled=False, edited_field_in_git=False) is False
-    # The Git change triggers a sync (now also OutOfSync on "image"), which applies "image" but
-    # -- because self-heal is off -- Argo CD never goes out of its way to fix "timeout" either;
-    # a sync run still applies the full desired manifest, so "timeout" reverts to Git's value too.
-    live_after_the_sync = {"timeout": 10, "image": "v2"}  # the sync applies the whole manifest
+    assert live_edit_triggers_sync(self_heal_enabled=False, already_synced_this_commit=True) is False
+    # The new commit is a new SHA, so automated sync runs, and applies the whole object: "timeout"
+    # is in the file and differs from live, so it is set back to Git's 10 along with the new image.
+    assert live_edit_triggers_sync(self_heal_enabled=False, already_synced_this_commit=False) is True
+    live_after_the_sync, _ = three_way_apply(last_applied, desired_after_git_change, live_after_edit)
+    assert live_after_the_sync == {"timeout": 10, "image": "v2"}
     assert sync_status(desired_after_git_change, live_after_the_sync) == "Synced"
-    # The edit did not survive forever, but it wasn't a targeted self-heal correction either --
-    # it was overwritten incidentally, the moment any sync of the whole manifest ran at all.
+    # The edit did not survive the unrelated deploy. It wasn't a targeted self-heal correction
+    # either: it was overwritten because a sync applies every field Git declares.
 
 
 # --- Pruning: deleting what's no longer in Git, with a resource-level override and an empty-set guard ---

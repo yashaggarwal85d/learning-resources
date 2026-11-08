@@ -30,13 +30,19 @@ everyone has to ask.
 
 ## Production
 
-WriteSerializable is the default for a reason stated directly in Databricks' own documentation: it
-gives "a good balance of data consistency and availability for most common operations." Changing a
-table to Serializable is a real trade — stronger guarantees, but appends that never conflict under
-WriteSerializable can now conflict under Serializable, so throughput for concurrent writers drops.
-The right call depends on whether a downstream process ever reconstructs table contents by
-replaying commit history in physical order; if it does, WriteSerializable's "logical order can
-differ from physical order" behavior is the wrong default for that table.
+Which levels you can pick depends on where the table runs. On Databricks, WriteSerializable is the
+default for a reason stated directly in its documentation: it gives "a good balance of data
+consistency and availability for most common operations." Open-source Delta Lake on Spark has the
+same two levels in its conflict checker but accepts only one as a table setting: its
+`delta.isolationLevel` "must be Serializable", and that is its default too.
+
+Where the choice exists, changing a table to Serializable is a real trade — stronger guarantees,
+but appends that never conflict under WriteSerializable can now conflict under Serializable, so
+throughput for concurrent writers drops. The two levels only part ways when a concurrent insert
+added rows the other operation should have read: a delete whose condition misses the new file
+commits under both. The right call depends on whether a downstream process ever reconstructs table
+contents by replaying commit history in physical order; if it does, WriteSerializable's "logical
+order can differ from physical order" behavior is the wrong default for that table.
 
 </section>
 
