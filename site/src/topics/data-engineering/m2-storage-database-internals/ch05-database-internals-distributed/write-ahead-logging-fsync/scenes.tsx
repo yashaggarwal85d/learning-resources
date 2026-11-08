@@ -199,7 +199,7 @@ export function RevealGroupCommit({ t }: StepCtx) {
       <T x={25} y={158} s={11} f={C.latte} o={easeOut(seg(t, 1.2, 1.5))}>
         one shared flush per group
       </T>
-      <Row y={200} label="with commit_delay" value="fewer flushes than commits" valueColor={C.focus} k={easeOut(seg(t, 3.2, 3.7))} />
+      <Row y={200} label="with commit_delay" value="fewer flushes" valueColor={C.focus} k={easeOut(seg(t, 3.2, 3.7))} />
     </Svg>
   );
 }
