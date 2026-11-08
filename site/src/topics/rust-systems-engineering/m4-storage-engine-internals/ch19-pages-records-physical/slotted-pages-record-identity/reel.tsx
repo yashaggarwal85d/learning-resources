@@ -52,7 +52,7 @@ const reel: Reel = {
       predict: {
         options: [
           { label: 'Yes, the slot indices shifted to fill the gap' },
-          { label: 'No, each record own slot index stayed exactly what it was before the deletion', correct: true },
+          { label: 'No, each record’s own slot index stayed exactly what it was before the deletion', correct: true },
           { label: 'Only the record immediately after the gap kept its own index' },
         ],
         explain: (

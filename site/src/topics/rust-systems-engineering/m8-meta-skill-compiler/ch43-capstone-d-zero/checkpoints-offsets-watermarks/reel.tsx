@@ -7,7 +7,7 @@ import * as S from './scenes';
 const reel: Reel = {
   steps: [
     {
-      title: 'A real pipeline checkpoints only once a batch own real commit has genuinely returned, never before. It crashes mid-stream, right as its fifteenth real batch begins committing. Does a restart from that real checkpoint reprocess anything already committed, or lose anything that was not?',
+      title: 'A real pipeline checkpoints only once a batch’s own real commit has genuinely returned, never before. It crashes mid-stream, right as its fifteenth real batch begins committing. Does a restart from that real checkpoint reprocess anything already committed, or lose anything that was not?',
       body: (
         <>
           A real checkpoint, taken only after the commit returns.
@@ -29,7 +29,7 @@ const reel: Reel = {
       Visual: S.CorrectPredict,
     },
     {
-      title: 'Measured: the real, correct pipeline own checkpoint lands on exactly the fourteenth batch, the identical real batch its own commit genuinely finished last, so a restart from that checkpoint reprocesses zero batches and loses zero records',
+      title: 'Measured: the real, correct pipeline’s own checkpoint lands on exactly the fourteenth batch, the identical real batch its own commit genuinely finished last, so a restart from that checkpoint reprocesses zero batches and loses zero records',
       body: (
         <>
           Fourteen real commits, a checkpoint that matches exactly.
@@ -61,7 +61,7 @@ const reel: Reel = {
       Visual: S.WrongPredict,
     },
     {
-      title: 'Measured: the real, wrong pipeline own checkpoint lands on the fifteenth batch, one real batch ahead of the fourteen its own commits genuinely finished, because the crash landed exactly while that fifteenth commit was still in flight',
+      title: 'Measured: the real, wrong pipeline’s own checkpoint lands on the fifteenth batch, one real batch ahead of the fourteen its own commits genuinely finished, because the crash landed exactly while that fifteenth commit was still in flight',
       body: (
         <>
           One real batch, claimed done before it ever was.
@@ -72,7 +72,7 @@ const reel: Reel = {
       Visual: S.WrongReveal,
     },
     {
-      title: 'The real, wrong pipeline own restart resumes from the batch after its own real checkpoint, the sixteenth, skipping the fifteenth entirely. Does that fifteenth batch own real records get reprocessed later, or are they gone?',
+      title: 'The real, wrong pipeline’s own restart resumes from the batch after its own real checkpoint, the sixteenth, skipping the fifteenth entirely. Does that fifteenth batch’s own real records get reprocessed later, or are they gone?',
       body: (
         <>
           A restart that skips right past the fifteenth batch.
@@ -94,7 +94,7 @@ const reel: Reel = {
       Visual: S.RestartPredict,
     },
     {
-      title: 'Measured: the real, wrong pipeline own restart genuinely loses the fifteenth batch own full set of records, permanently, since its checkpoint told it that batch was already done',
+      title: 'Measured: the real, wrong pipeline’s own restart genuinely loses the fifteenth batch’s own full set of records, permanently, since its checkpoint told it that batch was already done',
       body: (
         <>
           Ten real records, lost the moment restart resumed.
@@ -105,10 +105,10 @@ const reel: Reel = {
       Visual: S.RestartReveal,
     },
     {
-      title: 'The Rust standard library own documentation on a real, durable file sync states this directly: a real commit own job is to make sure in-memory data genuinely reaches the filesystem before it returns; a checkpoint taken before that return has happened is a checkpoint for a commit that has not, in fact, happened yet',
+      title: 'The Rust standard library’s own documentation on a real, durable file sync states this directly: a real commit’s own job is to make sure in-memory data genuinely reaches the filesystem before it returns; a checkpoint taken before that return has happened is a checkpoint for a commit that has not, in fact, happened yet',
       body: (
         <>
-          A real sync, in the standard library own words.
+          A real sync, in the standard library’s own words.
         </>
       ),
       duration: 2.8,

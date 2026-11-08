@@ -104,7 +104,7 @@ const reel: Reel = {
         </>
       ),
       duration: 3.0,
-      takeaway: 'Copy-on-write own unit of work is the whole page, so its footprint grows by a page each time.',
+      takeaway: 'Copy-on-write’s own unit of work is the whole page, so its footprint grows by a page each time.',
       Visual: S.CowReveal,
     },
     {

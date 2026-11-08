@@ -146,7 +146,7 @@ const reel: Reel = {
         </>
       ),
       duration: 3.0,
-      takeaway: 'A page own line pointers let an item identity outlive it being physically moved around that page.',
+      takeaway: 'A page’s own line pointers let an item identity outlive it being physically moved around that page.',
       Visual: S.PermanenceReveal,
     },
     {

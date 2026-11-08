@@ -61,10 +61,10 @@ const reel: Reel = {
       Visual: S.AllocationPredict,
     },
     {
-      title: 'Measured: the real, borrowing implementation allocates only a handful of real bytes per record, essentially none of each record own data, while the real, cloning implementation allocates right around each record own full real size, every single time',
+      title: 'Measured: the real, borrowing implementation allocates only a handful of real bytes per record, essentially none of each record’s own data, while the real, cloning implementation allocates right around each record’s own full real size, every single time',
       body: (
         <>
-          A handful of bytes, against each record own size.
+          A handful of bytes, against each record’s own size.
         </>
       ),
       duration: 3.0,
@@ -94,7 +94,7 @@ const reel: Reel = {
       Visual: S.GapPredict,
     },
     {
-      title: 'Measured: the real, cloning implementation own bytes per record is more than twenty times the real, borrowing implementation own, for the identical real throughput and the identical real checksum result, a real, structural gap a single speed number hid completely',
+      title: 'Measured: the real, cloning implementation’s own bytes per record is more than twenty times the real, borrowing implementation’s own, for the identical real throughput and the identical real checksum result, a real, structural gap a single speed number hid completely',
       body: (
         <>
           The identical speed, a cost over twenty times larger.
@@ -105,10 +105,10 @@ const reel: Reel = {
       Visual: S.GapReveal,
     },
     {
-      title: 'The Rust standard library own documentation on a real global allocator states this directly: a real, registered allocator stands behind every real allocation a running program makes, invoked through functions the program never calls directly',
+      title: 'The Rust standard library’s own documentation on a real global allocator states this directly: a real, registered allocator stands behind every real allocation a running program makes, invoked through functions the program never calls directly',
       body: (
         <>
-          A real allocator, in the standard library own words.
+          A real allocator, in the standard library’s own words.
         </>
       ),
       duration: 2.8,

@@ -17,7 +17,7 @@ const reel: Reel = {
       predict: {
         options: [
           { label: 'It keeps growing for as long as the producer outruns the sink' },
-          { label: 'It stays capped near the channel own real capacity', correct: true },
+          { label: 'It stays capped near the channel’s own real capacity', correct: true },
           { label: 'It grows only until the producer finishes, then shrinks' },
         ],
         explain: (
@@ -29,7 +29,7 @@ const reel: Reel = {
       Visual: S.BoundedPredict,
     },
     {
-      title: 'Measured: the real, bounded pipeline own peak bytes held across every in-flight batch lands at six thousand bytes, just a few batches worth, for the entire real run of fifty batches',
+      title: 'Measured: the real, bounded pipeline’s own peak bytes held across every in-flight batch lands at six thousand bytes, just a few batches worth, for the entire real run of fifty batches',
       body: (
         <>
           Fifty real batches, a memory peak that stays small.
@@ -39,7 +39,7 @@ const reel: Reel = {
       Visual: S.BoundedReveal,
     },
     {
-      title: 'The identical real producer and the identical real, slow sink, this time connected by channels with no real limit on how many batches they can hold, each stage cloning its own batch before handing it downstream. Does its own real peak memory land near the bounded pipeline own real peak, or far past it?',
+      title: 'The identical real producer and the identical real, slow sink, this time connected by channels with no real limit on how many batches they can hold, each stage cloning its own batch before handing it downstream. Does its own real peak memory land near the bounded pipeline’s own real peak, or far past it?',
       body: (
         <>
           An unbounded pipeline, the identical workload.
@@ -48,20 +48,20 @@ const reel: Reel = {
       duration: 2.8,
       predict: {
         options: [
-          { label: 'Close to the bounded pipeline own real peak' },
-          { label: 'Far past it, toward the full run own total bytes', correct: true },
+          { label: 'Close to the bounded pipeline’s own real peak' },
+          { label: 'Far past it, toward the full run’s own total bytes', correct: true },
           { label: 'It depends only on how many stages clone' },
         ],
         explain: (
           <>
-            Far past it, toward the entire run own bytes.
+            Far past it, toward the entire run’s own bytes.
           </>
         ),
       },
       Visual: S.UnboundedPredict,
     },
     {
-      title: 'Measured: the real, unbounded, cloning pipeline own peak bytes held reaches fifty-one thousand bytes, essentially the entire run own total batch bytes, because its fast producer never once has to wait on the real, slow sink',
+      title: 'Measured: the real, unbounded, cloning pipeline’s own peak bytes held reaches fifty-one thousand bytes, essentially the entire run’s own total batch bytes, because its fast producer never once has to wait on the real, slow sink',
       body: (
         <>
           The same fifty batches, a peak that keeps climbing.
@@ -72,7 +72,7 @@ const reel: Reel = {
       Visual: S.UnboundedReveal,
     },
     {
-      title: 'The real, bounded pipeline own measured peak, six thousand bytes, against the real, unbounded pipeline own measured peak, fifty-one thousand bytes, for the identical real workload. Is that real gap a small, incidental difference, or a large, structural one?',
+      title: 'The real, bounded pipeline’s own measured peak, six thousand bytes, against the real, unbounded pipeline’s own measured peak, fifty-one thousand bytes, for the identical real workload. Is that real gap a small, incidental difference, or a large, structural one?',
       body: (
         <>
           Two real peaks, the identical fifty batches.
@@ -94,18 +94,18 @@ const reel: Reel = {
       Visual: S.ComparePredict,
     },
     {
-      title: 'Measured: the real, unbounded pipeline own peak is more than eight times the real, bounded pipeline own peak, for the identical fifty real batches and the identical real sink delay, a real, structural gap rather than an incidental one',
+      title: 'Measured: the real, unbounded pipeline’s own peak is more than eight times the real, bounded pipeline’s own peak, for the identical fifty real batches and the identical real sink delay, a real, structural gap rather than an incidental one',
       body: (
         <>
           The identical workload, an eightfold gap.
         </>
       ),
       duration: 3.0,
-      takeaway: 'A bounded channel own real limit is what turns a fast producer head start into backpressure, not goodwill.',
+      takeaway: 'A bounded channel’s own real limit is what turns a fast producer head start into backpressure, not goodwill.',
       Visual: S.CompareReveal,
     },
     {
-      title: 'The tokio mpsc module own documentation states this directly: a bounded channel at capacity rejects a send until capacity frees up, which is exactly how it provides backpressure; an unbounded channel own send always completes immediately, with no real limit to push back against',
+      title: 'The tokio mpsc module’s own documentation states this directly: a bounded channel at capacity rejects a send until capacity frees up, which is exactly how it provides backpressure; an unbounded channel’s own send always completes immediately, with no real limit to push back against',
       body: (
         <>
           tokio mpsc, in its own words.
@@ -119,7 +119,7 @@ const reel: Reel = {
       title: 'Recap: a limit that is actually enforced',
       body: (
         <>
-          A real, bounded pipeline that moves each batch forward through channels with a real, enforced limit keeps its own memory capped under a slow sink; a real, unbounded pipeline that clones each batch into channels with no real limit lets a fast producer own head start turn into unbounded real memory, however identically slow the sink stays underneath it.
+          A real, bounded pipeline that moves each batch forward through channels with a real, enforced limit keeps its own memory capped under a slow sink; a real, unbounded pipeline that clones each batch into channels with no real limit lets a fast producer’s own head start turn into unbounded real memory, however identically slow the sink stays underneath it.
         </>
       ),
       duration: 3.0,
