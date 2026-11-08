@@ -1,12 +1,44 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // async fn lowers to an enum of suspension states, one per await point, each holding its own
 // live locals; that size, and the !Send propagation rule, are both measured for real by
 // examples.py (rustc 1.97.0, edition 2024; std::future::ready only, no external crate needed).
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
 
 // ── 1 · Call an async function — what comes back? (predict, hook) ──────────────────────────────
 export function CallReturnsValuePredict({ t }: StepCtx) {
@@ -43,15 +75,45 @@ export function SameLazinessReveal({ t }: StepCtx) {
 
 // ── 3 · So what is that value, exactly? (takeaway) ──────────────────────────────────────────────
 export function AnonymousEnumReveal({ t }: StepCtx) {
+  const lane = easeOut(seg(t, 0.4, 0.9));
+  const variants = [
+    { name: 'Start', locals: [] as string[], from: 40 },
+    { name: 'at first await', locals: ['x'], from: 80 },
+    { name: 'at second await', locals: ['x', 'y'], from: 120 },
+    { name: 'Done', locals: [] as string[], from: 160 },
+  ];
   return (
-    <Code
-      title="the Rust Reference's own description"
-      lines={['// an anonymous type, like a closure\'s', '// roughly: an enum with one variant', '// per await point, holding what that', '// point needs to resume']}
-      t={t}
-      start={0.1}
-      end={2.4}
-      highlight={[1, 2, 3]}
-    />
+    <Stack>
+      <Code title="the Rust Reference's own description" lines={['// an anonymous type, like a closure\'s', '// roughly: an enum with one variant', '// per await point, holding what that', '// point needs to resume']} t={t} start={0.1} end={0.5} highlight={t > 1.2 ? [1, 2, 3] : []} />
+      <Svg label="the async fn's body has two await points; the compiler's anonymous enum gets one variant per point, each holding just the locals still alive there" h={190} fill>
+        <T x={30} y={20} s={13} f={C.taupe} o={lane}>async fn body</T>
+        <line x1={60} y1={32} x2={60} y2={lerp(32, 172, lane)} stroke={C.mocha} strokeWidth={2} />
+        {[80, 120].map((y) => (
+          <g key={y} opacity={lane}>
+            <circle cx={60} cy={y} r={6} fill={C.caramel} />
+            <T x={76} y={y + 5} s={13} f={C.caramel}>.await</T>
+          </g>
+        ))}
+        <rect x={250} y={20} width={330} height={164} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} opacity={easeOut(seg(t, 0.9, 1.2))} />
+        {variants.map((v, i) => {
+          const k = easeInOut(seg(t, 1.2 + i * 0.3, 1.6 + i * 0.3));
+          if (k <= 0) return null;
+          const y = 30 + i * 38;
+          return (
+            <g key={v.name} transform={`translate(${lerp(-180, 0, k).toFixed(1)} ${lerp(v.from - y - 14, 0, k).toFixed(1)})`} opacity={Math.min(1, k * 2)}>
+              <rect x={262} y={y} width={306} height={30} rx={6} fill={C.cocoa} stroke={k >= 1 ? C.crema : C.mocha} strokeWidth={1.5} />
+              <T x={274} y={y + 20} s={13} f={C.crema}>{v.name}</T>
+              {v.locals.map((l, j) => (
+                <g key={l}>
+                  <rect x={470 + j * 44} y={y + 5} width={36} height={20} rx={10} fill={C.cinnamon} />
+                  <T x={488 + j * 44} y={y + 20} s={12} a="middle" f={C.espresso} w={700}>{l}</T>
+                </g>
+              ))}
+            </g>
+          );
+        })}
+      </Svg>
+    </Stack>
   );
 }
 
@@ -121,17 +183,31 @@ export function NotSendPredict({ t }: StepCtx) {
 }
 
 // ── 8 · rustc's own diagnostic (takeaway) ───────────────────────────────────────────────────────
-export function CompilerDiagnosticReveal({ t }: StepCtx) {
+export function CompilerDiagnosticReveal({ t, portrait }: StepCtx) {
+  const P = 300;
+  const box = easeOut(seg(t, 0.4, 0.8));
+  const rc = easeOut(seg(t, 0.8, 1.9));
+  const x = lerp(90, 450, rc);
+  const crossed = x > P;
+  const stamp = easeOutBack(seg(t, 2.0, 2.4));
   return (
-    <Code
-      title="not_send_across_await.rs — a real compile error"
-      dim
-      lines={['error: future cannot be sent', '  between threads safely', '// Rc<i32> is not Send', '// used across an await']}
-      t={t}
-      start={0.1}
-      end={2.2}
-      highlight={[0, 1]}
-    />
+    <Stack>
+      {!portrait && <Code title="not_send_across_await.rs — a real compile error" dim={t < 0.1} lines={['error: future cannot be sent', '  between threads safely', '// Rc<i32> is not Send', '// used across an await']} t={t} start={0.1} end={0.5} highlight={t > 2.0 ? [0, 1] : t > 1.4 ? [2, 3] : []} />}
+      <Svg label="the Rc's lifetime runs across the await point, so it is stored in the future itself, and the whole future cannot be sent between threads" h={170} fill>
+        <rect x={40} y={30} width={520} height={100} rx={12} fill="none" stroke={stamp > 0 ? C.cherryText : C.mocha} strokeWidth={stamp > 0 ? 2.5 : 1.5} opacity={box} />
+        <T x={54} y={22} s={13} f={stamp > 0 ? C.cherryText : C.taupe} o={box}>the future</T>
+        <line x1={P} y1={40} x2={P} y2={120} stroke={crossed ? C.cherryText : C.taupe} strokeWidth={2} strokeDasharray="4 4" opacity={box} />
+        <T x={P} y={150} s={13} a="middle" f={crossed ? C.cherryText : C.taupe} o={box}>.await</T>
+        <T x={70} y={74} s={13} f={C.latte} o={box}>Rc&lt;i32&gt;</T>
+        <line x1={90} y1={92} x2={x} y2={92} stroke={crossed ? C.cherryText : C.caramel} strokeWidth={8} strokeLinecap="round" opacity={rc > 0 ? 1 : 0} />
+        {stamp > 0 && (
+          <g transform={`translate(470 66) scale(${stamp.toFixed(3)}) rotate(-6) translate(-470 -66)`}>
+            <rect x={410} y={50} width={120} height={30} rx={5} fill="none" stroke={C.cherryText} strokeWidth={2} />
+            <T x={470} y={71} s={14} a="middle" f={C.cherryText} w={700}>not Send</T>
+          </g>
+        )}
+      </Svg>
+    </Stack>
   );
 }
 
@@ -143,14 +219,7 @@ export function Recap({ t }: StepCtx) {
     'moving a large future copies every byte it holds',
     'Send propagates in exactly like any other field',
   ];
-  return (
-    <Svg label="recap: lowering and size, proven both ways" h={300}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: lowering and size, proven both ways" rows={rows} step={55}
+      s={13}
+    />;
 }

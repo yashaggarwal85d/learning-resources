@@ -1,13 +1,56 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // Pin exists because the compiler's generated async state machines can hold a reference into
 // their own fields; moving such a value after that reference forms leaves it stale. Every claim
 // is executed by examples.py (current stable rustc, edition 2024; pin-project-lite is the one
 // real crate dependency, used only for the structural-projection example).
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
+
+/** A push-pin glyph at (x, y), scaled by `k`. */
+function PinIcon({ x, y, k = 1, f = C.caramel }: { x: number; y: number; k?: number; f?: string }) {
+  if (k <= 0) return null;
+  return (
+    <g transform={`translate(${x} ${y}) scale(${k.toFixed(3)})`}>
+      <circle cx={0} cy={-8} r={7} fill={f} />
+      <line x1={0} y1={-2} x2={0} y2={10} stroke={f} strokeWidth={2.5} strokeLinecap="round" />
+    </g>
+  );
+}
 
 // ── 1 · Can a local point into a sibling local? (predict, hook) ────────────────────────────────
 export function SelfPointingLocalsPredict({ t }: StepCtx) {
@@ -27,16 +70,27 @@ export function SelfPointingLocalsPredict({ t }: StepCtx) {
 
 // ── 2 · Named by the standard library itself (no takeaway, "from" step) ────────────────────────
 export function NamedByStdlibReveal({ t }: StepCtx) {
+  const box = easeOut(seg(t, 0.5, 0.9));
+  const fields = easeOut(seg(t, 0.8, 1.2));
   return (
-    <Code
-      title="std::pin's own words"
-      dim
-      lines={['// "a key example of such self-referential', '//  types are the state machines generated', '//  by the compiler to implement Future', '//  for async fns"']}
-      t={t}
-      start={0.1}
-      end={2.6}
-      highlight={[0, 1, 2, 3]}
-    />
+    <Stack>
+      <Code title="std::pin's own words" dim={t < 0.1} lines={['// "a key example of such self-referential', '//  types are the state machines generated', '//  by the compiler to implement Future', '//  for async fns"']} t={t} start={0.1} end={0.5} highlight={t > 1.3 ? [1, 2, 3] : [0]} />
+      <Svg label="the state machine the compiler generates for an async fn: one of its fields points back at another field inside the same value, a self-reference" h={160} fill>
+        <g transform={`translate(0 ${((1 - box) * 20).toFixed(1)})`} opacity={box}>
+          <rect x={120} y={24} width={360} height={110} rx={12} fill="none" stroke={C.crema} strokeWidth={1.5} />
+          <T x={134} y={18} s={13} f={C.latte}>async fn's future</T>
+        </g>
+        <g opacity={fields}>
+          <rect x={150} y={60} width={120} height={40} rx={7} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
+          <T x={210} y={85} s={13} a="middle" f={C.crema}>buf</T>
+          <rect x={330} y={60} width={120} height={40} rx={7} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
+          <T x={390} y={85} s={13} a="middle" f={C.crema}>ptr</T>
+        </g>
+        <Draw pts={Array.from({ length: 25 }, (_, i) => { const u = i / 24; return [lerp(390, 210, u), 100 + Math.sin(u * Math.PI) * 26] as [number, number]; })} t={t} from={1.3} to={1.9} stroke={C.caramel} w={2.5} />
+        <T x={300} y={154} s={13} a="middle" f={C.caramel} o={easeOut(seg(t, 1.9, 2.2))}>points into itself</T>
+        <Reticle x={300} y={79} w={376} h={126} t={t} at={2.2} />
+      </Svg>
+    </Stack>
   );
 }
 
@@ -128,32 +182,67 @@ export function MoveOutPredict({ t }: StepCtx) {
 }
 
 // ── 8 · rustc's own diagnostic (takeaway) ───────────────────────────────────────────────────────
-export function CompileFailReveal({ t }: StepCtx) {
+export function CompileFailReveal({ t, portrait }: StepCtx) {
+  const box = easeOut(seg(t, 0.4, 0.8));
+  const pull = easeInOut(seg(t, 1.0, 1.5));
+  const snap = easeOutBack(seg(t, 1.6, 2.0));
+  const dx = pull * 150 * (1 - snap);
+  const err = easeOutBack(seg(t, 1.7, 2.1));
   return (
-    <Code
-      title="move_out_of_pin_fails.rs — a real compile error"
-      dim
-      lines={['error[E0507]: cannot move out of', '  dereference of Pin<Box<SelfRef>>', '// no Unpin, so no plain SelfRef to take']}
-      t={t}
-      start={0.1}
-      end={2.2}
-      highlight={[0, 1]}
-    />
+    <Stack>
+      {!portrait && <Code title="move_out_of_pin_fails.rs — a real compile error" dim={t < 0.1} lines={['error[E0507]: cannot move out of', '  dereference of Pin<Box<SelfRef>>', '// no Unpin, so no plain SelfRef to take']} t={t} start={0.1} end={0.5} highlight={t > 1.7 ? [0, 1] : []} />}
+      <Svg label="an attempt to drag the SelfRef out of its Pin<Box> is pulled back: E0507, nothing can be moved out of the pinned value" h={160} fill>
+        <g opacity={box}>
+          <rect x={60} y={30} width={240} height={96} rx={12} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+          <T x={74} y={22} s={13} f={C.latte}>{'Pin<Box<SelfRef>>'}</T>
+          <PinIcon x={290} y={34} />
+        </g>
+        <g transform={`translate(${dx.toFixed(1)} 0)`} opacity={box}>
+          <rect x={100} y={56} width={160} height={44} rx={8} fill={C.cocoa} stroke={pull > 0.9 && snap < 0.5 ? C.cherryText : C.crema} strokeWidth={1.5} />
+          <T x={180} y={83} s={14} a="middle" f={C.crema}>SelfRef</T>
+        </g>
+        <line x1={420} y1={78} x2={lerp(420, 330, pull)} y2={78} stroke={C.latte} strokeWidth={2} opacity={pull > 0 && snap < 1 ? 1 : 0} />
+        <T x={470} y={70} s={13} a="middle" f={C.latte} o={pull > 0 && snap < 1 ? 1 : 0}>move out?</T>
+        {err > 0 && (
+          <g transform={`translate(470 120) scale(${err.toFixed(3)}) translate(-470 -120)`}>
+            <T x={470} y={126} s={15} a="middle" f={C.cherryText} w={700}>E0507</T>
+          </g>
+        )}
+      </Svg>
+    </Stack>
   );
 }
 
 // ── 9 · Structural projection, a per-field choice (takeaway) ────────────────────────────────────
-export function StructuralProjectionReveal({ t }: StepCtx) {
+export function StructuralProjectionReveal({ t, portrait }: StepCtx) {
+  const box = easeOut(seg(t, 0.4, 0.8));
+  const hop = easeInOut(seg(t, 1.0, 1.6)); // #[pin]: the pin passes to this one field only
+  const proj = [easeOut(seg(t, 1.8, 2.3)), easeOut(seg(t, 2.0, 2.5))];
   return (
     <Stack>
-      <Code
-        title="pin-project-lite: structural_projection.rs"
-        lines={['pin_project! { struct Combined<T, U> {', '    #[pin] pinned: T,', '    unpinned: U,', '} }']}
-        t={t}
-        start={0.1}
-        end={2.4}
-        highlight={[1]}
-      />
+      {!portrait && <Code title="pin-project-lite: structural_projection.rs" lines={['pin_project! { struct Combined<T, U> {', '    #[pin] pinned: T,', '    unpinned: U,', '} }']} t={t} start={0.1} end={0.5} highlight={t > 1.0 ? [1] : [0]} />}
+      <Svg label="Combined is pinned; the #[pin] field inherits the pin and projects to Pin<&mut T>, while the other field projects to an ordinary &mut U, read as 42" h={180} fill>
+        <g opacity={box}>
+          <rect x={30} y={30} width={230} height={130} rx={12} fill="none" stroke={C.crema} strokeWidth={1.5} />
+          <T x={44} y={22} s={13} f={C.latte}>{'Pin<&mut Combined>'}</T>
+          <PinIcon x={250} y={34} />
+          <rect x={50} y={52} width={190} height={38} rx={7} fill={C.cocoa} stroke={hop >= 1 ? C.caramel : C.mocha} strokeWidth={1.5} />
+          <T x={70} y={76} s={13} f={C.crema}>pinned: T</T>
+          <rect x={50} y={104} width={190} height={38} rx={7} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
+          <T x={70} y={128} s={13} f={C.crema}>unpinned: U</T>
+        </g>
+        <PinIcon x={lerp(250, 222, hop)} y={lerp(34, 70, hop)} k={hop > 0 ? 1 : 0} f={C.cinnamon} />
+        <Draw pts={[[240, 71], [360, 71]]} t={t} from={1.8} to={2.3} stroke={C.caramel} w={2} />
+        <Draw pts={[[240, 123], [360, 123]]} t={t} from={2.0} to={2.5} stroke={C.latte} w={2} />
+        <g opacity={proj[0]}>
+          <rect x={360} y={52} width={200} height={38} rx={7} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+          <T x={460} y={76} s={13} a="middle" f={C.caramel}>{'Pin<&mut T>'}</T>
+        </g>
+        <g opacity={proj[1]}>
+          <rect x={360} y={104} width={200} height={38} rx={7} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+          <T x={460} y={128} s={13} a="middle" f={C.crema}>{'&mut U: 42'}</T>
+        </g>
+      </Svg>
     </Stack>
   );
 }
@@ -161,19 +250,12 @@ export function StructuralProjectionReveal({ t }: StepCtx) {
 // ── 10 · Recap ───────────────────────────────────────────────────────────────────────────────────
 export function Recap({ t }: StepCtx) {
   const rows = [
-    'a value pointing into itself breaks the instant it moves',
+    'a value pointing into itself breaks once it moves',
     'Pin<Ptr> is a type-level promise, not a convention',
     'the compiler enforces that promise, rejecting the move',
     'pin projection is a per-field choice, never automatic',
   ];
-  return (
-    <Svg label="recap: self-reference and Pin, proven both ways" h={300}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: self-reference and Pin, proven both ways" rows={rows} step={55}
+      s={13}
+    />;
 }
