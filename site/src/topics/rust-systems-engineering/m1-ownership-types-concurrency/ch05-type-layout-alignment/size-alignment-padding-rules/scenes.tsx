@@ -90,13 +90,15 @@ export function ReprRustSame({ t }: StepCtx) {
 }
 
 // ── 2 · Does field order ever change a struct's size? (predict) ───────────────
-export function OrderMattersPredict({ t }: StepCtx) {
+export function OrderMattersPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code title="the same four fields, reordered again" lines={['struct Header { version: u8, flags: u8, length: u16, seq: u32 }', 'struct Header { version: u8, length: u16, flags: u8, seq: u32 }']} t={t} start={0.1} end={2.0} highlight={[0, 1]} />
-      <Svg label="does reordering these fields ever change the struct's size?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>does this reorder ever cost real bytes?</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does reordering these fields ever change the struct's size?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>does this reorder ever cost real bytes?</T>
+        </Svg>
+      )}
     </Stack>
   );
 }
@@ -150,13 +152,15 @@ export function OffsetsChecked({ t }: StepCtx) {
 }
 
 // ── 5 · What happens when the claim is wrong? (predict) ─────────────────────────
-export function AssertionFailPredict({ t }: StepCtx) {
+export function AssertionFailPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code title="offset_assertion_fail.rs" lines={['const _: () = assert!(offset_of!(Header, seq) == 999);']} t={t} start={0.1} end={2.0} highlight={[0]} />
-      <Svg label="what happens when this gets built?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>what happens when this gets built?</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="what happens when this gets built?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>what happens when this gets built?</T>
+        </Svg>
+      )}
     </Stack>
   );
 }

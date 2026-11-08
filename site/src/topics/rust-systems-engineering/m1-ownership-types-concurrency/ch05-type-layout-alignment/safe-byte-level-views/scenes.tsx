@@ -90,7 +90,7 @@ export function PaddingIsUB({ t }: StepCtx) {
 }
 
 // ── 2 · Does a derive-checked view accept the padded header? (predict) ──────────────
-export function PodDerivePredict({ t }: StepCtx) {
+export function PodDerivePredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -101,9 +101,11 @@ export function PodDerivePredict({ t }: StepCtx) {
         end={2.0}
         highlight={[0, 1]}
       />
-      <Svg label="does a derive-checked view accept this padded struct?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>does a checked view accept this, padding and all?</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does a derive-checked view accept this padded struct?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>does a checked view accept this, padding and all?</T>
+        </Svg>
+      )}
     </Stack>
   );
 }
@@ -168,13 +170,15 @@ export function PodDeriveRejects({ t, portrait }: StepCtx) {
 }
 
 // ── 5 · Read the same two wire bytes without choosing a byte order (predict) ──────────────────
-export function EndiannessPredict({ t }: StepCtx) {
+export function EndiannessPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code title="two wire bytes" lines={['let wire_bytes: [u8; 2] = [0x27, 0x10];', 'let value = u16::from_ne_bytes(wire_bytes);  // native order']} t={t} start={0.1} end={2.0} highlight={[0, 1]} />
-      <Svg label="what number comes out, read this way, on this machine?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>what comes out, read this way, on this machine?</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="what number comes out, read this way, on this machine?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>what comes out, read this way, on this machine?</T>
+        </Svg>
+      )}
     </Stack>
   );
 }

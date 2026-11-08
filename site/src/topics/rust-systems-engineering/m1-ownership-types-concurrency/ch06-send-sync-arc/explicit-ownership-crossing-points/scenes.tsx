@@ -82,7 +82,7 @@ export function FourPlacesHook({ t }: StepCtx) {
 }
 
 // ── 2 · Move a String into a new thread (predict) ──────────────────────────────────────────────
-export function MoveStringPredict({ t }: StepCtx) {
+export function MoveStringPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -93,9 +93,11 @@ export function MoveStringPredict({ t }: StepCtx) {
         end={2.0}
         highlight={[0, 1, 2]}
       />
-      <Svg label="does the caller still have message afterward?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>the closure captured message with `move`</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does the caller still have message afterward?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.7, 0.4)}>the closure captured message with `move`</T>
+        </Svg>
+      )}
     </Stack>
   );
 }

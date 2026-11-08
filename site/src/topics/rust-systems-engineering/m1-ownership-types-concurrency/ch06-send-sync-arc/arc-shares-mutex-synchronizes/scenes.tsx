@@ -79,7 +79,7 @@ export function BareArcShares({ t }: StepCtx) {
 }
 
 // ── 2 · Does assigning through a bare Arc<u64> compile? (predict) ──────────────────────────────
-export function BareArcPredict({ t }: StepCtx) {
+export function BareArcPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -90,9 +90,11 @@ export function BareArcPredict({ t }: StepCtx) {
         end={1.8}
         highlight={[0, 1]}
       />
-      <Svg label="does this build?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.0, 0.4)}>writing through the pointer, no lock</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does this build?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>writing through the pointer, no lock</T>
+        </Svg>
+      )}
     </Stack>
   );
 }
@@ -204,7 +206,7 @@ export function ParkingLotNoPoison({ t, portrait }: StepCtx) {
 }
 
 // ── 7 · Does holding a lock across an await compile? (predict) ─────────────────────────────────
-export function GuardAwaitPredict({ t }: StepCtx) {
+export function GuardAwaitPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -215,9 +217,11 @@ export function GuardAwaitPredict({ t }: StepCtx) {
         end={2.0}
         highlight={[0, 1, 2]}
       />
-      <Svg label="does this whole task still qualify to be spawned?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>guard made before the pause, used after</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does this whole task still qualify to be spawned?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>guard made before the pause, used after</T>
+        </Svg>
+      )}
     </Stack>
   );
 }
