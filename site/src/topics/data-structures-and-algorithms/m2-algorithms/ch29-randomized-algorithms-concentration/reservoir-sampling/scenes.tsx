@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = something that exists; latte = secondary labels; taupe = not yet reached or
 // discarded; caramel (focus) = the thing to look at right now; cinnamon = the alternative being compared;
@@ -445,6 +445,12 @@ export function PredictWeightMeaning({ t, answer }: StepCtx) {
   const pick = answered ? easeOut(seg(s, 0.2, 0.7)) : 0;
   const a = easeOut(seg(t, 0.2, 0.9));
   const b = easeOut(seg(t, 0.8, 1.5));
+  // The single-draw bar is built segment by segment, by weight; a draw needle then sweeps it. After the answer the
+  // needle comes to rest in the heavy item's share (the thing the weight controls) and the lock-on lands there.
+  const grow = (i: number) => easeOut(seg(t, 0.3 + i * 0.15, 0.6 + i * 0.15));
+  const sweep = 30 + 250 * (0.5 - 0.5 * Math.cos(Math.max(0, t - 1.0) * 2.4));
+  const heavy = 30 + (9 / 14) * 250;
+  const needle = lerp(sweep, heavy, answered ? easeInOut(seg(s, 0, 0.5)) : 0);
   let acc = 0;
   return (
     <Svg label="Weights one, one, one, one and ten. Left, a single draw: a bar split by weight, the heavy item taking ten fourteenths of it. Right, the final sample of two, five question marks. After answering, the per-draw reading lights" h={260}>
@@ -453,14 +459,17 @@ export function PredictWeightMeaning({ t, answer }: StepCtx) {
         {WTS.map((w, i) => {
           const x0 = 30 + (acc / 14) * 250;
           acc += w;
-          return <rect key={i} x={x0} y={70} width={(w / 14) * 250 - 2} height={30} fill={i === 4 ? (answered ? C.caramel : C.latte) : C.mocha} />;
+          return <rect key={i} x={x0} y={70} width={Math.max(0, ((w / 14) * 250 - 2) * grow(i))} height={30} fill={i === 4 ? (answered ? C.caramel : C.latte) : C.mocha} />;
         })}
-        <T x={30 + (4 / 14) * 250 + 4} y={124} s={12} f={answered ? C.caramel : C.latte}>10/14</T>
+        <T x={30 + (4 / 14) * 250 + 4} y={124} s={12} f={answered ? C.caramel : C.latte} o={grow(4)}>10/14</T>
+        {t > 1.0 && <path d={`M${needle.toFixed(1)} 62 V108`} stroke={C.focus} strokeWidth={2} />}
+        {t > 1.0 && <path d={`M${(needle - 5).toFixed(1)} 58 L${needle.toFixed(1)} 64 L${(needle + 5).toFixed(1)} 58 Z`} fill={C.focus} />}
       </g>
+      {answered && <Reticle x={30 + (4 / 14) * 250 + 89} y={85} w={190} h={44} t={s} at={0.5} />}
       <g opacity={b * (1 - 0.6 * pick)}>
         <T x={330} y={50} s={12} f={C.crema}>in the final sample of 2</T>
         {WTS.map((w, i) => (
-          <g key={i}>
+          <g key={i} opacity={easeOut(seg(t, 0.8 + i * 0.12, 1.1 + i * 0.12))} transform={`translate(0 ${((1 - easeOut(seg(t, 0.8 + i * 0.12, 1.1 + i * 0.12))) * 12).toFixed(2)})`}>
             <rect x={330 + i * 46} y={70} width={36} height={30} rx={2} fill="none" stroke={C.latte} />
             <T x={348 + i * 46} y={91} s={14} f={C.latte} a="middle">?</T>
             <T x={348 + i * 46} y={124} s={12} f={C.latte} a="middle">w {w}</T>

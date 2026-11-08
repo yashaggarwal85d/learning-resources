@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md, Chapter 18): crema = a vertex with a tentative distance; latte = secondary labels (an
 // edge weight, a rate, a round); taupe = an edge checked with no change; caramel = the thing to look at this beat (the
@@ -235,23 +235,35 @@ export function WorstOrderTightness({ t }: StepCtx) {
   const last = easeOut(seg(t, 2.6, 3.0));
   const TX = (v: number) => 160 + v * 80;
   const TY = (r: number) => 70 + r * 36;
+  // Each round is the round before, copied down a row; then one improvement hops a single edge to the right,
+  // from the vertex that just settled to its neighbour. The staircase those hops leave is the worst order.
+  const hop = (r: number) => easeInOut(seg(t, 0.5 + r * 0.55, 0.85 + r * 0.55));
+  const stairs: [number, number][] = [];
+  for (let r = 0; r < 4; r++) stairs.push([TX(r + 1), TY(r) + 13], [TX(r + 1), TY(r + 1) - 14]);
+  stairs.pop();
   return (
     <Svg label="A table of distances at the end of each round: each round adds exactly one new cell, a staircase, and the last vertex's minus 4 only lands in round 4, 4 of 4 possible rounds" h={270}>
       {[0, 1, 2, 3, 4].map((v) => <T key={v} x={TX(v)} y={36} s={12} f={C.latte} a="middle">{String(v)}</T>)}
       {[0, 1, 2, 3].map((r) => (
-        <g key={r} opacity={rows[r]}>
+        <g key={r} opacity={rows[r]} transform={`translate(0 ${((1 - rows[r]) * -24).toFixed(2)})`}>
           <T x={40} y={TY(r) + 5} s={12} f={C.latte}>{`round ${r + 1}`}</T>
           {ROUND_END[r].map((d, v) => {
             const isNew = v === r + 1;
+            const shown = !isNew || hop(r) >= 1;
             return (
               <g key={v}>
                 <rect x={TX(v) - 30} y={TY(r) - 14} width={60} height={26} rx={3} fill={isNew ? C.cocoa : 'none'} stroke={isNew ? (r === 3 ? C.caramel : C.crema) : C.line} />
-                <T x={TX(v)} y={TY(r) + 5} s={13} f={d === Infinity ? C.taupe : isNew ? C.caramel : C.crema} a="middle">{fmt(d)}</T>
+                <T x={TX(v)} y={TY(r) + 5} s={13} f={shown ? (d === Infinity ? C.taupe : isNew ? C.caramel : C.crema) : C.taupe} a="middle">{shown ? fmt(d) : fmt(r === 0 ? Infinity : ROUND_END[r - 1][v])}</T>
               </g>
             );
           })}
+          {hop(r) > 0 && hop(r) < 1 && (
+            <circle cx={lerp(TX(r), TX(r + 1), hop(r))} cy={TY(r) - Math.sin(Math.PI * hop(r)) * 16} r={5} fill={C.caramel} />
+          )}
         </g>
       ))}
+      <Draw pts={stairs} t={t} from={0.9} to={2.7} stroke={C.secondary} w={1.2} pen={false} dash="3 4" />
+      <Reticle x={TX(4)} y={TY(3) - 1} w={70} h={34} t={t} at={2.6} />
       <T x={300} y={236} s={13} f={C.caramel} a="middle" o={last}>settled on round 4 of 4: the bound is tight</T>
     </Svg>
   );

@@ -370,6 +370,22 @@ export function ArrayVersion({ t }: StepCtx) {
   const outside = ORDER.filter((v) => !inTree.has(v));
   const cur = round >= 0 ? outside[Math.min(outside.length - 1, Math.floor(rows[round]))] : null;
   const cap = easeOut(seg(t, 4.0, 4.4));
+  // The scan cursor glides from cell to cell along the keys still outside the tree; every comparison it makes
+  // drops a dot out of the cell it is reading into that round's row of the staircase.
+  const CXk = (v: string) => 147 + ORDER.indexOf(v) * 64;
+  let cursorX = CXk(ORDER[ORDER.length - 1]);
+  if (round >= 0 && outside.length) {
+    const f = rows[round];
+    const a = Math.min(outside.length - 1, Math.floor(f));
+    const b = Math.min(outside.length - 1, a + 1);
+    cursorX = lerp(CXk(outside[a]), CXk(outside[b]), easeInOut(f - Math.floor(f)));
+  }
+  const scanned = (r: number, j: number) => {
+    let before = 0;
+    for (let q = 0; q < r; q++) before += 6 - q;
+    return clamp((k - before - j) / 0.9);
+  };
+  const treeAt = (r: number) => new Set(ORDER.slice(0, r));
   return (
     <Svg label="A row of six keys; each round a cursor sweeps every cell still outside the tree, one dot per comparison dropping into a staircase below: 6, 5, 4, 3, 2, 1, 21 in all" h={280}>
       {ORDER.map((v, i) => (
@@ -378,13 +394,22 @@ export function ArrayVersion({ t }: StepCtx) {
           <T x={147 + i * 64} y={60} s={13} f={inTree.has(v) ? C.taupe : C.crema} a="middle">{v}</T>
         </g>
       ))}
+      {round >= 0 && k > 0 && <path d={`M${(cursorX - 31).toFixed(1)} 34 H${(cursorX + 31).toFixed(1)} M${(cursorX - 31).toFixed(1)} 76 H${(cursorX + 31).toFixed(1)}`} stroke={C.caramel} strokeWidth={2} />}
       <T x={30} y={60} s={12} f={C.latte}>keys</T>
-      {rows.map((c, r) => (
-        <g key={r}>
-          {Array.from({ length: Math.floor(c) }, (_, j) => <circle key={j} cx={147 + j * 64 + r * 32} cy={100 + r * 22} r={5} fill={C.cinnamon} />)}
-          {c >= 6 - r && <T x={147 + (6 - r) * 64 + r * 32 - 20} y={105 + r * 22} s={12} f={C.latte}>{String(6 - r)}</T>}
-        </g>
-      ))}
+      <T x={570} y={24} s={13} f={C.cinnamon} a="end" o={easeOut(seg(t, 0.3, 0.6))}>{`comparisons ${Math.floor(k)}`}</T>
+      {rows.map((c, r) => {
+        const out = ORDER.filter((v) => !treeAt(r).has(v));
+        return (
+          <g key={r}>
+            {Array.from({ length: Math.ceil(c) }, (_, j) => {
+              const d = easeOut(scanned(r, j));
+              const fx = CXk(out[Math.min(out.length - 1, j)]);
+              return <circle key={j} cx={lerp(fx, 147 + j * 64 + r * 32, d)} cy={lerp(70, 100 + r * 22, d)} r={5} fill={C.cinnamon} />;
+            })}
+            {c >= 6 - r && <T x={147 + (6 - r) * 64 + r * 32 - 20} y={105 + r * 22} s={12} f={C.latte}>{String(6 - r)}</T>}
+          </g>
+        );
+      })}
       <T x={300} y={262} s={13} f={C.cinnamon} a="middle" o={cap}>21 comparisons, fixed by the vertex count</T>
     </Svg>
   );

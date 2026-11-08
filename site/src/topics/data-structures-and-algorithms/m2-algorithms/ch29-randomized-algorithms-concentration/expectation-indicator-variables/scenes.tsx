@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = an outcome that happened; latte = secondary labels; taupe = not yet drawn;
 // caramel = the thing to look at (the expectation line, the indicator that fired, the pair being judged); cinnamon
@@ -132,17 +132,36 @@ export function LinearityUrn({ t }: StepCtx) {
   const b2 = easeOut(seg(t, 2.1, 2.6));
   const tot = easeOut(seg(t, 3.2, 3.6));
   const col = (c: string) => (c === 'R' ? C.cherryText : C.cinnamon);
+  // The first ball is lifted out of the urn (so the urn really changes), the branches it causes draw out of it,
+  // a second ball of unknown colour follows, and the two 3/5 shares slide together into one bar of 1.2.
+  const lift = easeInOut(seg(t, 0.3, 0.9));
+  const lift2 = easeInOut(seg(t, 2.0, 2.6));
+  const join = easeInOut(seg(t, 3.3, 4.2));
+  const U = 150; // canvas units per expected red
   return (
     <Svg label="An urn of three red balls and two blue. The first draw is red with three fifths. The second, without replacement, branches on the first: two quarters after a red, three quarters after a blue, and together still three fifths. Expected reds over two draws: three fifths plus three fifths, 1.2, the same as counting every ordered pair" h={300}>
-      {balls.map((c, i) => <circle key={i} cx={60 + (i % 3) * 26} cy={60 + Math.floor(i / 3) * 26} r={10} fill={col(c)} opacity={0.85} />)}
+      {balls.map((c, i) => {
+        const hx = 60 + (i % 3) * 26, hy = 60 + Math.floor(i / 3) * 26;
+        if (i === 0) {
+          const x = lerp(hx, 158, lift), y = lerp(hy, 66, lift) - Math.sin(Math.PI * lift) * 40;
+          return <circle key={i} cx={x} cy={y} r={10} fill={col(c)} opacity={0.85} />;
+        }
+        return <circle key={i} cx={hx} cy={hy} r={10} fill={col(c)} opacity={0.85} />;
+      })}
+      {lift2 > 0 && (
+        <g transform={`translate(${lerp(112, 158, lift2).toFixed(2)} ${(lerp(86, 176, lift2) - Math.sin(Math.PI * lift2) * 30).toFixed(2)})`}>
+          <circle r={10} fill={C.band} stroke={C.crema} strokeWidth={1.4} />
+          <T x={0} y={5} s={13} f={C.crema} a="middle">?</T>
+        </g>
+      )}
       <path d="M40 40 L40 100 Q40 112 52 112 L120 112 Q132 112 132 100 L132 40" fill="none" stroke={C.latte} strokeWidth={1.4} />
       <g opacity={b1}>
         <T x={180} y={50} s={12} f={C.latte}>first draw red</T>
         <T x={180} y={74} s={14} f={C.crema}>3/5</T>
       </g>
+      <Draw pts={[[240, 78], [320, 54]]} t={t} from={1.2} to={1.6} stroke={C.cherryText} w={1.4} />
+      <Draw pts={[[240, 78], [320, 106]]} t={t} from={1.35} to={1.75} stroke={C.cinnamon} w={1.4} />
       <g opacity={br}>
-        <line x1={240} y1={78} x2={320} y2={54} stroke={C.cherryText} strokeWidth={1.4} />
-        <line x1={240} y1={78} x2={320} y2={106} stroke={C.cinnamon} strokeWidth={1.4} />
         <T x={330} y={58} s={12} f={C.latte}>after red: red 2/4</T>
         <T x={330} y={110} s={12} f={C.latte}>after blue: red 3/4</T>
       </g>
@@ -152,6 +171,13 @@ export function LinearityUrn({ t }: StepCtx) {
       </g>
       <T x={180} y={236} s={14} f={C.caramel} o={tot}>3/5 + 3/5 = 1.2 reds expected</T>
       <T x={180} y={262} s={12} f={C.latte} o={tot}>dependent draws, still additive</T>
+      {tot > 0 && (
+        <g opacity={tot}>
+          <rect x={180} y={278} width={0.6 * U - 2} height={10} rx={2} fill={C.crema} />
+          <rect x={lerp(420, 180 + 0.6 * U, join)} y={278} width={0.6 * U - 2} height={10} rx={2} fill={C.crema} />
+          <line x1={180 + U} y1={272} x2={180 + U} y2={294} stroke={C.quiet} strokeDasharray="2 3" />
+        </g>
+      )}
     </Svg>
   );
 }

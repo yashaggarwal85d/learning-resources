@@ -334,9 +334,9 @@ export function KruskalRun({ t }: StepCtx) {
         );
       })}
       {cap === 0 ? (
-        <T x={30} y={22} s={12} f={C.latte}>sorted, scanned once; union-find vetoes cycles</T>
+        <T x={30} y={14} s={12} f={C.latte}>sorted, scanned once; union-find vetoes cycles</T>
       ) : (
-        <T x={30} y={22} s={12} f={C.caramel} o={cap}>{`5 kept, 5 rejected: total ${MST_W}`}</T>
+        <T x={30} y={14} s={12} f={C.caramel} o={cap}>{`5 kept, 5 rejected: total ${MST_W}`}</T>
       )}
     </Svg>
   );
@@ -368,22 +368,31 @@ export function WhySortDominates({ t }: StepCtx) {
 export function TieTrap({ t }: StepCtx) {
   const trees = [0, 1, 2, 3].map((i) => easeOut(seg(t, 0.5 + i * 0.5, 0.8 + i * 0.5)));
   const cap = easeOut(seg(t, 2.8, 3.2));
-  const S = (i: number, v: string): P => [70 + i * 140 + (SQ[v][0] - 210) / 3.6, 90 + (SQ[v][1] - 70) / 2];
+  // One square, every edge the same weight, sits in the middle; four copies peel off it to their own slots, and in each
+  // the three tree edges draw in while a different fourth edge is left out, dashed.
+  const slide = [0, 1, 2, 3].map((i) => easeInOut(seg(t, 0.3 + i * 0.5, 0.8 + i * 0.5)));
+  const S = (i: number, v: string): P => [lerp(280, 70 + i * 140, slide[i]) + (SQ[v][0] - 210) / 3.6, 90 + (SQ[v][1] - 70) / 2];
   return (
     <Svg label="The square with every edge weighing 1, then its four minimum trees side by side, each leaving out a different edge, each weighing 3" h={240}>
       {[0, 1, 2, 3].map((i) => (
-        <g key={i} opacity={0.25 + 0.75 * trees[i]}>
+        <g key={i} opacity={t < 0.3 ? easeOut(seg(t, 0, 0.3)) : 1}>
           {SQE.map(([a, b], j) => {
             const [x1, y1] = S(i, a);
             const [x2, y2] = S(i, b);
             const out = j === (i + 2) % 4;
-            return <line key={j} x1={x1} y1={y1} x2={x2} y2={y2} stroke={out ? C.mocha : C.caramel} strokeWidth={out ? 1.2 : 3} strokeDasharray={out ? '4 4' : undefined} />;
+            const k = trees[i];
+            return (
+              <g key={j}>
+                <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={C.mocha} strokeWidth={1.2} strokeDasharray={out && k > 0 ? '4 4' : undefined} />
+                {!out && k > 0 && <line x1={x1} y1={y1} x2={lerp(x1, x2, k)} y2={lerp(y1, y2, k)} stroke={C.caramel} strokeWidth={3} strokeLinecap="round" />}
+              </g>
+            );
           })}
           {Object.keys(SQ).map((v) => {
             const [x, y] = S(i, v);
             return <circle key={v} cx={x} cy={y} r={6} fill={C.band} stroke={C.crema} strokeWidth={1.5} />;
           })}
-          <T x={70 + i * 140 + 25} y={186} s={12} f={C.crema} a="middle" o={trees[i]}>weight 3</T>
+          <T x={70 + i * 140 + 25} y={lerp(198, 186, trees[i])} s={12} f={C.crema} a="middle" o={trees[i]}>weight 3</T>
         </g>
       ))}
       <T x={300} y={226} s={13} f={C.caramel} a="middle" o={cap}>four minimum trees, all tied</T>
