@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Decode, Draw, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
-import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { clamp, easeInOut, easeOut, easeOutBack, easeOutExpo, lerp, seg } from '../../../../../reels/anim';
 
 /** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
 function useSinceAnswer(on: boolean) {
@@ -383,49 +383,62 @@ export function RevealLoadPaths({ t }: StepCtx) {
 }
 
 // 9 · Exactly-once streaming. The old path: a row may slip or double (a dashed ghost). The new path: each write carries its offset,
-// counted 1, 2, 3 with no gaps.
+// and a caret marking where the writer left off steps one slot per row with no gaps; brackets lock onto it.
 export function RevealExactlyOnceStreaming({ t }: StepCtx) {
   const o = easeOut(seg(t, 2.0, 2.4));
+  // the writer's mark: after each row commits, the position it left off at steps one slot along
+  const pos = clamp((t - 2.7) / 0.3, 0, 4);
+  const pk = Math.floor(pos);
+  const px = 260 + lerp(pk, Math.min(4, pk + 1), easeInOut(clamp((pos - pk) * 2))) * 60 - 8;
   return (
     <Svg label="the modern streaming path guarantees exactly-once delivery with stream offsets, replacing an older best-effort method." h={230}>
       <T x={25} y={30} s={12} f={C.latte} o={easeOut(seg(t, 0.1, 0.4))}>
         older stream: best effort
       </T>
-      {[0, 1, 2, 3].map((i) => (
-        <rect
-          key={i}
-          x={260 + i * 60}
-          y={18}
-          width={44}
-          height={20}
-          rx={2}
-          fill="none"
-          stroke={i === 2 ? C.cherryText : C.latte}
-          strokeWidth={1.4}
-          strokeDasharray={i === 2 ? '4 3' : undefined}
-          opacity={easeOut(seg(t, 0.4 + i * 0.2, 0.7 + i * 0.2))}
-        />
-      ))}
-      <T x={25} y={64} s={11} f={C.cherryText} o={easeOut(seg(t, 1.2, 1.6))}>
+      {/* best effort: rows fly in; the third arrives as a ghost that may or may not be there, and may be there twice */}
+      {[0, 1, 2, 3].map((i) => {
+        const k = easeOutExpo(seg(t, 0.4 + i * 0.2, 0.8 + i * 0.2));
+        const ghost = i === 2;
+        const wob = ghost ? Math.sin(t * 5) * 3 : 0;
+        return (
+          <g key={i} opacity={k * (ghost ? 0.6 + 0.4 * Math.sin(t * 4) ** 2 : 1)}>
+            <rect
+              x={lerp(560, 260 + i * 60, k) + wob}
+              y={18}
+              width={44}
+              height={20}
+              rx={2}
+              fill="none"
+              stroke={ghost ? C.cherryText : C.latte}
+              strokeWidth={1.4}
+              strokeDasharray={ghost ? '4 3' : undefined}
+            />
+            {ghost && <rect x={lerp(560, 260 + i * 60, k) + 6 - wob} y={24} width={44} height={20} rx={2} fill="none" stroke={C.cherryText} strokeWidth={1} strokeDasharray="2 4" opacity={0.6} />}
+          </g>
+        );
+      })}
+      <T x={25} y={64} s={13} f={C.cherryText} o={easeOut(seg(t, 1.2, 1.6))}>
         probably every row, eventually
       </T>
       <T x={25} y={120} s={12} f={C.crema} o={o}>
         Storage Write API: offsets
       </T>
       {['a', 'b', 'c', 'd'].map((l, i) => {
-        const k = easeOut(seg(t, 2.4 + i * 0.3, 2.7 + i * 0.3));
+        const k = easeOutExpo(seg(t, 2.4 + i * 0.3, 2.75 + i * 0.3));
         return (
-          <g key={l} opacity={k}>
+          <g key={l} opacity={k} transform={`translate(${((1 - k) * -50).toFixed(1)} 0)`}>
             <rect x={260 + i * 60} y={106} width={44} height={22} rx={2} fill={C.cocoa} stroke={C.focus} strokeWidth={1.6} />
-            <T x={282 + i * 60} y={122} s={11} f={C.crema} a="middle">
+            <T x={282 + i * 60} y={122} s={13} f={C.crema} a="middle">
               {l}
             </T>
           </g>
         );
       })}
-      <T x={25} y={200} s={13} f={C.focus} o={easeOut(seg(t, 3.8, 4.2))}>
-        every row, exactly once
-      </T>
+      {/* where the writer left off: a caret under the stream that never skips or repeats a slot */}
+      {t > 2.7 && <path d={`M${px} 146 l8 -10 l8 10 z`} fill={C.focus} />}
+      <Draw pts={[[260, 154], [500, 154]]} t={t} from={2.7} to={3.9} stroke={C.focus} w={1.5} pen={false} />
+      <Decode text="every row, exactly once" t={t} at={3.8} x={25} y={200} s={13} f={C.focus} />
+      <Reticle x={500} y={141} w={34} h={28} t={t} at={4.15} />
     </Svg>
   );
 }

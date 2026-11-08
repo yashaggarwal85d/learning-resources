@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Plot, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
-import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { clamp, easeInOut, easeOut, easeOutBack, easeOutExpo, lerp, seg } from '../../../../../reels/anim';
 
 /** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
 function useSinceAnswer(on: boolean) {
@@ -168,29 +168,37 @@ function LogFile({ x, y, v, o = 1, stroke = C.latte, w = 70 }: { x: number; y: n
 }
 
 // 1 · Hook. A small metadata tree on the left, Iceberg's shape; on the right, a stack of JSON lines grows one by one,
-// Delta's shape.
+// Delta's shape: the tree's pointers draw down to their files, the log's entries are appended one by one.
 export function Hook({ t }: StepCtx) {
   return (
     <Svg label="iceberg's transaction log is a metadata tree. this topic opens the delta arc: an ordered json log." h={200}>
-      <T x={25} y={25} s={11} f={C.latte} o={easeOut(seg(t, 0.1, 0.4))}>
+      <T x={25} y={25} s={13} f={C.latte} o={easeOut(seg(t, 0.1, 0.4))}>
         Iceberg: a tree of files
       </T>
       <rect x={95} y={40} width={60} height={22} rx={3} fill={C.cocoa} stroke={C.second} strokeWidth={1.4} opacity={easeOut(seg(t, 0.2, 0.5))} />
-      {[0, 1, 2].map((i) => (
-        <g key={i} opacity={easeOut(seg(t, 0.5 + i * 0.1, 0.8 + i * 0.1))}>
-          <line x1={125} y1={62} x2={45 + i * 80} y2={100} stroke={C.mocha} strokeWidth={1.2} />
-          <rect x={25 + i * 80} y={100} width={40} height={20} rx={3} fill={C.cocoa} stroke={C.latte} strokeWidth={1.2} />
-        </g>
-      ))}
-      <T x={330} y={25} s={11} f={C.focus} o={easeOut(seg(t, 1.2, 1.5))}>
+      {/* the tree: each pointer draws down from the root, then the file it points at lands */}
+      {[0, 1, 2].map((i) => {
+        const k = easeOutBack(seg(t, 0.75 + i * 0.12, 1.05 + i * 0.12));
+        return (
+          <g key={i}>
+            <Draw pts={[[125, 62], [45 + i * 80, 100]]} t={t} from={0.45 + i * 0.12} to={0.8 + i * 0.12} stroke={C.mocha} w={1.2} pen={false} />
+            <rect x={25 + i * 80} y={100 - (1 - clamp(k, 0, 1.1)) * 10} width={40} height={20} rx={3} fill={C.cocoa} stroke={C.latte} strokeWidth={1.2} opacity={clamp(k)} />
+          </g>
+        );
+      })}
+      <T x={330} y={25} s={13} f={C.focus} o={easeOut(seg(t, 1.2, 1.5))}>
         Delta: an ordered JSON log
       </T>
-      {[0, 1, 2, 3, 4].map((v) => (
-        <rect key={v} x={330} y={40 + v * 22} width={230} height={16} rx={2} fill={C.cocoa} stroke={C.focus} strokeWidth={1.2} opacity={easeOut(seg(t, 1.5 + v * 0.3, 1.8 + v * 0.3))} />
-      ))}
-      <T x={25} y={185} s={13} f={C.crema} o={easeOut(seg(t, 3.6, 4.0))}>
-        same job, a different shape
-      </T>
+      {/* the log: each entry is appended at the bottom of the stack, sliding in from the right */}
+      {[0, 1, 2, 3, 4].map((v) => {
+        const k = easeOutExpo(seg(t, 1.5 + v * 0.3, 1.9 + v * 0.3));
+        return <rect key={v} x={330 + (1 - k) * 60} y={40 + v * 22} width={230} height={16} rx={2} fill={C.cocoa} stroke={C.focus} strokeWidth={1.2} opacity={k} />;
+      })}
+      <g opacity={easeOut(seg(t, 3.6, 4.0))} transform={`translate(0 ${((1 - easeOut(seg(t, 3.6, 4.0))) * 10).toFixed(1)})`}>
+        <T x={25} y={185} s={13} f={C.crema}>
+          same job, a different shape
+        </T>
+      </g>
     </Svg>
   );
 }
@@ -214,27 +222,42 @@ export function PredictReplayOrLatest({ t, answer }: StepCtx) {
   );
 }
 
-// 3 · Five commits. Each version's 20-digit file name lands, and beside it its action lines, one per line.
+// 3 · Five commits. Each version's 20-digit file name types in, and beside it its actions arrive one at a time; a marker
+// steps down to the newest version.
 export function RevealFiveRealCommits({ t }: StepCtx) {
+  // the newest version so far: a marker steps down the stack as each commit lands
+  const head = clamp((t - 0.2) / 0.65, 0, 4);
+  const hk = Math.floor(head);
+  const hy = 25 + lerp(hk, Math.min(4, hk + 1), easeInOut(clamp((head - hk) * 2.5))) * 40 + 8;
   return (
     <Svg label="five real commits, written by hand to spec: 00000000000000000000.json through ...0004.json." h={230}>
       {ACTIONS.map((acts, v) => {
         const y = 25 + v * 40;
         const b = 0.2 + v * 0.65;
+        const name = vname(v);
+        // the name types in: twenty digits of padding, then the extension
+        const typed = name.slice(0, Math.round(name.length * seg(t, b, b + 0.3)));
+        // then its actions arrive one at a time: one line, one action
+        const n = Math.round(acts.length * seg(t, b + 0.25, b + 0.25 + 0.12 * acts.length));
         return (
           <g key={v}>
-            <T x={25} y={y + 12} s={11} f={C.crema} o={easeOut(seg(t, b, b + 0.3))}>
-              {vname(v)}
+            <T x={25} y={y + 12} s={11} f={C.crema}>
+              {typed}
             </T>
-            <T x={250} y={y + 12} s={11} f={acts[0].startsWith('remove') ? C.cherryText : C.second} o={easeOut(seg(t, b + 0.25, b + 0.55))}>
-              {acts.join(' / ')}
-            </T>
+            {n > 0 && (
+              <T x={250} y={y + 12} s={11} f={acts[0].startsWith('remove') ? C.cherryText : C.second}>
+                {acts.slice(0, n).join(' / ')}
+              </T>
+            )}
           </g>
         );
       })}
-      <T x={25} y={225} s={12} f={C.latte} o={easeOut(seg(t, 3.7, 4.1))}>
-        newline-delimited JSON, one action per line
-      </T>
+      {t > 0.2 && <path d={`M10 ${hy - 5} l8 5 l-8 5 z`} fill={C.focus} />}
+      <g opacity={easeOut(seg(t, 3.7, 4.1))} transform={`translate(0 ${((1 - easeOut(seg(t, 3.7, 4.1))) * 10).toFixed(1)})`}>
+        <T x={25} y={225} s={12} f={C.latte}>
+          newline-delimited JSON, one action per line
+        </T>
+      </g>
     </Svg>
   );
 }

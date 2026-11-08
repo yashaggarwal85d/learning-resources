@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 
@@ -159,52 +159,67 @@ function Strip({ x0, x1, y, n, hit, h, k, dashed = false }: { x0: number; x1: nu
 }
 
 // 1 · Hook. Two files build side by side: Parquet's row groups and footer; ORC's stripes, each led by its index streams,
-// and its own footer.
+// and its own footer. Every block drops into place; the index streams open at each stripe's head and are locked onto;
+// dashed pairs link each Parquet block to its ORC counterpart.
 export function Hook({ t }: StepCtx) {
   const k = (i: number) => easeOut(seg(t, 0.3 + i * 0.35, 0.6 + i * 0.35));
+  // each block is written into its file: it drops into place from above
+  const drop = (i: number) => (1 - k(i)) * -18;
+  // ORC's index streams open up at the head of each stripe: the decision Parquet makes differently
+  const idx = (i: number) => easeOutBack(seg(t, 1.6 + i * 0.25, 2.0 + i * 0.25));
   return (
     <Svg label="one immutable Parquet file, and the one rival that made nearly every choice differently." h={215}>
       <T x={25} y={42} s={13} f={C.crema} o={k(0)}>
         Parquet
       </T>
       {[0, 1].map((i) => (
-        <g key={i} opacity={k(i + 1)}>
+        <g key={i} opacity={k(i + 1)} transform={`translate(0 ${drop(i + 1).toFixed(1)})`}>
           <rect x={25} y={52 + i * 44} width={250} height={40} rx={3} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
-          <T x={150} y={76 + i * 44} s={11} f={C.latte} a="middle">
+          <T x={150} y={76 + i * 44} s={13} f={C.latte} a="middle">
             row group
           </T>
         </g>
       ))}
-      <g opacity={k(3)}>
+      <g opacity={k(3)} transform={`translate(0 ${drop(3).toFixed(1)})`}>
         <rect x={25} y={140} width={250} height={22} rx={3} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
-        <T x={150} y={155} s={11} f={C.latte} a="middle">
+        <T x={150} y={155} s={13} f={C.latte} a="middle">
           footer
         </T>
       </g>
       <T x={325} y={42} s={13} f={C.crema} o={k(0)}>
         ORC
       </T>
-      {[0, 1].map((i) => (
-        <g key={i} opacity={k(i + 1)}>
-          <rect x={325} y={52 + i * 44} width={250} height={40} rx={3} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
-          <rect x={330} y={57 + i * 44} width={50} height={30} rx={2} fill={C.cocoa} stroke={C.second} strokeWidth={1.5} />
-          <T x={355} y={76 + i * 44} s={11} f={C.second} a="middle">
-            index
-          </T>
-          <T x={475} y={76 + i * 44} s={11} f={C.latte} a="middle">
-            stripe: streams
-          </T>
-        </g>
-      ))}
-      <g opacity={k(3)}>
+      {[0, 1].map((i) => {
+        const w = 50 * clamp(idx(i), 0, 1.15);
+        return (
+          <g key={i} opacity={k(i + 1)} transform={`translate(0 ${drop(i + 1).toFixed(1)})`}>
+            <rect x={325} y={52 + i * 44} width={250} height={40} rx={3} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
+            {w > 0 && <rect x={330} y={57 + i * 44} width={w} height={30} rx={2} fill={C.cocoa} stroke={C.second} strokeWidth={1.5} />}
+            <T x={355} y={76 + i * 44} s={13} f={C.second} a="middle" o={clamp(idx(i))}>
+              index
+            </T>
+            <T x={480} y={76 + i * 44} s={13} f={C.latte} a="middle">
+              stripe: streams
+            </T>
+          </g>
+        );
+      })}
+      <g opacity={k(3)} transform={`translate(0 ${drop(3).toFixed(1)})`}>
         <rect x={325} y={140} width={250} height={22} rx={3} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
-        <T x={450} y={155} s={11} f={C.latte} a="middle">
+        <T x={450} y={155} s={13} f={C.latte} a="middle">
           footer
         </T>
       </g>
-      <T x={300} y={200} s={13} f={C.focus} a="middle" o={easeOut(seg(t, 2.6, 3.0))}>
-        one rival, nearly every decision different
-      </T>
+      {/* same data, two shapes: each Parquet block is paired with its ORC counterpart */}
+      {[74, 118, 151].map((y, i) => (
+        <Draw key={y} pts={[[277, y], [323, y]]} t={t} from={2.3 + i * 0.12} to={2.55 + i * 0.12} stroke={C.line} w={1.2} dash="3 3" pen={false} />
+      ))}
+      <g opacity={easeOut(seg(t, 2.6, 3.0))} transform={`translate(0 ${((1 - easeOut(seg(t, 2.6, 3.0))) * 10).toFixed(1)})`}>
+        <T x={300} y={200} s={13} f={C.focus} a="middle">
+          one rival, nearly every decision different
+        </T>
+      </g>
+      <Reticle x={355} y={94} w={62} h={80} t={t} at={3.3} color={C.second} />
     </Svg>
   );
 }
