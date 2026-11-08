@@ -337,7 +337,8 @@ export function TwoHashesPredict({ t, answer }: StepCtx) {
         return (
           <g key={i}>
             {show && <rect x={x - 22} y={50} width={44} height={28} rx={3} fill={C.roast} stroke={C.crema} strokeWidth={1.3} opacity={i < 2 ? 1 : 1 - k} />}
-            {show && <T x={x} y={69} s={12} f={C.crema} a="middle" o={i < 2 ? 1 : 1 - k}>{k > 0.5 && i < 2 ? `h${i + 1}` : `h${i + 1}`}</T>}
+            {/* h3 to h7 fold into h2: their labels are gone before the boxes close up, so no two labels ever touch. */}
+            {show && <T x={x} y={69} s={12} f={C.crema} a="middle" o={i < 2 ? 1 : Math.max(0, 1 - k / 0.6)}>{`h${i + 1}`}</T>}
             <line x1={lerp(50 + i * 72, 280, k)} y1={78} x2={BX(b) + 9} y2={BY - 2} stroke={C.caramel} strokeWidth={1.2} opacity={0.8} />
           </g>
         );
