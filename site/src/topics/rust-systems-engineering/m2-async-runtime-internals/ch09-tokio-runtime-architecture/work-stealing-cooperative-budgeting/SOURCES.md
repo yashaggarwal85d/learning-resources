@@ -11,6 +11,15 @@ Fetched: 2026-10-23, cached at `sources/runtime-module.txt`.
 
 > if a worker thread uses the lifo slot three times in a row, it is temporarily disabled until the worker thread has scheduled a task that didn’t come from the lifo slot.
 
+## `tokio::runtime::Runtime::block_on` docs
+
+URL: https://docs.rs/tokio/latest/tokio/runtime/struct.Runtime.html
+Fetched: 2026-11-08, cached at `sources/runtime-struct.txt`.
+
+> Note that the future required by this function does not run as a worker. The expectation is that other tasks are spawned by the future here.
+
+Why the 200 tasks are spawned from inside one spawned task, not from the block_on future itself: only a task running on a worker pushes what it spawns onto that worker's own local queue.
+
 ## `tokio::task::coop` module docs
 
 URL: https://docs.rs/tokio/latest/tokio/task/coop/index.html

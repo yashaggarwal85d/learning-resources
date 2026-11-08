@@ -23,15 +23,18 @@ def cargo_run(name, timeout=60):
                            capture_output=True, text=True, timeout=timeout)
 
 
-# ---- 1. A Semaphore with 4 permits genuinely bounds concurrency: 20 tasks contending for it ----
-# ---- never run more than 4 at once, and the semaphore reports itself fully saturated. ----
+# ---- 1. A Semaphore with 4 permits genuinely bounds concurrency: 20 tasks contend for it. The ----
+# ---- four permit holders wait at a gate while the count is taken, so the snapshot is exact: ----
+# ---- 4 running, 0 permits available, 16 waiting, and never more than 4 at once over the run. ----
 r = cargo_run('semaphore_bounds_concurrency')
 assert r.returncode == 0, f'semaphore_bounds_concurrency should build and run:\n{r.stdout}\n{r.stderr}'
-available, max_seen = r.stdout.strip().split()
-available, max_seen = int(available), int(max_seen)
+available, running, waiting, max_seen = (int(x) for x in r.stdout.strip().split())
 assert available == 0, f'with 20 tasks contending for 4 permits, the semaphore should report 0 available, got {available}'
-assert 2 <= max_seen <= 4, f'the semaphore should let between 2 and 4 tasks run at once, got {max_seen}'
-print(f'semaphore_bounds_concurrency: 20 tasks contending for 4 permits never ran more than {max_seen} at once, and the semaphore reported 0 permits available')
+assert running == 4, f'exactly 4 tasks should hold permits and be running, got {running}'
+assert waiting == 16, f'the other 16 of the 20 tasks should still be waiting, got {waiting}'
+assert running + waiting == 20
+assert max_seen == 4, f'over the whole run exactly 4 tasks, never more, should run at once, got {max_seen}'
+print(f'semaphore_bounds_concurrency: of 20 tasks contending for 4 permits, {running} ran and {waiting} waited, the semaphore reported {available} permits available, and never more than {max_seen} ran at once')
 
 # ---- 2. Runtime metrics make a real task backlog visible: spawning 500 tasks onto a single ----
 # ---- worker leaves most of them still queued the instant metrics are sampled. ----

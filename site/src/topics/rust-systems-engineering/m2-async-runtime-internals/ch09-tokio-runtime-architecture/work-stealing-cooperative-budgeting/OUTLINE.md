@@ -4,7 +4,7 @@ Chapter 9, topic 29 (second of five). Single `/make-topic` session, 2026-10-23.
 
 ## Learning outcomes
 
-1. Name Tokio's real scheduling path for a multi-thread runtime: each worker's own local queue, the global injection queue behind it, and work stealing by moving half of a busy sibling worker's local queue — demonstrated directly: 200 tasks spawned from the one worker driving `block_on` end up running across several real threads.
+1. Name Tokio's real scheduling path for a multi-thread runtime: each worker's own local queue, the global injection queue behind it, and work stealing by moving half of a busy sibling worker's local queue — demonstrated directly: 200 tasks spawned from inside one task on one worker end up running across three or four of the four real worker threads.
 2. State the LIFO slot's purpose (message-passing locality: a task that wakes a sibling is given a fast path ahead of the ordinary queue) and its own limit (disabled after three consecutive uses), from the docs' own words.
 3. Explain cooperative budgeting: a task is forced to yield after a bounded per-poll budget of resource operations, demonstrated by measuring a trivial sibling task running well before an always-ready hot loop finishes.
 4. Contrast that with `task::unconstrained`, which opts a future out of the budget entirely — measured as the sibling only running once the identical hot loop itself finishes, exactly the starvation risk the docs name directly.
@@ -15,7 +15,7 @@ None. Built exactly as `CHAPTER.md` §A.2/§A.3 describe: reuses topic 28's mult
 
 ## Reel steps (storyboard)
 
-1. **"200 tasks are all spawned from inside the one task that's running block_on. Do they all run on that same one worker thread?"** (predict, hook) — `fig`: a loop of `tokio::spawn` calls inside `block_on`'s own future, next to a 4-worker runtime. Options: yes, they were all queued by the same worker / no — some get redistributed to other workers (correct) / only if `block_on` itself yields.
+1. **"200 tasks are all spawned from inside one task running on one worker. Do they all run on that same one worker thread?"** (predict, hook) — `fig`: a loop of `tokio::spawn` calls inside one task already running on a worker, next to a 4-worker runtime. Options: yes, they were all queued by the same worker / no — some get redistributed to other workers (correct) / only if the spawning task yields.
 2. **"No — idle workers steal from a busy one's queue"** — `fig`: one worker's queue strip, half of it sliding into an idle sibling's queue strip. NO takeaway (test-harness rule, first non-radio step after a predict step).
 3. **"Measured: 200 tasks, all spawned from one worker, land on three or four real threads"** — `fig`: `tasks_get_stolen`'s real, executed output. Takeaway: "Stealing moves half of a busy worker's queue to an idle sibling — that's the only way tasks spawned from one worker end up running on several real threads."
 4. **"A task that wakes a sibling task: does it go to the back of the queue like everything else?"** (predict) — `fig`: task A sending on a channel, waking task B. Options: yes, same queue, same order / no — it gets a special fast-path slot ahead of the queue (correct) / only on the current-thread runtime.
@@ -41,7 +41,7 @@ None. Built exactly as `CHAPTER.md` §A.2/§A.3 describe: reuses topic 28's mult
 | Claim | Source |
 |---|---|
 | Stealing moves half the tasks in one worker's local queue to another local queue when both the stealing worker's local and the global queue are empty | `docs.rs/tokio/runtime` (quoted) |
-| 200 tasks, all spawned from the single worker running block_on, run across more than one real OS thread | `examples/runtime-demo/src/tasks_get_stolen.rs` (executed, measured 2-4 distinct threads) |
+| 200 tasks, all spawned from inside one task on one worker, run across three or four of the four real worker threads | `examples/runtime-demo/src/tasks_get_stolen.rs` (executed, asserted 3 to 4 distinct threads; measured 4 in 60 of 60 runs, including pinned to one CPU) |
 | A task that wakes another task is placed in the woken worker's lifo slot instead of its queue, for message-passing locality | `docs.rs/tokio/runtime` (quoted) |
 | The lifo slot is disabled after three consecutive uses in a row until a non-lifo task is scheduled | `docs.rs/tokio/runtime` (quoted) |
 | A task that runs for a long time without yielding can starve other tasks or resources on the same executor | `docs.rs/tokio/task/coop` (quoted) |

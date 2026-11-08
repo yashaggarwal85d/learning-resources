@@ -7,10 +7,10 @@ import * as S from './scenes';
 const reel: Reel = {
   steps: [
     {
-      title: '200 tasks are all spawned from inside the one task that’s running block_on. Do they all run on that same one worker thread?',
+      title: '200 tasks are all spawned from inside one task running on one worker. Do they all run on that same one worker thread?',
       body: (
         <>
-          Two hundred lightweight units of work, every one of them spawned by code running inside the single worker driving block_on.
+          Two hundred lightweight units of work, every one of them spawned by code running inside one task on a single worker, so all pushed onto that worker’s own queue.
         </>
       ),
       duration: 2.8,
@@ -18,7 +18,7 @@ const reel: Reel = {
         options: [
           { label: 'Yes — that worker queued all of them itself' },
           { label: 'No — some get redistributed to other workers', correct: true },
-          { label: 'Only if block_on itself yields' },
+          { label: 'Only if the spawning task yields' },
         ],
         explain: (
           <>

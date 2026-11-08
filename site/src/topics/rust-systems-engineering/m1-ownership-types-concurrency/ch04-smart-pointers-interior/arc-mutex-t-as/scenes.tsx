@@ -67,7 +67,7 @@ export function MutexReflex({ t }: StepCtx) {
 }
 
 // ── 2 · Does splitting the work across threads help? (predict) ─────────────────────────────────────
-export function ContentionPredict({ t }: StepCtx) {
+export function ContentionPredict({ t, answer }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -79,7 +79,7 @@ export function ContentionPredict({ t }: StepCtx) {
         highlight={[0, 1]}
       />
       <Svg label="measured: the four-thread run took several times longer than one thread alone" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>slower than one thread doing it all alone</T>
+        {answer !== null && <T x={40} y={28} s={16} f={C.mocha} o={fa(t, 1.6, 0.4)}>slower than one thread doing it all alone</T>}
       </Svg>
     </Stack>
   );
@@ -137,7 +137,7 @@ export function OwnerTask({ t }: StepCtx) {
 }
 
 // ── 5 · Can a reader see a half-updated config? (predict) ──────────────────────────────────────────
-export function ArcSwapPredict({ t }: StepCtx) {
+export function ArcSwapPredict({ t, answer }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -149,7 +149,7 @@ export function ArcSwapPredict({ t }: StepCtx) {
         highlight={[0, 1]}
       />
       <Svg label="never: each load returns one complete, consistent snapshot" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>never: one complete snapshot, every time</T>
+        {answer !== null && <T x={40} y={28} s={16} f={C.mocha} o={fa(t, 1.6, 0.4)}>never: one complete snapshot, every time</T>}
       </Svg>
     </Stack>
   );

@@ -103,7 +103,7 @@ const reel: Reel = {
         </>
       ),
       duration: 3.0,
-      takeaway: 'A page byte order has to be explicit and enforced, not left to whatever platform happens to use.',
+      takeaway: 'A page’s byte order has to be explicit and enforced, not left to whatever platform happens to use.',
       Visual: S.EndiannessReveal,
     },
     {
@@ -146,7 +146,7 @@ const reel: Reel = {
         </>
       ),
       duration: 3.0,
-      takeaway: 'A page’s own line pointers let an item identity outlive it being physically moved around that page.',
+      takeaway: 'A page’s own line pointers let an item’s identity outlive it being physically moved around that page.',
       Visual: S.PermanenceReveal,
     },
     {

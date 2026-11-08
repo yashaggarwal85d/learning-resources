@@ -53,7 +53,7 @@
         "Run it for real: those raw bytes, read back in the chosen order, give the exact original value.",
         "Read in the opposite order, the very same bytes give back a different value entirely."
       ],
-      "takeaway": "A page byte order has to be explicit and enforced, not left to whatever platform happens to use."
+      "takeaway": "A page's byte order has to be explicit and enforced, not left to whatever platform happens to use."
     },
     {
       "lines": [
@@ -76,7 +76,7 @@
         "That same documentation says something stronger still, about the little index that points at an item inside a page.",
         "That index is never moved until the item it points to is freed, so it keeps working as a long-term reference, even while the item itself gets shuffled around to make room."
       ],
-      "takeaway": "A page own line pointers let an item identity outlive it being physically moved around that page."
+      "takeaway": "A page's own line pointers let an item's identity outlive it being physically moved around that page."
     },
     {
       "lines": [

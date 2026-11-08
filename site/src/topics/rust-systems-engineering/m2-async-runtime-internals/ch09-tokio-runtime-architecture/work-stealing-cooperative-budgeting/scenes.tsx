@@ -44,7 +44,7 @@ export function StealPredict({ t }: StepCtx) {
   return (
     <Stack>
       <Code
-        title="200 tasks, spawned from inside block_on"
+        title="200 tasks, spawned from one task on one worker"
         lines={['for _ in 0..200 {', '    tokio::spawn(work());', '}']}
         t={t}
         start={0.1}

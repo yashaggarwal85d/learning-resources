@@ -3,7 +3,7 @@
   "steps": [
     {
       "lines": [
-        "Take two hundred of these lightweight units of work, every single one of them spawned by code running inside the one worker that's currently driving the whole runtime forward.",
+        "Take two hundred of these lightweight units of work, every single one of them spawned by code running inside one task, on one single worker thread, so every one of them lands in that worker's own queue.",
         { "beat": 0.3 },
         "Do all two hundred stay right there, on that same one worker that spawned them?"
       ],

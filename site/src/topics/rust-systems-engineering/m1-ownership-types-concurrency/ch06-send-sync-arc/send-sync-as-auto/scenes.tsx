@@ -94,7 +94,7 @@ export function CellAloneWorks({ t }: StepCtx) {
 }
 
 // ── 2 · Does Arc<Cell<u64>>, cloned into a second thread, compile? (predict) ────────────────────
-export function CellSyncPredict({ t }: StepCtx) {
+export function CellSyncPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -105,9 +105,11 @@ export function CellSyncPredict({ t }: StepCtx) {
         end={2.0}
         highlight={[0, 1]}
       />
-      <Svg label="does this build?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.2, 0.4)}>a second thread, reached through a cloned shared pointer</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does this build?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>a second thread, reached through a cloned shared pointer</T>
+        </Svg>
+      )}
     </Stack>
   );
 }
@@ -218,7 +220,7 @@ export function OverridesFig({ t }: StepCtx) {
 }
 
 // ── 7 · Can an Rc be held across an await and still compile? (predict) ─────────────────────────
-export function RcAwaitPredict({ t }: StepCtx) {
+export function RcAwaitPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -226,12 +228,14 @@ export function RcAwaitPredict({ t }: StepCtx) {
         lines={['tokio::spawn(async {', '    let rc = Rc::new(());', '    task::yield_now().await;', '    use_rc(rc.clone());', '})']}
         t={t}
         start={0.1}
-        end={2.2}
+        end={1.5}
         highlight={[1, 2, 3]}
       />
-      <Svg label="does this whole task still qualify to be spawned?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.4, 0.4)}>pointer made before the pause, used after</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does this whole task still qualify to be spawned?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.5, 0.4)}>pointer made before the pause, used after</T>
+        </Svg>
+      )}
     </Stack>
   );
 }

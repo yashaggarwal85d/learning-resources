@@ -22,13 +22,14 @@ def cargo_run(name, timeout=60):
                            capture_output=True, text=True, timeout=timeout)
 
 
-# ---- 1. 200 tasks, all spawned from the one worker running block_on, end up running on ----
-# ---- more than one real thread: only possible if some were stolen from that worker's queue. ----
+# ---- 1. 200 tasks, all spawned from inside one task running on one worker (so all pushed onto ----
+# ---- that worker's own local queue), end up running on three or four of the runtime's 4 real ----
+# ---- worker threads: only possible if idle siblings stole them from that worker's queue. ----
 r = cargo_run('tasks_get_stolen')
 assert r.returncode == 0, f'tasks_get_stolen should build and run:\n{r.stdout}\n{r.stderr}'
 distinct = int(r.stdout.strip())
-assert distinct > 1, f'expected tasks to land on more than one real worker thread via stealing, got {distinct}'
-print(f'tasks_get_stolen: 200 tasks spawned from one worker ran across {distinct} real worker threads')
+assert 3 <= distinct <= 4, f'expected the 200 tasks to land on 3 or 4 of the 4 real worker threads via stealing, got {distinct}'
+print(f'tasks_get_stolen: 200 tasks spawned onto one worker ran across {distinct} of the 4 real worker threads')
 
 # ---- 2. An always-ready hot loop is still forced to yield by its cooperative budget, ----
 # ---- letting a trivial sibling task run well before the loop itself finishes. ----
