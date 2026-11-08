@@ -207,7 +207,7 @@ export function PredictOneBest({ t, answer }: StepCtx) {
         const p = on ? easeOutBack(seg(s, 0.3 + i * 0.12, 0.7 + i * 0.12)) : 0;
         return p <= 0 ? null : (
           <g key={g} opacity={Math.min(1, p)}>
-            <T x={lerp(315, 450, p)} y={lerp(85, 30 + i * 26, p)} s={12} f={C.focus}>
+            <T x={lerp(420, 450, p)} y={lerp(85, 30 + i * 26, p)} s={12} f={C.focus}>
               {g}
             </T>
           </g>
