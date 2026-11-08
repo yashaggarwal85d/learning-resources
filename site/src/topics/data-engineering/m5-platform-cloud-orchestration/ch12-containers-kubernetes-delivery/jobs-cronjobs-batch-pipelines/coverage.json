@@ -70,7 +70,7 @@
       "items": [
         { "item": "Allow/Forbid/Replace concurrency policy definitions", "at": [{ "step": "One overrun, three outcomes" }] },
         { "item": "startingDeadlineSeconds skips a Job occurrence once the deadline passes; unset means no deadline", "at": [{ "step": "Give up after 100 misses" }] },
-        { "item": "more than 100 missed schedules and the controller does not start the Job, logging an error", "at": [{ "step": "Give up after 100 misses" }] },
+        { "item": "more than 100 missed schedules and the controller records a warning, starts only the most recent missed Job, and never the earlier ones", "at": [{ "step": "Give up after 100 misses" }] },
         { "item": "both of the doc's own worked examples (no deadline vs. a 200-second deadline, same outage)", "at": [{ "step": "Give up after 100 misses" }] },
         { "item": "a CronJob creates a Job approximately once per schedule; its Jobs must therefore be idempotent", "at": [{ "step": "What a CronJob doesn't give you" }] },
         { "item": "successfulJobsHistoryLimit / failedJobsHistoryLimit defaults", "at": [{ "out": "a kubectl-tunable detail below this topic's scope, which is the concurrency/missed-schedule semantics, not history retention" }] },

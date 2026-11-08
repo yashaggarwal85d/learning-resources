@@ -176,21 +176,23 @@ def missed_schedules(outage_seconds: int, schedule_interval_seconds: int, starti
     return window // schedule_interval_seconds
 
 
-def would_start_after_outage(outage_seconds: int, schedule_interval_seconds: int, starting_deadline_seconds: int | None) -> bool:
-    return missed_schedules(outage_seconds, schedule_interval_seconds, starting_deadline_seconds) <= 100
+def too_many_missed_warning(outage_seconds: int, schedule_interval_seconds: int, starting_deadline_seconds: int | None) -> bool:
+    """SOURCES.md: past 100 missed schedules the controller records a TooManyMissedTimes warning and still
+    starts a Job for the most recent missed schedule; the earlier missed schedules never run."""
+    return missed_schedules(outage_seconds, schedule_interval_seconds, starting_deadline_seconds) > 100
 
 
-def test_docs_worked_example_one_no_deadline_112_minute_outage_does_not_start():
+def test_docs_worked_example_one_no_deadline_112_minute_outage_warns_and_drops_the_backlog():
     # 08:29:00 to 10:21:00 is 112 minutes = 6720s; schedule every 60s; no startingDeadlineSeconds.
     outage = (10 * 60 + 21) * 60 - (8 * 60 + 29) * 60
     assert missed_schedules(outage, 60, None) > 100
-    assert would_start_after_outage(outage, 60, None) is False
+    assert too_many_missed_warning(outage, 60, None) is True
 
 
-def test_docs_worked_example_two_200s_deadline_the_same_outage_does_start():
+def test_docs_worked_example_two_200s_deadline_the_same_outage_starts_without_a_warning():
     outage = (10 * 60 + 21) * 60 - (8 * 60 + 29) * 60
     assert missed_schedules(outage, 60, 200) == 3  # the doc's own stated figure
-    assert would_start_after_outage(outage, 60, 200) is True
+    assert too_many_missed_warning(outage, 60, 200) is False
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ A nightly pipeline is not a service: it runs, finishes, and must be retried with
     run.
 12. **Missed schedules and the 100-miss rule.** `startingDeadlineSeconds` bounds how late a missed
     run may still start; with no deadline set, a controller outage longer than 100 missed intervals
-    means Kubernetes gives up and logs an error rather than catching up forever. — takeaway
+    means Kubernetes drops the backlog, records a warning and starts only the most recent run, rather than catching up forever. — takeaway
 13. **The boundary: CronJob vs orchestrator.** A CronJob creates a Job "approximately once" per
     schedule — so Jobs must be idempotent — and has no dependency graph, no data intervals, no
     backfill, no cross-job retries or alerts; that's Chapter 11's subject, named as a boundary, not

@@ -123,13 +123,13 @@ URL: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 > Kubernetes tries to avoid those situations, but does not completely prevent them. Therefore,
 > the Jobs that you define should be idempotent.
 
-> For every CronJob, the CronJob Controller checks how many schedules it missed in the duration from its last scheduled time until now. If there are more than 100 missed schedules, then it does not start the Job and logs the error.
+> For every CronJob, the CronJob Controller checks how many schedules it missed in the duration from its last scheduled time until now. If there are more than 100 missed schedules, it records a TooManyMissedTimes Warning Event with the message below, and still starts a Job for the most recent missed schedule. Jobs for the earlier missed schedules are never started, however many there are.
 
 > It is important to note that if the startingDeadlineSeconds field is set (not nil), the controller counts how many missed Jobs occurred from the value of startingDeadlineSeconds until now rather than from the last scheduled time until now. For example, if startingDeadlineSeconds is 200, the controller counts how many missed Jobs occurred in the last 200 seconds.
 
 > For example, suppose a CronJob is set to schedule a new Job every one minute beginning at 08:30:00, and its
 > startingDeadlineSeconds field is not set. If the CronJob controller happens to
-> be down from 08:29:00 to 10:21:00, the Job will not start as the number of missed Jobs which missed their schedule is greater than 100.
+> be down from 08:29:00 to 10:21:00, more than 100 schedules are missed. When the controller is back, it records the warning above and starts one Job, for the most recent schedule. The earlier missed schedules do not run.
 
 > To illustrate this concept further, suppose a CronJob is set to schedule a new Job every one minute beginning at 08:30:00, and its
 > startingDeadlineSeconds is set to 200 seconds. If the CronJob controller happens to

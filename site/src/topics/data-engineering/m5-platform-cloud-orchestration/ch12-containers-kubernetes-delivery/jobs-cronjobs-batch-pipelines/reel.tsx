@@ -175,11 +175,11 @@ const reel: Reel = {
       body: (
         <>
           If the controller is down long enough, Kubernetes doesn't try to catch up forever. More than 100 missed schedules — counted from
-          `startingDeadlineSeconds` if it's set, or from the last scheduled time if it isn't — and the CronJob simply doesn't start, and logs an error.
+          `startingDeadlineSeconds` if it's set, or from the last scheduled time if it isn't — and the CronJob drops the backlog: it records a warning and starts only the most recent missed run.
         </>
       ),
       duration: 2.8,
-      takeaway: 'Past 100 missed schedules, a CronJob gives up and logs an error instead of catching up.',
+      takeaway: 'Past 100 missed schedules, a CronJob drops the backlog, warns, and starts only the latest run.',
       fig: 'the 100-miss cutoff',
       Visual: S.MissedSchedules,
     },
