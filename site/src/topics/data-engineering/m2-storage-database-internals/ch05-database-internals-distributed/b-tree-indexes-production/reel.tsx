@@ -133,7 +133,7 @@ const reel: Reel = {
         </>
       ),
       duration: 4.8,
-      fig: 'two features production systems actually use: a smarter multicolumn lookup, and a different engine own trade-off.',
+      fig: 'two features production systems actually use: a smarter multicolumn lookup, and a different engine’s own trade-off.',
       Visual: S.RevealProductionFeatures,
     },
     {
