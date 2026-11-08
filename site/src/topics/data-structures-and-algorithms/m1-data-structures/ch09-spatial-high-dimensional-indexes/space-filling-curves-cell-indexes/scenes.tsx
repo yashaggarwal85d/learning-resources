@@ -167,8 +167,8 @@ export function ZOrderPredict({ t, answer }: StepCtx) {
     <Svg label="x equals 3, bits 011, and y equals 5, bits 101, interleaved into 100111, which is 39; after answering, a pair near the origin stays 1 apart and a pair across the middle jumps 11" h={290}>
       <T x={30} y={34} s={13} f={C.latte}>x = 3</T>
       <T x={30} y={64} s={13} f={C.latte}>y = 5</T>
-      {xb.map((b, i) => <T key={`x${i}`} x={lerp(110 + i * 22, 110 + (2 * i + 1) * 20, weave)} y={lerp(34, 120, weave)} s={16} f={C.cinnamon} a="middle">{b}</T>)}
-      {yb.map((b, i) => <T key={`y${i}`} x={lerp(110 + i * 22, 110 + 2 * i * 20, weave)} y={lerp(64, 120, weave)} s={16} f={C.crema} a="middle">{b}</T>)}
+      {xb.map((b, i) => <T key={`x${i}`} x={lerp(110 + i * 26, 110 + (2 * i + 1) * 26, weave)} y={lerp(34, 120, weave)} s={16} f={C.cinnamon} a="middle">{b}</T>)}
+      {yb.map((b, i) => <T key={`y${i}`} x={lerp(110 + i * 26, 110 + 2 * i * 26, weave)} y={lerp(64, 120, weave)} s={16} f={C.crema} a="middle">{b}</T>)}
       <T x={30} y={160} s={14} f={C.caramel} o={easeOut(seg(t, 1.5, 1.8))}>= 39</T>
       <Grid gx={gx} gy={gy} c={c} />
       <Mark gx={gx} gy={gy} c={c} p={[3, 5]} f={C.cinnamon} o={easeOut(seg(t, 1.6, 1.9))} />

@@ -99,7 +99,8 @@ export function ReusePredict({ t, answer }: StepCtx) {
     <Svg label="Freed chunks of 1, 2, 4 and 8 cells, and a request for 16: pushed together they make 15, always one chunk short" h={300}>
       <T x={30} y={40} s={13} f={C.taupe}>next request: 16</T>
       <rect x={30} y={52} width={16 * U - 2} height={22} rx={3} fill="none" stroke={C.caramel} strokeWidth={2} opacity={a} />
-      <T x={30} y={128} s={13} f={C.taupe}>freed chunks</T>
+      {/* below the chunks, so they never slide across it on their way up */}
+      <T x={30} y={186} s={13} f={C.taupe}>freed chunks</T>
       {freed.map((n, k) => {
         const x0 = chunkX(k) + k * 10;
         const x1 = 30 + freed.slice(0, k).reduce((p, q) => p + q, 0) * U;

@@ -180,8 +180,8 @@ export function QueryReveal({ t }: StepCtx) {
       })}
       <Bracket l={5} r={11} y={240} />
       <T x={30} y={274} s={12} f={C.crema}>outlined: split</T>
-      <T x={180} y={274} s={12} f={C.caramel}>filled: used whole</T>
-      <T x={370} y={274} s={12} f={C.latte}>faded: skipped</T>
+      <T x={200} y={274} s={12} f={C.caramel}>filled: used whole</T>
+      <T x={410} y={274} s={12} f={C.latte}>faded: skipped</T>
       <T x={30} y={296} s={14} f={C.caramel} o={ans}>sum over [5, 11): 29</T>
     </Svg>
   );

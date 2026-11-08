@@ -317,10 +317,11 @@ export function AlternativesReveal({ t }: StepCtx) {
       </g>
       <T x={30} y={Y(3) - 8} s={13} f={C.crema} o={row(3)}>ternary tree</T>
       <g opacity={row(3)}>
-        <Nd p={[165, Y(3) - 15]} v="r" r={12} />
-        <Edge a={[175, Y(3) - 8]} b={[210, Y(3) + 10]} c={C.latte} />
-        <Nd p={[220, Y(3) + 14]} v="t" r={12} />
-        <T x={196} y={Y(3) - 14} s={12} f={C.latte}>hi</T>
+        {/* set right of the label's phone width (the label scales up on phones) */}
+        <Nd p={[190, Y(3) - 15]} v="r" r={12} />
+        <Edge a={[200, Y(3) - 8]} b={[235, Y(3) + 10]} c={C.latte} />
+        <Nd p={[245, Y(3) + 14]} v="t" r={12} />
+        <T x={221} y={Y(3) - 14} s={12} f={C.latte}>hi</T>
       </g>
       <T x={30} y={310} s={13} f={C.caramel} o={easeOut(seg(t, 3.4, 3.8))}>same tree; only the node&apos;s storage changes</T>
     </Svg>

@@ -127,9 +127,10 @@ export function PredictMergeBest({ t, answer }: StepCtx) {
   return (
     <Svg label="Merging 1 to 8 with 9 to 16: after answering, every left key is compared once against 9 and copied out, then the right list empties with no comparisons at all: 8 comparisons" h={280}>
       <g opacity={a}>
-        <MergeView L={LO} R={HI} k={k} yL={40} yR={86} yO={160} />
+        {/* the output row sits above both inputs, so the left keys rise into it without crossing the right row */}
+        <MergeView L={LO} R={HI} k={k} yL={110} yR={156} yO={44} />
       </g>
-      {!answered && <path d={`M${60 + 13} 66 L${60 + 13} 84`} stroke={C.caramel} strokeWidth={2} opacity={a * pulse} />}
+      {!answered && <path d={`M${60 + 13} 137 L${60 + 13} 153`} stroke={C.caramel} strokeWidth={2} opacity={a * pulse} />}
       {!answered && <T x={300} y={240} s={14} a="middle" f={C.caramel} o={pulse * a}>how many comparisons?</T>}
       {answered && <T x={300} y={240} s={13} a="middle" f={C.caramel} o={easeOut(seg(s, 1.4, 1.8))}>8: the right list is never compared</T>}
     </Svg>
