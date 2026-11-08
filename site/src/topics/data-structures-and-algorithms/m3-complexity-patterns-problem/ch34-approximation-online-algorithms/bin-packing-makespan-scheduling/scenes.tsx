@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = something that exists; latte = secondary labels; taupe = not yet reached or
 // discarded; caramel (focus) = the thing to look at right now; cinnamon = the alternative being compared;
@@ -330,17 +330,26 @@ export function ListSchedWorstCase({ t }: StepCtx) {
 const SPARK = [[120], [95], [95], [60, 60], [60, 40], [40, 40, 40], [20, 20, 20, 20, 20]];
 export function SparkAlgorithm({ t }: StepCtx) {
   const k = stepIdx(t, 0.4, 3.8, 15);
+  const kc = seg(t, 0.4, 3.8) * 15; // continuous: file g is falling while kc is between g and g + 1
   const cap = easeOut(seg(t, 4.0, 4.5));
   let n = 0;
   const firstIdx = SPARK.map((p) => { const f = n; n += p.length; return f; });
   const openP = SPARK.findIndex((p, i) => k >= firstIdx[i] && k < firstIdx[i] + p.length);
+  // Each file falls into the one open partition. The "checked" caret hovers over that partition only, and slides
+  // right the moment a file won't fit: the old partition is sealed with a bar across its top, never looked at again.
+  const PX = (i: number) => 30 + i * 78;
+  const curP = openP < 0 ? SPARK.length - 1 : openP;
+  const enter = easeInOut(clamp((kc - firstIdx[curP]) * 1.5));
+  const caretX = lerp(PX(Math.max(0, curP - 1)), PX(curP), curP === 0 ? 1 : enter) + 33;
   return (
     <Svg label="Fifteen file sizes, largest first, packed into partitions of at most 150 with an open cost of 10 added per file. Only the newest partition is ever checked for room; every earlier one is closed for good. The result: seven partitions" h={290}>
       <T x={30} y={26} s={12} f={C.latte}>next fit decreasing: only the newest is checked</T>
+      {k >= 0 && <path d={`M${(caretX - 7).toFixed(1)} 40 L${caretX.toFixed(1)} 50 L${(caretX + 7).toFixed(1)} 40 Z`} fill={C.caramel} opacity={cap > 0 ? 1 - cap : 1} />}
       {SPARK.map((p, i) => {
         let acc = 0;
-        const x = 30 + i * 78;
-        const closed = openP > i;
+        const x = PX(i);
+        const closed = openP > i || (openP < 0 && k >= 0 && i < SPARK.length - 1);
+        const sealAt = i < SPARK.length - 1 ? 0.4 + (firstIdx[i + 1] / 15) * 3.4 : 99;
         return (
           <g key={i} opacity={k >= firstIdx[i] ? 1 : 0}>
             <rect x={x} y={60} width={66} height={180} fill="none" stroke={i === openP ? C.caramel : C.latte} strokeWidth={i === openP ? 2 : 1} />
@@ -348,13 +357,15 @@ export function SparkAlgorithm({ t }: StepCtx) {
               const hh = ((v + 10) / 150) * 180;
               const y = 240 - acc - hh;
               acc += hh;
-              return (
-                <g key={j} opacity={k >= firstIdx[i] + j ? 1 : 0}>
+              const d = easeOut(clamp(kc - (firstIdx[i] + j)));
+              return d > 0 ? (
+                <g key={j} transform={`translate(0 ${((1 - d) * (60 - y)).toFixed(2)})`} opacity={clamp(d * 3)}>
                   <rect x={x + 3} y={y + 1} width={60} height={hh - 2} rx={1} fill={closed ? C.latte : C.caramel} opacity={0.85} />
                   <T x={x + 33} y={y + hh / 2 + 4} s={12} f={C.band} a="middle">{v}</T>
                 </g>
-              );
+              ) : null;
             })}
+            <Draw pts={[[x - 2, 58], [x + 68, 58]]} t={t} from={sealAt} to={sealAt + 0.2} stroke={C.latte} w={3} pen={false} />
           </g>
         );
       })}
@@ -366,26 +377,31 @@ export function SparkAlgorithm({ t }: StepCtx) {
 // 11 · Recap. The two guarantees side by side, 11/9 · OPT + 6/9 and 4/3 − 1/(3m), each measured against a computable
 // floor; then an arrow toward the next topic, where the proof is given up on purpose.
 export function Recap({ t }: StepCtx) {
-  const a = easeOut(seg(t, 0.2, 0.8));
-  const b = easeOut(seg(t, 1.0, 1.6));
+  // The two guarantees slide in from either side; from each, a line drops to the one computable floor they are both
+  // measured against (neither ever computes the optimum); then the arrow to the next topic draws with its pen.
+  const a = easeOutBack(seg(t, 0.2, 0.8));
+  const b = easeOutBack(seg(t, 1.0, 1.6));
   const c = easeOut(seg(t, 2.4, 3.0));
+  const fl = easeOut(seg(t, 1.6, 2.3));
   return (
     <Svg label="The two guarantees side by side: eleven ninths of the optimum plus six ninths for packing, four thirds minus one over three m for scheduling, each measured against a computable floor. Then an arrow toward the next topic, where the proof is given up on purpose" h={260}>
-      <g opacity={a}>
+      <g opacity={clamp(a * 2)} transform={`translate(${((1 - a) * -40).toFixed(2)} 0)`}>
         <rect x={30} y={30} width={250} height={70} rx={6} fill="none" stroke={C.caramel} />
         <T x={45} y={58} s={12} f={C.caramel}>packing</T>
         <T x={45} y={84} s={13} f={C.crema}>11/9 · OPT + 6/9</T>
       </g>
-      <g opacity={b}>
+      <g opacity={clamp(b * 2)} transform={`translate(${((1 - b) * 40).toFixed(2)} 0)`}>
         <rect x={310} y={30} width={250} height={70} rx={6} fill="none" stroke={C.caramel} />
         <T x={325} y={58} s={12} f={C.caramel}>scheduling</T>
         <T x={325} y={84} s={13} f={C.crema}>4/3 − 1/(3m)</T>
       </g>
-      <g opacity={c}>
-        <line x1={160} y1={150} x2={440} y2={150} stroke={C.cinnamon} strokeWidth={1.6} strokeDasharray="5 4" />
-        <path d="M446 150 l-10 -6 l0 12 Z" fill={C.cinnamon} />
-        <T x={300} y={180} s={12} f={C.cinnamon} a="middle">next: local search, no proof on purpose</T>
-      </g>
+      <Draw pts={[[155, 102], [155, 124]]} t={t} from={1.6} to={1.9} stroke={C.latte} w={1.2} pen={false} />
+      <Draw pts={[[435, 102], [435, 124]]} t={t} from={1.7} to={2.0} stroke={C.latte} w={1.2} pen={false} />
+      <line x1={300 - 260 * fl} y1={126} x2={300 + 260 * fl} y2={126} stroke={C.crema} strokeWidth={2} opacity={fl > 0 ? 1 : 0} />
+      <T x={300} y={116} s={12} f={C.latte} a="middle" o={fl}>computable floor</T>
+      <Draw pts={[[160, 168], [440, 168]]} t={t} from={2.4} to={3.1} stroke={C.cinnamon} w={1.6} dash="5 4" />
+      <path d="M446 168 l-10 -6 l0 12 Z" fill={C.cinnamon} opacity={easeOut(seg(t, 3.0, 3.2))} />
+      <T x={300} y={lerp(206, 198, c)} s={12} f={C.cinnamon} a="middle" o={c}>next: local search, no proof on purpose</T>
     </Svg>
   );
 }

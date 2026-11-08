@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = something that exists; latte = secondary labels; taupe = not yet reached or
 // discarded; caramel (focus) = the thing to look at right now; cinnamon = the alternative being compared;
@@ -299,28 +299,48 @@ export function KarpReductionDefinition({ t }: StepCtx) {
 export function WorkedReductionISVC({ t }: StepCtx) {
   const is = easeOut(seg(t, 0.3, 1.0));
   const vc = easeOut(seg(t, 1.3, 2.0));
-  const cov = stepIdx(t, 2.0, 3.4, 12);
   const map = easeOut(seg(t, 3.5, 4.0));
   const chk = easeOut(seg(t, 4.3, 4.8));
   const inW = (v: number) => WITNESS.includes(v);
+  const X = (v: number) => VX(v, 300, 132, 140, 92);
+  const Y = (v: number) => VY(v, 300, 132, 140, 92);
+  // The seven independent vertices ring out one by one; the other five turn blue, and then each edge is claimed by
+  // its cover end: it draws in blue starting from the vertex outside the set, so every edge visibly has one.
+  const ring = (v: number) => {
+    const i = WITNESS.indexOf(v);
+    return i < 0 ? 0 : easeOut(seg(t, 0.3 + i * 0.08, 0.7 + i * 0.08));
+  };
+  const pairs = Math.round(235880 * easeOut(seg(t, 4.3, 5.2)));
   return (
     <Svg label="The same twelve-vertex graph. Its independent set of seven lights; then the other five vertices turn blue, and every edge lights as covered by one of those five. G with seven maps to G with twelve minus seven, five. Then the exhaustive check: 235,880 pairs, zero mismatches" h={300}>
       <g>
-        {G12_EDGES.map(([a, b], k) => <line key={`${a}-${b}`} x1={VX(a, 300, 132, 140, 92)} y1={VY(a, 300, 132, 140, 92)} x2={VX(b, 300, 132, 140, 92)} y2={VY(b, 300, 132, 140, 92)} stroke={k <= cov ? C.cinnamon : C.mocha} strokeWidth={k <= cov ? 2.2 : 1.4} />)}
+        {G12_EDGES.map(([a, b], k) => {
+          const [from, to] = inW(a) ? [b, a] : [a, b];
+          return (
+            <g key={`${a}-${b}`}>
+              <line x1={X(a)} y1={Y(a)} x2={X(b)} y2={Y(b)} stroke={C.mocha} strokeWidth={1.4} />
+              <Draw pts={[[X(from), Y(from)], [X(to), Y(to)]]} t={t} from={2.0 + k * 0.11} to={2.3 + k * 0.11} stroke={C.cinnamon} w={2.2} />
+            </g>
+          );
+        })}
         {Array.from({ length: 12 }, (_, v) => {
           const col = inW(v) ? (is > 0 ? C.caramel : C.latte) : vc > 0 ? C.cinnamon : C.latte;
+          const rg = ring(v);
           return (
             <g key={v}>
-              <circle cx={VX(v, 300, 132, 140, 92)} cy={VY(v, 300, 132, 140, 92)} r={11} fill={C.band} stroke={col} strokeWidth={1.8} />
-              <T x={VX(v, 300, 132, 140, 92)} y={VY(v, 300, 132, 140, 92) + 4} s={12} f={col} a="middle">{v}</T>
+              {rg > 0 && rg < 1 && <circle cx={X(v)} cy={Y(v)} r={11 + 10 * rg} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={1 - rg} />}
+              <circle cx={X(v)} cy={Y(v)} r={11} fill={C.band} stroke={col} strokeWidth={1.8} />
+              <T x={X(v)} y={Y(v) + 4} s={12} f={col} a="middle">{v}</T>
             </g>
           );
         })}
       </g>
       <T x={20} y={26} s={12} f={C.caramel} o={is}>independent: 7</T>
       <T x={580} y={26} s={12} f={C.cinnamon} a="end" o={vc}>the rest cover: 5</T>
-      <T x={20} y={258} s={13} f={C.crema} o={map}>(G, k) → (G, n − k): (G, 7) → (G, 5)</T>
-      <T x={20} y={284} s={12} f={C.caramel} o={chk}>every graph to 6 vertices: 235,880 pairs, 0 mismatches</T>
+      <g opacity={map} transform={`translate(${((1 - map) * -16).toFixed(2)} 0)`}>
+        <T x={20} y={258} s={13} f={C.crema}>(G, k) → (G, n − k): (G, 7) → (G, 5)</T>
+      </g>
+      <T x={20} y={284} s={12} f={C.caramel} o={chk}>{`every graph to 6 vertices: ${pairs.toLocaleString('en-US')} pairs, 0 mismatches`}</T>
     </Svg>
   );
 }
@@ -332,6 +352,11 @@ export function PredictWrongDirection({ t, answer }: StepCtx) {
   const s = useSinceAnswer(answered);
   const bars = answered ? easeOut(seg(s, 0.2, 1.0)) : 0;
   const a = easeOut(seg(t, 0.2, 0.9));
+  // The reduction arrow draws from the new problem to the known one (the direction in question). After the answer the
+  // known problem rises as a bar, a ceiling slides across from it over the new problem, and the new problem's own
+  // height stays a question mark under that ceiling.
+  const known = answered ? easeOut(seg(s, 0.2, 0.9)) : 0;
+  const ceil = answered ? easeInOut(seg(s, 0.9, 1.5)) : 0;
   return (
     <Svg label="An arrow drawn from the new problem to the known-hard one. After answering, the two stand as bars: the known problem's height, and the new problem capped at or below it, its own height still unknown" h={260}>
       <g opacity={a}>
@@ -339,14 +364,15 @@ export function PredictWrongDirection({ t, answer }: StepCtx) {
         <T x={130} y={85} s={13} f={C.crema} a="middle">new</T>
         <rect x={380} y={60} width={160} height={40} rx={5} fill="none" stroke={C.caramel} />
         <T x={460} y={85} s={13} f={C.caramel} a="middle">known hard</T>
-        <line x1={204} y1={80} x2={370} y2={80} stroke={C.cherryText} strokeWidth={2} />
-        <path d="M376 80 l-10 -6 l0 12 Z" fill={C.cherryText} />
       </g>
+      <Draw pts={[[204, 80], [366, 80]]} t={t} from={0.6} to={1.5} stroke={C.cherryText} w={2} />
+      <path d="M376 80 l-10 -6 l0 12 Z" fill={C.cherryText} opacity={easeOut(seg(t, 1.4, 1.6))} />
       <g opacity={bars}>
         <line x1={60} y1={220} x2={540} y2={220} stroke={C.line} />
-        <rect x={400} y={130} width={120} height={90} fill={C.caramel} opacity={0.8} />
-        <rect x={80} y={130} width={120} height={90} fill="none" stroke={C.crema} strokeDasharray="4 3" />
-        <T x={140} y={180} s={16} f={C.crema} a="middle">?</T>
+        <rect x={400} y={220 - 90 * known} width={120} height={Math.max(1, 90 * known)} fill={C.caramel} opacity={0.8} />
+        <line x1={lerp(520, 80, ceil)} y1={130} x2={520} y2={130} stroke={C.caramel} strokeWidth={1.5} strokeDasharray="5 4" opacity={ceil > 0 ? 1 : 0} />
+        <rect x={80} y={130} width={120} height={90} fill="none" stroke={C.crema} strokeDasharray="4 3" opacity={ceil} />
+        <T x={140} y={180} s={16} f={C.crema} a="middle" o={ceil}>?</T>
         <T x={60} y={246} s={12} f={C.crema}>new ≤ known: an upper bound only</T>
       </g>
     </Svg>

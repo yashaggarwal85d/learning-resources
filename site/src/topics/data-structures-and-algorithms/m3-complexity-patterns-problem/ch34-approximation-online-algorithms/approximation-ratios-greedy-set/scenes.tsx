@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = something that exists; latte = secondary labels; taupe = not yet reached or
 // discarded; caramel (focus) = the thing to look at right now; cinnamon = the alternative being compared;
@@ -86,20 +86,36 @@ export function Opening({ t }: StepCtx) {
 export function RatioPromise({ t }: StepCtx) {
   const Y0 = 220, opt = 170, ceil = 90;
   const a = easeOut(seg(t, 0.2, 0.8));
-  const n = stepIdx(t, 0.9, 2.6, 10);
-  const h = stepIdx(t, 2.6, 3.6, 5);
   const algY = [150, 120, 160, 100, 140, 130, 110, 155, 125, 96];
   const heurY = [160, 150, 165, 40, 155];
+  // The optimum and the proved ceiling draw first; instances then fall in from above and come to rest where they
+  // land. Every one of the algorithm's stops under the ceiling; one of the heuristic's sails over it, with a ring.
+  const fallA = (i: number) => easeOut(seg(t, 0.9 + i * 0.17, 1.25 + i * 0.17));
+  const fallH = (i: number) => easeOut(seg(t, 2.6 + i * 0.2, 2.95 + i * 0.2));
+  const nA = algY.filter((_, i) => fallA(i) >= 1).length;
+  const nH = heurY.filter((_, i) => fallH(i) >= 1).length;
   return (
     <Svg label="An optimum line and a proved ceiling at a fixed multiple of it. Instances arrive as dots: the approximation algorithm's all land under the ceiling, on every one. A heuristic's land mostly low, then one far above, with no warning in advance" h={280}>
-      <line x1={40} y1={opt} x2={560} y2={opt} stroke={C.crema} strokeWidth={1.4} opacity={a} />
+      <Draw pts={[[40, opt], [560, opt]]} t={t} from={0.1} to={0.7} stroke={C.crema} w={1.4} pen={false} />
       <T x={560} y={opt + 18} s={12} f={C.crema} a="end" o={a}>optimum</T>
-      <line x1={40} y1={ceil} x2={360} y2={ceil} stroke={C.caramel} strokeDasharray="5 4" strokeWidth={1.6} opacity={a} />
+      <Draw pts={[[40, ceil], [360, ceil]]} t={t} from={0.3} to={0.9} stroke={C.caramel} w={1.6} dash="5 4" pen={false} />
       <T x={40} y={ceil - 10} s={12} f={C.caramel} o={a}>proved ceiling: ρ × optimum</T>
-      {algY.map((y, i) => <circle key={i} cx={60 + i * 30} cy={y} r={5} fill={C.caramel} opacity={i <= n ? 1 : 0} />)}
-      {heurY.map((y, i) => <circle key={i} cx={400 + i * 30} cy={y} r={5} fill={y < ceil ? C.cherryText : C.latte} opacity={i <= h ? 1 : 0} />)}
-      <T x={60} y={Y0 + 30} s={12} f={C.caramel} o={n >= 9 ? 1 : 0}>proved, every instance</T>
-      <T x={400} y={Y0 + 30} s={12} f={C.cherryText} o={h >= 4 ? 1 : 0}>heuristic: no promise</T>
+      {algY.map((y, i) => {
+        const k = fallA(i);
+        return k > 0 ? <circle key={i} cx={60 + i * 30} cy={lerp(Y0 + 20, y, k)} r={5} fill={C.caramel} opacity={clamp(k * 3)} /> : null;
+      })}
+      {heurY.map((y, i) => {
+        const k = fallH(i);
+        const bad = y < ceil;
+        return k > 0 ? (
+          <g key={i}>
+            <circle cx={400 + i * 30} cy={lerp(Y0 + 20, y, k)} r={5} fill={bad ? C.cherryText : C.latte} opacity={clamp(k * 3)} />
+            {bad && k >= 1 && <circle cx={400 + i * 30} cy={y} r={5 + 14 * easeOut(seg(t, 3.35, 3.9))} fill="none" stroke={C.cherryText} strokeWidth={1.5} opacity={1 - easeOut(seg(t, 3.35, 3.9))} />}
+          </g>
+        ) : null;
+      })}
+      <T x={60} y={Y0 + 30} s={12} f={C.caramel} o={nA >= algY.length ? 1 : 0}>proved, every instance</T>
+      <T x={400} y={Y0 + 30} s={12} f={C.cherryText} o={nH >= 4 ? 1 : 0}>heuristic: no promise</T>
     </Svg>
   );
 }
@@ -314,15 +330,28 @@ const RG = [2.0, 1.667, 1.333, 1.2, 1.143, 2.0, 1.333, 1.333, 2.0, 1.429, 1.6, 2
 export function RandomGraphCheck({ t }: StepCtx) {
   const X0 = 70, X1 = 550, Y0 = 220;
   const py = (r: number) => Y0 - (r - 0.8) * 130;
-  const n = Math.floor(seg(t, 0.4, 3.2) * 60);
   const cap = easeOut(seg(t, 3.4, 4.0));
+  // Sixty graphs drop in, each falling to its measured ratio. Then a scan runs along the ceiling: it never finds a
+  // dot above the line, and every graph that sits right on it rings as the scan passes.
+  const land = (i: number) => easeOut(seg(t, 0.4 + i * (2.8 / 60), 0.7 + i * (2.8 / 60)));
+  const scan = seg(t, 3.25, 4.3);
+  const sx = lerp(X0, X1, scan);
   return (
     <Svg label="Sixty random graphs drop in one by one as dots at their measured ratio of cover to optimum, under a ceiling line at two. The worst one seen sits right on the line, 2.0" h={290}>
       <line x1={X0} y1={py(2)} x2={X1} y2={py(2)} stroke={C.cherryText} strokeDasharray="5 4" strokeWidth={1.6} />
       <T x={X0 - 8} y={py(2) + 4} s={12} f={C.cherryText} a="end">2</T>
       <line x1={X0} y1={py(1)} x2={X1} y2={py(1)} stroke={C.line} />
       <T x={X0 - 8} y={py(1) + 4} s={12} f={C.latte} a="end">1</T>
-      {RG.map((r, i) => <circle key={i} cx={X0 + 6 + i * 8} cy={py(r)} r={3.5} fill={r >= 2 ? C.caramel : C.latte} opacity={i < n ? 1 : 0} />)}
+      {scan > 0 && scan < 1 && <line x1={sx} y1={py(2) - 18} x2={sx} y2={py(1) + 10} stroke={C.focus} strokeWidth={1.2} />}
+      {RG.map((r, i) => {
+        const k = land(i);
+        return k > 0 ? <circle key={i} cx={X0 + 6 + i * 8} cy={lerp(58, py(r), k)} r={3.5} fill={r >= 2 ? C.caramel : C.latte} opacity={clamp(k * 3)} /> : null;
+      })}
+      {RG.map((r, i) => {
+        const x = X0 + 6 + i * 8;
+        const k = clamp((sx - x) / 40);
+        return r >= 2 && scan < 1 && k > 0 && k < 1 ?<circle key={`p${i}`} cx={x} cy={py(r)} r={3.5 + 8 * k} fill="none" stroke={C.caramel} strokeWidth={1.2} opacity={1 - k} /> : null;
+      })}
       <T x={X0} y={40} s={12} f={C.latte}>60 random graphs, 4 to 13 vertices</T>
       <T x={X0} y={262} s={12} f={C.caramel} o={cap}>never above 2; worst seen 2.0</T>
     </Svg>

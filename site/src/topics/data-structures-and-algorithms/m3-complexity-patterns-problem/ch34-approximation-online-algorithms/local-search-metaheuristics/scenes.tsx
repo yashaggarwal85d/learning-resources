@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { C, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = the algorithm's own solution (the tour, the
@@ -447,7 +447,14 @@ export function PredictGeqoThreshold({ t, answer }: StepCtx) {
   const flow = seg(t, 0.6, 3.2);
   const ask = easeOut(seg(t, 3.0, 3.5));
   const rev = answered ? easeOut(seg(s, 0.2, 1.0)) : 0;
-  const plans = answered ? stepIdx(s, 0.4, 1.6, 22) : -1;
+  // The constant query's runs stream along its timeline like a conveyor; the hourly one's single run drops in once.
+  // After the answer a planning block lands on every run: once on the left, on each run on the right, and the
+  // planning time each side has paid grows as a bar underneath, one barely there, the other running away.
+  const clock = t + s;
+  const RX = (i: number) => 324 + ((i * 11 - clock * 14) % 242 + 242) % 242;
+  const drop = (i: number) => (answered ? easeOut(seg(s, 0.4 + i * 0.05, 0.7 + i * 0.05)) : 0);
+  const one = easeOutBack(seg(t, 0.6, 1.0));
+  const paid = answered ? easeInOut(seg(s, 0.6, 2.4)) : 0;
   return (
     <Svg label="Two timelines. Left, a query that runs once an hour: one run. Right, a query that runs constantly: runs streaming past. After answering, a planning block appears before each run: once on the left, before every single run on the right, where a weaker plan's cost repeats" h={270}>
       <g opacity={a}>
@@ -456,20 +463,26 @@ export function PredictGeqoThreshold({ t, answer }: StepCtx) {
         <T x={320} y={50} s={12} f={C.latte}>runs constantly</T>
         <line x1={320} y1={120} x2={570} y2={120} stroke={C.mocha} strokeWidth={1} />
       </g>
-      <rect x={150} y={104} width={6} height={16} fill={C.crema} opacity={flow > 0.2 ? 1 : 0} />
-      {Array.from({ length: 22 }).map((_, i) => (
-        <g key={i}>
-          <rect x={324 + i * 11} y={104} width={6} height={16} fill={C.crema} opacity={flow * 22 > i ? 1 : 0} />
-          <rect x={324 + i * 11} y={84} width={6} height={16} fill={C.cherry} opacity={plans >= i ? 1 : 0} />
-        </g>
-      ))}
+      {one > 0 && <rect x={150} y={lerp(70, 104, one)} width={6} height={16} fill={C.crema} />}
+      {Array.from({ length: 22 }).map((_, i) => {
+        const d = drop(i);
+        return flow * 22 > i ? (
+          <g key={i}>
+            <rect x={RX(i)} y={104} width={6} height={16} fill={C.crema} />
+            {d > 0 && <rect x={RX(i)} y={lerp(60, 84, d)} width={6} height={16} fill={C.cherry} opacity={clamp(d * 3)} />}
+          </g>
+        ) : null;
+      })}
       <T x={300} y={200} s={12} a="middle" f={C.caramel} o={rev > 0 ? 0 : ask}>which one should risk a weaker plan?</T>
       <g opacity={rev}>
-        <rect x={136} y={84} width={20} height={16} fill={C.caramel} />
+        <rect x={136} y={lerp(60, 84, rev)} width={20} height={16} fill={C.caramel} />
         <T x={30} y={160} s={12} f={C.cinnamon}>plans once: the risk</T>
         <T x={30} y={180} s={12} f={C.cinnamon}>is small here</T>
         <T x={320} y={160} s={12} f={C.cherryText}>plans every run:</T>
         <T x={320} y={180} s={12} f={C.cherryText}>a weak plan repeats</T>
+        <T x={30} y={214} s={12} f={C.quiet}>planning paid</T>
+        <rect x={30} y={224} width={Math.max(3, 8 * paid)} height={8} rx={2} fill={C.caramel} />
+        <rect x={320} y={224} width={Math.max(3, 250 * paid)} height={8} rx={2} fill={C.cherry} />
       </g>
     </Svg>
   );

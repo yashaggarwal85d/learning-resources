@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = something that exists; latte = secondary labels; taupe = not yet reached or
 // discarded; caramel (focus) = the thing to look at right now; cinnamon = the alternative being compared;
@@ -112,16 +112,31 @@ export function KnapsackNPCompleteAndDP({ t }: StepCtx) {
   const fill = seg(t, 1.0, 4.0);
   const ans = easeOut(seg(t, 4.0, 4.5));
   const R = 5, Cn = 16;
+  // The NP-complete stamp lands (scales down onto the page); then one pass sweeps the table, a cursor running row by
+  // row with each cell filling up from its floor as the cursor reaches it, and the lock-on closes on the last cell.
+  const sc = lerp(1.35, 1, easeOut(seg(t, 0.2, 0.6)));
+  const pos = fill * R * Cn;
+  const cr = Math.min(R - 1, Math.floor(pos / Cn)), cc = Math.min(Cn - 1, Math.floor(pos) % Cn);
   return (
     <Svg label="NP-complete is stamped on knapsack's decision question. Then a table with one row per item and one column per unit of capacity fills row by row in a single pass, and its last cell lights: the answer" h={290}>
-      <rect x={30} y={24} width={250} height={34} rx={5} fill="none" stroke={C.cherryText} opacity={stamp} />
-      <T x={155} y={46} s={13} f={C.cherryText} a="middle" o={stamp}>decision knapsack: NP-complete</T>
+      <g opacity={stamp} transform={`translate(155 41) scale(${sc.toFixed(3)}) translate(-155 -41)`}>
+        <rect x={5} y={24} width={300} height={34} rx={5} fill="none" stroke={C.cherryText} />
+        <T x={155} y={46} s={13} f={C.cherryText} a="middle">decision knapsack: NP-complete</T>
+      </g>
       {Array.from({ length: R }, (_, r) => Array.from({ length: Cn }, (_, c) => {
         const k = r * Cn + c;
-        const on = fill * R * Cn > k;
+        const f = clamp((pos - k) / 2.5);
         const last = r === R - 1 && c === Cn - 1;
-        return <rect key={k} x={60 + c * 30} y={90 + r * 30} width={26} height={26} rx={2} fill={last && ans > 0 ? C.caramel : on ? C.latte : 'none'} opacity={on ? (last && ans > 0 ? 1 : 0.55) : 1} stroke={C.mocha} strokeWidth={0.8} />;
+        const h = 26 * easeOut(f);
+        return (
+          <g key={k}>
+            <rect x={60 + c * 30} y={90 + r * 30} width={26} height={26} rx={2} fill="none" stroke={C.mocha} strokeWidth={0.8} />
+            {f > 0 && <rect x={60 + c * 30} y={90 + r * 30 + 26 - h} width={26} height={h} rx={2} fill={last && ans > 0 ? C.caramel : C.latte} opacity={last && ans > 0 ? 1 : 0.55} />}
+          </g>
+        );
       }))}
+      {fill > 0 && fill < 1 && <rect x={58 + cc * 30} y={88 + cr * 30} width={30} height={30} rx={3} fill="none" stroke={C.focus} strokeWidth={1.5} />}
+      <Reticle x={60 + (Cn - 1) * 30 + 13} y={90 + (R - 1) * 30 + 13} w={38} h={38} t={t} at={4.0} />
       <T x={60} y={256} s={12} f={C.latte}>columns: one per unit of capacity</T>
       <T x={52} y={110} s={12} f={C.latte} a="end">item 1</T>
       <T x={556} y={256} s={12} f={C.caramel} a="end" o={ans}>answer</T>
@@ -307,20 +322,29 @@ export function ThreePartitionBlowUp({ t }: StepCtx) {
 // a polynomial, gives polynomial time; but those capped instances are still NP-hard: a red cross on the chain.
 export function NoEscapeArgument({ t }: StepCtx) {
   const steps = ['strongly NP-hard', '+ pseudo-poly algorithm', 'numbers capped', 'polynomial time'];
-  const k = stepIdx(t, 0.3, 3.0, 4);
   const x = easeOut(seg(t, 3.4, 4.0));
+  // The chain is built one link at a time, each box dropping into place under the last with its connector drawing;
+  // then a red line runs from the end of the chain back up to its start (the same capped instances are still hard)
+  // and the cross is struck through the conclusion, stroke by stroke.
+  const drop = (i: number) => easeOutBack(seg(t, 0.3 + i * 0.67, 0.75 + i * 0.67));
   return (
     <Svg label="A chain of boxes: a strongly NP-hard problem, plus a pseudo-polynomial algorithm, run on numbers capped by a polynomial, gives polynomial time. But those capped instances are still NP-hard, so the chain breaks: a contradiction" h={290}>
-      {steps.map((s2, i) => (
-        <g key={s2} opacity={i <= k ? 1 : 0}>
-          <rect x={150} y={20 + i * 52} width={300} height={36} rx={5} fill="none" stroke={i === 3 ? C.caramel : C.crema} />
-          <T x={300} y={43 + i * 52} s={12} f={i === 3 ? C.caramel : C.crema} a="middle">{s2}</T>
-          {i > 0 && <line x1={300} y1={4 + i * 52} x2={300} y2={18 + i * 52} stroke={C.latte} />}
-        </g>
-      ))}
+      {steps.map((s2, i) => {
+        const k = drop(i);
+        return (
+          <g key={s2}>
+            <g opacity={clamp(k * 2)} transform={`translate(0 ${((1 - k) * -18).toFixed(2)})`}>
+              <rect x={150} y={20 + i * 52} width={300} height={36} rx={5} fill="none" stroke={i === 3 ? C.caramel : C.crema} />
+              <T x={300} y={43 + i * 52} s={12} f={i === 3 ? C.caramel : C.crema} a="middle">{s2}</T>
+            </g>
+            {i > 0 && <Draw pts={[[300, 4 + i * 52], [300, 18 + i * 52]]} t={t} from={0.2 + i * 0.67} to={0.4 + i * 0.67} stroke={C.latte} w={1} pen={false} />}
+          </g>
+        );
+      })}
+      <Draw pts={[[450, 194], [510, 194], [510, 38], [454, 38]]} t={t} from={3.1} to={3.7} stroke={C.cherryText} w={1.5} dash="4 3" />
+      <Draw pts={[[420, 180], [470, 230]]} t={t} from={3.4} to={3.65} stroke={C.cherryText} w={3} pen={false} />
+      <Draw pts={[[470, 180], [420, 230]]} t={t} from={3.6} to={3.85} stroke={C.cherryText} w={3} pen={false} />
       <g opacity={x}>
-        <line x1={420} y1={180} x2={470} y2={230} stroke={C.cherryText} strokeWidth={3} />
-        <line x1={470} y1={180} x2={420} y2={230} stroke={C.cherryText} strokeWidth={3} />
         <T x={300} y={250} s={12} f={C.cherryText} a="middle">but capped instances are still NP-hard</T>
         <T x={300} y={274} s={12} f={C.cherryText} a="middle">so no such algorithm, unless P = NP</T>
       </g>
