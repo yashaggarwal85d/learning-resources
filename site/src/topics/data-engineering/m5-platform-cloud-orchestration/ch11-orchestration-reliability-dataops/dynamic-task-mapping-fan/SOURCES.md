@@ -3,9 +3,9 @@
 URL: https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dynamic-task-mapping.html
 Version: Apache Airflow 3.3.2 documentation
 
-> Dynamic Task Mapping allows a way for a workflow to create a number of tasks at runtime based upon current data, rather than the Dag author having to know in advance how many tasks would be needed.
+> Task mapping, also called dynamic task mapping, allows a way for a workflow to create a number of tasks at runtime based upon current data, rather than the Dag author having to know in advance how many tasks would be needed.
 
-> Unlike a Python for-loop executed at DAG parse time, dynamic task mapping defers task creation until runtime, allowing the scheduler to determine the exact number of task instances based on upstream task outputs.
+> Unlike a Python for-loop executed at DAG parse time, task mapping defers task creation until runtime, allowing the scheduler to determine the exact number of task instances based on upstream task outputs.
 
 > As well as passing arguments that get expanded at run-time, it is possible to pass arguments that don’t change—in order to clearly differentiate between the two kinds we use different functions, expand() for mapped arguments, and partial() for unmapped ones.
 
