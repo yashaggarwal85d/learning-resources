@@ -1,7 +1,34 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Decode, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
+
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so a reveal can still move. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4.5) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
+
 
 // One primitive (UnsafeCell) with three safe wrappers fanning out from it: Cell (copy), RefCell
 // (tracked borrow, checked at run time), OnceCell/LazyLock (written or computed once). Every
@@ -63,13 +90,17 @@ export function UnsafeCellFig({ t }: StepCtx) {
 }
 
 // ── 2 · Mutate through &self, with no cell type at all (predict) ───────────────────────────────────
-export function NoCellFail({ t }: StepCtx) {
+export function NoCellFail({ t, answer }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
       <Code title="examples/counter_without_unsafecell_fail.rs" lines={['struct Counter { value: u32 }', 'fn increment(&self) { self.value += 1; }']} t={t} start={0.1} end={1.8} highlight={[0, 1]} />
-      <div style={{ opacity: fa(t, 2.0, 0.4) }}>
-        <Code title="rustc" lines={['error[E0594]: cannot assign to `self.value`,', 'which is behind a `&` reference']} t={t} start={2.0} end={2.6} highlight={[0, 1]} />
-      </div>
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="rustc" lines={['error[E0594]: cannot assign to `self.value`,', 'which is behind a `&` reference']} t={s} start={0.1} end={0.7} highlight={[0, 1]} />
+        </div>
+      )}
     </Stack>
   );
 }
@@ -152,13 +183,17 @@ export function RefCellTracked({ t, portrait }: StepCtx) {
 }
 
 // ── 5 · A shared borrow is still alive — then borrow_mut (predict) ─────────────────────────────────
-export function DoubleBorrowFail({ t }: StepCtx) {
+export function DoubleBorrowFail({ t, answer }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
       <Code title="examples/refcell_double_borrow_fail.rs" lines={['let shared = cell.borrow();', 'let exclusive = cell.borrow_mut();   // shared is still alive']} t={t} start={0.1} end={1.8} highlight={[0, 1]} />
-      <div style={{ opacity: fa(t, 2.0, 0.4) }}>
-        <Code title="run" lines={['thread panicked: RefCell already borrowed']} t={t} start={2.0} end={2.4} highlight={[0]} />
-      </div>
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="run" lines={['thread panicked: RefCell already borrowed']} t={s} start={0.1} end={0.5} highlight={[0]} />
+        </div>
+      )}
     </Stack>
   );
 }

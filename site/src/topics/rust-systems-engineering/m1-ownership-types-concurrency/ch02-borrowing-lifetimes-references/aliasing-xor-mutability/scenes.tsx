@@ -135,12 +135,12 @@ export function TheRule({ t }: StepCtx) {
         <Edge x1={150} y1={114} x2={380} y2={148} t={t} from={0.5} to={1.1} kind="shared" />
         <Edge x1={150} y1={179} x2={380} y2={156} t={t} from={0.8} to={1.4} kind="shared" />
       </g>
-      <g opacity={fa(t, 2.2, 0.4)}>
+      <g opacity={fa(t, 2.0, 0.4)}>
         <Slot x={40} y={95} name="&mut T" />
-        <Edge x1={150} y1={114} x2={380} y2={148} t={t} from={2.2} to={2.8} kind="exclusive" />
+        <Edge x1={150} y1={114} x2={380} y2={148} t={t} from={2.1} to={2.5} kind="exclusive" />
       </g>
       <T x={40} y={270} s={14} f={C.taupe} o={1 - fa(t, 1.8, 0.3)}>many &T …</T>
-      <T x={40} y={270} s={14} f={C.caramel} o={fa(t, 2.2, 0.4)}>… or exactly one &mut T, never both</T>
+      <T x={40} y={270} s={14} f={C.caramel} o={fa(t, 2.0, 0.4)}>… or exactly one &mut T, never both</T>
     </Svg>
   );
 }

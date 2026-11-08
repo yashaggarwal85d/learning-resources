@@ -1,7 +1,34 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
+
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so a reveal can still move. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4.5) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
+
 
 // This topic's own shape: one owner box (Box), a shared-count box with a plain dial (Rc), and the
 // same shape with a lock-glyph border (Arc) — the chapter's new refcount-dial and contention-bar
@@ -79,13 +106,19 @@ export function OwnershipShapes({ t }: StepCtx) {
 }
 
 // ── 2 · Moving Rc into a new thread (predict) ───────────────────────────────────────────────────────
-export function RcNotSend({ t }: StepCtx) {
+export function RcNotSend({ t, answer, portrait }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
-      <Code title="examples/rc_not_send_fail.rs" lines={['let shared = Rc::new(value);', 'thread::spawn(move || { use(shared); });']} t={t} start={0.1} end={1.6} highlight={[0, 1]} />
-      <div style={{ opacity: fa(t, 1.8, 0.4) }}>
-        <Code title="rustc" lines={['error[E0277]: Rc cannot be sent', 'between threads safely']} t={t} start={1.8} end={2.4} highlight={[0, 1]} />
-      </div>
+      {!(portrait && ans) && (
+        <Code title="examples/rc_not_send_fail.rs" lines={['let shared = Rc::new(value);', 'thread::spawn(move || { use(shared); });']} t={t} start={0.1} end={1.6} highlight={[0, 1]} />
+      )}
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="rustc" lines={['error[E0277]: Rc cannot be sent', 'between threads safely']} t={s} start={0.1} end={0.7} highlight={[0, 1]} />
+        </div>
+      )}
     </Stack>
   );
 }
@@ -140,7 +173,7 @@ export function ArcShared({ t }: StepCtx) {
 }
 
 // ── 5 · Does splitting the work across threads speed it up? (predict) ──────────────────────────────
-export function ContentionPredict({ t }: StepCtx) {
+export function ContentionPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -151,9 +184,11 @@ export function ContentionPredict({ t }: StepCtx) {
         end={2.0}
         highlight={[0, 1]}
       />
-      <Svg label="the identical total clone and drop work, once alone and once split across four threads" h={46}>
-        <T x={40} y={28} s={13} f={C.taupe} o={fa(t, 2.2, 0.4)}>same total work, two different ways to run it</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="the identical total clone and drop work, once alone and once split across four threads" h={34}>
+          <T x={40} y={24} s={16} f={C.taupe} o={fa(t, 1.7, 0.4)}>same total work, two different ways to run it</T>
+        </Svg>
+      )}
     </Stack>
   );
 }

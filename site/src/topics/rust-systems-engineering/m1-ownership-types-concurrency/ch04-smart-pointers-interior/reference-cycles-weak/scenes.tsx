@@ -1,7 +1,34 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
+
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so a reveal can still move. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4.5) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
+
 
 // This chapter's cycle-loop and refcount-dial visual language (CHAPTER.md §A.5): two node boxes
 // pointing at each other in a closed loop, redrawn with one arrow turned dashed and hollow-headed
@@ -64,7 +91,9 @@ export function CycleLeak({ t }: StepCtx) {
 }
 
 // ── 2 · Does this reject at compile time? (predict) ─────────────────────────────────────────────────
-export function CompilePredict({ t }: StepCtx) {
+export function CompilePredict({ t, answer }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
       <Code
@@ -72,12 +101,14 @@ export function CompilePredict({ t }: StepCtx) {
         lines={['parent.children.borrow_mut().push(Rc::clone(&child));', '*child.parent.borrow_mut() = Some(Rc::clone(&parent));']}
         t={t}
         start={0.1}
-        end={2.0}
+        end={1.6}
         highlight={[0, 1]}
       />
-      <div style={{ opacity: fa(t, 2.2, 0.4) }}>
-        <Code title="counting allocator" lines={['allocations never freed after both drop out of scope']} t={t} start={2.2} end={2.6} highlight={[0]} />
-      </div>
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="counting allocator" lines={['allocations never freed after both drop out of scope']} t={s} start={0.1} end={0.5} highlight={[0]} />
+        </div>
+      )}
     </Stack>
   );
 }
@@ -120,20 +151,26 @@ export function WeakFixesCycle({ t }: StepCtx) {
 }
 
 // ── 5 · The last strong owner is dropped — then upgrade (predict) ──────────────────────────────────
-export function UpgradeAfterDrop({ t }: StepCtx) {
+export function UpgradeAfterDrop({ t, answer, portrait }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
-      <Code
-        title="examples/weak_upgrade_after_drop.rs"
-        lines={['let weak = Rc::downgrade(&strong);', 'drop(strong);', 'weak.upgrade()   // ?']}
-        t={t}
-        start={0.1}
-        end={2.2}
-        highlight={[0, 1, 2]}
-      />
-      <div style={{ opacity: fa(t, 2.4, 0.4) }}>
-        <Code title="result" lines={['None']} t={t} start={2.4} end={2.6} highlight={[0]} />
-      </div>
+      {!(portrait && ans) && (
+        <Code
+          title="examples/weak_upgrade_after_drop.rs"
+          lines={['let weak = Rc::downgrade(&strong);', 'drop(strong);', 'weak.upgrade()   // ?']}
+          t={t}
+          start={0.1}
+          end={1.8}
+          highlight={[0, 1, 2]}
+        />
+      )}
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="result" lines={['None']} t={s} start={0.1} end={0.3} highlight={[0]} />
+        </div>
+      )}
     </Stack>
   );
 }
