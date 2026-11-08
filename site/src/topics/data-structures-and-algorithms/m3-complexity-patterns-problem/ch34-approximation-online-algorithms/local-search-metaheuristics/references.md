@@ -1,6 +1,6 @@
 # References
 
-- [Local search (optimization)](https://en.wikipedia.org/wiki/Local_search_(optimization)) — Wikipedia. Local search, neighborhood, local optimum.
+- [Local search (optimization)](https://en.wikipedia.org/wiki/Local_search_%28optimization%29) — Wikipedia. Local search, neighborhood, local optimum.
 - [2-opt](https://en.wikipedia.org/wiki/2-opt) — Wikipedia. The move and its attribution.
 - [Simulated annealing](https://en.wikipedia.org/wiki/Simulated_annealing) — Wikipedia. The acceptance rule and its attribution.
 - [Genetic algorithm](https://en.wikipedia.org/wiki/Genetic_algorithm) — Wikipedia. Population, selection, crossover, mutation.

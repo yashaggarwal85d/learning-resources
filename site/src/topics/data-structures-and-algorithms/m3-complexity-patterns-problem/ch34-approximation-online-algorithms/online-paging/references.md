@@ -4,7 +4,7 @@
 - [Bélády's anomaly](https://en.wikipedia.org/wiki/Bélády's_anomaly) — Wikipedia. The anomaly, its history, its unboundedness.
 - [Cache replacement policies](https://en.wikipedia.org/wiki/Cache_replacement_policies) — Wikipedia. LRU, FIFO, Bélády's optimal algorithm.
 - [Online algorithm](https://en.wikipedia.org/wiki/Online_algorithm) — Wikipedia. Online vs. offline, the competitive ratio.
-- [Competitive analysis (online algorithm)](https://en.wikipedia.org/wiki/Competitive_analysis_(online_algorithm)) — Wikipedia. Competitive analysis and the adversary.
+- [Competitive analysis (online algorithm)](https://en.wikipedia.org/wiki/Competitive_analysis_%28online_algorithm%29) — Wikipedia. Competitive analysis and the adversary.
 - [Adversary model](https://en.wikipedia.org/wiki/Adversary_model) — Wikipedia. Oblivious vs. adaptive adversaries.
 - [K-server problem](https://en.wikipedia.org/wiki/K-server_problem) — Wikipedia. Paging as a special case, and its k-competitive algorithm.
 - Sleator, D., & Tarjan, R. (1985). "Amortized efficiency of list update and paging rules." *Communications of the ACM*, 28(2), 202–208. Cited from the Competitive analysis and K-server problem Wikipedia pages' own reference lists; not independently fetched.
