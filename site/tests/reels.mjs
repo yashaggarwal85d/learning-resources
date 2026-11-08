@@ -22,7 +22,9 @@ const slugs = [...readFileSync(new URL('../src/topics/registry.ts', import.meta.
   // Held topics (PREVIEW_HELD=1 builds give them pages) are tested when named: on their own branch and in CI for a push
   // that changes them. A full sweep tests live reels; a held topic gets the full test again when it is released.
   .filter((m) => (m[2] === 'live' ? !parts || parts.some((p) => m[1].includes(p)) : m[2] === 'held' && process.env.PREVIEW_HELD === '1' && !!parts && parts.some((p) => m[1].includes(p))))
-  .map((m) => ({ slug: m[1], title: m[3] }));
+  .map((m) => ({ slug: m[1], title: m[3] }))
+  // REEL_SHARD=i/n keeps every n-th reel starting at i (0-based), so the full sweep can split across parallel jobs.
+  .filter((_, k) => { const [i, n] = (process.env.REEL_SHARD ?? '0/1').split('/').map(Number); return k % n === i; });
 const failures = [];
 const fail = (msg) => failures.push(msg);
 mkdirSync('test-results', { recursive: true });
