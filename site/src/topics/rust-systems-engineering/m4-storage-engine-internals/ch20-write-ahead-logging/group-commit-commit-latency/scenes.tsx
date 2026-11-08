@@ -1,7 +1,47 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Decode, Draw, Reticle, Stack, Svg, T, C } from '../../../../../reels/kit';
+
+
+/** A check mark that draws itself over `k` (0..1). */
+const Tick = ({ x, y, k, f = C.focus }: { x: number; y: number; k: number; f?: string }) =>
+  k > 0 ? <path d={`M${x} ${y} l6 6 l12 -14`} fill="none" stroke={f} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={30} strokeDashoffset={30 * (1 - k)} /> : null;
+/** A cross that draws itself over `k`. */
+const Cross = ({ x, y, k, f = C.cherryText }: { x: number; y: number; k: number; f?: string }) =>
+  k > 0 ? (
+    <g stroke={f} strokeWidth={2.5} strokeLinecap="round">
+      <line x1={x} y1={y - 7} x2={x + 14 * Math.min(1, k * 2)} y2={y - 7 + 14 * Math.min(1, k * 2)} />
+      {k > 0.5 && <line x1={x + 14} y1={y - 7} x2={x + 14 - 14 * (k - 0.5) * 2} y2={y - 7 + 14 * (k - 0.5) * 2} />}
+    </g>
+  ) : null;
+
+/** Recap rows: each slides in on its beat with its verdict drawing at the right; a spine draws down the left
+ * through them, and the lock-on lands on row `lock` at `lockAt` (finished 0.55 s later, inside the step). `y0` is the first row's centre. */
+function RecapRows({ t, rows, y0 = 40, gap = 56, start = 0.2, beat = 0.45, lock = 0, lockAt }: { t: number; rows: [string, boolean][]; y0?: number; gap?: number; start?: number; beat?: number; lock?: number; lockAt: number }) {
+  const yEnd = y0 + (rows.length - 1) * gap;
+  return (
+    <g>
+      <Draw pts={[[30, y0 - 6], [30, yEnd + 6]]} t={t} from={start - 0.05} to={start + (rows.length - 1) * beat + 0.3} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map(([r, good], i) => {
+        const a = start + i * beat;
+        const k = easeOut(seg(t, a, a + 0.45));
+        const y = y0 + i * gap;
+        const hot = i === lock;
+        return (
+          <g key={r}>
+            <g opacity={k} transform={`translate(${((1 - k) * -24).toFixed(1)} 0)`}>
+              <circle cx={30} cy={y} r={hot ? 6 : 4.5} fill={hot ? C.caramel : C.crema} />
+              <T x={50} y={y + 5} s={13} f={hot ? C.caramel : C.crema} w={hot ? 700 : 500}>{r}</T>
+            </g>
+            {good ? <Tick x={548} y={y} k={easeOut(seg(t, a + 0.3, a + 0.65))} /> : <Cross x={548} y={y} k={easeOut(seg(t, a + 0.3, a + 0.65))} />}
+          </g>
+        );
+      })}
+      <Reticle x={292} y={y0 + lock * gap} w={556} h={gap - 14} t={t} at={lockAt} />
+    </g>
+  );
+}
 
 // Without grouping, every transaction pays for its own flush; group
 // commit trades a short wait for one flush instead of many. Inside one
@@ -29,21 +69,42 @@ export function NoGroupingPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: one flush per transaction (takeaway) ───────────────────
 export function NoGroupingReveal({ t }: StepCtx) {
-  const rows = [
-    'five transactions, ready together',
-    'flushes: five, one each',
-  ];
+  const ys = [40, 80, 120, 160, 200];
+  const start = 0.25, trip = 0.42;
   return (
-    <Svg label="leader_follower_group_commit_latency.rs, measured" h={180}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 45} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 45} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
+    <Svg label="leader_follower_group_commit_latency.rs, measured" h={270}>
+      <T x={60} y={20} s={13} f={C.taupe}>ready together</T>
+      <rect x={430} y={70} width={120} height={100} rx={6} fill="none" stroke={C.crema} strokeWidth={1.5} />
+      <T x={490} y={126} s={15} a="middle" f={C.crema}>disk</T>
+      {ys.map((y, i) => {
+        const a = start + i * trip;
+        const k = easeInOut(seg(t, a, a + trip));
+        const x = lerp(80, 470, k);
+        const yy = lerp(y, 120, k);
+        const landed = t >= a + trip;
+        return (
+          <g key={i}>
+            {!landed && <circle cx={x} cy={yy} r={9} fill={C.caramel} opacity={easeOut(seg(t, 0, 0.2))} />}
+            {landed && <circle cx={80} cy={y} r={9} fill="none" stroke={C.mocha} />}
+            {/* one tally mark per flush */}
+            {landed && <line x1={448 + i * 20} y1={200} x2={448 + i * 20} y2={lerp(200, 226, easeOut(seg(t, a + trip, a + trip + 0.15)))} stroke={C.caramel} strokeWidth={3} strokeLinecap="round" />}
+          </g>
+        );
+      })}
+      {/* the disk jolts on every flush */}
+      {ys.map((_, i) => {
+        const a = start + (i + 1) * trip;
+        const pulse = seg(t, a, a + 0.2);
+        return pulse > 0 && pulse < 1 ? <rect key={i} x={430 - 6 * (1 - pulse)} y={70 - 6 * (1 - pulse)} width={120 + 12 * (1 - pulse)} height={100 + 12 * (1 - pulse)} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} opacity={1 - pulse} /> : null;
+      })}
+      <Decode text="flushes: five, one each" t={t} at={2.45} dur={0.45} x={300} y={256} s={15} a="middle" f={C.caramel} w={700} />
     </Svg>
   );
 }
+// ── 9 · PostgreSQL's own words on asynchronous commit (connecting, no takeaway) ──
+// A log of commits along a time line, already acknowledged. The crash
+// lands before the flush: only the newest, unflushed commits drop away,
+// and everything before them stays lined up and whole.
 
 // ── 3 · How many flushes when grouped (predict) ───────────────────────────
 export function GroupedPredict({ t }: StepCtx) {
@@ -160,38 +221,60 @@ export function AsyncReveal({ t }: StepCtx) {
 
 // ── 9 · PostgreSQL's own words on asynchronous commit (connecting, no takeaway) ──
 export function PgAsyncReveal({ t }: StepCtx) {
-  const rows = [
-    'async commit: faster, may lose recent txns',
-    'the risk is data loss, never corruption',
-  ];
+  const n = 8;
+  const crash = 1.2;
+  const flushedUpTo = 5; // the commits already flushed when the crash hits
   return (
-    <Svg label="PostgreSQL docs, quoted" h={180}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 45} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 45} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
+    <Svg label="PostgreSQL docs, quoted" h={260}>
+      <Draw pts={[[40, 110], [560, 110]]} t={t} from={0.1} to={0.6} stroke={C.mocha} w={1.5} pen={false} />
+      {Array.from({ length: n }, (_, i) => {
+        const x = 60 + i * 60;
+        const arrive = easeOut(seg(t, 0.15 + i * 0.1, 0.4 + i * 0.1));
+        const lost = i >= flushedUpTo;
+        const fall = lost ? easeInOut(seg(t, crash + 0.15, crash + 0.8)) : 0;
+        return (
+          <rect key={i} x={x} y={80 + (1 - arrive) * -16 + fall * 60} width={40} height={26} rx={3}
+            fill={lost && fall > 0 ? 'none' : C.crema} stroke={lost && fall > 0 ? C.cherryText : 'none'} strokeWidth={2}
+            opacity={arrive * (1 - fall * 0.5)} />
+        );
+      })}
+      <Draw pts={[[352, 40], [352, 180]]} t={t} from={crash} to={crash + 0.25} stroke={C.cherryText} w={2} />
+      {t > crash + 0.25 && <T x={352} y={32} s={13} a="middle" f={C.cherryText}>crash</T>}
+      <Draw pts={[[60, 232], [340, 232]]} t={t} from={2.0} to={2.5} stroke={C.caramel} w={1.5} pen={false} />
+      <T x={60} y={222} s={13} f={C.caramel} o={seg(t, 2.0, 2.3)}>“data loss, not data corruption”</T>
+      <T x={380} y={196} s={13} f={C.cherryText} o={seg(t, 1.7, 2.0)}>most recent: lost</T>
     </Svg>
   );
 }
+// ── 10 · Recap ──────────────────────────────────────────────────────────────
+// Five transactions collapse into one flush across the top, then the
+// lessons land one per beat; the lock-on settles on the one flush.
 
 // ── 10 · Recap ──────────────────────────────────────────────────────────────
 export function Recap({ t }: StepCtx) {
-  const rows = [
-    'no grouping: one flush per transaction',
-    'grouped: one flush for the whole batch',
-    "latency is the wait, not execution time",
-    'async commit: faster, but can lie briefly',
-  ];
+  const merge = easeInOut(seg(t, 0.2, 0.9));
   return (
-    <Svg label="recap: what grouping buys, what async gives up" h={300}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
+    <Svg label="recap: what grouping buys, what async gives up" h={320}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <circle key={i} cx={lerp(80 + i * 50, 300, merge)} cy={40} r={8} fill={C.caramel} opacity={i === 2 ? 1 : 1 - seg(t, 0.85, 1.0)} />
       ))}
+      <Draw pts={[[310, 40], [500, 40]]} t={t} from={0.9} to={1.2} stroke={C.caramel} w={2} />
+      <T x={510} y={45} s={13} f={C.crema} o={seg(t, 1.1, 1.3)}>disk</T>
+      <RecapRows
+        t={t}
+        y0={100}
+        gap={56}
+        start={1.0}
+        beat={0.3}
+        lockAt={2.4}
+        rows={[
+          ['no grouping: one flush per transaction', true],
+          ['grouped: one flush for the whole batch', true],
+          ['latency is the wait, not execution time', true],
+          ['async commit: faster, but can lie briefly', false],
+        ]}
+        lock={1}
+      />
     </Svg>
   );
 }
