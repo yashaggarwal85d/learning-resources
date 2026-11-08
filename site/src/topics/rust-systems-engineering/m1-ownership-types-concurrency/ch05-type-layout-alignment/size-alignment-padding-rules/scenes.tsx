@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // A byte ruler: one cell per byte, field spans bracketed above, padding cells hatched rather
 // than left blank. Every size and offset drawn here comes straight from examples.py's own
@@ -34,6 +34,38 @@ function byteRuler(x0: number, y: number, cellW: number, fields: Field[], t: num
     x += w;
   });
   return { nodes, end: x };
+}
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
 }
 
 // ── 1 · Same four fields, two orders — one repr(Rust) layout ────────────────────────────────────────────
@@ -153,14 +185,5 @@ export function Recap({ t }: StepCtx) {
     'repr(C) fixes it to the order you write',
     'offset_of! plus an assertion checks the claim',
   ];
-  return (
-    <Svg label="recap: layout is the compiler's choice, until you fix it" h={280}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 50} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 50} s={15} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: layout is the compiler's choice, until you fix it" rows={rows} />;
 }

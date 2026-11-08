@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // The same packet header from the previous topic, now read back from a byte buffer: the padded
 // field order's padding cells are the exact bytes that make a raw reinterpret unsound; the
@@ -35,6 +35,38 @@ function byteRuler(x0: number, y: number, cellW: number, fields: Field[], t: num
     x += w;
   });
   return { nodes, end: x };
+}
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
 }
 
 // ── 1 · The same padding that cost bytes now costs soundness ───────────────────────────
@@ -92,26 +124,45 @@ export function BytemuckSafeRead({ t }: StepCtx) {
 }
 
 // ── 4 · What derive(Pod) actually checks ──────────────────────────────────
-export function PodDeriveRejects({ t }: StepCtx) {
+export function PodDeriveRejects({ t, portrait }: StepCtx) {
+  const fields: Field[] = [
+    { name: 'version', bytes: 1, value: 'ver' },
+    { name: 'pad', bytes: 1, padding: true },
+    { name: 'length', bytes: 2, value: 'length' },
+    { name: 'flags', bytes: 1, value: 'flags' },
+    { name: 'pad', bytes: 3, padding: true },
+    { name: 'seq', bytes: 4, value: 'seq' },
+  ];
+  const W = 44;
+  const x0 = 36;
+  const ruler = byteRuler(x0, 30, W, fields, t, 0.35);
+  const scan = seg(t, 1.3, 2.2);
+  const sx = lerp(x0, x0 + 12 * W, scan);
+  const pads = [
+    { x: x0 + W, w: W },
+    { x: x0 + 5 * W, w: 3 * W },
+  ];
   return (
     <Stack>
-      <Code
-        title="the padded header, for real"
-        lines={['#[derive(Clone, Copy, Pod, Zeroable)]', 'struct BadHeader { version: u8, length: u16, flags: u8, seq: u32 }']}
-        t={t}
-        start={0.1}
-        end={1.6}
-        highlight={[0]}
-      />
-      <Code
-        title="the real compiler verdict"
-        dim
-        lines={['error: derive(Pod) was applied to a type with padding']}
-        t={t}
-        start={1.8}
-        end={3.0}
-        highlight={[0]}
-      />
+      {!portrait && <Code title="the padded header, for real" lines={['#[derive(Clone, Copy, Pod, Zeroable)]', 'struct BadHeader { version: u8, length: u16, flags: u8, seq: u32 }']} t={t} start={0.1} end={0.6} highlight={[0]} />}
+      <Svg label="derive(Pod) walks BadHeader's layout byte by byte and stops on the two padding gaps, which it names as the reason to refuse" h={110} fill>
+        {ruler.nodes}
+        {scan > 0 && scan < 1 && <rect x={sx - 2} y={22} width={4} height={44} fill={C.focus} />}
+        {pads.map((p, i) => {
+          const hit = easeOutBack(seg(t, 1.3 + ((p.x - x0) / (12 * W)) * 0.9, 1.6 + ((p.x - x0) / (12 * W)) * 0.9));
+          if (hit <= 0) return null;
+          return (
+            <g key={i}>
+              <rect x={p.x} y={30} width={p.w} height={28} fill="none" stroke={C.cherryText} strokeWidth={2.5} />
+              <g transform={`translate(${p.x + p.w / 2} 86) scale(${hit.toFixed(3)}) translate(${-(p.x + p.w / 2)} -86)`}>
+                <T x={p.x + p.w / 2} y={90} s={13} a="middle" f={C.cherryText} w={600}>padding</T>
+              </g>
+            </g>
+          );
+        })}
+        <Reticle x={x0 + 6.5 * W} y={44} w={3 * W + 16} h={42} t={t} at={2.3} color={C.cherryText} />
+      </Svg>
+      <Code title="the real compiler verdict" dim={t < 2.3} lines={['error: derive(Pod) was applied to a type with padding']} t={t} start={2.3} end={2.9} highlight={[0]} />
     </Stack>
   );
 }
@@ -160,14 +211,7 @@ export function Recap({ t }: StepCtx) {
     'reading that way needs no unsafe code at all',
     'a wire format’s byte order is its own choice',
   ];
-  return (
-    <Svg label="recap: padding is real, and bytes need a byte order" h={280}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 50} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 50} s={15} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: padding is real, and bytes need a byte order" rows={rows}
+      s={14}
+    />;
 }
