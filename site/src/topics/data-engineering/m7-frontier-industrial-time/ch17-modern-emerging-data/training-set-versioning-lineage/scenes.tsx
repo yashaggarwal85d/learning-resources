@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
@@ -412,22 +412,27 @@ export function RevealDecisionByScale({ t }: StepCtx) {
 }
 
 // 6 · Two tracker records draw: churn-model-v3 ← 0f8de662…, git:ab12cd3, 0.81; churn-model-v4 ← b5050eb3…, git:ef45gh6,
-// 0.78. A search box fills in "dataset = 0f8de662…"; it sweeps the records, lights v3, greys v4: 1 model found.
+// 0.78. A search box types in "dataset = 0f8de662…"; a scan line sweeps the records, an arrow runs to v3, v4 slides
+// aside greyed: 1 model found decodes, brackets lock onto v3's dataset.
 export function RevealExperimentTracker({ t }: StepCtx) {
   const RECS: [string, string, string, string][] = [
     ['churn-model-v3', HA, 'git:ab12cd3', '0.81'],
     ['churn-model-v4', HC, 'git:ef45gh6', '0.78'],
   ];
   const q = easeOut(seg(t, 1.6, 2.0));
-  const hit = easeOut(seg(t, 2.6, 3.0));
+  const query = `search dataset = ${HA}…`;
+  const typed = query.slice(0, Math.round(query.length * seg(t, 1.8, 2.4)));
+  const scan = easeInOut(seg(t, 2.4, 2.9));
+  const hit = easeOut(seg(t, 2.9, 3.2));
   return (
     <Svg label="an experiment tracker links a dataset digest, a code commit and a model run; models become searchable by which dataset trained them." h={220}>
       {RECS.map(([m, d, c, a], i) => {
         const y = 22 + i * 60;
         const k = easeOut(seg(t, 0.2 + i * 0.5, 0.7 + i * 0.5));
         const lit = hit > 0 && i === 0;
+        const miss = hit > 0 && i === 1 ? hit : 0;
         return (
-          <g key={m} opacity={k * (hit > 0 && i === 1 ? 1 - 0.6 * hit : 1)}>
+          <g key={m} opacity={k * (1 - 0.6 * miss)} transform={`translate(${((1 - k) * -30 + miss * 14).toFixed(1)} 0)`}>
             <rect x={25} y={y} width={550} height={46} rx={5} fill={C.panel} stroke={lit ? C.focus : C.line} strokeWidth={lit ? 1.8 : 1.2} />
             <T x={40} y={y + 19} s={13} f={C.primary}>
               {m}
@@ -435,24 +440,30 @@ export function RevealExperimentTracker({ t }: StepCtx) {
             <T x={560} y={y + 19} s={13} f={C.focus} a="end">
               {a}
             </T>
-            <T x={40} y={y + 38} s={12} f={lit ? C.focus : C.secondary}>
+            <T x={40} y={y + 38} s={13} f={lit ? C.focus : C.secondary}>
               {`dataset ${d}…`}
             </T>
-            <T x={560} y={y + 38} s={12} f={C.secondary} a="end">
+            <T x={560} y={y + 38} s={13} f={C.secondary} a="end">
               {c}
             </T>
           </g>
         );
       })}
-      <g opacity={q}>
+      {/* one entry ties the three together: a tie draws from the digest to the commit in each record as it lands */}
+      {RECS.map((_, i) => (
+        <Draw key={i} pts={[[215, 22 + i * 60 + 34], [440, 22 + i * 60 + 34]]} t={t} from={0.7 + i * 0.5} to={1.1 + i * 0.5} stroke={C.line} w={1.2} pen={false} />
+      ))}
+      <g opacity={q} transform={`translate(0 ${((1 - q) * 12).toFixed(1)})`}>
         <rect x={25} y={152} width={320} height={30} rx={5} fill="none" stroke={C.second} strokeWidth={1.3} />
-        <T x={40} y={172} s={12} f={C.second}>
-          {`search dataset = ${HA}…`}
+        <T x={40} y={172} s={13} f={C.second}>
+          {typed}
         </T>
       </g>
-      <T x={575} y={172} s={13} f={C.focus} a="end" o={hit}>
-        1 model found
-      </T>
+      {/* the search sweeps the records top to bottom */}
+      {scan > 0 && scan < 1 && <rect x={25} y={lerp(18, 132, scan)} width={550} height={3} rx={1.5} fill={C.second} opacity={0.8} />}
+      <Draw pts={[[25, 167], [12, 167], [12, 56], [25, 56]]} t={t} from={2.9} to={3.25} stroke={C.second} w={1.6} />
+      <Decode text="1 model found" t={t} at={3.0} x={575} y={172} s={13} f={C.focus} a="end" />
+      <Reticle x={115} y={56} w={190} h={26} t={t} at={3.45} />
     </Svg>
   );
 }

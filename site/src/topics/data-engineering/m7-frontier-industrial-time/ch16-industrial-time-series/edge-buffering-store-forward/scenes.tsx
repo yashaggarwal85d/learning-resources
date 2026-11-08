@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Edge buffering and store-and-forward, drawn from examples.py: the 50-point fsynced file read back whole, 72,000 against
@@ -107,38 +107,45 @@ const SENT: number[] = (() => {
 })();
 
 // 0 · The replay lands on the platform as a row of cells, in arrival order. The resent 10 sits beside the first 10, red;
-// 31 arrives before 30, red; and the live readings, pale blue, queue up behind the whole replay — late.
+// 31 arrives before 30, red; and the live readings, pale blue, wait beside the link and slide in only after the whole
+// replay — late. The cells land one by one in arrival order; the bad ones jolt as they turn red.
 export function Hook({ t }: StepCtx) {
   const cw = 8.6;
   const cx = (j: number) => 25 + j * cw;
   const dupAt = SENT.indexOf(10) + 1;
   const swapAt = SENT.indexOf(31);
+  // the live readings show up during the replay but wait behind it, then slide into place last
+  const wait = easeOut(seg(t, 1.8, 2.2));
+  const enter = easeInOut(seg(t, 3.6, 4.2));
   return (
     <Svg
       label="a WAN outage ends, the gateway replays its buffer, and the platform shows some readings twice, a few out of order, and new live data arriving late because the replay saturated the link"
       h={200}
     >
-      <T x={25} y={40} s={12} f={C.quiet} o={easeOut(seg(t, 0, 0.3))}>
+      <T x={25} y={40} s={13} f={C.quiet} o={easeOut(seg(t, 0, 0.3))}>
         replay, as it arrived
       </T>
+      {/* the replay lands cell by cell, in arrival order */}
       {SENT.map((s, j) => {
         const bad = j === dupAt || j === swapAt || j === swapAt + 1;
-        return <rect key={j} x={cx(j) + 0.5} y={70} width={cw - 1.5} height={22} rx={1.5} fill={bad && t > 2.4 ? C.bad : C.secondary} opacity={easeOut(seg(t, 0.2 + j * 0.03, 0.4 + j * 0.03))} />;
+        const k = easeOut(seg(t, 0.2 + j * 0.03, 0.45 + j * 0.03));
+        const jolt = bad ? Math.sin(seg(t, 2.4, 2.9) * Math.PI * 3) * 4 * (1 - seg(t, 2.4, 2.9)) : 0;
+        return <rect key={j} x={cx(j) + 0.5} y={lerp(46, 70, k) + jolt} width={cw - 1.5} height={22} rx={1.5} fill={bad && t > 2.4 ? C.bad : C.secondary} opacity={k} />;
       })}
       {[0, 1, 2, 3, 4, 5].map((i) => (
-        <rect key={i} x={cx(50) + 6 + i * cw} y={70} width={cw - 1.5} height={22} rx={1.5} fill={C.second} opacity={easeOut(seg(t, 1.8 + i * 0.08, 2.0 + i * 0.08))} />
+        <rect key={i} x={cx(50) + 6 + i * cw + lerp(70, 0, enter)} y={lerp(100, 70, enter)} width={cw - 1.5} height={22} rx={1.5} fill={C.second} opacity={wait * (0.5 + 0.5 * enter)} />
       ))}
-      <T x={cx(dupAt)} y={120} s={12} f={C.badText} a="middle" o={easeOut(seg(t, 2.6, 3.0))}>
+      <Draw pts={[[cx(dupAt) + 4, 96], [cx(dupAt) + 4, 106]]} t={t} from={2.6} to={2.8} stroke={C.badText} w={1} pen={false} />
+      <T x={cx(dupAt)} y={120} s={13} f={C.badText} a="middle" o={easeOut(seg(t, 2.7, 3.0))}>
         10 twice
       </T>
-      <T x={cx(swapAt)} y={148} s={12} f={C.badText} a="middle" o={easeOut(seg(t, 3.1, 3.5))}>
+      <Draw pts={[[cx(swapAt) + 8, 96], [cx(swapAt) + 8, 134]]} t={t} from={3.1} to={3.35} stroke={C.badText} w={1} pen={false} />
+      <T x={cx(swapAt)} y={148} s={13} f={C.badText} a="middle" o={easeOut(seg(t, 3.2, 3.5))}>
         31 before 30
       </T>
-      <T x={575} y={120} s={12} f={C.second} a="end" w={600} o={easeOut(seg(t, 3.6, 4.0))}>
+      <T x={575} y={120} s={13} f={C.second} a="end" w={600} o={easeOut(seg(t, 4.0, 4.3))}>
         live, late
       </T>
-      <path d={`M${cx(dupAt) + 4} 96 V106`} stroke={C.badText} strokeWidth={1} opacity={easeOut(seg(t, 2.6, 3.0))} />
-      <path d={`M${cx(swapAt) + 8} 96 V134`} stroke={C.badText} strokeWidth={1} opacity={easeOut(seg(t, 3.1, 3.5))} />
     </Svg>
   );
 }
@@ -339,7 +346,8 @@ export function RevealCatchup({ t }: StepCtx) {
 
 // 5 · A full buffer of 120 points with room for 100; every 12th is a safety alarm (white). Three policies cut 20: drop-
 // oldest shaves the front and loses alarms 0 and 12 (8 of 10); drop-newest shaves the back and loses alarm 108 (9 of 10);
-// drop by priority removes 20 ordinary points and keeps all 10 alarms.
+// drop by priority removes 20 ordinary points and keeps all 10 alarms. Dropped points fall out of their row; the verdicts
+// slide in; the 121st write slides in at the end, and brackets lock onto the priority row.
 export function RevealDropPolicy({ t }: StepCtx) {
   const cw = 3.6;
   const x0 = 130;
@@ -354,43 +362,51 @@ export function RevealDropPolicy({ t }: StepCtx) {
     { l: 'newest', keep: (i: number) => i < 100, r: '9 of 10', c: C.badText, y: 96 },
     { l: 'priority', keep: (i: number) => !prioDrop.has(i), r: '10 of 10', c: C.focus, y: 148 },
   ];
+  // the 121st write: one more point slides into the buffer's end, whatever the policy
+  const write = easeOutBack(seg(t, 4.6, 5.0));
   return (
     <Svg
       label="dropping the oldest or the newest point by age alone loses some of the buffer's own safety alarms along with everything else, dropping by priority first keeps every alarm, and the buffer's own write never blocks, whichever policy applies on read"
       h={200}
     >
       {rows.map((r, ri) => {
-        const cut = easeOut(seg(t, 1.0 + ri * 1.0, 1.6 + ri * 1.0));
+        const cut = easeInOut(seg(t, 1.0 + ri * 1.0, 1.6 + ri * 1.0));
+        const k = easeOut(seg(t, ri * 0.2, 0.3 + ri * 0.2));
         return (
-          <g key={r.l} opacity={easeOut(seg(t, ri * 0.2, 0.3 + ri * 0.2))}>
-            <T x={25} y={r.y + 12} s={12} f={C.secondary}>
+          <g key={r.l} opacity={k}>
+            <T x={25} y={r.y + 12} s={13} f={C.secondary}>
               {r.l}
             </T>
             {Array.from({ length: 120 }, (_, i) => {
               const alarm = i % 12 === 0;
               const kept = r.keep(i);
-              const gone = !kept && cut > 0.5;
+              // a dropped point falls out of its row; a dropped alarm falls in red
+              const fall = kept ? 0 : cut;
               return (
                 <rect
                   key={i}
                   x={x0 + i * cw}
-                  y={alarm ? r.y - 2 : r.y + 2}
+                  y={(alarm ? r.y - 2 : r.y + 2) + fall * 8}
                   width={cw - 1}
                   height={alarm ? 20 : 12}
-                  fill={gone ? (alarm ? C.bad : C.panel) : alarm ? C.focus : C.quiet}
-                  opacity={gone && !alarm ? 0.4 : 1}
+                  fill={fall > 0.3 ? (alarm ? C.bad : C.panel) : alarm ? C.focus : C.quiet}
+                  opacity={1 - fall * (alarm ? 0.3 : 0.75)}
                 />
               );
             })}
-            <T x={575} y={r.y + 36} s={12} f={r.c} a="end" w={600} o={easeOut(seg(t, 1.6 + ri * 1.0, 2.0 + ri * 1.0))}>
-              {`alarms kept: ${r.r}`}
-            </T>
+            <g opacity={easeOut(seg(t, 1.6 + ri * 1.0, 2.0 + ri * 1.0))} transform={`translate(${((1 - easeOut(seg(t, 1.6 + ri * 1.0, 2.0 + ri * 1.0))) * 20).toFixed(1)} 0)`}>
+              <T x={575} y={r.y + 36} s={12} f={r.c} a="end" w={600}>
+                {`alarms kept: ${r.r}`}
+              </T>
+            </g>
           </g>
         );
       })}
+      {write > 0 && <rect x={x0 + 120 * cw + 3} y={lerp(120, 150, clamp(write, 0, 1.1))} width={cw + 1} height={12} fill={C.second} opacity={clamp(write)} />}
       <T x={25} y={196} s={12} f={C.second} o={easeOut(seg(t, 4.6, 5.0))}>
         the 121st write still lands: no backpressure
       </T>
+      <Reticle x={300} y={160} w={570} h={44} t={t} at={5.3} />
     </Svg>
   );
 }

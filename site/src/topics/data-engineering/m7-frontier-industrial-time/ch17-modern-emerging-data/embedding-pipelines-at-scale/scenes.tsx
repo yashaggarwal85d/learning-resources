@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Embedding pipelines at scale, drawn from examples.py and the cited benchmark: 400 tickets where content hashing
@@ -236,26 +236,32 @@ export function RevealContentHashing({ t }: StepCtx) {
 
 // 3 · The paper's method assembles as a recipe: sequence length 512, batch 32, $2.49/hr. Then the formula: cost per
 // million tokens = rate ÷ (tokens/s × 3,600) × 1,000,000, with tokens/s marked "measured here, smaller machine". A
-// stamp: read for the method, not the number.
+// stamp lands: read for the method, not the number. Each setting slides in with its value decoding.
 export function RevealThroughputAndCost({ t }: StepCtx) {
   const R: [string, string][] = [
     ['sequence length', '512'],
     ['batch size', '32'],
     ['hardware rate', '$2.49/hr'],
   ];
+  const stamp = easeOutBack(seg(t, 3.3, 3.7));
   return (
     <Svg label="a published benchmark's own method, reproduced small: fixed sequence length, fixed batch size, a stated hardware rate." h={220}>
-      {R.map(([l, v], i) => (
-        <g key={l} opacity={easeOut(seg(t, 0.2 + i * 0.4, 0.6 + i * 0.4))}>
-          <T x={25} y={30 + i * 28} s={13} f={C.secondary}>
-            {l}
-          </T>
-          <T x={300} y={30 + i * 28} s={13} f={C.focus}>
-            {v}
-          </T>
-        </g>
-      ))}
-      <g opacity={easeOut(seg(t, 1.8, 2.3))}>
+      {/* the study's recipe, one fixed setting per line, each value decoding as its line slides in */}
+      {R.map(([l, v], i) => {
+        const k = easeOut(seg(t, 0.2 + i * 0.4, 0.6 + i * 0.4));
+        return (
+          <g key={l}>
+            <g opacity={k} transform={`translate(${((1 - k) * -24).toFixed(1)} 0)`}>
+              <T x={25} y={30 + i * 28} s={13} f={C.secondary}>
+                {l}
+              </T>
+            </g>
+            <Draw pts={[[200, 26 + i * 28], [290, 26 + i * 28]]} t={t} from={0.35 + i * 0.4} to={0.6 + i * 0.4} stroke={C.line} w={1} pen={false} />
+            <Decode text={v} t={t} at={0.5 + i * 0.4} x={300} y={30 + i * 28} s={13} f={C.focus} />
+          </g>
+        );
+      })}
+      <g opacity={easeOut(seg(t, 1.8, 2.3))} transform={`translate(0 ${((1 - easeOut(seg(t, 1.8, 2.3))) * 14).toFixed(1)})`}>
         <T x={25} y={124} s={13} f={C.primary}>
           $ per M tokens =
         </T>
@@ -267,15 +273,19 @@ export function RevealThroughputAndCost({ t }: StepCtx) {
           × 3,600) × 10⁶
         </T>
       </g>
-      <T x={25} y={170} s={12} f={C.second} o={easeOut(seg(t, 2.5, 2.9))}>
-        tokens/s: measured here, smaller
-      </T>
-      <g opacity={easeOut(seg(t, 3.3, 3.7))}>
-        <rect x={25} y={186} width={300} height={28} rx={4} fill="none" stroke={C.focus} strokeWidth={1.4} />
-        <T x={175} y={205} s={13} f={C.focus} a="middle">
-          the method, not the number
+      <g opacity={easeOut(seg(t, 2.5, 2.9))} transform={`translate(${((1 - easeOut(seg(t, 2.5, 2.9))) * -20).toFixed(1)} 0)`}>
+        <T x={25} y={172} s={13} f={C.second}>
+          tokens/s: measured here, smaller
         </T>
       </g>
+      {stamp > 0 && (
+        <g transform={`translate(175 200) scale(${lerp(1.6, 1, clamp(stamp, 0, 1.1)).toFixed(3)}) translate(-175 -200)`} opacity={clamp(stamp * 1.5)}>
+          <rect x={25} y={186} width={300} height={28} rx={4} fill="none" stroke={C.focus} strokeWidth={1.4} />
+          <T x={175} y={205} s={13} f={C.focus} a="middle">
+            the method, not the number
+          </T>
+        </g>
+      )}
     </Svg>
   );
 }

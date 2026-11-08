@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, easeOutExpo, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Zero-ETL replication, drawn from examples.py run for real on this sandbox's Postgres (wal_level = logical as the
@@ -434,7 +434,8 @@ export function RevealThreeCosts({ t }: StepCtx) {
 }
 
 // 7 · Four lines with their pictures: "zero" crossing from latency to code, the CDC chain inside a dashed boundary, the
-// 15–30 minute band, and the three given-up controls dimming.
+// documented window opening on the time line with a change landing inside it, and the three given-up controls
+// sinking away; brackets lock onto the window.
 export function Recap({ t }: StepCtx) {
   const L: [string, string][] = [
     ['zero', 'zero pipeline code, not latency'],
@@ -443,10 +444,17 @@ export function Recap({ t }: StepCtx) {
     ['given up', 'schema timing, filtering, cost'],
   ];
   const k = (i: number) => easeOut(seg(t, 0.3 + i * 0.9, 0.7 + i * 0.9));
+  const zero = easeOutBack(seg(t, 0.5, 0.9));
+  // underneath: a change travels the same log-based chain, box to box
+  const flow = ((t - 1.3) / 1.1) % 1;
+  // the real limit: the documented window opens on the time line, and a change lands inside it
+  const band = easeOutExpo(seg(t, 2.2, 2.7));
+  const land = easeInOut(seg(t, 2.5, 3.1));
+  const give = easeInOut(seg(t, 3.4, 3.9));
   return (
     <Svg label="zero-ETL is managed log-based CDC. The code is gone; the mechanism and its limits are not." h={300}>
       {L.map(([a, b], i) => (
-        <g key={a} opacity={k(i)}>
+        <g key={a} opacity={k(i)} transform={`translate(${((1 - k(i)) * -24).toFixed(1)} 0)`}>
           <T x={25} y={40 + i * 70} s={13} f={C.secondary}>
             {a}
           </T>
@@ -455,27 +463,32 @@ export function Recap({ t }: StepCtx) {
           </T>
         </g>
       ))}
-      <g opacity={k(0)}>
-        <rect x={470} y={30} width={100} height={30} rx={4} fill={C.panel} stroke={C.focus} />
-        <T x={520} y={50} s={12} f={C.focus} a="middle">
-          code: 0
-        </T>
-      </g>
+      {zero > 0 && (
+        <g transform={`translate(520 45) scale(${clamp(zero, 0, 1.2).toFixed(3)}) translate(-520 -45)`}>
+          <rect x={470} y={30} width={100} height={30} rx={4} fill={C.panel} stroke={C.focus} />
+          <T x={520} y={50} s={13} f={C.focus} a="middle">
+            code: 0
+          </T>
+        </g>
+      )}
       <g opacity={k(1)}>
         <rect x={460} y={92} width={115} height={36} rx={4} fill="none" stroke={C.secondary} strokeDasharray="4 3" />
         {[0, 1, 2].map((j) => (
           <rect key={j} x={470 + j * 34} y={102} width={24} height={16} rx={2} fill={C.panel} stroke={j === 1 ? C.focus : C.line} />
         ))}
+        {t > 1.3 && <circle cx={lerp(470, 562, flow)} cy={110} r={3.5} fill={C.focus} />}
       </g>
       <g opacity={k(2)}>
         <line x1={460} y1={186} x2={575} y2={186} stroke={C.line} />
-        <rect x={490} y={172} width={60} height={28} fill={C.second} opacity={0.25} />
+        <rect x={520 - 30 * band} y={172} width={60 * band} height={28} fill={C.second} opacity={0.25} />
+        {land > 0 && <circle cx={lerp(462, 520, land)} cy={186} r={4} fill={C.second} />}
       </g>
       <g opacity={k(3)}>
         {[0, 1, 2].map((j) => (
-          <rect key={j} x={470 + j * 36} y={244} width={28} height={20} rx={2} fill={C.panel} stroke={C.line} opacity={1 - 0.6 * easeOut(seg(t, 3.4, 3.9))} />
+          <rect key={j} x={470 + j * 36} y={244 + give * (10 + j * 4)} width={28} height={20} rx={2} fill={C.panel} stroke={C.line} opacity={1 - 0.6 * give} />
         ))}
       </g>
+      <Reticle x={520} y={186} w={76} h={40} t={t} at={3.9} />
     </Svg>
   );
 }
