@@ -875,9 +875,9 @@ export function InFlight({ t, portrait }: StepCtx) {
     </g>
   );
   const ax = fade(t, 0.2, 0.6);
-  const read = fade(t, 3.0, 3.4);
-  const fin = fade(t, 3.4, 3.8);
-  const foot = fade(t, 3.8, 4.2);
+  const read = fade(t, 2.9, 3.2);
+  const fin = fade(t, 3.1, 3.4);
+  const foot = fade(t, 3.3, 3.7);
   // the caramel finish line: where the last read of the panel ends (640 µs one at a time, 80 µs together)
   const finish = (x0: number, w: number, yTop: number, yBot: number, frac: number, lab: string, anchor: 'start' | 'end') => (
     <g opacity={fin}>

@@ -183,7 +183,7 @@ export function Duplicates({ t: t0 }: StepCtx) {
       <T x={25} y={230} s={16} f={C.cherryText} w={700} o={easeOut(seg(t, 3.2, 3.7))}>
         second attempt: error
       </T>
-      <T x={25} y={264} s={13} f={C.latte} o={easeOut(seg(t, 4.4, 4.9))}>
+      <T x={25} y={264} s={13} f={C.latte} o={easeOut(seg(t, 3.3, 3.7))}>
         loud on purpose: no silent data loss
       </T>
     </Svg>
@@ -273,10 +273,10 @@ export function Atomic({ t: t0 }: StepCtx) {
         update
       </T>
       {others.map((i) => {
-        const p = seg(t, 3.6 + i * 0.5, 4.2 + i * 0.5);
+        const p = seg(t, 2.6 + i * 0.3, 3.2 + i * 0.3);
         return p > 0 && p < 1 ? <circle key={i} cx={290 + i * 40} cy={lerp(14, 58, p * p)} r={6} fill={C.crema} opacity={1 - p * 0.5} /> : null;
       })}
-      <T x={25} y={260} s={15} f={C.caramel} w={700} o={easeOut(seg(t, 4.2, 4.8))}>
+      <T x={25} y={260} s={15} f={C.caramel} w={700} o={easeOut(seg(t, 3.4, 3.9))}>
         one of two outcomes, always
       </T>
     </Svg>
@@ -307,7 +307,7 @@ export function Gap({ t: t0 }: StepCtx) {
       <T x={290} y={92} s={13} f={C.latte} a="middle" o={easeOut(seg(t, 2.0, 2.4))}>
         the gap
       </T>
-      <circle cx={440} cy={60} r={9 + 6 * hit * (1 - seg(t, 3.8, 4.4))} fill={hit > 0 ? C.cherryText : C.caramel} opacity={ins} />
+      <circle cx={440} cy={60} r={9 + 6 * hit * (1 - seg(t, 3.8, 4.3))} fill={hit > 0 ? C.cherryText : C.caramel} opacity={ins} />
       <T x={440} y={44} s={13} f={hit > 0 ? C.cherryText : C.caramel} a="middle" o={ins}>
         inserts
       </T>
@@ -323,7 +323,7 @@ export function Gap({ t: t0 }: StepCtx) {
       <T x={575} y={244} s={18} f={C.cherryText} a="end" w={700} o={easeOut(seg(t, 3.8, 4.3))}>
         unique violation
       </T>
-      <T x={25} y={284} s={13} f={C.latte} o={easeOut(seg(t, 5.2, 5.8))}>
+      <T x={25} y={284} s={13} f={C.latte} o={easeOut(seg(t, 4.0, 4.5))}>
         no going back to the update branch
       </T>
       <rect x={ph - 2} y={30} width={4} height={150} fill={C.latte} opacity={t < 5.0 ? 0.25 : 0} />
@@ -377,7 +377,7 @@ export function Choose({ t: t0 }: StepCtx) {
   const q = easeOut(seg(t, 0.2, 0.7));
   const b1 = easeOut(seg(t, 1.0, 1.6));
   const b2 = easeOut(seg(t, 2.6, 3.2));
-  const spin = seg(t, 3.4, 4.6) * 360;
+  const spin = seg(t, 2.6, 3.4) * 360;
   return (
     <Svg label="Which statement to use: ON CONFLICT for plain insert-or-update, race-free; MERGE with a retry for richer logic" h={290}>
       <T x={40} y={30} s={14} f={C.latte} o={q}>
@@ -410,7 +410,7 @@ export function Choose({ t: t0 }: StepCtx) {
           <path d="M340 193 l6 6 l-6 6" fill="none" stroke={C.caramel} strokeWidth={2.5} />
         </g>
       </g>
-      <T x={40} y={272} s={13} f={C.latte} o={easeOut(seg(t, 4.6, 5.2))}>
+      <T x={40} y={272} s={13} f={C.latte} o={easeOut(seg(t, 3.2, 3.7))}>
         the shape of the need, not habit
       </T>
     </Svg>
