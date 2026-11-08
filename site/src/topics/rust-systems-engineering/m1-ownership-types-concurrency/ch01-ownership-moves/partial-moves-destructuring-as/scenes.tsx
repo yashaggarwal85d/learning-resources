@@ -368,7 +368,7 @@ export function BraceDrops({ t, answer, portrait }: StepCtx) {
   const y = TLY(H);
   const fy = portrait ? 14 : 20;
   const sy = portrait ? 126 : 140; // the new owner's slot
-  const slide = easeOutBack(seg(t, 1.0, 1.4));
+  const slide = easeOutBack(seg(t, 0.9, 1.3));
   const gone = t >= 1.4 || ans;
   return (
     <Svg label="One field of three trace probes is moved out. At the closing brace the moved field dies first, with its new owner; then the struct drops head and tail in order; the hole drops nothing." h={H}>
@@ -383,7 +383,7 @@ export function BraceDrops({ t, answer, portrait }: StepCtx) {
         {!portrait && <T x={40} y={186} s={20} f={C.latte} w={600} o={fa(t, 0.6, 0.4)}>{'}'}</T>}
         {!portrait && <T x={40} y={216} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>Trace logs its name when dropped</T>}
       </g>
-      {!ans && t >= 1.0 && <Token x={lerp(235, 310, slide)} y={lerp(fy + 40, sy, slide)} w={110} h={30} kind="buf" label="Trace" o={1 - seg(t, 1.4, 1.5)} />}
+      {!ans && t >= 0.9 && <Token x={lerp(235, 310, slide)} y={lerp(fy + 40, sy, slide)} w={110} h={30} kind="buf" label="Trace" o={1 - seg(t, 1.3, 1.4)} />}
       <Slot x={300} y={sy} name="body" type="Trace" ghost={t < 1.4} o={t < 0.6 ? 0 : 1} look={ans} />
       <Timeline h={H} o={ans ? 1 : fa(t, 0.4)} />
       <g style={rv(ans, 0.05)}>

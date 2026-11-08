@@ -1,7 +1,34 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
+
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so a reveal can still move. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4.5) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
+
 
 // This topic's own shape: one impl box (associated type, chosen once) against several impl boxes
 // fanning from one trait-with-parameter (generic parameter, chosen many times) — the opposite
@@ -93,7 +120,9 @@ export function AssocVsGeneric({ t }: StepCtx) {
 }
 
 // ── 2 · Can the same type pick Output twice? (predict) ────────────────────────────────────────────
-export function DuplicateImpl({ t }: StepCtx) {
+export function DuplicateImpl({ t, answer }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
       <Code
@@ -104,9 +133,11 @@ export function DuplicateImpl({ t }: StepCtx) {
         end={1.4}
         highlight={[0, 1]}
       />
-      <div style={{ opacity: fa(t, 1.6, 0.4) }}>
-        <Code title="rustc" lines={['error[E0119]: conflicting implementations', 'of trait Codec for type A']} t={t} start={1.6} end={2.2} highlight={[0, 1]} />
-      </div>
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="rustc" lines={['error[E0119]: conflicting implementations', 'of trait Codec for type A']} t={s} start={0.1} end={0.7} highlight={[0, 1]} />
+        </div>
+      )}
     </Stack>
   );
 }
@@ -189,13 +220,17 @@ export function GatLending({ t, portrait }: StepCtx) {
 }
 
 // ── 5 · Implementing a foreign trait for a foreign type (predict) ──────────────────────────────────
-export function OrphanFail({ t }: StepCtx) {
+export function OrphanFail({ t, answer }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
       <Code title="examples/orphan_rule_fail.rs" lines={['impl fmt::Display for Vec<u8> { ... }']} t={t} start={0.1} end={1.2} highlight={[0]} />
-      <div style={{ opacity: fa(t, 1.4, 0.4) }}>
-        <Code title="rustc" lines={['error[E0117]: only traits defined in the', 'current crate can be implemented here']} t={t} start={1.4} end={2.0} highlight={[0, 1]} />
-      </div>
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="rustc" lines={['error[E0117]: only traits defined in the', 'current crate can be implemented here']} t={s} start={0.1} end={0.7} highlight={[0, 1]} />
+        </div>
+      )}
     </Stack>
   );
 }

@@ -253,20 +253,26 @@ export function ImplTraitArg({ t }: StepCtx) {
 }
 
 // ── 7 · One shared bound instead of two impl Trait parameters (predict) ────────────────────────────────────────
-export function SharedBoundFail({ t }: StepCtx) {
+export function SharedBoundFail({ t, answer, portrait }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
-      <Code
-        title="examples/trait_bound_same_type_fail.rs"
-        lines={['fn two_same_type<T: Greet>(a: T, b: T) -> (&\'static str, &\'static str) {', '    (a.hi(), b.hi())', '}', 'two_same_type(Dog, Cat)']}
-        t={t}
-        start={0.1}
-        end={1.6}
-        highlight={[0, 3]}
-      />
-      <div style={{ opacity: fa(t, 1.8, 0.4) }}>
-        <Code title="rustc" lines={['error[E0308]: mismatched types', 'expected `Dog`, found `Cat`']} t={t} start={1.8} end={2.4} highlight={[0, 1]} />
-      </div>
+      {!(portrait && ans) && (
+        <Code
+          title="examples/trait_bound_same_type_fail.rs"
+          lines={['fn two_same_type<T: Greet>(a: T, b: T) -> (&\'static str, &\'static str) {', '    (a.hi(), b.hi())', '}', 'two_same_type(Dog, Cat)']}
+          t={t}
+          start={0.1}
+          end={1.6}
+          highlight={[0, 3]}
+        />
+      )}
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="rustc" lines={['error[E0308]: mismatched types', 'expected `Dog`, found `Cat`']} t={s} start={0.1} end={0.7} highlight={[0, 1]} />
+        </div>
+      )}
     </Stack>
   );
 }

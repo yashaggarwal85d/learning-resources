@@ -151,10 +151,12 @@ export function NoCopy({ t }: StepCtx) {
 }
 
 // ── 2 · Does Header outlive the buffer it was parsed from? (predict) ───────────────────────────
-export function OutlivesQuestion({ t }: StepCtx) {
+export function OutlivesQuestion({ t, answer }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   const bufIn = fa(t, 0.2, 0.3);
   const headerIn = fa(t, 0.6, 0.3);
-  const shrink = easeOut(seg(t, 1.3, 1.7));
+  const shrink = ans ? easeOut(seg(s, 0.1, 0.5)) : 0;
   const bufW = 180 * (1 - shrink);
   return (
     <Svg label="a function that owns its buffer as a local Vec, parses it, and tries to return the Header" h={340}>
@@ -169,10 +171,10 @@ export function OutlivesQuestion({ t }: StepCtx) {
         <T x={340} y={126} s={14} a="middle" f={C.caramel}>header</T>
         <Draw pts={[[300, 126], [170, 122]]} t={t} from={0.9} to={1.3} stroke={shrink > 0.3 ? C.cherryText : C.caramel} w={2} dash="5 4" pen={false} />
       </g>
-      <g opacity={fa(t, 1.7, 0.4)}>
+      <g opacity={ans ? fa(s, 0.5, 0.4) : 0}>
         <T x={300} y={160} s={13} a="middle" f={C.cherryText}>buf just dropped — header still points there</T>
       </g>
-      <T x={40} y={260} s={15} f={C.crema} o={fa(t, 2.2, 0.4)}>does this compile?</T>
+      <T x={40} y={260} s={15} f={C.crema} o={fa(t, 1.1, 0.4)}>does this compile?</T>
     </Svg>
   );
 }

@@ -209,13 +209,17 @@ export function LostInlining({ t }: StepCtx) {
 }
 
 // ── 5 · A method that takes Self by value can't go in the vtable (predict) ─────────────────────────
-export function DynIncompatible({ t }: StepCtx) {
+export function DynIncompatible({ t, answer }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
   return (
     <Stack>
       <Code title="examples/dyn_incompatible_fail.rs" lines={['fn loud(self) -> Self;', 'let d: Box<dyn Greet> = Box::new(Dog);']} t={t} start={0.1} end={1.4} highlight={[0, 1]} />
-      <div style={{ opacity: fa(t, 1.6, 0.4) }}>
-        <Code title="rustc" lines={['error[E0038]: Greet is not dyn compatible', 'loud references the Self type']} t={t} start={1.6} end={2.2} highlight={[0, 1]} />
-      </div>
+      {ans && (
+        <div style={{ opacity: fa(s, 0, 0.3) }}>
+          <Code title="rustc" lines={['error[E0038]: Greet is not dyn compatible', 'loud references the Self type']} t={s} start={0.1} end={0.7} highlight={[0, 1]} />
+        </div>
+      )}
     </Stack>
   );
 }
