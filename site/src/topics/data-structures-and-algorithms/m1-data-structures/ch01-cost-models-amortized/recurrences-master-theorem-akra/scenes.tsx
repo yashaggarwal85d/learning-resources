@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, easeOutBack, fmt, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, fmt, lerp, seg } from '../../../../../reels/anim';
 import { C, SERIF, Svg, T } from '../../../../../reels/kit';
 
 // Every number shown here is computed or asserted by examples.py. Trees are drawn top-down, one row per level; the per-level
@@ -98,31 +98,36 @@ export function MergeTree({ t, portrait }: StepCtx) {
     <Svg label="Recursion tree of merge sort on 64 keys: seven levels, every level totals 64, the sum is 448" h={380}>
       {Array.from({ length: 7 }, (_, i) => {
         const a = easeOut(seg(t, 0.2 + 0.55 * i, 0.6 + 0.55 * i));
+        // Each call is handed down from its parent: children start at the parent's place and spread out to their own.
+        const k = easeInOut(seg(t, 0.2 + 0.55 * i, 0.75 + 0.55 * i));
         const y = ROW(i);
         const n = 2 ** i;
+        const px = (j: number) => (i > 0 ? CX(i - 1, j >> 1) : CX(0, 0));
+        const x = (j: number) => lerp(px(j), CX(i, j), k);
+        const yy = lerp(i > 0 ? ROW(i - 1) : y, y, k);
         return (
           <g key={i} opacity={a}>
             {!portrait && <T x={22} y={y + 5} s={13} f={C.taupe}>L{i}</T>}
             {i > 0 &&
               Array.from({ length: n }, (_, j) => (
-                <line key={j} x1={CX(i - 1, j >> 1)} y1={ROW(i - 1) + (i - 1 <= 3 ? 12 : 2)} x2={CX(i, j)} y2={y - (i <= 3 ? 12 : 2)} stroke={C.mocha} strokeWidth={i > 4 ? 0.7 : 1.2} />
+                <line key={j} x1={CX(i - 1, j >> 1)} y1={ROW(i - 1) + (i - 1 <= 3 ? 12 : 2)} x2={x(j)} y2={Math.max(ROW(i - 1) + (i - 1 <= 3 ? 12 : 2), yy - (i <= 3 ? 12 : 2))} stroke={C.mocha} strokeWidth={i > 4 ? 0.7 : 1.2} />
               ))}
             {Array.from({ length: n }, (_, j) =>
               i <= 3 ? (
                 <g key={j}>
-                  <rect x={CX(i, j) - 17} y={y - 12} width={34} height={24} rx={5} fill={C.roast} stroke={C.mocha} />
-                  <T x={CX(i, j)} y={y + 5} s={13} f={C.crema} a="middle">{sizes[i]}</T>
+                  <rect x={x(j) - 17} y={yy - 12} width={34} height={24} rx={5} fill={C.roast} stroke={C.mocha} />
+                  <T x={x(j)} y={yy + 5} s={13} f={C.crema} a="middle">{sizes[i]}</T>
                 </g>
               ) : (
-                <circle key={j} cx={CX(i, j)} cy={y} r={i === 4 ? 3 : i === 5 ? 2.4 : 1.8} fill={C.taupe} />
+                <circle key={j} cx={x(j)} cy={yy} r={i === 4 ? 3 : i === 5 ? 2.4 : 1.8} fill={C.taupe} />
               ),
             )}
-            <T x={540} y={y + 5} s={15} f={C.caramel} a="end" w={600}>64</T>
+            <T x={lerp(500, 540, a)} y={y + 5} s={15} f={C.caramel} a="end" w={600}>64</T>
           </g>
         );
       })}
-      <line x1={440} y1={ROW(6) + 16} x2={545} y2={ROW(6) + 16} stroke={C.latte} strokeWidth={1.5} opacity={rule} />
-      <T x={540} y={ROW(6) + 44} s={20} f={C.caramel} a="end" w={700} o={rule}>448</T>
+      <line x1={545 - 105 * rule} y1={ROW(6) + 16} x2={545} y2={ROW(6) + 16} stroke={C.latte} strokeWidth={1.5} opacity={rule} />
+      <T x={540} y={ROW(6) + 44} s={20} f={C.caramel} a="end" w={700} o={rule}>{fmt(lerp(64, 448, easeOut(seg(t, 3.9, 4.5))))}</T>
       <T x={540} y={ROW(6) + 66} s={13} f={C.latte} a="end" o={rule}>= 64 × 7 levels</T>
     </Svg>
   );

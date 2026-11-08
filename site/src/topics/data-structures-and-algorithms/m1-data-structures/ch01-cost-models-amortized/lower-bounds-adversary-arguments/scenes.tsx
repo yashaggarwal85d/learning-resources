@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, MONO, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, MONO, Svg, T } from '../../../../../reels/kit';
 
 // Every number shown here is computed or asserted by examples.py. Trees are drawn top-down; the per-level budget sits in caramel at the
 // right margin (x = 540, end-anchored), one column, read straight down. Colour grammar of the chapter: caramel = what is counted and the
@@ -767,25 +767,33 @@ export function Scoreboard({ t }: StepCtx) {
 export function DistinctPredict({ t, answer }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
+  // Before the answer: the twelve unknown keys collapse into one yes/no verdict, so counting says one question.
+  // After it: the keys are chained neighbour to neighbour (the sorted order a safe "distinct" must learn),
+  // and the count races from the counting bound's 1 up to the sorting bound.
+  const pill = (i: number) => easeOutBack(seg(t, 0.5 + i * 0.15, 0.9 + i * 0.15));
+  const chain = Array.from({ length: 12 }, (_, i) => [49 + i * 42, i % 2 ? 72 : 64] as [number, number]);
+  const race = easeOut(seg(s, 0.9, 2.4));
   return (
     <Svg label={shown ? 'Are all keys distinct: two possible answers, counting gives one question, but a million keys cost at least 18,488,885 comparisons, as many as sorting' : 'Are all keys distinct: two possible answers, yes or no, counting gives one question; the worst case on a million keys is unknown'} h={250}>
       <T x={30} y={22} s={13} f={C.latte} o={fade(t, 0, 0.3)}>
         are all keys distinct?
       </T>
-      <g opacity={fade(t, 0.1, 0.5)}>
-        {Array.from({ length: 12 }, (_, i) => (
-          <g key={i}>
-            <rect x={30 + i * 42} y={34} width={38} height={26} rx={5} fill={C.roast} stroke={C.mocha} />
+      {Array.from({ length: 12 }, (_, i) => {
+        const k = easeOut(seg(t, 0.05 + i * 0.03, 0.45 + i * 0.03));
+        return (
+          <g key={i} opacity={k} transform={`translate(0 ${((1 - k) * -10).toFixed(2)})`}>
+            <rect x={30 + i * 42} y={34} width={38} height={26} rx={5} fill={C.roast} stroke={shown && s > 0.1 + i * 0.08 ? C.latte : C.mocha} />
             <T x={30 + i * 42 + 19} y={52} s={13} f={C.taupe} a="middle">
               ?
             </T>
           </g>
-        ))}
-      </g>
+        );
+      })}
+      {shown && <Draw pts={chain} t={s} from={0.1} to={1.0} stroke={C.caramel} w={1.5} />}
       {['yes', 'no'].map((a, i) => (
-        <g key={a} opacity={fade(t, 0.5 + i * 0.15, 0.8 + i * 0.15)}>
-          <rect x={30 + i * 100} y={80} width={84} height={30} rx={15} fill="none" stroke={C.latte} />
-          <T x={72 + i * 100} y={100} s={15} f={C.crema} a="middle">
+        <g key={a} opacity={clamp(pill(i) * 2)} transform={`translate(${72 + i * 100} ${lerp(62, 95, pill(i)).toFixed(2)}) scale(${lerp(0.4, 1, clamp(pill(i))).toFixed(3)})`}>
+          <rect x={-42} y={-15} width={84} height={30} rx={15} fill="none" stroke={C.latte} />
+          <T x={0} y={5} s={15} f={C.crema} a="middle">
             {a}
           </T>
         </g>
@@ -795,10 +803,11 @@ export function DistinctPredict({ t, answer }: StepCtx) {
       </T>
       {shown ? (
         <>
-          <T x={30} y={182} s={17} f={C.caramel} w={700} o={fade(s, 0, 0.5)}>
-            ≥ 18,488,885 = ⌈log₂ 1,000,000!⌉
+          <T x={30} y={182} s={17} f={C.caramel} w={700} o={fade(s, 0.8, 1.0)}>
+            ≥ {race < 1 ? Math.max(1, Math.round(18488885 * race)).toLocaleString('en-US') : '18,488,885'} = ⌈log₂ 1,000,000!⌉
           </T>
-          <T x={30} y={212} s={13} f={C.latte} o={fade(s, 0.5, 0.9)}>
+          <rect x={30} y={194} width={Math.max(3, 540 * race)} height={4} rx={2} fill={C.caramel} opacity={fade(s, 0.8, 1.0)} />
+          <T x={30} y={224} s={13} f={C.latte} o={fade(s, 2.2, 2.6)}>
             as many as sorting: proof in the next step
           </T>
         </>

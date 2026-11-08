@@ -466,21 +466,25 @@ export function HalveBits({ t }: StepCtx) {
 
 // 12 · The price: Theta(U) space, unless you hash.
 export function SpacePrice({ t }: StepCtx) {
+  const grow = easeInOut(seg(t, 0.1, 1.2));
   const collapse = easeOut(seg(t, 2.4, 3.6));
   const dots = [0, 1, 2, 3, 4, 5, 6, 7];
+  // Where each non-empty cluster sits inside the huge array, before it is lifted out into the compact table.
+  const from = [61, 118, 172, 236, 331, 389, 452, 517];
   return (
     <Svg label="An array of 2 to the 64 cluster slots dwarfs a million keys; hashing keeps only the non-empty clusters, Theta of n" h={340}>
       <T x={40} y={90} s={15} f={C.latte}>array of clusters: 2⁶⁴ slots</T>
       <T x={560} y={90} s={22} f={C.taupe} a="end" w={700} o={1 - 0.5 * collapse}>Θ(U)</T>
-      <rect x={40} y={104} width={520} height={34} rx={6} fill={C.cocoa} stroke={C.mocha} opacity={1 - 0.4 * collapse} />
-      <rect x={299} y={104} width={2} height={34} fill={C.crema} opacity={fadeIn(t, 0.6)} />
-      <path d="M300 140 V168" stroke={C.crema} opacity={fadeIn(t, 0.8)} />
+      <rect x={40} y={104} width={Math.max(2, 520 * grow)} height={34} rx={6} fill={C.cocoa} stroke={C.mocha} opacity={1 - 0.4 * collapse} />
+      <rect x={299} y={lerp(80, 104, easeOut(seg(t, 0.6, 1.1)))} width={2} height={34} fill={C.crema} opacity={fadeIn(t, 0.6)} />
+      <Draw pts={[[300, 140], [300, 168]]} t={t} from={0.8} to={1.2} stroke={C.crema} w={1} />
       <T x={300} y={188} s={15} f={C.crema} a="middle" o={fadeIn(t, 0.9)}>1,000,000 keys</T>
-      {dots.map((i) => (
-        <circle key={i} cx={120 + i * 52} cy={248} r={7} fill={C.caramel} opacity={collapse} />
-      ))}
+      {dots.map((i) => {
+        const k = easeInOut(seg(t, 2.4 + i * 0.08, 3.3 + i * 0.08));
+        return <circle key={i} cx={lerp(from[i], 120 + i * 52, k)} cy={lerp(121, 248, k)} r={lerp(3, 7, k)} fill={C.caramel} opacity={clamp(collapse * 4)} />;
+      })}
       <T x={40} y={290} s={15} f={C.latte} o={collapse}>only the non-empty clusters</T>
-      <T x={560} y={290} s={22} f={C.caramel} a="end" w={700} o={collapse}>Θ(n)</T>
+      <Decode text="Θ(n)" t={t} at={3.3} x={560} y={290} s={22} f={C.caramel} a="end" w={700} />
     </Svg>
   );
 }

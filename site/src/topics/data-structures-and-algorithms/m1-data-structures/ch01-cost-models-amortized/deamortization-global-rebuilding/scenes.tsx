@@ -271,22 +271,34 @@ export function FanOut({ t: clock }: StepCtx) {
   const lines = at(t, 0.2, 0.9);
   const slow = at(t, 1.1, 1.4);
   const root = at(t, 1.4, 1.7);
+  // The request fans out along every edge; the replies race back. Ninety-nine are home almost at once, the one slow
+  // server's reply crawls, and the root (which needs every answer) waits for it.
+  const back = (i: number) => (i === SLOW ? easeInOut(seg(t, 0.95, 1.42)) : easeOut(seg(t, 0.92 + (i % 7) * 0.01, 1.08 + (i % 7) * 0.01)));
+  const pct = at(t, 2.0, 2.6);
   return (
     <Svg label="A request fans out from a root to 100 leaf servers; one leaf is slow, and that is enough to make the whole request slow. With a 1 in 100 chance per server, 63 percent of requests to 100 servers are slow" h={360}>
       <T x={40} y={26} s={13} f={C.latte}>Dean and Barroso, The Tail at Scale</T>
       <T x={40} y={44} s={13} f={C.taupe}>each server: 10 ms typical, 1 s at its p99</T>
       {LEAVES.map((l, i) => (
-        <line key={i} x1={300} y1={84} x2={l.x} y2={l.y} stroke={i === SLOW ? C.cherry : C.taupe} strokeWidth={i === SLOW ? 2 : 1} opacity={i === SLOW ? Math.max(0.35 * lines, slow) : 0.35 * lines} />
+        <line key={i} x1={300} y1={84} x2={lerp(300, l.x, lines)} y2={lerp(84, l.y, lines)} stroke={i === SLOW ? C.cherry : C.taupe} strokeWidth={i === SLOW ? 2 : 1} opacity={i === SLOW ? Math.max(0.35 * lines, slow) : 0.35 * lines} />
       ))}
       {LEAVES.map((l, i) => (
         <circle key={i} cx={l.x} cy={l.y} r={i === SLOW ? 5.5 : 3.5} fill={i === SLOW ? C.cherry : C.crema} opacity={i === SLOW ? 0.25 + 0.75 * slow : lines} />
       ))}
+      {LEAVES.map((l, i) => {
+        const k = back(i);
+        if (k <= 0 || k >= 1) return null;
+        return <circle key={`r${i}`} cx={lerp(l.x, 300, k)} cy={lerp(l.y, 84, k)} r={i === SLOW ? 4 : 2} fill={i === SLOW ? C.cherryText : C.caramel} />;
+      })}
       <circle cx={300} cy={84} r={9} fill={C.crema} />
       <circle cx={300} cy={84} r={9} fill={C.cherry} opacity={root} />
-      <T x={40} y={250} s={26} f={C.cherryText} w={700} serif o={at(t, 2.0, 2.4)}>63%</T>
+      <circle cx={300} cy={84} r={9 + 10 * root} fill="none" stroke={C.cherryText} strokeWidth={1.5} opacity={root * (1 - root) * 3} />
+      <T x={40} y={250} s={26} f={C.cherryText} w={700} serif o={at(t, 2.0, 2.2)}>{Math.round(63 * pct)}%</T>
+      <rect x={140} y={232} width={Math.max(3, 420 * 0.63 * pct)} height={14} rx={3} fill={C.cherry} opacity={at(t, 2.0, 2.2)} />
+      <rect x={140} y={232} width={420} height={14} rx={3} fill="none" stroke={C.mocha} opacity={at(t, 2.0, 2.2)} />
       <T x={40} y={272} s={13} f={C.latte} o={at(t, 2.0, 2.4)}>of requests to 100 servers take over 1 s</T>
       <T x={40} y={316} s={15} f={C.crema} o={at(t, 2.8, 3.2)}>2,000 servers, 1 in 10,000 slow:</T>
-      <T x={40} y={344} s={15} f={C.cherryText} w={600} o={at(t, 3.0, 3.4)}>almost 1 request in 5</T>
+      <T x={lerp(60, 40, at(t, 3.0, 3.4))} y={344} s={15} f={C.cherryText} w={600} o={at(t, 3.0, 3.4)}>almost 1 request in 5</T>
     </Svg>
   );
 }

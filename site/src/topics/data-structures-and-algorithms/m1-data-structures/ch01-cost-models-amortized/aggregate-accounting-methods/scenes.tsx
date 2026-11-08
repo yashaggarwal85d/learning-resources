@@ -600,21 +600,32 @@ export function Counter({ t, answer }: StepCtx) {
   const gx = (c: number) => 120 + 64 * c;
   const gy = (r: number) => 106 + 11 * r;
   const a = easeOut(seg(t, 0.1, 0.6));
+  const before = [0, 1, 1, 1, 1];
   const bits = [1, 0, 0, 0, 0];
   const tot = [1, 2, 4, 8, 16]; // bit 4 .. bit 0
+  // The 16th increment as a carry ripple: bit 0 flips first, then the carry runs left until it lands on bit 4.
+  const flip = (c: number) => seg(t, 0.55 + (4 - c) * 0.16, 0.7 + (4 - c) * 0.16);
+  // After the answer, the sixteen increments replay row by row; each flipped bit sweeps in from the left.
   const vis = (r: number) => (shown ? easeOut(seg(s, 0.07 * r, 0.07 * r + 0.15)) : 0);
+  const sum = shown ? easeOut(seg(s, 1.1, 1.8)) : 0;
   return (
     <Svg label="A binary counter's first 16 increments as a grid, one row per increment and one column per bit: bit 0 flips 16 times, bit 1 eight, bit 2 four, bit 3 twice, bit 4 once, 31 flips in all" h={318}>
       <T x={300} y={15} s={15} f={C.cherryText} a="middle" w={600} o={a}>01111 → 10000 flips 5 bits</T>
       <T x={300} y={38} s={15} f={C.taupe} a="middle" o={a}>unit: one bit flip</T>
       <T x={112} y={60} s={15} f={C.taupe} a="end" o={a}>bit</T>
-      {bits.map((b, c) => (
-        <g key={c} opacity={a}>
-          <T x={gx(c) + 32} y={60} s={15} f={C.taupe} a="middle">{4 - c}</T>
-          <rect x={gx(c) + 2} y={68} width={60} height={32} rx={8} fill={C.cherry} />
-          <T x={gx(c) + 32} y={92} s={20} f={C.crema} a="middle" w={700}>{b}</T>
-        </g>
-      ))}
+      {bits.map((b, c) => {
+        const f = flip(c);
+        const sy = Math.abs(Math.cos(f * Math.PI));
+        return (
+          <g key={c} opacity={a}>
+            <T x={gx(c) + 32} y={60} s={15} f={C.taupe} a="middle">{4 - c}</T>
+            <g transform={`translate(0 ${84}) scale(1 ${Math.max(0.04, sy).toFixed(3)}) translate(0 ${-84})`}>
+              <rect x={gx(c) + 2} y={68} width={60} height={32} rx={8} fill={f > 0 ? C.cherry : C.roast} stroke={C.mocha} />
+              <T x={gx(c) + 32} y={92} s={20} f={C.crema} a="middle" w={700}>{f >= 0.5 ? b : before[c]}</T>
+            </g>
+          </g>
+        );
+      })}
       <T x={112} y={gy(0) + 8} s={15} f={C.taupe} a="end">inc 1</T>
       <T x={112} y={gy(15) + 8} s={15} f={C.taupe} a="end">inc 16</T>
       <line x1={76} y1={gy(0) + 20} x2={76} y2={gy(15) - 14} stroke={C.taupe} strokeWidth={1} strokeDasharray="2 4" />
@@ -625,15 +636,15 @@ export function Counter({ t, answer }: StepCtx) {
             return (
               <g key={c}>
                 <rect x={gx(c) + 2} y={gy(r)} width={60} height={9} rx={3} fill="none" stroke={C.taupe} strokeWidth={0.8} opacity={0.45} />
-                {flipped && <rect x={gx(c) + 2} y={gy(r)} width={60} height={9} rx={3} fill={C.caramel} opacity={vis(r)} />}
+                {flipped && vis(r) > 0 && <rect x={gx(c) + 2} y={gy(r)} width={Math.max(3, 60 * vis(r))} height={9} rx={3} fill={C.caramel} />}
               </g>
             );
           })}
         </g>
       ))}
       {shown && <rect x={gx(0)} y={gy(15) - 1} width={320} height={11} rx={4} fill="none" stroke={C.cherry} strokeWidth={2} opacity={easeOut(seg(s, 1.0, 1.3))} />}
-      {tot.map((v, c) => <T key={c} x={gx(c) + 32} y={gy(15) + 34} s={15} f={C.caramel} a="middle" w={700} o={shown ? easeOut(seg(s, 1.1, 1.4)) : 0}>{v}</T>)}
-      <T x={452} y={gy(15) + 36} s={22} f={C.caramel} serif w={700} o={shown ? easeOut(seg(s, 1.1, 1.4)) : 0}>= 31</T>
+      {tot.map((v, c) => <T key={c} x={gx(c) + 32} y={gy(15) + 34} s={15} f={C.caramel} a="middle" w={700} o={shown ? easeOut(seg(s, 1.1, 1.4)) : 0}>{Math.round(v * sum)}</T>)}
+      <T x={452} y={gy(15) + 36} s={22} f={C.caramel} serif w={700} o={shown ? easeOut(seg(s, 1.1, 1.4)) : 0}>= {Math.round(31 * sum)}</T>
     </Svg>
   );
 }
