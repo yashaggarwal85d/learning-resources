@@ -185,7 +185,7 @@ export function RevealMultivaluedQuote({ t }: StepCtx) {
 export function PredictBridgeSum({ t, answer }: StepCtx) {
   return (
     <Svg label="join through the bridge, sum — the real total?" h={210}>
-      <Row y={40} label="order's own amount" value="joined through the bridge" k={easeOut(seg(t, 0.1, 0.5))} />
+      <Row y={40} label="order's own amount" value="via the bridge" k={easeOut(seg(t, 0.1, 0.5))} />
       <Cell x={25} y={62} w={130} h={26} label="70.00" o={easeOut(seg(t, 0.2, 0.5))} />
       {PROMOS.map((p, i) => (
         <g key={p}>
