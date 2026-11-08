@@ -461,7 +461,7 @@ export function RevealELTShift({ t }: StepCtx) {
   );
   return (
     <Svg label="storage cheaper, compute faster, transform after load" h={230}>
-      <Row y={40} label="cloud warehouses" value="storage cheap, compute fast" k={easeOut(seg(t, 0.4, 0.9))} />
+      <Row y={40} label="cloud" value="storage cheap, compute fast" k={easeOut(seg(t, 0.4, 0.9))} />
       <Row y={85} label="transform now happens" value="after load, not before" valueColor={C.focus} k={easeOut(seg(t, 2.4, 2.9))} />
       {chip(25, 110, 'extract', C.mocha)}
       {chip(lerp(215, 405, sw), 110 - Math.sin(sw * Math.PI) * 14, 'transform', C.focus)}
