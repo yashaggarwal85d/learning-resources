@@ -191,11 +191,13 @@ export function PredictCondensation({ t, answer }: StepCtx) {
   const arrows = answered ? easeOut(seg(s, 0.9, 1.4)) : 0;
   return (
     <Svg label="The six-vertex graph with its three mutually reachable groups ringed. After answering: each group shrinks to one point, leaving 0 1 2, then 3 4, then 5 in a line, with no cycle" h={250}>
-      <g opacity={1 - shrink}>
-        <Graph />
-        {[0, 1, 2].map((g) => <Ring key={g} g={g} o={rings} scale={breathe} />)}
-      </g>
-      {answered && [0, 1, 2].map((g) => <Pill key={g} g={g} o={shrink} />)}
+      {shrink < 0.5 && (
+        <g opacity={1 - 2 * shrink}>
+          <Graph />
+          {[0, 1, 2].map((g) => <Ring key={g} g={g} o={rings} scale={breathe * (1 - shrink)} />)}
+        </g>
+      )}
+      {answered && shrink >= 0.5 && [0, 1, 2].map((g) => <Pill key={g} g={g} o={2 * shrink - 1} />)}
       {answered && (
         <>
           <PillArrow a={0} b={1} p={arrows} />

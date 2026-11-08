@@ -119,7 +119,7 @@ export function AllocationPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: allocation is a different story ──────────────────────
 export function AllocationReveal({ t }: StepCtx) {
-  const rows = ['borrowing: a handful of bytes per record', 'cloning: right around each record own size'];
+  const rows = ['borrowing: a handful of bytes per record', 'cloning: right around each record’s own size'];
   // Borrowing reaches into the record with a reference, and the allocator sees a sliver. Cloning copies the whole record
   // out into fresh memory, record after record, a full record's worth every time.
   const rec = 200;

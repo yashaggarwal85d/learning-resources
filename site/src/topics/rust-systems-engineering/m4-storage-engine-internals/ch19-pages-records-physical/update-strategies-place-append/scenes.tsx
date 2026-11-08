@@ -72,7 +72,7 @@ export function AppendPredict({ t }: StepCtx) {
     <Stack>
       <Code
         title="the same five updates, appended to a log"
-        lines={['log.push(v); log.push(v);', '// does the log own footprint grow each time?']}
+        lines={['log.push(v); log.push(v);', '// does the log’s own footprint grow each time?']}
         t={t}
         start={0.1}
         end={2.6}
@@ -91,8 +91,8 @@ export function AppendReveal({ t }: StepCtx) {
     <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the log, after five appended updates</T>
       <rect x={70} y={70} width={w} height={10} rx={3} fill={C.caramel} opacity={0.7} />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>footprint grew; compaction shrank it back</T>}
+      <rect x={60} y={85} width={480} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.3, 0.4) > 0.85 && <T x={300} y={112} s={13} a="middle" f={C.mocha}>footprint grew; compaction shrank it back</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.7, 0.4)}>every old version stayed until compaction ran</T>
     </Svg>
   );
@@ -104,7 +104,7 @@ export function CowPredict({ t }: StepCtx) {
     <Stack>
       <Code
         title="the same five updates, each copying a whole page"
-        lines={['let mut new_page = *pages.last().unwrap();', '// just the record own bytes, or a whole page?']}
+        lines={['let mut new_page = *pages.last().unwrap();', '// just the record’s own bytes, or a whole page?']}
         t={t}
         start={0.1}
         end={2.6}
@@ -122,8 +122,8 @@ export function CowReveal({ t }: StepCtx) {
     <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={200}>
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one small update, copy-on-write</T>
       <rect x={70} y={70} width={w} height={10} rx={3} fill={C.cherry} opacity={0.7} />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>footprint grew by a whole page each time</T>}
+      <rect x={60} y={85} width={480} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={300} y={112} s={13} a="middle" f={C.mocha}>footprint grew by a whole page each time</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>never just the record's own few bytes</T>
     </Svg>
   );
@@ -177,8 +177,8 @@ export function CrashSafetyReveal({ t }: StepCtx) {
       <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a data page is copied, never overwritten</T>
       <circle cx={200} cy={76} r={4} fill={C.taupe} />
       <circle cx={200 + dx} cy={76} r={4} fill="none" stroke={C.caramel} strokeWidth={1.5} />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>no page can ever be left half-written</T>}
+      <rect x={60} y={85} width={480} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      {fa(t, 1.0, 0.4) > 0.85 && <T x={300} y={112} s={13} a="middle" f={C.mocha}>no page can ever be left half-written</T>}
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>no special recovery procedure needed at all</T>
     </Svg>
   );

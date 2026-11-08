@@ -133,19 +133,19 @@ function Ptr({ x1, y1, x2, y2, k, f = C.latte }: { x1: number; y1: number; x2: n
 export function NoCopy({ t }: StepCtx) {
   const bytes = ['R', 'U', 'S', 'T', 'C', 'H', '0', '2'];
   return (
-    <Svg label="Header's fields are bracket spans drawn directly over ranges of the caller's own buffer, not a separate copied row" h={360}>
+    <Svg label="Header's fields are bracket spans drawn directly over ranges of the caller's own buffer, not a separate copied row" h={290}>
       <T x={40} y={40} s={14} f={C.crema}>buf: [u8; 8]</T>
       <g opacity={fa(t, 0.2, 0.4)}>
         <ByteRow y={60} bytes={bytes} />
       </g>
       <g opacity={fa(t, 0.8, 0.4)}>
-        <FieldSpan x1={40} x2={40 + 4 * 56 - 4} y={150} t={t} from={0.8} label="magic: &'a [u8]" />
+        <FieldSpan x1={40} x2={40 + 4 * 56 - 4} y={140} t={t} from={0.8} label="magic: &'a [u8]" />
       </g>
       <g opacity={fa(t, 1.6, 0.4)}>
-        <FieldSpan x1={40 + 4 * 56} x2={40 + 8 * 56 - 4} y={210} t={t} from={1.6} label="name: &'a [u8]" color={C.cinnamon} />
+        <FieldSpan x1={40 + 4 * 56} x2={40 + 8 * 56 - 4} y={190} t={t} from={1.6} label="name: &'a [u8]" color={C.cinnamon} />
       </g>
-      <T x={40} y={280} s={14} f={C.caramel} o={fa(t, 2.4, 0.4)}>no byte of buf was copied to build either field</T>
-      <T x={40} y={305} s={13} f={C.taupe} o={fa(t, 2.4, 0.4)}>confirmed by pointer equality in zero_copy_parse.rs</T>
+      <T x={40} y={240} s={14} f={C.caramel} o={fa(t, 2.4, 0.4)}>no byte of buf was copied to build either field</T>
+      <T x={40} y={266} s={13} f={C.taupe} o={fa(t, 2.4, 0.4)}>confirmed by pointer equality in zero_copy_parse.rs</T>
     </Svg>
   );
 }
