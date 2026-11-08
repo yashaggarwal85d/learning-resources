@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Reticle, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Decode, Draw, Reticle, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 
 /** A check mark that draws itself over `k` (0..1). */
@@ -22,7 +22,7 @@ function RecapRows({ t, rows, y0 = 40, gap = 56, start = 0.2, beat = 0.45, lock 
   const yEnd = y0 + (rows.length - 1) * gap;
   return (
     <g>
-      <Draw pts={[[30, y0 - 6], [30, yEnd + 6]]} t={t} from={start - 0.05} to={start + (rows.length - 1) * beat + 0.3} stroke={C.mocha} w={1.5} pen={false} />
+      <Draw pts={[[26, y0 - 6], [26, yEnd + 6]]} t={t} from={start - 0.05} to={start + (rows.length - 1) * beat + 0.3} stroke={C.mocha} w={1.5} pen={false} />
       {rows.map(([r, good], i) => {
         const a = start + i * beat;
         const k = easeOut(seg(t, a, a + 0.45));
@@ -31,10 +31,10 @@ function RecapRows({ t, rows, y0 = 40, gap = 56, start = 0.2, beat = 0.45, lock 
         return (
           <g key={r}>
             <g opacity={k} transform={`translate(${((1 - k) * -24).toFixed(1)} 0)`}>
-              <circle cx={30} cy={y} r={hot ? 6 : 4.5} fill={hot ? C.caramel : C.crema} />
-              <T x={50} y={y + 5} s={13} f={hot ? C.caramel : C.crema} w={hot ? 700 : 500}>{r}</T>
+              <circle cx={26} cy={y} r={hot ? 6 : 4.5} fill={hot ? C.caramel : C.crema} />
+              <T x={44} y={y + 5} s={13} f={hot ? C.caramel : C.crema} w={hot ? 700 : 500}>{r}</T>
             </g>
-            {good ? <Tick x={548} y={y} k={easeOut(seg(t, a + 0.3, a + 0.65))} /> : <Cross x={548} y={y} k={easeOut(seg(t, a + 0.3, a + 0.65))} />}
+            {good ? <Tick x={554} y={y} k={easeOut(seg(t, a + 0.3, a + 0.65))} /> : <Cross x={556} y={y} k={easeOut(seg(t, a + 0.3, a + 0.65))} />}
           </g>
         );
       })}
@@ -134,19 +134,36 @@ export function CheckpointPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: fewer records, identical state (takeaway) ───────────────
 export function CheckpointReveal({ t }: StepCtx) {
-  const full = easeOut(seg(t, 0.4, 0.7));
-  const bounded = easeOut(seg(t, 0.8, 1.1));
+  const n = 12, x0 = 40, cw = 42, cp = 5;
+  const lane = (y: number, from: number, label: string, f: string) => {
+    const p = seg(t, 0.3, 1.7);
+    const reach = lerp(from, n, p);
+    return (
+      <g>
+        <T x={x0} y={y - 10} s={13} f={f}>{label}</T>
+        {Array.from({ length: n }, (_, i) => (
+          <rect key={i} x={x0 + i * cw} y={y} width={cw - 6} height={22} rx={2} fill={i >= from && i < reach ? f : 'none'} stroke={C.mocha} />
+        ))}
+        {p > 0 && p < 1 && <line x1={x0 + reach * cw} y1={y - 4} x2={x0 + reach * cw} y2={y + 26} stroke={C.cinnamon} strokeWidth={2} />}
+      </g>
+    );
+  };
   return (
-    <Svg label="aries_analysis_redo_undo.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a full scan, and a bounded one</T>
-      <rect x={60} y={68} width={full * 260} height={8} rx={2} fill={C.taupe} opacity={0.7} />
-      <rect x={60} y={79} width={bounded * 90} height={8} rx={2} fill={C.caramel} opacity={0.8} />
-      <rect x={60} y={90} width={260} height={39} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.2, 0.4) > 0.85 && <T x={190} y={114} s={13} a="middle" f={C.mocha}>fewer records, same final state</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>skips only what's already durable</T>
+    <Svg label="aries_analysis_redo_undo.rs, measured" h={260}>
+      {lane(46, 0, 'full scan', C.latte)}
+      {lane(126, cp, 'from the checkpoint', C.caramel)}
+      <line x1={x0 + cp * cw - 3} y1={110} x2={x0 + cp * cw - 3} y2={156} stroke={C.caramel} strokeWidth={2.5} />
+      <T x={x0 + cp * cw + 4} y={176} s={13} f={C.caramel} o={seg(t, 0.2, 0.4)}>checkpoint's bound</T>
+      <Decode text="fewer records, same final state" t={t} at={1.9} dur={0.5} x={x0} y={232} s={15} f={C.caramel} w={700} />
+      <Tick x={540} y={226} k={easeOut(seg(t, 2.3, 2.6))} />
     </Svg>
   );
 }
+// ── 6 · Measured: resumes exactly, one CLR per update (takeaway) ──────────
+// Undo walks back over the loser's updates, writing a CLR for each. A second
+// crash cuts it off partway. The next recovery reads the last CLR, jumps
+// straight to where it stopped and carries on: no update is undone twice,
+// so each one ends with exactly one CLR.
 
 // ── 5 · Does a second crash mid-undo repeat, skip, or resume (predict) ────
 export function ClrPredict({ t }: StepCtx) {
@@ -166,19 +183,38 @@ export function ClrPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: resumes exactly, one CLR per update (takeaway) ──────────
 export function ClrReveal({ t }: StepCtx) {
-  const resume = easeOut(seg(t, 0.5, 0.85));
-  const dx = resume * 60;
+  const n = 4, x0 = 80, cw = 110;
+  const undo1 = seg(t, 0.2, 0.9) * 2;
+  const crash = 0.95;
+  const undo2 = seg(t, 1.4, 2.1) * 2;
+  const done = Math.floor(undo1) + Math.floor(undo2);
   return (
-    <Svg label="aries_analysis_redo_undo.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>two recovery attempts, one loser txn</T>
-      <circle cx={200} cy={76} r={4} fill={C.taupe} />
-      <circle cx={200 + dx} cy={76} r={4} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={fa(t, 0.5, 0.2)} />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.0, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>exactly one CLR per update, total</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>resumed right where the first one stopped</T>
+    <Svg label="aries_analysis_redo_undo.rs, measured" h={270}>
+      <T x={x0} y={30} s={13} f={C.latte}>the loser's updates</T>
+      {Array.from({ length: n }, (_, i) => {
+        const x = x0 + (n - 1 - i) * cw;
+        const undone = i < done;
+        return (
+          <g key={i}>
+            <rect x={x} y={42} width={90} height={34} rx={4} fill="none" stroke={undone ? C.taupe : C.crema} strokeWidth={1.5} strokeDasharray={undone ? '4 3' : undefined} />
+            {undone && <rect x={x + 30} y={lerp(42, 120, easeOut(seg(i < 2 ? undo1 : undo2, (i % 2) + 0.2, (i % 2) + 0.8)))} width={30} height={22} rx={3} fill="none" stroke={C.caramel} strokeWidth={2} />}
+          </g>
+        );
+      })}
+      <T x={x0} y={170} s={13} f={C.caramel} o={seg(t, 0.4, 0.6)}>one CLR each</T>
+      <Draw pts={[[290, 20], [290, 200]]} t={t} from={crash} to={crash + 0.25} stroke={C.cherryText} w={2} />
+      {t > crash + 0.25 && <T x={298} y={198} s={13} f={C.cherryText}>crash</T>}
+      <Draw pts={[[290, 100], [235, 100], [235, 82]]} t={t} from={1.2} to={1.4} stroke={C.cinnamon} w={2} />
+      <T x={150} y={216} s={13} f={C.cinnamon} o={seg(t, 1.2, 1.4)}>resumed right here</T>
+      <Decode text="exactly one CLR per update" t={t} at={2.15} dur={0.45} x={x0} y={252} s={15} f={C.caramel} w={700} />
     </Svg>
   );
 }
+// ── 9 · Why steal + no-force is safe (surprising fact, takeaway) ──────────
+// Two pages, two timings. An uncommitted page is stolen: written back
+// early. A committed one is not forced: it stays only in memory. A crash
+// hits; undo cleans the early page, redo rebuilds the late one, and both
+// end correct.
 
 // ── 7 · Is a CLR's own effect ever itself undone (predict) ────────────────
 export function PaperClrPredict({ t }: StepCtx) {
@@ -231,14 +267,26 @@ export function PaperClrReveal({ t }: StepCtx) {
 
 // ── 9 · Why steal + no-force is safe (surprising fact, takeaway) ──────────
 export function StealNoForceReveal({ t }: StepCtx) {
+  const steal = easeInOut(seg(t, 0.3, 0.8));
+  const crash = 1.0;
+  const fix1 = easeInOut(seg(t, 1.4, 1.9));
+  const fix2 = easeInOut(seg(t, 1.7, 2.2));
   return (
-    <Svg label="ARIES paper, quoted" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>steal: early write-back. no-force: late</T>
-      <Draw pts={[[200, 76], [240, 76]]} t={t} from={0.5} to={0.75} stroke={C.caramel} w={2} />
-      <Draw pts={[[240, 76], [280, 76]]} t={t} from={0.75} to={1.0} stroke={C.taupe} w={2} />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>redo and undo fix up either case</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>that freedom is why it's the fast policy</T>
+    <Svg label="ARIES paper, quoted" h={260}>
+      <T x={40} y={30} s={13} f={C.latte}>memory</T>
+      <T x={40} y={170} s={13} f={C.latte}>disk</T>
+      <line x1={40} y1={120} x2={560} y2={120} stroke={C.mocha} />
+      {/* steal: the uncommitted page goes to disk early */}
+      <rect x={120} y={lerp(46, 180, steal)} width={110} height={40} rx={4} fill="none" stroke={fix1 > 0 ? C.caramel : C.cinnamon} strokeWidth={2} />
+      <T x={175} y={lerp(46, 180, steal) + 25} s={13} a="middle" f={fix1 > 0 ? C.caramel : C.cinnamon}>{fix1 >= 1 ? 'undone' : 'steal'}</T>
+      {/* no-force: the committed page stays in memory, lost at the crash, then rebuilt on disk */}
+      {t < crash + 0.2 && <rect x={360} y={46} width={110} height={40} rx={4} fill="none" stroke={C.crema} strokeWidth={2} opacity={1 - seg(t, crash, crash + 0.2)} />}
+      {t < crash + 0.2 && <T x={415} y={71} s={13} a="middle" f={C.crema}>no-force</T>}
+      {fix2 > 0 && <rect x={360} y={180} width={110 * fix2} height={40} rx={4} fill="none" stroke={C.caramel} strokeWidth={2} />}
+      {fix2 >= 1 && <T x={415} y={205} s={13} a="middle" f={C.caramel}>redone</T>}
+      <Draw pts={[[40, 100], [560, 100]]} t={t} from={crash} to={crash + 0.25} stroke={C.cherryText} w={2} />
+      <T x={560} y={92} s={13} a="end" f={C.cherryText} o={seg(t, crash + 0.2, crash + 0.3)}>crash</T>
+      <Decode text="both fixed up" t={t} at={2.2} dur={0.4} x={300} y={252} s={15} a="middle" f={C.caramel} w={700} />
     </Svg>
   );
 }

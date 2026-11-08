@@ -104,21 +104,34 @@ export function IdempotentPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: a genuine no-op, twice over (takeaway) ─────────────────
 export function IdempotentReveal({ t }: StepCtx) {
-  const attempts = [0, 1];
+  const pass = (a: number, y: number, label: string) => {
+    const k = seg(t, a, a + 0.6);
+    const x = k < 0.6 ? lerp(120, 330, k / 0.6) : lerp(330, 250, (k - 0.6) / 0.4);
+    return (
+      <g>
+        <T x={40} y={y + 5} s={13} f={C.latte} o={seg(t, a - 0.1, a)}>{label}</T>
+        {k > 0 && k < 1 && <rect x={x} y={y - 11} width={34} height={22} rx={3} fill={C.cinnamon} />}
+        {k >= 1 && <T x={250} y={y + 5} s={13} f={C.cinnamon}>no-op</T>}
+      </g>
+    );
+  };
   return (
-    <Svg label="log_first_redo_idempotent_torn_page.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one old record, one full recovery pass</T>
-      {attempts.map((i) => {
-        const bounce = easeOut(seg(t, 0.5 + i * 0.25, 0.7 + i * 0.25));
-        const dy = (1 - Math.abs(bounce - 0.5) * 2) * 14;
-        return <circle key={i} cx={220 + i * 30} cy={76 - dy} r={4} fill={C.taupe} opacity={fa(t, 0.5 + i * 0.25, 0.2)} />;
-      })}
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>both: a genuine no-op</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>page.lsn already covers both of them</T>
+    <Svg label="log_first_redo_idempotent_torn_page.rs, measured" h={260}>
+      <rect x={370} y={40} width={180} height={150} rx={6} fill="none" stroke={C.crema} strokeWidth={1.5} />
+      <T x={460} y={30} s={13} a="middle" f={C.crema}>page</T>
+      <T x={460} y={120} s={15} a="middle" f={C.caramel} w={700}>page.lsn</T>
+      <T x={460} y={146} s={13} a="middle" f={C.latte} o={seg(t, 0.5, 0.7)}>≥ record.lsn</T>
+      {pass(0.3, 80, 'replay')}
+      {pass(1.3, 150, 'second pass')}
+      <Tick x={520} y={176} k={easeOut(seg(t, 2.1, 2.4))} />
+      <Decode text="page unchanged" t={t} at={2.2} dur={0.4} x={460} y={226} s={15} a="middle" f={C.caramel} w={700} />
     </Svg>
   );
 }
+// ── 6 · Measured: caught and fixed (takeaway) ─────────────────────────────
+// A crash mid-write: half the page's blocks land new, half stay old. The
+// checksum runs over the bytes and no longer matches. Then the log's own
+// full-page image slides in over the torn page, and the checksum matches.
 
 // ── 5 · Does a checksum catch a torn page (predict) ───────────────────────
 export function TornPredict({ t }: StepCtx) {
@@ -138,18 +151,32 @@ export function TornPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: caught and fixed (takeaway) ─────────────────────────────
 export function TornReveal({ t }: StepCtx) {
-  const restore = easeOut(seg(t, 0.6, 0.95));
+  const n = 8, x0 = 120, cw = 46;
+  const tear = seg(t, 0.2, 0.7) * n;
+  const scan = seg(t, 0.8, 1.3);
+  const fix = easeInOut(seg(t, 1.5, 2.0));
   return (
-    <Svg label="log_first_redo_idempotent_torn_page.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a page torn by a partial write</T>
-      <circle cx={260} cy={76} r={4} fill={C.cherry} opacity={fa(t, 0.4, 0.2) * (1 - restore)} />
-      <Draw pts={[[280, 50], [280, 85]]} t={t} from={0.6} to={0.9} stroke={C.caramel} w={2} pen />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.1, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>checksum mismatch: caught, then fixed</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>fixed from the log's own full-page image</T>
+    <Svg label="log_first_redo_idempotent_torn_page.rs, measured" h={260}>
+      <T x={x0} y={56} s={13} f={C.latte}>page</T>
+      {Array.from({ length: n }, (_, i) => {
+        const fresh = i < 5 && tear > i;
+        return <rect key={i} x={x0 + i * cw} y={66} width={cw - 6} height={36} rx={2} fill={fresh ? C.crema : C.taupe} />;
+      })}
+      {scan > 0 && scan < 1 && <line x1={x0 + scan * n * cw} y1={58} x2={x0 + scan * n * cw} y2={110} stroke={C.cinnamon} strokeWidth={2} />}
+      <Decode text={fix >= 1 ? 'checksum: matches' : 'checksum: mismatch'} t={t} at={fix >= 1 ? 2.0 : 1.3} dur={0.35} x={x0} y={140} s={15} f={fix >= 1 ? C.caramel : C.cherryText} w={700} />
+      {/* the full-page image from the log */}
+      <T x={x0} y={196} s={13} f={C.caramel} o={seg(t, 1.4, 1.6)}>full-page image, from the log</T>
+      <g transform={`translate(0 ${lerp(144, 0, fix).toFixed(1)})`} opacity={seg(t, 1.4, 1.6)}>
+        {Array.from({ length: n }, (_, i) => <rect key={i} x={x0 + i * cw} y={66} width={cw - 6} height={36} rx={2} fill="none" stroke={C.caramel} strokeWidth={2} />)}
+      </g>
+      {fix >= 1 && Array.from({ length: n }, (_, i) => <rect key={i} x={x0 + i * cw} y={66} width={cw - 6} height={36} rx={2} fill={C.crema} />)}
     </Svg>
   );
 }
+// ── 9 · PostgreSQL's own full-page write (surprising fact, takeaway) ─────
+// Before the page on disk is first modified, a complete image of it goes
+// into the log. Then the page is written, and a crash tears it. Recovery
+// copies the image back: the page is whole again.
 
 // ── 7 · Why doesn't commit need every page flushed (predict) ─────────────
 export function PgWalPredict({ t }: StepCtx) {
@@ -200,17 +227,26 @@ export function PgWalReveal({ t }: StepCtx) {
 
 // ── 9 · PostgreSQL's own full-page write (surprising fact, takeaway) ─────
 export function FullPageWriteReveal({ t }: StepCtx) {
-  const write = easeOut(seg(t, 0.5, 0.85));
-  const dy = (1 - write) * -24;
+  const img = easeInOut(seg(t, 0.3, 0.9));
+  const tear = seg(t, 1.2, 1.4);
+  const back = easeInOut(seg(t, 1.7, 2.3));
   return (
-    <Svg label="PostgreSQL docs, quoted" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a full image, written before the page</T>
-      <Draw pts={[[240, 50], [240, 85]]} t={t} from={0.5} to={0.8} stroke={C.caramel} w={2} pen />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      <g transform={`translate(0,${dy})`} opacity={write}>
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>PostgreSQL's own name: full-page write</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the same fix this topic just measured</T>
+    <Svg label="PostgreSQL docs, quoted" h={260}>
+      <T x={40} y={30} s={13} f={C.latte}>WAL</T>
+      <rect x={40} y={40} width={520} height={44} rx={4} fill="none" stroke={C.mocha} />
+      <T x={40} y={150} s={13} f={C.latte}>page on disk</T>
+      <rect x={40} y={160} width={160} height={44} rx={4} fill="none" stroke={C.crema} strokeWidth={1.5} />
+      {/* the complete image goes into the log first */}
+      <rect x={lerp(46, 300, img)} y={lerp(166, 46, img)} width={148} height={32} rx={3} fill="none" stroke={C.caramel} strokeWidth={2} opacity={img > 0 ? 1 : 0} />
+      {img >= 1 && <rect x={300} y={46} width={148} height={32} rx={3} fill="none" stroke={C.caramel} strokeWidth={2} />}
+      <T x={374} y={67} s={13} a="middle" f={C.caramel} o={seg(t, 0.8, 1.0)}>full image</T>
+      {/* then the write, torn by a crash */}
+      <rect x={46} y={166} width={74} height={32} rx={2} fill={C.crema} opacity={seg(t, 1.0, 1.2)} />
+      {tear > 0 && back < 1 && <line x1={124} y1={156} x2={116} y2={208} stroke={C.cherryText} strokeWidth={2.5} />}
+      {tear > 0 && back < 1 && <T x={220} y={188} s={13} f={C.cherryText} o={tear * (1 - back)}>torn</T>}
+      {/* restored from the image */}
+      {back > 0 && <rect x={lerp(300, 46, back)} y={lerp(46, 166, back)} width={148} height={32} rx={3} fill={back >= 1 ? C.caramel : 'none'} stroke={C.caramel} strokeWidth={2} />}
+      <Decode text="restored from the image" t={t} at={2.3} dur={0.45} x={220} y={188} s={13} f={C.caramel} />
     </Svg>
   );
 }
