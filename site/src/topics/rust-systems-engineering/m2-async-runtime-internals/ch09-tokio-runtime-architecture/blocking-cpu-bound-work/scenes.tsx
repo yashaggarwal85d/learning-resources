@@ -1,12 +1,44 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // spawn_blocking (a dedicated, dynamically-sized blocking pool), block_in_place (hand other
 // tasks to a new worker before blocking this one; panics with no other worker to hand off to),
 // and the named alternative for genuinely CPU-bound work.
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
 
 // ── 1 · A direct blocking call, one worker (predict, hook) ──────────────────────────────────────
 export function BaselinePredict({ t }: StepCtx) {
@@ -127,16 +159,41 @@ export function PanicPredict({ t }: StepCtx) {
 
 // ── 8 · Measured: panics (takeaway) ──────────────────────────────────────────────────────────────
 export function PanicReveal({ t }: StepCtx) {
+  const lane = easeOut(seg(t, 0.4, 0.8));
+  const reach = easeInOut(seg(t, 1.0, 1.6)); // block_in_place looks for another worker to take over
+  const boom = easeOutBack(seg(t, 1.7, 2.1));
   return (
-    <Code
-      title="block_in_place_panics_on_current_thread.rs"
-      dim
-      lines={['thread panicked:', '  can call blocking only when', '  running on the multi-threaded runtime']}
-      t={t}
-      start={0.1}
-      end={2.4}
-      highlight={[0, 1, 2]}
-    />
+    <Stack>
+      <Code title="block_in_place_panics_on_current_thread.rs" dim={t < 0.1} lines={['thread panicked:', '  can call blocking only when', '  running on the multi-threaded runtime']} t={t} start={0.1} end={0.5} highlight={t > 1.7 ? [0, 1, 2] : []} />
+      <Svg label="on a current-thread runtime there is only one worker; block_in_place reaches for a second worker to hand the other tasks to, finds none, and panics" h={170} fill>
+        <g opacity={lane}>
+          <T x={30} y={40} s={13} f={C.latte}>the only worker</T>
+          <rect x={30} y={50} width={300} height={34} rx={8} fill={C.cocoa} stroke={C.crema} strokeWidth={1.5} />
+          {[0, 1, 2, 3].map((i) => (
+            <circle key={i} cx={60 + i * 34} cy={67} r={8} fill={i ? C.latte : C.caramel} />
+          ))}
+          <T x={250} y={72} s={13} a="middle" f={C.caramel}>blocking</T>
+        </g>
+        <rect x={30} y={118} width={300} height={34} rx={8} fill="none" stroke={boom > 0 ? C.cherryText : C.mocha} strokeWidth={1.5} strokeDasharray="6 4" opacity={reach > 0 ? 1 : 0} />
+        <T x={180} y={140} s={13} a="middle" f={C.taupe} o={reach}>no other worker</T>
+        {reach > 0 && (
+          <g>
+            <line x1={150} y1={84} x2={150} y2={lerp(84, 118, reach)} stroke={boom > 0 ? C.cherryText : C.latte} strokeWidth={2} />
+            {[1, 2, 3].map((i) => (
+              <circle key={i} cx={60 + i * 34} cy={lerp(67, 100, reach * (boom > 0 ? 1 - boom : 1))} r={5} fill={C.latte} opacity={0.8} />
+            ))}
+          </g>
+        )}
+        {boom > 0 && (
+          <g transform={`translate(460 100) scale(${boom.toFixed(3)})`}>
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <line key={i} x1={Math.cos((i * Math.PI) / 4) * 26} y1={Math.sin((i * Math.PI) / 4) * 26} x2={Math.cos((i * Math.PI) / 4) * 40} y2={Math.sin((i * Math.PI) / 4) * 40} stroke={C.cherryText} strokeWidth={2.5} />
+            ))}
+            <T x={0} y={5} s={14} a="middle" f={C.cherryText} w={700}>panic</T>
+          </g>
+        )}
+      </Svg>
+    </Stack>
   );
 }
 
@@ -165,14 +222,7 @@ export function Recap({ t }: StepCtx) {
     'block_in_place moves everything else, or panics',
     'CPU-heavy work has its own named answers',
   ];
-  return (
-    <Svg label="recap: two real fixes, two different promises" h={300}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: two real fixes, two different promises" rows={rows} step={55}
+      s={14}
+    />;
 }
