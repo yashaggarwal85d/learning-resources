@@ -117,7 +117,7 @@ export function RaceRecapHook({ t }: StepCtx) {
 }
 
 // ── 2 · Release-store, acquire-load it back (predict) ───────────────────────────────────────────
-export function ReleaseAcquirePredict({ t }: StepCtx) {
+export function ReleaseAcquirePredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -128,9 +128,11 @@ export function ReleaseAcquirePredict({ t }: StepCtx) {
         end={2.4}
         highlight={[1, 3]}
       />
-      <Svg label="does this fix the race loom found last topic?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.6, 0.4)}>only the flag's ordering changed; data stays Relaxed</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does this fix the race loom found last topic?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.9, 0.4)}>only the flag's ordering changed; data stays Relaxed</T>
+        </Svg>
+      )}
     </Stack>
   );
 }

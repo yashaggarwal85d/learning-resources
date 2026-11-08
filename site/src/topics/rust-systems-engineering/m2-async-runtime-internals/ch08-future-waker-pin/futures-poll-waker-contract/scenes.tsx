@@ -72,7 +72,7 @@ export function InertFutureHook({ t }: StepCtx) {
 }
 
 // ── 2 · Build a future by hand (predict) ────────────────────────────────────────────────────────
-export function BuildByHandPredict({ t }: StepCtx) {
+export function BuildByHandPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -83,9 +83,11 @@ export function BuildByHandPredict({ t }: StepCtx) {
         end={2.2}
         highlight={[3]}
       />
-      <Svg label="does constructing it do any work?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.4, 0.4)}>no poll has happened yet</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="does constructing it do any work?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.9, 0.4)}>no poll has happened yet</T>
+        </Svg>
+      )}
     </Stack>
   );
 }
@@ -147,7 +149,7 @@ export function LazinessBackpressureReveal({ t }: StepCtx) {
 }
 
 // ── 5 · Pending without a plan to be asked again (predict) ─────────────────────────────────────
-export function NoWakeupPredict({ t }: StepCtx) {
+export function NoWakeupPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -158,9 +160,11 @@ export function NoWakeupPredict({ t }: StepCtx) {
         end={2.4}
         highlight={[3]}
       />
-      <Svg label="what happens to this future next?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.6, 0.4)}>no waker stored, no waker called</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="what happens to this future next?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.9, 0.4)}>no waker stored, no waker called</T>
+        </Svg>
+      )}
     </Stack>
   );
 }

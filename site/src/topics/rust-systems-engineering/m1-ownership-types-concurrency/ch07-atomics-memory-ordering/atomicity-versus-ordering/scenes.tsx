@@ -126,7 +126,7 @@ export function AtomicityOnlyReveal({ t }: StepCtx) {
 }
 
 // ── 5 · One thread publishes a value, then a flag (predict) ────────────────────────────────────
-export function PublicationPredict({ t }: StepCtx) {
+export function PublicationPredict({ t, portrait }: StepCtx) {
   return (
     <Stack>
       <Code
@@ -137,9 +137,11 @@ export function PublicationPredict({ t }: StepCtx) {
         end={2.4}
         highlight={[0, 1, 3, 4]}
       />
-      <Svg label="can the reader see the flag before the value?" h={46}>
-        <T x={40} y={28} s={13} f={C.mocha} o={fa(t, 2.6, 0.4)}>both stores are Relaxed — no ordering requested</T>
-      </Svg>
+      {!portrait && (
+        <Svg label="can the reader see the flag before the value?" h={34}>
+          <T x={40} y={24} s={16} f={C.mocha} o={fa(t, 1.9, 0.4)}>both stores are Relaxed — no ordering requested</T>
+        </Svg>
+      )}
     </Stack>
   );
 }
