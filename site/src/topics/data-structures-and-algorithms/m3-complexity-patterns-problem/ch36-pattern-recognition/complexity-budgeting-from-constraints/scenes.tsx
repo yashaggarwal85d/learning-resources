@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = the problem statement's own text and a structure as it is;
 // latte = secondary labels (n, a count, a cost); caramel = the thing to look at (the signal, the
@@ -146,7 +146,6 @@ export function PredictBudgetFit({ t, answer }: StepCtx) {
 // 4 · The budget table, derived row by row
 export function BudgetTableDerived({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.5));
-  const r = stepIdx(t, 0.5, 4.3, 6);
   const end = easeOut(seg(t, 4.6, 5.1));
   const rows: [string, string, string, number | null][] = [
     ['10', 'n!', '3,628,800', 3628800],
@@ -157,23 +156,30 @@ export function BudgetTableDerived({ t }: StepCtx) {
     ['larger', 'log n, 1', '', null],
   ];
   const x = (v: number) => L(v, 430, 35, 5);
+  // The budget line draws down the page; then each row is the division done live: the row slides in, its operation
+  // count runs up, and its bar grows on the log axis until it stops at or under the line.
+  const row = (i: number) => easeOut(seg(t, 0.5 + i * 0.63, 1.0 + i * 0.63));
+  const run = (i: number) => easeInOut(seg(t, 0.6 + i * 0.63, 1.15 + i * 0.63));
   return (
     <Svg label="A table derived by dividing the budget by each growth rate: n = 10 allows n!, 3,628,800; 20 allows 2ⁿ, 1,048,576; 500 allows n³, 125,000,000; 5,000 allows n², 25,000,000; a million allows n log n, 19,931,569; past that only log n or constant work. Each row's bar sits at or under the budget line" h={300}>
       <g opacity={a}>
         <T x={30} y={26} s={11} f={C.latte}>n up to</T>
         <T x={140} y={26} s={11} f={C.latte}>allows</T>
         <T x={240} y={26} s={11} f={C.latte}>operations</T>
-        <line x1={x(1e8)} y1={36} x2={x(1e8)} y2={262} stroke={C.cinnamon} strokeWidth={1.6} />
         <T x={x(1e8)} y={278} s={11} a="middle" f={C.cinnamon}>10⁸</T>
       </g>
+      <Draw pts={[[x(1e8), 36], [x(1e8), 262]]} t={t} from={0.1} to={0.6} stroke={C.cinnamon} w={1.6} pen={false} />
       {rows.map(([n, rate, ops, v], i) => {
         const y = 58 + i * 38;
+        const k = row(i);
+        const g = run(i);
+        const shown = v === null ? '' : g >= 1 ? ops : Math.round(Math.pow(10, lerp(0, Math.log10(v), g))).toLocaleString('en-US');
         return (
-          <g key={n} opacity={i <= r ? 1 : 0}>
+          <g key={n} opacity={clamp(k * 2)} transform={`translate(${((1 - k) * -20).toFixed(2)} 0)`}>
             <T x={30} y={y} s={12} f={C.crema}>{n}</T>
             <T x={140} y={y} s={13} f={C.caramel}>{rate}</T>
-            <T x={240} y={y} s={12} f={C.latte}>{ops}</T>
-            {v !== null && <rect x={430} y={y - 12} width={x(v) - 430} height={14} fill={C.crema} opacity={0.45} />}
+            <T x={240} y={y} s={12} f={C.latte}>{shown}</T>
+            {v !== null && g > 0 && <rect x={430} y={y - 12} width={Math.max(2, (x(v) - 430) * g)} height={14} fill={C.crema} opacity={0.45} />}
           </g>
         );
       })}

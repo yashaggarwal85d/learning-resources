@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = a structure as it is; latte = secondary labels; caramel =
 // the thing to look at (the shape recognised, the edge or item chosen); cinnamon (rare) = the
@@ -114,7 +114,6 @@ export function ReviewerHook({ t }: StepCtx) {
 export function PredictPairingVariant({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
-  const k = stepIdx(t, 0.2, 2.2, 3);
   const ask = easeOut(seg(t, 2.6, 3.1));
   const rev = answered ? easeOut(seg(s, 0.2, 1.0)) : 0;
   const cards: [string, string, boolean][] = [
@@ -122,22 +121,28 @@ export function PredictPairingVariant({ t, answer }: StepCtx) {
     ['within one group', 'solvable, harder method', false],
     ['true/false, 3 per rule', 'NP-complete', true],
   ];
+  // Each story rises into place and draws its own structure: pairs across two columns, pairs inside one group, a rule
+  // touching three variables. After the answer, verdicts rise under each card and the lock-on closes on the hard one.
+  const T0 = (i: number) => 0.2 + i * 0.67;
   return (
     <Svg label="Three pairing stories side by side: across two groups, within one group, and true-or-false choices with three variables per rule. After answering: the first two are solvable; the third is NP-complete" h={250}>
       {cards.map(([lab, verdict, hard], i) => {
         const x = 30 + i * 186;
+        const k = easeOut(seg(t, T0(i), T0(i) + 0.4));
         return (
-          <g key={lab} opacity={i <= k ? 1 : 0}>
+          <g key={lab} opacity={clamp(k * 2)} transform={`translate(0 ${((1 - k) * 16).toFixed(2)})`}>
             <rect x={x} y={40} width={170} height={120} fill="none" stroke={rev > 0.5 ? (hard ? C.cherry : C.cinnamon) : C.latte} strokeWidth={1.4} />
-            {i === 0 && [0, 1, 2].map((r) => <line key={r} x1={x + 50} y1={70 + r * 25} x2={x + 120} y2={70 + ((r + 1) % 3) * 25} stroke={C.crema} strokeWidth={1.2} />)}
+            {i === 0 && [0, 1, 2].map((r) => <Draw key={r} pts={[[x + 50, 70 + r * 25], [x + 120, 70 + ((r + 1) % 3) * 25]]} t={t} from={T0(0) + 0.3 + r * 0.12} to={T0(0) + 0.55 + r * 0.12} stroke={C.crema} w={1.2} pen={false} />)}
             {i === 0 && [0, 1, 2].map((r) => <g key={`n${r}`}><circle cx={x + 50} cy={70 + r * 25} r={5} fill={C.crema} /><circle cx={x + 120} cy={70 + r * 25} r={5} fill={C.crema} /></g>)}
-            {i === 1 && <path d={`M${x + 85} 66 L${x + 50} 126 L${x + 120} 126 Z`} fill="none" stroke={C.crema} strokeWidth={1.2} />}
-            {i === 2 && <T x={x + 85} y={104} s={13} a="middle" f={C.crema}>(x ∨ y ∨ z)</T>}
+            {i === 1 && <Draw pts={[[x + 85, 66], [x + 50, 126], [x + 120, 126], [x + 85, 66]]} t={t} from={T0(1) + 0.3} to={T0(1) + 0.75} stroke={C.crema} w={1.2} />}
+            {i === 1 && [[x + 85, 66], [x + 50, 126], [x + 120, 126]].map(([cx, cy], j) => <circle key={j} cx={cx} cy={cy} r={5} fill={C.crema} opacity={k} />)}
+            {i === 2 && <Decode text="(x ∨ y ∨ z)" t={t} at={T0(2) + 0.3} dur={0.5} x={x + 85} y={104} s={13} a="middle" f={C.crema} />}
             <T x={x + 85} y={182} s={11} a="middle" f={C.latte}>{lab}</T>
-            <T x={x + 85} y={206} s={12} a="middle" f={hard ? C.cherryText : C.cinnamon} o={rev}>{verdict}</T>
+            <T x={x + 85} y={lerp(216, 206, rev)} s={12} a="middle" f={hard ? C.cherryText : C.cinnamon} o={rev}>{verdict}</T>
           </g>
         );
       })}
+      {answered && <Reticle x={30 + 2 * 186 + 85} y={100} w={182} h={132} t={s} at={0.9} color={C.cherryText} />}
       <T x={300} y={240} s={12} a="middle" f={C.caramel} o={rev > 0 ? 0 : ask}>which one is genuinely hard?</T>
     </Svg>
   );
@@ -150,24 +155,37 @@ export function FlowCutShape({ t }: StepCtx) {
   const b = easeOut(seg(t, 1.6, 2.3));
   const eq = easeOut(seg(t, 2.6, 3.1));
   const nm = easeOut(seg(t, 3.6, 4.3));
+  // Two independent counts run up side by side, the flow algorithm's and the brute force's, and the "=" snaps in
+  // between them when both land on 8. Then the near-miss: whole units, one path each, crawl along single routes.
+  const c1 = Math.round(8 * easeOut(seg(t, 0.8, 1.6)));
+  const c2 = Math.round(8 * easeOut(seg(t, 1.7, 2.6)));
+  const sc = lerp(1.8, 1, easeOutBack(seg(t, 2.6, 3.0)));
+  const unit = (j: number) => seg(t, 3.9 + j * 0.25, 5.2 + j * 0.25);
   return (
     <Svg label="The reviewer network checked two ways: the flow algorithm gives 8, a from-scratch brute force over every valid assignment gives 8. They agree. The near-miss: flow that must travel as whole units along single paths is much harder" h={270}>
       <T x={30} y={30} s={12} f={C.latte} o={a}>shape: something moves through capacity-limited links</T>
-      <g opacity={f}>
+      <g opacity={f} transform={`translate(${((1 - f) * -20).toFixed(2)} 0)`}>
         <rect x={60} y={60} width={200} height={50} fill="none" stroke={C.caramel} strokeWidth={1.4} />
         <T x={160} y={82} s={12} a="middle" f={C.caramel}>flow algorithm</T>
-        <T x={160} y={102} s={14} a="middle" f={C.caramel}>8</T>
+        <T x={160} y={102} s={14} a="middle" f={C.caramel}>{`${c1}`}</T>
       </g>
-      <g opacity={b}>
+      <g opacity={b} transform={`translate(${((1 - b) * 20).toFixed(2)} 0)`}>
         <rect x={340} y={60} width={200} height={50} fill="none" stroke={C.cinnamon} strokeWidth={1.4} />
         <T x={440} y={82} s={12} a="middle" f={C.cinnamon}>brute force, all</T>
-        <T x={440} y={102} s={14} a="middle" f={C.cinnamon}>8</T>
+        <T x={440} y={102} s={14} a="middle" f={C.cinnamon}>{`${c2}`}</T>
       </g>
-      <T x={300} y={92} s={16} a="middle" f={C.crema} o={eq}>=</T>
+      <g transform={`translate(300 86) scale(${sc.toFixed(3)}) translate(-300 -86)`}>
+        <T x={300} y={92} s={16} a="middle" f={C.crema} o={eq}>=</T>
+      </g>
       <T x={300} y={150} s={12} a="middle" f={C.latte} o={eq}>if they ever disagreed, one would have a bug</T>
       <g opacity={nm}>
         <T x={30} y={210} s={12} f={C.cherryText}>near-miss: whole, indivisible units</T>
         <T x={30} y={234} s={12} f={C.cherryText}>along single paths: much harder</T>
+        <line x1={380} y1={222} x2={570} y2={222} stroke={C.line} strokeWidth={6} strokeLinecap="round" />
+        {[0, 1, 2].map((j) => {
+          const u = unit(j);
+          return u > 0 && u < 1 ? <rect key={j} x={lerp(376, 556, u)} y={216} width={14} height={12} rx={2} fill={C.cherryText} /> : null;
+        })}
       </g>
     </Svg>
   );
@@ -273,19 +291,30 @@ const CHOSEN = ['1,4', '5,7', '8,11', '12,16'];
 export function IntervalSchedulingShape({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
   const sorted = [...INTERVALS].sort((p, q) => p[1] - q[1]);
-  const k = stepIdx(t, 0.7, 3.3, sorted.length);
+  const kF = seg(t, 0.7, 3.3) * sorted.length;
+  const k = t < 0.7 ? -1 : Math.min(sorted.length - 1, Math.floor(kF));
   const res = easeOut(seg(t, 3.5, 4.0));
   const nm = easeOut(seg(t, 4.3, 4.8));
   const X = (v: number) => 40 + v * 32;
   let lastEnd = -Infinity;
+  const ends: number[] = [];
   const decided = sorted.map(([s0, e0], i) => {
     if (i > k) return 'open';
     if (s0 >= lastEnd) {
       lastEnd = e0;
+      ends.push(e0);
       return 'take';
     }
     return 'skip';
   });
+  // A "free from" marker rides along the time axis: it jumps to the end of each interval the greedy takes. Each
+  // interval, when its turn comes, is tested against the marker: a taken one slides down to the axis row it now
+  // occupies, a skipped one shrinks back into the stack.
+  const prevEnd = ends.length > 1 ? ends[ends.length - 2] : 0;
+  const curEnd = ends.length ? ends[ends.length - 1] : 0;
+  const lastTakeIdx = decided.lastIndexOf('take');
+  const glide = lastTakeIdx >= 0 ? easeInOut(clamp((kF - lastTakeIdx) * 2)) : 0;
+  const mx = X(lerp(prevEnd, curEnd, ends.length ? glide : 0));
   return (
     <Svg label="Eleven intervals on one resource, sorted by finish time. The greedy takes each one that starts after the last taken one ends: (1,4), (5,7), (8,11), (12,16), four in all, the same as an exhaustive search" h={290}>
       <g opacity={a}>
@@ -297,8 +326,18 @@ export function IntervalSchedulingShape({ t }: StepCtx) {
       {sorted.map(([s0, e0], i) => {
         const st = decided[i];
         const col = st === 'take' ? C.caramel : st === 'skip' ? C.mocha : C.latte;
-        return <rect key={i} x={X(s0)} y={24 + i * 17} width={(e0 - s0) * 32} height={11} fill={col} opacity={a * (st === 'skip' ? 0.5 : 0.8)} />;
+        const d = st === 'open' ? 0 : easeOut(clamp((kF - i) * 2.5));
+        const y0 = 24 + i * 17;
+        const y = st === 'take' ? lerp(y0, 200, d) : y0;
+        const h = st === 'skip' ? lerp(11, 5, d) : 11;
+        return (
+          <g key={i}>
+            {st === 'take' && <rect x={X(s0)} y={y0} width={(e0 - s0) * 32} height={11} fill="none" stroke={C.mocha} strokeWidth={1} opacity={a * 0.6} />}
+            <rect x={X(s0)} y={y + (11 - h) / 2} width={(e0 - s0) * 32} height={h} fill={col} opacity={a * (st === 'skip' ? 0.5 : 0.8)} />
+          </g>
+        );
       })}
+      {t >= 0.7 && <path d={`M${mx.toFixed(1)} 14 V214`} stroke={C.focus} strokeWidth={1.2} strokeDasharray="3 3" opacity={1 - res * 0.6} />}
       <T x={30} y={256} s={12} f={C.caramel} o={res}>{`earliest finish first: ${CHOSEN.length}, as brute force finds`}</T>
       <T x={30} y={280} s={12} f={C.cherryText} o={nm}>a second resource or a setup time: no guarantee</T>
     </Svg>
@@ -359,7 +398,6 @@ export function DagDpShape({ t }: StepCtx) {
 
 // 8 · The catalogue: question → technique
 export function PatternCatalogue({ t }: StepCtx) {
-  const k = stepIdx(t, 0.2, 3.8, 6);
   const end = easeOut(seg(t, 4.2, 4.8));
   const rows: [string, string, string][] = [
     ['a sequence that may cycle', 'fast and slow pointers', ''],
@@ -369,15 +407,22 @@ export function PatternCatalogue({ t }: StepCtx) {
     ['a monotone predicate', 'binary search the answer', ''],
     ['the next larger value', 'a monotonic stack', '4, 2, 4, −1, −1, −1'],
   ];
+  // An index being read: each question lands, then its technique slides out from under it along the arrow, and where
+  // the course has a worked result, that result decodes at the right edge.
+  const T0 = (i: number) => 0.2 + i * 0.6;
   return (
     <Svg label="Six questions and their techniques: a sequence that may cycle, fast and slow pointers; the K best of a stream, a size-K heap, here 42, 56, 61, 71; several sorted sources, a k-way merge; a grid to walk, breadth-first search or DP; a monotone predicate, binary search on the answer; the next larger value, a monotonic stack, here 4, 2, 4, −1, −1, −1" h={290}>
       {rows.map(([q, tech, ex], i) => {
         const y = 32 + i * 38;
+        const k = easeOut(seg(t, T0(i), T0(i) + 0.3));
+        const m = easeOut(seg(t, T0(i) + 0.2, T0(i) + 0.55));
         return (
-          <g key={q} opacity={i <= k ? 1 : 0}>
-            <T x={30} y={y} s={12} f={C.latte}>{q}</T>
-            <T x={30} y={y + 18} s={12} f={C.caramel}>{`→ ${tech}`}</T>
-            {ex && <T x={570} y={y + 18} s={11} a="end" f={C.latte}>{ex}</T>}
+          <g key={q}>
+            <T x={lerp(16, 30, k)} y={y} s={12} f={C.latte} o={k}>{q}</T>
+            <g opacity={m} transform={`translate(${((1 - m) * -18).toFixed(2)} 0)`}>
+              <T x={30} y={y + 18} s={12} f={C.caramel}>{`→ ${tech}`}</T>
+            </g>
+            {ex && <Decode text={ex} t={t} at={T0(i) + 0.45} dur={0.5} x={570} y={y + 18} s={11} a="end" f={C.latte} />}
           </g>
         );
       })}
@@ -472,20 +517,32 @@ export function LabProtocol({ t }: StepCtx) {
 
 // 12 · Recap
 export function Recap({ t }: StepCtx) {
-  const k = stepIdx(t, 0.2, 2.8, 5);
   const end = easeOut(seg(t, 3.4, 4.0));
   const chain = ['size', 'operations', 'graph', 'shape', 'falsifier'];
+  // The habit as a chain read left to right: each link slides in and a reading dot travels through it to the next;
+  // the last link, the falsifier, takes the lock-on, and an arrow drops to what comes next.
+  const T0 = (i: number) => 0.2 + i * 0.52;
+  const dotF = seg(t, 0.3, 2.9) * 4;
+  const dotX = 68 + dotF * 114;
   return (
     <Svg label="Read the size, the operations, the situation as a graph, the shape, and what would break the match. Next, hash tables inside hash joins" h={220}>
-      {chain.map((c, i) => (
-        <g key={c} opacity={i <= k ? 1 : 0}>
-          <rect x={16 + i * 114} y={60} width={104} height={36} fill="none" stroke={i === 4 ? C.caramel : C.crema} strokeWidth={1.4} />
-          <T x={68 + i * 114} y={83} s={11} a="middle" f={i === 4 ? C.caramel : C.crema}>{c}</T>
-          {i > 0 && <line x1={6 + i * 114} y1={78} x2={14 + i * 114} y2={78} stroke={C.latte} strokeWidth={1.2} />}
-        </g>
-      ))}
-      <T x={300} y={30} s={12} a="middle" f={C.latte} o={k >= 0 ? 1 : 0}>read the statement before any algorithm</T>
-      <T x={300} y={160} s={13} a="middle" f={C.caramel} o={end}>next: hash tables inside hash joins</T>
+      {chain.map((c, i) => {
+        const k = easeOutBack(seg(t, T0(i), T0(i) + 0.4));
+        return (
+          <g key={c}>
+            <g opacity={clamp(k * 2)} transform={`translate(${((1 - k) * -20).toFixed(2)} 0)`}>
+              <rect x={16 + i * 114} y={60} width={104} height={36} fill="none" stroke={i === 4 ? C.caramel : C.crema} strokeWidth={1.4} />
+              <T x={68 + i * 114} y={83} s={11} a="middle" f={i === 4 ? C.caramel : C.crema}>{c}</T>
+            </g>
+            {i > 0 && <Draw pts={[[6 + i * 114, 78], [14 + i * 114, 78]]} t={t} from={T0(i) + 0.1} to={T0(i) + 0.3} stroke={C.latte} w={1.2} pen={false} />}
+          </g>
+        );
+      })}
+      {t > 0.3 && t < 2.95 && <circle cx={dotX} cy={104} r={3.5} fill={C.focus} />}
+      <Reticle x={68 + 4 * 114} y={78} w={116} h={48} t={t} at={2.9} />
+      <Draw pts={[[524, 104], [524, 130], [300, 130], [300, 142]]} t={t} from={3.1} to={3.6} stroke={C.caramel} w={1.2} />
+      <T x={300} y={30} s={12} a="middle" f={C.latte} o={easeOut(seg(t, 0.2, 0.5))}>read the statement before any algorithm</T>
+      <T x={300} y={164} s={13} a="middle" f={C.caramel} o={end}>next: hash tables inside hash joins</T>
     </Svg>
   );
 }

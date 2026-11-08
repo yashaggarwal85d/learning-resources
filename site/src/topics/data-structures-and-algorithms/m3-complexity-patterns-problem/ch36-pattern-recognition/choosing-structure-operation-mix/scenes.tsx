@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = a structure as it is; latte = secondary labels (a key, a
 // count); caramel = the thing to look at (the operation being asked, the winning structure);
@@ -143,12 +143,27 @@ export function PredictRangeShare({ t, answer }: StepCtx) {
 // 4 · Why: a full scan against the width of the range
 export function TreeRangeMeasured({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
-  const scan = stepIdx(t, 0.7, 2.4, 20);
-  const bs = stepIdx(t, 2.6, 3.2, 3);
-  const walk = stepIdx(t, 3.3, 4.0, 4);
+  const scanF = seg(t, 0.7, 2.4) * 20;
+  const scan = t < 0.7 ? -1 : Math.min(19, Math.floor(scanF));
   const end = easeOut(seg(t, 4.2, 4.7));
   const cx = (i: number) => 52 + i * 26;
   const probes = [10, 5, 7];
+  // The hash table's cursor has to glide over every cell; the tree's binary search hops (10, then 5, then 7) and then
+  // walks only the range's width. The distance each cursor travels is the cost.
+  const hashX = cx(Math.min(19, scanF));
+  const hop = seg(t, 2.6, 3.2) * 3; // 0..3 through the three probes
+  const bs = t < 2.6 ? -1 : Math.min(2, Math.floor(hop));
+  const walkF = seg(t, 3.3, 4.0) * 4;
+  const walk = t < 3.3 ? -1 : Math.min(3, Math.floor(walkF));
+  let treeX = cx(probes[0]);
+  let treeY = 0;
+  if (t >= 2.6 && t < 3.3) {
+    const j = Math.min(2, Math.floor(hop));
+    const f = easeInOut(Math.min(1, (hop - j) * 1.6));
+    const from = j === 0 ? cx(probes[0]) : cx(probes[j - 1]);
+    treeX = lerp(from, cx(probes[j]), f);
+    treeY = j === 0 ? 0 : Math.sin(Math.PI * f) * 24;
+  } else if (t >= 3.3) treeX = cx(7 + Math.min(3, walkF));
   return (
     <Svg label="Twenty cells for the hash table, every one checked in turn to answer one range query. Twenty sorted cells for the tree: a binary search lands on the range's start in a few steps, then walks only the range's own width" h={270}>
       <g opacity={a}>
@@ -156,6 +171,7 @@ export function TreeRangeMeasured({ t }: StepCtx) {
         {Array.from({ length: 20 }).map((_, i) => (
           <rect key={i} x={cx(i) - 10} y={42} width={20} height={20} fill={i <= scan ? C.cherry : 'none'} fillOpacity={0.6} stroke={C.mocha} strokeWidth={1} />
         ))}
+        {t >= 0.7 && t < 2.5 && <rect x={hashX - 12} y={40} width={24} height={24} fill="none" stroke={C.cherryText} strokeWidth={1.8} />}
         <T x={30} y={92} s={12} f={C.cherryText} o={scan >= 19 ? 1 : 0}>every key it holds: all n</T>
         <T x={30} y={136} s={12} f={C.latte}>tree, kept in order:</T>
         {Array.from({ length: 20 }).map((_, i) => {
@@ -163,6 +179,7 @@ export function TreeRangeMeasured({ t }: StepCtx) {
           const walked = walk >= 0 && i >= 7 && i <= 7 + walk;
           return <rect key={i} x={cx(i) - 10} y={148} width={20} height={20} fill={walked ? C.caramel : probed ? C.latte : 'none'} fillOpacity={0.6} stroke={C.mocha} strokeWidth={1} />;
         })}
+        {t >= 2.6 && t < 4.1 && <circle cx={treeX} cy={140 - treeY} r={4.5} fill={C.caramel} />}
         <T x={30} y={198} s={12} f={C.caramel} o={walk >= 0 ? 1 : 0}>log n to find the start, then the range's width</T>
       </g>
       <T x={300} y={252} s={12} a="middle" f={C.crema} o={end}>that asymmetry is why a sliver flips it</T>
@@ -346,6 +363,10 @@ export function PredictFenwickMax({ t, answer }: StepCtx) {
   const pre = ARR.map((v) => (run += v));
   let m = -Infinity;
   const pmax = ARR.map((v) => (m = Math.max(m, v)));
+  // Each running value is carried along from its left neighbour, so the accumulation is visible: sums grow cell by
+  // cell; the maximum's 999 is carried unchanged all the way across. After the answer, that early 999 is traced
+  // over the bracket into the trick's result, and the lock-on finds the range's real maximum, 7.
+  const carry = (i: number, from: number) => easeOut(seg(t, from + i * 0.12, from + 0.25 + i * 0.12));
   return (
     <Svg label="The array 999, 1, 2, 7, 3, 5 with the range from index 3 to 5 bracketed. Prefix sums: 1017 minus 1002 is 15, the range's sum. Prefix maxima are 999 all along. After answering, the trick's answer is 999; the range's true maximum is 7" h={280}>
       <g opacity={a}>
@@ -360,18 +381,26 @@ export function PredictFenwickMax({ t, answer }: StepCtx) {
       </g>
       <g opacity={sums}>
         <T x={30} y={98} s={12} f={C.latte}>prefix sum</T>
-        {pre.map((v, i) => (
-          <T key={i} x={cx(i)} y={98} s={12} a="middle" f={i === 2 || i === 5 ? C.cinnamon : C.latte}>{`${v}`}</T>
-        ))}
-        <T x={150} y={124} s={12} f={C.cinnamon}>{`sum: ${pre[5]} − ${pre[2]} = ${pre[5] - pre[2]}, correct`}</T>
+        {pre.map((v, i) => {
+          const k = carry(i, 0.8);
+          return k > 0 ? (
+            <T key={i} x={lerp(i > 0 ? cx(i - 1) : cx(0), cx(i), k)} y={98} s={12} a="middle" f={i === 2 || i === 5 ? C.cinnamon : C.latte} o={clamp(k * 2)}>{`${v}`}</T>
+          ) : null;
+        })}
+        <T x={150} y={124} s={12} f={C.cinnamon} o={easeOut(seg(t, 1.5, 1.8))}>{`sum: ${pre[5]} − ${pre[2]} = ${pre[5] - pre[2]}, correct`}</T>
       </g>
       <g opacity={maxes}>
         <T x={30} y={168} s={12} f={C.latte}>prefix max</T>
-        {pmax.map((v, i) => (
-          <T key={i} x={cx(i)} y={168} s={12} a="middle" f={C.latte}>{`${v}`}</T>
-        ))}
+        {pmax.map((v, i) => {
+          const k = carry(i, 1.9);
+          return k > 0 ? (
+            <T key={i} x={lerp(i > 0 ? cx(i - 1) : cx(0), cx(i), k)} y={168} s={12} a="middle" f={C.latte} o={clamp(k * 2)}>{`${v}`}</T>
+          ) : null;
+        })}
         <T x={150} y={194} s={12} f={C.caramel} o={1 - rev}>max: undo the first three?</T>
       </g>
+      {answered && <Draw pts={[[cx(0), 62], [cx(0), 76], [cx(5) + 30, 76], [cx(5) + 30, 182]]} t={s} from={0.1} to={0.9} stroke={C.cherryText} w={1.5} dash="4 3" />}
+      {answered && <Reticle x={cx(3)} y={47} w={56} h={34} t={s} at={1.1} color={C.cinnamon} />}
       <g opacity={rev}>
         <T x={150} y={194} s={12} f={C.cherryText}>{`the trick says ${pmax[5]}`}</T>
         <T x={150} y={222} s={12} f={C.cinnamon}>{`true max of 7, 3, 5: ${Math.max(...ARR.slice(3))}`}</T>
@@ -384,8 +413,6 @@ export function PredictFenwickMax({ t, answer }: StepCtx) {
 // 10 · A segment tree gets it right
 export function SegmentTreeCorrect({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
-  const lv = stepIdx(t, 0.6, 1.8, 3);
-  const q = stepIdx(t, 2.1, 3.1, 2);
   const end = easeOut(seg(t, 3.4, 3.9));
   // examples.py's SegmentTree(BREAKING_ARRAY), size 8: tree[1..15]; −inf shown as a dash.
   const tree: (number | null)[] = [null, 999, 999, 5, 999, 7, 5, null, 999, 1, 2, 7, 3, 5, null, null];
@@ -395,25 +422,47 @@ export function SegmentTreeCorrect({ t }: StepCtx) {
     const span = 520 / first;
     return [40 + span * (i - first) + span / 2, 40 + depth * 52];
   };
+  // Built bottom-up: each parent rises out of its two children, carrying their max. Then the query walks down from the
+  // root to the two nodes that cover [3, 5] exactly, and their values drop to the answer.
+  const rise = (depth: number) => (depth === 3 ? 1 : easeOut(seg(t, 0.6 + (2 - depth) * 0.4, 1.0 + (2 - depth) * 0.4)));
+  const at = (i: number): [number, number] => {
+    const [x, y] = pos(i);
+    const depth = Math.floor(Math.log2(i));
+    if (depth === 3) return [x, y];
+    const k = rise(depth);
+    return [x, lerp(pos(2 * i)[1], y, k)];
+  };
   const used = [11, 6];
+  const paths: [number, number][][] = [
+    [1, 2, 5, 11].map((i) => pos(i)),
+    [1, 3, 6].map((i) => pos(i)),
+  ];
+  const drop = (j: number) => easeInOut(seg(t, 2.9 + j * 0.15, 3.4 + j * 0.15));
   return (
     <Svg label="A segment tree over 999, 1, 2, 7, 3, 5, each parent the max of its two children. The query for range 3 to 5 takes the leaf 7 and the node covering 3 and 5, whose max is 5: the answer is 7, correct" h={280}>
       {tree.map((v, i) => {
         if (i === 0) return null;
-        const [x, y] = pos(i);
+        const [x, y] = at(i);
         const depth = Math.floor(Math.log2(i));
-        const shown = 3 - depth <= lv || depth === 3;
+        const k = rise(depth);
         const hit = used.indexOf(i);
-        const isHit = hit >= 0 && hit <= q;
+        const isHit = hit >= 0 && t >= 2.4 + hit * 0.4;
         return (
-          <g key={i} opacity={a * (shown ? 1 : 0)}>
-            {i > 1 && <line x1={pos(i >> 1)[0]} y1={pos(i >> 1)[1] + 12} x2={x} y2={y - 12} stroke={C.mocha} strokeWidth={1} />}
+          <g key={i} opacity={a * (depth === 3 ? 1 : clamp(k * 2))}>
+            {i > 1 && <line x1={at(i >> 1)[0]} y1={at(i >> 1)[1] + 12} x2={x} y2={y - 12} stroke={C.mocha} strokeWidth={1} opacity={rise(depth - 1)} />}
             <rect x={x - 22} y={y - 12} width={44} height={24} fill={C.band} stroke={isHit ? C.caramel : C.latte} strokeWidth={isHit ? 2.2 : 1} />
             <T x={x} y={y + 5} s={12} a="middle" f={isHit ? C.caramel : C.crema}>{v === null ? '–' : `${v}`}</T>
           </g>
         );
       })}
-      <T x={30} y={244} s={12} f={C.caramel} o={q >= 1 ? 1 : 0}>max(7, 5) = 7, correct</T>
+      {paths.map((p, j) => <Draw key={j} pts={p} t={t} from={2.0 + j * 0.4} to={2.4 + j * 0.4} stroke={C.caramel} w={1.6} />)}
+      {used.map((i, j) => {
+        const k = drop(j);
+        if (k <= 0 || k >= 1) return null;
+        const [x, y] = pos(i);
+        return <T key={i} x={lerp(x, 90 + j * 40, k)} y={lerp(y + 5, 244, k)} s={12} a="middle" f={C.caramel}>{`${tree[i]}`}</T>;
+      })}
+      <Decode text="max(7, 5) = 7, correct" t={t} at={3.4} x={30} y={244} s={12} f={C.caramel} />
       <T x={30} y={270} s={11} f={C.latte} o={end}>only needs an associative combine; matched brute force, 20 cases</T>
     </Svg>
   );
@@ -422,7 +471,6 @@ export function SegmentTreeCorrect({ t }: StepCtx) {
 // 11 · The weighted-mix thesis: three mixes, three winners
 export function WeightedMixThesis({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
-  const r = stepIdx(t, 0.7, 3.4, 3);
   const redis = easeOut(seg(t, 3.8, 4.5));
   const rows: [string, string[], number][] = [
     ['all lookups', ['1', '23.25', '10,000,000'], 0],
@@ -430,6 +478,20 @@ export function WeightedMixThesis({ t }: StepCtx) {
     ['leaderboard', ['5,000,000.5', '16.63', '6.66'], 2],
   ];
   const cols = [230, 350, 480];
+  // Each mix slides in as a row; a single "winner" frame then travels to that row's cheapest structure, so the winner
+  // visibly moves column as the mix moves. Last, the two structures of a mix that needs both slide together and link.
+  const rowIn = (i: number) => easeOut(seg(t, 0.7 + i * 0.9, 1.1 + i * 0.9));
+  const move = (i: number) => easeInOut(seg(t, 1.0 + i * 0.9, 1.5 + i * 0.9));
+  let fx = cols[0], fy = 66;
+  rows.forEach(([, , win], i) => {
+    if (i === 0) return;
+    const k = move(i);
+    if (k > 0) {
+      fx = lerp(cols[rows[i - 1][2]], cols[win], k);
+      fy = lerp(66 + (i - 1) * 40, 66 + i * 40, k);
+    }
+  });
+  const pair = easeInOut(seg(t, 3.9, 4.6));
   return (
     <Svg label="Cost per operation as frequency times cost, n = 10,000,000, k = 10. All lookups: hash 1, tree 23.25, heap 10,000,000; hash wins. Sixty percent ranges: tree 29.25 wins. A leaderboard of inserts and top-k: heap 6.66 wins. Then a hash table and a skip list kept together over one sorted set" h={290}>
       <g opacity={a}>
@@ -440,25 +502,32 @@ export function WeightedMixThesis({ t }: StepCtx) {
       </g>
       {rows.map(([lab, vals, win], i) => {
         const y = 66 + i * 40;
+        const k = rowIn(i);
+        const won = i === 0 ? move(0) > 0 || t > 1.0 : move(i) >= 1;
         return (
-          <g key={lab} opacity={i <= r ? 1 : 0}>
+          <g key={lab} opacity={clamp(k * 2)} transform={`translate(${((1 - k) * 24).toFixed(2)} 0)`}>
             <T x={30} y={y} s={12} f={C.latte}>{lab}</T>
             {vals.map((v, j) => (
               <g key={j}>
-                {j === win && <rect x={cols[j] - 54} y={y - 16} width={108} height={24} fill="none" stroke={C.caramel} strokeWidth={1.8} />}
-                <T x={cols[j]} y={y} s={12} a="middle" f={j === win ? C.caramel : C.latte}>{v}</T>
+                {j === win && won && <rect x={cols[j] - 54} y={y - 16} width={108} height={24} fill="none" stroke={C.caramel} strokeWidth={1} opacity={0.5} />}
+                <T x={cols[j]} y={y} s={12} a="middle" f={j === win && won ? C.caramel : C.latte}>{v}</T>
               </g>
             ))}
           </g>
         );
       })}
+      {t > 1.0 && <rect x={fx - 54} y={fy - 16} width={108} height={24} fill="none" stroke={C.caramel} strokeWidth={2} />}
       <g opacity={redis}>
         <T x={30} y={204} s={12} f={C.crema}>a mix that needs both:</T>
-        <rect x={60} y={218} width={150} height={28} fill="none" stroke={C.caramel} strokeWidth={1.4} />
-        <T x={135} y={237} s={12} a="middle" f={C.caramel}>hash table</T>
-        <rect x={300} y={218} width={150} height={28} fill="none" stroke={C.caramel} strokeWidth={1.4} />
-        <T x={375} y={237} s={12} a="middle" f={C.caramel}>skip list</T>
-        <line x1={210} y1={232} x2={300} y2={232} stroke={C.latte} strokeWidth={1.2} strokeDasharray="4 3" />
+        <g transform={`translate(${lerp(-30, 0, pair).toFixed(2)} 0)`}>
+          <rect x={60} y={218} width={150} height={28} fill="none" stroke={C.caramel} strokeWidth={1.4} />
+          <T x={135} y={237} s={12} a="middle" f={C.caramel}>hash table</T>
+        </g>
+        <g transform={`translate(${lerp(30, 0, pair).toFixed(2)} 0)`}>
+          <rect x={300} y={218} width={150} height={28} fill="none" stroke={C.caramel} strokeWidth={1.4} />
+          <T x={375} y={237} s={12} a="middle" f={C.caramel}>skip list</T>
+        </g>
+        <Draw pts={[[210, 232], [300, 232]]} t={t} from={4.5} to={4.9} stroke={C.latte} w={1.2} dash="4 3" />
         <T x={255} y={274} s={11} a="middle" f={C.latte}>one sorted set, kept in sync</T>
       </g>
     </Svg>
@@ -468,9 +537,12 @@ export function WeightedMixThesis({ t }: StepCtx) {
 // 12 · Recap: a situation, not a table
 export function Recap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
-  const b = easeOut(seg(t, 1.0, 1.6));
-  const grow = stepIdx(t, 1.8, 3.6, 3);
+  const b = easeOutBack(seg(t, 1.0, 1.6));
   const end = easeOut(seg(t, 3.9, 4.4));
+  // The table stays put; the situation is a single position that sprouts: its next situations slide out of it along
+  // their edges, then each of those sprouts its own, the space growing faster than any table could be written.
+  const g1 = easeOut(seg(t, 1.8, 2.5));
+  const g2 = easeOut(seg(t, 2.6, 3.4));
   const kids = (x: number, y: number, dx: number) => [
     [x - dx, y + 46],
     [x, y + 46],
@@ -483,23 +555,29 @@ export function Recap({ t }: StepCtx) {
         <rect x={40} y={60} width={140} height={60} fill="none" stroke={C.latte} strokeWidth={1.2} />
         <T x={110} y={95} s={12} a="middle" f={C.latte}>data in a table</T>
       </g>
-      <g opacity={b}>
+      <g opacity={clamp(b * 2)} transform={`translate(400 60) scale(${Math.max(0.01, b).toFixed(3)}) translate(-400 -60)`}>
         <circle cx={400} cy={60} r={10} fill={C.caramel} />
         <T x={420} y={44} s={11} f={C.caramel}>a position</T>
       </g>
-      {l1.map(([x, y], i) => (
-        <g key={i} opacity={grow >= 0 ? 1 : 0}>
-          <line x1={400} y1={70} x2={x} y2={y - 8} stroke={C.latte} strokeWidth={1.2} />
-          <circle cx={x} cy={y} r={8} fill="none" stroke={C.crema} strokeWidth={1.4} />
-          {kids(x, y, 24).map(([x2, y2], j) => (
-            <g key={j} opacity={grow >= 1 ? 1 : 0}>
-              <line x1={x} y1={y + 8} x2={x2} y2={y2 - 6} stroke={C.mocha} strokeWidth={1} />
-              <circle cx={x2} cy={y2} r={6} fill="none" stroke={C.latte} strokeWidth={1} />
-            </g>
-          ))}
-        </g>
-      ))}
-      <T x={400} y={214} s={11} a="middle" f={C.latte} o={grow >= 2 ? 1 : 0}>legal moves, toward a goal</T>
+      {l1.map(([x0, y0], i) => {
+        const x = lerp(400, x0, g1), y = lerp(60, y0, g1);
+        return (
+          <g key={i} opacity={g1 > 0 ? 1 : 0}>
+            <line x1={400} y1={70} x2={x} y2={y - 8} stroke={C.latte} strokeWidth={1.2} />
+            <circle cx={x} cy={y} r={8} fill="none" stroke={C.crema} strokeWidth={1.4} />
+            {kids(x0, y0, 24).map(([x2, y2], j) => {
+              const cx2 = lerp(x0, x2, g2), cy2 = lerp(y0, y2, g2);
+              return (
+                <g key={j} opacity={g2 > 0 ? 1 : 0}>
+                  <line x1={x0} y1={y0 + 8} x2={cx2} y2={cy2 - 6} stroke={C.mocha} strokeWidth={1} />
+                  <circle cx={cx2} cy={cy2} r={6} fill="none" stroke={C.latte} strokeWidth={1} />
+                </g>
+              );
+            })}
+          </g>
+        );
+      })}
+      <T x={400} y={214} s={11} a="middle" f={C.latte} o={easeOut(seg(t, 3.2, 3.6))}>legal moves, toward a goal</T>
       <T x={300} y={246} s={13} a="middle" f={C.caramel} o={end}>next: modelling problems as graphs</T>
     </Svg>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = a state or structure as it is; latte = secondary labels;
 // caramel = the thing to look at (the move, the state being chosen); cinnamon (rare) = the
@@ -48,22 +48,34 @@ const changed = (i: number) => (i === 0 ? -1 : [...LADDER[i]].findIndex((ch, j) 
 
 // 1 · Hook: a word ladder, one letter at a time
 export function WordLadderHook({ t }: StepCtx) {
-  const k = stepIdx(t, 0.2, 3.2, 6);
   const end = easeOut(seg(t, 3.5, 4.0));
+  // Each word is the one above it, copied down a rung; then the one letter that changes flips over like a tile,
+  // showing the old letter on the way up and the new one on the way down.
+  const T0 = (i: number) => 0.2 + i * 0.5;
   return (
     <Svg label="A word ladder: head, heal, teal, tell, tall, tail, each a real word, each one letter different from the last. Five moves, though head and tail differ in only four letters" h={290}>
       {LADDER.map((w, i) => {
         const y = 30 + i * 38;
         const c = changed(i);
+        const slide = i === 0 ? easeOut(seg(t, 0.2, 0.5)) : easeInOut(seg(t, T0(i), T0(i) + 0.25));
+        const flip = seg(t, T0(i) + 0.22, T0(i) + 0.5);
+        const yy = i === 0 ? y : lerp(y - 38, y, slide);
+        const prev = i > 0 ? LADDER[i - 1] : w;
         return (
-          <g key={w} opacity={i <= k ? 1 : 0}>
-            {[...w].map((ch, j) => (
-              <g key={j}>
-                <rect x={180 + j * 40} y={y} width={32} height={30} fill="none" stroke={j === c ? C.caramel : C.mocha} strokeWidth={j === c ? 2 : 1} />
-                <T x={196 + j * 40} y={y + 21} s={15} a="middle" f={j === c ? C.caramel : C.crema}>{ch}</T>
-              </g>
-            ))}
-            <T x={370} y={y + 20} s={11} f={C.latte}>a word</T>
+          <g key={w} opacity={t >= T0(i) ? (i === 0 ? slide : 1) : 0}>
+            {[...w].map((ch, j) => {
+              const isC = j === c;
+              const sy = isC ? Math.max(0.05, Math.abs(Math.cos(flip * Math.PI))) : 1;
+              const shownCh = isC && flip < 0.5 ? prev[j] : ch;
+              const cy = yy + 15;
+              return (
+                <g key={j} transform={`translate(0 ${cy}) scale(1 ${sy.toFixed(3)}) translate(0 ${-cy})`}>
+                  <rect x={180 + j * 40} y={yy} width={32} height={30} fill="none" stroke={isC ? C.caramel : C.mocha} strokeWidth={isC ? 2 : 1} />
+                  <T x={196 + j * 40} y={yy + 21} s={15} a="middle" f={isC && flip >= 0.5 ? C.caramel : C.crema}>{shownCh}</T>
+                </g>
+              );
+            })}
+            <T x={370} y={yy + 20} s={11} f={C.latte} o={i === 0 ? 1 : easeOut(seg(t, T0(i) + 0.45, T0(i) + 0.6))}>a word</T>
           </g>
         );
       })}
@@ -77,35 +89,51 @@ export function PredictFifteenPuzzle({ t, answer }: StepCtx) {
   const answered = answer !== null;
   const s = useSinceAnswer(answered);
   const a = easeOut(seg(t, 0.1, 0.6));
-  const mv = stepIdx(t, 0.6, 2.4, 4);
+  const mvF = seg(t, 0.6, 2.4) * 4; // four slides; tile m is in motion while mvF is between m and m + 1
   const cnt = easeOut(seg(t, 2.0, 2.5));
   const ask = easeOut(seg(t, 2.8, 3.3));
   const rev = answered ? easeOut(seg(s, 0.2, 1.0)) : 0;
   // the blank walks 15 → 14 → 10 → 9 → 13 (cell indices), each a legal slide
   const blanks = [15, 14, 10, 9, 13];
   const board = Array.from({ length: 16 }, (_, i) => (i < 15 ? i + 1 : 0));
-  for (let m = 0; m <= mv; m++) {
+  // Board after the slides already finished; the tile of the slide in progress glides into the blank.
+  const done = mvF >= 4 ? 4 : Math.max(0, Math.floor(mvF));
+  for (let m = 0; m < done; m++) {
     const from = blanks[m];
     const to = blanks[m + 1];
     [board[from], board[to]] = [board[to], board[from]];
   }
+  const moving = done < 4 && t >= 0.6 ? { tile: board[blanks[done + 1]], from: blanks[done + 1], to: blanks[done], f: easeInOut(mvF - done) } : null;
   const blank = board.indexOf(0);
   const nb = [blank - 4, blank + 4, blank % 4 ? blank - 1 : -1, blank % 4 < 3 ? blank + 1 : -1].filter((i) => i >= 0 && i < 16);
+  const cellX = (i: number) => 40 + (i % 4) * 44;
+  const cellY = (i: number) => 40 + Math.floor(i / 4) * 44;
   return (
     <Svg label="A fifteen puzzle, its blank sliding a few times: each arrangement a state, each slide a move. 10,461,394,944,000 states. After answering: neither stored nor searched in full; the neighbours of the current state are generated only when needed" h={270}>
       <g opacity={a}>
-        {board.map((v, i) => (
-          <g key={i}>
-            <rect x={40 + (i % 4) * 44} y={40 + Math.floor(i / 4) * 44} width={40} height={40} fill="none" stroke={v === 0 ? C.caramel : rev > 0.5 && nb.includes(i) ? C.cinnamon : C.latte} strokeWidth={v === 0 || (rev > 0.5 && nb.includes(i)) ? 2 : 1} strokeDasharray={v === 0 ? '4 3' : undefined} />
-            <T x={60 + (i % 4) * 44} y={66 + Math.floor(i / 4) * 44} s={13} a="middle" f={C.crema}>{v ? `${v}` : ''}</T>
+        {board.map((v, i) => {
+          const isMoving = moving && i === moving.from;
+          const ring = rev > 0 && nb.includes(i);
+          return (
+            <g key={i}>
+              <rect x={cellX(i)} y={cellY(i)} width={40} height={40} fill="none" stroke={v === 0 || isMoving ? C.caramel : ring ? C.cinnamon : C.latte} strokeWidth={v === 0 || ring ? 2 : 1} strokeDasharray={v === 0 || isMoving ? '4 3' : undefined} />
+              {!isMoving && <T x={cellX(i) + 20} y={cellY(i) + 26} s={13} a="middle" f={C.crema}>{v ? `${v}` : ''}</T>}
+              {ring && rev < 1 && <rect x={cellX(i) - 6 * rev} y={cellY(i) - 6 * rev} width={40 + 12 * rev} height={40 + 12 * rev} fill="none" stroke={C.cinnamon} strokeWidth={1} opacity={1 - rev} />}
+            </g>
+          );
+        })}
+        {moving && (
+          <g>
+            <rect x={lerp(cellX(moving.from), cellX(moving.to), moving.f) + 2} y={lerp(cellY(moving.from), cellY(moving.to), moving.f) + 2} width={36} height={36} fill={C.band} stroke={C.crema} strokeWidth={1} />
+            <T x={lerp(cellX(moving.from), cellX(moving.to), moving.f) + 20} y={lerp(cellY(moving.from), cellY(moving.to), moving.f) + 26} s={13} a="middle" f={C.crema}>{`${moving.tile}`}</T>
           </g>
-        ))}
+        )}
         <T x={240} y={60} s={12} f={C.latte}>each arrangement: a state</T>
         <T x={240} y={84} s={12} f={C.latte}>each slide: a move</T>
       </g>
       <g opacity={cnt}>
         <T x={240} y={130} s={12} f={C.latte}>states: 16! ÷ 2 =</T>
-        <T x={240} y={154} s={14} f={C.caramel}>10,461,394,944,000</T>
+        <Decode text="10,461,394,944,000" t={t} at={2.0} dur={0.8} x={240} y={154} s={14} f={C.caramel} />
       </g>
       <T x={240} y={200} s={12} f={C.caramel} o={rev > 0 ? 0 : ask}>store them all? search them all?</T>
       <g opacity={rev}>
@@ -122,21 +150,32 @@ const DEPTHS = [1, 2, 4, 8, 16, 20, 39, 62, 116, 152, 286, 396, 748, 1024, 1893,
 // 3 · The eight puzzle searched for real; the fifteen by arithmetic
 export function ImplicitGraphRevealed({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.5));
-  const d = stepIdx(t, 0.5, 3.2, 32);
+  const dF = seg(t, 0.5, 3.2) * 32;
+  const d = t < 0.5 ? -1 : Math.min(31, Math.floor(dF));
   const tot = easeOut(seg(t, 3.3, 3.8));
   const fif = easeOut(seg(t, 4.1, 4.6));
   const max = Math.max(...DEPTHS);
+  // The search's frontier sweeps outward one depth at a time; each depth's bar grows as its states are found, and the
+  // running total of states visited counts up with it, to 181,440.
+  let seen = 0;
+  DEPTHS.forEach((c, i) => {
+    seen += c * clamp(dF - i);
+  });
+  const fx = 64 + Math.min(31, dF) * 15.4 + 5.5;
   return (
     <Svg label="A breadth-first search of the eight puzzle from its goal: the count of states at each distance grows, peaks in the twenties and falls off, ending at 31 moves; 181,440 states in all. The fifteen puzzle's 10,461,394,944,000 comes from arithmetic alone" h={290}>
       <T x={30} y={26} s={12} f={C.latte} o={a}>eight puzzle: a real breadth-first search</T>
       <line x1={60} y1={190} x2={560} y2={190} stroke={C.mocha} strokeWidth={1} opacity={a} />
-      {DEPTHS.map((c, i) => (
-        <rect key={i} x={64 + i * 15.4} y={190 - (c / max) * 140} width={11} height={(c / max) * 140} fill={i === 31 && d >= 31 ? C.caramel : C.crema} opacity={i <= d ? 0.6 : 0} />
-      ))}
+      {DEPTHS.map((c, i) => {
+        const g = easeOut(clamp(dF - i));
+        const h = (c / max) * 140 * g;
+        return g > 0 ? <rect key={i} x={64 + i * 15.4} y={190 - h} width={11} height={h} fill={i === 31 && d >= 31 ? C.caramel : C.crema} opacity={0.6} /> : null;
+      })}
+      {t >= 0.5 && dF < 32 && <line x1={fx} y1={44} x2={fx} y2={192} stroke={C.focus} strokeWidth={1} opacity={0.7} />}
       <T x={64} y={208} s={11} f={C.latte} o={a}>0</T>
       <T x={560} y={208} s={11} a="end" f={C.latte} o={d >= 31 ? 1 : 0}>31 moves deep</T>
       <T x={300} y={208} s={11} a="middle" f={C.latte} o={a}>moves from the goal</T>
-      <T x={30} y={240} s={13} f={C.caramel} o={tot}>181,440 reachable states</T>
+      <T x={30} y={240} s={13} f={tot > 0 ? C.caramel : C.latte} o={t >= 0.5 ? 1 : 0}>{`${Math.round(seen).toLocaleString('en-US')} reachable states`}</T>
       <T x={30} y={274} s={12} f={C.latte} o={fif}>fifteen puzzle: 16! ÷ 2, never listed</T>
     </Svg>
   );
@@ -153,21 +192,26 @@ const BUCKETS: [string, string[]][] = [
 // 4 · Wildcard buckets: edges without comparing words
 export function WildcardBuckets({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.5));
-  const b = stepIdx(t, 0.5, 2.8, 5);
   const edges = easeOut(seg(t, 3.0, 3.5));
   const end = easeOut(seg(t, 3.8, 4.3));
+  // Each bucket's pattern decodes, then its words fly in from the right and drop into their slots; once every bucket is
+  // filled, a line draws through each bucket's words: sharing a bucket is the edge.
+  const T0 = (i: number) => 0.5 + i * 0.46;
   return (
     <Svg label="Words dropped into buckets keyed by a blanked letter: hea_ holds head, heal, hear, heat; _eal holds heal and teal; te_l teal and tell; t_ll tall and tell; ta_l tail and tall. Words sharing a bucket are joined: those are the ladder's edges. 200 neighbour links either way" h={290}>
       <T x={30} y={26} s={12} f={C.latte} o={a}>blank one letter; bucket by the pattern</T>
       {BUCKETS.map(([key, ws], i) => {
         const y = 62 + i * 40;
         return (
-          <g key={key} opacity={i <= b ? 1 : 0}>
-            <T x={30} y={y} s={13} f={C.caramel}>{key}</T>
-            {ws.map((w, j) => (
-              <T key={w} x={130 + j * 68} y={y} s={12} f={C.crema}>{w}</T>
-            ))}
-            <path d={`M${150} ${y + 8} L${130 + (ws.length - 1) * 68 + 20} ${y + 8}`} stroke={C.caramel} strokeWidth={1.4} opacity={edges} />
+          <g key={key} opacity={t >= T0(i) ? 1 : 0}>
+            <Decode text={key} t={t} at={T0(i)} dur={0.3} x={30} y={y} s={13} f={C.caramel} />
+            {ws.map((w, j) => {
+              const k = easeOut(seg(t, T0(i) + 0.1 + j * 0.06, T0(i) + 0.4 + j * 0.06));
+              return (
+                <T key={w} x={lerp(210 + j * 68, 130 + j * 68, k)} y={y - (1 - k) * 14} s={12} f={C.crema} o={clamp(k * 2)}>{w}</T>
+              );
+            })}
+            <Draw pts={[[150, y + 8], [130 + (ws.length - 1) * 68 + 20, y + 8]]} t={t} from={3.0 + i * 0.08} to={3.4 + i * 0.08} stroke={C.caramel} w={1.4} />
           </g>
         );
       })}
@@ -332,22 +376,36 @@ export function LayeredGraphIntroduced({ t }: StepCtx) {
 // 8 · The layered graph measured: the detour pays only with enough discounts
 export function LayeredGraphMeasured({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.5));
-  const k = stepIdx(t, 0.5, 2.8, 5);
   const size = easeOut(seg(t, 3.2, 3.8));
   const size2 = easeOut(seg(t, 4.0, 4.6));
   const costs = [30, 30, 30, 25, 20];
+  // One row per discount limit: the bar first runs out to the direct route's 30, then, where the detour pays,
+  // shrinks back to the detour's cost. Then the layered graph appears as k + 1 copies fanning out of one.
+  const row = (i: number) => easeOut(seg(t, 0.5 + i * 0.46, 0.85 + i * 0.46));
+  const cut = (i: number) => easeInOut(seg(t, 0.85 + i * 0.46, 1.25 + i * 0.46));
+  const fan = easeInOut(seg(t, 3.3, 4.2));
+  const layers = 4;
   return (
     <Svg label="Cheapest cost from 0 to 3 for k = 0 to 4 discounts: 30, 30, 30, 25, 20. The direct route holds until three discounts make the detour pay. At V = 100,000, E = 300,000 and k = 3, the layered graph has 400,000 vertices and 2,100,000 edges" h={290}>
       <T x={30} y={26} s={12} f={C.latte} o={a}>cheapest cost, 0 to 3</T>
       {costs.map((c, i) => {
         const y = 44 + i * 30;
         const detour = c < 30;
+        const k = row(i);
+        const w = lerp(0, 30, k) - (30 - c) * cut(i);
+        const landed = !detour || cut(i) >= 1;
         return (
-          <g key={i} opacity={i <= k ? 1 : 0}>
+          <g key={i} opacity={k > 0 ? 1 : 0}>
             <T x={30} y={y + 13} s={12} f={C.latte}>{`k = ${i}`}</T>
-            <rect x={100} y={y} width={c * 10} height={16} fill={detour ? C.caramel : C.latte} opacity={0.6} />
-            <T x={110 + c * 10} y={y + 13} s={12} f={detour ? C.caramel : C.crema}>{`${c} ${detour ? 'detour' : 'direct'}`}</T>
+            <rect x={100} y={y} width={Math.max(2, w * 10)} height={16} fill={detour && cut(i) > 0 ? C.caramel : C.latte} opacity={0.6} />
+            <T x={110 + w * 10} y={y + 13} s={12} f={detour && landed ? C.caramel : C.crema} o={easeOut(seg(t, 0.75 + i * 0.46, 0.95 + i * 0.46))}>{landed ? `${c} ${detour ? 'detour' : 'direct'}` : ''}</T>
           </g>
+        );
+      })}
+      {Array.from({ length: layers }, (_, l) => {
+        const dy = lerp(0, 18, fan) * (l - 1.5);
+        return (
+          <path key={l} d={`M430 ${(248 + dy).toFixed(1)} L540 ${(248 + dy).toFixed(1)} L570 ${(236 + dy).toFixed(1)} L460 ${(236 + dy).toFixed(1)} Z`} fill="none" stroke={l === 0 ? C.crema : C.latte} strokeWidth={1.2} opacity={size} />
         );
       })}
       <g opacity={size}>
