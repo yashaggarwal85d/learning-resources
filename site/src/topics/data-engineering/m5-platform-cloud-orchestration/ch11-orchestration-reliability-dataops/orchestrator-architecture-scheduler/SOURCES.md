@@ -48,7 +48,7 @@ Contents (item by item, for the coverage map):
 ## Airflow 3.3.2 — Supported versions (Version Life Cycle)
 
 URL: https://airflow.apache.org/docs/apache-airflow/stable/installation/supported-versions.html
-Version: Airflow 3.3.2 documentation (fetched 30 Oct 2026)
+Version: Airflow 3.3.2 documentation (fetched 30 Oct 2026); re-checked 8 Nov 2026, when the current Airflow 3 patch had moved to 3.4.0
 
 > Version
 > Current Patch/Minor
@@ -57,7 +57,7 @@ Version: Airflow 3.3.2 documentation (fetched 30 Oct 2026)
 > Limited Maintenance
 > EOL/Terminated
 > 3
-> 3.3.2
+> 3.4.0
 > Maintenance
 > Apr 22, 2025
 > TBD
