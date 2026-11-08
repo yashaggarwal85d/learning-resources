@@ -96,7 +96,7 @@ function MergeView({ L, R, k, yL = 40, yR = 80, yO = 170, xL = 60, xR = 60, show
       })}
       {showCmp &&
         tr.slice(0, Math.min(placed + 1, tr.length)).map((e, i) =>
-          e.cmp ? <circle key={i} cx={MX(i) + 13} cy={yO + 36} r={3} fill={C.caramel} opacity={i < placed ? 0.9 : f} /> : null,
+          e.cmp ? <circle key={i} cx={MX(i) + 13} cy={yO < yL ? yO - 8 : yO + 36} r={3} fill={C.caramel} opacity={i < placed ? 0.9 : f} /> : null,
         )}
     </g>
   );
