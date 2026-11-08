@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Plot, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 
@@ -290,7 +290,8 @@ export function RevealDynamoSpannerClassified({ t }: StepCtx) {
   );
 }
 
-// 8 · Failure domains. Boxes draw from the inside out, in the narration's order: process, host, rack, zone, region.
+// 8 · Failure domains. Each box grows out of the one inside it, in the narration's order: process, host, rack, zone,
+// region; then a red cut draws down through every wall.
 export function RevealFailureDomainsPhysically({ t }: StepCtx) {
   const boxes: [number, number, number, number, string, number][] = [
     [200, 132, 200, 42, 'process', 0.4],
@@ -299,19 +300,25 @@ export function RevealFailureDomainsPhysically({ t }: StepCtx) {
     [60, 54, 480, 166, 'availability zone', 2.8],
     [25, 30, 550, 200, 'region', 3.6],
   ];
+  // Each domain grows out of the one inside it, so the camera seems to pull back one level per beat.
   return (
     <Svg label="process, host, rack, zone, region: real ways to partition." h={240}>
       {boxes.map(([x, y, w, h, l, a], i) => {
-        const k = easeOut(seg(t, a, a + 0.4));
+        const k = easeOut(seg(t, a, a + 0.5));
+        if (k <= 0) return null;
+        const [px, py, pw, ph] = i === 0 ? [300, 153, 0, 0] : boxes[i - 1];
+        const bx = lerp(px, x, k), by = lerp(py, y, k), bw = lerp(pw, w, k), bh = lerp(ph, h, k);
         return (
-          <g key={l} opacity={k}>
-            <rect x={x} y={y} width={w} height={h} rx={5} fill="none" stroke={i === 0 ? C.focus : C.latte} strokeWidth={1.5} />
-            <T x={i === 0 ? 300 : x + 10} y={i === 0 ? 158 : y + 16} s={11} f={i === 0 ? C.focus : C.latte} a={i === 0 ? 'middle' : 'start'}>
+          <g key={l}>
+            <rect x={bx} y={by} width={bw} height={bh} rx={5} fill="none" stroke={i === 0 ? C.focus : C.latte} strokeWidth={1.5} opacity={clamp(k * 1.5)} />
+            <T x={i === 0 ? 300 : bx + 10} y={i === 0 ? 158 : by + 16} s={13} f={i === 0 ? C.focus : C.latte} a={i === 0 ? 'middle' : 'start'} o={easeOut(seg(t, a + 0.3, a + 0.6))}>
               {l}
             </T>
           </g>
         );
       })}
+      {/* any of those walls can be where the split happens: a cut runs down through all of them */}
+      <Draw pts={[[428, 22], [420, 80], [432, 130], [422, 190], [430, 238]]} t={t} from={4.1} to={4.7} stroke={C.badText} w={2} dash="6 5" />
     </Svg>
   );
 }

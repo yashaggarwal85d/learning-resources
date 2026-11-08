@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, rng, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar: caramel = the thing to look at (the device, the fix), cherry/cherryText = a bad outcome (loss, flush,
 // amplification), taupe = quiet/waiting, latte = secondary labels, crema = data, cinnamon = the alternative being compared.
@@ -482,11 +482,15 @@ export function Verdict({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.2, 1.0));
   const b = easeOut(seg(t, 1.1, 1.9));
   const c = easeOut(seg(t, 2.0, 2.8));
+  const race = easeOut(seg(t, 0.3, 1.2));
   const rows = [
-    { label: 'sequential vs random', value: `${Math.max(1, Math.round(414 * easeOut(seg(t, 0.3, 1.2))))}×`, color: C.caramel, o: a },
+    { label: 'sequential vs random', value: `${Math.max(1, Math.round(414 * race))}×`, color: C.caramel, o: a },
     { label: 'write amplification', value: 'past one', color: C.cherry, o: b },
     { label: 'durability recipe', value: 'write, fsync, fsync', color: C.cinnamon, o: c },
   ];
+  // Row 2: one page written by the app lands on flash, then the cleaner's copies slide in beside it.
+  const land = easeOutBack(seg(t, 1.2, 1.55));
+  const copies = [easeOut(seg(t, 1.55, 1.85)), easeOut(seg(t, 1.75, 2.05))];
   return (
     <Svg label="Three answers for the drive below the cache: a 414 times sequential-to-random gap, write amplification past one on random writes, and a three-step durability recipe" h={320}>
       {rows.map((r, i) => (
@@ -494,12 +498,53 @@ export function Verdict({ t }: StepCtx) {
           <T x={25} y={70 + i * 80} s={15} f={C.latte}>
             {r.label}
           </T>
-          <T x={25} y={104 + i * 80} s={26} f={r.color} w={700}>
+          <T x={25} y={104 + i * 80} s={26} f={r.color === C.cherry ? C.cherryText : r.color} w={700}>
             {r.value}
           </T>
           <rect x={25} y={114 + i * 80} width={260 * r.o} height={3} rx={1.5} fill={r.color} />
         </g>
       ))}
+      {/* 1 · the same bytes, two orders: the sequential bar races to the end while the random one barely leaves */}
+      <g opacity={a}>
+        <T x={390} y={66} s={13} f={C.secondary}>
+          seq
+        </T>
+        <Bar x={440} y={56} w={135 * race} h={12} full={135} fill={C.caramel} />
+        <T x={390} y={94} s={13} f={C.secondary}>
+          rand
+        </T>
+        <Bar x={440} y={84} w={(135 * race) / 414} h={12} full={135} fill={C.secondary} />
+      </g>
+      {/* 2 · one page from the app, more pages underneath once the cleaner copies live data */}
+      <g opacity={b}>
+        <T x={390} y={146} s={13} f={C.secondary}>
+          app
+        </T>
+        <T x={390} y={184} s={13} f={C.secondary}>
+          flash
+        </T>
+        <rect x={440} y={134} width={24} height={16} rx={3} fill={C.caramel} />
+        {land > 0 && <rect x={440} y={lerp(134, 172, clamp(land, 0, 1.2))} width={24} height={16} rx={3} fill={C.caramel} />}
+        {copies.map((k, i) =>
+          k > 0 ? <rect key={i} x={lerp(590, 470 + i * 30, k)} y={172} width={24} height={16} rx={3} fill={C.cherry} stroke={C.cherryText} strokeWidth={1} /> : null,
+        )}
+      </g>
+      {/* 3 · the recipe: the file reaches the disk, then the directory entry does */}
+      <g opacity={c}>
+        <T x={434} y={232} s={13} a="middle" f={C.secondary}>
+          file
+        </T>
+        <T x={530} y={232} s={13} a="middle" f={C.secondary}>
+          dir
+        </T>
+        <line x1={410} y1={290} x2={575} y2={290} stroke={C.cinnamon} strokeWidth={2} />
+        <T x={575} y={308} s={13} a="end" f={C.cinnamon}>
+          disk
+        </T>
+      </g>
+      <Draw pts={[[434, 242], [434, 284]]} t={t} from={2.2} to={2.55} stroke={C.cinnamon} />
+      <Draw pts={[[530, 242], [530, 284]]} t={t} from={2.6} to={2.95} stroke={C.cinnamon} />
+      <Reticle x={482} y={262} w={160} h={70} t={t} at={2.95} />
     </Svg>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, rng, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar: caramel = the thing to look at (the device, the fix), cherry/cherryText = a bad outcome
 // (torn write, slow-down, refused writer), taupe = quiet/waiting, latte = labels, crema = data, cinnamon = the alternative.
@@ -426,6 +426,17 @@ export function Verdict({ t }: StepCtx) {
     { label: 'run at once, per link', value: `${Math.max(1, Math.round(14 * easeOut(seg(t, 1.1, 1.9))))} requests`, color: C.cinnamon, o: b },
     { label: 'minimum part, this upload', value: '105 MiB', color: C.cherry, o: c },
   ];
+  // Row 1: time per byte falls steeply as a range grows, then flattens; the marker rides the curve to the knee.
+  const curve: [number, number][] = Array.from({ length: 40 }, (_, i) => {
+    const x = i / 39;
+    return [380 + x * 195, 46 + 54 / (1 + 9 * x)];
+  });
+  const ride = easeInOut(seg(t, 0.5, 1.2));
+  const knee = curve[Math.round(ride * 12)];
+  // Row 2: requests leave one after another until the pipe to the link is full.
+  const sent = 14 * easeOut(seg(t, 1.1, 1.9));
+  // Row 3: one upload splits into parts: gaps open between them.
+  const split = easeInOut(seg(t, 2.1, 2.7));
   return (
     <Svg label="Three settled numbers for the tier: size ranges near nine megabytes, run about fourteen requests to fill a link, and this upload's parts near one hundred and five mebibytes" h={320}>
       {rows.map((r, i) => (
@@ -433,12 +444,29 @@ export function Verdict({ t }: StepCtx) {
           <T x={25} y={70 + i * 80} s={15} f={C.latte}>
             {r.label}
           </T>
-          <T x={25} y={104 + i * 80} s={26} f={r.color} w={700}>
+          <T x={25} y={104 + i * 80} s={26} f={r.color === C.cherry ? C.cherryText : r.color} w={700}>
             {r.value}
           </T>
           <rect x={25} y={114 + i * 80} width={260 * r.o} height={3} rx={1.5} fill={r.color} />
         </g>
       ))}
+      <line x1={380} y1={104} x2={575} y2={104} stroke={C.line} opacity={a} />
+      <Draw pts={curve} t={t} from={0.2} to={0.9} stroke={C.secondary} w={2} pen={false} />
+      {ride > 0 && <circle cx={knee[0]} cy={knee[1]} r={6} fill={C.caramel} />}
+      <g opacity={b}>
+        <rect x={380} y={168} width={195} height={22} rx={11} fill="none" stroke={C.line} strokeWidth={1.5} />
+        {Array.from({ length: 14 }, (_, i) => {
+          const k = clamp(sent - i);
+          if (k <= 0) return null;
+          return <circle key={i} cx={lerp(380, 393 + i * 13, easeOut(k))} cy={179} r={4.5} fill={C.cinnamon} opacity={k} />;
+        })}
+      </g>
+      <g opacity={c}>
+        {Array.from({ length: 5 }, (_, i) => (
+          <rect key={i} x={380 + i * (39 + 6 * split) - 12 * split} y={250} width={39} height={18} rx={3} fill={C.cherry} stroke={C.cherryText} strokeWidth={1} />
+        ))}
+      </g>
+      <Reticle x={477} y={179} w={215} h={40} t={t} at={2.85} />
     </Svg>
   );
 }
