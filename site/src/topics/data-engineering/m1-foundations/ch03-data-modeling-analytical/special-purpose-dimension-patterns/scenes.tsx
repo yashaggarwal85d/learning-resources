@@ -295,7 +295,7 @@ export function RevealRolePlayingMeasured({ t }: StepCtx) {
   return (
     <Svg label="one dim_date, joined twice, two distinct dates" h={230}>
       <Row y={40} label="one shared table" value="joined in two roles" k={easeOut(seg(t, 0.3, 0.8))} />
-      <Row y={85} label="order date, ship date" value="both came back distinct" valueColor={C.focus} k={easeOut(seg(t, 2.6, 3.1))} />
+      <Row y={85} label="order date, ship date" value="both distinct" valueColor={C.focus} k={easeOut(seg(t, 2.6, 3.1))} />
       <Cell x={25} y={135} w={150} h={26} label="order" o={easeOut(seg(t, 0.4, 0.7))} />
       {[0, 1, 2].map((r) => (
         <Cell
