@@ -86,8 +86,8 @@ Retrieved 2026-11-02
 
 ## Soda — PyPI release metadata (version verification)
 
-URL: https://pypi.org/pypi/soda-core/json
-Retrieved 2026-11-02
+URL: https://pypi.org/pypi/soda-core/4.29.0/json
+Retrieved 2026-11-02; pinned to the 4.29.0 release record on 2026-11-08, after the unpinned URL moved on to 4.30.0
 
 > "version":"4.29.0"
 
