@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, lerp, rng, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = the textbook structure, and exact data in memory; latte =
 // secondary labels (a count, a weight, a bound); taupe = data on disk or not yet merged; caramel
@@ -326,9 +326,15 @@ export function AveragingWrong({ t }: StepCtx) {
 // 9 · The weighting: a reservoir sample weighted by its own partition's size
 export function WeightedSampling({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.8));
-  const samp = easeOut(seg(t, 0.8, 1.8));
   const wt = easeOut(seg(t, 2.0, 2.8));
   const note = easeOut(seg(t, 3.2, 3.9));
+  // Thirty values are drawn out of each partition and fall into its sample row: the big partition's from all along its
+  // 6,000 rows, the small one's all from its thin sliver of 60. Then the weights attach: each big-partition value
+  // swells (it speaks for 200 rows), each small-partition value shrinks (it speaks for 2).
+  const R = rng(9);
+  const fromBig = Array.from({ length: 30 }, () => 160 + R() * 400);
+  const fromSmall = Array.from({ length: 30 }, () => 160 + R() * 4);
+  const fall = (i: number) => easeInOut(seg(t, 0.8 + i * 0.022, 1.3 + i * 0.022));
   return (
     <Svg label="A partition of 6,000 rows and one of 60 each give a sample of 30 values. Each sampled value carries a weight of its partition's rows over its sample size: 200 for the large partition, 2 for the small one" h={270}>
       <g opacity={a}>
@@ -337,21 +343,21 @@ export function WeightedSampling({ t }: StepCtx) {
         <T x={40} y={130} s={12} f={C.crema}>60 rows</T>
         <rect x={160} y={118} width={4} height={18} fill={C.taupe} />
       </g>
-      <g opacity={samp}>
-        {Array.from({ length: 30 }, (_, i) => (
-          <circle key={i} cx={166 + i * 13} cy={66} r={4} fill={C.crema} />
-        ))}
-        {Array.from({ length: 30 }, (_, i) => (
-          <circle key={i} cx={166 + i * 13} cy={156} r={4} fill={C.crema} />
-        ))}
+      {Array.from({ length: 30 }, (_, i) => {
+        const k = fall(i);
+        return k > 0 ? <circle key={`b${i}`} cx={lerp(fromBig[i], 166 + i * 13, k)} cy={lerp(37, 66, k)} r={lerp(4, 5.5, wt)} fill={C.crema} /> : null;
+      })}
+      {Array.from({ length: 30 }, (_, i) => {
+        const k = fall(i);
+        return k > 0 ? <circle key={`s${i}`} cx={lerp(fromSmall[i], 166 + i * 13, k)} cy={lerp(127, 156, k)} r={lerp(4, 2.5, wt)} fill={C.crema} /> : null;
+      })}
+      <g opacity={easeOut(seg(t, 1.2, 1.8))}>
         <T x={40} y={70} s={12} f={C.latte}>sample 30</T>
         <T x={40} y={160} s={12} f={C.latte}>sample 30</T>
       </g>
-      <g opacity={wt}>
-        <T x={560} y={92} s={14} a="end" f={C.caramel}>each × 200</T>
-        <T x={560} y={182} s={14} a="end" f={C.cinnamon}>each × 2</T>
-      </g>
-      <T x={300} y={236} s={13} a="middle" f={C.caramel} o={note}>the weight travels with the sample</T>
+      <Decode text="each × 200" t={t} at={2.0} x={560} y={92} s={14} a="end" f={C.caramel} />
+      <Decode text="each × 2" t={t} at={2.2} x={560} y={182} s={14} a="end" f={C.cinnamon} />
+      <T x={300} y={lerp(244, 236, note)} s={13} a="middle" f={C.caramel} o={note}>the weight travels with the sample</T>
     </Svg>
   );
 }
@@ -363,22 +369,26 @@ export function RangeBoundaries({ t }: StepCtx) {
   const sp = easeOut(seg(t, 2.0, 2.8));
   const note = easeOut(seg(t, 3.2, 3.9));
   const bx = (v: number) => 60 + (v - 8) * 15;
+  // The full sort's quartiles drop in from above; then the cuts chosen from the samples slide in from the left end of
+  // the axis and come to rest just beside them, close but not identical, and the lock-on frames one such pair.
   return (
     <Svg label="The amount axis from 8 to 40, cut into 4 output ranges. The true quartiles a full sort finds, and the boundaries chosen from the weighted samples alone, land close together" h={270}>
       <g opacity={a}>
         <T x={300} y={24} s={12} a="middle" f={C.latte}>cut the stream into 4 equal ranges</T>
-        <rect x={bx(8)} y={110} width={bx(40) - bx(8)} height={20} fill={C.cocoa} />
+        <rect x={bx(8)} y={110} width={Math.max(2, (bx(40) - bx(8)) * a)} height={20} fill={C.cocoa} />
         <T x={bx(8)} y={152} s={12} a="middle" f={C.taupe}>8</T>
         <T x={bx(40)} y={152} s={12} a="middle" f={C.taupe}>40</T>
       </g>
       {TRUE_BOUNDS.map((v, i) => (
-        <line key={i} x1={bx(v)} y1={70} x2={bx(v)} y2={130} stroke={C.crema} strokeWidth={2.5} opacity={tr} />
+        <Draw key={i} pts={[[bx(v), 70], [bx(v), 130]]} t={t} from={0.9 + i * 0.15} to={1.4 + i * 0.15} stroke={C.crema} w={2.5} pen={false} />
       ))}
       <T x={bx(TRUE_BOUNDS[2]) + 8} y={78} s={12} f={C.crema} o={tr}>full sort</T>
-      {SAMPLED_BOUNDS.map((v, i) => (
-        <line key={i} x1={bx(v)} y1={110} x2={bx(v)} y2={176} stroke={C.caramel} strokeWidth={2.5} opacity={sp} />
-      ))}
+      {SAMPLED_BOUNDS.map((v, i) => {
+        const k = easeInOut(seg(t, 2.0 + i * 0.15, 2.8 + i * 0.15));
+        return k > 0 ? <line key={i} x1={lerp(bx(8), bx(v), k)} y1={110} x2={lerp(bx(8), bx(v), k)} y2={176} stroke={C.caramel} strokeWidth={2.5} /> : null;
+      })}
       <T x={bx(SAMPLED_BOUNDS[2]) + 8} y={176} s={12} f={C.caramel} o={sp}>from samples</T>
+      <Reticle x={(bx(TRUE_BOUNDS[1]) + bx(SAMPLED_BOUNDS[1])) / 2} y={123} w={40} h={116} t={t} at={3.2} />
       <T x={300} y={226} s={13} a="middle" f={C.caramel} o={note}>close, and no row fully sorted</T>
     </Svg>
   );
@@ -391,9 +401,12 @@ const BITS_B = [0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1
 // 11 · A filter merges too: a bitwise union
 export function BloomMerge({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.8));
-  const or = stepIdx(t, 1.0, 2.8, 24);
+  const orF = seg(t, 1.0, 2.8) * 24;
   const note = easeOut(seg(t, 3.1, 3.8));
   const cell = (x: number, y: number, on: boolean, col: string, key: number) => <rect key={key} x={x} y={y} width={18} height={18} fill={on ? col : C.roast} stroke={C.mocha} />;
+  // A column cursor sweeps left to right. At each position, every lit bit of A and of B drops straight down into the
+  // merged row; the merged bit lights the moment either one lands, so the union is built visibly, position by position.
+  const fall = (i: number) => easeIn2(clamp((orF - i) / 1.5));
   return (
     <Svg label="Two filters of the same size and hash count. The merged filter turns on, position by position, every bit either one had on, so anything either called present still tests present" h={260}>
       <T x={300} y={22} s={12} a="middle" f={C.latte} o={a}>same size (2,048 bits), same 4 hashes</T>
@@ -403,12 +416,26 @@ export function BloomMerge({ t }: StepCtx) {
         {BITS_A.map((b, i) => cell(60 + i * 21, 38, b === 1, C.crema, i))}
         {BITS_B.map((b, i) => cell(60 + i * 21, 70, b === 1, C.cinnamon, 100 + i))}
       </g>
-      <T x={20} y={140} s={12} f={C.caramel} o={or >= 0 ? 1 : 0}>A OR B</T>
-      {BITS_A.map((b, i) => (i <= or ? cell(60 + i * 21, 126, b === 1 || BITS_B[i] === 1, C.caramel, 200 + i) : null))}
+      <T x={20} y={140} s={12} f={C.caramel} o={t >= 1.0 ? 1 : 0}>A OR B</T>
+      {BITS_A.map((b, i) => (orF > i ? cell(60 + i * 21, 126, (b === 1 || BITS_B[i] === 1) && fall(i) >= 1, C.caramel, 200 + i) : null))}
+      {BITS_A.map((b, i) => {
+        const k = fall(i);
+        if (k <= 0 || k >= 1) return null;
+        return (
+          <g key={`f${i}`}>
+            {b === 1 && <rect x={63 + i * 21} y={lerp(41, 129, k)} width={12} height={12} fill={C.crema} />}
+            {BITS_B[i] === 1 && <rect x={63 + i * 21} y={lerp(73, 129, k)} width={12} height={12} fill={C.cinnamon} />}
+          </g>
+        );
+      })}
+      {t >= 1.0 && orF < 24 && <rect x={58 + Math.min(23, Math.floor(orF)) * 21} y={34} width={22} height={114} fill="none" stroke={C.focus} strokeWidth={1} opacity={0.6} />}
       <T x={300} y={196} s={13} a="middle" f={C.caramel} o={note}>present in either: still present</T>
     </Svg>
   );
 }
+
+/** Accelerating fall, for bits dropping into the merged row. */
+const easeIn2 = (x: number) => x * x;
 
 // 12 · Where a sketch travels: built per machine, shuffled as bytes, merged once
 export function WhereItTravels({ t }: StepCtx) {

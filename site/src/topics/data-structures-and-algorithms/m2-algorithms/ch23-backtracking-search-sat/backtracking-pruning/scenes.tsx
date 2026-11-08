@@ -579,28 +579,44 @@ const OWN = [9, 11, 11, 14, 17, 17, 24, 24, 24, 25, 27, 28, 28, 32, 36, 43, 43, 
 export function HeavyTail({ t }: StepCtx) {
   const X0 = 50, W = 500;
   const nx = (sec: number) => X0 + ((log10(sec) + 3) / 6) * W; // 0.001 s to 1,000 s
-  const fast = stepIdx(t, 0.3, 1.4, 27);
-  const slow = stepIdx(t, 1.6, 2.2, 3);
   const mil = easeOut(seg(t, 2.5, 2.9));
-  const own = stepIdx(t, 3.2, 4.4, OWN.length);
   const ox = (a: number) => X0 + ((log10(a) - log10(5)) / (log10(200) - log10(5))) * W;
+  // Every run is a racer leaving the start of the log time axis together with the others: twenty-seven pull up almost
+  // at once, while three keep going and going, far out to the right: the tail stretches as you watch. This topic's own
+  // thirty runs then race on their own axis below, and spread out the same way, less far.
+  const fastK = (i: number) => easeOut(seg(t, 0.3 + (i % 9) * 0.03, 0.75 + (i % 9) * 0.03));
+  const slowK = (i: number) => easeInOut(seg(t, 0.3 + i * 0.05, 2.2 + i * 0.05));
+  const ownK = (i: number) => easeOut(seg(t, 3.2 + (i % 6) * 0.04, 3.8 + (i % 6) * 0.04 + (log10(OWN[i]) - log10(5)) * 0.35));
+  const fastDone = fastK(26) >= 1 && fastK(8) >= 1;
   return (
     <Svg label="Norvig's thirty runs on one log time axis: twenty-seven dots land under 0.02 seconds, then three far out near 190 seconds. Across a million puzzles, more than 99.95 percent under 0.1 seconds, a few far longer. Then this topic's own thirty seeded runs, in blue, on their own axis: the same uneven spread, smaller" h={300}>
       <T x={X0} y={28} s={12} f={C.latte}>Norvig: 30 runs, seconds, log scale</T>
       <line x1={X0} y1={80} x2={X0 + W} y2={80} stroke={C.line} />
-      {Array.from({ length: 27 }, (_, i) => (i <= fast ? <circle key={i} cx={nx(0.004 + (i % 9) * 0.0018)} cy={66 - Math.floor(i / 9) * 9} r={3.2} fill={C.crema} /> : null))}
-      {Array.from({ length: 3 }, (_, i) => (i <= slow ? <circle key={i} cx={nx(190) + (i - 1) * 9} cy={66} r={3.6} fill={C.cherryText} /> : null))}
-      <T x={nx(0.02)} y={100} s={12} f={C.crema} a="middle" o={fast >= 26 ? 1 : 0}>27 under 0.02 s</T>
-      <T x={nx(190)} y={100} s={12} f={C.cherryText} a="middle" o={slow >= 2 ? 1 : 0}>3 near 190 s</T>
-      <T x={X0} y={140} s={12} f={C.latte} o={mil}>a million puzzles: over 99.95% under 0.1 s</T>
-      <T x={X0} y={196} s={12} f={C.cinnamon} o={own >= 0 ? 1 : 0}>this topic: 30 seeded runs, tries, log scale</T>
-      <line x1={X0} y1={250} x2={X0 + W} y2={250} stroke={C.line} opacity={own >= 0 ? 1 : 0} />
-      {OWN.map((a, i) => {
-        if (i > own) return null;
-        const same = OWN.slice(0, i).filter((b) => Math.abs(ox(b) - ox(a)) < 6).length;
-        return <circle key={i} cx={ox(a)} cy={238 - same * 8} r={3} fill={C.cinnamon} />;
+      {Array.from({ length: 27 }, (_, i) => {
+        const k = fastK(i);
+        return t >= 0.3 ? <circle key={i} cx={lerp(X0, nx(0.004 + (i % 9) * 0.0018), k)} cy={66 - Math.floor(i / 9) * 9} r={3.2} fill={C.crema} /> : null;
       })}
-      <T x={300} y={286} s={13} f={C.crema} a="middle" o={own >= OWN.length - 1 ? 1 : 0}>the same uneven shape, smaller</T>
+      {Array.from({ length: 3 }, (_, i) => {
+        const k = slowK(i);
+        const x = lerp(X0, nx(190) + (i - 1) * 9, k);
+        return t >= 0.3 ? (
+          <g key={i}>
+            {k < 1 && <line x1={X0} y1={56 - i * 4} x2={x} y2={56 - i * 4} stroke={C.cherryText} strokeWidth={1} opacity={0.35} />}
+            <circle cx={x} cy={66} r={3.6} fill={C.cherryText} />
+          </g>
+        ) : null;
+      })}
+      <T x={nx(0.02)} y={100} s={12} f={C.crema} a="middle" o={fastDone ? 1 : 0}>27 under 0.02 s</T>
+      <T x={nx(190)} y={100} s={12} f={C.cherryText} a="middle" o={slowK(2) >= 1 ? 1 : 0}>3 near 190 s</T>
+      <T x={X0} y={140} s={12} f={C.latte} o={mil}>a million puzzles: over 99.95% under 0.1 s</T>
+      <T x={X0} y={196} s={12} f={C.cinnamon} o={t >= 3.2 ? 1 : 0}>this topic: 30 seeded runs, tries, log scale</T>
+      <line x1={X0} y1={250} x2={X0 + W} y2={250} stroke={C.line} opacity={t >= 3.2 ? 1 : 0} />
+      {OWN.map((a, i) => {
+        if (t < 3.2) return null;
+        const same = OWN.slice(0, i).filter((b) => Math.abs(ox(b) - ox(a)) < 6).length;
+        return <circle key={i} cx={lerp(X0, ox(a), ownK(i))} cy={238 - same * 8} r={3} fill={C.cinnamon} />;
+      })}
+      <T x={300} y={286} s={13} f={C.crema} a="middle" o={easeOut(seg(t, 4.4, 4.8))}>the same uneven shape, smaller</T>
     </Svg>
   );
 }
