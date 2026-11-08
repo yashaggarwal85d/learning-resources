@@ -398,9 +398,9 @@ export function DirectoryGotcha({ t }: StepCtx) {
 // 10 · Predict: is a retried fsync safe? Flow of a failed flush, dropped pages, a hollow retry.
 export function FsyncGate({ t, answer }: StepCtx) {
   const answered = answer !== null;
-  const fail = easeOut(seg(t, 0.3, 1.0));
-  const drop = easeOut(seg(t, 1.2, 1.9));
-  const retry = easeOut(seg(t, 2.3, 3.0));
+  const fail = easeOut(seg(t, 0.2, 0.6));
+  const drop = easeOut(seg(t, 0.6, 1.0));
+  const retry = easeOut(seg(t, 1.0, 1.5));
   return (
     <Svg label="A failed fsync is reported once, and the kernel marks the dirty pages clean and drops them; a retry then has nothing left to flush" h={340}>
       <T x={25} y={34} s={14} f={C.latte}>
@@ -422,7 +422,7 @@ export function FsyncGate({ t, answer }: StepCtx) {
       <T x={300} y={222} s={14} f={C.latte}>
         fsync call 2
       </T>
-      <rect x={300 + 40 * (1 - retry)} y={236} width={160} height={34} rx={7} fill={retry > 0.5 ? C.caramel : C.cocoa} opacity={retry} />
+      <rect x={300 + 40 * (1 - retry)} y={236} width={160} height={34} rx={7} fill={C.cocoa} stroke={retry > 0.5 ? C.caramel : 'none'} strokeWidth={2} opacity={retry} />
       <T x={380} y={258} s={13} f={C.crema} a="middle" o={retry}>
         reports success
       </T>

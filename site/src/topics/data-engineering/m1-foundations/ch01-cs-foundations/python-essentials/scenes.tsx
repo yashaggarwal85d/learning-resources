@@ -151,14 +151,14 @@ export function MutableDefault({ t, answer, portrait }: StepCtx) {
           {calls > 0 && (
             <g opacity={calls}>
               {['call 1', 'call 2'].map((c, i) => (
-                <g key={c} opacity={easeOut(seg(t, 1.0 + i * 0.3, 1.3 + i * 0.3))}>
+                <g key={c} opacity={easeOut(seg(t, 0.6 + i * 0.2, 0.9 + i * 0.2))}>
                   <T x={440 + i * 80} y={140} s={13} a="middle" f={C.primary}>
                     {c}
                   </T>
                 </g>
               ))}
               {!fixed && (
-                <T x={480} y={110} s={14} a="middle" f={C.focus} o={easeOut(seg(t, 1.6, 2.0))}>
+                <T x={480} y={110} s={14} a="middle" f={C.focus} o={easeOut(seg(t, 0.9, 1.15))}>
                   ?
                 </T>
               )}
@@ -190,7 +190,7 @@ export function MutableDefault({ t, answer, portrait }: StepCtx) {
 export function LateBinding({ t, answer, portrait }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
-  const loop = seg(t, 0.4, 2.2);
+  const loop = seg(t, 0.2, 1.1);
   const iv = Math.min(2, Math.floor(loop * 3));
   const fix = shown ? easeInOut(seg(s, 2.2, 2.9)) : 0;
   return (
@@ -217,7 +217,7 @@ export function LateBinding({ t, answer, portrait }: StepCtx) {
             </T>
           </g>
           {[0, 1, 2].map((k) => {
-            const born = easeOutBack(seg(t, 0.4 + k * 0.6, 0.8 + k * 0.6));
+            const born = easeOutBack(seg(t, 0.2 + k * 0.3, 0.5 + k * 0.3));
             const x = 40 + k * 190;
             const read = shown ? easeOut(seg(s, 0.3 + k * 0.4, 0.6 + k * 0.4)) : 0;
             return (
@@ -236,7 +236,7 @@ export function LateBinding({ t, answer, portrait }: StepCtx) {
             );
           })}
           {!shown && (
-            <T x={300} y={160} s={14} a="middle" f={C.focus} o={easeOut(seg(t, 2.4, 2.8))}>
+            <T x={300} y={160} s={14} a="middle" f={C.focus} o={easeOut(seg(t, 0.9, 1.15))}>
               f() → ?
             </T>
           )}
@@ -577,7 +577,7 @@ export function Hashable({ t, answer, portrait }: StepCtx) {
             </g>
           )}
           {!shown && (
-            <T x={110} y={100} s={14} a="middle" f={C.focus} o={easeOut(seg(t, 1.2, 1.6))}>
+            <T x={110} y={100} s={14} a="middle" f={C.focus} o={easeOut(seg(t, 0.8, 1.1))}>
               a key?
             </T>
           )}
@@ -633,7 +633,7 @@ export function TypeHints({ t, answer, portrait }: StepCtx) {
             )}
           </g>
           {!shown && (
-            <T x={470} y={59} s={14} f={C.focus} o={easeOut(seg(t, 1.0, 1.4))}>
+            <T x={470} y={59} s={14} f={C.focus} o={easeOut(seg(t, 0.8, 1.15))}>
               ?
             </T>
           )}

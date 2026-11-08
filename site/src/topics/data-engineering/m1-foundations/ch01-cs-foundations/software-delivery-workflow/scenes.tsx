@@ -509,8 +509,8 @@ export function VersionDial({ t, answer }: StepCtx) {
   const sa = useSinceAnswer(shown);
   const names = ['MAJOR', 'MINOR', 'PATCH'];
   // The dial turns as each card lands: 1.5.0 → 1.5.1 (the fix) → 1.6.0 (the addition); after the answer → 2.0.0.
-  const k1 = easeInOut(seg(t, 1.8, 2.2));
-  const k2 = easeInOut(seg(t, 3.3, 3.7));
+  const k1 = easeInOut(seg(t, 0.6, 0.9));
+  const k2 = easeInOut(seg(t, 0.9, 1.2));
   const k3 = shown ? easeInOut(seg(sa, 0.2, 0.7)) : 0;
   const roll: [string, string, number][] =
     k3 > 0
@@ -530,7 +530,7 @@ export function VersionDial({ t, answer }: StepCtx) {
             ['5', '5', 0],
             ['0', '1', k1],
           ];
-  const cardAt = [1.5, 3.0, 4.5];
+  const cardAt = [0.3, 0.6, 0.9];
   return (
     <Stack>
       <Strip lit="release" />
@@ -606,7 +606,7 @@ export function WorksOnMyMachine({ t, answer }: StepCtx) {
   const sa = useSinceAnswer(shown);
   // Last week's install: the 1.5.0 crate travels from the shelf down into the laptop. After the answer, today's clean
   // machine reaches the whole shelf and the newest crate, 2.0.0, travels into it; then the run fails.
-  const lap = easeInOut(seg(t, 1.6, 2.4));
+  const lap = easeInOut(seg(t, 0.5, 1.0));
   const ci = shown ? easeInOut(seg(sa, 0.2, 1.0)) : 0;
   const fail = shown ? easeOut(seg(sa, 1.1, 1.5)) : 0;
   const a = shown ? 1 : fade(t, 0.3);
@@ -657,7 +657,7 @@ export function WorksOnMyMachine({ t, answer }: StepCtx) {
               1.5.0
             </T>
           )}
-          {lap >= 1 && <Tok x={252} y={252} n="0" r={16} o={fade(t, 2.4)} />}
+          {lap >= 1 && <Tok x={252} y={252} n="0" r={16} o={fade(t, 1.0)} />}
           <rect x={308} y={190} width={262} height={104} rx={12} fill={C.espresso} stroke={shown ? C.cherryText : C.crema} strokeWidth={2} />
           <T x={324} y={216} s={13} f={C.latte}>
             CI machine, clean today
