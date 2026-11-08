@@ -32,6 +32,8 @@ URL: https://www.kimballgroup.com/data-warehouse-business-intelligence-resources
 ## Fivetran, "ETL vs. ELT: Why a post-load process wins every time"
 URL: https://www.fivetran.com/blog/etl-vs-elt-why-a-post-load-process-wins-every-time
 
-> Historically, the ETL process (Extract-Transform-Load) made the most sense for data transformation because the cost of computation storage and bandwidth were both high – and transforming your data before loading it into the data warehouse would reduce both. However, in the last decade, cloud data warehouses, such as Snowflake, Amazon Redshift, and Google BigQuery, have become ubiquitous, driving down storage costs and increasing processing power exponentially.
+> Storage, computation and bandwidth were extremely scarce. By transforming before loading, ETL decreases the volume of data stored in the warehouse.
 
-> This has made it much less of a concern to store raw data in the data warehouse – and opened up the potential for a different way of transforming data post-load, rather than pre-load.
+> the cost of storage has plummeted from nearly $1 million to a matter of cents per gigabyte (a factor of 50 million) over four decades. Likewise, computation costs have shrunken by a factor of millions and the cost of internet transit has fallen by a factor of thousands.
+
+Note: Fivetran rewrote this post after the topic shipped; the two quotes above are its current wording of the same two claims (ETL saved scarce storage and compute; both are now cheap), re-checked 2026-11-08.
