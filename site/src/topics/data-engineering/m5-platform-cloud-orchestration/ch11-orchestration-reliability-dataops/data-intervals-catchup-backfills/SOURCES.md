@@ -1,17 +1,18 @@
 ## Dag Runs
 
 URL: https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/dag-run.html
-Version: Apache Airflow 3.3.2 documentation
+Version: Apache Airflow 3.3.2 documentation; quotes re-checked against the live page 8 Nov 2026
 
 > Each Dag run in Airflow has an assigned “data interval” that represents the time
 > range it operates in.
 
-> The “logical date” (also called execution_date in Airflow versions prior to 2.2)
-> of a Dag run, for example, denotes the start of the data interval, not when the
+> The “logical date” (also called execution_date in Airflow versions prior to 2.2) of a Dag run is defined by the timetable: for both timetable kinds it is data_interval_start.
 
-> By default, Dag runs that have not been run since the last data interval are not created by the scheduler upon activation of a Dag ( Airflow config scheduler.catchup_by_default=False). The scheduler creates a Dag run only for the latest interval.
+> For a data-interval timetable it is the start of the contiguous window, not when the Dag is actually executed.
 
-> If you set catchup=True in the Dag, the scheduler will kick off a Dag Run for any data interval that has not been run since the last data interval (or has been cleared). This concept is called Catchup.
+> By default, missed scheduled run times between start_date and “now” are not backfilled when a Dag is activated (Airflow config scheduler.catchup_by_default=False). The timetable instead selects the most recently applicable scheduled run time
+
+> If you set catchup=True in the Dag, the scheduler will kick off a Dag Run for any scheduled run time that has not been run since the last run (or has been cleared). This concept is called Catchup.
 
 > then you will want to turn catchup off, which is the default setting or can be done explicitly by setting catchup=False in the Dag definition, if the default config has been changed for your Airflow environment.
 
@@ -20,19 +21,19 @@ Note: the page states Airflow's config name is `scheduler.catchup_by_default`, d
 ## Backfill
 
 URL: https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/backfill.html
-Version: Apache Airflow 3.3.2 documentation
+Version: Apache Airflow 3.3.2 documentation; quotes re-checked against the live page 8 Nov 2026
 
 > Backfill is when you create runs for past dates of a Dag. Airflow provides a mechanism
 > to do this through the CLI and REST API. You provide a Dag, a start date, and an end date,
 > and Airflow will create runs in the range according to the Dag’s schedule.
 
-> There are three options for reprocessing behavior:
+> There are three options for reprocessing behavior.
 
-> none - if there’s already a run for this logical date, do not create another, no matter the state
+> Missing Runs (none) - if there’s already a run for this logical date, do not create another, no matter the state
 
 > You can set max_active_runs on a backfill and it will control how many Dag runs in
 > the backfill can run concurrently. Backfill max_active_runs is applied independently
-> the Dag max_active_runs setting.
+> of the Dag max_active_runs setting.
 
 > For Dags that use a partition-based timetable (e.g. CronPartitionTimetable),
 > the same --from-date / --to-date flags are used for all backfills.
