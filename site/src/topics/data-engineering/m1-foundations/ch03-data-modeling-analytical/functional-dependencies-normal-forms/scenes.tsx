@@ -386,7 +386,7 @@ export function RevealFourthNormalForm({ t }: StepCtx) {
   return (
     <Svg label="one value, many facts, not one" h={230}>
       <Row y={40} label="functional dependency" value="one value → one value" k={easeOut(seg(t, 0.2, 0.7))} />
-      <Row y={85} label="multivalued dependency" value="one value → many facts" valueColor={C.second} k={easeOut(seg(t, 2.0, 2.5))} />
+      <Row y={85} label="multivalued dependency" value="one → many" valueColor={C.second} k={easeOut(seg(t, 2.0, 2.5))} />
       {chip(25, 150, 'X', easeOut(seg(t, 0.2, 0.5)))}
       <line x1={95} y1={164} x2={95 + 60 * a} y2={164} stroke={C.latte} strokeWidth={2} />
       {chip(155, 150, 'Y', a)}
@@ -485,8 +485,8 @@ export function RevealDenormalizationTrade({ t }: StepCtx) {
   const s2 = seg(t, 2.8, 3.4);
   return (
     <Svg label="a trade made on purpose, not a mistake" h={220}>
-      <Row y={40} label="scan-heavy workload" value="pays for joins every row" k={easeOut(seg(t, 0.2, 0.7))} />
-      <Row y={85} label="denormalize on purpose" value="fewer joins, more risk" valueColor={C.second} k={easeOut(seg(t, 2.6, 3.1))} />
+      <Row y={40} label="scan-heavy workload" value="joins every row" k={easeOut(seg(t, 0.2, 0.7))} />
+      <Row y={85} label="denormalize" value="fewer joins, more risk" valueColor={C.second} k={easeOut(seg(t, 2.6, 3.1))} />
       <T x={25} y={140} s={12} f={C.latte} o={easeOut(seg(t, 0.3, 0.6))}>
         normalized
       </T>
