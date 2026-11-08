@@ -77,7 +77,7 @@ export function Hook({ t }: StepCtx) {
   const secs = 8 * easeInOut(seg(t, 0.2, 1.6));
   const FIX: [string, string, string][] = [
     ['real-time OLAP', 'a new store', C.primary],
-    ['nightly pre-aggregate', 'a new table', C.primary],
+    ['pre-aggregate', 'a new table', C.primary],
     ['clustering key', 'just two lines', C.focus],
   ];
   return (
@@ -104,7 +104,7 @@ export function Hook({ t }: StepCtx) {
           <g key={name} opacity={Math.min(1, k)} transform={`translate(0 ${(1 - k) * -20})`}>
             <Draw pts={[[300, 100], [x + 85, 140]]} t={t} from={at - 0.2} to={at + 0.1} stroke={C.line} w={1.2} pen={false} />
             <rect x={x} y={140} width={170} height={84} rx={5} fill={C.panel} stroke={i === 2 ? C.focus : C.line} />
-            <T x={x + 85} y={170} s={13} f={C.primary} a="middle" w={600}>
+            <T x={x + 85} y={170} s={12} f={C.primary} a="middle" w={600}>
               {name}
             </T>
             <T x={x + 85} y={200} s={14} f={f} a="middle">
