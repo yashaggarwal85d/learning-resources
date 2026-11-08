@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // CHAPTER.md, topic 10: a source box on the left, a stack of question cards on the right; each card flips to show the
@@ -356,7 +356,8 @@ export function RevealSchemaOwnership({ t }: StepCtx) {
 }
 
 // 6 · Three arrivals: e17 at 12:00:01, e18 at 12:00:01, then e17 resent. Keyed on the timestamp, e17 and e18 collapse
-// into one (red, a real event lost). Keyed on the id, only the resend is dropped.
+// into one: e18 lands on e17's slot and is knocked out (red, a real event lost). Keyed on the id, each finds its own
+// slot and only the resend falls out; the verdict decodes and locks on.
 export function RevealDeliveryReliability({ t }: StepCtx) {
   const EV: [string, string, boolean][] = [
     ['e17', '12:00:01', false],
@@ -364,68 +365,96 @@ export function RevealDeliveryReliability({ t }: StepCtx) {
     ['e17', '12:00:09', true],
   ];
   const tsK = easeOut(seg(t, 1.4, 1.9));
-  const idK = easeOut(seg(t, 2.6, 3.1));
+  // keyed on the timestamp: e17 slides into the 12:00:01 slot, e18 arrives at the same slot and is knocked out of it
+  const tsE17 = easeInOut(seg(t, 1.5, 2.0));
+  const tsE18 = easeInOut(seg(t, 1.8, 2.3));
+  const knock = easeOutBack(seg(t, 2.3, 2.6));
+  const idK = easeOut(seg(t, 2.6, 3.0));
+  // keyed on the id: e17 and e18 each find their own slot; the resend heads for e17's slot and falls out
+  const idE = easeInOut(seg(t, 2.7, 3.2));
+  const rs = easeInOut(seg(t, 3.2, 3.6));
+  const fall = easeOut(seg(t, 3.6, 3.9));
   return (
     <Svg label="late, duplicate, lost, resent — a resend without a fresh id is a duplicate waiting to happen" h={270}>
-      {['late', 'duplicate', 'lost', 'resent'].map((c, i) => (
-        <g key={c} opacity={easeOut(seg(t, i * 0.12, i * 0.12 + 0.3))}>
-          <rect x={30 + i * 138} y={8} width={124} height={24} rx={12} fill={C.ink} stroke={i === 3 ? C.focus : C.line} />
-          <T x={92 + i * 138} y={25} s={13} f={i === 3 ? C.focus : C.secondary} a="middle">
-            {c}
-          </T>
-        </g>
-      ))}
-      {EV.map(([id, ts, resend], i) => (
-        <g key={i} opacity={easeOut(seg(t, 0.4 + i * 0.25, 0.7 + i * 0.25))}>
-          <rect x={30} y={48 + i * 32} width={160} height={26} rx={3} fill={C.panel} stroke={resend ? C.second : C.line} />
-          <T x={40} y={66 + i * 32} s={13} f={resend ? C.second : C.primary}>
-            {id} · {ts}
-          </T>
-        </g>
-      ))}
+      {['late', 'duplicate', 'lost', 'resent'].map((c, i) => {
+        const k = easeOut(seg(t, i * 0.12, i * 0.12 + 0.3));
+        return (
+          <g key={c} opacity={k} transform={`translate(0 ${((1 - k) * -12).toFixed(1)})`}>
+            <rect x={30 + i * 138} y={8} width={124} height={24} rx={12} fill={C.ink} stroke={i === 3 ? C.focus : C.line} />
+            <T x={92 + i * 138} y={25} s={13} f={i === 3 ? C.focus : C.secondary} a="middle">
+              {c}
+            </T>
+          </g>
+        );
+      })}
+      {EV.map(([id, ts, resend], i) => {
+        const k = easeOut(seg(t, 0.4 + i * 0.25, 0.75 + i * 0.25));
+        return (
+          <g key={i} opacity={k} transform={`translate(${((1 - k) * -40).toFixed(1)} 0)`}>
+            <rect x={30} y={48 + i * 32} width={160} height={26} rx={3} fill={C.panel} stroke={resend ? C.second : C.line} />
+            <T x={40} y={66 + i * 32} s={13} f={resend ? C.second : C.primary}>
+              {id} · {ts}
+            </T>
+          </g>
+        );
+      })}
       {/* keyed on timestamp */}
       <g opacity={tsK}>
         <T x={230} y={60} s={13} f={C.secondary}>
           key: timestamp
         </T>
-        <rect x={230} y={70} width={140} height={26} rx={3} fill={C.panel} stroke={C.line} />
-        <T x={240} y={88} s={13} f={C.primary}>
-          e17
-        </T>
-        <rect x={230} y={102} width={140} height={26} rx={3} fill={C.bad} stroke={C.badText} />
-        <T x={240} y={120} s={13} f={C.focus}>
-          e18 lost
-        </T>
+        <rect x={230} y={70} width={140} height={26} rx={3} fill="none" stroke={C.line} strokeDasharray="3 3" />
       </g>
+      {tsE17 > 0 && (
+        <g transform={`translate(${lerp(-200, 0, tsE17).toFixed(1)} ${lerp(-22, 0, tsE17).toFixed(1)})`}>
+          <rect x={230} y={70} width={140} height={26} rx={3} fill={C.panel} stroke={C.line} />
+          <T x={240} y={88} s={13} f={C.primary}>
+            e17
+          </T>
+        </g>
+      )}
+      {tsE18 > 0 && (
+        <g transform={`translate(${lerp(-200, 0, tsE18).toFixed(1)} ${lerp(-22, 0, tsE18) + lerp(-32, 0, clamp(knock, 0, 1.2))})`}>
+          <rect x={230} y={102} width={140} height={26} rx={3} fill={knock > 0.5 ? C.bad : C.panel} stroke={knock > 0.5 ? C.badText : C.line} />
+          <T x={240} y={120} s={13} f={C.focus}>
+            {knock > 0.5 ? 'e18 lost' : 'e18'}
+          </T>
+        </g>
+      )}
       {/* keyed on id */}
       <g opacity={idK}>
         <T x={410} y={60} s={13} f={C.focus}>
           key: event id
         </T>
-        <rect x={410} y={70} width={140} height={26} rx={3} fill={C.panel} stroke={C.focus} />
-        <T x={420} y={88} s={13} f={C.primary}>
-          e17
-        </T>
-        <rect x={410} y={102} width={140} height={26} rx={3} fill={C.panel} stroke={C.focus} />
-        <T x={420} y={120} s={13} f={C.primary}>
-          e18
-        </T>
-        <T x={420} y={152} s={13} f={C.second}>
-          resend dropped
-        </T>
       </g>
+      {idE > 0 &&
+        ['e17', 'e18'].map((id, i) => (
+          <g key={id} transform={`translate(${lerp(-380, 0, idE).toFixed(1)} 0)`}>
+            <rect x={410} y={70 + i * 32} width={140} height={26} rx={3} fill={C.panel} stroke={C.focus} />
+            <T x={420} y={88 + i * 32} s={13} f={C.primary}>
+              {id}
+            </T>
+          </g>
+        ))}
+      {rs > 0 && fall < 1 && (
+        <g opacity={1 - fall} transform={`translate(${lerp(-380, 0, rs).toFixed(1)} ${lerp(64, 0, rs) + fall * 50})`}>
+          <rect x={410} y={70} width={140} height={26} rx={3} fill={C.panel} stroke={C.second} strokeDasharray="4 3" />
+        </g>
+      )}
+      <T x={420} y={152} s={13} f={C.second} o={fall}>
+        resend dropped
+      </T>
       <T x={40} y={210} s={14} f={C.primary} o={easeOut(seg(t, 1.0, 1.3))}>
         resend
       </T>
       <T x={575} y={210} s={14} f={C.second} a="end" o={easeOut(seg(t, 1.1, 1.4))}>
         same event id
       </T>
-      <T x={40} y={240} s={14} f={C.focus} o={easeOut(seg(t, 3.0, 3.3))}>
+      <T x={40} y={240} s={14} f={C.focus} o={easeOut(seg(t, 3.9, 4.2))}>
         dedup key
       </T>
-      <T x={575} y={240} s={14} f={C.focus} a="end" o={easeOut(seg(t, 3.1, 3.4))}>
-        id, not timestamp
-      </T>
+      <Decode text="id, not timestamp" t={t} at={4.0} x={575} y={240} s={14} f={C.focus} a="end" />
+      <Reticle x={480} y={100} w={156} h={84} t={t} at={4.2} />
     </Svg>
   );
 }

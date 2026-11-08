@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Decode, Draw, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 
@@ -293,7 +293,8 @@ export function RevealMeasuredSkew({ t }: StepCtx) {
 }
 
 // 4 · One snapshot. Three connection lanes: the exporter takes a snapshot, a separate importer opens the same one, a
-// third commits a row in between; both read 50,000; a later fresh connection reads 50,001.
+// third commits a row in between; both read 50,000; a later fresh connection reads 50,001. The snapshot line draws
+// down, the import arrow follows it, the new row slides in after the line, and only the later lane reaches it.
 export function RevealSnapshot({ t }: StepCtx) {
   const rows: [string, string, number, string][] = [
     ['exports a snapshot', '50,000', 0.3, C.second],
@@ -301,23 +302,32 @@ export function RevealSnapshot({ t }: StepCtx) {
     ['commits a new row', '', 1.9, C.focus],
     ['later, no snapshot', '50,001', 2.7, C.crema],
   ];
+  const ly = (i: number) => 38 + i * 46;
+  // the new row slides in on the commit lane, just after the snapshot line
+  const ins = easeOutBack(seg(t, 2.0, 2.45));
   return (
     <Svg label="one exported snapshot, imported by a second worker, unmoved by a concurrent insert." h={230}>
-      <line x1={250} y1={20} x2={250} y2={205} stroke={C.second} strokeWidth={1.6} strokeDasharray="5 4" opacity={easeOut(seg(t, 0.4, 0.8))} />
-      {rows.map(([l, v, k0, f], i) => {
+      {/* the snapshot: one moment, drawn down through every lane that shares it */}
+      <Draw pts={[[250, 20], [250, 205]]} t={t} from={0.4} to={1.0} stroke={C.second} w={1.6} dash="5 4" pen={false} />
+      {rows.map(([l, , k0], i) => {
         const k = easeOut(seg(t, k0, k0 + 0.4));
         return (
-          <g key={l} opacity={k}>
-            <T x={25} y={44 + i * 46} s={12} f={C.crema}>
+          <g key={l} opacity={k} transform={`translate(${((1 - k) * -20).toFixed(1)} 0)`}>
+            <T x={25} y={44 + i * 46} s={13} f={C.crema}>
               {l}
-            </T>
-            {i === 2 ? <rect x={390} y={32 + i * 46} width={16} height={16} rx={2} fill={C.focus} /> : null}
-            <T x={575} y={44 + i * 46} s={15} f={f} a="end">
-              {v}
             </T>
           </g>
         );
       })}
+      {/* the importer is handed the exporter's snapshot: an arrow down the snapshot line */}
+      <Draw pts={[[262, ly(0)], [262, ly(1)]]} t={t} from={1.1} to={1.5} stroke={C.second} w={2} />
+      {ins > 0 && <rect x={lerp(560, 390, clamp(ins, 0, 1.1))} y={32 + 2 * 46} width={16} height={16} rx={2} fill={C.focus} />}
+      {/* only the later connection reaches the new row */}
+      <Draw pts={[[398, ly(2) + 12], [398, ly(3) - 4]]} t={t} from={2.7} to={3.1} stroke={C.focus} w={2} />
+      <Decode text="50,000" t={t} at={0.6} x={575} y={44} s={15} f={C.second} a="end" />
+      <Decode text="50,000" t={t} at={1.4} x={575} y={44 + 46} s={15} f={C.second} a="end" />
+      <Decode text="50,001" t={t} at={3.1} x={575} y={44 + 3 * 46} s={15} f={C.crema} a="end" />
+      <Reticle x={548} y={176} w={74} h={34} t={t} at={3.6} />
     </Svg>
   );
 }
@@ -406,7 +416,8 @@ export function RevealVacuumMeasured({ t }: StepCtx) {
   );
 }
 
-// 8 · Recap. Four choices as four cards, each with the currency it spends.
+// 8 · Recap. Four choices, each sliding in; a leader draws out to the currency it spends; brackets lock onto the long
+// extract, the one that costs the primary.
 export function Recap({ t }: StepCtx) {
   const cards: [string, string][] = [
     ['parallel read', 'a stride, not a filter'],
@@ -417,18 +428,28 @@ export function Recap({ t }: StepCtx) {
   return (
     <Svg label="stride not filter. One shared snapshot. COPY ahead. A vacuum cost, measured." h={250}>
       {cards.map(([a, b], i) => {
-        const k = easeOut(seg(t, 0.3 + i * 0.8, 0.7 + i * 0.8));
+        const k0 = 0.3 + i * 0.8;
+        const k = easeOut(seg(t, k0, k0 + 0.4));
+        const price = easeOut(seg(t, k0 + 0.45, k0 + 0.8));
+        const col = i === 3 ? C.cherryText : C.second;
         return (
-          <g key={a} opacity={k}>
-            <T x={25} y={44 + i * 52} s={13} f={C.crema}>
-              {a}
-            </T>
-            <T x={575} y={44 + i * 52} s={12} f={i === 3 ? C.cherryText : C.second} a="end">
-              {b}
-            </T>
+          <g key={a}>
+            <g opacity={k} transform={`translate(${((1 - k) * -24).toFixed(1)} 0)`}>
+              <T x={25} y={44 + i * 52} s={13} f={C.crema}>
+                {a}
+              </T>
+            </g>
+            {/* each choice pays: a leader runs from the choice out to the currency it spends */}
+            <Draw pts={[[25, 54 + i * 52], [575, 54 + i * 52]]} t={t} from={k0 + 0.2} to={k0 + 0.6} stroke={C.line} w={1.2} />
+            <g opacity={price} transform={`translate(${((1 - price) * 24).toFixed(1)} 0)`}>
+              <T x={575} y={44 + i * 52} s={13} f={col} a="end">
+                {b}
+              </T>
+            </g>
           </g>
         );
       })}
+      <Reticle x={300} y={195} w={566} h={36} t={t} at={3.9} color={C.cherryText} />
     </Svg>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 
@@ -261,32 +261,47 @@ export function PredictSegmentFull({ t, answer }: StepCtx) {
 }
 
 // 3 · Segment roll. Four segments fill one after another; each time one reaches the limit, a roll mark lands and the
-// next opens. The last stays open.
+// next opens (a roll mark draws). Records drop into the open file as it grows. The last stays open and is locked onto.
 export function RevealSegmentRoll({ t }: StepCtx) {
   const fills = [0, 1, 2, 3].map((i) => easeInOut(seg(t, 0.4 + i * 0.85, 1.25 + i * 0.85)) * (i === 3 ? 0.6 : 1));
+  // which segment is open right now, and where its fill ends: records drop in there
+  const active = Math.min(3, Math.max(0, Math.floor((t - 0.4) / 0.85)));
+  const tip = 25 + active * 132 + 3 + 114 * fills[active];
+  const beat = ((t - 0.4) / 0.17) % 1;
+  const dropping = t > 0.4 && t < 0.4 + 3 * 0.85 + 0.85 * 0.6;
   return (
     <Svg label="a real toy log, 400 records appended — the open segment rolls three separate times as it crosses its byte limit" h={200}>
-      <T x={25} y={26} s={11} f={C.latte} o={easeOut(seg(t, 0, 0.3))}>
+      <T x={25} y={22} s={13} f={C.latte} o={easeOut(seg(t, 0, 0.3))}>
         limit: 4,096 bytes per segment
       </T>
+      {dropping && <rect x={tip - 4} y={lerp(28, 48, easeInOut(beat))} width={8} height={8} rx={1.5} fill={C.focus} opacity={1 - beat * 0.6} />}
       {fills.map((f, i) => {
         const x = 25 + i * 132;
         const open = easeOut(seg(t, 0.2 + i * 0.85, 0.45 + i * 0.85));
+        const sw = easeOutBack(seg(t, 0.2 + i * 0.85, 0.5 + i * 0.85));
         return (
           <g key={i}>
-            <rect x={x} y={40} width={120} height={28} rx={4} fill={C.cocoa} stroke={i === 3 ? C.focus : C.mocha} strokeWidth={1.5} opacity={open} />
+            <g opacity={open} transform={`translate(${x + 60} 54) scale(${clamp(sw, 0, 1.1).toFixed(3)} 1) translate(${-(x + 60)} -54)`}>
+              <rect x={x} y={40} width={120} height={28} rx={4} fill={C.cocoa} stroke={i === 3 ? C.focus : C.mocha} strokeWidth={1.5} />
+            </g>
             <rect x={x + 3} y={43} width={114 * f} height={22} rx={3} fill={C.latte} opacity={0.5} />
             {i > 0 && (
-              <T x={x - 6} y={92} s={11} f={C.second} a="middle" o={open}>
-                roll
-              </T>
+              <>
+                <Draw pts={[[x - 6, 36], [x - 6, 76]]} t={t} from={0.2 + i * 0.85} to={0.45 + i * 0.85} stroke={C.second} w={2} />
+                <T x={x - 6} y={96} s={13} f={C.second} a="middle" o={open}>
+                  roll
+                </T>
+              </>
             )}
           </g>
         );
       })}
-      <T x={25} y={140} s={12} f={C.crema} o={easeOut(seg(t, 3.9, 4.3))}>
-        400 records: 3 rolls, 4 segments
-      </T>
+      <g opacity={easeOut(seg(t, 3.9, 4.2))} transform={`translate(0 ${((1 - easeOut(seg(t, 3.9, 4.2))) * 8).toFixed(1)})`}>
+        <T x={25} y={140} s={13} f={C.crema}>
+          400 records: 3 rolls, 4 segments
+        </T>
+      </g>
+      <Reticle x={482} y={54} w={132} h={42} t={t} at={4.2} />
     </Svg>
   );
 }
