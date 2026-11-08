@@ -544,7 +544,7 @@ export function Recap({ t }: StepCtx) {
     <Svg label="hub, link, satellite; hash keys; a measured join cost" h={220}>
       <Row y={50} label="hub, link, satellite" value="key, relation, history" k={easeOut(seg(t, 0.2, 0.7))} />
       <Row y={110} label="hash keys" value="no coordinator needed" k={easeOut(seg(t, 1.4, 1.9))} />
-      <Row y={170} label="the tradeoff" value="auditability vs. a counted cost" valueColor={C.focus} k={easeOut(seg(t, 2.6, 3.1))} />
+      <Row y={170} label="the tradeoff" value="audit vs. a counted cost" valueColor={C.focus} k={easeOut(seg(t, 2.6, 3.1))} />
     </Svg>
   );
 }
