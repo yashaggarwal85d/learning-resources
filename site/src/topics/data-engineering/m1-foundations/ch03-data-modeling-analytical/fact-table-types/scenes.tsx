@@ -446,7 +446,7 @@ export function Recap({ t }: StepCtx) {
   return (
     <Svg label="four types, measured" h={250}>
       <Row y={45} label="transaction" value="dense, or sparse" k={easeOut(seg(t, 0.6, 1.1))} />
-      <Row y={100} label="periodic snapshot" value="every entity, every period" k={easeOut(seg(t, 1.4, 1.9))} />
+      <Row y={100} label="periodic snapshot" value="every period" k={easeOut(seg(t, 1.4, 1.9))} />
       <Row y={155} label="accumulating" value="updated row" k={easeOut(seg(t, 2.2, 2.7))} />
       <Row y={210} label="factless" value="did it happen at all" valueColor={C.focus} k={easeOut(seg(t, 3.0, 3.5))} />
     </Svg>
