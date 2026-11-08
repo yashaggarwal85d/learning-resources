@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Plot, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 
@@ -423,23 +423,47 @@ export function RevealSideBySide({ t }: StepCtx) {
   );
 }
 
-// 9 · Recap. Two lines with their pictures: a fixed row of chance tokens; a lost file pulling a whole stage back.
+// 9 · Recap. Two lines with their pictures: a fixed row of chance tokens, spent one per failure until none are left;
+// a lost file pulling a whole finished stage back, each task draining and running again.
 export function Recap({ t }: StepCtx) {
+  // the retry limit: four chance tokens land, then each failure spends one, until the row is empty
+  const lost = easeOut(seg(t, 2.3, 2.6));
   return (
     <Svg label="a retry limit is bounded; a lost piece can cost far more than one task." h={250}>
-      <T x={25} y={40} s={12} f={C.crema} o={easeOut(seg(t, 0.1, 0.4))}>
+      <T x={25} y={40} s={13} f={C.crema} o={easeOut(seg(t, 0.1, 0.4))}>
         a retry limit buys a fixed count
       </T>
-      {[0, 1, 2, 3].map((j) => (
-        <circle key={j} cx={45 + j * 36} cy={80} r={12} fill={C.focus} opacity={easeOut(seg(t, 0.5 + j * 0.2, 0.8 + j * 0.2))} />
-      ))}
-      <T x={25} y={146} s={12} f={C.crema} o={easeOut(seg(t, 2.0, 2.3))}>
+      {[0, 1, 2, 3].map((j) => {
+        const land = easeOutBack(seg(t, 0.4 + j * 0.15, 0.7 + j * 0.15));
+        const spend = easeInOut(seg(t, 1.1 + j * 0.2, 1.4 + j * 0.2));
+        return (
+          <g key={j}>
+            <circle cx={45 + j * 36} cy={80} r={12} fill="none" stroke={C.line} strokeDasharray="3 3" opacity={easeOut(seg(t, 0.4, 0.7))} />
+            {spend < 1 && <circle cx={45 + j * 36 + spend * 40} cy={80 - (1 - clamp(land, 0, 1.2)) * 20 + spend * 24} r={12 * (1 - spend * 0.6)} fill={C.focus} opacity={clamp(land) * (1 - spend)} />}
+          </g>
+        );
+      })}
+      <T x={200} y={86} s={13} f={C.quiet} o={easeOut(seg(t, 1.9, 2.2))}>
+        then the job fails
+      </T>
+      <T x={25} y={146} s={13} f={C.crema} o={easeOut(seg(t, 2.0, 2.3))}>
         losing finished work costs a stage
       </T>
-      <rect x={25} y={164} width={30} height={30} rx={3} fill="none" stroke={C.cherryText} strokeWidth={1.6} strokeDasharray="4 3" opacity={easeOut(seg(t, 2.3, 2.6))} />
-      {T4.map((i) => (
-        <rect key={i} x={80 + i * 50} y={164} width={42} height={30} rx={3} fill={C.cocoa} stroke={C.second} strokeWidth={1.4} opacity={easeOut(seg(t, 2.8 + i * 0.2, 3.1 + i * 0.2))} />
-      ))}
+      <rect x={25} y={164} width={30} height={30} rx={3} fill="none" stroke={C.cherryText} strokeWidth={1.6} strokeDasharray="4 3" opacity={lost} />
+      {/* the one lost file pulls the whole finished stage back: each done task drains, then runs again */}
+      <Draw pts={[[55, 179], [76, 179]]} t={t} from={2.6} to={2.8} stroke={C.cherryText} w={2} />
+      {T4.map((i) => {
+        const done = easeOut(seg(t, 0.2, 0.6));
+        const drain = easeInOut(seg(t, 2.9 + i * 0.12, 3.3 + i * 0.12));
+        const again = easeInOut(seg(t, 3.5 + i * 0.2, 4.1 + i * 0.2));
+        const fillW = 36 * clamp(1 - drain + again);
+        return (
+          <g key={i} opacity={easeOut(seg(t, 2.3, 2.6))}>
+            <rect x={80 + i * 50} y={164} width={42} height={30} rx={3} fill={C.cocoa} stroke={drain > 0 && again < 1 ? C.cherryText : C.second} strokeWidth={1.4} />
+            <rect x={83 + i * 50} y={167} width={Math.max(0, fillW * done)} height={24} rx={2} fill={C.second} opacity={0.55} />
+          </g>
+        );
+      })}
     </Svg>
   );
 }

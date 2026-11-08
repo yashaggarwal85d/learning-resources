@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Decode, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
-import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { clamp, easeInOut, easeOut, easeOutBack, easeOutExpo, lerp, seg } from '../../../../../reels/anim';
 
 /** Seconds since the learner answered a predict step (the player's clock has stopped by then), so reveals can animate. */
 function useSinceAnswer(on: boolean) {
@@ -208,25 +208,35 @@ function Hier({
   );
 }
 
-// 1 · Hook. Four words drop in as nested labels, each with a "?" for what fixes its count.
+// 1 · Hook. Four words zoom in as nested boxes, each label decoding, then a "?" pops beside each for what fixes its
+// count, and brackets lock onto the task.
 export function Hook({ t }: StepCtx) {
   const words = ['application', 'job', 'stage', 'task'];
+  const box = (i: number): [number, number, number, number] => [25 + i * 30, 14 + i * 26, 550 - i * 60, 170 - i * 40];
   return (
     <Svg label="one click: 'application', 'job', 'stage', 'task'. Which number does each actually fix?" h={200}>
       {words.map((w, i) => {
-        const k = easeOut(seg(t, 0.3 + i * 0.5, 0.7 + i * 0.5));
+        // each level zooms in out of the one around it
+        const k = easeOutExpo(seg(t, 0.3 + i * 0.5, 0.8 + i * 0.5));
+        if (k <= 0) return null;
+        const [x, y, bw, bh] = box(i);
+        const [px, py, pw, ph] = i === 0 ? [300 - 20, 99 - 10, 40, 20] : box(i - 1);
+        const q = easeOutBack(seg(t, 2.6 + i * 0.3, 2.95 + i * 0.3));
         return (
-          <g key={w} opacity={k}>
-            <rect x={25 + i * 30} y={14 + i * 26} width={550 - i * 60} height={170 - i * 40} rx={5} fill="none" stroke={i === 3 ? C.focus : C.mocha} strokeWidth={1.4} />
-            <T x={37 + i * 30} y={32 + i * 26} s={12} f={C.crema}>
-              {w}
-            </T>
-            <T x={563 - i * 30} y={32 + i * 26} s={12} f={C.second} a="end" o={easeOut(seg(t, 2.6 + i * 0.3, 2.9 + i * 0.3))}>
-              ?
-            </T>
+          <g key={w}>
+            <rect x={lerp(px, x, k)} y={lerp(py, y, k)} width={lerp(pw, bw, k)} height={lerp(ph, bh, k)} rx={5} fill="none" stroke={i === 3 ? C.focus : C.mocha} strokeWidth={1.4} />
+            <Decode text={w} t={t} at={0.45 + i * 0.5} x={37 + i * 30} y={32 + i * 26} s={13} f={C.crema} />
+            {q > 0 && (
+              <g transform={`translate(${563 - i * 30} ${27 + i * 26}) scale(${clamp(q, 0, 1.3).toFixed(3)})`}>
+                <T x={0} y={5} s={13} f={C.second} a="end">
+                  ?
+                </T>
+              </g>
+            )}
           </g>
         );
       })}
+      <Reticle x={300} y={117} w={382} h={62} t={t} at={3.9} />
     </Svg>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 
@@ -427,25 +427,71 @@ export function RevealShreddingSourced({ t }: StepCtx) {
   );
 }
 
-// 9 · Recap. Three ways to hold it, each with where it pays: every read, up front by dropping, once and keeping all.
+// 9 · Recap. Three ways to hold it, each with where it pays: a read cursor sweeping again and again, two fields falling
+// out of a fixed shape, one encoding pass that keeps every field.
 export function Recap({ t }: StepCtx) {
   const rows: [string, string, string][] = [
     ['plain text', 'pays on every read', C.latte],
     ['a fixed shape', 'risks what it drops', C.cherryText],
     ['VARIANT', 'pays once, keeps all', C.second],
   ];
+  const chips = [0, 1, 2, 3, 4];
+  // plain text: every read sweeps the whole string again
+  const reading = t > 0.7;
+  const sweep = ((t - 0.7) / 0.7) % 1;
+  // a fixed shape: the two fields it has no column for fall away
+  const drop = easeInOut(seg(t, 1.7, 2.3));
+  // VARIANT: encoded once (one pass), then every field stays
+  const enc = easeOut(seg(t, 2.6, 3.1));
   return (
     <Svg label="one type, three shapes of cost: a string's re-parsing, a struct's early commitment, VARIANT's binary." h={250}>
-      {rows.map(([a, b, f], i) => (
-        <g key={a}>
-          <T x={25} y={50 + i * 60} s={13} f={C.crema} o={easeOut(seg(t, 0.3 + i * 0.9, 0.6 + i * 0.9))}>
-            {a}
-          </T>
-          <T x={575} y={50 + i * 60} s={13} f={f} a="end" o={easeOut(seg(t, 0.6 + i * 0.9, 0.9 + i * 0.9))}>
-            {b}
-          </T>
-        </g>
-      ))}
+      {rows.map(([a, b, f], i) => {
+        const k = easeOut(seg(t, 0.3 + i * 0.9, 0.6 + i * 0.9));
+        const p = easeOut(seg(t, 0.6 + i * 0.9, 0.9 + i * 0.9));
+        return (
+          <g key={a}>
+            <g opacity={k} transform={`translate(${((1 - k) * -20).toFixed(1)} 0)`}>
+              <T x={25} y={50 + i * 60} s={13} f={C.crema}>
+                {a}
+              </T>
+            </g>
+            <g opacity={p} transform={`translate(${((1 - p) * 20).toFixed(1)} 0)`}>
+              <T x={575} y={50 + i * 60} s={13} f={f} a="end">
+                {b}
+              </T>
+            </g>
+          </g>
+        );
+      })}
+      <g opacity={easeOut(seg(t, 0.3, 0.6))}>
+        <rect x={190} y={34} width={170} height={22} rx={3} fill="none" stroke={C.line} />
+        {reading && <rect x={192 + sweep * 160} y={36} width={6} height={18} rx={1} fill={C.latte} />}
+      </g>
+      <g opacity={easeOut(seg(t, 1.2, 1.5))}>
+        {chips.map((j) => {
+          const falls = j >= 3;
+          return (
+            <rect
+              key={j}
+              x={190 + j * 34}
+              y={94 + (falls ? drop * 40 : 0)}
+              width={28}
+              height={22}
+              rx={3}
+              fill={C.cocoa}
+              stroke={falls && drop > 0 ? C.cherryText : C.mocha}
+              opacity={falls ? 1 - drop : 1}
+            />
+          );
+        })}
+      </g>
+      <g opacity={easeOut(seg(t, 2.1, 2.4))}>
+        {chips.map((j) => (
+          <rect key={j} x={190 + j * 34} y={154} width={28} height={22} rx={3} fill={C.cocoa} stroke={enc > j / 5 ? C.second : C.mocha} strokeWidth={1.4} />
+        ))}
+      </g>
+      <Draw pts={[[190, 182], [354, 182]]} t={t} from={2.6} to={3.1} stroke={C.second} w={2} />
+      <Reticle x={300} y={162} w={566} h={44} t={t} at={3.6} />
     </Svg>
   );
 }

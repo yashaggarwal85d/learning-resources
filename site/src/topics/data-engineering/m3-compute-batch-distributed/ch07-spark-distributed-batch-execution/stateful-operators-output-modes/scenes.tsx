@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bar, C, Plot, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Plot, Reticle, Svg, T } from '../../../../../reels/kit';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 
@@ -217,7 +217,8 @@ export function Hook({ t }: StepCtx) {
 }
 
 // 1 · Three modes. A result table where one trigger changed two rows and added one; three columns fill with what each
-// mode hands over: the one new row, the three changed or new, every row.
+// mode hands over, each row sliding out of the result into its column: the one new row, the three changed or new,
+// every row; brackets lock onto the whole table.
 export function RevealThreeModes({ t }: StepCtx) {
   const rows = [0, 1, 2, 3, 4, 5, 6];
   const kind = (i: number) => (i === 6 ? 'new' : i === 2 || i === 4 ? 'changed' : 'same');
@@ -226,9 +227,10 @@ export function RevealThreeModes({ t }: StepCtx) {
     ['update', [2, 4, 6]],
     ['complete', rows],
   ];
+  const grow = easeOutBack(seg(t, 0.6, 1.0));
   return (
     <Svg label="three output modes: new rows only, changed rows only, or the whole table." h={250}>
-      <T x={25} y={22} s={11} f={C.latte}>
+      <T x={25} y={22} s={13} f={C.latte}>
         the result
       </T>
       {rows.map((i) => (
@@ -236,7 +238,7 @@ export function RevealThreeModes({ t }: StepCtx) {
           key={i}
           x={25}
           y={32 + i * 26}
-          width={140}
+          width={i === 6 ? 140 * clamp(grow, 0, 1.1) : 140}
           height={20}
           rx={2}
           fill={C.cocoa}
@@ -245,30 +247,37 @@ export function RevealThreeModes({ t }: StepCtx) {
           opacity={i === 6 ? easeOut(seg(t, 0.6, 1.0)) : 1}
         />
       ))}
+      {/* each mode hands rows over: a copy leaves its row in the result and slides into the mode's column */}
       {out.map(([m, ids], c) => {
         const k0 = 1.4 + c * 1.0;
+        const step = c === 2 ? 0.07 : 0.18;
         return (
           <g key={m}>
-            <T x={230 + c * 120} y={22} s={11} f={C.crema} o={easeOut(seg(t, k0 - 0.2, k0))}>
+            <T x={230 + c * 120} y={22} s={13} f={C.crema} o={easeOut(seg(t, k0 - 0.2, k0))}>
               {m}
             </T>
-            {ids.map((i, j) => (
-              <rect
-                key={i}
-                x={230 + c * 120}
-                y={32 + j * 26}
-                width={90}
-                height={20}
-                rx={2}
-                fill={C.mocha}
-                stroke={kind(i) === 'new' ? C.second : kind(i) === 'changed' ? C.focus : C.latte}
-                strokeWidth={1.4}
-                opacity={easeOut(seg(t, k0 + j * 0.08, k0 + 0.3 + j * 0.08))}
-              />
-            ))}
+            {ids.map((i, j) => {
+              const k = easeInOut(seg(t, k0 + j * step, k0 + 0.45 + j * step));
+              if (k <= 0) return null;
+              return (
+                <rect
+                  key={i}
+                  x={lerp(25, 230 + c * 120, k)}
+                  y={lerp(32 + i * 26, 32 + j * 26, k)}
+                  width={lerp(140, 90, k)}
+                  height={20}
+                  rx={2}
+                  fill={C.mocha}
+                  stroke={kind(i) === 'new' ? C.second : kind(i) === 'changed' ? C.focus : C.latte}
+                  strokeWidth={1.4}
+                  opacity={clamp(k * 2)}
+                />
+              );
+            })}
           </g>
         );
       })}
+      <Reticle x={515} y={120} w={104} h={194} t={t} at={4.3} />
     </Svg>
   );
 }
