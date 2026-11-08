@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = a structure as the textbook draws it; latte = labels;
 // caramel = the thing to look at (the bits being read, the batch being split); cinnamon (rare) =
@@ -168,7 +168,6 @@ export function BucketBatchSplit({ t }: StepCtx) {
 // 4 · The batch count doubles until every batch fits
 export function BatchGrowth({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
-  const k = stepIdx(t, 0.6, 3.6, 6);
   const end = easeOut(seg(t, 3.9, 4.4));
   const rows: [number, number][] = [
     [1, 4000],
@@ -179,24 +178,33 @@ export function BatchGrowth({ t }: StepCtx) {
     [32, 155],
   ];
   const X = (v: number) => 180 + v * 0.09;
+  // Each doubling is shown as a split: the new row starts as the old largest batch and is cut down to the new largest
+  // one, while the batch count beside it doubles. The cut that finally clears the budget line takes the lock-on.
+  const T0 = (i: number) => 0.6 + i * 0.5;
   return (
     <Svg label="Largest batch against a budget of 200 rows as the batch count doubles: 1 batch, 4,000; 2, 2,028; 4, 1,025; 8, 530; 16, 285; 32, 155, the first that fits" h={270}>
       <g opacity={a}>
-        <line x1={X(200)} y1={30} x2={X(200)} y2={218} stroke={C.cinnamon} strokeWidth={2} />
+        <Draw pts={[[X(200), 30], [X(200), 218]]} t={t} from={0.1} to={0.6} stroke={C.cinnamon} w={2} pen={false} />
         <T x={X(200)} y={234} s={11} a="middle" f={C.cinnamon}>budget 200</T>
         <T x={30} y={22} s={11} f={C.latte}>batches: largest one</T>
       </g>
       {rows.map(([n, m], i) => {
         const y = 36 + i * 30;
         const fits = m <= 200;
+        const k = easeOut(seg(t, T0(i), T0(i) + 0.15));
+        const cut = i === 0 ? easeOut(seg(t, T0(0), T0(0) + 0.45)) : easeInOut(seg(t, T0(i) + 0.1, T0(i) + 0.45));
+        const w = i === 0 ? m * cut : lerp(rows[i - 1][1], m, cut);
+        const shown = cut >= 1 ? m : Math.round(w);
         return (
-          <g key={n} opacity={i <= k ? 1 : 0}>
+          <g key={n} opacity={k} transform={`translate(0 ${((1 - k) * -12).toFixed(2)})`}>
             <T x={30} y={y + 13} s={12} f={C.crema}>{`${n}`}</T>
-            <T x={90} y={y + 13} s={12} f={fits ? C.caramel : C.latte}>{m.toLocaleString('en-US')}</T>
-            <rect x={180} y={y} width={m * 0.09} height={16} fill={fits ? C.caramel : C.cherry} opacity={0.7} />
+            <T x={90} y={y + 13} s={12} f={fits && cut >= 1 ? C.caramel : C.latte}>{shown.toLocaleString('en-US')}</T>
+            <rect x={180} y={y} width={Math.max(2, w * 0.09)} height={16} fill={fits && cut >= 1 ? C.caramel : C.cherry} opacity={0.7} />
+            {i > 0 && cut > 0 && cut < 1 && <line x1={180 + w * 0.09} y1={y - 3} x2={180 + w * 0.09} y2={y + 19} stroke={C.focus} strokeWidth={1.5} />}
           </g>
         );
       })}
+      <Reticle x={190} y={36 + 5 * 30 + 8} w={330} h={28} t={t} at={T0(5) + 0.5} />
       <T x={300} y={262} s={12} a="middle" f={C.caramel} o={end}>each old batch becomes exactly two</T>
     </Svg>
   );
@@ -267,14 +275,25 @@ export function SplitStopsGrowing({ t }: StepCtx) {
 // 7 · Spill, measured
 export function SpillMeasured({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
-  const k = stepIdx(t, 0.6, 3.0, 100);
+  const kF = seg(t, 0.6, 3.0) * 100;
   const end = easeOut(seg(t, 3.3, 3.9));
+  // Orders arrive one square at a time and drop into place; each is hashed on arrival: the few whose customer is in the
+  // resident batch stay light, every other one sinks to the temporary file, and the spill share counts up with them.
+  const spilled = Array.from({ length: 100 }).reduce<number>((acc, _, i) => acc + (i >= 8 ? clamp(kF - i) : 0), 0);
   return (
     <Svg label="A hundred squares for the 80,000 orders: about 92 go to a temporary file because their customer's batch is not the one resident batch; about 8 are probed straight away" h={270}>
       <T x={30} y={28} s={12} f={C.latte} o={a}>80,000 orders, each square about 1%</T>
+      <T x={560} y={28} s={12} a="end" f={C.cherryText} o={kF > 8 ? 1 : 0}>{`to disk: ${Math.round(spilled)}%`}</T>
       {Array.from({ length: 100 }).map((_, i) => {
         const disk = i >= 8;
-        return <rect key={i} x={40 + (i % 20) * 26} y={44 + Math.floor(i / 20) * 26} width={20} height={20} fill={i <= k ? (disk ? C.cherry : C.crema) : 'none'} fillOpacity={disk ? 0.7 : 0.5} stroke={C.mocha} strokeWidth={1} />;
+        const d = easeOut(clamp((kF - i) / 3));
+        const x = 40 + (i % 20) * 26, y = 44 + Math.floor(i / 20) * 26;
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={20} height={20} fill="none" stroke={C.mocha} strokeWidth={1} />
+            {d > 0 && <rect x={x} y={lerp(y - 18, y, d)} width={20} height={20} fill={disk ? C.cherry : C.crema} fillOpacity={(disk ? 0.7 : 0.5) * clamp(d * 2)} stroke={C.mocha} strokeWidth={1} />}
+          </g>
+        );
       })}
       <g opacity={end}>
         <rect x={40} y={190} width={14} height={14} fill={C.crema} opacity={0.5} />
@@ -290,22 +309,35 @@ export function SpillMeasured({ t }: StepCtx) {
 export function SkewTable({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
   const cap = easeOut(seg(t, 0.9, 1.5));
-  const k = stepIdx(t, 1.8, 3.2, 4);
   const end = easeOut(seg(t, 3.5, 4.1));
+  // The four busiest customers are lifted out of the main budget and fly into their own slots in the capped skew
+  // table. Then the main budget is cut into batches (the dividers draw in) and the skew table is left untouched.
+  const fly = (i: number) => easeInOut(seg(t, 1.8 + i * 0.35, 2.4 + i * 0.35));
+  const from = [120, 200, 280, 360];
   return (
     <Svg label="The memory budget of 200 rows, with a separate skew table capped at 2% of it, 4 rows. The four busiest customers each take one, and their orders never spill, whatever the batching does" h={260}>
       <g opacity={a}>
         <rect x={30} y={40} width={400} height={50} fill="none" stroke={C.latte} strokeWidth={1.2} />
         <T x={40} y={70} s={12} f={C.latte}>memory budget: 200 rows</T>
       </g>
-      <g opacity={cap}>
+      {[1, 2, 3].map((j) => (
+        <Draw key={j} pts={[[30 + j * 100, 40], [30 + j * 100, 90]]} t={t} from={3.4 + j * 0.12} to={3.6 + j * 0.12} stroke={C.latte} w={1} dash="3 3" pen={false} />
+      ))}
+      <g opacity={cap} transform={`translate(${((1 - cap) * 24).toFixed(2)} 0)`}>
         <rect x={446} y={40} width={110} height={50} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={501} y={30} s={11} a="middle" f={C.caramel}>skew: 2% = 4</T>
         {[0, 1, 2, 3].map((i) => (
-          <rect key={i} x={452 + i * 26} y={52} width={20} height={26} fill={i <= k ? C.caramel : 'none'} stroke={C.caramel} strokeWidth={1} opacity={i <= k ? 0.8 : 0.5} />
+          <rect key={i} x={452 + i * 26} y={52} width={20} height={26} fill="none" stroke={C.caramel} strokeWidth={1} opacity={0.5} />
         ))}
       </g>
-      <T x={30} y={140} s={12} f={C.crema} o={k >= 0 ? 1 : 0}>the four busiest customers, one row each</T>
+      {[0, 1, 2, 3].map((i) => {
+        const k = fly(i);
+        if (k <= 0) return null;
+        const x = lerp(from[i], 452 + i * 26, k);
+        const y = lerp(56, 52, k) - Math.sin(Math.PI * k) * 30;
+        return <rect key={i} x={x} y={y} width={20} height={26} fill={C.caramel} opacity={0.8} />;
+      })}
+      <T x={30} y={140} s={12} f={C.crema} o={easeOut(seg(t, 1.8, 2.2))}>the four busiest customers, one row each</T>
       <T x={30} y={170} s={12} f={C.caramel} o={end}>always resident: their orders never spill</T>
       <T x={30} y={200} s={12} f={C.latte} o={end}>capped on purpose: the extreme few only</T>
     </Svg>
@@ -316,10 +348,27 @@ export function SkewTable({ t }: StepCtx) {
 export function OpenAddressedProbeSide({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
   const b = easeOut(seg(t, 1.2, 1.8));
-  const p = stepIdx(t, 2.0, 3.8, 4);
+  const pF = seg(t, 2.0, 3.8) * 4;
+  const p = t < 2.0 ? -1 : Math.min(3, Math.floor(pF));
   const end = easeOut(seg(t, 4.1, 4.7));
   const offs = [0, 1, 3, 6];
   const taken = new Set([2, 3, 5]);
+  // Left: the chain grows sideways, each tuple of its own size hanging off a pointer that draws to it. Right: a new key
+  // drops onto slot h, finds it taken, and hops on by the triangular numbers (+1, +3, +6) until it lands in a free slot.
+  const SX = (i: number) => 30 + i * 44 + 19;
+  let kx = SX(offs[0] + 2), ky = 150;
+  if (t >= 2.0) {
+    const j = Math.min(3, Math.floor(pF));
+    const f = pF >= 4 ? 1 : pF - j;
+    if (j === 0) {
+      kx = SX(2);
+      ky = lerp(140, 180, easeOut(f));
+    } else {
+      const e = easeInOut(Math.min(1, f * 1.4));
+      kx = lerp(SX(offs[j - 1] + 2), SX(offs[j] + 2), e);
+      ky = 180 - Math.sin(Math.PI * e) * 34;
+    }
+  }
   return (
     <Svg label="Left: PostgreSQL's chained bucket, tuples of different sizes hanging in a chain. Right: Spark's open-addressed array for one long key: a new key tries slot h, then h plus 1, h plus 3, h plus 6, the triangular numbers, until a free slot" h={270}>
       <g opacity={a}>
@@ -327,7 +376,14 @@ export function OpenAddressedProbeSide({ t }: StepCtx) {
         <rect x={30} y={50} width={30} height={24} fill="none" stroke={C.crema} strokeWidth={1.2} />
         {[50, 80, 36].map((w, i, arr) => {
           const x = 70 + arr.slice(0, i).reduce((s0, v) => s0 + v + 14, 0);
-          return <rect key={i} x={x} y={54} width={w} height={16} fill={C.crema} opacity={0.45} />;
+          const k = easeOut(seg(t, 0.3 + i * 0.25, 0.6 + i * 0.25));
+          const px = i === 0 ? 60 : x - 14;
+          return (
+            <g key={i}>
+              <Draw pts={[[px, 62], [x, 62]]} t={t} from={0.2 + i * 0.25} to={0.35 + i * 0.25} stroke={C.latte} w={1} pen={false} />
+              {k > 0 && <rect x={x} y={54} width={Math.max(2, w * k)} height={16} fill={C.crema} opacity={0.45} />}
+            </g>
+          );
         })}
         <T x={30} y={104} s={11} f={C.latte}>any tuple size, a pointer to chase</T>
       </g>
@@ -339,11 +395,12 @@ export function OpenAddressedProbeSide({ t }: StepCtx) {
           const occupied = taken.has(i);
           return (
             <g key={i}>
-              <rect x={30 + i * 44} y={166} width={38} height={28} fill={occupied ? C.latte : i === 8 && p >= 3 ? C.caramel : 'none'} fillOpacity={occupied ? 0.35 : 0.7} stroke={isTried ? C.caramel : C.mocha} strokeWidth={isTried ? 2 : 1} />
+              <rect x={30 + i * 44} y={166} width={38} height={28} fill={occupied ? C.latte : i === 8 && pF >= 4 ? C.caramel : 'none'} fillOpacity={occupied ? 0.35 : 0.7} stroke={isTried ? C.caramel : C.mocha} strokeWidth={isTried ? 2 : 1} />
               {isTried && <T x={49 + i * 44} y={214} s={11} a="middle" f={C.caramel}>{offs[tried] === 0 ? 'h' : `+${offs[tried]}`}</T>}
             </g>
           );
         })}
+        {t >= 2.0 && pF < 4 && <circle cx={kx} cy={ky} r={6} fill={C.caramel} />}
       </g>
       <T x={30} y={252} s={12} f={C.crema} o={end}>one fixed-size number: nothing extra to chase</T>
     </Svg>

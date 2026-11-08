@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md, chapter 37): crema = textbook structure/in-memory data; latte =
 // secondary labels; caramel = the thing to look at (the watched chain A→B→C→D); cinnamon (rare)
@@ -92,31 +92,48 @@ export function OrchestratorHook({ t, answer }: StepCtx) {
   const r2 = answered ? easeOut(seg(s, 1.4, 2.2)) : 0;
   const chain = ['A', 'B', 'C', 'D'];
   const fan = ['W1', 'W2', 'W3', 'W4', 'W5'];
+  // The free slots tick in; the chain grows downward one task at a time while the fan-out's five children spread out
+  // from W. After the answer, W lifts off and flies into the first free slot: the default rule's pick.
+  const slot = (i: number) => easeOut(seg(t, 0.1 + i * 0.02, 0.4 + i * 0.02));
+  const grow = (i: number) => easeOut(seg(t, 1.0 + i * 0.3, 1.4 + i * 0.3));
+  const spread = easeInOut(seg(t, 1.2, 2.2));
+  const fly = answered ? easeInOut(seg(s, 0.6, 1.3)) : 0;
+  const wx = lerp(420, 65.5, fly), wy = lerp(84, 41.5, fly) - Math.sin(Math.PI * fly) * 20;
   return (
     <Svg label="Four thousand tasks, two hundred ready, thirty-two free slots. Chain head A has three tasks below it, fan-out head W has five. After answering: W, weight 6 against A's 4, runs first, yet the chain's last task D finishes at 10 either way" h={290}>
       <g opacity={a}>
         <T x={300} y={24} s={12} a="middle" f={C.latte}>4,000 tasks · 200 ready · 32 free slots</T>
-        {Array.from({ length: 32 }).map((_, i) => (
-          <rect key={i} x={60 + i * 15} y={36} width={11} height={11} fill="none" stroke={C.mocha} />
-        ))}
       </g>
+      {Array.from({ length: 32 }).map((_, i) => (
+        <rect key={i} x={60 + i * 15} y={36 + (1 - slot(i)) * 8} width={11} height={11} fill="none" stroke={C.mocha} opacity={slot(i)} />
+      ))}
       <g opacity={b}>
-        {chain.map((c, i) => (
-          <g key={c}>
-            {i > 0 && <line x1={150} y1={84 + (i - 1) * 40 + 12} x2={150} y2={84 + i * 40 - 12} stroke={C.mocha} strokeWidth={1.5} />}
-            <circle cx={150} cy={84 + i * 40} r={12} fill={i === 0 && r1 > 0 ? C.roast : C.roast} stroke={C.caramel} strokeWidth={1.5} />
-            <T x={150} y={89 + i * 40} s={12} a="middle" f={C.caramel}>{c}</T>
-          </g>
-        ))}
-        <circle cx={420} cy={84} r={12} fill={r1 > 0.5 ? C.caramel : C.roast} stroke={C.crema} strokeWidth={1.5} />
-        <T x={420} y={89} s={12} a="middle" f={r1 > 0.5 ? C.ink : C.crema}>W</T>
-        {fan.map((c, i) => (
-          <g key={c}>
-            <line x1={420} y1={96} x2={330 + i * 45} y2={134} stroke={C.mocha} strokeWidth={1.5} />
-            <circle cx={330 + i * 45} cy={146} r={12} fill={C.roast} stroke={C.crema} strokeWidth={1.5} />
-            <T x={330 + i * 45} y={151} s={11} a="middle" f={C.crema}>{c}</T>
-          </g>
-        ))}
+        {chain.map((c, i) => {
+          const k = grow(i);
+          const y = lerp(84 + Math.max(0, i - 1) * 40, 84 + i * 40, k);
+          return (
+            <g key={c} opacity={i === 0 ? 1 : clamp(k * 2)}>
+              {i > 0 && <line x1={150} y1={84 + (i - 1) * 40 + 12} x2={150} y2={Math.max(84 + (i - 1) * 40 + 12, y - 12)} stroke={C.mocha} strokeWidth={1.5} />}
+              <circle cx={150} cy={y} r={12} fill={C.roast} stroke={C.caramel} strokeWidth={1.5} />
+              <T x={150} y={y + 5} s={12} a="middle" f={C.caramel}>{c}</T>
+            </g>
+          );
+        })}
+        {fan.map((c, i) => {
+          const x = lerp(420, 330 + i * 45, spread), y = lerp(96, 146, spread);
+          return (
+            <g key={c}>
+              <line x1={420} y1={96} x2={x} y2={Math.max(96, y - 12)} stroke={C.mocha} strokeWidth={1.5} />
+              <circle cx={x} cy={y} r={12} fill={C.roast} stroke={C.crema} strokeWidth={1.5} />
+              <T x={x} y={y + 5} s={11} a="middle" f={C.crema}>{c}</T>
+            </g>
+          );
+        })}
+        {fly > 0 && <circle cx={420} cy={84} r={12} fill="none" stroke={C.mocha} strokeWidth={1} strokeDasharray="3 3" />}
+        <g transform={`translate(${wx.toFixed(2)} ${wy.toFixed(2)}) scale(${lerp(1, 0.5, fly).toFixed(3)})`}>
+          <circle cx={0} cy={0} r={12} fill={r1 > 0.5 ? C.caramel : C.roast} stroke={C.crema} strokeWidth={1.5} />
+          <T x={0} y={5} s={12} a="middle" f={r1 > 0.5 ? C.ink : C.crema}>W</T>
+        </g>
       </g>
       <T x={300} y={234} s={13} a="middle" f={C.caramel} o={rev(ask, r1)}>which runs first? which finishes sooner?</T>
       <g opacity={r1}>
@@ -124,7 +141,7 @@ export function OrchestratorHook({ t, answer }: StepCtx) {
         <T x={480} y={89} s={12} f={C.caramel}>weight 6</T>
         <T x={420} y={196} s={12} a="middle" f={C.caramel}>W runs first</T>
       </g>
-      <T x={300} y={262} s={13} a="middle" f={C.crema} o={r2}>D finishes at 10 either way</T>
+      <T x={300} y={lerp(270, 262, r2)} s={13} a="middle" f={C.crema} o={r2}>D finishes at 10 either way</T>
     </Svg>
   );
 }
@@ -211,31 +228,44 @@ export function ChapterDag({ t }: StepCtx) {
 // 4 · Airflow's docs: the default weight is a sum over descendants, not a longest chain
 export function AirflowWeightDocs({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.9));
-  const chainAdd = stepIdx(t, 1.0, 2.6, 4);
-  const fanAdd = stepIdx(t, 2.0, 3.6, 6);
   const not = easeOut(seg(t, 3.9, 4.6));
+  // The quoted rule lands and its key phrase is underlined. Then the rule is run: each task's own 1 slides out of the
+  // task's name and stacks into its row, and the row's total counts up as the ones arrive: 4 for A, 6 for W.
+  const one = (start: number, i: number) => easeOut(seg(t, start + i * 0.27, start + 0.35 + i * 0.27));
+  const sumA = [0, 1, 2, 3].reduce((acc, i) => acc + (one(1.0, i) >= 1 ? 1 : 0), 0);
+  const sumW = [0, 1, 2, 3, 4, 5].reduce((acc, i) => acc + (one(2.0, i) >= 1 ? 1 : 0), 0);
   return (
     <Svg label="priority_weight defaults to one. The downstream rule sums it over every descendant: A gets one plus one plus one plus one, four; W gets one plus five ones, six. A sum over descendants, not the longest chain" h={270}>
       <g opacity={a}>
         <T x={300} y={26} s={12} a="middle" f={C.latte}>priority_weight: default 1, any integer</T>
         <T x={300} y={52} s={13} a="middle" f={C.crema}>downstream: own + sum over descendants</T>
       </g>
+      {/* underline under "sum over descendants"; it scales with the text on phones (--svg-text-scale) */}
+      <g style={{ transform: 'scaleX(var(--svg-text-scale, 1))', transformOrigin: '300px 0px', transformBox: 'view-box' }}>
+        <Draw pts={[[292, 60], [449, 60]]} t={t} from={0.7} to={1.2} stroke={C.caramel} w={1.6} />
+      </g>
       <T x={40} y={104} s={13} f={C.caramel} o={a}>A</T>
-      {[0, 1, 2, 3].map((i) => (
-        <g key={i} opacity={i <= chainAdd ? 1 : 0}>
-          <rect x={80 + i * 44} y={88} width={36} height={22} fill={C.caramel} />
-          <T x={98 + i * 44} y={104} s={12} a="middle" f={C.ink}>1</T>
-        </g>
-      ))}
-      <T x={270} y={104} s={14} f={C.caramel} o={chainAdd >= 3 ? 1 : 0}>= 4</T>
+      {[0, 1, 2, 3].map((i) => {
+        const k = one(1.0, i);
+        return k > 0 ? (
+          <g key={i} opacity={clamp(k * 2)} transform={`translate(${((1 - k) * (40 - (80 + i * 44))).toFixed(2)} 0)`}>
+            <rect x={80 + i * 44} y={88} width={36} height={22} fill={C.caramel} />
+            <T x={98 + i * 44} y={104} s={12} a="middle" f={C.ink}>1</T>
+          </g>
+        ) : null;
+      })}
+      <T x={270} y={104} s={14} f={C.caramel} o={sumA > 0 ? 1 : 0}>{`= ${sumA}`}</T>
       <T x={40} y={154} s={13} f={C.crema} o={a}>W</T>
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <g key={i} opacity={i <= fanAdd ? 1 : 0}>
-          <rect x={80 + i * 44} y={138} width={36} height={22} fill={C.crema} />
-          <T x={98 + i * 44} y={154} s={12} a="middle" f={C.ink}>1</T>
-        </g>
-      ))}
-      <T x={358} y={154} s={14} f={C.crema} o={fanAdd >= 5 ? 1 : 0}>= 6</T>
+      {[0, 1, 2, 3, 4, 5].map((i) => {
+        const k = one(2.0, i);
+        return k > 0 ? (
+          <g key={i} opacity={clamp(k * 2)} transform={`translate(${((1 - k) * (40 - (80 + i * 44))).toFixed(2)} 0)`}>
+            <rect x={80 + i * 44} y={138} width={36} height={22} fill={C.crema} />
+            <T x={98 + i * 44} y={154} s={12} a="middle" f={C.ink}>1</T>
+          </g>
+        ) : null;
+      })}
+      <T x={358} y={154} s={14} f={C.crema} o={sumW > 0 ? 1 : 0}>{`= ${sumW}`}</T>
       <g opacity={not}>
         <T x={300} y={212} s={13} a="middle" f={C.caramel}>a sum over descendants</T>
         <T x={300} y={242} s={13} a="middle" f={C.cherryText}>not the longest chain below</T>

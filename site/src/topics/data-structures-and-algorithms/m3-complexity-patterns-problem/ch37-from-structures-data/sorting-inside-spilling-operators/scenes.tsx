@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md): crema = a structure as the textbook draws it; latte = labels;
 // caramel = the thing to look at (the run being written, the smallest element picked); cinnamon
@@ -116,7 +116,6 @@ export function RunGeneration({ t }: StepCtx) {
 
 // 3 · Four departures from the textbook
 export function FourDepartures({ t }: StepCtx) {
-  const k = stepIdx(t, 0.3, 4.6, 4);
   const end = easeOut(seg(t, 4.9, 5.5));
   const rows: [string, string, string][] = [
     ['polyphase merge', 'balanced merge', 'tape drives stopped being scarce'],
@@ -124,15 +123,26 @@ export function FourDepartures({ t }: StepCtx) {
     ['one block at a time', 'preread a fair share', 'from each tape, to stay sequential'],
     ['a written final merge', 'final merge on the fly', 'when nothing needs random access'],
   ];
+  // Each textbook choice lands, is struck through, and its replacement slides in along the arrow; the reason that
+  // moved follows underneath. Four rows, one beat each.
+  const T0 = (i: number) => 0.3 + i * 1.07;
   return (
     <Svg label="PostgreSQL's four departures: a balanced merge for polyphase, since tape drives stopped being scarce; quicksort instead of replacement selection to make runs; preread a fair share from each tape to stay sequential; and the final merge done on the fly" h={290}>
       {rows.map(([old, nw, why], i) => {
         const y = 34 + i * 60;
+        const k = easeOut(seg(t, T0(i), T0(i) + 0.3));
+        const m = easeOut(seg(t, T0(i) + 0.45, T0(i) + 0.8));
         return (
-          <g key={i} opacity={i <= k ? 1 : 0}>
-            <T x={30} y={y} s={12} f={C.taupe}>{old}</T>
-            <T x={300} y={y} s={12} f={C.caramel}>{`→ ${nw}`}</T>
-            <T x={30} y={y + 22} s={11} f={C.latte}>{why}</T>
+          <g key={i}>
+            <T x={30} y={y} s={12} f={C.taupe} o={k}>{old}</T>
+            {/* the strike scales with the text on phones (--svg-text-scale), so it always spans the whole label */}
+            <g style={{ transform: 'scaleX(var(--svg-text-scale, 1))', transformOrigin: '28px 0px', transformBox: 'view-box' }}>
+              <Draw pts={[[28, y - 4], [32 + old.length * 7.6, y - 4]]} t={t} from={T0(i) + 0.3} to={T0(i) + 0.55} stroke={C.taupe} w={1.2} pen={false} />
+            </g>
+            <g opacity={m} transform={`translate(${((1 - m) * 40).toFixed(2)} 0)`}>
+              <T x={300} y={y} s={12} f={C.caramel}>{`→ ${nw}`}</T>
+            </g>
+            <T x={30} y={y + 22} s={11} f={C.latte} o={easeOut(seg(t, T0(i) + 0.7, T0(i) + 1.0))}>{why}</T>
           </g>
         );
       })}
@@ -371,7 +381,6 @@ export function SpillComparisonMeasured({ t }: StepCtx) {
 // 11 · The merge kernel: always the smallest available element
 export function MergeKernelRecap({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
-  const k = stepIdx(t, 0.8, 3.8, 9);
   const end = easeOut(seg(t, 4.1, 4.7));
   const runs = [
     [1, 4, 8],
@@ -387,21 +396,29 @@ export function MergeKernelRecap({ t }: StepCtx) {
     order.push([best, idx[best]]);
     idx[best]++;
   }
-  const taken = (r: number, i: number) => order.findIndex(([rr, ii]) => rr === r && ii === i);
+  // Each pick flies: the smallest head lifts out of its run and travels to the next slot of the output, growing to
+  // the output's scale on the way, so the sorted sequence is visibly assembled from the three runs' heads.
+  const pick = (s0: number) => easeInOut(seg(t, 0.8 + s0 * 0.33, 1.15 + s0 * 0.33));
   return (
     <Svg label="Three sorted runs. Again and again the smallest head among them is picked and appended to the output, until one sorted sequence remains: the merge kernel inside a sort's spill, a hash aggregation's fallback, compaction and shuffle reads" h={270}>
       {runs.map((run, r) => (
         <g key={r} opacity={a}>
           <T x={30} y={54 + r * 40} s={12} f={C.latte}>{`run ${r + 1}`}</T>
           {run.map((v, i) => {
-            const at = taken(r, i);
-            return <rect key={i} x={100 + i * 24} y={40 + r * 40 + (10 - v)} width={18} height={v + 10} fill={C.crema} opacity={at <= k ? 0.15 : 0.6} />;
+            const s0 = order.findIndex(([rr, ii]) => rr === r && ii === i);
+            return <rect key={i} x={100 + i * 24} y={40 + r * 40 + (10 - v)} width={18} height={v + 10} fill={C.crema} opacity={pick(s0) > 0 ? 0.15 : 0.6} />;
           })}
         </g>
       ))}
       {order.map(([r, i], s0) => {
         const v = runs[r][i];
-        return <rect key={s0} x={300 + s0 * 28} y={110 + (10 - v) * 2} width={22} height={v * 2 + 20} fill={C.caramel} opacity={s0 <= k ? 0.75 : 0} />;
+        const k = pick(s0);
+        if (k <= 0) return null;
+        const x = lerp(100 + i * 24, 300 + s0 * 28, k);
+        const w = lerp(18, 22, k);
+        const h = lerp(v + 10, v * 2 + 20, k);
+        const yb = lerp(40 + r * 40 + 20, 110 + 40, k) - Math.sin(Math.PI * k) * 20; // bottom edge
+        return <rect key={s0} x={x} y={yb - h} width={w} height={h} fill={k >= 1 ? C.caramel : C.focus} opacity={0.75} />;
       })}
       <T x={300} y={90} s={12} f={C.caramel} o={a}>always the smallest head next</T>
       <T x={30} y={220} s={12} f={C.crema} o={end}>a heap or a tree of losers does the picking</T>
@@ -416,22 +433,30 @@ export function Recap({ t }: StepCtx) {
   const b = easeOut(seg(t, 0.9, 1.5));
   const meet = easeInOut(seg(t, 1.9, 2.9));
   const end = easeOut(seg(t, 3.4, 4.0));
+  // The two answers slide in, their lines run together into one box, and that box then does its one job on repeat:
+  // the smallest item leaves it, again and again.
+  const ticks = [0, 1, 2, 3];
   return (
     <Svg label="Two answers to missing memory: split by hash, or into sorted pieces merged back. Both end at the same move, picking the smallest available item over and over. Next, the structure that does the picking" h={240}>
-      <g opacity={a}>
+      <g opacity={a} transform={`translate(${((1 - a) * -24).toFixed(2)} 0)`}>
         <rect x={30} y={40} width={220} height={34} fill="none" stroke={C.crema} strokeWidth={1.2} />
         <T x={140} y={62} s={12} a="middle" f={C.crema}>split by hash</T>
       </g>
-      <g opacity={b}>
+      <g opacity={b} transform={`translate(${((1 - b) * -24).toFixed(2)} 0)`}>
         <rect x={30} y={100} width={220} height={34} fill="none" stroke={C.crema} strokeWidth={1.2} />
         <T x={140} y={122} s={12} a="middle" f={C.crema}>sorted runs, merged</T>
       </g>
-      <g opacity={meet}>
-        <path d="M250 57 L330 88 M250 117 L330 88" stroke={C.latte} strokeWidth={1.2} fill="none" />
+      <Draw pts={[[250, 57], [330, 88]]} t={t} from={1.9} to={2.4} stroke={C.latte} w={1.2} pen={false} />
+      <Draw pts={[[250, 117], [330, 88]]} t={t} from={2.0} to={2.5} stroke={C.latte} w={1.2} pen={false} />
+      <g opacity={meet} transform={`translate(450 88) scale(${lerp(0.85, 1, meet).toFixed(3)}) translate(-450 -88)`}>
         <rect x={330} y={70} width={240} height={36} fill="none" stroke={C.caramel} strokeWidth={1.6} />
         <T x={450} y={93} s={12} a="middle" f={C.caramel}>pick the smallest, again</T>
       </g>
-      <T x={30} y={190} s={13} f={C.caramel} o={end}>next: the structure that does the picking</T>
+      {ticks.map((j) => {
+        const u = seg(t, 2.9 + j * 0.45, 3.6 + j * 0.45);
+        return u > 0 && u < 1 ? <rect key={j} x={lerp(440, 520, u)} y={lerp(110, 150, easeOut(u))} width={10} height={10} rx={2} fill={C.caramel} opacity={1 - u} /> : null;
+      })}
+      <T x={30} y={lerp(198, 190, end)} s={13} f={C.caramel} o={end}>next: the structure that does the picking</T>
     </Svg>
   );
 }

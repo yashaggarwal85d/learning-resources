@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md, chapter 37): crema = the textbook structure as drawn earlier, and
 // data in memory; latte = secondary labels; taupe = data on disk, not yet read back; caramel =
@@ -216,10 +216,13 @@ export function PredictSplit({ t, answer }: StepCtx) {
 // 6 · Measured: the lopsided split
 export function LopsidedSplit({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.8));
-  const l = easeOut(seg(t, 0.8, 2.0));
   const r = easeOut(seg(t, 2.0, 2.8));
   const note = easeOut(seg(t, 3.2, 4.0));
   const W = 200;
+  // The duplicate rows drop into the left page one by one until it is full; the fifth has nowhere to go and is pushed
+  // out sideways, across the gap, into the new right page. Then each page's fill gauge runs out to its share.
+  const drop = (i: number) => easeOutBack(seg(t, 0.8 + i * 0.3, 1.1 + i * 0.3));
+  const push = easeInOut(seg(t, 2.0, 2.8));
   return (
     <Svg label="After the split: the left page holds 4 of 4 slots, full; the right page holds 1 of 4, a quarter full" h={260}>
       <g opacity={a}>
@@ -232,14 +235,19 @@ export function LopsidedSplit({ t }: StepCtx) {
           </g>
         ))}
       </g>
-      {[0, 1, 2, 3].map((i) => (
-        <rect key={i} x={80 + i * 50} y={60} width={44} height={60} fill={C.crema} opacity={l * 4 > i ? 1 : 0} />
-      ))}
-      <rect x={320} y={60} width={44} height={60} fill={C.cinnamon} opacity={r} />
-      <T x={180} y={146} s={13} a="middle" f={C.crema} o={l >= 1 ? 1 : 0}>4 of 4: full</T>
+      {[0, 1, 2, 3].map((i) => {
+        const k = drop(i);
+        return k > 0 ? <rect key={i} x={80 + i * 50} y={lerp(20, 60, k)} width={44} height={60} fill={C.crema} opacity={clamp(k * 2)} /> : null;
+      })}
+      {t >= 1.9 && (
+        <rect x={lerp(280, 320, push)} y={lerp(20, 60, easeOut(seg(t, 1.9, 2.2))) - Math.sin(Math.PI * push) * 14} width={44} height={60} fill={C.cinnamon} opacity={lerp(0.6, 1, r)} />
+      )}
+      <T x={180} y={146} s={13} a="middle" f={C.crema} o={easeOut(seg(t, 1.9, 2.2))}>4 of 4: full</T>
       <T x={420} y={146} s={13} a="middle" f={C.cinnamon} o={r}>1 of 4</T>
-      <rect x={80} y={170} width={W} height={10} fill={C.crema} opacity={note} />
-      <rect x={320} y={170} width={W * 0.25} height={10} fill={C.cinnamon} opacity={note} />
+      {note > 0 && <rect x={80} y={170} width={Math.max(2, W * note)} height={10} fill={C.crema} />}
+      {note > 0 && <rect x={320} y={170} width={Math.max(2, W * 0.25 * note)} height={10} fill={C.cinnamon} />}
+      <rect x={80} y={170} width={W} height={10} fill="none" stroke={C.line} opacity={note} />
+      <rect x={320} y={170} width={W} height={10} fill="none" stroke={C.line} opacity={note} />
       <T x={300} y={224} s={13} a="middle" f={C.caramel} o={note}>the fallback's own assumption, measured</T>
     </Svg>
   );
@@ -248,30 +256,38 @@ export function LopsidedSplit({ t }: StepCtx) {
 // 7 · The LSM tree: the textbook entry, and RocksDB's key with a sequence number
 export function LsmTwoColumn({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.9));
-  const lv = stepIdx(t, 0.6, 2.0, 4);
   const b = easeOut(seg(t, 2.3, 3.0));
   const seq = easeOut(seg(t, 3.0, 3.8));
   const sizes = [4, 40, 400, 4000];
+  // The levels build downward, each one wider than the last as it lands. On the right the stored key slides in, and
+  // the sequence number slides out from behind it and locks on beside it: the extra field riding with every key.
+  const lv = (i: number) => easeOut(seg(t, 0.6 + i * 0.35, 1.0 + i * 0.35));
   return (
     <Svg label="Left: the Chapter 5 LSM tree, levels of 4, 40, 400 and 4,000 MB, each entry a user key and a value. Right: RocksDB's stored key, the user key with a sequence number beside it" h={260}>
       <T x={140} y={26} s={12} a="middle" f={C.latte} o={a}>Chapter 5: key and value</T>
-      {sizes.map((mb, i) => (
-        <g key={mb} opacity={i <= lv ? 1 : 0}>
-          <rect x={30} y={44 + i * 34} width={30 + i * 40} height={22} fill={C.roast} stroke={C.crema} />
-          <T x={70 + i * 40} y={60 + i * 34} s={12} f={C.latte}>{`${mb.toLocaleString('en-US')} MB`}</T>
-        </g>
-      ))}
+      {sizes.map((mb, i) => {
+        const k = lv(i);
+        return (
+          <g key={mb} opacity={k > 0 ? 1 : 0}>
+            <rect x={30} y={44 + i * 34} width={Math.max(2, (30 + i * 40) * k)} height={22} fill={C.roast} stroke={C.crema} />
+            <T x={70 + i * 40} y={60 + i * 34} s={12} f={C.latte} o={k}>{`${mb.toLocaleString('en-US')} MB`}</T>
+          </g>
+        );
+      })}
       <line x1={300} y1={20} x2={300} y2={230} stroke={C.mocha} opacity={a} />
       <g opacity={b}>
         <T x={450} y={26} s={12} a="middle" f={C.cinnamon}>RocksDB's stored key</T>
-        <rect x={320} y={90} width={190} height={26} fill={C.roast} stroke={C.crema} strokeWidth={1.5} />
-        <T x={415} y={108} s={12} a="middle" f={C.crema}>order:4001:status</T>
         <g opacity={seq}>
-          <rect x={510} y={90} width={60} height={26} fill={C.roast} stroke={C.cinnamon} strokeWidth={1.5} />
-          <T x={540} y={108} s={12} a="middle" f={C.cinnamon}>seq</T>
-          <T x={450} y={156} s={12} a="middle" f={C.latte}>user key, plus a sequence number</T>
+          <rect x={lerp(450, 510, seq)} y={90} width={60} height={26} fill={C.roast} stroke={C.cinnamon} strokeWidth={1.5} />
+          <T x={lerp(480, 540, seq)} y={108} s={12} a="middle" f={C.cinnamon}>seq</T>
+          <T x={450} y={lerp(166, 156, seq)} s={12} a="middle" f={C.latte}>user key, plus a sequence number</T>
+        </g>
+        <g transform={`translate(${((1 - b) * 30).toFixed(2)} 0)`}>
+          <rect x={320} y={90} width={190} height={26} fill={C.roast} stroke={C.crema} strokeWidth={1.5} />
+          <T x={415} y={108} s={12} a="middle" f={C.crema}>order:4001:status</T>
         </g>
       </g>
+      <Reticle x={540} y={103} w={70} h={36} t={t} at={3.8} color={C.cinnamon} />
     </Svg>
   );
 }
@@ -443,43 +459,58 @@ export function BlockReadCounts({ t, answer }: StepCtx) {
   const s = useSinceAnswer(answered);
   const a = easeOut(seg(t, 0.1, 0.9));
   const ask = easeOut(seg(t, 1.4, 2.2));
-  const k = answered ? stepIdx(s, 0.2, 2.2, 4) : -1;
   const same = answered ? easeOut(seg(s, 2.5, 3.1)) : 0;
   const U = 100;
   const x0 = 290;
+  // Before the answer the four cases line up. After it, each lookup is run: its reads stack up one block at a time
+  // (index, then filter, then data) and its total counts up. Then a dashed line carries the no-filter miss's length
+  // down to the uncached-partition miss: exactly as long, and the lock-on lands there.
+  const grow = (i: number) => (answered ? clamp((s - 0.2 - i * 0.5) / 0.45) : 0);
+  const reach = (c: (typeof CASES)[number]) => (c.index + c.filter + c.data) * U;
   return (
     <Svg label="Block reads per lookup: a hit 2, index and data; a miss with no filter 2; a miss against a cached whole filter 1; a miss whose filter partition is not cached 2, index and partition, the same as no filter" h={290}>
       <g opacity={a}>
         <T x={300} y={22} s={12} a="middle" f={C.latte}>block reads per point lookup</T>
-        {CASES.map((c, i) => (
-          <T key={c.label} x={x0 - 12} y={66 + i * 44} s={12} a="end" f={i === 3 ? C.caramel : C.crema}>{c.label}</T>
-        ))}
       </g>
       {CASES.map((c, i) => {
-        const on = i <= k ? 1 : 0;
+        const k = easeOut(seg(t, 0.2 + i * 0.2, 0.6 + i * 0.2));
+        return (
+          <g key={c.label} opacity={k} transform={`translate(${((1 - k) * -16).toFixed(2)} 0)`}>
+            <T x={x0 - 12} y={66 + i * 44} s={12} a="end" f={i === 3 ? C.caramel : C.crema}>{c.label}</T>
+          </g>
+        );
+      })}
+      {CASES.map((c, i) => {
+        const g = grow(i);
+        if (g <= 0) return null;
         const parts: [number, string][] = [
           [c.index, C.crema],
           [c.filter, C.cinnamon],
           [c.data, C.taupe],
         ];
+        const total = c.index + c.filter + c.data;
+        const len = reach(c) * easeOut(g);
         let x = x0;
         return (
-          <g key={c.label} opacity={on}>
+          <g key={c.label}>
             {parts.map(([n, col], j) => {
-              const r = n > 0 ? <rect key={j} x={x + 1} y={50 + i * 44} width={n * U - 2} height={22} fill={col} /> : null;
+              const w = Math.min(n * U, Math.max(0, x0 + len - x));
+              const r = n > 0 && w > 0 ? <rect key={j} x={x + 1} y={50 + i * 44} width={Math.max(2, w - 2)} height={22} fill={col} /> : null;
               x += n * U;
               return r;
             })}
-            <T x={x + 10} y={66 + i * 44} s={13} f={C.caramel}>{`${c.index + c.filter + c.data}`}</T>
+            <T x={x0 + len + 10} y={66 + i * 44} s={13} f={C.caramel}>{`${Math.max(1, Math.ceil(total * easeOut(g) - 1e-6))}`}</T>
           </g>
         );
       })}
+      {answered && <Draw pts={[[x0 + reach(CASES[1]), 74 + 44], [x0 + reach(CASES[1]), 50 + 3 * 44]]} t={s} from={2.3} to={2.8} stroke={C.cherryText} w={1.2} dash="3 3" />}
+      {answered && <Reticle x={x0 + reach(CASES[3]) / 2} y={61 + 3 * 44} w={reach(CASES[3]) + 40} h={34} t={s} at={2.8} color={C.cherryText} />}
       <g opacity={a}>
         <T x={x0} y={236} s={12} f={C.crema}>index</T>
         <T x={x0 + 70} y={236} s={12} f={C.cinnamon}>filter</T>
         <T x={x0 + 150} y={236} s={12} f={C.taupe}>data</T>
       </g>
-      <T x={300} y={272} s={13} a="middle" f={C.caramel} o={rev(ask, k >= 0 ? 1 : 0)}>which miss costs the most?</T>
+      <T x={300} y={272} s={13} a="middle" f={C.caramel} o={rev(ask, answered ? 1 : 0)}>which miss costs the most?</T>
       <T x={300} y={272} s={13} a="middle" f={C.cherryText} o={same}>uncached partition: same as no filter</T>
     </Svg>
   );

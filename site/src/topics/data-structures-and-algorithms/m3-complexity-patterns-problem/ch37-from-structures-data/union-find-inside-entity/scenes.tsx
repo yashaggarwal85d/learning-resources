@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Svg, T } from '../../../../../reels/kit';
 
 // Colour grammar (CHAPTER.md, chapter 37): crema = textbook structure/in-memory data; latte =
 // secondary labels; caramel = the thing to look at; cinnamon (rare) = the system's modification
@@ -248,10 +248,23 @@ export function ThresholdSweep({ t }: StepCtx) {
     [0.63, 8, '8 + 8 + 8'],
     [0.7, 8, '8 + 8 + 8'],
   ];
-  const k = stepIdx(t, 1.0, 4.0, 6);
   const br = easeOut(seg(t, 4.3, 5.1));
   const x = (v: number) => 80 + (v - 0.5) * 2200;
   const y = (n: number) => 200 - n * 6;
+  // A threshold cursor sweeps left to right along the score axis; the largest-cluster line is traced behind it, flat,
+  // then a sheer drop, flat, a drop, flat. Each tested threshold lands as the cursor reaches it. Last, the two bridge
+  // scores draw down from the top and sit exactly on the two cliffs.
+  const sweep = easeInOut(seg(t, 1.0, 4.0));
+  const sv = 0.5 + 0.2 * sweep;
+  const stair: [number, number][] = [[x(0.5), y(24)]];
+  for (let i = 1; i < pts.length; i++) stair.push([x(pts[i][0]), y(pts[i - 1][1])], [x(pts[i][0]), y(pts[i][1])]);
+  const tipY = (() => {
+    let n = 24;
+    for (const [v, c] of pts) if (v <= sv + 1e-9) n = c;
+    return y(n);
+  })();
+  const trace = stair.filter(([px]) => px <= x(sv) + 1e-6);
+  if (trace.length && trace[trace.length - 1][0] < x(sv)) trace.push([x(sv), trace[trace.length - 1][1]]);
   return (
     <Svg label="Largest cluster against threshold: 24 at 0.50 and 0.55, 16 at 0.59 and 0.60, 8 at 0.63 and 0.70. The two drops sit exactly at the bridge scores 0.58 and 0.62" h={280}>
       <g opacity={a}>
@@ -259,25 +272,32 @@ export function ThresholdSweep({ t }: StepCtx) {
         <line x1={x(0.5)} y1={200} x2={x(0.7)} y2={200} stroke={C.mocha} />
         <T x={x(0.7)} y={262} s={12} a="end" f={C.taupe}>threshold (score) →</T>
       </g>
-      {pts.map(([v, n, lab], i) =>
-        i <= k ? (
-          <g key={v}>
-            {i > 0 && <polyline points={`${x(pts[i - 1][0])},${y(pts[i - 1][1])} ${x(v)},${y(pts[i - 1][1])} ${x(v)},${y(n)}`} fill="none" stroke={C.crema} strokeWidth={2} />}
-            <circle cx={x(v)} cy={y(n)} r={5} fill={C.caramel} />
-            <T x={i === 2 ? x(v) - 4 : i === 3 ? x(v) + 4 : x(v)} y={i === 3 ? 240 : 222} s={12} a={i === 2 ? 'end' : i === 3 ? 'start' : 'middle'} f={C.taupe}>{v.toFixed(2)}</T>
-            {(i === 0 || i === 2 || i === 4) && <T x={x(v) + 8} y={y(n) - 10} s={12} f={C.crema}>{lab}</T>}
-          </g>
-        ) : null,
+      {t >= 1.0 && trace.length > 1 && <polyline points={trace.map(([px, py]) => `${px.toFixed(1)},${py}`).join(' ')} fill="none" stroke={C.crema} strokeWidth={2} />}
+      {t >= 1.0 && sweep < 1 && (
+        <g>
+          <line x1={x(sv)} y1={44} x2={x(sv)} y2={200} stroke={C.focus} strokeWidth={1} opacity={0.6} />
+          <circle cx={x(sv)} cy={tipY} r={4} fill={C.focus} />
+        </g>
       )}
+      {pts.map(([v, n, lab], i) => {
+        const k = t >= 1.0 ? easeOutBack(clamp((sv - v) / 0.012 + 1)) : 0;
+        return k > 0 ? (
+          <g key={v}>
+            <circle cx={x(v)} cy={y(n)} r={5 * Math.min(1.3, k)} fill={C.caramel} />
+            <T x={i === 2 ? x(v) - 4 : i === 3 ? x(v) + 4 : x(v)} y={i === 3 ? 240 : 222} s={12} a={i === 2 ? 'end' : i === 3 ? 'start' : 'middle'} f={C.taupe} o={clamp(k)}>{v.toFixed(2)}</T>
+            {(i === 0 || i === 2 || i === 4) && <T x={x(v) + 8} y={y(n) - 10} s={12} f={C.crema} o={clamp(k)}>{lab}</T>}
+          </g>
+        ) : null;
+      })}
       <g opacity={br}>
         <T x={x(0.62) + 30} y={34} s={12} f={C.cherryText}>the bridges</T>
         {[0.58, 0.62].map((v) => (
-          <g key={v}>
-            <line x1={x(v)} y1={40} x2={x(v)} y2={200} stroke={C.cherryText} strokeWidth={1.5} strokeDasharray="4 3" />
-            <T x={x(v)} y={34} s={12} a="middle" f={C.cherryText}>{v.toFixed(2)}</T>
-          </g>
+          <T key={v} x={x(v)} y={34} s={12} a="middle" f={C.cherryText}>{v.toFixed(2)}</T>
         ))}
       </g>
+      {[0.58, 0.62].map((v, j) => (
+        <Draw key={v} pts={[[x(v), 40], [x(v), 200]]} t={t} from={4.3 + j * 0.2} to={4.9 + j * 0.2} stroke={C.cherryText} w={1.5} dash="4 3" />
+      ))}
     </Svg>
   );
 }
