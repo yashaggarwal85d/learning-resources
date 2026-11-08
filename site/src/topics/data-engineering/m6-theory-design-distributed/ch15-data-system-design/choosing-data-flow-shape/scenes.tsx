@@ -353,7 +353,7 @@ export function RevealLambdaKappaUnified({ t }: StepCtx) {
       </T>
       <Tag x={kx} y={250} label="unified engine" k={tagU} f={C.focus} />
       <T x={kx} y={284} s={13} f={C.secondary} a="middle" o={easeOut(seg(t, 3.4, 3.8))}>
-        Kappa's one path, replay built in
+        one path, with replay
       </T>
       <T x={lx} y={250} s={13} f={C.secondary} a="middle" o={easeOut(seg(t, 1.3, 1.7))}>
         two code paths
