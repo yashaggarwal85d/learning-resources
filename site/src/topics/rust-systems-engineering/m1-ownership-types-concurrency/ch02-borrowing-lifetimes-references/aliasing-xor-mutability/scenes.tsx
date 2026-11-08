@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, easeOutBack, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -57,10 +58,74 @@ function Flash({ x, y, code, t, at }: { x: number; y: number; code: string; t: n
   );
 }
 
+/** Seconds since the learner answered a predict step (the player's clock has stopped by then), so a reveal can still move. */
+function useSinceAnswer(on: boolean) {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    if (!on) {
+      setS(0);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setS(99);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = () => {
+      const d = (performance.now() - t0) / 1000;
+      setS(d);
+      if (d < 4.5) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [on]);
+  return s;
+}
+
+/** A quadratic arc from (x1, y1) to (x2, y2) bowing through control height `peak`, sampled for Draw. */
+const arc = (x1: number, y1: number, x2: number, y2: number, peak: number): [number, number][] =>
+  Array.from({ length: 25 }, (_, i) => {
+    const u = i / 24;
+    return [lerp(x1, x2, u), (1 - u) * (1 - u) * y1 + 2 * u * (1 - u) * peak + u * u * y2];
+  });
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
+
 // ── 1 · Two readers or one writer, never both ─────────────────────────────────────────────────────────────────────
 export function TheRule({ t }: StepCtx) {
   return (
-    <Svg label="many shared borrows of a place, or exactly one exclusive borrow, never both at once" h={380}>
+    <Svg label="many shared borrows of a place, or exactly one exclusive borrow, never both at once" h={310}>
       <Payload x={380} y={122} label="the place" hot />
       <g opacity={1 - fa(t, 1.8, 0.3)}>
         <Slot x={40} y={30} name="&T" />
@@ -99,16 +164,55 @@ export function DataRaceFreedom({ t }: StepCtx) {
 }
 
 // ── 3 · A function the compiler wants to shrink (predict) ──────────────────────────────────────────────────────────
-export function Compute({ t }: StepCtx) {
+export function Compute({ t, answer, portrait }: StepCtx) {
+  const ans = answer !== null;
+  const s = useSinceAnswer(ans);
+  const m = ans ? easeInOut(seg(s, 0.1, 0.8)) : 0; // the two cells slide into one place
+  const careful = ans ? easeOut(seg(s, 0.9, 1.5)) : 0;
+  const shortcut = ans ? easeOut(seg(s, 1.0, 2.0)) : 0;
+  const outX = lerp(390, 60, m);
+  const merged = m > 0.95;
   return (
     <Stack>
-      <Code
-        title="examples/compute.rs"
-        lines={['pub fn compute(input: &u32, output: &mut u32) {', '    if *input > 10 { *output = 1; }', '    if *input > 5 { *output *= 2; }', '}']}
-        t={t}
-        start={0.1}
-        end={1.6}
-      />
+      {!(portrait && ans) && (
+        <Code
+          title="examples/compute.rs"
+          lines={['pub fn compute(input: &u32, output: &mut u32) {', '    if *input > 10 { *output = 1; }', '    if *input > 5 { *output *= 2; }', '}']}
+          t={t}
+          start={0.1}
+          end={0.8}
+          highlight={t > 1.0 && !ans ? [1, 2] : []}
+        />
+      )}
+      <Svg label="compute reads input twice and may write output twice; a shortcut would read once and write once. If both were the same place, the careful version stops at 1 while the shortcut lands on 2" h={196} fill>
+        <rect x={60} y={50} width={150} height={44} rx={8} fill={C.cocoa} stroke={merged ? C.caramel : C.mocha} strokeWidth={merged ? 2.5 : 1.5} />
+        {!merged && <rect x={outX} y={50} width={150} height={44} rx={8} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />}
+        {m < 0.5 && <T x={135} y={78} s={14} a="middle" f={C.crema}>*input</T>}
+        {m < 0.5 && <T x={outX + 75} y={78} s={14} a="middle" f={C.crema}>*output</T>}
+        {m >= 0.5 && <T x={135} y={78} s={14} a="middle" f={C.caramel}>one place</T>}
+        {!ans && (
+          <g>
+            <Draw pts={arc(210, 58, 390, 58, 0)} t={t} from={0.25} to={0.7} stroke={C.latte} w={2} />
+            <T x={300} y={22} s={13} a="middle" f={C.latte} o={easeOut(seg(t, 0.55, 0.8))}>{'> 10: write'}</T>
+            <Draw pts={arc(210, 86, 390, 86, 136)} t={t} from={0.75} to={1.2} stroke={C.latte} w={2} />
+            <T x={300} y={136} s={13} a="middle" f={C.latte} o={easeOut(seg(t, 1.05, 1.3))}>{'> 5: write again'}</T>
+            <Draw pts={[[210, 72], [390, 72]]} t={t} from={1.25} to={1.6} stroke={C.caramel} w={2} dash="6 5" />
+            <T x={300} y={180} s={13} a="middle" f={C.caramel} o={easeOut(seg(t, 1.4, 1.7))}>shortcut: once</T>
+          </g>
+        )}
+        {ans && (
+          <g opacity={easeOut(seg(s, 0.8, 1.0))}>
+            <T x={40} y={134} s={13} f={C.latte}>careful</T>
+            <line x1={170} y1={130} x2={520} y2={130} stroke={C.mocha} strokeWidth={1.5} />
+            <circle cx={lerp(170, 345, careful)} cy={130} r={7} fill={C.cherryText} />
+            {careful > 0.95 && <T x={345} y={114} s={14} a="middle" f={C.cherryText} w={600}>1</T>}
+            <T x={40} y={176} s={13} f={C.latte}>shortcut</T>
+            <line x1={170} y1={172} x2={520} y2={172} stroke={C.mocha} strokeWidth={1.5} />
+            <circle cx={lerp(170, 520, shortcut)} cy={172} r={7} fill={C.caramel} />
+            {shortcut > 0.95 && <T x={520} y={156} s={14} a="middle" f={C.caramel} w={600}>2</T>}
+          </g>
+        )}
+      </Svg>
     </Stack>
   );
 }
@@ -132,19 +236,41 @@ export function AliasFail({ t }: StepCtx) {
 
 // ── 5 · The optimizer is told, not just lucky ──────────────────────────────────────────────────────────────────────
 export function Noalias({ t }: StepCtx) {
+  const drop = (a: number) => easeOutBack(seg(t, a, a + 0.4));
+  const ghost = easeOut(seg(t, 1.45, 1.95));
   return (
     <Stack>
       <Code
         title="-O --emit=llvm-ir"
-        lines={[
-          'define void @compute_ref(ptr noalias %input, ptr noalias %output)',
-          'define void @compute_raw(ptr %input, ptr %output)',
-        ]}
+        lines={['define void @compute_ref(ptr noalias %input, ptr noalias %output)', 'define void @compute_raw(ptr %input, ptr %output)']}
         t={t}
         start={0.1}
-        end={2.0}
-        highlight={[0]}
+        end={0.7}
+        highlight={t > 1.3 ? [0] : []}
       />
+      <Svg label="the reference version's two pointer parameters each receive a noalias tag; on the raw-pointer version the tags fall away, since raw pointers promise nothing" h={184} fill>
+        <T x={20} y={75} s={13} f={C.latte}>{'&u32, &mut'}</T>
+        <T x={20} y={159} s={13} f={C.latte}>raw ptrs</T>
+        {[230, 410].map((x, i) => {
+          const k = drop(0.75 + i * 0.25);
+          return (
+            <g key={x}>
+              <rect x={x} y={52} width={140} height={36} rx={8} fill={C.cocoa} stroke={k > 0.95 ? C.caramel : C.mocha} strokeWidth={1.5} />
+              <T x={x + 70} y={75} s={13} a="middle" f={C.crema}>{i ? '%output' : '%input'}</T>
+              {k > 0 && (
+                <g transform={`translate(0 ${((1 - k) * -40).toFixed(1)})`} opacity={Math.min(1, k * 2)}>
+                  <rect x={x + 20} y={18} width={100} height={26} rx={5} fill={C.caramel} />
+                  <T x={x + 70} y={36} s={13} a="middle" f={C.espresso} w={700}>noalias</T>
+                </g>
+              )}
+              <rect x={x} y={136} width={140} height={36} rx={8} fill="none" stroke={C.mocha} strokeWidth={1.5} strokeDasharray="5 4" />
+              <T x={x + 70} y={159} s={13} a="middle" f={C.latte}>{i ? '%output' : '%input'}</T>
+              {ghost > 0 && ghost < 1 && <rect x={x + 20} y={92 + ghost * 40} width={100} height={26} rx={5} fill="none" stroke={C.taupe} strokeDasharray="4 3" opacity={1 - ghost} />}
+            </g>
+          );
+        })}
+        <Reticle x={390} y={54} w={350} h={84} t={t} at={1.5} />
+      </Svg>
     </Stack>
   );
 }
@@ -225,15 +351,13 @@ export function Sneaky({ t }: StepCtx) {
 
 // ── 10 · Recap ──────────────────────────────────────────────────────────────────────────────────────────────────
 export function Recap({ t }: StepCtx) {
-  const rows = ['many &T or one &mut T, never both', 'that rule gives data-race freedom', 'and the noalias facts the optimizer relies on', 'a reborrow lends from a &mut without moving it', 'a two-phase borrow is reserved, then activated', 'reservation still obeys the rule, past the call'];
   return (
-    <Svg label="recap: the aliasing rule, what it buys, and its two exceptions-that-are-not" h={360}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.35, 0.4)}>
-          <circle cx={30} cy={40 + i * 48} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 48} s={15} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
+    <RecapList
+      t={t}
+      end={2.5}
+      label="recap: the aliasing rule, what it buys, and its two exceptions-that-are-not"
+      rows={['many &T or one &mut T, never both', 'that rule gives data-race freedom', 'and the noalias facts the optimizer uses', 'a reborrow lends from a &mut, never moves it', 'a two-phase borrow: reserved, then activated', 'reservation still obeys the rule, past the call']}
+      s={14}
+    />
   );
 }
