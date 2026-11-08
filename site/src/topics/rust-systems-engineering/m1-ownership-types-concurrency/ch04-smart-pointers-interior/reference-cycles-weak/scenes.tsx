@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // This chapter's cycle-loop and refcount-dial visual language (CHAPTER.md §A.5): two node boxes
 // pointing at each other in a closed loop, redrawn with one arrow turned dashed and hollow-headed
@@ -9,6 +9,38 @@ import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 // examples/*.rs; every claim is executed by examples.py. No digits in any caption text.
 
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
 
 // ── 1 · A cycle that never closes ───────────────────────────────────────────────────────────────────
 export function CycleLeak({ t }: StepCtx) {
@@ -107,17 +139,36 @@ export function UpgradeAfterDrop({ t }: StepCtx) {
 }
 
 // ── 6 · Built with a Weak to itself ─────────────────────────────────────────────────────────────────
-export function NewCyclic({ t }: StepCtx) {
+export function NewCyclic({ t, portrait }: StepCtx) {
+  const alloc = easeOut(seg(t, 0.6, 1.0)); // the allocation exists, still unbuilt
+  const hand = easeInOut(seg(t, 1.1, 1.7)); // its Weak is handed to the closure
+  const tuck = easeInOut(seg(t, 1.9, 2.5)); // and tucked into self_ref
+  const done = easeOut(seg(t, 2.5, 2.9));
+  const wx = lerp(lerp(150, 420, hand), 300, tuck);
+  const wy = lerp(lerp(110, 60, hand), 112, tuck);
   return (
     <Stack>
-      <Code
-        title="examples/rc_new_cyclic.rs"
-        lines={['Rc::new_cyclic(|weak_self| Node {', '    self_ref: RefCell::new(weak_self.clone()),', '})']}
-        t={t}
-        start={0.1}
-        end={2.2}
-        highlight={[0, 1, 2]}
-      />
+      {!portrait && <Code title="examples/rc_new_cyclic.rs" lines={['Rc::new_cyclic(|weak_self| Node {', '    self_ref: RefCell::new(weak_self.clone()),', '})']} t={t} start={0.1} end={0.6} highlight={t > 1.9 ? [1] : [0]} />}
+      <Svg label="new_cyclic allocates the node first, hands the building closure a Weak pointing at that unfinished allocation, and the closure tucks it into self_ref, so the finished node points back at itself" h={190} fill>
+        <g opacity={alloc}>
+          <rect x={60} y={40} width={180} height={110} rx={10} fill={done > 0.5 ? C.cocoa : 'none'} stroke={done > 0.5 ? C.caramel : C.mocha} strokeWidth={1.5} strokeDasharray={done > 0.5 ? undefined : '6 5'} />
+          <T x={74} y={30} s={13} f={C.taupe}>{done > 0.5 ? 'Node: built' : 'Node: being built'}</T>
+          <rect x={240} y={92} width={130} height={40} rx={7} fill="none" stroke={C.mocha} strokeWidth={1.5} strokeDasharray="4 3" />
+          <T x={305} y={150} s={13} a="middle" f={C.taupe}>self_ref</T>
+        </g>
+        <g opacity={easeOut(seg(t, 1.0, 1.3))}>
+          <rect x={380} y={20} width={190} height={80} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+          <T x={394} y={116} s={13} f={C.taupe}>the closure</T>
+        </g>
+        {hand > 0 && (
+          <g transform={`translate(${wx.toFixed(1)} ${wy.toFixed(1)})`}>
+            <rect x={-55} y={-14} width={110} height={28} rx={14} fill={C.cinnamon} />
+            <T x={0} y={5} s={13} a="middle" f={C.espresso} w={700}>Weak</T>
+          </g>
+        )}
+        {done > 0 && <Draw pts={[[300, 98], [300, 74], [250, 74], [240, 74]]} t={t} from={2.5} to={2.9} stroke={C.cinnamon} w={2} dash="5 4" />}
+        <T x={60} y={182} s={13} f={C.cinnamon} o={easeOut(seg(t, 2.8, 3.1))}>points back at itself, without owning it</T>
+      </Svg>
     </Stack>
   );
 }
@@ -131,14 +182,7 @@ export function Recap({ t }: StepCtx) {
     'upgrade returns none once the owner is gone',
     'new_cyclic builds in a weak pointer to itself',
   ];
-  return (
-    <Svg label="recap: a cycle leaks, Weak breaks it, new_cyclic builds it in" h={320}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 50} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 50} s={15} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3.2} label="recap: a cycle leaks, Weak breaks it, new_cyclic builds it in" rows={rows}
+      s={14}
+    />;
 }

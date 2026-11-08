@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
+import { Bar, C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // One shared lock vs three ways around it: four threads funneled through one lock, four threads
 // each with their own lock, one owner reached by messages, and a lock-free read-mostly swap.
@@ -16,6 +16,38 @@ const threadDots = (cx: number, cy: number, opacity: number) => (
   </g>
 );
 
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
+
 // ── 1 · The reflex: wrap it in Arc<Mutex<T>> ────────────────────────────────────────────────────────
 export function MutexReflex({ t }: StepCtx) {
   return (
@@ -26,7 +58,7 @@ export function MutexReflex({ t }: StepCtx) {
         <g key={i} opacity={fa(t, 0.4 + i * 0.25, 0.4)}>
           <Draw pts={[[x, y], [300, 86]]} t={t} from={0.4 + i * 0.25} to={0.65 + i * 0.25} stroke={C.mocha} w={1.5} pen={false} />
           {threadDots(x, y, 1)}
-          <T x={x} y={y + 5} s={11} a="middle" f={C.crema}>t{i + 1}</T>
+          <T x={x} y={y + 5} s={12} a="middle" f={C.crema}>t{i + 1}</T>
         </g>
       ))}
       <T x={60} y={250} s={13} f={C.taupe} o={fa(t, 1.6, 0.4)}>one shared lock, correct every time</T>
@@ -55,17 +87,33 @@ export function ContentionPredict({ t }: StepCtx) {
 
 // ── 3 · Sharding: no two threads share a lock (no takeaway: the reel's "from" step) ────────────────
 export function Sharding({ t }: StepCtx) {
+  const xs = [90, 230, 370, 510];
+  const one = easeOut(seg(t, 0.2, 0.6));
+  const split = easeInOut(seg(t, 0.8, 1.5)); // the one lock becomes one per thread
+  const work = easeOut(seg(t, 1.6, 2.5)); // every shard's work fills at the same time
   return (
-    <Svg label="each thread gets its own independent Mutex; no two threads ever contend for the same lock" h={300}>
-      {[[90, 110], [250, 110], [410, 110], [570, 110]].map(([x, y], i) => (
-        <g key={i} opacity={fa(t, 0.2 + i * 0.3, 0.4)}>
-          <rect x={x - 45} y={y} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={1.5} />
-          <T x={x} y={y + 29} s={12} a="middle" f={C.crema}>shard</T>
-          <circle cx={x} cy={y - 26} r={14} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-          <T x={x} y={y - 21} s={11} a="middle" f={C.crema}>t{i + 1}</T>
-        </g>
-      ))}
-      <T x={60} y={220} s={13} f={C.mocha} o={fa(t, 1.6, 0.4)}>beats both single-lock runs above</T>
+    <Svg label="one shared Mutex splits into one shard per thread; each thread works on its own shard and all four finish together, beating both single-lock runs" h={300}>
+      {xs.map((x, i) => {
+        const cx = lerp(300, x, split);
+        const ty = lerp(36 + i * 0 , 64, split);
+        const tx = lerp(240 + i * 40, x, split);
+        return (
+          <g key={i}>
+            <g opacity={i === 0 || split > 0 ? one : 0}>
+              <rect x={cx - 55} y={110} width={110} height={46} rx={8} fill={C.cocoa} stroke={C.caramel} strokeWidth={1.5} />
+              <T x={cx} y={139} s={13} a="middle" f={C.crema}>{split > 0.5 ? 'shard' : 'one Mutex'}</T>
+            </g>
+            <g opacity={easeOut(seg(t, 0.3 + i * 0.1, 0.6 + i * 0.1))}>
+              <circle cx={tx} cy={ty} r={15} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+              <T x={tx} y={ty + 5} s={12} a="middle" f={C.crema}>t{i + 1}</T>
+              <line x1={tx} y1={ty + 15} x2={cx} y2={110} stroke={C.mocha} strokeWidth={1.5} opacity={split} />
+            </g>
+            <Bar x={x - 55} y={176} w={110 * work} h={10} full={110} fill={C.caramel} o={split > 0.95 ? 1 : 0} />
+          </g>
+        );
+      })}
+      <T x={300} y={36} s={13} a="middle" f={C.cherryText} o={one * (1 - split)}>all four wait on one lock</T>
+      <T x={60} y={240} s={13} f={C.crema} o={easeOut(seg(t, 2.4, 2.8))}>beats both single-lock runs above</T>
     </Svg>
   );
 }
@@ -134,14 +182,7 @@ export function Recap({ t }: StepCtx) {
     'an owner task trades the lock for a queue',
     'arc-swap gives read-mostly data a lock-free read',
   ];
-  return (
-    <Svg label="recap: one lock, and three ways around it" h={280}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 50} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 50} s={15} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: one lock, and three ways around it" rows={rows}
+      s={14}
+    />;
 }

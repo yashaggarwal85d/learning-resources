@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // This topic's own shape: one owner box (Box), a shared-count box with a plain dial (Rc), and the
 // same shape with a lock-glyph border (Arc) — the chapter's new refcount-dial and contention-bar
@@ -10,6 +10,38 @@ import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 // contrast qualitatively, never from a hard-coded number.
 
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+/** A recap as a payoff: each point slides in from the left on its beat (fitted to the step's `end`), its tick draws as it
+ * lands, a spine grows down to meet it, and the last point (where the topic leads next) lights up and is locked on. */
+function RecapList({ t, rows, label, end, step = 50, s = 15 }: { t: number; rows: string[]; label: string; end: number; step?: number; s?: number }) {
+  const y0 = 40;
+  const n = rows.length;
+  const start = 0.15;
+  const beat = Math.min(0.42, Math.max(0.2, (end - start - 1.15) / Math.max(1, n - 1)));
+  const h = y0 + (n - 1) * step + 40;
+  const lastY = y0 + (n - 1) * step;
+  return (
+    <Svg label={label} h={Math.max(300, h)}>
+      <Draw pts={[[29, y0 - 5], [29, lastY - 5]]} t={t} from={start + 0.1} to={start + 0.1 + (n - 1) * beat} stroke={C.mocha} w={1.5} pen={false} />
+      {rows.map((r, i) => {
+        const at = start + i * beat;
+        const k = easeOut(seg(t, at, at + 0.45));
+        const d = easeOut(seg(t, at + 0.2, at + 0.55));
+        const y = y0 + i * step;
+        const last = i === n - 1;
+        if (k <= 0) return null;
+        return (
+          <g key={r} opacity={k} transform={`translate(${((1 - k) * -44).toFixed(1)} 0)`}>
+            <circle cx={29} cy={y - 5} r={11} fill={C.espresso} stroke={last ? C.caramel : C.mocha} strokeWidth={1.5} />
+            <path d={`M23 ${y - 5} l4 4 l8 -9`} fill="none" stroke={C.caramel} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="20" strokeDashoffset={20 * (1 - d)} />
+            <T x={46} y={y} s={s} f={last ? C.caramel : C.crema}>{r}</T>
+          </g>
+        );
+      })}
+      <Reticle x={300} y={lastY - 5} w={576} h={36} t={t} at={Math.max(start + (n - 1) * beat + 0.3, end - 0.6)} />
+    </Svg>
+  );
+}
 
 // ── 1 · One owner, many owners, many owners safely ──────────────────────────────────────────────────
 export function OwnershipShapes({ t }: StepCtx) {
@@ -24,13 +56,13 @@ export function OwnershipShapes({ t }: StepCtx) {
   const arc2 = easeOut(seg(t, 1.3, 1.55));
   const arc3 = easeOut(seg(t, 1.3, 1.55));
   return (
-    <Svg label="Box is one owner on the heap; Rc shares that owner on one thread; Arc shares it safely across threads" h={360}>
+    <Svg label="Box is one owner on the heap; Rc shares that owner on one thread; Arc shares it safely across threads" h={296}>
       <rect x={60} y={20} width={260} height={50} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.1, 0.3)} />
       <T x={110} y={51} s={13} a="middle" f={C.crema} o={fa(t, 0.1, 0.3)}>Box, one owner</T>
       <circle cx={280} cy={20 + (1 - boxDrop) * -40 + 25} r={6} fill={C.caramel} opacity={fa(t, 0.1, 0.3)} />
 
       <rect x={60} y={90} width={260} height={50} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 0.6, 0.3)} />
-      <T x={105} y={121} s={13} a="middle" f={C.crema} o={fa(t, 0.6, 0.3)}>Rc, shared on one thread</T>
+      <T x={105} y={121} s={13} a="middle" f={C.crema} o={fa(t, 0.6, 0.3)}>Rc, one thread</T>
       <circle cx={70 + (1 - rc2) * -40} cy={ownerY(1)} r={6} fill={C.taupe} opacity={rc2 > 0 ? 1 : 0} />
       <circle cx={88 + (1 - rc3) * -40} cy={ownerY(1)} r={6} fill={C.taupe} opacity={rc3 > 0 ? 1 : 0} />
 
@@ -154,14 +186,7 @@ export function Recap({ t }: StepCtx) {
     'that atomic count is cheap only while uncontended',
     'real contention has to be measured, not assumed',
   ];
-  return (
-    <Svg label="recap: Box, Rc, Arc, and what Arc's safety actually costs under real contention" h={320}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 50} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 50} s={15} f={C.crema}>{r}</T>
-        </g>
-      ))}
-    </Svg>
-  );
+  return <RecapList t={t} end={3} label="recap: Box, Rc, Arc, and what Arc's safety actually costs under real contention" rows={rows}
+      s={14}
+    />;
 }
