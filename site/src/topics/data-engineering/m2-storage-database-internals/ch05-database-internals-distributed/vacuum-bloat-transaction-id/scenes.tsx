@@ -200,7 +200,7 @@ export function RevealHotUpdate({ t }: StepCtx) {
         indexed column
       </T>
       <rect x={160} y={126} width={180 + 180 * b} height={14} rx={2} fill={C.cherryText} opacity={0.75 * easeOut(seg(t, 1.8, 2.1))} />
-      <Row y={200} label="touch no indexed column" value="the index never moves" valueColor={C.focus} k={easeOut(seg(t, 3.3, 3.8))} />
+      <Row y={200} label="no indexed column" value="index never moves" valueColor={C.focus} k={easeOut(seg(t, 3.3, 3.8))} />
     </Svg>
   );
 }
