@@ -285,7 +285,7 @@ export function RevealMeasured({ t }: StepCtx) {
   const Xm = (h: number) => 160 + h * 130;
   const seen = easeOut(seg(t, 1.2, 1.5));
   const missed = easeOut(seg(t, 3.0, 3.3));
-  const bar = (y: number, a: number, b: number, g: number, f = C.focus) =>
+  const bar = (y: number, a: number, b: number, g: number, f: string = C.focus) =>
     g > 0 ? <rect x={Xm(a)} y={y - 10} width={Math.max(2, (Xm(b) - Xm(a)) * g)} height={20} rx={4} fill={C.panel} stroke={f} strokeWidth={1.4} /> : null;
   const snap = (x: number, y: number, k: number) => (k > 0 ? <rect x={x - 2} y={y - 15} width={4} height={30} rx={1} fill={C.second} opacity={k} /> : null);
   return (

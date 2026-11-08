@@ -325,7 +325,7 @@ export function RevealEffect({ t }: StepCtx) {
 // completes.
 export function RevealAtomicCommit({ t }: StepCtx) {
   const both = t > 1.3;
-  const chip = (x: number, y: number, label: string, solid: boolean, f = C.focus, dashed = false, k = 1) =>
+  const chip = (x: number, y: number, label: string, solid: boolean, f: string = C.focus, dashed = false, k = 1) =>
     k > 0 ? (
       <g opacity={k}>
         <rect x={x - 42} y={y - 13} width={84} height={26} rx={4} fill={solid ? f : C.panel} stroke={f} strokeWidth={1.4} strokeDasharray={dashed ? '4 3' : undefined} />
