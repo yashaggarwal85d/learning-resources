@@ -318,7 +318,7 @@ export function RevealLehmanYao({ t }: StepCtx) {
   const m = easeInOut(seg(t, 2.0, 2.8));
   return (
     <Svg label="a search reading a page exactly as it splits — a right-link and a high key, instead of a whole-tree lock" h={240}>
-      <Row y={40} label="Lehman and Yao, 1981" value="a right-link, a high key" k={easeOut(seg(t, 0.2, 0.7))} />
+      <Row y={40} label="Lehman–Yao 1981" value="right-link, high key" k={easeOut(seg(t, 0.2, 0.7))} />
       <PageBox x={120} y={80} w={160} full={s > 0 ? 0.5 : 1} />
       <T x={200} y={124} s={11} f={C.second} a="middle" o={s}>
         high key
