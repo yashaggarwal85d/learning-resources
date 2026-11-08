@@ -39,11 +39,13 @@ Version: fetched 2026-10-31
 ## HashiCorp Terraform: Import existing infrastructure resources
 
 URL: https://developer.hashicorp.com/terraform/cli/import
-Version: fetched 2026-10-31
+Version: fetched 2026-10-31, re-fetched 2026-11-08
 
-> Before you run terraform import you must manually write a resource configuration block for the resource. The resource block describes where Terraform should map the imported object.
+> Use the terraform import command to import a single existing resource into Terraform state. Before running the command, you must manually write a resource configuration block that describes where Terraform should map the imported object.
 
-> The terraform import CLI command can only import resources into the state. Importing via the CLI does not generate configuration.
+> The import block generates configuration and lets you review imports as part of your normal plan and apply workflow.
+
+Note: re-checked 2026-11-08 after the page was rewritten. The command imports into state against a hand-written block (first quote); generating configuration belongs to the import block, not the command (second quote).
 
 ## OpenTofu: Manifesto
 

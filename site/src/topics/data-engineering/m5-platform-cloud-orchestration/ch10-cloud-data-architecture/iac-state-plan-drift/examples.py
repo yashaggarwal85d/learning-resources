@@ -123,7 +123,7 @@ def detect_drift(state, remote, resource_id):
 def drift_then_import():
     """A console click changes a resource outside the tool; the next plan shows drift. Import
     then brings an EXISTING, already-changed resource under management without recreating it —
-    SOURCES.md: 'The terraform import CLI command can only import resources into the state.'"""
+    SOURCES.md: 'Use the terraform import command to import a single existing resource into Terraform state.'"""
     state = StateStore()
     remote = RemoteSystem()
     state.record("firewall_rule", {"port": 443})
