@@ -1,6 +1,6 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, Svg, T, Reticle, Draw } from '../../../../../reels/kit';
 import { RefresherList } from '../refreshers';
 
 // Every ID, count and output shown here comes from examples.sh and is asserted in examples.py.
@@ -40,7 +40,23 @@ const Pill = ({ x, y, w, children }: { x: number; y: number; w: number; children
 );
 
 // 1 · Where we are: the five refreshers that open the chapter.
-export const Opening = (c: StepCtx) => <RefresherList {...c} current={1} />;
+// The list's rows slide in (../refreshers). A "you are here" marker then runs down the rail past the refreshers
+// already done and stops at this one, and brackets lock onto its row.
+export const Opening = (c: StepCtx) => {
+  const run = easeInOut(seg(c.t, 0.9, 1.5));
+  const y = lerp(40, 162, run);
+  return (
+    <div className="relative h-full w-full">
+      <RefresherList {...c} current={1} />
+      <svg viewBox="0 0 600 420" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
+        <line x1={14} y1={40} x2={14} y2={360} stroke={C.mocha} strokeWidth={1.5} opacity={easeOut(seg(c.t, 0.6, 1.0))} />
+        <Draw pts={[[14, 40], [14, 162]]} t={c.t} from={0.9} to={1.5} w={2.5} pen={false} />
+        {run > 0 && <circle cx={14} cy={y} r={6} fill={C.focus} />}
+        <Reticle x={300} y={162} w={556} h={64} t={c.t} at={1.45} />
+      </svg>
+    </div>
+  );
+};
 
 // 2 · Merge or rebase? The same fork, integrated both ways.
 export function MergeOrRebase({ t, answer }: StepCtx) {

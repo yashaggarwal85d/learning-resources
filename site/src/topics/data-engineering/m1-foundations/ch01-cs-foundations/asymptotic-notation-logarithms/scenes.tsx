@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
-import { C, SERIF, Svg, T } from '../../../../../reels/kit';
+import { C, SERIF, Svg, T, Reticle, Draw } from '../../../../../reels/kit';
 import { RefresherList } from '../refreshers';
 
 // Every number drawn here is computed or asserted in examples.py. Each scene is a pure function of time.
@@ -44,7 +44,23 @@ const LogB = ({ rest }: { rest: string }) => (
 );
 
 // 1 · Where we are: the last of the five refreshers.
-export const Opening = (c: StepCtx) => <RefresherList {...c} current={4} />;
+// The list's rows slide in (../refreshers). A "you are here" marker then runs down the rail past the refreshers
+// already done and stops at this one, and brackets lock onto its row.
+export const Opening = (c: StepCtx) => {
+  const run = easeInOut(seg(c.t, 0.9, 1.5));
+  const y = lerp(40, 360, run);
+  return (
+    <div className="relative h-full w-full">
+      <RefresherList {...c} current={4} />
+      <svg viewBox="0 0 600 420" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
+        <line x1={14} y1={40} x2={14} y2={360} stroke={C.mocha} strokeWidth={1.5} opacity={easeOut(seg(c.t, 0.6, 1.0))} />
+        <Draw pts={[[14, 40], [14, 360]]} t={c.t} from={0.9} to={1.5} w={2.5} pen={false} />
+        {run > 0 && <circle cx={14} cy={y} r={6} fill={C.focus} />}
+        <Reticle x={300} y={360} w={556} h={64} t={c.t} at={1.45} />
+      </svg>
+    </div>
+  );
+};
 
 // 2 · O is a ceiling, Ω a floor, Θ both: the cost divided by n·log₂n, g(n) = 3·n·log₂n + 8n.
 // Beats: the ceiling line, the floor line, the ratio curve settling between them, then the Θ label.

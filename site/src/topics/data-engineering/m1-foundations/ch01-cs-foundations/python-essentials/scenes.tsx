@@ -3,7 +3,7 @@ import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { RefresherList } from '../refreshers';
-import { C, MONO, SERIF } from '../../../../../reels/kit';
+import { C, MONO, SERIF, Reticle, Draw } from '../../../../../reels/kit';
 
 // Every example shown here is executed and checked by examples.py.
 
@@ -82,7 +82,23 @@ const Chip = ({ x, y, v, c }: { x: number; y: number; v: string; c: string }) =>
 );
 
 // 1 · Where we are: the five refreshers that open the chapter.
-export const Opening = (c: StepCtx) => <RefresherList {...c} current={0} />;
+// The list's rows slide in (../refreshers). A "you are here" marker then runs down the rail past the refreshers
+// already done and stops at this one, and brackets lock onto its row.
+export const Opening = (c: StepCtx) => {
+  const run = easeInOut(seg(c.t, 0.9, 1.5));
+  const y = lerp(40, 96, run);
+  return (
+    <div className="relative h-full w-full">
+      <RefresherList {...c} current={0} />
+      <svg viewBox="0 0 600 420" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
+        <line x1={14} y1={40} x2={14} y2={360} stroke={C.mocha} strokeWidth={1.5} opacity={easeOut(seg(c.t, 0.6, 1.0))} />
+        <Draw pts={[[14, 40], [14, 96]]} t={c.t} from={0.9} to={1.5} w={2.5} pen={false} />
+        {run > 0 && <circle cx={14} cy={y} r={6} fill={C.focus} />}
+        <Reticle x={300} y={96} w={556} h={64} t={c.t} at={1.45} />
+      </svg>
+    </div>
+  );
+};
 
 // 2 · Mutable default arguments. The drawing: the function object holds its one default list, made when def runs. After
 // the answer, call 1 and call 2 each drop a 1 into that same list; then the fix gives each call a fresh list of its own.

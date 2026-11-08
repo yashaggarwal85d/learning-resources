@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { Code } from '../../../../../reels/Code';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, T } from '../../../../../reels/kit';
+import { C, T, Reticle, Draw } from '../../../../../reels/kit';
 import { RefresherList } from '../refreshers';
 
 /** The kit's Svg, plus `auto`: the height the width implies, so a line of text above it stays next to it in a Stack. */
@@ -119,7 +119,23 @@ function Box({
 }
 
 // 1 · Where we are: the five refreshers that open the chapter.
-export const Opening = (c: StepCtx) => <RefresherList {...c} current={3} />;
+// The list's rows slide in (../refreshers). A "you are here" marker then runs down the rail past the refreshers
+// already done and stops at this one, and brackets lock onto its row.
+export const Opening = (c: StepCtx) => {
+  const run = easeInOut(seg(c.t, 0.9, 1.5));
+  const y = lerp(40, 294, run);
+  return (
+    <div className="relative h-full w-full">
+      <RefresherList {...c} current={3} />
+      <svg viewBox="0 0 600 420" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
+        <line x1={14} y1={40} x2={14} y2={360} stroke={C.mocha} strokeWidth={1.5} opacity={easeOut(seg(c.t, 0.6, 1.0))} />
+        <Draw pts={[[14, 40], [14, 294]]} t={c.t} from={0.9} to={1.5} w={2.5} pen={false} />
+        {run > 0 && <circle cx={14} cy={y} r={6} fill={C.focus} />}
+        <Reticle x={300} y={294} w={556} h={64} t={c.t} at={1.45} />
+      </svg>
+    </div>
+  );
+};
 
 // 2 · Review: a funnel of rungs that shrink, then a size bar.
 const RUNGS = ['design: most important', 'functionality', 'complexity', 'tests', 'naming, comments', 'style: "Nit:", optional'];
