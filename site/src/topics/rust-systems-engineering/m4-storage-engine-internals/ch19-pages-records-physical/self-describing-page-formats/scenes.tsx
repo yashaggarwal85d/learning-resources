@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, seg, lerp, easeInOut } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Reticle, Decode, Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // A real page's checksum genuinely catches a corrupted byte anywhere in its
 // body, but a checksum alone can't catch a deliberate, consistent format
@@ -9,6 +9,54 @@ import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 // be explicit and enforced, matching PostgreSQL's own self-describing header
 // and its line pointers' own permanence guarantee.
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+function Sweep({ t, from, to }: { t: number; from: number; to: number }) {
+  const k = seg(t, from, to);
+  if (k <= 0 || k >= 1) return null;
+  return <rect x={lerp(40, 540, easeInOut(k))} y={56} width={4} height={44} fill={C.caramel} />;
+}
+
+// A page as a header cell (the magic number) and a row of body bytes, with a checksum box. A scan bar sweeps
+// the bytes between `from` and `to` seconds, computing the checksum as it goes.
+function PageBytes({ t, flip, magicSwap }: { t: number; flip?: number; magicSwap?: number }) {
+  const cells = Array.from({ length: 14 }, (_, i) => i);
+  return (
+    <g>
+      <rect x={40} y={60} width={70} height={36} rx={3} fill="none" stroke={C.latte} strokeWidth={1.5} />
+      <T x={75} y={50} s={13} a="middle" f={C.taupe}>magic</T>
+      {magicSwap !== undefined && (
+        <g>
+          <rect x={48} y={lerp(68, 30, magicSwap)} width={54} height={20} rx={2} fill={C.mocha} opacity={1 - magicSwap} />
+          <rect x={48} y={lerp(106, 68, magicSwap)} width={54} height={20} rx={2} fill={C.cinnamon} opacity={magicSwap} />
+        </g>
+      )}
+      {magicSwap === undefined && <rect x={48} y={68} width={54} height={20} rx={2} fill={C.mocha} />}
+      <T x={330} y={50} s={13} a="middle" f={C.taupe}>page body</T>
+      {cells.map((i) => {
+        const hit = flip !== undefined && i === 8;
+        const pop = hit ? flip! : 0;
+        return <rect key={i} x={124 + i * 30} y={68 - Math.sin(Math.PI * Math.min(1, pop * 2)) * 18} width={24} height={20} rx={2} fill={hit && pop > 0.5 ? C.cherryText : C.mocha} />;
+      })}
+    </g>
+  );
+}
+
+// A list row that lands on its beat: its text slides in from the left while its marker draws
+// (a tick for a recap point, a growing dot for one of several names, a cross for a failure).
+function Row({ t, at, y, text, mark = 'tick' }: { t: number; at: number; y: number; text: string; mark?: 'tick' | 'dot' | 'cross' }) {
+  const k = easeOut(seg(t, at, at + 0.45));
+  return (
+    <g>
+      {mark === 'tick' && <Draw pts={[[23, y], [28, y + 5], [37, y - 6]]} t={t} from={at + 0.1} to={at + 0.4} stroke={C.caramel} w={2} />}
+      {mark === 'cross' && <Draw pts={[[25, y - 5], [35, y + 5]]} t={t} from={at + 0.1} to={at + 0.3} stroke={C.cherryText} w={2} />}
+      {mark === 'cross' && <Draw pts={[[35, y - 5], [25, y + 5]]} t={t} from={at + 0.25} to={at + 0.45} stroke={C.cherryText} w={2} />}
+      {mark === 'dot' && <circle cx={30} cy={y} r={5 * k} fill={C.caramel} />}
+      <g opacity={k} transform={`translate(${((1 - k) * -28).toFixed(1)} 0)`}>
+        <T x={48} y={y + 6} s={13} f={C.crema}>{text}</T>
+      </g>
+    </g>
+  );
+}
 
 // ── 1 · Does a corrupted byte get caught (predict, hook) ─────────────────────────────────────────
 export function CorruptionPredict({ t }: StepCtx) {
@@ -28,18 +76,20 @@ export function CorruptionPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: round-trip clean, corruption caught (swipe test's "from" step — NO takeaway) ──
 export function CorruptionReveal({ t }: StepCtx) {
-  const rows = [
-    'untouched page: checksum validates cleanly',
-    'one flipped byte: checksum genuinely invalid',
-  ];
+  // The checksum sweep runs over the untouched page: valid. One byte pops and comes back flipped; the same sweep
+  // runs again and the checksum fails, found from inside the page alone.
+  const flip = easeOut(seg(t, 1.2, 1.6));
   return (
-    <Svg label="self_describing_page_catches_corruption.rs, measured" h={180}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 45} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 45} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
+    <Svg label="self_describing_page_catches_corruption.rs, measured" h={200}>
+      <PageBytes t={t} flip={flip} />
+      <Sweep t={t} from={0.3} to={1.0} />
+      <Sweep t={t} from={1.7} to={2.3} />
+      <T x={40} y={140} s={13} f={C.taupe}>checksum</T>
+      <Decode text="valid" t={t} at={0.95} x={140} y={140} s={14} f={C.caramel} w={600} />
+      <Draw pts={[[134, 135], [190, 135]]} t={t} from={2.3} to={2.45} stroke={C.cherryText} w={2} pen={false} />
+      <Decode text="invalid" t={t} at={2.3} x={210} y={140} s={14} f={C.cherryText} w={600} />
+      <Reticle x={375} y={78} w={40} h={40} t={t} at={2.45} color={C.cherryText} />
+      <T x={40} y={185} s={13} f={C.latte} o={fa(t, 2.4, 0.3)}>caught from inside the page</T>
     </Svg>
   );
 }
@@ -62,16 +112,19 @@ export function MagicPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: checksum valid, format invalid (takeaway) ──────────────────────────────────────
 export function MagicReveal({ t }: StepCtx) {
-  const check1 = easeOut(seg(t, 0.5, 0.75));
-  const check2 = easeOut(seg(t, 0.85, 1.1));
+  // The magic number slides out and a new one slides in; the checksum is honestly recomputed (the sweep) and
+  // passes. Then the magic check's pointer drops onto the header cell, and that check is what fails.
+  const swap = easeOut(seg(t, 0.3, 0.7));
   return (
     <Svg label="self_describing_page_catches_corruption.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>magic number changed, checksum recomputed</T>
-      <circle cx={250} cy={76} r={4} fill={C.taupe} opacity={check1} />
-      <circle cx={280} cy={76} r={4} fill={C.cherry} opacity={check2} />
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>checksum: valid. format check: invalid</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>only the magic number check caught it</T>
+      <PageBytes t={t} magicSwap={swap} />
+      <Sweep t={t} from={0.8} to={1.4} />
+      <T x={40} y={140} s={13} f={C.taupe}>checksum</T>
+      <Decode text="valid" t={t} at={1.35} x={140} y={140} s={14} f={C.caramel} w={600} />
+      <T x={40} y={170} s={13} f={C.taupe} o={fa(t, 1.5, 0.3)}>magic check</T>
+      <Draw pts={[[30, 165], [22, 165], [22, 78], [38, 78]]} t={t} from={1.6} to={1.9} stroke={C.cherryText} w={2} />
+      <Decode text="format changed" t={t} at={1.9} x={160} y={170} s={14} f={C.cherryText} w={600} />
+      <Reticle x={75} y={78} w={80} h={46} t={t} at={2.2} color={C.cherryText} />
     </Svg>
   );
 }
@@ -169,13 +222,11 @@ export function Recap({ t }: StepCtx) {
     'line pointers let identity outlive a move',
   ];
   return (
-    <Svg label="recap: a page that can tell its own story" h={300}>
+    <Svg label="recap: a page that can tell its own story" h={240}>
       {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
+        <Row key={r} t={t} at={0.2 + i * 0.45} y={40 + i * 50} text={r} />
       ))}
+      <Reticle x={290} y={90} w={556} h={36} t={t} at={2.25} />
     </Svg>
   );
 }

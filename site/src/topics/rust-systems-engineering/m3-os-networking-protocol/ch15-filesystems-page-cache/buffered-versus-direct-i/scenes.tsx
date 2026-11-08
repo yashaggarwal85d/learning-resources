@@ -1,12 +1,69 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, seg, lerp } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Reticle, Decode, Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // readahead() genuinely brings pages in before any read; DONTNEED genuinely evicts them
 // once they're clean; O_DIRECT genuinely never lets them in at all — one page cache,
 // pulled three different directions.
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+// The page cache as a strip of slots above the file's pages on disk: a page that becomes resident
+// rises into its slot, one that is evicted sinks back to disk. `up` is 0 on disk, 1 resident.
+function CacheStrip({ t, up, before, after, at }: { t: number; up: (i: number) => number; before: string; after: string; at: number }) {
+  const pages = [0, 1, 2, 3, 4, 5, 6, 7];
+  return (
+    <g>
+      <T x={60} y={40} s={13} f={C.taupe}>page cache</T>
+      <rect x={60} y={50} width={250} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+      <T x={60} y={190} s={13} f={C.taupe}>file on disk</T>
+      {pages.map((i) => (
+        <rect key={`d${i}`} x={68 + i * 30} y={150} width={22} height={20} rx={2} fill="none" stroke={C.mocha} />
+      ))}
+      {pages.map((i) => {
+        const k = up(i);
+        return <rect key={i} x={68 + i * 30} y={lerp(150, 60, k)} width={22} height={20} rx={2} fill={C.caramel} />;
+      })}
+      <T x={335} y={76} s={13} f={C.latte} o={1 - fa(t, at, 0.3)}>{before}</T>
+      <Decode text={after} t={t} at={at + 0.2} x={335} y={76} s={13} f={C.caramel} w={600} />
+    </g>
+  );
+}
+
+// Several names pour into one idea: a line from each row's dot runs down the left gutter into one node,
+// where the idea they share decodes and is locked on.
+function Converge({ t, n, y0, dy, at, verdict }: { t: number; n: number; y0: number; dy: number; at: number; verdict: string }) {
+  const yN = y0 + n * dy + 5;
+  const k = easeOut(seg(t, at + 0.5, at + 0.8));
+  const w = 44 + verdict.length * 10;
+  return (
+    <g>
+      {Array.from({ length: n }, (_, i) => (
+        <Draw key={i} pts={[[30, y0 + i * dy], [14, y0 + i * dy], [14, yN], [30, yN]]} t={t} from={at + i * 0.1} to={at + 0.5 + i * 0.1} stroke={C.taupe} w={1.5} />
+      ))}
+      <circle cx={30} cy={yN} r={7 * k} fill={C.caramel} />
+      <Decode text={verdict} t={t} at={at + 0.6} x={48} y={yN + 5} s={14} f={C.caramel} w={600} />
+      <Reticle x={20 + w / 2} y={yN} w={w} h={30} t={t} at={at + 1.0} />
+    </g>
+  );
+}
+
+// A list row that lands on its beat: its text slides in from the left while its marker draws
+// (a tick for a recap point, a growing dot for one of several names, a cross for a failure).
+function Row({ t, at, y, text, mark = 'tick' }: { t: number; at: number; y: number; text: string; mark?: 'tick' | 'dot' | 'cross' }) {
+  const k = easeOut(seg(t, at, at + 0.45));
+  return (
+    <g>
+      {mark === 'tick' && <Draw pts={[[23, y], [28, y + 5], [37, y - 6]]} t={t} from={at + 0.1} to={at + 0.4} stroke={C.caramel} w={2} />}
+      {mark === 'cross' && <Draw pts={[[25, y - 5], [35, y + 5]]} t={t} from={at + 0.1} to={at + 0.3} stroke={C.cherryText} w={2} />}
+      {mark === 'cross' && <Draw pts={[[35, y - 5], [25, y + 5]]} t={t} from={at + 0.25} to={at + 0.45} stroke={C.cherryText} w={2} />}
+      {mark === 'dot' && <circle cx={30} cy={y} r={5 * k} fill={C.caramel} />}
+      <g opacity={k} transform={`translate(${((1 - k) * -28).toFixed(1)} 0)`}>
+        <T x={48} y={y + 6} s={13} f={C.crema}>{text}</T>
+      </g>
+    </g>
+  );
+}
 
 // ── 1 · readahead() on a dropped file (predict, hook) ───────────────────────────────────────────
 export function ReadaheadPredict({ t }: StepCtx) {
@@ -26,17 +83,12 @@ export function ReadaheadPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: 0 resident, then all resident (this is the swipe test's "from" step — NO takeaway) ──
 export function ReadaheadReveal({ t }: StepCtx) {
-  const pages = [0, 1, 2, 3, 4, 5, 6, 7];
+  // One readahead() call: every page rises from disk into the cache, with no read() in between.
   return (
-    <Svg label="readahead_populates_the_page_cache.rs: a real measurement" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>before readahead: no pages resident</T>
-      {pages.map((i) => {
-        const fill = easeOut(seg(t, 0.6 + i * 0.05, 0.85 + i * 0.05));
-        return <rect key={i} x={66 + i * 26} y={70} width={20} height={14} rx={2} fill={C.caramel} opacity={fill} />;
-      })}
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>after readahead: every page resident</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.8, 0.4)}>no read() call happened in between</T>
+    <Svg label="readahead_populates_the_page_cache.rs: a real measurement" h={230}>
+      <CacheStrip t={t} up={(i) => easeOut(seg(t, 0.6 + i * 0.1, 1.0 + i * 0.1))} before="none resident" after="all resident" at={1.4} />
+      <Reticle x={185} y={70} w={262} h={52} t={t} at={2.1} />
+      <T x={60} y={222} s={13} f={C.latte} o={fa(t, 1.9, 0.4)}>no read() call happened in between</T>
     </Svg>
   );
 }
@@ -59,17 +111,12 @@ export function DontneedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: all resident, then none (takeaway) ────────────────────────────────────────────
 export function DontneedReveal({ t }: StepCtx) {
-  const pages = [0, 1, 2, 3, 4, 5, 6, 7];
+  // All resident after readahead; one fadvise(DONTNEED) and every clean page sinks back to disk.
   return (
-    <Svg label="fadvise_dontneed_evicts_resident_pages.rs: a real check" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>after readahead: every page resident</T>
-      {pages.map((i) => {
-        const empty = easeOut(seg(t, 0.6 + i * 0.05, 0.85 + i * 0.05));
-        return <rect key={i} x={66 + i * 26} y={70} width={20} height={14} rx={2} fill={C.caramel} opacity={1 - empty} />;
-      })}
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>after DONTNEED: none resident at all</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.8, 0.4)}>a hint, documented as non-binding, that works</T>
+    <Svg label="fadvise_dontneed_evicts_resident_pages.rs: a real check" h={230}>
+      <CacheStrip t={t} up={(i) => 1 - easeOut(seg(t, 0.7 + i * 0.08, 1.05 + i * 0.08))} before="all resident" after="none resident" at={1.4} />
+      <Reticle x={185} y={70} w={262} h={52} t={t} at={2.1} />
+      <T x={60} y={222} s={13} f={C.latte} o={fa(t, 1.9, 0.4)}>a non-binding hint that works</T>
     </Svg>
   );
 }
@@ -92,17 +139,39 @@ export function BufferedDirectPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: buffered caches, direct never does (takeaway) ─────────────────────────────────
 export function BufferedDirectReveal({ t }: StepCtx) {
-  const pages = [0, 1, 2, 3, 4, 5, 6, 7];
+  // Two runs of the same read. Buffered: each block travels disk → cache → app and leaves a copy in the cache.
+  // Direct: each block takes the lower path around the cache, which stays empty.
+  const blocks = [0, 1, 2, 3];
+  const cacheX = 235;
+  const bx = (k: number) => lerp(50, 500, k);
+  const lowY = (k: number) => 165 + Math.sin(Math.PI * k) * 30;
   return (
-    <Svg label="direct_io_never_populates_the_page_cache.rs: a real check" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>buffered read: every page resident</T>
-      {pages.map((i) => {
-        const fill = easeOut(seg(t, 0.6 + i * 0.05, 0.85 + i * 0.05));
-        return <rect key={i} x={66 + i * 26} y={70} width={20} height={14} rx={2} fill={C.caramel} opacity={fill} />;
+    <Svg label="direct_io_never_populates_the_page_cache.rs: a real check" h={240}>
+      <T x={40} y={30} s={13} f={C.taupe}>disk</T>
+      <T x={cacheX + 65} y={30} s={13} a="middle" f={C.taupe}>page cache</T>
+      <T x={560} y={30} s={13} a="end" f={C.taupe}>app</T>
+      <rect x={cacheX} y={45} width={130} height={80} rx={6} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+      <line x1={40} y1={85} x2={560} y2={85} stroke={C.mocha} strokeDasharray="3 5" />
+      <Draw pts={Array.from({ length: 21 }, (_, i) => [bx(i / 20), lowY(i / 20)] as [number, number])} t={t} from={1.3} to={1.7} stroke={C.mocha} w={1.5} pen={false} />
+      {blocks.map((i) => {
+        const k = easeOut(seg(t, 0.3 + i * 0.12, 1.0 + i * 0.12));
+        const x = bx(k);
+        const kept = x > cacheX + 10 + i * 28;
+        return (
+          <g key={`b${i}`}>
+            {kept && <rect x={cacheX + 10 + i * 28} y={75} width={22} height={20} rx={2} fill={C.caramel} />}
+            <rect x={x} y={75} width={22} height={20} rx={2} fill={C.caramel} opacity={1 - fa(t, 1.2, 0.2)} />
+          </g>
+        );
       })}
-      <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-      {fa(t, 1.3, 0.4) > 0.85 && <T x={190} y={112} s={13} a="middle" f={C.mocha}>direct read: no page resident at all</T>}
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.8, 0.4)}>the cache never even sees it happen</T>
+      {blocks.map((i) => {
+        const k = easeOut(seg(t, 1.5 + i * 0.12, 2.1 + i * 0.12));
+        return <rect key={`d${i}`} x={bx(k)} y={lowY(k) - 10} width={22} height={20} rx={2} fill={C.cinnamon} opacity={k > 0 ? 1 - fa(t, 2.5, 0.2) * 0.4 : 0} />;
+      })}
+      <T x={40} y={65} s={13} f={C.crema} o={fa(t, 0.2, 0.3)}>buffered</T>
+      <T x={40} y={150} s={13} f={C.cinnamon} o={fa(t, 1.4, 0.3)}>O_DIRECT</T>
+      <Decode text="cache: every page" t={t} at={1.1} x={cacheX + 65} y={145} s={13} a="middle" f={C.caramel} w={600} />
+      <T x={300} y={232} s={13} a="middle" f={C.latte} o={fa(t, 2.3, 0.4)}>direct: the cache never sees it</T>
     </Svg>
   );
 }
@@ -149,11 +218,9 @@ export function LessonReveal({ t }: StepCtx) {
   return (
     <Svg label="three names, one shared cache" h={220}>
       {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.35, 0.4)}>
-          <circle cx={30} cy={40 + i * 45} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 45} s={13} f={C.crema}>{r}</T>
-        </g>
+        <Row key={r} t={t} at={0.2 + i * 0.35} y={40 + i * 45} text={r} mark="dot" />
       ))}
+      <Converge t={t} n={rows.length} y0={40} dy={45} at={1.25} verdict="who holds the page" />
     </Svg>
   );
 }
@@ -167,13 +234,11 @@ export function Recap({ t }: StepCtx) {
     'none of this means a byte is durable',
   ];
   return (
-    <Svg label="recap: a real cache, pulled three real ways" h={300}>
+    <Svg label="recap: a real cache, pulled three real ways" h={240}>
       {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
+        <Row key={r} t={t} at={0.2 + i * 0.45} y={40 + i * 50} text={r} />
       ))}
+      <Reticle x={290} y={140} w={556} h={36} t={t} at={2.25} />
     </Svg>
   );
 }

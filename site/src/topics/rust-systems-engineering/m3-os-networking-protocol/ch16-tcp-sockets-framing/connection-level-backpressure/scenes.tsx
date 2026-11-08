@@ -1,13 +1,48 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Reticle, Decode, Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Not reading a real connection genuinely closes its own receive window and blocks
 // the remote sender; a real bounded output buffer enforces its cap by genuinely
 // rejecting the next push once full; a real per-connection timeout genuinely fires
 // against a peer that may never send anything. Backpressure is a choice, not an accident.
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+// Several names pour into one idea: a line from each row's dot runs down the left gutter into one node,
+// where the idea they share decodes and is locked on.
+function Converge({ t, n, y0, dy, at, verdict }: { t: number; n: number; y0: number; dy: number; at: number; verdict: string }) {
+  const yN = y0 + n * dy + 5;
+  const k = easeOut(seg(t, at + 0.5, at + 0.8));
+  const w = 44 + verdict.length * 10;
+  return (
+    <g>
+      {Array.from({ length: n }, (_, i) => (
+        <Draw key={i} pts={[[30, y0 + i * dy], [14, y0 + i * dy], [14, yN], [30, yN]]} t={t} from={at + i * 0.1} to={at + 0.5 + i * 0.1} stroke={C.taupe} w={1.5} />
+      ))}
+      <circle cx={30} cy={yN} r={7 * k} fill={C.caramel} />
+      <Decode text={verdict} t={t} at={at + 0.6} x={48} y={yN + 5} s={14} f={C.caramel} w={600} />
+      <Reticle x={20 + w / 2} y={yN} w={w} h={30} t={t} at={at + 1.0} />
+    </g>
+  );
+}
+
+// A list row that lands on its beat: its text slides in from the left while its marker draws
+// (a tick for a recap point, a growing dot for one of several names, a cross for a failure).
+function Row({ t, at, y, text, mark = 'tick' }: { t: number; at: number; y: number; text: string; mark?: 'tick' | 'dot' | 'cross' }) {
+  const k = easeOut(seg(t, at, at + 0.45));
+  return (
+    <g>
+      {mark === 'tick' && <Draw pts={[[23, y], [28, y + 5], [37, y - 6]]} t={t} from={at + 0.1} to={at + 0.4} stroke={C.caramel} w={2} />}
+      {mark === 'cross' && <Draw pts={[[25, y - 5], [35, y + 5]]} t={t} from={at + 0.1} to={at + 0.3} stroke={C.cherryText} w={2} />}
+      {mark === 'cross' && <Draw pts={[[35, y - 5], [25, y + 5]]} t={t} from={at + 0.25} to={at + 0.45} stroke={C.cherryText} w={2} />}
+      {mark === 'dot' && <circle cx={30} cy={y} r={5 * k} fill={C.caramel} />}
+      <g opacity={k} transform={`translate(${((1 - k) * -28).toFixed(1)} 0)`}>
+        <T x={48} y={y + 6} s={13} f={C.crema}>{text}</T>
+      </g>
+    </g>
+  );
+}
 
 // ── 1 · A server that never reads (predict, hook) ───────────────────────────────────────────────
 export function WindowPredict({ t }: StepCtx) {
@@ -148,11 +183,9 @@ export function LessonReveal({ t }: StepCtx) {
   return (
     <Svg label="backpressure as an explicit choice" h={220}>
       {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.35, 0.4)}>
-          <circle cx={30} cy={40 + i * 45} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 45} s={13} f={C.crema}>{r}</T>
-        </g>
+        <Row key={r} t={t} at={0.2 + i * 0.35} y={40 + i * 45} text={r} mark="dot" />
       ))}
+      <Converge t={t} n={rows.length} y0={40} dy={45} at={1.25} verdict="an explicit choice" />
     </Svg>
   );
 }
@@ -166,13 +199,11 @@ export function Recap({ t }: StepCtx) {
     'a real timeout ends a connection that stalls',
   ];
   return (
-    <Svg label="recap: a connection that chooses, on purpose" h={300}>
+    <Svg label="recap: a connection that chooses, on purpose" h={240}>
       {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
+        <Row key={r} t={t} at={0.2 + i * 0.45} y={40 + i * 50} text={r} />
       ))}
+      <Reticle x={290} y={40} w={556} h={36} t={t} at={2.25} />
     </Svg>
   );
 }

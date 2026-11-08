@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, seg, lerp, clamp } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Plot, Reticle, Decode, Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 
 // Overwriting in place is the cheapest in space, but destroys the old
 // version outright. Appending keeps every version until a real compaction
@@ -9,6 +9,23 @@ import { Draw, Stack, Svg, T, C } from '../../../../../reels/kit';
 // space, a page at a time, but that's exactly what buys crash safety with
 // no special recovery procedure.
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
+
+// A list row that lands on its beat: its text slides in from the left while its marker draws
+// (a tick for a recap point, a growing dot for one of several names, a cross for a failure).
+function Row({ t, at, y, text, mark = 'tick' }: { t: number; at: number; y: number; text: string; mark?: 'tick' | 'dot' | 'cross' }) {
+  const k = easeOut(seg(t, at, at + 0.45));
+  return (
+    <g>
+      {mark === 'tick' && <Draw pts={[[23, y], [28, y + 5], [37, y - 6]]} t={t} from={at + 0.1} to={at + 0.4} stroke={C.caramel} w={2} />}
+      {mark === 'cross' && <Draw pts={[[25, y - 5], [35, y + 5]]} t={t} from={at + 0.1} to={at + 0.3} stroke={C.cherryText} w={2} />}
+      {mark === 'cross' && <Draw pts={[[35, y - 5], [25, y + 5]]} t={t} from={at + 0.25} to={at + 0.45} stroke={C.cherryText} w={2} />}
+      {mark === 'dot' && <circle cx={30} cy={y} r={5 * k} fill={C.caramel} />}
+      <g opacity={k} transform={`translate(${((1 - k) * -28).toFixed(1)} 0)`}>
+        <T x={48} y={y + 6} s={13} f={C.crema}>{text}</T>
+      </g>
+    </g>
+  );
+}
 
 // ── 1 · Does in-place overwriting leave any garbage (predict, hook) ──────────────────────────────
 export function InPlacePredict({ t }: StepCtx) {
@@ -28,18 +45,23 @@ export function InPlacePredict({ t }: StepCtx) {
 
 // ── 2 · Measured: footprint flat, no garbage (swipe test's "from" step) ──────────────────────────
 export function InPlaceReveal({ t }: StepCtx) {
-  const rows = [
-    'footprint before five updates: one record',
-    'footprint after: still just one record',
-  ];
+  // Five updates, one after another: each new value slides down into the record's one slot and pushes the old
+  // value out, gone. The footprint bracket under the slot never moves.
+  const ups = [0, 1, 2, 3, 4];
+  const beat = 0.32, start = 0.4;
+  const n = Math.floor(clamp((t - start) / beat, 0, ups.length));
+  const k = easeOut(seg((t - start) - (n < ups.length ? n : ups.length - 1) * beat, 0, 0.25));
+  const active = n < ups.length;
   return (
-    <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={180}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 45} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 45} s={13} f={C.crema}>{r}</T>
-        </g>
-      ))}
+    <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={210}>
+      <T x={60} y={40} s={13} f={C.taupe}>updates</T>
+      <Plot pts={ups.map((i) => [150 + i * 24, 35] as [number, number])} t={t} start={start} beat={beat} r={5} fill={C.caramel} />
+      <rect x={200} y={70} width={200} height={40} rx={4} fill="none" stroke={C.latte} strokeWidth={1.5} />
+      <rect x={206} y={active ? lerp(76, 140, k) : 76} width={188} height={28} rx={3} fill={active ? C.mocha : C.caramel} opacity={active ? 1 - k : 1} />
+      {active && <rect x={206} y={lerp(20, 76, k)} width={188} height={28} rx={3} fill={C.caramel} opacity={k} />}
+      <Draw pts={[[200, 128], [200, 136], [400, 136], [400, 128]]} t={t} from={0.2} to={0.6} stroke={C.crema} w={1.5} pen={false} />
+      <T x={300} y={158} s={13} a="middle" f={C.crema} o={fa(t, 0.3, 0.3)}>footprint: one record</T>
+      <Decode text="after: still one record" t={t} at={2.1} x={300} y={190} s={13} a="middle" f={C.caramel} w={600} />
     </Svg>
   );
 }
@@ -125,18 +147,23 @@ export function ComparePredict({ t }: StepCtx) {
 
 // ── 8 · Measured: copy-on-write leaves more garbage (connecting step, NO takeaway) ───────────────
 export function CompareReveal({ t }: StepCtx) {
-  const rows = [
-    'append-only garbage: old record versions',
-    'copy-on-write garbage: whole discarded pages',
-  ];
+  // The same five updates, leftovers piling up side by side: append-only leaves one old record version per
+  // update (small blocks), copy-on-write a whole discarded page per update (big blocks). The second pile wins.
+  const ups = [0, 1, 2, 3, 4];
+  const land = (i: number) => easeOut(seg(t, 0.4 + i * 0.3, 0.65 + i * 0.3));
   return (
-    <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={180}>
-      {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 45} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 45} s={13} f={C.crema}>{r}</T>
+    <Svg label="update_strategy_changes_the_fragmentation_cost.rs, measured" h={200}>
+      <T x={30} y={30} s={13} f={C.taupe}>leftover after the same updates</T>
+      <T x={30} y={76} s={13} f={C.crema}>append-only</T>
+      <T x={30} y={136} s={13} f={C.crema}>copy-on-write</T>
+      {ups.map((i) => (
+        <g key={i}>
+          <rect x={170 + i * 22} y={lerp(30, 62, land(i))} width={18} height={20} rx={2} fill={C.latte} opacity={land(i)} />
+          <rect x={170 + i * 78} y={lerp(90, 122, land(i))} width={72} height={20} rx={2} fill={C.cherryText} opacity={land(i)} />
         </g>
       ))}
+      <Decode text="strictly larger" t={t} at={2.0} x={570} y={176} s={13} a="end" f={C.cherryText} w={600} />
+      <Reticle x={362} y={132} w={400} h={34} t={t} at={2.2} color={C.cherryText} />
     </Svg>
   );
 }
@@ -166,13 +193,11 @@ export function Recap({ t }: StepCtx) {
     'that larger cost buys genuine crash safety',
   ];
   return (
-    <Svg label="recap: three deliberate choices" h={300}>
+    <Svg label="recap: three deliberate choices" h={240}>
       {rows.map((r, i) => (
-        <g key={r} opacity={fa(t, 0.2 + i * 0.4, 0.4)}>
-          <circle cx={30} cy={40 + i * 55} r={5} fill={C.caramel} />
-          <T x={48} y={46 + i * 55} s={13} f={C.crema}>{r}</T>
-        </g>
+        <Row key={r} t={t} at={0.2 + i * 0.45} y={40 + i * 50} text={r} />
       ))}
+      <Reticle x={290} y={190} w={556} h={36} t={t} at={2.25} />
     </Svg>
   );
 }
