@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Blameless post-mortems and incident communication, drawn from examples.py's simulated incident: the timeline at
@@ -406,45 +406,58 @@ export function Recap({ t }: StepCtx) {
 
 // 8 · The post-mortem under review: one factor, "the on-call engineer deployed a bad config"; one action, "retrain the
 // engineer". "What's missing?" After the answer both are flagged — a person, not a condition — and the unasked question
-// writes in: what let a bad config reach production unnoticed?
+// writes in: what let a bad config reach production unnoticed? The flags slide in, the action is struck through, and
+// brackets lock onto the question.
 export function ProveIt({ t, answer }: StepCtx) {
   const on = answer !== null;
   const s = useSinceAnswer(on);
+  const f1 = on ? easeOutBack(seg(s, 0.4, 0.75)) : 0;
+  const f2 = on ? easeOutBack(seg(s, 0.8, 1.15)) : 0;
+  const q = on ? easeOut(seg(s, 1.4, 1.8)) : 0;
   return (
     <Svg label="a post-mortem names one contributing factor, the on-call engineer deployed a bad config, and closes with one action item: retrain the engineer. What's missing?" h={200}>
-      <g opacity={easeOut(seg(t, 0, 0.4))}>
-        <T x={25} y={24} s={11} f={C.quiet}>
+      <g opacity={easeOut(seg(t, 0, 0.4))} transform={`translate(${((1 - easeOut(seg(t, 0, 0.4))) * -20).toFixed(1)} 0)`}>
+        <T x={25} y={24} s={13} f={C.quiet}>
           contributing factors: 1
         </T>
         <T x={25} y={46} s={13} f={on && s > 0.4 ? C.badText : C.primary}>
           the on-call engineer deployed it
         </T>
       </g>
-      <g opacity={easeOut(seg(t, 0.8, 1.2))}>
-        <T x={25} y={82} s={11} f={C.quiet}>
+      <g opacity={easeOut(seg(t, 0.8, 1.2))} transform={`translate(${((1 - easeOut(seg(t, 0.8, 1.2))) * -20).toFixed(1)} 0)`}>
+        <T x={25} y={82} s={13} f={C.quiet}>
           action items: 1
         </T>
         <T x={25} y={104} s={13} f={on && s > 0.8 ? C.badText : C.primary}>
           retrain the engineer
         </T>
       </g>
-      <T x={575} y={150} s={14} f={C.focus} a="end" o={on ? 0 : easeOut(seg(t, 1.6, 2.0))}>
+      {/* the action fixes nothing: it is struck through */}
+      {on && <Draw pts={[[22, 100], [190, 100]]} t={s} from={0.9} to={1.2} stroke={C.badText} w={1.6} pen={false} />}
+      <T x={575} y={150} s={14} f={C.focus} a="end" o={on ? 0 : easeOut(seg(t, 1.6, 2.0)) * (0.75 + 0.25 * Math.sin(t * 3))}>
         what's missing?
       </T>
       {on && (
         <g>
-          <T x={575} y={46} s={12} f={C.badText} a="end" o={easeOut(seg(s, 0.4, 0.7))}>
-            a person
-          </T>
-          <T x={575} y={104} s={12} f={C.badText} a="end" o={easeOut(seg(s, 0.8, 1.1))}>
-            blames, fixes nothing
-          </T>
-          <T x={25} y={150} s={13} f={C.second} o={easeOut(seg(s, 1.4, 1.8))}>
-            what let a bad config reach
-          </T>
-          <T x={25} y={176} s={13} f={C.second} o={easeOut(seg(s, 1.4, 1.8))}>
-            production unnoticed?
-          </T>
+          <g opacity={clamp(f1)} transform={`translate(${((1 - clamp(f1, 0, 1.1)) * 40).toFixed(1)} 0)`}>
+            <T x={575} y={46} s={13} f={C.badText} a="end">
+              a person
+            </T>
+          </g>
+          <g opacity={clamp(f2)} transform={`translate(${((1 - clamp(f2, 0, 1.1)) * 40).toFixed(1)} 0)`}>
+            <T x={575} y={104} s={13} f={C.badText} a="end">
+              blames, fixes nothing
+            </T>
+          </g>
+          <g opacity={q} transform={`translate(0 ${((1 - q) * 12).toFixed(1)})`}>
+            <T x={25} y={150} s={13} f={C.second}>
+              what let a bad config reach
+            </T>
+            <T x={25} y={176} s={13} f={C.second}>
+              production unnoticed?
+            </T>
+          </g>
+          <Reticle x={160} y={160} w={282} h={50} t={s} at={2.0} color={C.second} />
         </g>
       )}
     </Svg>

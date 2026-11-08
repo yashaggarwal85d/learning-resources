@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Negotiating data contracts and SLOs, drawn from examples.py: its three disclosed, illustrative tiers (fast 5 min at
@@ -348,37 +348,47 @@ export function RevealErrorBudget({ t }: StepCtx) {
 }
 
 // 6 · The budget bar, a breach chunk in it. A timeline under it: the contract signed on the left, the incident on the
-// right. The owner's tag — "platform on-call engineer" — is pinned at the signing, long before the incident arrives.
+// right. The owner's tag — "platform on-call engineer" — drops onto its pin at the signing; time then runs the length of
+// the line to the incident, which only then burns the budget; brackets lock onto the owner.
 export function RevealBreachOwner({ t }: StepCtx) {
   const tag = easeOutBack(seg(t, 1.0, 1.5));
-  const inc = easeOut(seg(t, 2.2, 2.6));
+  // time runs from the signing to the incident; the breach only eats the budget when the incident lands
+  const run = easeInOut(seg(t, 1.6, 2.4));
+  const inc = easeOutBack(seg(t, 2.3, 2.7));
+  const burn = easeOut(seg(t, 2.4, 3.0));
   return (
     <Svg label="an error budget only works if spending it is somebody's specific, named responsibility, agreed before the breach happens." h={200}>
       <g opacity={easeOut(seg(t, 0, 0.4))}>
         <rect x={25} y={20} width={550} height={22} rx={3} fill="none" stroke={C.focus} strokeWidth={1.3} />
-        <rect x={25} y={20} width={550 * 0.154} height={22} rx={3} fill={C.badText} opacity={0.6} />
         <line x1={25} y1={120} x2={575} y2={120} stroke={C.line} />
-        <circle cx={60} cy={120} r={6} fill={C.focus} />
-        <T x={60} y={146} s={12} f={C.secondary} a="middle">
+        <T x={60} y={146} s={13} f={C.secondary} a="middle">
           signed
         </T>
       </g>
-      <g opacity={Math.min(1, tag)}>
-        <line x1={60} y1={114} x2={60} y2={84} stroke={C.second} strokeWidth={1.3} />
-        <rect x={40} y={60} width={380} height={26} rx={13} fill={C.panel} stroke={C.second} strokeWidth={1.4} />
-        <T x={230} y={78} s={12} f={C.second} a="middle">
-          owner: platform on-call engineer
-        </T>
-      </g>
-      <g opacity={inc}>
-        <path d="M500 104 l10 16 l-20 0 z" fill={C.badText} />
-        <T x={500} y={146} s={12} f={C.badText} a="middle">
-          incident
-        </T>
-      </g>
-      <T x={300} y={184} s={12} f={C.focus} a="middle" o={easeOut(seg(t, 2.8, 3.2))}>
-        named before, not during
-      </T>
+      <rect x={25} y={20} width={Math.max(0, 550 * 0.154 * burn)} height={22} rx={3} fill={C.badText} opacity={0.6} />
+      <circle cx={60} cy={120} r={6 * easeOutBack(seg(t, 0.2, 0.6))} fill={C.focus} />
+      {/* the owner is pinned at the signing: the tag drops onto its stem */}
+      <Draw pts={[[60, 114], [60, 86]]} t={t} from={0.8} to={1.05} stroke={C.second} w={1.3} pen={false} />
+      {tag > 0 && (
+        <g opacity={clamp(tag)} transform={`translate(0 ${((1 - clamp(tag, 0, 1.1)) * -30).toFixed(1)})`}>
+          <rect x={40} y={60} width={380} height={26} rx={13} fill={C.panel} stroke={C.second} strokeWidth={1.4} />
+          <T x={230} y={78} s={13} f={C.second} a="middle">
+            owner: platform on-call engineer
+          </T>
+        </g>
+      )}
+      <Draw pts={[[66, 120], [494, 120]]} t={t} from={1.6} to={2.4} stroke={C.focus} w={2} pen={false} />
+      {run > 0 && run < 1 && <circle cx={lerp(66, 494, run)} cy={120} r={4} fill={C.focus} />}
+      {inc > 0 && (
+        <g transform={`translate(0 ${((1 - clamp(inc, 0, 1.1)) * -24).toFixed(1)})`} opacity={clamp(inc)}>
+          <path d="M500 104 l10 16 l-20 0 z" fill={C.badText} />
+          <T x={500} y={146} s={13} f={C.badText} a="middle">
+            incident
+          </T>
+        </g>
+      )}
+      <Decode text="named before, not during" t={t} at={2.8} x={300} y={184} s={13} f={C.focus} a="middle" />
+      <Reticle x={230} y={73} w={392} h={34} t={t} at={3.2} />
     </Svg>
   );
 }

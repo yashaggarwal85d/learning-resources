@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Warm-up and steady-state measurement, drawn from examples.py run for real on this sandbox's Postgres: trial 1's 60
@@ -211,7 +211,7 @@ export function PredictWhoseNumber({ t, answer }: StepCtx) {
 }
 
 // 2 · The five named causes arrive one by one, each with a small mark. Then two of them — the buffer pool and page
-// cache, and the empty caches — get a blue "here" tag: the two this sandbox reproduces for real.
+// cache, and the empty caches — get a blue "here" tag sliding in: the two this sandbox reproduces for real, locked onto.
 export function RevealWarmupCauses({ t }: StepCtx) {
   const causes = ['compiler still warming up', 'buffer pool, page cache empty', 'caches never asked yet', 'background cleanup piling up', 'small files not merged'];
   const tag = easeOutBack(seg(t, 3.3, 3.8));
@@ -220,19 +220,22 @@ export function RevealWarmupCauses({ t }: StepCtx) {
       {causes.map((c, i) => {
         const y = 30 + i * 44;
         const real = i === 1 || i === 2;
+        const k = easeOut(seg(t, 0.5 + i * 0.45, 0.8 + i * 0.45));
         return (
-          <g key={c} opacity={easeOut(seg(t, 0.5 + i * 0.45, 0.8 + i * 0.45))}>
-            <rect x={25} y={y - 14} width={18} height={18} rx={3} fill="none" stroke={real && tag > 0.5 ? C.second : C.line} strokeWidth={1.3} />
-            <T x={34} y={y} s={11} f={C.secondary} a="middle">
-              {`${i + 1}`}
-            </T>
-            <T x={55} y={y} s={13} f={C.primary}>
-              {c}
-            </T>
-            {real && (
-              <g opacity={Math.min(1, tag)}>
-                <rect x={480} y={y - 15} width={95} height={20} rx={10} fill="none" stroke={C.second} strokeWidth={1.3} />
-                <T x={527} y={y} s={11} f={C.second} a="middle">
+          <g key={c}>
+            <g opacity={k} transform={`translate(${((1 - k) * -28).toFixed(1)} 0)`}>
+              <rect x={25} y={y - 14} width={18} height={18} rx={3} fill="none" stroke={real && tag > 0.5 ? C.second : C.line} strokeWidth={1.3} />
+              <T x={34} y={y} s={13} f={C.secondary} a="middle">
+                {`${i + 1}`}
+              </T>
+              <T x={55} y={y} s={13} f={C.primary}>
+                {c}
+              </T>
+            </g>
+            {real && tag > 0 && (
+              <g opacity={clamp(tag)} transform={`translate(${((1 - clamp(tag, 0, 1.1)) * 60).toFixed(1)} 0)`}>
+                <rect x={462} y={y - 15} width={113} height={20} rx={10} fill="none" stroke={C.second} strokeWidth={1.3} />
+                <T x={518} y={y} s={13} f={C.second} a="middle">
                   real, here
                 </T>
               </g>
@@ -240,9 +243,8 @@ export function RevealWarmupCauses({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={575} y={250} s={12} f={C.secondary} a="end" o={easeOut(seg(t, 3.6, 4.0))}>
-        two of five, reproduced
-      </T>
+      <Decode text="two of five, reproduced" t={t} at={3.6} x={575} y={250} s={13} f={C.secondary} a="end" />
+      <Reticle x={518} y={91} w={124} h={74} t={t} at={3.85} color={C.second} />
     </Svg>
   );
 }

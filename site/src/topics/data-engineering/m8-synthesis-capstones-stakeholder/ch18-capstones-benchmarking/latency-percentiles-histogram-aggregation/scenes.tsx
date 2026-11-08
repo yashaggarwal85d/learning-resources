@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
 import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
@@ -352,6 +352,7 @@ export function RevealFanoutAmplification({ t }: StepCtx) {
 // 6 · Two lanes at 30 requests a second, the same 2-second stall at request 60. Closed-loop: sends stop during the
 // stall and resume after — one slow request, the rest normal. Constant-rate: send ticks keep coming on schedule; each
 // one queued behind the stall waits, latency falling 1/30 s per request as the backlog drains: all 60 that follow.
+// A send cursor writes each lane's latencies as it moves; the verdicts decode and brackets lock onto the backlog.
 export function RevealClosedLoopVsConstantRate({ t }: StepCtx) {
   const X = (i: number) => 40 + i * 4.3;
   const n = Math.floor(seg(t, 0.4, 3.4) * 120);
@@ -363,31 +364,34 @@ export function RevealClosedLoopVsConstantRate({ t }: StepCtx) {
         const h = back > 0 ? (back / 2000) * 60 : 3;
         return <rect key={i} x={X(i)} y={y0 - h} width={3} height={h} fill={back > 0 ? C.badText : C.secondary} />;
       })}
+      {/* the generator's send cursor, writing one latency per request as it goes */}
+      {n > 0 && n < 120 && <line x1={X(n) + 1.5} y1={y0 - 66} x2={X(n) + 1.5} y2={y0 + 4} stroke={C.focus} strokeWidth={1.2} />}
     </g>
   );
   return (
     <Svg label="two generators, the same offered load, the same injected stall." h={260}>
       <g opacity={easeOut(seg(t, 0, 0.3))}>
-        <T x={25} y={22} s={12} f={C.secondary}>
+        <T x={25} y={22} s={13} f={C.secondary}>
           waits for each reply
         </T>
         <Lat y0={100} cr={false} />
       </g>
       <g opacity={easeOut(seg(t, 0.2, 0.5))}>
-        <T x={25} y={132} s={12} f={C.secondary}>
+        <T x={25} y={132} s={13} f={C.secondary}>
           fixed schedule, 30 a second
         </T>
         <Lat y0={210} cr={true} />
       </g>
-      <T x={575} y={78} s={12} f={C.focus} a="end" o={easeOut(seg(t, 3.4, 3.8))}>
-        tail looks calm
-      </T>
-      <T x={575} y={236} s={12} f={C.badText} a="end" o={easeOut(seg(t, 3.6, 4.0))}>
-        the whole backlog, reported
-      </T>
-      <T x={X(60)} y={252} s={11} f={C.quiet} a="middle" o={n > 60 ? 1 : 0}>
+      <Decode text="tail looks calm" t={t} at={3.4} x={575} y={78} s={13} f={C.focus} a="end" />
+      <g opacity={easeOut(seg(t, 3.6, 4.0))} transform={`translate(${((1 - easeOut(seg(t, 3.6, 4.0))) * 20).toFixed(1)} 0)`}>
+        <T x={575} y={236} s={13} f={C.badText} a="end">
+          the whole backlog, reported
+        </T>
+      </g>
+      <T x={X(60)} y={252} s={13} f={C.quiet} a="middle" o={n > 60 ? 1 : 0}>
         2 s stall
       </T>
+      <Reticle x={X(90)} y={180} w={X(121) - X(59)} h={68} t={t} at={3.9} color={C.badText} />
     </Svg>
   );
 }

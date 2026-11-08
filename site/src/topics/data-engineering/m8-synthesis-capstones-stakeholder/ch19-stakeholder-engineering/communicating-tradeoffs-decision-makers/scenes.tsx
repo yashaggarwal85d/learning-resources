@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { C, Draw, Svg, T } from '../../../../../reels/kit';
-import { easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
+import { C, Decode, Draw, Reticle, Svg, T } from '../../../../../reels/kit';
+import { easeInOut, easeOut, easeOutBack, easeOutExpo, lerp, seg } from '../../../../../reels/anim';
 import type { StepCtx } from '../../../../../reels/types';
 
 // Communicating trade-offs to decision-makers, drawn from examples.py's restatement of the previous topic's tiers:
@@ -191,41 +191,53 @@ export function PredictWhyDifferent({ t, answer }: StepCtx) {
 }
 
 // 2 · The three tiers in the terms that built them — 288 runs a day plus streaming, 24 runs, 1 run. Each row's
-// engineering words dissolve and its business terms write in: dollars a day, and the risk of a wrong number per day.
+// engineering words sink away and its business terms decode in: dollars a day, and the risk of a wrong number per day,
+// each with a bar on its own scale, cost shrinking as risk grows; brackets lock onto the slow tier's risk.
 export function RevealCostInBusinessTerms({ t }: StepCtx) {
   const sw = easeInOut(seg(t, 1.4, 2.2));
+  // bar lengths on each column's own scale: cost per day falls as risk per day rises, tier by tier
+  const dollars = (x: string) => Number(x.replace(/[$,]/g, ''));
+  const cost = TIERS.map((r) => dollars(r[2]));
+  const riskV = TIERS.map((r) => dollars(r[3]));
+  const costW = cost.map((v) => (v / Math.max(...cost)) * 120);
+  const riskW = riskV.map((v) => (v / Math.max(...riskV)) * 120);
   return (
     <Svg label="the same three tiers, restated in dollars and in the risk of a wrong number reaching a plant manager, not the terms that built them." h={200}>
       <g opacity={sw}>
-        <T x={300} y={24} s={11} f={C.quiet} a="end">
+        <T x={300} y={24} s={13} f={C.quiet} a="end">
           per day
         </T>
-        <T x={560} y={24} s={11} f={C.quiet} a="end">
+        <T x={560} y={24} s={13} f={C.quiet} a="end">
           wrong-number risk
         </T>
       </g>
       {TIERS.map(([n, eng, usd, risk], i) => {
         const y = 60 + i * 44;
+        const k = easeOut(seg(t, 0.2 + i * 0.2, 0.5 + i * 0.2));
+        const cb = easeOutExpo(seg(t, 2.0 + i * 0.3, 2.6 + i * 0.3));
+        const rb = easeOutExpo(seg(t, 2.2 + i * 0.3, 2.8 + i * 0.3));
         return (
-          <g key={n} opacity={easeOut(seg(t, 0.2 + i * 0.2, 0.5 + i * 0.2))}>
+          <g key={n} opacity={k}>
             <T x={25} y={y} s={13} f={i === 1 ? C.focus : C.primary}>
               {n}
             </T>
-            <T x={120} y={y} s={12} f={C.secondary} o={1 - sw}>
-              {eng}
-            </T>
-            <T x={300} y={y} s={13} f={C.focus} a="end" o={easeOut(seg(t, 2.0 + i * 0.3, 2.3 + i * 0.3))}>
-              {usd}
-            </T>
-            <T x={560} y={y} s={13} f={i === 2 ? C.badText : C.primary} a="end" o={easeOut(seg(t, 2.2 + i * 0.3, 2.5 + i * 0.3))}>
-              {risk}
-            </T>
+            {/* the engineering terms sink away as the business terms arrive */}
+            <g opacity={1 - sw} transform={`translate(0 ${(sw * 14).toFixed(1)})`}>
+              <T x={120} y={y} s={12} f={C.secondary}>
+                {eng}
+              </T>
+            </g>
+            <Decode text={usd} t={t} at={2.0 + i * 0.3} x={300} y={y} s={13} f={C.focus} a="end" />
+            <Decode text={risk} t={t} at={2.2 + i * 0.3} x={560} y={y} s={13} f={i === 2 ? C.badText : C.primary} a="end" />
+            {cb > 0 && <rect x={300 - costW[i] * cb} y={y + 7} width={Math.max(2, costW[i] * cb)} height={4} rx={2} fill={C.focus} />}
+            {rb > 0 && <rect x={560 - riskW[i] * rb} y={y + 7} width={Math.max(2, riskW[i] * rb)} height={4} rx={2} fill={i === 2 ? C.badText : C.secondary} />}
           </g>
         );
       })}
-      <T x={25} y={190} s={11} f={C.quiet} o={easeOut(seg(t, 3.0, 3.4))}>
+      <T x={25} y={190} s={13} f={C.quiet} o={easeOut(seg(t, 3.0, 3.4))}>
         examples.py's own illustrative pricing
       </T>
+      <Reticle x={520} y={150} w={96} h={34} t={t} at={3.2} color={C.badText} />
     </Svg>
   );
 }
