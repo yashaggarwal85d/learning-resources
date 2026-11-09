@@ -35,7 +35,11 @@ jobs:
 
   site:
     name: Site build and reel tests
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which Playwright 1.56.1 doesn't support yet
+    # (`npx playwright install --with-deps chromium` fails outright). Bump back to
+    # ubuntu-latest once Playwright ships 26.04 support, or drop the pin if Playwright
+    # itself is upgraded past the version that needs it.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
