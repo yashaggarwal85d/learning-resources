@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeInOut, easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -18,12 +18,24 @@ const threadDot = (cx: number, cy: number, label: string, opacity = 1) => (
 
 // ── 1 · Last topic's race, fixed with two words (hook) ──────────────────────────────────────────
 export function RaceRecapHook({ t }: StepCtx) {
+  // The reorder itself races across the figure: the ready dot overtakes the data dot and reaches thread B
+  // first, exactly the surprise loom found; the fix then locks on as two words.
+  const dataK = easeInOut(seg(t, 0.2, 1.3));
+  const readyK = easeInOut(seg(t, 0.2, 0.9));
+  const dataX = lerp(70, 520, dataK);
+  const readyX = lerp(70, 520, readyK);
+  const arrived = t >= 0.9;
   return (
     <Svg label="the relaxed publication race from last topic, and the two words that fix it" h={220}>
-      <T x={60} y={60} s={14} f={C.mocha} o={fa(t, 0.3, 0.4)}>data.store(42, Relaxed);</T>
-      <T x={60} y={90} s={14} f={C.mocha} o={fa(t, 0.6, 0.4)}>ready.store(true, Relaxed);</T>
-      <T x={60} y={130} s={13} f={C.taupe} o={fa(t, 1.0, 0.4)}>loom found: the flag seen before the value</T>
-      <T x={60} y={180} s={16} f={C.caramel} o={fa(t, 1.6, 0.4)}>Release. Acquire.</T>
+      <T x={14} y={28} s={13} f={C.taupe}>data.store(42, Relaxed)</T>
+      <line x1={70} y1={46} x2={520} y2={46} stroke={C.line} strokeWidth={1.5} />
+      <circle cx={dataX} cy={46} r={7} fill={C.secondary} opacity={dataK > 0 ? 1 : 0} />
+      <T x={14} y={88} s={13} f={C.taupe}>ready.store(true, Relaxed)</T>
+      <line x1={70} y1={106} x2={520} y2={106} stroke={C.line} strokeWidth={1.5} />
+      <circle cx={readyX} cy={106} r={7} fill={C.focus} opacity={readyK > 0 ? 1 : 0} />
+      <T x={540} y={50} s={12} f={C.focus} o={arrived ? 1 : 0}>seen</T>
+      <T x={300} y={140} s={14} a="middle" f={C.cherryText} w={700} o={fa(t, 1.0, 0.3)}>the flag arrives before the value</T>
+      <T x={300} y={185} s={17} a="middle" f={C.caramel} w={700} o={fa(t, 1.7, 0.4)}>Release. Acquire.</T>
     </Svg>
   );
 }

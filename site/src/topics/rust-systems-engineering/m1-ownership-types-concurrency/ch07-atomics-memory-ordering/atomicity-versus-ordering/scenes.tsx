@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -17,12 +17,22 @@ const threadDot = (cx: number, cy: number, label: string, opacity = 1) => (
 
 // ── 1 · Two separate questions about the same shared memory (hook) ─────────────────────────────
 export function TwoQuestionsHook({ t }: StepCtx) {
+  // Question 1 (atomicity): a split line races across the shared value, as if two half-writes landed.
+  // Question 2 (ordering): two arrows to two observers draw at different speeds, arriving out of step.
+  const tearK = easeOut(seg(t, 0.2, 0.7));
+  const arrowA = easeOut(seg(t, 1.0, 1.5));
+  const arrowB = easeOut(seg(t, 1.0, 2.0));
   return (
-    <Svg label="one shared location, two separate questions about it" h={240}>
-      <rect x={220} y={30} width={160} height={50} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-      <T x={300} y={60} s={13} a="middle" f={C.crema}>shared memory</T>
-      <T x={60} y={140} s={14} f={C.latte} o={fa(t, 0.5, 0.4)}>did this update tear?</T>
-      <T x={60} y={190} s={14} f={C.mocha} o={fa(t, 1.0, 0.4)}>what order do others see it in?</T>
+    <Svg label="one shared location, two separate questions about it" h={260}>
+      <rect x={220} y={16} width={160} height={50} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={300} y={46} s={13} a="middle" f={C.crema}>shared memory</T>
+      <line x1={220 + 160 * tearK} y1={16} x2={220 + 160 * tearK} y2={66} stroke={C.cherryText} strokeWidth={2} opacity={tearK > 0 && tearK < 1 ? 1 : 0} />
+      <T x={60} y={110} s={14} f={C.latte} o={fa(t, 0.4, 0.4)}>did this update tear?</T>
+      <line x1={260} y1={80} x2={lerp(260, 100, arrowA)} y2={lerp(80, 150, arrowA)} stroke={C.mocha} strokeWidth={1.5} opacity={fa(t, 1.0, 0.3)} />
+      <line x1={340} y1={80} x2={lerp(340, 500, arrowB)} y2={lerp(80, 150, arrowB)} stroke={C.mocha} strokeWidth={1.5} opacity={fa(t, 1.0, 0.3)} />
+      {threadDot(lerp(260, 100, arrowA), lerp(80, 150, arrowA), 'A', arrowA > 0 ? 1 : 0)}
+      {threadDot(lerp(340, 500, arrowB), lerp(80, 150, arrowB), 'B', arrowB > 0 ? 1 : 0)}
+      <T x={60} y={190} s={14} f={C.mocha} o={fa(t, 1.3, 0.4)}>what order do others see it in?</T>
     </Svg>
   );
 }
@@ -106,12 +116,19 @@ export function LoomViolationReveal({ t }: StepCtx) {
 
 // ── 7 · The missing piece has a name: happens-before (takeaway) ────────────────────────────────
 export function HappensBeforeReveal({ t }: StepCtx) {
+  // The relation itself draws: event A, an arrow for "happens-before", event B — the one
+  // relation every ordering in the model is built from.
   return (
-    <Svg label="the C++20 memory model Rust's atomics follow, minus consume" h={220}>
-      <rect x={120} y={30} width={360} height={50} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-      <T x={300} y={60} s={12} a="middle" f={C.latte}>"Rust atomics currently follow the same rules as C++20"</T>
-      <T x={60} y={130} s={13} f={C.crema} o={fa(t, 0.6, 0.4)}>happens-before: what's guaranteed seen</T>
-      <T x={60} y={170} s={13} f={C.mocha} o={fa(t, 1.1, 0.4)}>every ordering is built from this one relation</T>
+    <Svg label="the C++20 memory model Rust's atomics follow, minus consume" h={240}>
+      <rect x={120} y={30} width={360} height={50} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 0, 0.3)} />
+      <T x={300} y={60} s={12} a="middle" f={C.latte} o={fa(t, 0, 0.3)}>"Rust atomics currently follow the same rules as C++20"</T>
+      <circle cx={100} cy={160} r={16} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 0.6, 0.3)} />
+      <T x={100} y={165} s={13} a="middle" f={C.crema} o={fa(t, 0.6, 0.3)}>A</T>
+      <Draw pts={[[120, 160], [280, 160]]} t={t} from={0.8} to={1.3} stroke={C.caramel} w={2} />
+      <T x={200} y={145} s={11} a="middle" f={C.taupe} o={fa(t, 1.0, 0.3)}>happens-before</T>
+      <circle cx={300} cy={160} r={16} fill="none" stroke={C.caramel} strokeWidth={2} opacity={fa(t, 1.3, 0.3)} />
+      <T x={300} y={165} s={13} a="middle" f={C.crema} o={fa(t, 1.3, 0.3)}>B</T>
+      <T x={60} y={210} s={13} f={C.mocha} o={fa(t, 1.7, 0.4)}>every ordering is built from this one relation</T>
     </Svg>
   );
 }
@@ -132,10 +149,18 @@ export function DataRaceUbReveal({ t }: StepCtx) {
 
 // ── 9 · The kernel has its own, stricter model (takeaway) ──────────────────────────────────────
 export function LkmmReveal({ t }: StepCtx) {
+  // The one path this topic follows (C++20) draws straight across; a second path forks off and
+  // is labelled LKMM, visibly a different model rather than just a second sentence.
+  const forkK = easeOut(seg(t, 0.6, 1.1));
   return (
-    <Svg label="LKMM: a distinct, stricter model, named and set aside" h={200}>
-      <T x={60} y={70} s={14} f={C.crema} o={fa(t, 0.4, 0.4)}>the Linux kernel's own memory model is different</T>
-      <T x={60} y={120} s={13} f={C.mocha} o={fa(t, 1.0, 0.4)}>it matters only for kernel Rust</T>
+    <Svg label="LKMM: a distinct, stricter model, named and set aside" h={220}>
+      <T x={60} y={40} s={13} f={C.taupe} o={fa(t, 0, 0.3)}>C++20 / Rust</T>
+      <Draw pts={[[60, 56], [300, 56]]} t={t} from={0.1} to={0.6} stroke={C.caramel} w={2} />
+      <Draw pts={[[300, 56], [500, 56]]} t={t} from={0.6} to={1.0} stroke={C.caramel} w={2} />
+      <Draw pts={[[300, 56], [500, lerp(56, 130, forkK)]]} t={t} from={0.6} to={1.1} stroke={C.taupe} w={1.5} dash="4 4" />
+      <T x={500} y={150} s={12} a="end" f={C.taupe} o={fa(t, 1.1, 0.3)}>LKMM</T>
+      <T x={60} y={90} s={14} f={C.crema} o={fa(t, 1.3, 0.4)}>the Linux kernel's own memory model is different</T>
+      <T x={60} y={180} s={13} f={C.mocha} o={fa(t, 1.8, 0.4)}>it matters only for kernel Rust</T>
     </Svg>
   );
 }
