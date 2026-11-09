@@ -127,7 +127,7 @@ export function SleepReveal({ t }: StepCtx) {
       <circle cx={dotX} cy={82} r={4} fill={C.caramel} opacity={fa(t, 0.3, 0.3)} />
       <g opacity={fa(t, 0.9, 0.4)}>
         <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>woke at: 201ms</T>
+        <T x={170} y={112} s={13} a="middle" f={C.mocha}>woke close to the deadline</T>
       </g>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the thing that actually calls wake</T>
     </Svg>
