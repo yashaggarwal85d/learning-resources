@@ -29,13 +29,19 @@ function timeBar(x: number, y: number, frac: number, display: string, label: str
 
 // ── 1 · A lock's only job is synchronizing memory (hook) ───────────────────────────────────────
 export function CriticalSectionHook({ t }: StepCtx) {
+  // A pointer actually crosses the section, touching a read mark then a write mark, so the box
+  // is shown doing its one job rather than just labelled with it.
   return (
     <Svg label="a critical section, holding only a memory read and a memory write" h={260}>
       <rect x={200} y={70} width={200} height={70} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-      <T x={300} y={100} s={13} a="middle" f={C.crema}>critical section</T>
-      <T x={300} y={122} s={11} a="middle" f={C.taupe}>read memory, write memory</T>
-      <T x={60} y={200} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>that's the whole job, nothing more</T>
-      <T x={60} y={226} s={13} f={C.mocha} o={fa(t, 1.1, 0.4)}>what if something else goes in there?</T>
+      <T x={300} y={54} s={13} a="middle" f={C.crema}>critical section</T>
+      <circle cx={230} cy={105} r={4} fill={C.mocha} opacity={fa(t, 0.1, 0.2)} />
+      <T x={230} y={128} s={10} a="middle" f={C.taupe}>read</T>
+      <circle cx={370} cy={105} r={4} fill={C.caramel} opacity={fa(t, 0.6, 0.2)} />
+      <T x={370} y={128} s={10} a="middle" f={C.taupe}>write</T>
+      <Draw pts={[[230, 105], [370, 105]]} t={t} from={0.1} to={0.6} stroke={C.taupe} w={1.5} />
+      <T x={60} y={200} s={13} f={C.latte} o={fa(t, 1.0, 0.4)}>that's the whole job, nothing more</T>
+      <T x={60} y={226} s={13} f={C.mocha} o={fa(t, 1.5, 0.4)}>what if something else goes in there?</T>
     </Svg>
   );
 }
