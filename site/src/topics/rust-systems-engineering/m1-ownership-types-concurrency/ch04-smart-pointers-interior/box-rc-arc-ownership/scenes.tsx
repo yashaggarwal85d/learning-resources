@@ -107,18 +107,21 @@ export function ContentionPredict({ t }: StepCtx) {
 
 // ── 6 · Measuring what contention really costs ──────────────────────────────────────────────────────
 export function ContentionBar({ t }: StepCtx) {
+  // The run's own numbers vary by machine (examples.py asserts contended_ns > uncontended_ns, never an exact ratio),
+  // so the bars race schematically: the baseline grows first, then the contended bar grows past it and holds there.
+  const base = 240 * easeOut(seg(t, 0.1, 0.7));
+  const contended = 240 * 1.65 * easeOut(seg(t, 0.8, 1.6));
+  const overshoot = contended > base;
   return (
-    <Svg label="measured: the contended run took longer than the single uncontended thread doing all of it alone" h={380}>
-      <g opacity={fa(t, 0.2, 0.4)}>
-        <rect x={100} y={260} width={120} height={60} fill="none" stroke={C.taupe} strokeWidth={2} />
-        <T x={160} y={300} s={13} a="middle" f={C.crema}>one thread</T>
-      </g>
-      <g opacity={fa(t, 0.8, 0.4)}>
-        <rect x={340} y={140} width={120} height={180} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={400} y={180} s={13} a="middle" f={C.crema}>four threads</T>
-      </g>
-      <T x={60} y={340} s={13} f={C.mocha} o={fa(t, 1.4, 0.4)}>contention cost more than</T>
-      <T x={60} y={362} s={13} f={C.mocha} o={fa(t, 1.6, 0.4)}>the parallelism gave back</T>
+    <Svg label="measured: the contended run took longer than the single uncontended thread doing all of it alone" h={300}>
+      <T x={14} y={30} s={13} f={C.taupe}>one thread, all the work</T>
+      <rect x={14} y={42} width={Math.max(2, base)} height={34} rx={6} fill={C.band} stroke={C.taupe} strokeWidth={1.5} />
+      <line x1={14 + base} y1={28} x2={14 + base} y2={236} stroke={C.taupe} strokeDasharray="5 4" opacity={fa(t, 0.7, 0.2)} />
+      <T x={14} y={120} s={13} f={C.taupe}>four threads, same total work</T>
+      <rect x={14} y={132} width={Math.max(2, contended)} height={34} rx={6} fill={overshoot ? C.cherry : C.band} fillOpacity={overshoot ? 0.3 : 1} stroke={overshoot ? C.cherryText : C.taupe} strokeWidth={overshoot ? 2.5 : 1.5} />
+      <T x={300} y={200} s={15} a="middle" f={C.cherryText} w={700} o={fa(t, 1.7, 0.3)}>slower than one thread alone</T>
+      <T x={14} y={252} s={13} f={C.mocha} o={fa(t, 2.1, 0.3)}>contention cost more than</T>
+      <T x={14} y={274} s={13} f={C.mocha} o={fa(t, 2.3, 0.3)}>the parallelism gave back</T>
     </Svg>
   );
 }

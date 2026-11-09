@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -44,13 +44,19 @@ export function NoCellFail({ t }: StepCtx) {
 
 // ── 3 · Cell copies the whole value, in and out ─────────────────────────────────────────────────────
 export function CellCopy({ t }: StepCtx) {
+  // A value chip actually slides into the Cell on set, then a second chip slides back out on get:
+  // two whole-value copies crossing the boundary, never a reference into it.
+  const inK = easeOut(seg(t, 0.3, 0.9));
+  const outK = easeOut(seg(t, 1.3, 1.9));
   return (
     <Svg label="Cell copies a whole value in and out; a reference to the inside is never handed out" h={280}>
       <rect x={220} y={30} width={160} height={54} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
       <T x={300} y={62} s={13} a="middle" f={C.crema}>Cell&lt;u32&gt;</T>
-      <T x={90} y={150} s={13} f={C.taupe} o={fa(t, 0.5, 0.4)}>set copies a value in</T>
-      <T x={340} y={150} s={13} f={C.taupe} o={fa(t, 1.0, 0.4)}>get copies a value out</T>
-      <T x={90} y={210} s={12} f={C.mocha} o={fa(t, 1.6, 0.4)}>no reference handed out, nothing to track</T>
+      {inK > 0 && inK < 1 && <rect x={lerp(90, 250, inK)} y={46} width={40} height={22} rx={5} fill={C.band} stroke={C.taupe} strokeWidth={1.5} />}
+      <T x={90} y={150} s={13} f={C.taupe} o={fa(t, 0.3, 0.3)}>set copies a value in</T>
+      {outK > 0 && outK < 1 && <rect x={lerp(310, 450, outK)} y={46} width={40} height={22} rx={5} fill={C.band} stroke={C.taupe} strokeWidth={1.5} />}
+      <T x={340} y={150} s={13} f={C.taupe} o={fa(t, 1.3, 0.3)}>get copies a value out</T>
+      <T x={90} y={210} s={12} f={C.mocha} o={fa(t, 2.0, 0.4)}>no reference handed out, nothing to track</T>
     </Svg>
   );
 }
