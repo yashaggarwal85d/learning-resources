@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Bar, Reticle } from '../../../../../reels/kit';
 
 // A file descriptor is a handle, not the resource itself — a duplicated one genuinely
 // shares its original's offset, a dropped OwnedFd genuinely closes the real resource,
@@ -26,14 +26,16 @@ export function DupPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: continues from the shared offset (this is the swipe test's "from" step — NO takeaway) ──
 export function DupReveal({ t }: StepCtx) {
+  const cursorX = lerp(60, 400, easeOut(seg(t, 0.15, 1.1)));
+  const first = cursorX < 230;
   return (
     <Svg label="dup_shares_the_same_offset.rs: one offset, two fds" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>original reads: the first half</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>duplicate reads: the second half</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one offset, shared, not two</T>
+      <line x1={60} y1={55} x2={400} y2={55} stroke={C.mocha} strokeWidth={1.5} />
+      <circle cx={cursorX} cy={55} r={5} fill={C.caramel} />
+      <T x={60} y={35} s={12} f={first ? C.crema : C.quiet}>original reads</T>
+      <T x={260} y={35} s={12} f={first ? C.quiet : C.crema}>duplicate reads</T>
+      <T x={60} y={125} s={13} f={C.mocha} o={fa(t, 0.9, 0.3)}>continues from the exact same offset</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.2, 0.3)}>one offset, shared, not two</T>
     </Svg>
   );
 }
@@ -56,14 +58,15 @@ export function OwnedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: closed outright, borrow stays valid (takeaway) ────────────────────────────────
 export function OwnedReveal({ t }: StepCtx) {
+  const closeK = easeOut(seg(t, 0.2, 0.5));
   return (
     <Svg label="owned_fd_closes_on_drop.rs: a real close" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>dropped OwnedFd's number: EBADF</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>a separate BorrowedFd: still valid</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>ownership decides, not the number</T>
+      <rect x={60} y={40} width={150} height={44} rx={6} fill="none" stroke={closeK > 0.9 ? C.cherryText : C.taupe} strokeWidth={2} opacity={1 - closeK * 0.4} />
+      <T x={135} y={67} s={12} a="middle" f={C.crema}>dropped OwnedFd</T>
+      <rect x={270} y={40} width={170} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={355} y={67} s={12} a="middle" f={C.crema}>separate BorrowedFd</T>
+      <T x={60} y={125} s={13} f={C.mocha} o={fa(t, 0.6, 0.3)}>dropped fd's number: EBADF</T>
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 0.9, 0.3)}>ownership decides, not the number</T>
     </Svg>
   );
 }
@@ -86,14 +89,16 @@ export function CloexecPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: default fd gone, leaked fd survives (takeaway) ────────────────────────────────
 export function CloexecReveal({ t }: StepCtx) {
+  const crossX = lerp(60, 300, easeOut(seg(t, 0.2, 0.7)));
+  const fadeDefault = 1 - easeOut(seg(t, 0.45, 0.65));
   return (
     <Svg label="cloexec_default_blocks_the_leak.rs: a real exec" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>default fd, in the child: gone</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>CLOEXEC-cleared fd: still there</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a default working exactly as it should</T>
+      <line x1={220} y1={25} x2={220} y2={115} stroke={C.mocha} strokeWidth={1.5} strokeDasharray="4 4" />
+      <T x={220} y={128} s={11} a="middle" f={C.taupe}>exec</T>
+      <circle cx={Math.min(crossX, 220)} cy={55} r={5} fill={C.caramel} opacity={fadeDefault} />
+      <circle cx={crossX} cy={95} r={5} fill={C.cherryText} opacity={fa(t, 0.2, 0.3)} />
+      <T x={60} y={135} s={13} f={C.mocha} o={fa(t, 0.8, 0.3)}>default fd, in the child: gone</T>
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.1, 0.3)}>CLOEXEC-cleared fd: still there</T>
     </Svg>
   );
 }
@@ -116,10 +121,14 @@ export function LimitPredict({ t }: StepCtx) {
 
 // ── 8 · RLIMIT_NOFILE, the real ceiling (no takeaway, connecting step) ──────────────────────────
 export function LimitReveal({ t }: StepCtx) {
+  const w = lerp(6, 260, easeOut(seg(t, 0.2, 0.9)));
   return (
     <Svg label="getrlimit(2): a real, enforced ceiling" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>one more than the highest fd a process may hold</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>RLIMIT_NOFILE — exceeding it is EMFILE</T>
+      <Bar x={60} y={25} w={w} h={16} full={280} fill={C.caramel} />
+      <line x1={340} y1={15} x2={340} y2={51} stroke={C.cherryText} strokeWidth={2} />
+      <Reticle x={340} y={33} w={30} h={36} t={t} at={0.9} />
+      <T x={60} y={75} s={13} f={C.crema} o={fa(t, 0.3, 0.3)}>one more than the highest fd a process may hold</T>
+      <T x={60} y={105} s={13} f={C.latte} o={fa(t, 0.9, 0.3)}>RLIMIT_NOFILE — exceeding it is EMFILE</T>
     </Svg>
   );
 }

@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { Stack, Svg, T, C } from '../../../../../reels/kit';
 
@@ -25,14 +25,15 @@ export function CommandPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: own pid, real exit code (this is the swipe test's "from" step — NO takeaway) ──
 export function CommandReveal({ t }: StepCtx) {
+  const x = lerp(140, 320, easeOut(seg(t, 0.2, 0.6)));
   return (
     <Svg label="command_spawns_a_real_child.rs: a real child" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>child's pid: genuinely its own</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>exit code: exactly 7</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real, separate process</T>
+      <circle cx={90} cy={55} r={6} fill={C.taupe} />
+      <T x={90} y={38} s={11} a="middle" f={C.quiet}>parent</T>
+      <circle cx={x} cy={55} r={6} fill={C.caramel} />
+      <T x={x} y={38} s={11} a="middle" f={C.crema}>child, own pid</T>
+      <T x={60} y={115} s={13} f={C.mocha} o={fa(t, 0.7, 0.3)}>exit code: exactly 7</T>
+      <T x={60} y={145} s={13} f={C.latte} o={fa(t, 1.0, 0.3)}>a real, separate process</T>
     </Svg>
   );
 }
@@ -55,14 +56,19 @@ export function ForkPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: child has exactly one thread (takeaway) ───────────────────────────────────────
 export function ForkReveal({ t }: StepCtx) {
+  const crossAt = 0.5;
   return (
     <Svg label="fork_child_has_one_thread.rs: a real count" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>parent's own thread count: several</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>forked child's count: exactly one</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one thread, the rest simply gone</T>
+      <T x={60} y={30} s={13} f={C.quiet}>parent, before fork</T>
+      {[0, 1, 2, 3].map((i) => {
+        const k = easeOut(seg(t, 0.15 + i * 0.1, 0.15 + i * 0.1 + 0.2));
+        return <circle key={i} cx={70 + i * 35} cy={55} r={5} fill={C.taupe} opacity={k} />;
+      })}
+      <line x1={220} y1={20} x2={220} y2={110} stroke={C.mocha} strokeWidth={1.5} strokeDasharray="4 4" />
+      <T x={220} y={123} s={11} a="middle" f={C.taupe}>fork()</T>
+      <circle cx={260} cy={55} r={5} fill={C.caramel} opacity={fa(t, crossAt, 0.2)} />
+      <T x={60} y={145} s={13} f={C.mocha} o={fa(t, crossAt + 0.3, 0.3)}>forked child's count: exactly one</T>
+      <T x={60} y={175} s={13} f={C.latte} o={fa(t, crossAt + 0.6, 0.3)}>one thread, the rest simply gone</T>
     </Svg>
   );
 }
@@ -85,14 +91,17 @@ export function PidfdPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: succeeds alive, ESRCH once gone (takeaway) ────────────────────────────────────
 export function PidfdReveal({ t }: StepCtx) {
+  const reapAt = 0.6;
+  const pulse = 0.5 + 0.5 * Math.sin(t * 6);
+  const aliveOpac = pulse * (1 - easeOut(seg(t, reapAt, reapAt + 0.1)));
   return (
     <Svg label="pidfd_fails_after_the_process_is_gone.rs: a real check" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>while alive: the signal succeeds</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>once gone: fails outright, ESRCH</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>never confused with a new process</T>
+      <circle cx={100} cy={55} r={5} fill={C.caramel} opacity={aliveOpac} />
+      <T x={60} y={35} s={12} f={C.quiet}>while alive</T>
+      <circle cx={300} cy={55} r={5} fill={C.cherryText} opacity={fa(t, reapAt, 0.2)} />
+      <T x={260} y={35} s={12} f={C.quiet}>once gone</T>
+      <T x={60} y={115} s={13} f={C.mocha} o={fa(t, 0.4, 0.3)}>while alive: the signal succeeds</T>
+      <T x={60} y={145} s={13} f={C.latte} o={fa(t, reapAt + 0.3, 0.3)}>once gone: fails outright, ESRCH</T>
     </Svg>
   );
 }
@@ -115,10 +124,12 @@ export function SetVarPredict({ t }: StepCtx) {
 
 // ── 8 · The documented safety contract, quoted (no takeaway, connecting step) ───────────────────
 export function SetVarReveal({ t }: StepCtx) {
+  const pulse = 0.5 + 0.5 * Math.sin(t * 8);
   return (
     <Svg label="std::env::set_var's own safety section" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>sound alone on one thread, or on Windows</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>elsewhere, multithreaded: never call it at all</T>
+      <T x={60} y={50} s={13} f={C.crema} o={fa(t, 0.2, 0.4)}>sound alone on one thread, or on Windows</T>
+      <circle cx={430} cy={90} r={5} fill={C.cherryText} opacity={fa(t, 0.6, 0.3) * pulse} />
+      <T x={60} y={95} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>elsewhere, multithreaded: never call it at all</T>
     </Svg>
   );
 }
