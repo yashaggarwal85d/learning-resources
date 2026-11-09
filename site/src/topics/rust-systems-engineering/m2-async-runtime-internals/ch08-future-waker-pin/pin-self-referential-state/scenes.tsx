@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, easeInOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Reticle } from '../../../../../reels/kit';
 
 // Pin exists because the compiler's generated async state machines can hold a reference into
 // their own fields; moving such a value after that reference forms leaves it stale. Every claim
@@ -42,18 +42,18 @@ export function NamedByStdlibReveal({ t }: StepCtx) {
 
 // ── 3 · Breaks on move (takeaway) ────────────────────────────────────────────────────────────────
 export function BreaksOnMoveReveal({ t }: StepCtx) {
+  const k = easeInOut(seg(t, 1.0, 1.8));
+  const x = lerp(70, 340, k);
+  const broken = k > 0.05;
   return (
-    <Svg label="self_ref_breaks_on_move.rs: measured, not assumed" h={220}>
-      <T x={60} y={50} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>right after construction, still lines up</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={70} width={160} height={44} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={140} y={97} s={13} a="middle" f={C.mocha}>valid: true</T>
-      </g>
-      <T x={60} y={150} s={14} f={C.crema} o={fa(t, 1.4, 0.4)}>after the move, it no longer does</T>
-      <g opacity={fa(t, 2.0, 0.4)}>
-        <rect x={60} y={170} width={160} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={140} y={197} s={13} a="middle" f={C.crema}>valid: false</T>
-      </g>
+    <Svg label="self_ref_breaks_on_move.rs: the value moves, the pointer doesn't" h={240}>
+      <T x={60} y={30} s={13} f={C.quiet}>right after construction, the pointer targets value, in place</T>
+      <circle cx={150} cy={110} r={3} fill={C.taupe} />
+      <rect x={x} y={70} width={160} height={60} rx={6} fill="none" stroke={broken ? C.caramel : C.taupe} strokeWidth={2} />
+      <T x={x + 80} y={95} s={12} a="middle" f={C.crema}>value</T>
+      <T x={x + 80} y={115} s={11} a="middle" f={broken ? C.cherryText : C.mocha}>{broken ? 'pointer: dangling' : 'pointer: self'}</T>
+      <line x1={150} y1={110} x2={x + 20} y2={100} stroke={broken ? C.cherryText : C.taupe} strokeWidth={1.5} strokeDasharray={broken ? '3 3' : undefined} />
+      <T x={60} y={210} s={13} f={C.latte} o={fa(t, 1.9, 0.3)}>moved — the pointer now targets stale, freed memory</T>
     </Svg>
   );
 }
@@ -76,11 +76,16 @@ export function BoxFixPredict({ t }: StepCtx) {
 
 // ── 5 · Pin<Ptr> is a promise about the pointee (takeaway) ─────────────────────────────────────
 export function PinPromiseReveal({ t }: StepCtx) {
+  const y = lerp(10, 55, easeOut(seg(t, 0.3, 0.9)));
   return (
-    <Svg label="std::pin's own definition" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>Pin wraps a pointer, not the value itself</T>
-      <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>a promise the pointee will not move</T>
-      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>almost every ordinary type never needed it: Unpin</T>
+    <Svg label="Pin<Ptr>: a promise about where the pointee stays" h={200}>
+      <rect x={180} y={65} width={160} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <T x={260} y={95} s={13} a="middle" f={C.crema}>the pointee</T>
+      <line x1={260} y1={y} x2={260} y2={65} stroke={C.caramel} strokeWidth={2} />
+      <circle cx={260} cy={y} r={6} fill={C.caramel} />
+      <Reticle x={260} y={90} w={170} h={60} t={t} at={0.9} />
+      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.1, 0.4)}>Pin wraps the pointer: a promise the pointee won't move</T>
+      <T x={60} y={180} s={13} f={C.taupe} o={fa(t, 1.6, 0.4)}>almost every ordinary type never needed it: Unpin</T>
     </Svg>
   );
 }

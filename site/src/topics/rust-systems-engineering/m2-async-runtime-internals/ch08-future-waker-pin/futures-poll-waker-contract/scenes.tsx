@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { Stack, Svg, T, C } from '../../../../../reels/kit';
 
@@ -11,6 +11,7 @@ const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
 
 // ── 1 · A value that does nothing until something asks (hook) ──────────────────────────────────
 export function InertFutureHook({ t }: StepCtx) {
+  const pulse = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 6));
   return (
     <Svg label="a future, inert, next to a thread already running" h={220}>
       <rect x={60} y={50} width={180} height={60} rx={8} fill="none" stroke={C.taupe} strokeWidth={2} />
@@ -18,6 +19,7 @@ export function InertFutureHook({ t }: StepCtx) {
       <g opacity={fa(t, 0.6, 0.4)}>
         <rect x={340} y={50} width={180} height={60} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={430} y={85} s={13} a="middle" f={C.crema}>thread: already running</T>
+        <circle cx={430} cy={102} r={4} fill={C.caramel} opacity={pulse} />
       </g>
       <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.2, 0.4)}>constructing one does not start it</T>
     </Svg>
@@ -137,11 +139,25 @@ export function WakeTraitReveal({ t }: StepCtx) {
 
 // ── 9 · Future, Waker, scheduler, poll — run end to end (takeaway) ─────────────────────────────
 export function FullLoopReveal({ t }: StepCtx) {
+  const nodes: [number, number][] = [[120, 70], [310, 70], [310, 170], [120, 170]];
+  const labels = ['future', 'waker', 'scheduler', 'poll'];
+  const k = (t * 0.6) % 1;
+  const i0 = Math.floor(k * 4);
+  const f = (k * 4) % 1;
+  const a = nodes[i0];
+  const b = nodes[(i0 + 1) % 4];
+  const dotX = lerp(a[0], b[0], f);
+  const dotY = lerp(a[1], b[1], f);
   return (
-    <Svg label="future, waker, scheduler, poll — the whole architecture" h={240}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.2, 0.4)}>future → waker → scheduler → poll</T>
-      <T x={60} y={110} s={13} f={C.mocha} o={fa(t, 0.8, 0.4)}>delay_executor.rs: the result lands exactly once</T>
-      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.4, 0.4)}>no hidden thread does the future's work</T>
+    <Svg label="future, waker, scheduler, poll — the cycle, running" h={240}>
+      {nodes.map(([x, y], i) => (
+        <g key={i}>
+          <rect x={x - 55} y={y - 20} width={110} height={40} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+          <T x={x} y={y + 5} s={12} a="middle" f={C.crema}>{labels[i]}</T>
+        </g>
+      ))}
+      <circle cx={dotX} cy={dotY} r={5} fill={C.caramel} />
+      <T x={60} y={215} s={13} f={C.latte} o={fa(t, 0.3, 0.3)}>no hidden thread does the future's work</T>
     </Svg>
   );
 }

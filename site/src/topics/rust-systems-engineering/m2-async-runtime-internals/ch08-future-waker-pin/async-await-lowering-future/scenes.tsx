@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, easeInOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Draw, Plot, Reticle, Bar } from '../../../../../reels/kit';
 
 // async fn lowers to an enum of suspension states, one per await point, each holding its own
 // live locals; that size, and the !Send propagation rule, are both measured for real by
@@ -27,10 +27,12 @@ export function CallReturnsValuePredict({ t }: StepCtx) {
 // ── 2 · A value, the same laziness (no takeaway, "from" step) ──────────────────────────────────
 export function SameLazinessReveal({ t }: StepCtx) {
   return (
-    <Svg label="the same laziness from last topic, by a different name" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>constructing a future does no work</T>
-      <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>calling an async fn is exactly that</T>
-      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>a value comes back, nothing has run</T>
+    <Svg label="time passes after the call; still nothing has run" h={200}>
+      <Draw pts={[[60, 100], [520, 100]]} t={t} from={0.2} to={1.3} stroke={C.mocha} w={1.5} pen={false} dash="4 5" />
+      <Plot pts={[[60, 100]]} t={t} start={0.1} fill={C.caramel} labels={['small_future()']} />
+      <Reticle x={520} y={100} w={150} h={46} t={t} at={1.3} />
+      <T x={445} y={85} s={13} a="middle" f={C.latte} o={fa(t, 1.3, 0.3)}>still nothing has run</T>
+      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.7, 0.4)}>constructing it is the only thing that happened</T>
     </Svg>
   );
 }
@@ -67,26 +69,30 @@ export function BiggerLocalPredict({ t }: StepCtx) {
 
 // ── 5 · Measured: two bytes versus over four thousand (takeaway) ───────────────────────────────
 export function MeasuredSizesReveal({ t }: StepCtx) {
+  const largeW = lerp(8, 470, easeOut(seg(t, 0.3, 1.2)));
   return (
-    <Svg label="future_size.rs: real measured sizes" h={220}>
-      <rect x={60} y={50} width={100} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-      <T x={110} y={80} s={13} a="middle" f={C.crema}>small</T>
-      <g opacity={fa(t, 0.5, 0.4)}>
-        <rect x={220} y={50} width={320} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={380} y={80} s={13} a="middle" f={C.crema}>large: holds the buffer</T>
-      </g>
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.1, 0.4)}>the same await point, two very different sizes</T>
+    <Svg label="future_size.rs: bars race to each measured size" h={220}>
+      <T x={60} y={45} s={13} f={C.quiet}>small_future(): nothing held across the await</T>
+      <Bar x={60} y={55} w={8} h={24} full={470} fill={C.caramel} />
+      <T x={60} y={125} s={13} f={C.quiet}>large_future(): the 4096-byte local held</T>
+      <Bar x={60} y={135} w={largeW} h={24} full={470} fill={C.caramel} />
+      <T x={60} y={190} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>the same await point, two very different sizes</T>
     </Svg>
   );
 }
 
 // ── 6 · That size difference is a real memcpy (takeaway) ────────────────────────────────────────
 export function RealMemcpyReveal({ t }: StepCtx) {
+  const k = easeInOut(seg(t, 0.2, 1.1));
+  const x = lerp(90, 400, k);
   return (
-    <Svg label="moving the future copies every byte it holds" h={220}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>Box::pin(large_future()) moves the whole enum</T>
-      <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>every byte measured gets copied, once</T>
-      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>a real cost, paid on every move</T>
+    <Svg label="Box::pin moves the future: every byte travels with it" h={220}>
+      <T x={60} y={40} s={13} f={C.quiet}>Box::pin(large_future())</T>
+      <Draw pts={[[90, 150], [400, 150]]} t={t} from={0.2} to={1.1} stroke={C.mocha} w={1.5} pen={false} dash="4 5" />
+      <rect x={x} y={120} width={150} height={56} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={x + 75} y={153} s={13} a="middle" f={C.crema}>enum + buffer</T>
+      <Reticle x={x + 75} y={148} w={160} h={66} t={t} at={1.1} />
+      <T x={60} y={200} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>every byte the enum holds travels with it</T>
     </Svg>
   );
 }

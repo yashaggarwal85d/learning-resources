@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, easeInOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Reticle } from '../../../../../reels/kit';
 
 // A trait's async fn is neither dyn compatible nor Send-constrainable by callers — two separate
 // gaps in the stable 2026 language, each proven by a real compiler error. trait-variant and
@@ -88,14 +88,15 @@ export function TraitVariantReveal({ t }: StepCtx) {
 
 // ── 6 · Proven: spawned on a real thread (takeaway) ──────────────────────────────────────────────
 export function TraitVariantProvenReveal({ t }: StepCtx) {
+  const x = lerp(60, 330, easeInOut(seg(t, 0.3, 1.1)));
   return (
     <Svg label="trait-variant-fix: a real cross-thread spawn" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>through the generated Greeter trait</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>spawned, joined, correct</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real thread, not merely described</T>
+      <T x={60} y={40} s={13} f={C.quiet}>through the generated Greeter trait</T>
+      <line x1={300} y1={55} x2={300} y2={150} stroke={C.mocha} strokeWidth={1.5} strokeDasharray="4 4" />
+      <T x={300} y={165} s={12} a="middle" f={C.taupe}>thread boundary</T>
+      <rect x={x} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={x + 110} y={112} s={13} a="middle" f={C.mocha}>spawned, joined, correct</T>
+      <Reticle x={x + 110} y={107} w={230} h={54} t={t} at={1.1} />
     </Svg>
   );
 }
@@ -132,14 +133,14 @@ export function AsyncTraitReveal({ t }: StepCtx) {
 
 // ── 9 · Measured: one real allocation (takeaway) ────────────────────────────────────────────────
 export function AllocationCountReveal({ t }: StepCtx) {
+  const n = Math.round(lerp(0, 1, easeOut(seg(t, 0.4, 1.1))));
   return (
     <Svg label="async-trait-fix: a real counting allocator" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one dyn-dispatched call, through the macro</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>allocations: exactly one</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>counted directly, not cited</T>
+      <T x={60} y={40} s={13} f={C.quiet}>one dyn-dispatched call, through the macro</T>
+      <T x={60} y={125} s={48} f={C.caramel} serif>{n}</T>
+      <T x={150} y={120} s={14} f={C.mocha}>heap allocation</T>
+      <Reticle x={90} y={100} w={160} h={64} t={t} at={1.1} />
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>counted directly, not cited</T>
     </Svg>
   );
 }
