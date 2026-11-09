@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, easeOutBack, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, Draw, Reticle, Stack, Svg, T } from '../../../../../reels/kit';
 
 // The topic's own idea: a lifetime as a bracket drawn *over* existing borrow edges, never touching the drop
 // timeline. Variance gets its own small two-box diagram (CHAPTER.md §A.5): an outer box (the longer lifetime)
@@ -154,19 +154,27 @@ export function StaticBound({ t }: StepCtx) {
 
 // ── 9 · The one case the bound really is the fix ────────────────────────────────────────────────────────────────
 export function BoxLeak({ t }: StepCtx) {
+  // The drop bracket draws in as if about to close, then is struck through at the moment the
+  // destructor is skipped; a lock-on settles on the reference that comes out really 'static.
+  const bracketK = easeOut(seg(t, 0.2, 0.7));
+  const struck = t >= 0.9;
+  const strikeK = easeOut(seg(t, 0.9, 1.1));
   return (
     <Svg label="Box::leak mints a genuine static reference to data created at run time, by deliberately skipping its destructor" h={300}>
       <T x={40} y={50} s={15} f={C.crema}>Box::leak(Box::new(n))</T>
-      <g opacity={fa(t, 0.6, 0.4)}>
-        <T x={40} y={90} s={14} f={C.taupe}>the destructor never runs, on purpose</T>
-        <T x={40} y={112} s={14} f={C.taupe}>(Chapter 1's leak-safety)</T>
+      <rect x={40} y={70} width={110} height={34} rx={7} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={bracketK} />
+      <T x={95} y={92} s={11} a="middle" f={C.taupe} o={bracketK}>drop</T>
+      {struck && <line x1={40} y1={70 + 34 * (1 - strikeK)} x2={150} y2={70 + 34 * strikeK} stroke={C.cherryText} strokeWidth={2} />}
+      <T x={170} y={92} s={13} f={C.cherryText} o={fa(t, 0.9, 0.3)}>skipped, on purpose (Chapter 1's leak-safety)</T>
+      <g opacity={fa(t, 1.3, 0.4)}>
+        <rect x={40} y={128} width={180} height={40} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={130} y={153} s={13} a="middle" f={C.caramel}>&amp;'static n</T>
       </g>
-      <g opacity={fa(t, 1.4, 0.4)}>
-        <T x={40} y={150} s={14} f={C.caramel}>really &'static, no coercion needed</T>
-      </g>
-      <g opacity={fa(t, 2.2, 0.4)}>
-        <T x={40} y={190} s={14} f={C.taupe}>rare, explicit, and deliberate</T>
-        <T x={40} y={212} s={14} f={C.taupe}>almost never the fix for a 'static hint</T>
+      <Reticle x={130} y={148} w={200} h={60} t={t} at={1.9} />
+      <T x={40} y={220} s={14} f={C.caramel} o={fa(t, 2.1, 0.4)}>really &apos;static, no coercion needed</T>
+      <g opacity={fa(t, 2.5, 0.4)}>
+        <T x={40} y={255} s={13} f={C.taupe}>rare, explicit, and deliberate</T>
+        <T x={40} y={277} s={13} f={C.taupe}>almost never the fix for a 'static hint</T>
       </g>
     </Svg>
   );
