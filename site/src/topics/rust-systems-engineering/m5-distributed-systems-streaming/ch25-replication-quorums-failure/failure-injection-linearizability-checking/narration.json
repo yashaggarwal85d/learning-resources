@@ -77,9 +77,9 @@
     },
     {
       "lines": [
-        "So here's the shape of this whole topic: a recorded history gathered under several real, independent failures can be mechanically checked for linearizability.",
-        "Only the failures an actual read observes ever show up as a violation; the rest can be injected all day and leave no trace at all.",
-        "A real checker finds the answer by genuine enumeration over every candidate order, never by assumption."
+        "Notice what you never had to do here: you never reasoned about which interleavings were plausible, and you never trusted your own intuition about which failure mattered.",
+        "The checker tried every order and let the register's own semantics rule each one in or out; your job was only to record the history honestly.",
+        "That brute-force habit does not scale to a real production log, but the next chapter asks a harder question it sets up perfectly: before anyone can even record a history to check, a cluster first has to agree on who is allowed to make the promise in the first place."
       ]
     }
   ]
