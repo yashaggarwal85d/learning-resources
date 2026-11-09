@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Reticle } from '../../../../../reels/kit';
 
 // Time/size retention deletes by age alone; compaction keeps the latest
 // value per key forever instead, until a real tombstone genuinely removes
@@ -64,6 +64,7 @@ export function CompactionReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>the identical old entry, kept by compaction</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>it is still that key's own latest value</T>
     </Svg>
   );
@@ -94,6 +95,7 @@ export function TombstoneReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>the key disappears; every other key stays</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a tombstone deletes the key, not just a value</T>
     </Svg>
   );

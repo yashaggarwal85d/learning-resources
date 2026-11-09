@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Reticle } from '../../../../../reels/kit';
 
 // A key's own write order is only genuinely guaranteed within one partition;
 // key-based routing holds that order only as long as the partition count
@@ -64,6 +64,7 @@ export function ResizeReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>at least one key's own route changed</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>growing a topic is never free for a key</T>
     </Svg>
   );
@@ -94,6 +95,7 @@ export function SplitReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>old entries stayed in the old partition</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>new writes landed in a different one</T>
     </Svg>
   );
