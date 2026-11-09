@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -48,22 +48,34 @@ function FatPointerDiagram({ t, from = 0.3, showRows = false }: { t: number; fro
 
 // ── 1 · Two words, not one ──────────────────────────────────────────────────────────────────────────
 export function FatPointer({ t }: StepCtx) {
+  // The data-pointer word is already there; the vtable word slides in from the right and docks flush against
+  // it, so the pointer visibly widens from one word to two, then a bracket locks onto the pair.
+  const dock = easeOutBack(seg(t, 1.0, 1.7));
+  const vx = lerp(600, 410, dock);
+  const lockOn = t >= 2.0;
   return (
     <Svg label="a reference or Box to a concrete type is one word; to a dyn Trait it is two words, a data pointer plus a vtable pointer" h={300}>
       <ThinPointer x={60} y={40} label="&A" />
       <ThinPointer x={60} y={110} label="Box<A>" />
       <T x={40} y={190} s={13} f={C.taupe} o={fa(t, 0.2, 0.4)}>one word: just the data</T>
-      <g opacity={fa(t, 0.7, 0.4)}>
+      <g opacity={fa(t, 0.6, 0.3)}>
         <rect x={320} y={40} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={365} y={69} s={12} a="middle" f={C.crema}>&dyn Codec</T>
-        <rect x={420} y={40} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={465} y={69} s={12} a="middle" f={C.crema}>vtable</T>
         <rect x={320} y={110} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={365} y={139} s={12} a="middle" f={C.crema}>Box dyn</T>
+      </g>
+      <g opacity={fa(t, 0.9, 0.3)} transform={`translate(${vx - 410} 0)`}>
+        <rect x={420} y={40} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <T x={465} y={69} s={12} a="middle" f={C.crema}>vtable</T>
         <rect x={420} y={110} width={90} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={465} y={139} s={12} a="middle" f={C.crema}>vtable</T>
-        <T x={320} y={190} s={13} f={C.caramel}>two words: data plus vtable</T>
       </g>
+      {lockOn && (
+        <g>
+          <rect x={316} y={32} width={198} height={62} rx={10} fill="none" stroke={C.focus} strokeWidth={2} opacity={easeOut(seg(t, 2.0, 2.3))} />
+        </g>
+      )}
+      <T x={320} y={190} s={13} f={C.caramel} o={fa(t, 1.8, 0.3)}>two words: data plus vtable</T>
     </Svg>
   );
 }

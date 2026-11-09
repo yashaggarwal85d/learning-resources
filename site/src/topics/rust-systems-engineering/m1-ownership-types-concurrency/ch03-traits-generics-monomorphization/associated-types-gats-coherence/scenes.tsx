@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -12,22 +12,36 @@ const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
 
 // ── 1 · Chosen once, or chosen many times ───────────────────────────────────────────────────────────
 export function AssocVsGeneric({ t }: StepCtx) {
+  // A second impl tries to land on the associated-type side and is rejected with a cross, proving
+  // "chosen once"; the generic side instead keeps landing one impl after another.
+  const tryK = easeOut(seg(t, 0.9, 1.3));
+  const tryX = lerp(300, 160, tryK);
+  const rejected = t >= 1.3;
   return (
     <Svg label="an associated type is chosen once per impl; a generic parameter on the trait lets the same type implement it many times" h={340}>
       <T x={40} y={30} s={13} f={C.taupe}>Codec::Output, an associated type</T>
       <g opacity={fa(t, 0.2, 0.4)}>
         <rect x={60} y={44} width={200} height={46} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={160} y={72} s={13} a="middle" f={C.crema}>impl Codec for A</T>
-        <T x={60} y={108} s={12} f={C.caramel}>chosen once, right here</T>
       </g>
+      {tryK > 0 && tryK < 1 && <rect x={tryX} y={44} width={160} height={46} rx={8} fill="none" stroke={C.cherryText} strokeWidth={2} opacity={1 - tryK} />}
+      {rejected && (
+        <g opacity={easeOut(seg(t, 1.3, 1.6))}>
+          <line x1={280} y1={34} x2={320} y2={70} stroke={C.cherryText} strokeWidth={2.5} />
+          <line x1={320} y1={34} x2={280} y2={70} stroke={C.cherryText} strokeWidth={2.5} />
+        </g>
+      )}
+      <T x={60} y={108} s={12} f={C.caramel} o={fa(t, 1.5, 0.3)}>a second impl doesn't fit: chosen once, right here</T>
       <T x={40} y={160} s={13} f={C.taupe}>Meters: From&lt;T&gt;, a generic parameter</T>
-      <g opacity={fa(t, 0.8, 0.4)}>
+      <g opacity={fa(t, 1.9, 0.4)}>
         <rect x={60} y={174} width={150} height={44} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
         <T x={135} y={201} s={12} a="middle" f={C.crema}>From&lt;i32&gt;</T>
+      </g>
+      <g opacity={fa(t, 2.3, 0.4)}>
         <rect x={230} y={174} width={150} height={44} rx={8} fill="none" stroke={C.taupe} strokeWidth={1.5} />
         <T x={305} y={201} s={12} a="middle" f={C.crema}>From&lt;f64&gt;</T>
-        <T x={60} y={238} s={12} f={C.taupe}>two impls, one per source type</T>
       </g>
+      <T x={60} y={238} s={12} f={C.taupe} o={fa(t, 2.7, 0.3)}>both fit at once: chosen many times</T>
     </Svg>
   );
 }

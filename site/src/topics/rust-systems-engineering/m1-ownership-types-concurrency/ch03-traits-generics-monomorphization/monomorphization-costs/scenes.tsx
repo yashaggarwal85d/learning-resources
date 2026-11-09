@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, fmt, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { C, Draw, Stack, Svg, T } from '../../../../../reels/kit';
 
@@ -166,21 +166,34 @@ export function ImplTraitReturn({ t }: StepCtx) {
 }
 
 // ── 9 · Returning it unboxed costs nothing extra; boxing it allocates ──────────────────────────────────────────
+/** A tick mark that lands on the beat, so a bare rectangle still moves: scales in from 0 on arrival. */
+function Tick({ x, y, t, a, c }: { x: number; y: number; t: number; a: number; c: string }) {
+  const k = easeOut(seg(t, a, a + 0.25));
+  return <circle cx={x} cy={y} r={5 * k} fill={c} />;
+}
 export function AllocCount({ t }: StepCtx) {
+  // The counting allocator's own delta per call (examples.py: after_impl - before = 0, after_boxed - before = 1).
+  const implCount = Math.round(lerp(0, 0, easeOut(seg(t, 0.8, 1.4))));
+  const boxedCount = Math.round(lerp(0, 1, easeOut(seg(t, 1.6, 2.3))));
+  const boxedSettled = t >= 2.3;
+  const ring = easeOut(seg(t, 2.3, 2.9));
   return (
     <Svg label="a counting global allocator shows the impl Trait return making no new allocation, and the boxed trait object making exactly one, every call" h={300}>
-      <T x={40} y={44} s={15} f={C.crema}>a counting allocator, before and after each call</T>
+      <T x={40} y={44} s={15} f={C.crema}>allocations counted, one call each, every call it repeats</T>
       <g opacity={fa(t, 0.4, 0.4)}>
-        <rect x={40} y={70} width={240} height={60} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
+        <rect x={40} y={70} width={240} height={110} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={160} y={96} s={13} a="middle" f={C.crema}>make_adder_impl_trait</T>
-        <T x={160} y={118} s={13} a="middle" f={C.caramel}>no new allocation</T>
+        <Tick x={160} y={130} t={t} a={0.8} c={C.caramel} />
+        <T x={160} y={166} s={22} a="middle" f={implCount > 0 ? C.cherryText : C.caramel} w={700}>{fmt(implCount)}</T>
       </g>
       <g opacity={fa(t, 1.0, 0.4)}>
-        <rect x={320} y={70} width={240} height={60} rx={8} fill="none" stroke={C.cherryText} strokeWidth={2} />
+        <rect x={320} y={70} width={240} height={110} rx={8} fill="none" stroke={C.cherryText} strokeWidth={2} />
         <T x={440} y={96} s={13} a="middle" f={C.crema}>make_adder_boxed</T>
-        <T x={440} y={118} s={13} a="middle" f={C.cherryText}>one new allocation</T>
+        <Tick x={440} y={130} t={t} a={1.6} c={C.cherryText} />
+        <T x={440} y={166} s={22} a="middle" f={C.cherryText} w={700}>{fmt(boxedCount)}</T>
+        {boxedSettled && <circle cx={440} cy={158} r={34 - 14 * (1 - ring)} fill="none" stroke={C.cherryText} strokeWidth={2} opacity={1 - ring} />}
       </g>
-      <T x={300} y={200} s={14} a="middle" f={C.latte} o={fa(t, 1.6, 0.4)}>same closure, same result, different cost every call</T>
+      <T x={300} y={222} s={14} a="middle" f={C.latte} o={fa(t, 2.6, 0.4)}>same closure, same result — one path allocates on every call, the other never does</T>
     </Svg>
   );
 }
