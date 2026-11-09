@@ -1,5 +1,5 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { Stack, Svg, T, C } from '../../../../../reels/kit';
 
@@ -48,12 +48,20 @@ export function StealReveal({ t }: StepCtx) {
 export function StealMeasuredReveal({ t }: StepCtx) {
   return (
     <Svg label="tasks_get_stolen.rs: a real, measured spread" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>200 tasks, one spawning worker</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>ran across 3–4 real threads</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>measured directly, not assumed</T>
+      <T x={60} y={30} s={13} f={C.quiet}>200 tasks, one spawning worker</T>
+      {[0, 1, 2, 3].map((l) => (
+        <rect key={l} x={60 + l * 110} y={45} width={90} height={60} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      ))}
+      {Array.from({ length: 16 }).map((_, i) => {
+        const lane = i % 4;
+        const start = 0.15 + i * 0.05;
+        const k = easeOut(seg(t, start, start + 0.3));
+        const x = 60 + lane * 110 + 45;
+        const y = 55 + Math.floor(i / 4) * 12;
+        return <circle key={i} cx={x} cy={y} r={3} fill={C.caramel} opacity={k} />;
+      })}
+      <T x={60} y={140} s={13} f={C.mocha} o={fa(t, 1.0, 0.3)}>ran across 3–4 real threads</T>
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>measured directly, not assumed</T>
     </Svg>
   );
 }
@@ -76,16 +84,14 @@ export function LifoPredict({ t }: StepCtx) {
 
 // ── 5 · LIFO slot (no takeaway, docs-naming "from" step) ─────────────────────────────────────────
 export function LifoReveal({ t }: StepCtx) {
+  const y = lerp(10, 50, easeOut(seg(t, 0.3, 0.7)));
   return (
     <Svg label="the lifo slot: a fast lane for a just-woken task" h={220}>
-      <g opacity={fa(t, 0.2, 0.4)}>
-        <rect x={60} y={40} width={160} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={140} y={67} s={13} a="middle" f={C.mocha}>lifo slot</T>
-      </g>
-      <g opacity={fa(t, 0.2, 0.4)}>
-        <rect x={60} y={96} width={160} height={70} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={140} y={135} s={12} a="middle" f={C.crema}>local queue</T>
-      </g>
+      <rect x={60} y={40} width={160} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={140} y={67} s={13} a="middle" f={C.mocha}>lifo slot</T>
+      <rect x={60} y={96} width={160} height={70} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <T x={140} y={135} s={12} a="middle" f={C.crema}>local queue</T>
+      <circle cx={140} cy={y} r={5} fill={C.caramel} />
       <T x={60} y={190} s={13} f={C.crema} o={fa(t, 0.8, 0.4)}>checked first, for message-passing locality</T>
       <T x={60} y={215} s={13} f={C.latte} o={fa(t, 1.4, 0.4)}>disabled after three uses in a row</T>
     </Svg>
@@ -144,18 +150,15 @@ export function UnconstrainedPredict({ t }: StepCtx) {
 
 // ── 9 · Measured starvation (takeaway) ───────────────────────────────────────────────────────────
 export function UnconstrainedMeasuredReveal({ t }: StepCtx) {
+  const w = lerp(6, 276, easeOut(seg(t, 0.3, 1.0)));
   return (
     <Svg label="unconstrained_starves_sibling.rs: no protection left" h={220}>
       <T x={60} y={50} s={13} f={C.latte} o={fa(t, 0.2, 0.4)}>the budget, switched off entirely</T>
-      <g opacity={fa(t, 0.5, 0.4)}>
-        <rect x={60} y={70} width={280} height={14} rx={4} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <rect x={62} y={72} width={276} height={10} rx={3} fill={C.caramel} opacity={0.85} />
-      </g>
-      <g opacity={fa(t, 1.1, 0.4)}>
-        <rect x={60} y={110} width={240} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={180} y={137} s={13} a="middle" f={C.mocha}>sibling waits for the whole loop</T>
-      </g>
-      <T x={60} y={190} s={13} f={C.crema} o={fa(t, 1.6, 0.4)}>both land within milliseconds of each other</T>
+      <rect x={60} y={70} width={280} height={14} rx={4} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <rect x={62} y={72} width={w} height={10} rx={3} fill={C.caramel} opacity={0.85} />
+      <rect x={60} y={110} width={240} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={180} y={137} s={13} a="middle" f={C.mocha} o={fa(t, 1.0, 0.3)}>sibling waits for the whole loop</T>
+      <T x={60} y={190} s={13} f={C.crema} o={fa(t, 1.4, 0.3)}>both land within milliseconds of each other</T>
     </Svg>
   );
 }

@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Bar, Reticle } from '../../../../../reels/kit';
 
 // A task is multiplexed onto a small, fixed worker pool, never mapped 1:1 onto a real thread;
 // a worker fully occupied by a non-yielding call stalls everything else scheduled there,
@@ -26,15 +26,25 @@ export function MultiplexPredict({ t }: StepCtx) {
 
 // ── 2 · A task is a state machine, not a thread (no takeaway, "from" step) ─────────────────────
 export function MultiplexReveal({ t }: StepCtx) {
+  const n = 10;
   return (
     <Svg label="a hundred tasks, two real worker threads" h={220}>
       {[0, 1].map((w) => (
-        <g key={w} opacity={fa(t, 0.2 + w * 0.3, 0.4)}>
+        <g key={w}>
           <rect x={60 + w * 240} y={40} width={200} height={60} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
           <T x={160 + w * 240} y={75} s={13} a="middle" f={C.crema}>worker thread</T>
         </g>
       ))}
-      <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.0, 0.4)}>a hundred lightweight tasks, flowing through both</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const start = 0.15 + i * 0.08;
+        const k = easeOut(seg(t, start, start + 0.5));
+        if (k <= 0) return null;
+        const tx = i % 2 === 0 ? 160 : 400;
+        const x = lerp(300, tx, k);
+        const y = lerp(170, 70, k);
+        return <circle key={i} cx={x} cy={y} r={3} fill={C.caramel} />;
+      })}
+      <T x={60} y={200} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>a hundred lightweight tasks, flowing through both</T>
     </Svg>
   );
 }
@@ -57,14 +67,15 @@ export function StallPredict({ t }: StepCtx) {
 
 // ── 4 · Measured stall (takeaway) ───────────────────────────────────────────────────────────────
 export function StallMeasuredReveal({ t }: StepCtx) {
+  const stallAt = 0.5;
+  const w = lerp(6, 220, easeOut(seg(t, 0.2, stallAt)));
   return (
     <Svg label="blocking_stalls_worker.rs: a real, measured wait" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>created, then queued behind the blocking call</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>waited: the full call</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>measured directly, not assumed</T>
+      <T x={60} y={45} s={13} f={C.quiet}>trivial task, queued behind the blocking call</T>
+      <Bar x={60} y={55} w={w} h={22} full={220} fill={C.caramel} />
+      <Reticle x={170} y={66} w={230} h={40} t={t} at={stallAt} />
+      <T x={60} y={120} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>waited: the full call, stalled right there</T>
+      <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.1, 0.4)}>measured directly, not assumed</T>
     </Svg>
   );
 }
@@ -87,10 +98,16 @@ export function RuntimeChoicePredict({ t }: StepCtx) {
 
 // ── 6 · Always running vs. only while driven (takeaway) ─────────────────────────────────────────
 export function RuntimeChoiceReveal({ t }: StepCtx) {
+  const x1 = 60 + ((t * 90) % 400);
+  const driven = Math.floor(t / 0.8) % 2 === 0;
   return (
     <Svg label="the docs' own words" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>multi-thread: spawns its own pool, always running</T>
-      <T x={60} y={110} s={14} f={C.mocha} o={fa(t, 0.9, 0.4)}>current-thread: no pool, runs only while driven</T>
+      <line x1={60} y1={55} x2={460} y2={55} stroke={C.mocha} strokeWidth={1.5} />
+      <circle cx={x1} cy={55} r={4} fill={C.caramel} />
+      <T x={60} y={40} s={13} f={C.crema}>multi-thread: spawns its own pool, always running</T>
+      <line x1={60} y1={115} x2={460} y2={115} stroke={C.mocha} strokeWidth={1.5} strokeDasharray="4 4" />
+      {driven && <circle cx={260} cy={115} r={4} fill={C.taupe} opacity={fa(t, 0.9, 0.3)} />}
+      <T x={60} y={100} s={13} f={C.mocha} o={fa(t, 0.9, 0.4)}>current-thread: no pool, runs only while driven</T>
       <T x={60} y={160} s={13} f={C.taupe} o={fa(t, 1.5, 0.4)}>a workload-shape decision, not a default</T>
     </Svg>
   );
@@ -129,14 +146,15 @@ export function SpawnFailReveal({ t }: StepCtx) {
 
 // ── 9 · LocalSet runs it for real (takeaway) ────────────────────────────────────────────────────
 export function LocalSetReveal({ t }: StepCtx) {
+  const bounce = 0.5 + 0.5 * Math.sin(t * 3);
+  const bx = 80 + bounce * 200;
   return (
     <Svg label="localset_runs_not_send.rs: the identical value, run for real" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>through LocalSet and spawn_local</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={240} height={44} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={180} y={112} s={13} a="middle" f={C.mocha}>runs correctly, same thread</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a different promise, not a relaxed one</T>
+      <T x={60} y={40} s={13} f={C.quiet}>through LocalSet and spawn_local</T>
+      <line x1={60} y1={95} x2={300} y2={95} stroke={C.mocha} strokeWidth={1.5} />
+      <circle cx={bx} cy={95} r={4} fill={C.caramel} opacity={fa(t, 0.3, 0.3)} />
+      <T x={60} y={125} s={12} f={C.taupe}>same thread, every time — never moves across</T>
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.1, 0.4)}>a different promise, not a relaxed one</T>
     </Svg>
   );
 }

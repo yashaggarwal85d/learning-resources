@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Bar, Reticle, Decode } from '../../../../../reels/kit';
 
 // spawn_blocking (a dedicated, dynamically-sized blocking pool), block_in_place (hand other
 // tasks to a new worker before blocking this one; panics with no other worker to hand off to),
@@ -26,14 +26,15 @@ export function BaselinePredict({ t }: StepCtx) {
 
 // ── 2 · Measured baseline (no takeaway, re-confirming "from" step) ──────────────────────────────
 export function BaselineReveal({ t }: StepCtx) {
+  const stallAt = 0.5;
+  const w = lerp(6, 220, easeOut(seg(t, 0.2, stallAt)));
   return (
     <Svg label="blocking_call_stalls_worker.rs: the same baseline, reconfirmed" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one worker, one blocking call</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>waited: the full 300ms</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the exact starting point every fix is measured against</T>
+      <T x={60} y={45} s={13} f={C.quiet}>one worker, one blocking call</T>
+      <Bar x={60} y={55} w={w} h={22} full={220} fill={C.caramel} />
+      <Reticle x={170} y={66} w={230} h={40} t={t} at={stallAt} />
+      <T x={60} y={120} s={13} f={C.crema} o={fa(t, 0.6, 0.4)}>waited: the full 300ms</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.1, 0.4)}>the exact starting point every fix is measured against</T>
     </Svg>
   );
 }
@@ -56,16 +57,16 @@ export function SpawnBlockingPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: isolated (takeaway) ────────────────────────────────────────────────────────────
 export function SpawnBlockingReveal({ t }: StepCtx) {
+  const moveX = lerp(140, 380, easeOut(seg(t, 0.2, 0.9)));
+  const siblingPulse = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 8));
   return (
     <Svg label="spawn_blocking_isolates_it.rs: a separate pool entirely" h={220}>
-      <g opacity={fa(t, 0.1, 0.4)}>
-        <rect x={60} y={40} width={160} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={140} y={70} s={12} a="middle" f={C.crema}>worker pool</T>
-      </g>
-      <g opacity={fa(t, 0.4, 0.4)}>
-        <rect x={280} y={40} width={200} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={380} y={70} s={12} a="middle" f={C.mocha}>blocking pool, separate</T>
-      </g>
+      <rect x={60} y={40} width={160} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <T x={140} y={70} s={12} a="middle" f={C.crema}>worker pool</T>
+      <rect x={280} y={40} width={200} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={380} y={70} s={12} a="middle" f={C.mocha}>blocking pool, separate</T>
+      <circle cx={moveX} cy={65} r={5} fill={C.caramel} />
+      <circle cx={110} cy={65} r={4} fill={C.crema} opacity={fa(t, 0.9, 0.3) * siblingPulse} />
       <T x={60} y={125} s={13} f={C.crema} o={fa(t, 0.9, 0.4)}>sibling ran after roughly 0ms</T>
       <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.4, 0.4)}>the worker never touched the call at all</T>
     </Svg>
@@ -90,18 +91,16 @@ export function BlockInPlacePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: handed off (takeaway) ──────────────────────────────────────────────────────────
 export function BlockInPlaceReveal({ t }: StepCtx) {
+  const moveX = lerp(140, 380, easeOut(seg(t, 0.15, 0.6)));
   return (
     <Svg label="block_in_place_hands_off.rs: everything else moves instead" h={220}>
-      <g opacity={fa(t, 0.1, 0.4)}>
-        <rect x={60} y={40} width={160} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={140} y={70} s={12} a="middle" f={C.mocha}>this worker, now blocked</T>
-      </g>
-      <g opacity={fa(t, 0.5, 0.4)}>
-        <rect x={280} y={40} width={200} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <T x={380} y={70} s={12} a="middle" f={C.crema}>sibling, handed off here</T>
-      </g>
-      <T x={60} y={125} s={13} f={C.crema} o={fa(t, 1.0, 0.4)}>sibling ran after roughly 0ms</T>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>moved before the blocking call even started</T>
+      <rect x={60} y={40} width={160} height={50} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={140} y={70} s={12} a="middle" f={C.mocha}>this worker, now blocked</T>
+      <rect x={280} y={40} width={200} height={50} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <T x={380} y={70} s={12} a="middle" f={C.crema}>sibling, handed off here</T>
+      <circle cx={moveX} cy={65} r={5} fill={C.caramel} />
+      <T x={60} y={125} s={13} f={C.crema} o={fa(t, 0.8, 0.4)}>sibling ran after roughly 0ms</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>moved before the blocking call even started</T>
     </Svg>
   );
 }
@@ -141,9 +140,10 @@ export function PanicReveal({ t }: StepCtx) {
 export function AlternativesReveal({ t }: StepCtx) {
   return (
     <Svg label="for genuinely CPU-heavy work, no blocking at all" h={240}>
-      <T x={60} y={55} s={14} f={C.crema} o={fa(t, 0.2, 0.4)}>rayon, or a dedicated runtime</T>
-      <T x={60} y={100} s={14} f={C.mocha} o={fa(t, 0.7, 0.4)}>glommio, monoio, compio</T>
-      <T x={60} y={135} s={13} f={C.latte} o={fa(t, 1.2, 0.4)}>one worker per core, no borrowing at all</T>
+      <T x={60} y={45} s={13} f={C.quiet}>CPU-bound, no async waiting at all</T>
+      <Decode text="rayon :: spawn()" t={t} at={0.2} dur={0.6} x={60} y={85} s={16} f={C.caramel} />
+      <Decode text="glommio, monoio, compio" t={t} at={0.8} dur={0.7} x={60} y={125} s={14} f={C.mocha} />
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.6, 0.4)}>one worker per core, no borrowing at all</T>
     </Svg>
   );
 }

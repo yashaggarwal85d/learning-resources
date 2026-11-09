@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Bar, Reticle } from '../../../../../reels/kit';
 
 // mio::Poll's real register -> park -> readiness event -> poll cycle, built directly; the
 // timer driver's own wake cycle, measured; io_uring named as real but unstable and opt-in.
@@ -25,14 +25,15 @@ export function RegisterPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: a real event (takeaway) ────────────────────────────────────────────────────────
 export function RegisterReveal({ t }: StepCtx) {
+  const x = lerp(70, 300, easeOut(seg(t, 0.2, 0.8)));
   return (
     <Svg label="mio_register_then_connect.rs: a real event, named" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>register, then wait</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>writable: Token(0)</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real event, naming the exact socket</T>
+      <T x={60} y={45} s={13} f={C.quiet}>register, then wait</T>
+      <circle cx={x} cy={90} r={5} fill={C.caramel} />
+      <rect x={280} y={70} width={170} height={40} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <T x={365} y={95} s={13} a="middle" f={C.mocha}>writable: Token(0)</T>
+      <Reticle x={365} y={90} w={190} h={56} t={t} at={0.8} />
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.0, 0.4)}>a real event, naming the exact socket</T>
     </Svg>
   );
 }
@@ -55,14 +56,15 @@ export function TimeoutPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: parked for the timeout (takeaway) ──────────────────────────────────────────────
 export function TimeoutReveal({ t }: StepCtx) {
+  const full = 0.9;
+  const w = lerp(6, 220, easeOut(seg(t, 0.2, full)));
   return (
     <Svg label="mio_poll_times_out_with_nothing_ready.rs: a real, measured wait" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>parked, waiting for nothing</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>waited: the full timeout</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>zero events, measured directly</T>
+      <T x={60} y={45} s={13} f={C.quiet}>parked, waiting for nothing</T>
+      <Bar x={60} y={55} w={w} h={22} full={220} fill={C.caramel} />
+      <Reticle x={170} y={66} w={230} h={40} t={t} at={full} />
+      <T x={60} y={120} s={13} f={C.crema} o={fa(t, 0.6, 0.4)}>waited: the full timeout</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.1, 0.4)}>zero events, measured directly</T>
     </Svg>
   );
 }
@@ -85,14 +87,15 @@ export function SleepPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: wakes on time (takeaway) ───────────────────────────────────────────────────────
 export function SleepReveal({ t }: StepCtx) {
+  const target = 0.9;
+  const w = lerp(6, 221, easeOut(seg(t, 0.2, target)));
   return (
     <Svg label="sleep_actually_wakes_at_deadline.rs: close to the real deadline" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>asked for 200ms</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>woke at: 201ms</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the thing that actually calls wake</T>
+      <T x={60} y={45} s={13} f={C.quiet}>asked for 200ms</T>
+      <Bar x={60} y={55} w={w} h={22} full={221} fill={C.caramel} />
+      <Reticle x={170} y={66} w={231} h={40} t={t} at={target} />
+      <T x={60} y={120} s={13} f={C.crema} o={fa(t, 0.6, 0.4)}>woke right at the deadline</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.1, 0.4)}>the thing that actually calls wake</T>
     </Svg>
   );
 }

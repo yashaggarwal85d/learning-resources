@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Reticle } from '../../../../../reels/kit';
 
 // Semaphore saturation, runtime-metrics backlog, and bounded-channel backpressure, each
 // measured directly; tokio-console named from the crate's own words, closing the chapter.
@@ -27,12 +27,14 @@ export function SemaphorePredict({ t }: StepCtx) {
 export function SemaphoreReveal({ t }: StepCtx) {
   return (
     <Svg label="semaphore_bounds_concurrency.rs: a real, measured cap" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>20 tasks, 4 permits</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>available: 0</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>never more than 4 running at once</T>
+      <T x={60} y={40} s={13} f={C.quiet}>20 tasks, 4 permits</T>
+      {[0, 1, 2, 3].map((i) => {
+        const k = easeOut(seg(t, 0.2 + i * 0.15, 0.2 + i * 0.15 + 0.3));
+        return <rect key={i} x={60 + i * 55} y={55} width={44} height={44} rx={6} fill={k > 0.9 ? C.caramel : 'none'} stroke={C.caramel} strokeWidth={2} opacity={Math.max(0.3, k)} />;
+      })}
+      <Reticle x={60 + 2 * 55 - 5} y={77} w={240} h={56} t={t} at={0.9} />
+      <T x={60} y={135} s={13} f={C.mocha} o={fa(t, 1.0, 0.3)}>available: 0</T>
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>never more than 4 running at once</T>
     </Svg>
   );
 }
@@ -55,14 +57,16 @@ export function MetricsPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: hundreds still queued (takeaway) ──────────────────────────────────────────────
 export function MetricsReveal({ t }: StepCtx) {
+  const n = 12;
   return (
     <Svg label="global_queue_depth_reveals_backlog.rs: a real backlog" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one worker, 500 tasks</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>queued: hundreds</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>read straight from the runtime's own metrics</T>
+      <T x={60} y={30} s={13} f={C.quiet}>one worker, 500 tasks</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const k = easeOut(seg(t, 0.15 + i * 0.06, 0.15 + i * 0.06 + 0.3));
+        return <rect key={i} x={60 + (i % 6) * 36} y={45 + Math.floor(i / 6) * 30} width={28} height={22} rx={3} fill={C.caramel} opacity={k} />;
+      })}
+      <T x={60} y={140} s={13} f={C.mocha} o={fa(t, 1.0, 0.3)}>queued: hundreds</T>
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>read straight from the runtime's own metrics</T>
     </Svg>
   );
 }
@@ -85,14 +89,16 @@ export function ChannelPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: refused, then accepted (takeaway) ─────────────────────────────────────────────
 export function ChannelReveal({ t }: StepCtx) {
+  const k1 = easeOut(seg(t, 0.2, 0.4));
+  const bounceX = lerp(260, 190, easeOut(seg(t, 0.55, 0.8)));
   return (
     <Svg label="bounded_channel_applies_backpressure.rs: a real, enforced limit" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>one slot, two sends</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>second send: refused</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a third goes through once a slot frees up</T>
+      <T x={60} y={30} s={13} f={C.quiet}>one slot, two sends</T>
+      <rect x={60} y={45} width={60} height={44} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <circle cx={90} cy={67} r={6} fill={C.caramel} opacity={k1} />
+      <circle cx={bounceX} cy={67} r={6} fill={C.cherryText} opacity={fa(t, 0.55, 0.2)} />
+      <T x={60} y={135} s={13} f={C.mocha} o={fa(t, 0.9, 0.3)}>second send: refused</T>
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.2, 0.3)}>a third goes through once a slot frees up</T>
     </Svg>
   );
 }
