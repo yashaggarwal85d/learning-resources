@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Bar, Reticle } from '../../../../../reels/kit';
 
 // Order changes meaning: a real buffer-then-concurrency-limit stack admits far
 // more concurrent callers than the reverse order, matching ServiceBuilder's own
@@ -62,14 +62,18 @@ export function TimeoutOutsidePredict({ t }: StepCtx) {
 
 // ── 4 · Measured: the deadline fired early, auth included (takeaway) ────────────────────────────
 export function TimeoutOutsideReveal({ t }: StepCtx) {
+  const deadlineAt = 0.5;
+  const authW = lerp(6, 280, easeOut(seg(t, 0.15, 1.3)));
+  const cutW = Math.min(authW, 140);
   return (
     <Svg label="timeout_placement_bounds_different_things.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a slow auth step, wrapped by the deadline</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>fired, well before auth would finish</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the deadline bounded everything inside it</T>
+      <T x={60} y={30} s={13} f={C.quiet}>a slow auth step, wrapped by the deadline</T>
+      <Bar x={60} y={45} w={cutW} h={18} full={280} fill={C.cherry} />
+      <line x1={200} y1={40} x2={200} y2={70} stroke={C.cherryText} strokeWidth={2} />
+      <T x={200} y={83} s={11} a="middle" f={C.cherryText}>deadline</T>
+      <Reticle x={200} y={54} w={30} h={34} t={t} at={deadlineAt} />
+      <T x={60} y={115} s={13} f={C.mocha} o={fa(t, 0.6, 0.3)}>fired, well before auth would finish</T>
+      <T x={60} y={145} s={13} f={C.latte} o={fa(t, 0.9, 0.3)}>the deadline bounded everything inside it</T>
     </Svg>
   );
 }
@@ -92,14 +96,13 @@ export function TimeoutInsidePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: auth ran unbounded, outside the deadline (takeaway) ───────────────────────────
 export function TimeoutInsideReveal({ t }: StepCtx) {
+  const authW = lerp(6, 280, easeOut(seg(t, 0.15, 1.0)));
   return (
     <Svg label="timeout_placement_bounds_different_things.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same slow auth step, moved outside</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>ran to completion, entirely unbounded</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the deadline never even saw it</T>
+      <T x={60} y={30} s={13} f={C.quiet}>the same slow auth step, moved outside</T>
+      <Bar x={60} y={45} w={authW} h={18} full={280} fill={C.caramel} />
+      <T x={60} y={100} s={13} f={C.mocha} o={fa(t, 1.0, 0.3)}>ran to completion, entirely unbounded</T>
+      <T x={60} y={130} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>the deadline never even saw it</T>
     </Svg>
   );
 }
@@ -122,28 +125,48 @@ export function RetryPredict({ t }: StepCtx) {
 
 // ── 8 · Measured: the side effect ran once per attempt (takeaway) ───────────────────────────────
 export function RetryReveal({ t }: StepCtx) {
+  const attempts = [{ fail: true }, { fail: true }, { fail: false }];
   return (
     <Svg label="retry_without_idempotency_reruns_the_effect.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>three attempts, two failed, one succeeded</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the side effect: ran all three times</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>nothing was guarding it from running again</T>
+      <T x={60} y={30} s={13} f={C.quiet}>three attempts</T>
+      {attempts.map((a, i) => {
+        const start = 0.2 + i * 0.3;
+        const k = easeOut(seg(t, start, start + 0.2));
+        return (
+          <g key={i}>
+            <rect x={60 + i * 100} y={45} width={80} height={30} rx={4} fill="none" stroke={a.fail ? C.cherryText : C.caramel} strokeWidth={2} opacity={k} />
+            <circle cx={100 + i * 100} cy={95} r={4} fill={C.caramel} opacity={fa(t, start + 0.1, 0.15)} />
+          </g>
+        );
+      })}
+      <T x={60} y={125} s={13} f={C.mocha} o={fa(t, 1.1, 0.3)}>the side effect: ran all three times</T>
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.4, 0.3)}>nothing was guarding it from running again</T>
     </Svg>
   );
 }
 
 // ── 9 · Add an idempotency key: runs once (no takeaway, surprising fact) ────────────────────────
 export function IdempotentReveal({ t }: StepCtx) {
+  const attempts = [{ fail: true }, { fail: true }, { fail: false }];
   return (
     <Svg label="retry_without_idempotency_reruns_the_effect.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the same handler, same failures, same retries</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the side effect: ran exactly once</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>one check, and the repeats stopped mattering</T>
+      <T x={60} y={30} s={13} f={C.quiet}>same handler, same failures, same retries</T>
+      {attempts.map((a, i) => {
+        const start = 0.2 + i * 0.3;
+        const k = easeOut(seg(t, start, start + 0.2));
+        return (
+          <g key={i}>
+            <rect x={60 + i * 100} y={45} width={80} height={30} rx={4} fill="none" stroke={a.fail ? C.cherryText : C.caramel} strokeWidth={2} opacity={k} />
+            {i === 0 ? (
+              <circle cx={100 + i * 100} cy={95} r={4} fill={C.caramel} opacity={fa(t, start + 0.1, 0.15)} />
+            ) : (
+              <T x={70 + i * 100} y={100} s={11} f={C.taupe} o={fa(t, start + 0.1, 0.15)}>skipped</T>
+            )}
+          </g>
+        );
+      })}
+      <T x={60} y={125} s={13} f={C.mocha} o={fa(t, 1.1, 0.3)}>the side effect: ran exactly once</T>
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.4, 0.3)}>one check, and the repeats stopped mattering</T>
     </Svg>
   );
 }

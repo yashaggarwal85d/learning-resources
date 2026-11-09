@@ -27,14 +27,19 @@ export function ContractPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: a real caller waits for real ready (swipe test's "from" step — NO takeaway) ───
 export function ContractReveal({ t }: StepCtx) {
+  const n = 4;
+  const readyAt = 0.8;
   return (
     <Svg label="service_is_poll_ready_then_call.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>reported not ready, several times over</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>only then did the caller call it</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>readiness genuinely awaited, not assumed</T>
+      <T x={60} y={30} s={13} f={C.quiet}>poll_ready(), repeatedly</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const start = 0.1 + i * 0.18;
+        const k = easeOut(seg(t, start, start + 0.15)) * (1 - easeOut(seg(t, start + 0.15, start + 0.3)));
+        return <circle key={i} cx={70 + i * 40} cy={55} r={5} fill={C.cherryText} opacity={k} />;
+      })}
+      <circle cx={70 + n * 40} cy={55} r={6} fill={C.caramel} opacity={fa(t, readyAt, 0.2)} />
+      <T x={60} y={100} s={13} f={C.mocha} o={fa(t, readyAt + 0.1, 0.3)}>only then did the caller call it</T>
+      <T x={60} y={130} s={13} f={C.latte} o={fa(t, readyAt + 0.4, 0.3)}>readiness genuinely awaited, not assumed</T>
     </Svg>
   );
 }
@@ -93,14 +98,20 @@ export function BufferPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: the queue accepts everything, inner still capped (takeaway) ───────────────────
 export function BufferReveal({ t }: StepCtx) {
+  const n = 8;
+  const pulse = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 4));
   return (
     <Svg label="layers_compose_and_bound_a_stack.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>every call accepted, immediately</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the inner service: still one at a time</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a real backlog, hidden, not a rejection</T>
+      <T x={60} y={25} s={13} f={C.quiet}>queue: every call accepted</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const k = easeOut(seg(t, 0.1 + i * 0.04, 0.1 + i * 0.04 + 0.15));
+        return <rect key={i} x={60 + i * 28} y={35} width={22} height={22} rx={3} fill={C.caramel} opacity={k} />;
+      })}
+      <T x={60} y={90} s={13} f={C.quiet}>inner service: one at a time</T>
+      <rect x={60} y={100} width={30} height={30} rx={4} fill="none" stroke={C.caramel} strokeWidth={2} />
+      <circle cx={75} cy={115} r={4} fill={C.caramel} opacity={pulse} />
+      <T x={60} y={155} s={13} f={C.mocha} o={fa(t, 0.9, 0.3)}>the inner service: still one at a time</T>
+      <T x={60} y={180} s={13} f={C.latte} o={fa(t, 1.2, 0.3)}>a real backlog, hidden, not a rejection</T>
     </Svg>
   );
 }
@@ -123,10 +134,13 @@ export function PanicPredict({ t }: StepCtx) {
 
 // ── 8 · The trait's own words, quoted (no takeaway, connecting step) ────────────────────────────
 export function PanicReveal({ t }: StepCtx) {
+  const shake = Math.sin(t * 30) * 2 * easeOut(seg(t, 0.3, 0.4)) * (1 - easeOut(seg(t, 0.4, 0.5)));
   return (
     <Svg label="tower::Service, quoted directly" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>permitted to panic, if called too soon</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>the trait's own words, not a convention</T>
+      <T x={60 + shake} y={25} s={13} f={C.cherryText} o={fa(t, 0.1, 0.3)}>call() with no poll_ready</T>
+      <circle cx={360} cy={25} r={6} fill={C.cherryText} opacity={fa(t, 0.4, 0.2)} />
+      <T x={60} y={65} s={13} f={C.crema} o={fa(t, 0.5, 0.4)}>permitted to panic, if called too soon</T>
+      <T x={60} y={95} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>the trait's own words, not a convention</T>
     </Svg>
   );
 }
