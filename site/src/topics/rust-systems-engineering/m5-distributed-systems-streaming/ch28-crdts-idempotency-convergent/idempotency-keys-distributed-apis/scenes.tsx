@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Reticle } from '../../../../../reels/kit';
 
 // An idempotency key's own scope, TTL, stored response, and conflict check
 // are four genuinely separate real rules, and together they are what lets
@@ -64,6 +64,7 @@ export function ReplayReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>the stored response, replayed exactly</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the side effect never ran a second time</T>
     </Svg>
   );
@@ -94,6 +95,7 @@ export function RaceReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>the second request: a real conflict, caught</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the side effect ran exactly once, not twice</T>
     </Svg>
   );
@@ -124,6 +126,7 @@ export function TtlReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>the expired key treated as brand new</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the side effect genuinely ran again</T>
     </Svg>
   );
