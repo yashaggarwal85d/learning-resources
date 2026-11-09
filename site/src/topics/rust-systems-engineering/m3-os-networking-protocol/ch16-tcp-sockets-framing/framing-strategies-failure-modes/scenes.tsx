@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Bar, Reticle } from '../../../../../reels/kit';
 
 // A capped length-prefixed frame decodes correctly and extracts without copying a
 // single byte; an uncapped claim is rejected before any large buffer is ever
@@ -27,14 +27,17 @@ export function CapPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: rejected before allocation (swipe test's "from" step — NO takeaway) ───────────
 export function CapReveal({ t }: StepCtx) {
+  const capAt = 0.4;
+  const w = lerp(6, 400, easeOut(seg(t, 0.15, capAt)));
   return (
     <Svg label="capped_length_prefix_framing.rs, measured" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a frame claims a length of 1 GiB</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>rejected, no such buffer allocated</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the cap check runs before allocation</T>
+      <T x={60} y={30} s={13} f={C.quiet}>a frame claims a length of 1 GiB</T>
+      <line x1={260} y1={20} x2={260} y2={56} stroke={C.cherryText} strokeWidth={2} />
+      <T x={260} y={70} s={11} a="middle" f={C.cherryText}>cap</T>
+      <Bar x={60} y={35} w={Math.min(w, 200)} h={18} full={400} fill={w > 195 ? C.cherryText : C.caramel} />
+      <Reticle x={260} y={44} w={30} h={34} t={t} at={capAt} />
+      <T x={60} y={100} s={13} f={C.mocha} o={fa(t, 0.5, 0.3)}>rejected, no such buffer allocated</T>
+      <T x={60} y={130} s={13} f={C.latte} o={fa(t, 0.8, 0.3)}>the cap check runs before allocation</T>
     </Svg>
   );
 }
@@ -57,14 +60,15 @@ export function SplitToPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: zero-copy, confirmed by pointer (takeaway) ────────────────────────────────────
 export function SplitToReveal({ t }: StepCtx) {
+  const x = lerp(90, 260, easeOut(seg(t, 0.2, 0.6)));
   return (
     <Svg label="the frame's own pointer, checked directly" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the frame's own data pointer, checked</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>lands at the payload's own address</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>split in place, never copied</T>
+      <rect x={60} y={40} width={300} height={40} rx={6} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+      <T x={70} y={65} s={11} f={C.quiet}>buffer</T>
+      <rect x={x} y={44} width={90} height={32} rx={4} fill={C.caramel} opacity={fa(t, 0.2, 0.3)} />
+      <T x={x + 45} y={65} s={11} a="middle" f={C.mocha}>frame</T>
+      <T x={60} y={110} s={13} f={C.mocha} o={fa(t, 0.7, 0.3)}>lands at the payload's own address</T>
+      <T x={60} y={140} s={13} f={C.latte} o={fa(t, 1.0, 0.3)}>split in place, never copied</T>
     </Svg>
   );
 }
@@ -87,10 +91,13 @@ export function DecoderPredict({ t }: StepCtx) {
 
 // ── 6 · The documentation's own words, quoted (no takeaway, connecting step) ────────────────────
 export function DecoderReveal({ t }: StepCtx) {
+  const x = lerp(60, 220, easeOut(seg(t, 0.2, 0.6)));
   return (
     <Svg label="the codec documentation, quoted directly" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>turn bytes into frames, find the boundaries</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>exactly the problem a byte stream creates</T>
+      <line x1={60} y1={25} x2={400} y2={25} stroke={C.mocha} strokeWidth={1.5} />
+      <line x1={x} y1={10} x2={x} y2={40} stroke={C.caramel} strokeWidth={2} />
+      <T x={60} y={65} s={13} f={C.crema} o={fa(t, 0.5, 0.4)}>turn bytes into frames, find the boundaries</T>
+      <T x={60} y={95} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>exactly the problem a byte stream creates</T>
     </Svg>
   );
 }
@@ -132,10 +139,15 @@ export function StrategiesReveal({ t }: StepCtx) {
 
 // ── 9 · The chapter's own chosen pattern (takeaway) ─────────────────────────────────────────────
 export function PatternReveal({ t }: StepCtx) {
+  const capK = easeOut(seg(t, 0.2, 0.4));
+  const splitX = lerp(150, 260, easeOut(seg(t, 0.6, 0.9)));
   return (
     <Svg label="capped, and extracted without copying" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>cap the claim before trusting it</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>then split the buffer in place</T>
+      <line x1={150} y1={15} x2={150} y2={45} stroke={C.cherryText} strokeWidth={2} opacity={capK} />
+      <rect x={60} y={20} width={90} height={30} rx={4} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+      <rect x={splitX} y={20} width={70} height={30} rx={4} fill={C.caramel} opacity={fa(t, 0.6, 0.3)} />
+      <T x={60} y={75} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>cap the claim before trusting it</T>
+      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.7, 0.4)}>then split the buffer in place</T>
     </Svg>
   );
 }
