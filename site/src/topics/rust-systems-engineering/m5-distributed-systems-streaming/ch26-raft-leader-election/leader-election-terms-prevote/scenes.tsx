@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Reticle } from '../../../../../reels/kit';
 
 // A real election under terms and randomized timeouts elects a correct
 // leader only when the up-to-date-log voting rule is enforced; a real
@@ -65,6 +65,7 @@ export function StaleCandidateReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>genuinely rejected, genuinely loses</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a fresh term is never enough on its own</T>
     </Svg>
   );
@@ -95,6 +96,7 @@ export function DisruptionReveal({ t }: StepCtx) {
         <rect x={60} y={75} width={300} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
         <T x={210} y={102} s={13} a="middle" f={C.mocha}>the healthy leader genuinely steps down</T>
       </g>
+      <Reticle x={210} y={97} w={324} h={68} t={t} at={1.3} />
       <T x={60} y={150} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a bare term rise alone can depose a leader</T>
     </Svg>
   );
