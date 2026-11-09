@@ -26,14 +26,16 @@ export function ReadaheadPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: 0 resident, then all resident (this is the swipe test's "from" step — NO takeaway) ──
 export function ReadaheadReveal({ t }: StepCtx) {
+  const n = 10;
   return (
     <Svg label="readahead_populates_the_page_cache.rs: a real measurement" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>before readahead: no pages resident</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>after readahead: every page resident</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>no read() call happened in between</T>
+      <T x={60} y={30} s={13} f={C.quiet}>before readahead: no pages resident</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const k = easeOut(seg(t, 0.4 + i * 0.06, 0.4 + i * 0.06 + 0.25));
+        return <rect key={i} x={60 + i * 34} y={45} width={26} height={26} rx={4} fill={k > 0.9 ? C.caramel : 'none'} stroke={C.taupe} strokeWidth={1.5} opacity={Math.max(0.3, k)} />;
+      })}
+      <T x={60} y={130} s={13} f={C.mocha} o={fa(t, 1.1, 0.3)}>after readahead: every page resident</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.4, 0.3)}>no read() call happened in between</T>
     </Svg>
   );
 }
@@ -56,14 +58,16 @@ export function DontneedPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: all resident, then none (takeaway) ────────────────────────────────────────────
 export function DontneedReveal({ t }: StepCtx) {
+  const n = 10;
   return (
     <Svg label="fadvise_dontneed_evicts_resident_pages.rs: a real check" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>after readahead: every page resident</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>after DONTNEED: none resident at all</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a hint, documented as non-binding, that works</T>
+      <T x={60} y={30} s={13} f={C.quiet}>after readahead: every page resident</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const k = 1 - easeOut(seg(t, 0.4 + i * 0.06, 0.4 + i * 0.06 + 0.25));
+        return <rect key={i} x={60 + i * 34} y={45} width={26} height={26} rx={4} fill={k > 0.1 ? C.caramel : 'none'} stroke={C.taupe} strokeWidth={1.5} opacity={Math.max(0.3, k)} />;
+      })}
+      <T x={60} y={130} s={13} f={C.mocha} o={fa(t, 1.1, 0.3)}>after DONTNEED: none resident at all</T>
+      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.4, 0.3)}>a hint, documented as non-binding, that works</T>
     </Svg>
   );
 }
@@ -86,14 +90,20 @@ export function BufferedDirectPredict({ t }: StepCtx) {
 
 // ── 6 · Measured: buffered caches, direct never does (takeaway) ─────────────────────────────────
 export function BufferedDirectReveal({ t }: StepCtx) {
+  const n = 8;
   return (
     <Svg label="direct_io_never_populates_the_page_cache.rs: a real check" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>buffered read: every page resident</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>direct read: no page resident at all</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>the cache never even sees it happen</T>
+      <T x={60} y={25} s={12} f={C.quiet}>buffered read</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const k = easeOut(seg(t, 0.2 + i * 0.06, 0.2 + i * 0.06 + 0.25));
+        return <rect key={i} x={60 + i * 34} y={35} width={26} height={22} rx={4} fill={k > 0.9 ? C.caramel : 'none'} stroke={C.taupe} strokeWidth={1.5} opacity={Math.max(0.3, k)} />;
+      })}
+      <T x={60} y={85} s={12} f={C.quiet}>direct read</T>
+      {Array.from({ length: n }).map((_, i) => (
+        <rect key={i} x={60 + i * 34} y={95} width={26} height={22} rx={4} fill="none" stroke={C.cherryText} strokeWidth={1.5} opacity={fa(t, 0.3, 0.3) * 0.6} />
+      ))}
+      <T x={60} y={140} s={13} f={C.mocha} o={fa(t, 1.1, 0.3)}>direct read: no page resident at all</T>
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>the cache never even sees it happen</T>
     </Svg>
   );
 }
@@ -116,10 +126,14 @@ export function DirtyPredict({ t }: StepCtx) {
 
 // ── 8 · The documented caveat, quoted (no takeaway, connecting step) ────────────────────────────
 export function DirtyReveal({ t }: StepCtx) {
+  const pulse = 0.5 + 0.5 * Math.sin(t * 6);
+  const synced = easeOut(seg(t, 0.8, 1.0));
   return (
     <Svg label="posix_fadvise's own documented caveat" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>a dirty page is never freed by DONTNEED</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>fsync or fdatasync has to write it back first</T>
+      <rect x={60} y={10} width={30} height={30} rx={4} fill={C.cherry} opacity={1 - synced * 0.7} />
+      <circle cx={95} cy={15} r={3} fill={C.cherryText} opacity={pulse * (1 - synced)} />
+      <T x={60} y={75} s={13} f={C.crema} o={fa(t, 0.2, 0.4)}>a dirty page is never freed by DONTNEED</T>
+      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>fsync or fdatasync has to write it back first</T>
     </Svg>
   );
 }

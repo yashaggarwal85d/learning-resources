@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
 import { easeOut, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Decode } from '../../../../../reels/kit';
 
 // sync_all and sync_data genuinely make different syscalls; a file's fsync and its
 // directory's fsync are genuinely two separate calls; and a failed fsync's own retry
@@ -28,12 +28,11 @@ export function SyncCallPredict({ t }: StepCtx) {
 export function SyncCallReveal({ t }: StepCtx) {
   return (
     <Svg label="sync_demo.rs, traced: two real syscalls" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>sync_all() traced as: fsync</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>sync_data() traced as: fdatasync</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>confirmed by strace, not by the docs alone</T>
+      <T x={60} y={30} s={13} f={C.quiet}>sync_all()</T>
+      <Decode text="fsync(fd)" t={t} at={0.3} dur={0.5} x={60} y={60} s={16} f={C.caramel} />
+      <T x={60} y={95} s={13} f={C.quiet}>sync_data()</T>
+      <Decode text="fdatasync(fd)" t={t} at={0.8} dur={0.5} x={60} y={125} s={16} f={C.mocha} />
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.3, 0.3)}>confirmed by strace, not by the docs alone</T>
     </Svg>
   );
 }
@@ -58,12 +57,11 @@ export function DirSyncPredict({ t }: StepCtx) {
 export function DirSyncReveal({ t }: StepCtx) {
   return (
     <Svg label="directory_fsync_is_a_separate_syscall.rs: a real trace" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>the file's own fsync: one real syscall</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>the directory's own fsync: a second one</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>two different handles, two different calls</T>
+      <T x={60} y={30} s={13} f={C.quiet}>the file's own fsync</T>
+      <Decode text="fsync(file_fd)" t={t} at={0.2} dur={0.5} x={60} y={60} s={15} f={C.caramel} />
+      <T x={60} y={95} s={13} f={C.quiet}>the directory's own fsync</T>
+      <Decode text="fsync(dir_fd)" t={t} at={0.7} dur={0.5} x={60} y={125} s={15} f={C.mocha} />
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.2, 0.3)}>two different handles, two different calls</T>
     </Svg>
   );
 }
@@ -86,14 +84,20 @@ export function AtomicReplacePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: no partial reads, ever (takeaway) ─────────────────────────────────────────────
 export function AtomicReplaceReveal({ t }: StepCtx) {
+  const flipAt = 0.6;
+  const n = 10;
   return (
     <Svg label="atomic_replace_never_exposes_a_partial_file.rs: a real race" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>tens of thousands of real concurrent reads</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={260} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={190} y={112} s={13} a="middle" f={C.mocha}>a half-written file: never once observed</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>old content or new content, never a mix</T>
+      <T x={60} y={30} s={13} f={C.quiet}>tens of thousands of concurrent reads</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const start = 0.1 + i * 0.1;
+        const k = easeOut(seg(t, start, start + 0.2));
+        const afterFlip = start > flipAt;
+        return <circle key={i} cx={60 + i * 36} cy={60} r={5} fill={afterFlip ? C.caramel : C.taupe} opacity={k} />;
+      })}
+      <line x1={60 + flipAt * 360} y1={40} x2={60 + flipAt * 360} y2={80} stroke={C.mocha} strokeWidth={1.5} strokeDasharray="3 3" opacity={fa(t, flipAt, 0.1)} />
+      <T x={60} y={110} s={13} f={C.mocha} o={fa(t, 0.8, 0.3)}>a half-written file: never once observed</T>
+      <T x={60} y={140} s={13} f={C.latte} o={fa(t, 1.1, 0.3)}>old content or new content, never a mix</T>
     </Svg>
   );
 }
@@ -116,10 +120,14 @@ export function RetryPredict({ t }: StepCtx) {
 
 // ── 8 · The paper's own account, quoted (no takeaway, connecting step) ──────────────────────────
 export function RetryReveal({ t }: StepCtx) {
+  const clearAt = 0.5;
+  const cleanedOpac = easeOut(seg(t, clearAt, clearAt + 0.2));
   return (
     <Svg label="the paper's own account of the 2018 incident" h={160}>
-      <T x={60} y={70} s={13} f={C.crema} o={fa(t, 0.3, 0.4)}>a failed fsync marks the dirty page clean anyway</T>
-      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.9, 0.4)}>the retry finds nothing left to write, "succeeds"</T>
+      <rect x={60} y={10} width={28} height={28} rx={4} fill={C.cherry} opacity={1 - cleanedOpac * 0.8} />
+      <circle cx={100} cy={15} r={4} fill={C.cherryText} opacity={fa(t, 0.3, 0.1) * (1 - easeOut(seg(t, clearAt, clearAt + 0.1)))} />
+      <T x={60} y={75} s={13} f={C.crema} o={fa(t, 0.2, 0.4)}>a failed fsync marks the dirty page clean anyway</T>
+      <T x={60} y={100} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>the retry finds nothing left to write, "succeeds"</T>
     </Svg>
   );
 }
