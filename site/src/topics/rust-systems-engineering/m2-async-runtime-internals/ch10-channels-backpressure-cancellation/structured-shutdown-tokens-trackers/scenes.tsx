@@ -1,7 +1,7 @@
 import type { StepCtx } from '../../../../../reels/types';
-import { easeOut, seg } from '../../../../../reels/anim';
+import { easeOut, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
-import { Stack, Svg, T, C } from '../../../../../reels/kit';
+import { Stack, Svg, T, C, Bar, Reticle } from '../../../../../reels/kit';
 
 // A CancellationToken genuinely rejecting new work outright; a TaskTracker's wait()
 // genuinely waiting for real completion; a real deadline genuinely abandoning a straggler.
@@ -25,14 +25,18 @@ export function TokenPredict({ t }: StepCtx) {
 
 // ── 2 · Measured: rejected outright (this is the swipe test's "from" step — NO takeaway) ────────
 export function TokenReveal({ t }: StepCtx) {
+  const okX = lerp(90, 170, easeOut(seg(t, 0.2, 0.4)));
+  const bounceX = lerp(300, 240, easeOut(seg(t, 0.7, 0.9)));
   return (
     <Svg label="shutdown_rejects_new_after_signal.rs: a hard stop" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>before the signal: accepted</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>after the signal: rejected</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>a hard stop, not a queue</T>
+      <T x={60} y={30} s={13} f={C.quiet}>before the signal: accepted</T>
+      <circle cx={okX} cy={55} r={5} fill={C.caramel} opacity={fa(t, 0.2, 0.3)} />
+      <line x1={250} y1={25} x2={250} y2={115} stroke={C.mocha} strokeWidth={1.5} strokeDasharray="4 4" />
+      <T x={250} y={125} s={11} a="middle" f={C.taupe}>signal</T>
+      <circle cx={300} cy={85} r={5} fill={C.caramel} opacity={fa(t, 0.6, 0.2)} />
+      <circle cx={bounceX} cy={85} r={5} fill={C.cherryText} opacity={fa(t, 0.7, 0.2)} />
+      <T x={60} y={135} s={13} f={C.mocha} o={fa(t, 0.9, 0.3)}>after the signal: rejected</T>
+      <T x={60} y={165} s={13} f={C.latte} o={fa(t, 1.2, 0.3)}>a hard stop, not a queue</T>
     </Svg>
   );
 }
@@ -55,14 +59,17 @@ export function TrackerPredict({ t }: StepCtx) {
 
 // ── 4 · Measured: waits for real completion (takeaway) ─────────────────────────────────────────
 export function TrackerReveal({ t }: StepCtx) {
+  const n = 8;
   return (
     <Svg label="tracker_waits_for_every_accepted_job.rs: a real wait" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>8 jobs, one tracker</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>wait() returns: all finished</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>completion, not just a signal</T>
+      <T x={60} y={30} s={13} f={C.quiet}>8 jobs, one tracker</T>
+      {Array.from({ length: n }).map((_, i) => {
+        const start = 0.15 + i * 0.1;
+        const k = easeOut(seg(t, start, start + 0.3));
+        return <rect key={i} x={60 + (i % 4) * 55} y={45 + Math.floor(i / 4) * 30} width={40} height={20} rx={4} fill={k > 0.9 ? C.caramel : 'none'} stroke={C.caramel} strokeWidth={1.5} opacity={Math.max(0.3, k)} />;
+      })}
+      <T x={60} y={140} s={13} f={C.mocha} o={fa(t, 1.1, 0.3)}>wait() returns: all finished</T>
+      <T x={60} y={170} s={13} f={C.latte} o={fa(t, 1.4, 0.3)}>completion, not just a signal</T>
     </Svg>
   );
 }
@@ -85,14 +92,17 @@ export function DeadlinePredict({ t }: StepCtx) {
 
 // ── 6 · Measured: stops right on time (takeaway) ────────────────────────────────────────────────
 export function DeadlineReveal({ t }: StepCtx) {
+  const deadlineAt = 0.65;
+  const w = lerp(6, 180, easeOut(seg(t, 0.15, deadlineAt)));
   return (
     <Svg label="shutdown_meets_its_deadline.rs: a real limit" h={200}>
-      <T x={60} y={60} s={14} f={C.crema} o={fa(t, 0.3, 0.4)}>a straggler, still running</T>
-      <g opacity={fa(t, 0.9, 0.4)}>
-        <rect x={60} y={85} width={220} height={44} rx={6} fill="none" stroke={C.caramel} strokeWidth={2} />
-        <T x={170} y={112} s={13} a="middle" f={C.mocha}>wait: stopped at the deadline</T>
-      </g>
-      <T x={60} y={160} s={13} f={C.latte} o={fa(t, 1.5, 0.4)}>not a moment longer</T>
+      <T x={60} y={30} s={13} f={C.quiet}>a straggler, still running</T>
+      <Bar x={60} y={45} w={w} h={18} full={280} fill={C.caramel} />
+      <line x1={240} y1={40} x2={240} y2={70} stroke={C.cherryText} strokeWidth={2} />
+      <T x={240} y={85} s={11} a="middle" f={C.cherryText}>deadline</T>
+      <Reticle x={240} y={54} w={30} h={30} t={t} at={deadlineAt} />
+      <T x={60} y={125} s={13} f={C.mocha} o={fa(t, 0.9, 0.3)}>wait: stopped at the deadline</T>
+      <T x={60} y={155} s={13} f={C.latte} o={fa(t, 1.2, 0.3)}>not a moment longer</T>
     </Svg>
   );
 }
